@@ -1,0 +1,28 @@
+name: Update real Milovice 3D map
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/download_osm.py'
+      - '.github/workflows/update-map.yml'
+permissions:
+  contents: write
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download and validate actual OSM data
+        run: python3 scripts/download_osm.py
+      - name: Commit updated map only when data changed
+        run: |
+          if git diff --quiet -- data/milovice-osm.json; then
+            echo "No changes in OSM data"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/milovice-osm.json
+          git commit -m "Update Milovice map from OpenStreetMap"
+          git push
