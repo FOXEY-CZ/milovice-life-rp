@@ -413,6 +413,7 @@ const osmRoadMaterial=new THREE.MeshLambertMaterial({color:0x666b6e,map:asphaltT
 const osmBuildingMaterial=[0xcbbba3,0xe1d5c0,0xaebec0,0xd8b8a3,0xe2d4bc,0xb7c8b1,0xc2a69a,0xd2d4cf].map((c,i)=>new THREE.MeshStandardMaterial({color:c,map:facadeTexture(i+1),roughness:.93,metalness:0}));
 const osmParkMaterial=mat(0x769b65),osmStripeMaterial=mat(0xf5e8c8);
 let osmActive=false,osmReady=false,osmLoading=false,oldPosition=null,osmRoads=[],osmBuildings=0,osmNamedRoads=[],osmLandmarks=[];
+const osmDriveRoads=[];
 const osmBtn=document.createElement('button');
 osmBtn.id='osm3d';osmBtn.type='button';osmBtn.textContent='⏳ Načítám Milovice…';
 osmBtn.style.cssText='position:fixed;right:12px;top:132px;z-index:46;background:#193d58;border:1px solid #93b4c7;min-height:39px;font-size:12px;padding:8px';
@@ -670,10 +671,13 @@ osmBtn.onclick=async()=>{
  if(osmLoading)return;
  osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';osmMessage('Načítám místní soubor mapy ze stejného GitHub Pages webu…');
  try{
- const elements=await fetchMiloviceOSM();osmRoads=[];osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;osmFurnitureCount=0;for(const batch of facadeBatches)batch.clear();
+ const elements=await fetchMiloviceOSM();osmRoads=[];osmDriveRoads.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;osmFurnitureCount=0;
+  if(trafficGroup.parent!==osmLayer)osmLayer.add(trafficGroup);
+  if(visualDetails.parent!==osmLayer)osmLayer.add(visualDetails);for(const batch of facadeBatches)batch.clear();
  cube(2200,.16,2200,osmParkMaterial,0,-.18,0,osmLayer);
  for(const el of elements){if(!el.geometry?.length)continue;
  if(el.tags?.highway){const points=el.geometry.map(osmPoint);osmRoads.push(points);if(el.tags.name)osmNamedRoads.push({name:el.tags.name,points});const width=el.tags.highway==='primary'?11:el.tags.highway==='secondary'?9:el.tags.highway==='tertiary'?8:el.tags.highway==='pedestrian'?4:el.tags.highway==='service'?4.5:7.8;
+  if(['primary','secondary','tertiary','residential','unclassified','living_street','service'].includes(el.tags.highway))osmDriveRoads.push({points,width,kind:el.tags.highway,oneway:el.tags.oneway==='yes'?1:el.tags.oneway==='-1'?-1:0});
  for(let i=1;i<points.length;i++){osmRoadSegment(points[i-1],points[i],width,el.tags.highway);osmRoadFurniture(points[i-1],points[i],width,el.tags.highway)}
  }else if(el.tags?.building){osmBuilding(el.geometry,el.tags,osmBuildings);osmAddLandmark(el)}
  }
@@ -684,54 +688,125 @@ osmBtn.onclick=async()=>{
 };
 
 
-// RP 4.1: lightweight moving traffic and pedestrians on real OSM road segments.
+// RP 4.4: Cars follow the drivable OSM road graph, including connected streets.
+// Pedestrians remain on sidewalks; vehicles occupy the correct half of a two-way road.
 const trafficGroup=new THREE.Group();osmLayer.add(trafficGroup);
-const trafficCars=[],trafficPeople=[];
-const carPaint=[0x285b87,0xb9bfc4,0x9c3431,0x343b45,0xd8c6a5].map(c=>new THREE.MeshStandardMaterial({color:c,metalness:.22,roughness:.52}));
+const trafficCars=[],trafficPeople=[],driveSegments=[],driveGraph=new Map();
+const carPaint=[0x285b87,0xb9bfc4,0x9c3431,0x343b45,0xd8c6a5,0x4f725f,0xeeeeee,0xa78a55].map(c=>new THREE.MeshStandardMaterial({color:c,metalness:.27,roughness:.44}));
 const npcSkin=new THREE.MeshStandardMaterial({color:0xc89b79,roughness:1});
-const npcClothes=[0x293e55,0x577c61,0x7b4b48,0x444453].map(c=>new THREE.MeshStandardMaterial({color:c,roughness:1}));
-const carBaseGeo=new THREE.BoxGeometry(1.75,.72,3.5),carCabGeo=new THREE.BoxGeometry(1.48,.66,1.9);
-const npcBodyGeo=new THREE.BoxGeometry(.42,1.03,.3),npcHeadGeo=new THREE.SphereGeometry(.22,8,6);
+const npcClothes=[0x293e55,0x577c61,0x7b4b48,0x444453,0xb49e79,0x755d88].map(c=>new THREE.MeshStandardMaterial({color:c,roughness:1}));
+const carGlass=new THREE.MeshStandardMaterial({color:0x375c70,metalness:.20,roughness:.25});
+const carTyre=new THREE.MeshStandardMaterial({color:0x202327,roughness:.95});
+const carChrome=new THREE.MeshStandardMaterial({color:0xb3b7bb,metalness:.65,roughness:.35});
+const carHeadlight=new THREE.MeshBasicMaterial({color:0xffebbd});
+const carTaillight=new THREE.MeshBasicMaterial({color:0xce3027});
+const carBaseGeo=new THREE.BoxGeometry(1.79,.62,3.85),carCabGeo=new THREE.BoxGeometry(1.48,.59,1.95);
+const carWheelGeo=new THREE.CylinderGeometry(.37,.37,.20,12);
+const npcBodyGeo=new THREE.BoxGeometry(.42,1.03,.3),npcHeadGeo=new THREE.SphereGeometry(.22,8,6),npcLegGeo=new THREE.BoxGeometry(.16,.77,.18);
+function roadNode(p){return Math.round(p.x*3)+','+Math.round(p.y*3)}
+function roadGraphAdd(node,segment,direction){
+ const key=roadNode(node);if(!driveGraph.has(key))driveGraph.set(key,[]);
+ driveGraph.get(key).push({segment,direction});
+}
+function rpBuildRoadGraph(){
+ driveGraph.clear();driveSegments.length=0;
+ for(const road of osmDriveRoads){
+  for(let j=1;j<road.points.length;j++){
+   const a=road.points[j-1],b=road.points[j],len=a.distanceTo(b);
+   if(len<2.5||len>175||road.width<4.4)continue;
+   const segment={a,b,len,width:road.width,oneway:road.oneway,kind:road.kind};
+   driveSegments.push(segment);
+   if(road.oneway!==-1)roadGraphAdd(a,segment,1);
+   if(road.oneway!==1)roadGraphAdd(b,segment,-1);
+  }
+ }
+}
+function makeTrafficCar(index,segment){
+ const g=new THREE.Group(),paint=carPaint[index%carPaint.length];
+ const body=new THREE.Mesh(carBaseGeo,paint);body.position.y=.68;g.add(body);
+ const roof=new THREE.Mesh(carCabGeo,paint);roof.position.set(0,1.20,-.13);g.add(roof);
+ const windshield=new THREE.Mesh(new THREE.BoxGeometry(1.38,.39,.035),carGlass);windshield.position.set(0,1.30,-1.13);g.add(windshield);
+ const rearGlass=new THREE.Mesh(new THREE.BoxGeometry(1.38,.35,.035),carGlass);rearGlass.position.set(0,1.30,.89);g.add(rearGlass);
+ for(const side of [-1,1]){
+  const window=new THREE.Mesh(new THREE.BoxGeometry(.038,.36,1.50),carGlass);window.position.set(side*.756,1.30,-.13);g.add(window);
+  for(const zz of [-1.24,1.19]){
+   const wheel=new THREE.Mesh(carWheelGeo,carTyre);wheel.rotation.z=Math.PI/2;wheel.position.set(side*.92,.40,zz);g.add(wheel);
+   const rim=new THREE.Mesh(new THREE.CylinderGeometry(.17,.17,.21,10),carChrome);rim.rotation.z=Math.PI/2;rim.position.copy(wheel.position);g.add(rim);
+  }
+  const frontLamp=new THREE.Mesh(new THREE.BoxGeometry(.37,.14,.055),carHeadlight);frontLamp.position.set(side*.55,.74,-1.97);g.add(frontLamp);
+  const rearLamp=new THREE.Mesh(new THREE.BoxGeometry(.35,.15,.055),carTaillight);rearLamp.position.set(side*.55,.77,1.97);g.add(rearLamp);
+ }
+ trafficGroup.add(g);
+ return {g,seg:segment,progress:(index*.137)%1,direction:index%2?-1:1,speed:5.0+(index%5)*1.15,turns:0};
+}
 function rpPopulate(){
  trafficGroup.clear();trafficCars.length=0;trafficPeople.length=0;
- const segments=[];
- for(const roadPoints of osmRoads)for(let i=1;i<roadPoints.length;i++){
-  const a=roadPoints[i-1],b=roadPoints[i],len=a.distanceTo(b);
-  if(len>12&&len<170)segments.push({a,b,len});
- }
+ rpBuildRoadGraph();
+ const segments=driveSegments.filter(s=>s.len>9&&s.width>=6);
  if(!segments.length)return;
- for(let i=0;i<14;i++){
-  const seg=segments[(i*37+13)%segments.length],g=new THREE.Group(),paint=carPaint[i%carPaint.length];
-  const chassis=new THREE.Mesh(carBaseGeo,paint);chassis.position.y=.67;g.add(chassis);
-  const cab=new THREE.Mesh(carCabGeo,new THREE.MeshStandardMaterial({color:0x456173,metalness:.12,roughness:.35}));cab.position.set(0,1.22,-.18);g.add(cab);
-  const direction=i%2?1:-1;trafficGroup.add(g);trafficCars.push({g,seg,progress:(i*.137)%1,direction,speed:3.5+i%5});
+ for(let i=0;i<18;i++){
+  const seg=segments[(i*37+13)%segments.length];
+  const car=makeTrafficCar(i,seg);
+  // Respect OSM one-way tags from the moment each car is spawned.
+  if(seg.oneway!==0)car.direction=seg.oneway;
+  trafficCars.push(car);
  }
- for(let i=0;i<24;i++){
+ for(let i=0;i<30;i++){
   const seg=segments[(i*23+7)%segments.length],g=new THREE.Group();
-  const body=new THREE.Mesh(npcBodyGeo,npcClothes[i%npcClothes.length]);body.position.y=1.1;g.add(body);
+  const torso=new THREE.Mesh(npcBodyGeo,npcClothes[i%npcClothes.length]);torso.position.y=1.13;g.add(torso);
   const head=new THREE.Mesh(npcHeadGeo,npcSkin);head.position.y=1.87;g.add(head);
-  trafficGroup.add(g);trafficPeople.push({g,seg,progress:(i*.183)%1,direction:i%2?1:-1,speed:.7+(i%4)*.18});
+  const leftLeg=new THREE.Mesh(npcLegGeo,carTyre);leftLeg.position.set(-.13,.40,0);g.add(leftLeg);
+  const rightLeg=new THREE.Mesh(npcLegGeo,carTyre);rightLeg.position.set(.13,.40,0);g.add(rightLeg);
+  trafficGroup.add(g);
+  trafficPeople.push({g,seg,progress:(i*.183)%1,direction:i%2?1:-1,speed:.75+(i%4)*.22,side:i%2?1:-1,legs:[leftLeg,rightLeg],phase:i*.87});
  }
+}
+function rpNextStreet(car){
+ const point=car.direction===1?car.seg.b:car.seg.a;
+ const outgoing=driveGraph.get(roadNode(point))||[];
+ const options=outgoing.filter(o=>o.segment!==car.seg);
+ if(!options.length){
+  if(!car.seg.oneway){car.direction=-car.direction;car.progress=car.direction===1?0:1;return}
+  const fallback=driveSegments[(car.turns*19+7)%driveSegments.length];car.seg=fallback;car.direction=fallback.oneway||1;car.progress=car.direction===1?0:1;return;
+ }
+ const approachX=(car.seg.b.x-car.seg.a.x)*car.direction/car.seg.len;
+ const approachZ=(car.seg.b.y-car.seg.a.y)*car.direction/car.seg.len;
+ let best=options[0],bestScore=-Infinity;
+ for(const item of options){
+  const vx=(item.segment.b.x-item.segment.a.x)*item.direction/item.segment.len;
+  const vz=(item.segment.b.y-item.segment.a.y)*item.direction/item.segment.len;
+  const straight=approachX*vx+approachZ*vz;
+  const score=straight+(Math.sin(car.turns*29+item.segment.a.x*.1+item.segment.a.y*.13)*.16);
+  if(score>bestScore){bestScore=score;best=item}
+ }
+ car.seg=best.segment;car.direction=best.direction;car.progress=best.direction===1?0:1;car.turns++;
 }
 function rpAnimateTraffic(dt){
  if(!osmActive)return;
+ const playerX=walking?px:x,playerZ=walking?pz:z;
  for(const obj of trafficCars){
-  const {seg,g}=obj;obj.progress=(obj.progress+dt*obj.speed/seg.len)%1;
-  const t=obj.direction===1?obj.progress:1-obj.progress;
+  const {g}=obj;
+  const proximity=Math.hypot(g.position.x-x,g.position.z-z);
+  const slowed=!walking&&proximity<8?0.15:1;
+  obj.progress+=obj.direction*dt*obj.speed*slowed/obj.seg.len;
+  if(obj.progress>1||obj.progress<0)rpNextStreet(obj);
+  const seg=obj.seg,dir=obj.direction;
   const dx=(seg.b.x-seg.a.x)/seg.len,dz=(seg.b.y-seg.a.y)/seg.len;
-  const side=obj.direction*1.55;
-  g.position.set(seg.a.x+(seg.b.x-seg.a.x)*t-dz*side,.05,seg.a.y+(seg.b.y-seg.a.y)*t+dx*side);
-  g.rotation.y=Math.atan2(-dx*obj.direction,-dz*obj.direction);
-  g.visible=Math.hypot(g.position.x-(walking?px:x),g.position.z-(walking?pz:z))<165;
+  const side=dir*Math.min(2.25,seg.width*.25);
+  g.position.set(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,.045,seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side);
+  g.rotation.y=Math.atan2(-dx*dir,-dz*dir);
+  g.visible=Math.hypot(g.position.x-playerX,g.position.z-playerZ)<170;
  }
  for(const obj of trafficPeople){
-  const {seg,g}=obj;obj.progress=(obj.progress+dt*obj.speed/seg.len)%1;
-  const t=obj.direction===1?obj.progress:1-obj.progress;
-  const dx=(seg.b.x-seg.a.x)/seg.len,dz=(seg.b.y-seg.a.y)/seg.len;
-  const side=obj.direction*5.2;
-  g.position.set(seg.a.x+(seg.b.x-seg.a.x)*t-dz*side,0,seg.a.y+(seg.b.y-seg.a.y)*t+dx*side);
+  obj.progress+=obj.direction*dt*obj.speed/obj.seg.len;
+  if(obj.progress>=1){obj.progress=1;obj.direction=-1}
+  else if(obj.progress<=0){obj.progress=0;obj.direction=1}
+  const seg=obj.seg,dx=(seg.b.x-seg.a.x)/seg.len,dz=(seg.b.y-seg.a.y)/seg.len;
+  const side=obj.side*(seg.width/2+1.55),g=obj.g;
+  g.position.set(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,0,seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side);
   g.rotation.y=Math.atan2(-dx*obj.direction,-dz*obj.direction);
-  g.visible=Math.hypot(g.position.x-(walking?px:x),g.position.z-(walking?pz:z))<125;
+  g.visible=Math.hypot(g.position.x-playerX,g.position.z-playerZ)<120;
+  if(g.visible){obj.legs[0].rotation.x=Math.sin(elapsed*6+obj.phase)*.34;obj.legs[1].rotation.x=-obj.legs[0].rotation.x}
  }
 }
 const mini=document.getElementById('minimap'),mc=mini.getContext('2d');
