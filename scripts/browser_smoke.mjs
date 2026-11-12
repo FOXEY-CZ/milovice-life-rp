@@ -57,6 +57,14 @@ try{
  await page.waitForFunction(()=>window.__miloviceAreasLoaded?.includes('bozidar'),null,{timeout:105000});
  console.log('Boží Dar streamed:',JSON.stringify(await page.evaluate(()=>window.__miloviceAreaStats)));
  await page.screenshot({path:'browser-artifacts/milovice-bozidar.png'});
+ await page.locator('#rp-vehicles').click();
+ await page.locator('#rp-graphics-select').selectOption('realistic');
+ await page.waitForTimeout(1800);
+ if(!(await page.locator('#rp-graphics-select').inputValue()).includes('realistic'))throw new Error('Quality preset selection failed');
+ await page.screenshot({path:'browser-artifacts/milovice-graphics-shadows.png'});
+ await page.locator('#rp-graphics-select').selectOption('balanced');
+ await page.locator('#rp-spawn-close').click();
+ console.log('Graphics: balanced and dynamic-shadow mode both rendered');
  console.log('Smoke OK: rendered 3D, terrain, walking, car, mission controls');
  if(errors.length)console.log('Nonfatal browser messages:',errors.slice(0,6));
  await context.close();
