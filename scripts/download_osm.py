@@ -19,7 +19,7 @@ for url in urls:
   result=[]
   for way in root.findall("way"):
    tags={t.attrib["k"]:t.attrib["v"] for t in way.findall("tag")}
-   if not ("building" in tags or tags.get("highway") in ("residential","living_street","tertiary","secondary","primary","service","unclassified","pedestrian","footway","path") or tags.get("historic") or tags.get("amenity") in ("place_of_worship","school","townhall","community_centre","theatre","bus_station")):continue
+   if not ("building" in tags or tags.get("highway") in ("residential","living_street","tertiary","secondary","primary","service","unclassified","pedestrian","footway","path") or tags.get("historic") or tags.get("railway") in ("rail","platform","disused") or tags.get("public_transport")=="platform" or tags.get("amenity") in ("place_of_worship","school","townhall","community_centre","theatre","bus_station")):continue
    geometry=[{"lat":nodes[int(nd.attrib["ref"])][0],"lon":nodes[int(nd.attrib["ref"])][1]} for nd in way.findall("nd") if int(nd.attrib["ref"]) in nodes]
    if len(geometry)<2:continue
    result.append({"type":"way","id":int(way.attrib["id"]),"tags":tags,"geometry":geometry})
