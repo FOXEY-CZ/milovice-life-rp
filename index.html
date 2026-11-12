@@ -855,6 +855,15 @@ function finalizeFacades(){for(let i=0;i<4;i++){for(const batch of facadeBatches
 
 // 4.0: richer architecture: distinct wall materials, glazed entrances and roof equipment.
 const foundationMat=new THREE.MeshStandardMaterial({color:0x8f8e88,roughness:.98,side:THREE.DoubleSide});
+const foundationPositions=[],foundationFaces=[];
+function finalizeFoundations(){
+ if(!foundationFaces.length)return;
+ const geo=new THREE.BufferGeometry();
+ geo.setAttribute('position',new THREE.Float32BufferAttribute(foundationPositions,3));
+ geo.setIndex(foundationFaces);geo.computeVertexNormals();
+ const mesh=new THREE.Mesh(geo,foundationMat);mesh.frustumCulled=false;osmLayer.add(mesh);
+ foundationPositions.length=0;foundationFaces.length=0;
+}
 const osmDoorMaterial=new THREE.MeshStandardMaterial({color:0x394a50,metalness:.25,roughness:.28,side:THREE.DoubleSide});
 const roofDetailMat=new THREE.MeshStandardMaterial({color:0x777e7c,metalness:.34,roughness:.68});
 const roofVentMat=new THREE.MeshStandardMaterial({color:0x39484b,metalness:.42,roughness:.43});
@@ -884,20 +893,15 @@ function osmBuilding(points,tags,index){
  }
  baseHeight+=.10;
  if(terrainGrid){
-  const foundationVertices=[],foundationIndices=[];
   for(let i=0;i<pts.length;i++){
    const a=pts[i],b=pts[(i+1)%pts.length],steps=Math.max(1,Math.ceil(a.distanceTo(b)/3));
    for(let j=0;j<steps;j++){
     const t0=j/steps,t1=(j+1)/steps,x0=a.x+(b.x-a.x)*t0,z0=a.y+(b.y-a.y)*t0,x1=a.x+(b.x-a.x)*t1,z1=a.y+(b.y-a.y)*t1;
-    const floor0=terrainAt(x0,z0)-.045,floor1=terrainAt(x1,z1)-.045,idx=foundationVertices.length/3;
-    foundationVertices.push(x0,floor0,z0,x1,floor1,z1,x1,baseHeight+.015,z1,x0,baseHeight+.015,z0);
-    foundationIndices.push(idx,idx+1,idx+2,idx,idx+2,idx+3);
+    const floor0=terrainAt(x0,z0)-.045,floor1=terrainAt(x1,z1)-.045,idx=foundationPositions.length/3;
+    foundationPositions.push(x0,floor0,z0,x1,floor1,z1,x1,baseHeight+.015,z1,x0,baseHeight+.015,z0);
+    foundationFaces.push(idx,idx+1,idx+2,idx,idx+2,idx+3);
    }
   }
-  const foundationGeom=new THREE.BufferGeometry();
-  foundationGeom.setAttribute('position',new THREE.Float32BufferAttribute(foundationVertices,3));
-  foundationGeom.setIndex(foundationIndices);foundationGeom.computeVertexNormals();
-  osmLayer.add(new THREE.Mesh(foundationGeom,foundationMat));
  }
  const mesh=new THREE.Mesh(geometry,osmBuildingMaterial[index%osmBuildingMaterial.length]);mesh.position.y=baseHeight;osmLayer.add(mesh);
  const roofShape=new THREE.Shape();roofShape.moveTo(pts[0].x,-pts[0].y);
@@ -1114,7 +1118,7 @@ osmBtn.onclick=async()=>{
  if(osmLoading)return;
  osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';osmMessage('Načítám místní soubor mapy ze stejného GitHub Pages webu…');
  try{
- const elements=await fetchMiloviceOSM();await rpLoadTerrain();osmRoads=[];osmDriveRoads.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;osmFurnitureCount=0;
+ const elements=await fetchMiloviceOSM();await rpLoadTerrain();foundationPositions.length=0;foundationFaces.length=0;osmRoads=[];osmDriveRoads.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;osmFurnitureCount=0;
   if(trafficGroup.parent!==osmLayer)osmLayer.add(trafficGroup);
   if(visualDetails.parent!==osmLayer)osmLayer.add(visualDetails);for(const batch of facadeBatches)batch.clear();
  if(terrainGrid)rpTerrainMesh();else cube(2200,.16,2200,osmParkMaterial,0,-.18,0,osmLayer);
@@ -1124,7 +1128,7 @@ osmBtn.onclick=async()=>{
  for(let i=1;i<points.length;i++){osmRoadSegment(points[i-1],points[i],width,el.tags.highway);osmRoadFurniture(points[i-1],points[i],width,el.tags.highway)}
  }else if(el.tags?.building){osmBuilding(el.geometry,el.tags,osmBuildings);osmAddLandmark(el)}
  }
- if(!osmRoads.length)throw Error('Žádné silnice v odpovědi');finalizeFacades();osmStreetLabels();chunkMilovice();improveMiloviceVisuals();rpPopulate();
+ if(!osmRoads.length)throw Error('Žádné silnice v odpovědi');finalizeFoundations();finalizeFacades();osmStreetLabels();chunkMilovice();improveMiloviceVisuals();rpPopulate();
  osmReady=true;osmNotice.style.display='none';osmSetActive(true);document.getElementById('status').textContent='Prozkoumávej skutečné Milovice. Na mapě najdeš pojmenované ulice a budovy.';
  }catch(e){osmLayer.clear();for(const batch of facadeBatches)batch.clear();osmReady=false;osmBtn.textContent='🔄 Zkusit načíst Milovice';notify('Skutečná mapa se nenačetla. Zkus znovu tlačítko vpravo.');osmNotice.style.display='block';osmNotice.textContent='3D mapa se nenačetla: '+e.message+'. Zkus znovu načíst mapu.';loadingScreen.textContent='⚠️ Skutečnou mapu Milovic se nepodařilo načíst. Klepni na Zkusit načíst Milovice.'}
  finally{osmLoading=false}
