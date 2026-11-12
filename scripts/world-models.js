@@ -233,6 +233,10 @@ export function makeCityElefantStyleTrain(THREE){
   if(i!==1){
    const cabZ=i===0?-12.13:12.13;
    part(THREE,coach,new THREE.BoxGeometry(2.40,1.02,.10),glass,0,2.55,cabZ);
+   const routeSign=textPanel(THREE,'S22 MILOVICE',1.65,.32);
+   routeSign.position.set(0,2.87,cabZ+(i===0?-.10:.10));
+   routeSign.rotation.y=i===0?0:Math.PI;
+   coach.add(routeSign);
    part(THREE,coach,new THREE.BoxGeometry(2.50,.24,.12),black,0,1.45,cabZ+.04);
    for(const s of [-1,1]){
     part(THREE,coach,new THREE.BoxGeometry(.19,.17,.13),material(THREE,0xffedcb),s*.97,1.55,cabZ+.08);
