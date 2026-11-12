@@ -56,6 +56,22 @@ function sideExtrusion(THREE,points,width,bevel=.045){
  geom.rotateY(-Math.PI/2);geom.translate(width*.5-.02,0,0);
  return geom;
 }
+// Baked procedural metallic surface: tiny clearcoat grain, no borrowed image textures.
+function automotivePaint(THREE,color){
+ const coat=material(THREE,color,.33,.42);
+ if(coat.map)return coat;
+ const cv=document.createElement('canvas');cv.width=cv.height=128;const g=cv.getContext('2d'),im=g.createImageData(128,128);
+ let seed=79231;for(let i=0;i<im.data.length;i+=4){
+  seed=(Math.imul(seed,1664525)+1013904223)>>>0;
+  const n=218+(seed%33),sparkle=(seed%59===0)?22:0;
+  im.data[i]=Math.min(255,n+sparkle);im.data[i+1]=Math.min(255,n+sparkle);
+  im.data[i+2]=Math.min(255,n+sparkle);im.data[i+3]=255;
+ }
+ g.putImageData(im,0,0);
+ const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;
+ tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.repeat.set(5,9);
+ coat.map=tex;coat.needsUpdate=true;return coat;
+}
 function carWheel(THREE,parent,side,z,radius=.38,xOffset=.87){
  const tyre=material(THREE,0x171a1d),rim=material(THREE,0xabb4b8,.74,.35),spoke=material(THREE,0x505b65,.6,.42);
  const pivot=new THREE.Group();pivot.position.set(side*xOffset,radius+.045,z);parent.add(pivot);
@@ -72,7 +88,7 @@ export function makeRoadCar(THREE,index=0){
  const height=[1.60,1.58,1.57,1.75,1.60,1.72,2.16,1.60][variant];
  const width=isVan?2.04:1.81;
  const colors=[0x164a71,0xa0afb8,0x393d43,0x8f3937,0x4c7566,0xc7c5bd,0xf0ece1,0x8f8d80];
- const paint=material(THREE,colors[variant],.22,.43),chrome=material(THREE,0xb6bec4,.72,.35);
+ const paint=automotivePaint(THREE,colors[variant]),chrome=material(THREE,0xb6bec4,.72,.35);
  const glass=material(THREE,0x223e50,.22,.19),black=material(THREE,0x20272e),light=material(THREE,0xf8e5b5);
  const back=material(THREE,0xb82e29),headStart=isVan?1.13:height*.68;
  const profile=[[-length*.50,.46],[-length*.49,.87],[-length*.39,1.03],[length*.36,1.03],[length*.49,.83],[length*.50,.50]];
@@ -125,7 +141,7 @@ function textPanel(THREE,text,w,h,background='#12191e',foreground='#ffd75a'){
 }
 export function makePidBus(THREE,route='432'){
  const group=new THREE.Group(),w=2.55,length=11.0;
- const white=material(THREE,0xeaeae5),red=material(THREE,0xc72931),dark=material(THREE,0x20292f);
+ const white=automotivePaint(THREE,0xeaeae5),red=automotivePaint(THREE,0xc72931),dark=material(THREE,0x20292f);
  const tinted=material(THREE,0x305b70,.25,.25),silver=material(THREE,0xa9b7bc,.65,.4);
  const profile=[[-5.5,.47],[-5.49,2.69],[-5.25,3.04],[5.23,3.04],[5.48,2.70],[5.50,.47]];
  const shell=part(THREE,group,sideExtrusion(THREE,profile,w,.095),white,0,0,0);
@@ -167,13 +183,23 @@ export function makeCityElefantStyleTrain(THREE){
   for(const side of [-1,1]){
    part(THREE,coach,new THREE.BoxGeometry(.06,1.11,23.2),blue,side*1.43,2.66,0);
    part(THREE,coach,new THREE.BoxGeometry(.07,.50,23.2),red,side*1.44,1.25,0);
+   // GPU-instanced panes: 22 windows per side without 44 separate draw calls.
+   const paneGeo=new THREE.BoxGeometry(.08,.48,1.43);
+   const seamGeo=new THREE.BoxGeometry(.10,.51,.06);
+   const panes=new THREE.InstancedMesh(paneGeo,glass,22);
+   const seams=new THREE.InstancedMesh(seamGeo,black,22),tmp=new THREE.Object3D();
+   let p=0;
    for(let k=0;k<11;k++){
     const z=-10.9+k*2.07;
     for(const y of [1.86,3.12]){
-     part(THREE,coach,new THREE.BoxGeometry(.08,.48,1.43),glass,side*1.45,y,z);
-     part(THREE,coach,new THREE.BoxGeometry(.10,.51,.06),black,side*1.50,y,z+.75);
+     tmp.position.set(side*1.45,y,z);tmp.rotation.set(0,0,0);tmp.scale.set(1,1,1);
+     tmp.updateMatrix();panes.setMatrixAt(p,tmp.matrix);
+     tmp.position.set(side*1.50,y,z+.75);tmp.updateMatrix();seams.setMatrixAt(p,tmp.matrix);
+     p++;
     }
    }
+   panes.instanceMatrix.needsUpdate=true;seams.instanceMatrix.needsUpdate=true;
+   panes.computeBoundingSphere();seams.computeBoundingSphere();coach.add(panes,seams);
    for(const z of [-8.8,8.5]){
     const tyre=new THREE.Mesh(new THREE.CylinderGeometry(.43,.43,.18,14),wheel);
     tyre.rotation.z=Math.PI/2;tyre.position.set(side*1.12,.48,z);coach.add(tyre);
