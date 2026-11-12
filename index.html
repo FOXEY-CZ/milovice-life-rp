@@ -858,7 +858,7 @@ const stationWalls=new THREE.MeshStandardMaterial({color:0xe6e3d5,map:facadeText
 const blueStarWalls=new THREE.MeshStandardMaterial({color:0xd48a35,map:facadeTexture(19),roughness:.9});
 const mirova36Walls=new THREE.MeshStandardMaterial({color:0xdac6a0,map:facadeTexture(26),roughness:.92});
 const grocerWalls=new THREE.MeshStandardMaterial({color:0xd2cdc1,map:facadeTexture(8),roughness:.9});
-const mirova36Roof=new THREE.MeshStandardMaterial({color:0x853f46,map:roofTileMap,roughness:.86,side:THREE.DoubleSide});
+const mirova36Roof=new THREE.MeshStandardMaterial({color:0x853f46,roughness:.86,side:THREE.DoubleSide});
 const schoolWalls=new THREE.MeshStandardMaterial({color:0xe3b42f,map:facadeTexture(37),roughness:.9});
 const schoolPlinth=new THREE.MeshStandardMaterial({color:0xb34a31,roughness:.86,side:THREE.DoubleSide});
 const garageWalls=new THREE.MeshStandardMaterial({color:0xb1afa4,roughness:.92});
@@ -914,6 +914,7 @@ function miloviceRoofTiles(){
  const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(2,2);t.colorSpace=THREE.SRGBColorSpace;return t;
 }
 const roofTileMap=miloviceRoofTiles();
+mirova36Roof.map=roofTileMap;mirova36Roof.needsUpdate=true; // Assign only after texture creation.
 const osmRoofPalette=[
  new THREE.MeshStandardMaterial({color:0xffffff,map:roofTileMap,roughness:.96,side:THREE.DoubleSide}),
  mat(0xb5684d),mat(0x745652),mat(0x87766a),mat(0x545a5e)
