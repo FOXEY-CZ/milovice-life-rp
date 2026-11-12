@@ -838,22 +838,32 @@ function rpBuildCrosswalks(){
  }
 }
 function makeTrafficCar(index,segment){
- const g=new THREE.Group(),paint=carPaint[index%carPaint.length];
- const body=new THREE.Mesh(carBaseGeo,paint);body.position.y=.68;g.add(body);
- const roof=new THREE.Mesh(carCabGeo,paint);roof.position.set(0,1.20,-.13);g.add(roof);
+ const g=new THREE.Group(),type=index%9,paint=type===8?carPaint[1]:carPaint[index%carPaint.length];
+ let length=3.85,roofHeight=.59;
+ if(type===2||type===5){length=4.52;roofHeight=.72}
+ if(type===6){length=4.9;roofHeight=1.04}
+ if(type===7){length=5.8;roofHeight=1.42}
+ const body=new THREE.Mesh(carBaseGeo,paint);body.position.y=.70;body.scale.z=length/3.85;g.add(body);
+ const roof=new THREE.Mesh(carCabGeo,paint);roof.position.set(0,1.18+Math.max(0,roofHeight-.59)*.35,-.12);roof.scale.set(1,roofHeight/.59,(type===6||type===7)?1.36:1);g.add(roof);
  const windshield=new THREE.Mesh(new THREE.BoxGeometry(1.38,.39,.035),carGlass);windshield.position.set(0,1.30,-1.13);g.add(windshield);
  const rearGlass=new THREE.Mesh(new THREE.BoxGeometry(1.38,.35,.035),carGlass);rearGlass.position.set(0,1.30,.89);g.add(rearGlass);
  for(const side of [-1,1]){
   const window=new THREE.Mesh(new THREE.BoxGeometry(.038,.36,1.50),carGlass);window.position.set(side*.756,1.30,-.13);g.add(window);
-  for(const zz of [-1.24,1.19]){
+  for(const zz of [-length*.34,length*.32]){
    const wheel=new THREE.Mesh(carWheelGeo,carTyre);wheel.rotation.z=Math.PI/2;wheel.position.set(side*.92,.40,zz);g.add(wheel);
    const rim=new THREE.Mesh(new THREE.CylinderGeometry(.17,.17,.21,10),carChrome);rim.rotation.z=Math.PI/2;rim.position.copy(wheel.position);g.add(rim);
   }
-  const frontLamp=new THREE.Mesh(new THREE.BoxGeometry(.37,.14,.055),carHeadlight);frontLamp.position.set(side*.55,.74,-1.97);g.add(frontLamp);
-  const rearLamp=new THREE.Mesh(new THREE.BoxGeometry(.35,.15,.055),carTaillight);rearLamp.position.set(side*.55,.77,1.97);g.add(rearLamp);
+  const frontLamp=new THREE.Mesh(new THREE.BoxGeometry(.37,.14,.055),carHeadlight);frontLamp.position.set(side*.55,.74,-length*.505);g.add(frontLamp);
+  const rearLamp=new THREE.Mesh(new THREE.BoxGeometry(.35,.15,.055),carTaillight);rearLamp.position.set(side*.55,.77,length*.505);g.add(rearLamp);
+ }
+ if(type===8){
+  const stripe=new THREE.Mesh(new THREE.BoxGeometry(1.85,.19,2.8),new THREE.MeshStandardMaterial({color:0x225eaa,roughness:.55}));stripe.position.y=.91;g.add(stripe);
+  const bar=new THREE.Mesh(new THREE.BoxGeometry(.85,.12,.28),new THREE.MeshBasicMaterial({color:0x285bda}));bar.position.set(0,1.65,.05);g.add(bar);
+ }else if(type===7){
+  const stripe=new THREE.Mesh(new THREE.BoxGeometry(1.82,.24,4.5),new THREE.MeshStandardMaterial({color:0xf4d846,roughness:.54}));stripe.position.y=.98;g.add(stripe);
  }
  trafficGroup.add(g);
- return {g,seg:segment,progress:(index*.137)%1,direction:index%2?-1:1,speed:5.0+(index%5)*1.15,turns:0};
+ return {g,seg:segment,progress:(index*.137)%1,direction:index%2?-1:1,speed:5.0+(index%5)*1.15,turns:0,driven:false,parked:false,type};
 }
 function rpPopulate(){
  trafficGroup.clear();trafficCars.length=0;trafficPeople.length=0;
@@ -861,7 +871,7 @@ function rpPopulate(){
  rpBuildCrosswalks();
  const segments=driveSegments.filter(s=>s.len>9&&s.width>=6);
  if(!segments.length)return;
- for(let i=0;i<18;i++){
+ for(let i=0;i<22;i++){
   const seg=segments[(i*37+13)%segments.length];
   const car=makeTrafficCar(i,seg);
   // Respect OSM one-way tags from the moment each car is spawned.
@@ -904,13 +914,27 @@ function rpAnimateTraffic(dt){
  for(const obj of trafficCars){
   const {g}=obj;
   const proximity=Math.hypot(g.position.x-x,g.position.z-z);
-  const slowed=!walking&&proximity<8?0.15:1;
-  obj.progress+=obj.direction*dt*obj.speed*slowed/obj.seg.len;
+  if(obj.driven||obj.parked){g.visible=Boolean(obj.driven)||Math.hypot(g.position.x-playerX,g.position.z-playerZ)<170;continue}
+  let frontDist=Infinity;
+  for(const other of trafficCars){
+   if(other===obj)continue;
+   const vx=other.g.position.x-g.position.x,vz=other.g.position.z-g.position.z;
+   const forwardX=-Math.sin(g.rotation.y),forwardZ=-Math.cos(g.rotation.y);
+   const along=vx*forwardX+vz*forwardZ;
+   if(along>0&&along<15&&Math.abs(vx*forwardZ-vz*forwardX)<2.6)frontDist=Math.min(frontDist,along);
+  }
+  if(!walking){
+   const vx=x-g.position.x,vz=z-g.position.z,forwardX=-Math.sin(g.rotation.y),forwardZ=-Math.cos(g.rotation.y);
+   const along=vx*forwardX+vz*forwardZ;
+   if(along>0&&along<15&&Math.abs(vx*forwardZ-vz*forwardX)<3.3)frontDist=Math.min(frontDist,along);
+  }
+  const eased=frontDist<5?0:frontDist<13?Math.max(0,(frontDist-5)/8):1;
+  obj.progress+=obj.direction*dt*obj.speed*eased/obj.seg.len;
   if(obj.progress>1||obj.progress<0)rpNextStreet(obj);
   const seg=obj.seg,dir=obj.direction;
   const dx=(seg.b.x-seg.a.x)/seg.len,dz=(seg.b.y-seg.a.y)/seg.len;
   const side=dir*Math.min(2.25,seg.width*.25);
-  g.position.set(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,.045,seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side);
+  g.position.set(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,terrainAt(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side)+.045,seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side);
   g.rotation.y=Math.atan2(-dx*dir,-dz*dir);
   g.visible=Math.hypot(g.position.x-playerX,g.position.z-playerZ)<170;
  }
@@ -920,12 +944,15 @@ function rpAnimateTraffic(dt){
   else if(obj.progress<=0){obj.progress=0;obj.direction=1}
   const seg=obj.seg,dx=(seg.b.x-seg.a.x)/seg.len,dz=(seg.b.y-seg.a.y)/seg.len;
   const side=obj.side*(seg.width/2+1.55),g=obj.g;
-  g.position.set(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,0,seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side);
+  g.position.set(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,terrainAt(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side),seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side);
   g.rotation.y=Math.atan2(-dx*obj.direction,-dz*obj.direction);
   g.visible=Math.hypot(g.position.x-playerX,g.position.z-playerZ)<120;
   if(g.visible){obj.legs[0].rotation.x=Math.sin(elapsed*6+obj.phase)*.34;obj.legs[1].rotation.x=-obj.legs[0].rotation.x}
  }
 }
+// Ground is flat until an authenticated DEM raster has been loaded; never invent elevations.
+let terrainGrid=null;
+function terrainAt(x,z){if(!terrainGrid)return 0;const {n,step,min,values}=terrainGrid;const fx=Math.max(0,Math.min(n-1.001,(x-min)/step)),fz=Math.max(0,Math.min(n-1.001,(z-min)/step));const ix=Math.floor(fx),iz=Math.floor(fz),tx=fx-ix,tz=fz-iz;const i=iz*n+ix;const a=values[i],b=values[i+1],c=values[i+n],d=values[i+n+1];return ((a*(1-tx)+b*tx)*(1-tz)+(c*(1-tx)+d*tx)*tz)*.1}
 const mini=document.getElementById('minimap'),mc=mini.getContext('2d');
 function drawMini(){const mapX=walking?px:x,mapZ=walking?pz:z,heading=walking?orbitYaw:angle;if(osmActive){
  const w=180,h=180,scale=.30;mc.clearRect(0,0,w,h);mc.fillStyle='#203b33';mc.fillRect(0,0,w,h);
@@ -982,22 +1009,22 @@ if(walking){
  let forwardMove=(keys.has('KeyW')?1:0)-(keys.has('KeyS')?1:0);
  const len=Math.hypot(strafe,forwardMove);
  if(len>0){strafe/=len;forwardMove/=len;const dx=strafe*Math.cos(orbitYaw)-forwardMove*Math.sin(orbitYaw),dz=-strafe*Math.sin(orbitYaw)-forwardMove*Math.cos(orbitYaw);px+=dx*4.2*dt;pz+=dz*4.2*dt;walkYaw=Math.atan2(-dx,-dz)}
- avatar.position.set(px,0,pz);avatar.rotation.y=walkYaw;
+ avatar.position.set(px,terrainAt(px,pz),pz);avatar.rotation.y=walkYaw;
 }
 const gas=keys.has('KeyW'),brake=keys.has('KeyS');
 // Signed velocity: forward positive, reverse negative. Braking first, then reverse.
-if(walking){speed=0}else if(open){if(speed>0)speed=Math.max(0,speed-12*dt);else speed=Math.min(0,speed+12*dt)}
-else if(gas&&!brake){speed=Math.min(13,speed+6*dt)}
-else if(brake&&!gas){speed=Math.max(-4.5,speed-12*dt)}
+if(walking){speed=0}else if(open&&!activeCar){if(speed>0)speed=Math.max(0,speed-12*dt);else speed=Math.min(0,speed+12*dt)}
+else if(gas&&!brake){speed=Math.min(activeCar?25:13,speed+(activeCar?10:6)*dt)}
+else if(brake&&!gas){speed=Math.max(activeCar?-7:-4.5,speed-(activeCar?15:12)*dt)}
 else if(speed>0){speed=Math.max(0,speed-2.4*dt)}
 else{speed=Math.min(0,speed+2.4*dt)}
 const steer=(keys.has('KeyD')?1:0)-(keys.has('KeyA')?1:0);
 if(!walking&&Math.abs(speed)>.02){
  // Positive yaw rotates the bus toward screen-left in this coordinate convention.
  // Negate to make right button turn right while driving forward.
- angle-=steer*(speed/13)*.95*dt;
+ angle-=steer*(speed/(activeCar?22:13))*(activeCar?1.35:.95)*dt;
  x-=Math.sin(angle)*speed*dt;z-=Math.cos(angle)*speed*dt;
 }
-if(Math.abs(speed)*3.6>46&&rating>40)rating=Math.max(40,rating-Math.ceil(dt*2));x=Math.max(-1700,Math.min(1700,x));z=Math.max(-1500,Math.min(1500,z));bus.position.set(x,0,z);bus.rotation.y=angle;if(osmActive)updateMiloviceChunks();
-const forward=new THREE.Vector3(-Math.sin(angle),0,-Math.cos(angle));let desired,target;if(walking){if(walkCam===1){desired=new THREE.Vector3(px,1.90,pz);target=new THREE.Vector3(px-Math.sin(orbitYaw)*22,1.90-Math.sin(orbitPitch)*16,pz-Math.cos(orbitYaw)*22)}else{target=new THREE.Vector3(px,1.5,pz);desired=new THREE.Vector3(px+Math.sin(orbitYaw)*orbitDistance*Math.cos(orbitPitch),1.5+2.1+Math.sin(orbitPitch)*orbitDistance,pz+Math.cos(orbitYaw)*orbitDistance*Math.cos(orbitPitch))}}else if(cam===0){desired=new THREE.Vector3(x,5.4,z).addScaledVector(forward,-12);target=new THREE.Vector3(x,1.7,z).addScaledVector(forward,9)}else if(cam===1){desired=new THREE.Vector3(x,2.42,z).addScaledVector(forward,2.7);target=new THREE.Vector3(x,2.1,z).addScaledVector(forward,32)}else{desired=new THREE.Vector3(x+16,17,z+16);target=new THREE.Vector3(x,1,z)}camera.position.lerp(desired,Math.min(1,dt*8));camera.lookAt(target);if(t-lastHud>180){updateUI();lastHud=t}if(t-lastMap>350){drawMini();lastMap=t}renderer.render(scene,camera);window.__miloviceStarted=true;perfFrames++;if(t-perfSince>=1200){const fps=Math.round(perfFrames*1000/(t-perfSince));const info=renderer.info.render;perfEl.innerHTML='FPS: '+fps+'<small>Draw calls: '+info.calls+' · Trojúhelníky: '+Math.round(info.triangles/1000)+'k</small>';perfEl.style.color=fps>=45?'#a6f3b9':fps>=25?'#ffe39b':'#ff9e9e';perfFrames=0;perfSince=t}}requestAnimationFrame(animate);setTimeout(()=>osmBtn.click(),300);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+if(!activeCar&&Math.abs(speed)*3.6>46&&rating>40)rating=Math.max(40,rating-Math.ceil(dt*2));x=Math.max(-1700,Math.min(1700,x));z=Math.max(-1500,Math.min(1500,z));if(activeCar){activeCar.g.position.set(x,terrainAt(x,z)+.045,z);activeCar.g.rotation.y=angle;bus.position.set(busPark.x,terrainAt(busPark.x,busPark.z),busPark.z);bus.rotation.y=busPark.angle;}else{bus.position.set(x,terrainAt(x,z),z);bus.rotation.y=angle;if(!walking)busPark={x,z,angle}}if(osmActive)updateMiloviceChunks();
+const forward=new THREE.Vector3(-Math.sin(angle),0,-Math.cos(angle));const elevation=terrainAt(walking?px:x,walking?pz:z);let desired,target;if(walking){if(walkCam===1){desired=new THREE.Vector3(px,1.90,pz);target=new THREE.Vector3(px-Math.sin(orbitYaw)*22,1.90-Math.sin(orbitPitch)*16,pz-Math.cos(orbitYaw)*22)}else{target=new THREE.Vector3(px,1.5,pz);desired=new THREE.Vector3(px+Math.sin(orbitYaw)*orbitDistance*Math.cos(orbitPitch),1.5+2.1+Math.sin(orbitPitch)*orbitDistance,pz+Math.cos(orbitYaw)*orbitDistance*Math.cos(orbitPitch))}}else if(cam===0){desired=new THREE.Vector3(x,5.4,z).addScaledVector(forward,-12);target=new THREE.Vector3(x,1.7,z).addScaledVector(forward,9)}else if(cam===1){desired=new THREE.Vector3(x,2.42,z).addScaledVector(forward,2.7);target=new THREE.Vector3(x,2.1,z).addScaledVector(forward,32)}else{desired=new THREE.Vector3(x+16,17,z+16);target=new THREE.Vector3(x,1,z)}desired.y+=elevation;target.y+=elevation;if(activeCar&&cam===0){desired.set(x,3.4+elevation,z).addScaledVector(forward,-8.6);target.set(x,1.45+elevation,z).addScaledVector(forward,6)}else if(activeCar&&cam===1){desired.set(x,1.55+elevation,z).addScaledVector(forward,.95);target.set(x,1.5+elevation,z).addScaledVector(forward,25)}camera.position.lerp(desired,Math.min(1,dt*8));camera.lookAt(target);if(t-lastHud>180){updateUI();lastHud=t}if(t-lastMap>350){drawMini();lastMap=t}renderer.render(scene,camera);window.__miloviceStarted=true;perfFrames++;if(t-perfSince>=1200){const fps=Math.round(perfFrames*1000/(t-perfSince));const info=renderer.info.render;perfEl.innerHTML='FPS: '+fps+'<small>Draw calls: '+info.calls+' · Trojúhelníky: '+Math.round(info.triangles/1000)+'k</small>';perfEl.style.color=fps>=45?'#a6f3b9':fps>=25?'#ffe39b':'#ff9e9e';perfFrames=0;perfSince=t}}requestAnimationFrame(animate);setTimeout(()=>osmBtn.click(),300);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 </script></body></html>
