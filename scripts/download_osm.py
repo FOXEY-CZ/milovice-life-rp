@@ -2,7 +2,7 @@
 """Fetch genuine OSM roads and buildings for a small area of Milovice, CZ."""
 import json, os, sys, time, urllib.parse, urllib.request, xml.etree.ElementTree as ET
 from datetime import datetime, timezone
-BBOX=(14.885,50.223,14.895,50.229)  # west,south,east,north
+BBOX=(14.882,50.2225,14.896,50.2307)  # Old Milovice incl. verified St. Catherine church; west,south,east,north
 urls=[
  "https://api.openstreetmap.org/api/0.6/map?bbox="+",".join(map(str,BBOX)),
  "https://overpass-api.de/api/map?bbox="+",".join(map(str,BBOX)),
@@ -19,11 +19,11 @@ for url in urls:
   result=[]
   for way in root.findall("way"):
    tags={t.attrib["k"]:t.attrib["v"] for t in way.findall("tag")}
-   if not ("building" in tags or tags.get("highway") in ("residential","living_street","tertiary","secondary","primary","service","unclassified","pedestrian")):continue
+   if not ("building" in tags or tags.get("highway") in ("residential","living_street","tertiary","secondary","primary","service","unclassified","pedestrian","footway","path") or tags.get("historic") or tags.get("amenity") in ("place_of_worship","school","townhall","community_centre","theatre","bus_station")):continue
    geometry=[{"lat":nodes[int(nd.attrib["ref"])][0],"lon":nodes[int(nd.attrib["ref"])][1]} for nd in way.findall("nd") if int(nd.attrib["ref"]) in nodes]
    if len(geometry)<2:continue
    result.append({"type":"way","id":int(way.attrib["id"]),"tags":tags,"geometry":geometry})
-  if not any(e["tags"].get("highway") for e in result):raise ValueError("No roads in extract")
+  if sum("building" in e["tags"] for e in result)<150 or sum("highway" in e["tags"] for e in result)<20:raise ValueError("Map extract unexpectedly small; keep old data")
   data={"type":"osm-overpass-export","area":"Milovice, Stredocesky kraj, Czechia","bbox":BBOX,"source":"OpenStreetMap API","source_url":url,"downloaded_at":datetime.now(timezone.utc).isoformat(),"attribution":"© OpenStreetMap contributors (ODbL)","elements":result}
   print("OSM features:",len(result),"roads:",sum("highway" in e["tags"] for e in result),"buildings:",sum("building" in e["tags"] for e in result))
   break
