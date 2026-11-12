@@ -855,6 +855,9 @@ function miloviceChurchBrickTexture(){
 const churchWalls=new THREE.MeshStandardMaterial({color:0xffffff,map:miloviceChurchBrickTexture(),roughness:.91});
 const stationWalls=new THREE.MeshStandardMaterial({color:0xe6e3d5,map:facadeTexture(87),roughness:.92});
 const blueStarWalls=new THREE.MeshStandardMaterial({color:0xd48a35,map:facadeTexture(19),roughness:.9});
+const mirova36Walls=new THREE.MeshStandardMaterial({color:0xdac6a0,map:facadeTexture(26),roughness:.92});
+const grocerWalls=new THREE.MeshStandardMaterial({color:0xd2cdc1,map:facadeTexture(8),roughness:.9});
+const mirova36Roof=new THREE.MeshStandardMaterial({color:0x853f46,map:roofTileMap,roughness:.86,side:THREE.DoubleSide});
 const schoolWalls=new THREE.MeshStandardMaterial({color:0xe3b42f,map:facadeTexture(37),roughness:.9});
 const schoolPlinth=new THREE.MeshStandardMaterial({color:0xb34a31,roughness:.86,side:THREE.DoubleSide});
 const garageWalls=new THREE.MeshStandardMaterial({color:0xb1afa4,roughness:.92});
@@ -1333,6 +1336,53 @@ function miloviceStationGroundFloor(pts,base,h,cx,cz){
   stationBoard('OBCHOD',sx+nx*.55,base+2.88,sz+nz*.55,r.yaw,'#365a64');
  }
 }
+// Photo-verified corner building Mírová 243/36: ivory walls, dark-red steep
+// roof and a blue-and-white street-level shopfront (ŠJů, 30 May 2024).
+function miloviceMirova36Detail(pts,base,h,cx,cz){
+ const cameraPoint=osmPoint({lat:50.2280572,lon:14.8840981});
+ let best=null,dist=Infinity;
+ for(let i=0;i<pts.length;i++){
+  const a=pts[i],b=pts[(i+1)%pts.length],len=a.distanceTo(b);
+  if(len<4)continue;
+  const mx=(a.x+b.x)/2,mz=(a.y+b.y)/2,dd=Math.hypot(mx-cameraPoint.x,mz-cameraPoint.y);
+  if(dd<dist){dist=dd;best={a,b,len,mx,mz}}
+ }
+ if(!best)return;
+ const {a,b,len,mx,mz}=best,dx=b.x-a.x,dz=b.y-a.y;
+ let nx=-dz/len,nz=dx/len;
+ if(nx*(mx-cx)+nz*(mz-cz)<0){nx=-nx;nz=-nz}
+ const yaw=Math.atan2(nx,nz);
+ archPart('stationFrames',mx+nx*.6,base+1.35,mz+nz*.6,Math.min(7.8,len*.78),2.50,.18,yaw);
+ archPart('stationGlass',mx+nx*.72,base+1.41,mz+nz*.72,Math.min(7.3,len*.75),2.25,.12,yaw);
+ archPart('stationCanopy',mx+nx*.92,base+2.73,mz+nz*.92,Math.min(9.4,len*.88),.18,1.04,yaw);
+ stationBoard('OBCHOD • SLUŽBY',mx+nx*.95,base+3.05,mz+nz*.95,yaw,'#2c5774');
+ // A pair of roof dormers also appears in the 2024 photograph.
+ for(const side of [-1,1]){
+  const dormX=cx+(b.x-a.x)/len*side*Math.min(3.1,len*.20);
+  const dormZ=cz+(b.y-a.y)/len*side*Math.min(3.1,len*.20);
+  archPart('starWhite',dormX,base+h+1.18,dormZ,1.48,1.52,.92,yaw);
+  archPart('stationGlass',dormX,base+h+1.25,dormZ,1.05,1.10,.96,yaw);
+  archPart('stationCanopy',dormX,base+h+2.07,dormZ,1.92,.13,1.36,yaw);
+ }
+}
+function miloviceGrocer74Detail(pts,base,h,cx,cz){
+ const roadside=osmPoint({lat:50.22747,lon:14.88297}); // street-side approach near verified address
+ let best=null,dist=Infinity;
+ for(let i=0;i<pts.length;i++){
+  const a=pts[i],b=pts[(i+1)%pts.length],len=a.distanceTo(b);
+  if(len<4)continue;
+  const mx=(a.x+b.x)/2,mz=(a.y+b.y)/2,d=Math.hypot(mx-roadside.x,mz-roadside.y);
+  if(d<dist){dist=d;best={a,b,len,mx,mz}}
+ }
+ if(!best)return;
+ const {a,b,len,mx,mz}=best,dx=b.x-a.x,dz=b.y-a.y;
+ let nx=-dz/len,nz=dx/len;if(nx*(mx-cx)+nz*(mz-cz)<0){nx=-nx;nz=-nz}
+ const yaw=Math.atan2(nx,nz);
+ archPart('stationGlass',mx+nx*.42,base+1.55,mz+nz*.42,Math.min(6.0,len*.78),2.05,.16,yaw);
+ archPart('stationFrames',mx+nx*.53,base+1.57,mz+nz*.53,Math.min(6.3,len*.82),2.16,.09,yaw);
+ archPart('stationCanopy',mx+nx*.80,base+2.82,mz+nz*.80,Math.min(7.5,len*.90),.13,1.0,yaw);
+ stationBoard('POTRAVINY',mx+nx*.66,base+3.12,mz+nz*.66,yaw,'#2b5670');
+}
 function osmBuilding(points,tags,index,osmId=null){
  if(points.length<4)return;
  const pts=points.map(osmPoint);
@@ -1346,10 +1396,12 @@ function osmBuilding(points,tags,index,osmId=null){
  const isChurch=type==='church'&&tags.name==='sv. Kateřina Alexandrijská';
  const isStation=type==='train_station'&&tags.name==='Milovice';
  const isBlueStar=osmId===202367194; // verified Mírová 134/11 building; photographed 2024, 2 floors.
+ const isMirova36=osmId===202367254; // verified Mírová 243/36 photographed May 2024, cadastral 3 floors incl. attic.
+ const isGrocer74=osmId===202298645; // verified Mírová 74/4, Můj obchod - Potraviny D a Š.
  const floors=Math.min(9,Math.max(1,Number(tags['building:levels'])||(isGarage||isIndustrial?1:2)));
  const explicitHeight=parseFloat(tags.height);
- const h=Math.min(32,Math.max(isGarage?2.35:3.0,Number.isFinite(explicitHeight)&&explicitHeight>2?explicitHeight:isBlueStar?7.15:isStation?7.4:isGarage?2.75:isIndustrial?5.3:isChurch?11.5:floors*(isSchool?3.4:3.05)));
- const isHouse=!isBlueStar&&(type==='house'||(type==='residential'&&floors<=2&&w*d<1000));
+ const h=Math.min(32,Math.max(isGarage?2.35:3.0,Number.isFinite(explicitHeight)&&explicitHeight>2?explicitHeight:isBlueStar?7.15:isMirova36?6.75:isGrocer74?3.65:isStation?7.4:isGarage?2.75:isIndustrial?5.3:isChurch?11.5:floors*(isSchool?3.4:3.05)));
+ const isHouse=!isBlueStar&&!isMirova36&&!isGrocer74&&(type==='house'||(type==='residential'&&floors<=2&&w*d<1000));
  const oldCenter=osmNearestRoadName((Math.min(...xs)+Math.max(...xs))*.5,(Math.min(...zs)+Math.max(...zs))*.5)==='5. května';
  const shape=new THREE.Shape();shape.moveTo(pts[0].x,-pts[0].y);
  for(let i=1;i<pts.length;i++)shape.lineTo(pts[i].x,-pts[i].y);
@@ -1377,7 +1429,7 @@ function osmBuilding(points,tags,index,osmId=null){
    }
   }
  }
- const wallMat=isBlueStar?blueStarWalls:isSchool?schoolWalls:isChurch?churchWalls:isStation?stationWalls:isGarage?garageWalls:isIndustrial?workWalls:osmBuildingMaterial[(oldCenter?index+3:index)%osmBuildingMaterial.length];
+ const wallMat=isBlueStar?blueStarWalls:isMirova36?mirova36Walls:isGrocer74?grocerWalls:isSchool?schoolWalls:isChurch?churchWalls:isStation?stationWalls:isGarage?garageWalls:isIndustrial?workWalls:osmBuildingMaterial[(oldCenter?index+3:index)%osmBuildingMaterial.length];
  const mesh=new THREE.Mesh(geometry,wallMat);mesh.position.y=baseHeight+stationPortalHeight;osmLayer.add(mesh);
  if(isStation)miloviceStationGroundFloor(pts,baseHeight,h,centerX,centerZ);
  const roofShape=new THREE.Shape();roofShape.moveTo(pts[0].x,-pts[0].y);
@@ -1388,10 +1440,12 @@ function osmBuilding(points,tags,index,osmId=null){
  roof.position.y=baseHeight+h+.025;
   const roofMat=isSchool?osmRoofPalette[4]:oldCenter?osmRoofPalette[0]:osmRoofPalette[index%osmRoofPalette.length];
   const pitched=isHouse?miloviceGableRoof(pts,baseHeight,h,roofMat):null;
-  const hip=!pitched&&(isHouse||isSchool||isChurch||isStation||isBlueStar)?miloviceHipRoof(pts,baseHeight,h,isChurch?osmRoofPalette[4]:isStation?osmRoofPalette[0]:isBlueStar?osmRoofPalette[1]:roofMat,isChurch?4.3:isStation?2.6:isBlueStar?.65:isSchool?1.05:Math.min(2.3,Math.min(w,d)*.25)):null;
+  const hip=!pitched&&(isHouse||isSchool||isChurch||isStation||isBlueStar||isMirova36)?miloviceHipRoof(pts,baseHeight,h,isChurch?osmRoofPalette[4]:isStation?osmRoofPalette[0]:isMirova36?mirova36Roof:isBlueStar?osmRoofPalette[1]:roofMat,isChurch?4.3:isStation?2.6:isBlueStar?.65:isMirova36?2.9:isSchool?1.05:Math.min(2.3,Math.min(w,d)*.25)):null;
   if(pitched||hip)osmLayer.add(pitched||hip);else osmLayer.add(roof);
   if(isChurch)miloviceChurchTower(pts,baseHeight,h);
    if(isBlueStar)miloviceBlueStarDetail(pts,baseHeight,h,centerX,centerZ);
+   if(isMirova36)miloviceMirova36Detail(pts,baseHeight,h,centerX,centerZ);
+   if(isGrocer74)miloviceGrocer74Detail(pts,baseHeight,h,centerX,centerZ);
  // Small rooftop ventilation blocks create recognisable silhouettes without expensive meshes.
  if(!isHouse&&!isGarage&&!isSchool&&!isBlueStar&&!isChurch&&!isStation&&index%5===0&&w>10&&d>9){
   const cx=(Math.min(...xs)+Math.max(...xs))*.5,cz=(Math.min(...zs)+Math.max(...zs))*.5;
@@ -1401,7 +1455,7 @@ function osmBuilding(points,tags,index,osmId=null){
   ventTop.position.set(cx,baseHeight+h+.58,cz);osmLayer.add(ventTop);
  }
  // Building facade upgrade: per-building window allocation and visible architectural details.
- const visibleFloors=isGarage||isChurch?0:isBlueStar?2:isIndustrial?1:Math.min(Math.max(1,Math.floor(h/3)),8);
+ const visibleFloors=isGarage||isChurch?0:isBlueStar||isMirova36?2:isGrocer74?1:isIndustrial?1:Math.min(Math.max(1,Math.floor(h/3)),8);
  for(let i=0;i<pts.length;i++){
   const p=pts[i],q=pts[(i+1)%pts.length],dx=q.x-p.x,dz=q.y-p.y,len=Math.hypot(dx,dz);
   if(len<5||len>90)continue;
@@ -1409,7 +1463,7 @@ function osmBuilding(points,tags,index,osmId=null){
   const mx=(p.x+q.x)/2,mz=(p.y+q.y)/2;
   if(nx*(mx-centerX)+nz*(mz-centerZ)<0){nx=-nx;nz=-nz}
   const rotation=Math.atan2(nx,nz),ux=dx/len,uz=dz/len;
-  if(isHouse||isSchool||isStation||isBlueStar){
+  if(isHouse||isSchool||isStation||isBlueStar||isMirova36){
    // Tile eaves, rain gutters, and drainpipes follow the actual OSM walls.
    archPart('roofGutter',mx+nx*.23,baseHeight+h+.11,mz+nz*.23,len,.075,.12,rotation);
    if(len>6&&i%2===0)archPart('roofGutter',p.x+nx*.21,baseHeight+h*.53,p.y+nz*.21,.10,h*.98,.12,rotation);
@@ -1446,7 +1500,7 @@ function osmBuilding(points,tags,index,osmId=null){
     if(oldCenter&&isHouse&&j%2===0){
      archPart('shutter',px+nx*.54+ux*.91,baseHeight+y,pz+nz*.54+uz*.91,.24,1.52,.13,rotation);
     }
-    if(!isHouse&&!isSchool&&!isIndustrial&&!isBlueStar&&floor>0&&j%3===0){
+    if(!isHouse&&!isSchool&&!isIndustrial&&!isBlueStar&&!isMirova36&&!isGrocer74&&floor>0&&j%3===0){
      const bx=px+nx*.83,bz=pz+nz*.83,by=baseHeight+y-.93;
      archPart('balcony',bx,by,bz,2.22,.13,1.02,rotation);
      archPart('railing',bx+nx*.59,by+.52,bz+nz*.59,2.10,.93,.055,rotation);
@@ -1457,7 +1511,7 @@ function osmBuilding(points,tags,index,osmId=null){
   }
  }
  // Ground-floor entrance: a lightweight facade panel, placed on the longest building wall.
- if(!isGarage&&!isChurch&&!isBlueStar&&!isStation){
+ if(!isGarage&&!isChurch&&!isBlueStar&&!isStation&&!isMirova36&&!isGrocer74){
   let longest=null;
   for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length],len=a.distanceTo(b);if(len>5&&(!longest||len>longest.len))longest={a,b,len}}
   if(longest){
