@@ -839,6 +839,58 @@ function miloviceRailTrack(points,tags){
   }
  }
 }
+// 5.0: animated regional double-decker EMU on real mapped railway geometry.
+// Train silhouette resembles the class 471 family, but it is original simplified art.
+let railTraffic=null;
+function rpInitRailTraffic(){
+ if(railTraffic||!osmRailways.length)return;
+ let selected=null,maxDistance=0;
+ for(const way of osmRailways){
+  if(way.tags?.railway!=='rail'||!Array.isArray(way.geometry)||way.geometry.length<4)continue;
+  const geo=way.geometry.map(osmPoint);
+  let len=0;for(let i=1;i<geo.length;i++)len+=geo[i].distanceTo(geo[i-1]);
+  if(len>maxDistance){maxDistance=len;selected=geo}
+ }
+ if(!selected||maxDistance<110)return;
+ const route=new THREE.CatmullRomCurve3(
+  selected.map(p=>new THREE.Vector3(p.x,terrainAt(p.x,p.y)+.54,p.y)),false,'centripetal',.14);
+ const length=route.getLength(),model=makeCityElefantStyleTrain(THREE);
+ osmLayer.add(model.group);
+ const station=osmPoint({lat:50.22910,lon:14.88198});
+ let stationDist=length*.58,closest=Infinity;
+ for(let i=0;i<=100;i++){
+  const sample=route.getPointAt(i/100),dist=Math.hypot(sample.x-station.x,sample.z-station.y);
+  if(dist<closest){closest=dist;stationDist=i*length/100}
+ }
+ railTraffic={route,length,model,position:Math.min(length-18,Math.max(68,stationDist+75)),
+  direction:-1,speed:9,hold:0,stationDist,stationVisited:false};
+ window.__miloviceRailDebug={loaded:true,cars:model.cars.length,trackMeters:Math.round(length)};
+ rpUpdateRailTraffic(0);
+}
+function rpUpdateRailTraffic(dt){
+ if(!osmActive||!railTraffic)return;
+ const rail=railTraffic;
+ if(rail.hold>0)rail.hold=Math.max(0,rail.hold-dt);
+ else{
+  rail.position+=rail.direction*rail.speed*dt;
+  const limitHi=rail.length-17,limitLo=68;
+  if(rail.position>limitHi){rail.position=limitHi;rail.direction=-1;rail.stationVisited=false;rail.hold=2.5}
+  if(rail.position<limitLo){rail.position=limitLo;rail.direction=1;rail.stationVisited=false;rail.hold=2.5}
+  if(!rail.stationVisited&&Math.abs(rail.position-rail.stationDist)<1.8){
+   rail.stationVisited=true;rail.hold=7;
+  }
+ }
+ for(let i=0;i<rail.model.cars.length;i++){
+  const distance=Math.max(0,Math.min(rail.length,rail.position-i*24));
+  const u=distance/rail.length;
+  const p=rail.route.getPointAt(u),t=rail.route.getTangentAt(u);
+  const car=rail.model.cars[i];
+  car.position.copy(p);
+  car.rotation.y=Math.atan2(-t.x,-t.z)+(rail.direction<0?Math.PI:0);
+ }
+ const playerX=walking?px:x,playerZ=walking?pz:z;
+ rail.model.group.visible=rail.model.cars.some(car=>Math.hypot(car.position.x-playerX,car.position.z-playerZ)<OSM_VIEW+75);
+}
 // Procedural asphalt: deterministic micro-grain, no remote textures or extra draw calls.
 const asphaltCanvas=document.createElement('canvas');asphaltCanvas.width=128;asphaltCanvas.height=128;
 const asphaltCtx=asphaltCanvas.getContext('2d');const asphaltPixels=asphaltCtx.createImageData(128,128);
@@ -1953,7 +2005,7 @@ async function rpLoadCityArea(id){
   osmFurnitureCount=0;
   rpAppendOSMElements(osm.elements);
   finalizeFoundations();finalizeFacades();finalizeArchitecture();
-  chunkMilovice();rpBuildRoadGraph();rpPopulateRegionalTraffic(area);improveMiloviceVisuals();
+  chunkMilovice();rpBuildRoadGraph();rpPopulateRegionalTraffic(area);improveMiloviceVisuals();rpInitRailTraffic();
   loadedCityAreas.add(id);
   window.__miloviceAreasLoaded=[...loadedCityAreas];
   window.__miloviceAreaStats={buildings:osmBuildings,roads:osmRoads.length};
@@ -2141,7 +2193,7 @@ osmBtn.onclick=async()=>{
   if(visualDetails.parent!==osmLayer)osmLayer.add(visualDetails);for(const batch of facadeBatches)batch.clear();
  if(terrainGrid)rpTerrainMesh();else cube(2200,.16,2200,osmParkMaterial,0,-.18,0,osmLayer);
  rpAppendOSMElements(elements);
- if(!osmRoads.length)throw Error('Žádné silnice v odpovědi');finalizeFoundations();finalizeFacades();finalizeArchitecture();osmStreetLabels();chunkMilovice();improveMiloviceVisuals();rpPopulate();
+ if(!osmRoads.length)throw Error('Žádné silnice v odpovědi');finalizeFoundations();finalizeFacades();finalizeArchitecture();osmStreetLabels();chunkMilovice();improveMiloviceVisuals();rpPopulate();rpInitRailTraffic();
  osmReady=true;window.__miloviceAreasLoaded=[...loadedCityAreas];osmNotice.style.display='none';osmSetActive(true);document.getElementById('status').textContent='Prozkoumávej skutečné Milovice. Na mapě najdeš pojmenované ulice a budovy.';
  }catch(e){osmLayer.clear();for(const batch of facadeBatches)batch.clear();osmReady=false;osmBtn.textContent='🔄 Zkusit načíst Milovice';notify('Skutečná mapa se nenačetla. Zkus znovu tlačítko vpravo.');osmNotice.style.display='block';osmNotice.textContent='3D mapa se nenačetla: '+e.message+'. Zkus znovu načíst mapu.';loadingScreen.textContent='⚠️ Skutečnou mapu Milovic se nepodařilo načíst. Klepni na Zkusit načíst Milovice.'}
  finally{osmLoading=false}
