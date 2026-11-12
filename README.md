@@ -1,10 +1,24 @@
-# Milovice Life RP — 4.7 Old Town Recognition
+# Milovice Life RP — 4.8 Connected Town / Architecture
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/
 
-Browser-based singleplayer RP prototype using real OpenStreetMap footprints of Staré Milovice and the official ČÚZK terrain. **Not** yet a photorealistic digital twin.
+Browser-based singleplayer RP prototype using real OpenStreetMap footprints of Milovice and official ČÚZK terrain. **Not** yet a photorealistic digital twin or an exact reconstruction of every house. Some regional buildings have mapped heights; untagged buildings use archetype-based approximations.
 
-## 4.7 mapped landmarks
+## 4.8 map expansion & graphics
+
+- Five independently streamed OSM sectors: **Mladá, Benátecká Vrutice, Západní propojení, Mladá–Staré Milovice–Boží Dar, Boží Dar**. The older central extract remains the first sector.
+- True local streets, service roads, rails and OSM building outlines. Data downloads are deduplicated by OSM way IDs in overlapping sectors.
+- Matching **ČÚZK DMR 4G** regional elevation grids with 20 m gameplay sampling; old center retains more detailed 10 m DEM.
+- The spawn vehicle menu now contains a **district selector**. As the player drives, adjacent regions are loaded progressively; citywide traffic gets new routes.
+- Panel apartment blocks tagged 4–16 floors retain their height and receive photo-inspired facade styles, long balcony arrays, slab seams and entrance canopies. Houses, garages, schools, commercial and industrial buildings get different procedural facade treatment.
+- Railway station model no longer uses one towering solid polygon. It has a raised central section, two low side wings, separate pitched red roofs and an open through-passage. Precise openings/roof dimensions remain *photo-informed approximations*.
+- Graphics selector includes lightweight **balanced** mode and **realistic shadows** mode with localized PCF shadow casting; the latter can reduce FPS on phones.
+- No photographs or Google Street View tiles are used as textures without suitable permission; only original procedurally generated game textures are embedded.
+
+The area sectors are expanded **gameplay map windows**, not authoritative municipal boundary polygons. Additional distant countryside and exact landmark geometry remain incomplete.
+
+
+## Earlier 4.7 mapped landmarks
 
 | Place / feature | Geodata | Work done |
 | --- | --- | --- |
@@ -22,7 +36,7 @@ Browser-based singleplayer RP prototype using real OpenStreetMap footprints of S
 See [architecture data & references](data/architecture-references.json), including photo author, historical date, license and model uncertainty. Many OSM building levels are missing or outdated. The new building heights remain **photo-derived estimates**, not survey measurements.
 
 ## Game
-Controls: WASD/arrows to walk or drive; E to board/leave; C camera; R reset; M minimap; J jobs. Also supports mobile touch controls. Spawn picker offers walking, sedan, SUV, van, police car and bus. Only an **active bus job** shows doors, passengers and route markers.
+Controls: WASD/arrows to walk or drive; E to board/leave; C camera; R reset; M minimap; J jobs. Also supports mobile touch controls. Spawn picker offers a regional location (including the Mladá and Boží Dar areas), plus walking, sedan, SUV, van, police car and bus. Only an **active bus job** shows doors, passengers and route markers.
 
 ## Sources and attribution
 - Footprints, road centerlines, rail, paths: © OpenStreetMap contributors (ODbL).
