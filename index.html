@@ -1,6 +1,14 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice Life RP – 3.9 · build 20261112-h</title><meta name="milovice-build" content="20261112-h"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
+<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice Life RP – 4.0 · build 20261112-j</title><meta name="milovice-build" content="20261112-j"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
 #realmap{position:fixed;inset:0;z-index:100;background:#101e2c;display:none;flex-direction:column;color:#fff;font-family:system-ui}#realmap.open{display:flex}#maphead{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#142c3e}#maphead button{flex:0 0 auto;min-height:40px}#osmmap{flex:1;min-height:0;touch-action:pan-x pan-y}#mapfoot{padding:8px 12px;background:#142c3e;font-size:12px;line-height:1.4}#maplaunch{position:fixed;right:12px;top:75px;z-index:45;background:#193d58;border:1px solid #93b4c7;box-shadow:0 2px 8px #0006}#realmap .leaflet-container{background:#d7e5da}#realmap a{color:#aedbff} @media(max-width:700px){#maplaunch{top:72px;right:8px;padding:7px 10px;font-size:12px;min-height:36px}#maphead{font-size:13px}}
-</style><style>#perf{position:fixed;top:10px;right:10px;z-index:42;background:#102437e8;border:1px solid #77a7b6;border-radius:10px;padding:7px 10px;color:#c8f6d4;font:600 12px system-ui;pointer-events:none;min-width:100px;text-align:center}#perf small{display:block;color:#c9d5dd;font-size:10px;font-weight:400}@media(max-width:700px){#perf{top:8px;right:8px;padding:5px 7px;font-size:11px}#maplaunch{top:100px!important}}</style></head><body><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><p>Verze 3.9 · build <strong id="build-label">20261112-h</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p>Rychlost: <strong id="speed">0</strong> km/h · Cestující: <strong id="pass">0</strong></p><p style="display:none">Další zastávka: <strong id="stop">Milovice, žel. st.</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p style="display:none">Trasa: <strong id="progress">0 / 4</strong> · Do zastávky: <strong id="distance">16 m</strong></p><p>Čas: <strong id="clock">00:00</strong> · Hodnocení: <strong id="rating">100</strong> %</p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · mezerník: dveře · C: kamera · R: reset. Zatím jde o volnou jízdu po reálných ulicích; linka a zastávky budou doplněny.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Plyn</button><button data-key="KeyS">▼ Brzda / R</button><button data-key="KeyD">▶</button><button id="enter">🚶 Vystoupit</button><button id="doors">🚪 Dveře</button><button id="horn">📣 Klakson</button><button id="camera">📷 Kamera</button><button id="reset">↺ Reset</button></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
+</style><style>#perf{position:fixed;top:10px;right:10px;z-index:42;background:#102437e8;border:1px solid #77a7b6;border-radius:10px;padding:7px 10px;color:#c8f6d4;font:600 12px system-ui;pointer-events:none;min-width:100px;text-align:center}#perf small{display:block;color:#c9d5dd;font-size:10px;font-weight:400}@media(max-width:700px){#perf{top:8px;right:8px;padding:5px 7px;font-size:11px}#maplaunch{top:100px!important}}</style><style id="milovice-modern-ui">
+#hud{background:linear-gradient(145deg,rgba(9,24,39,.88),rgba(20,44,61,.82));backdrop-filter:blur(12px);border:1px solid rgba(176,214,235,.3);box-shadow:0 10px 30px #061b2b33;border-radius:18px}
+#controls{background:linear-gradient(180deg,rgba(11,26,42,.78),rgba(13,32,48,.92));backdrop-filter:blur(10px);border:1px solid #b5d9ef3d;box-shadow:0 8px 32px #0005}
+#controls button{background:linear-gradient(160deg,#27465f,#142c43);border:1px solid #a0c7df85;border-radius:12px;box-shadow:inset 0 1px 0 #ffffff20}
+#controls button:active,#controls button.held{background:linear-gradient(160deg,#287fa2,#20536e)}
+#maplaunch{background:linear-gradient(150deg,#234d69,#143248);border-radius:13px;box-shadow:0 7px 18px #0005}
+#perf{backdrop-filter:blur(8px);border-radius:12px}
+#minimap{box-shadow:0 6px 20px #0007}
+</style></head><body><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><p>Verze 4.0 · build <strong id="build-label">20261112-j</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p>Rychlost: <strong id="speed">0</strong> km/h · Cestující: <strong id="pass">0</strong></p><p style="display:none">Další zastávka: <strong id="stop">Milovice, žel. st.</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p style="display:none">Trasa: <strong id="progress">0 / 4</strong> · Do zastávky: <strong id="distance">16 m</strong></p><p>Čas: <strong id="clock">00:00</strong> · Hodnocení: <strong id="rating">100</strong> %</p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · mezerník: dveře · C: kamera · R: reset. Zatím jde o volnou jízdu po reálných ulicích; linka a zastávky budou doplněny.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Plyn</button><button data-key="KeyS">▼ Brzda / R</button><button data-key="KeyD">▶</button><button id="enter">🚶 Vystoupit</button><button id="doors">🚪 Dveře</button><button id="horn">📣 Klakson</button><button id="camera">📷 Kamera</button><button id="reset">↺ Reset</button></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
 <section id="realmap" aria-label="Skutečná mapa Milovic"><div id="maphead"><strong>🗺️ Milovice – skutečná mapa</strong><button id="closemap" type="button">✕ Zpět do hry</button></div><div id="osmmap"></div><div id="mapfoot">Mapová data © přispěvatelé OpenStreetMap. <strong>3D herní svět je zatím modelový</strong> – poloha autobusu není napojena na skutečné GPS souřadnice. Mapa slouží jako podklad pro budoucí přestavbu.</div></section><script type="module">
 const mapLaunch=document.getElementById('maplaunch'),mapPanel=document.getElementById('realmap');
 let leafletMap=null;
@@ -23,7 +31,7 @@ document.getElementById('closemap').addEventListener('click',()=>mapPanel.classL
 document.addEventListener('keydown',e=>{if(e.code==='Escape'&&mapPanel.classList.contains('open')){mapPanel.classList.remove('open');e.stopImmediatePropagation()}},true);
 
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-const BUILD_ID='20261112-h';
+const BUILD_ID='20261112-j';
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x9bc8ec);scene.fog=new THREE.Fog(0x9bc8ec,280,850);const camera=new THREE.PerspectiveCamera(67,innerWidth/innerHeight,.1,1400);const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.25));renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x65725a,1.6));const sun=new THREE.DirectionalLight(0xffefcc,1.7);sun.position.set(50,100,30);scene.add(sun);
 
 // Visual pipeline 3.8: cinematic tonemapping, improved sky and material response.
@@ -370,7 +378,12 @@ const facadePosition=new THREE.Vector3(),facadeRotation=new THREE.Quaternion(),f
 function addFacadePart(kind,x,y,z,rotation){facadePosition.set(x,y,z);facadeRotation.setFromAxisAngle(new THREE.Vector3(0,1,0),rotation);facadeMatrix.compose(facadePosition,facadeRotation,facadeScale);{const key=Math.floor(x/120)+','+Math.floor(z/120);if(!facadeBatches[kind].has(key))facadeBatches[kind].set(key,[]);facadeBatches[kind].get(key).push(facadeMatrix.clone())}}
 function finalizeFacades(){for(let i=0;i<4;i++){for(const batch of facadeBatches[i].values()){if(!batch.length)continue;const inst=new THREE.InstancedMesh(facadeGeo[i],facadeMat[i],batch.length);for(let j=0;j<batch.length;j++)inst.setMatrixAt(j,batch[j]);inst.instanceMatrix.needsUpdate=true;inst.computeBoundingSphere();osmLayer.add(inst)}facadeBatches[i].clear()}}
 
-const osmDoorMaterial=new THREE.MeshLambertMaterial({color:0x4b514e,side:THREE.DoubleSide});
+// 4.0: richer architecture: distinct wall materials, glazed entrances and roof equipment.
+const osmDoorMaterial=new THREE.MeshStandardMaterial({color:0x394a50,metalness:.25,roughness:.28,side:THREE.DoubleSide});
+const roofDetailMat=new THREE.MeshStandardMaterial({color:0x777e7c,metalness:.34,roughness:.68});
+const roofVentMat=new THREE.MeshStandardMaterial({color:0x39484b,metalness:.42,roughness:.43});
+const architecturalDetail=new THREE.Group();osmLayer.add(architecturalDetail);
+
 function osmBuilding(points,tags,index){
  if(points.length<4)return;
  const pts=points.map(osmPoint);
@@ -392,6 +405,14 @@ function osmBuilding(points,tags,index){
  const roofGeo=new THREE.ShapeGeometry(roofShape);roofGeo.rotateX(-Math.PI/2);
  const roof=new THREE.Mesh(roofGeo,osmRoofPalette[index%osmRoofPalette.length]);
  roof.position.y=h+.025;osmLayer.add(roof);
+ // Small rooftop ventilation blocks create recognisable silhouettes without expensive meshes.
+ if(index%4===0 && w>10 && d>9){
+  const cx=(Math.min(...xs)+Math.max(...xs))*.5,cz=(Math.min(...zs)+Math.max(...zs))*.5;
+  const vent=new THREE.Mesh(new THREE.BoxGeometry(Math.min(w*.23,4),.48,Math.min(d*.22,3)),roofDetailMat);
+  vent.position.set(cx,h+.28,cz);osmLayer.add(vent);
+  const ventTop=new THREE.Mesh(new THREE.BoxGeometry(Math.min(w*.24,4.1),.12,Math.min(d*.23,3.1)),roofVentMat);
+  ventTop.position.set(cx,h+.58,cz);osmLayer.add(ventTop);
+ }
  // Building facade upgrade: per-building window allocation and visible architectural details.
  const centerX=pts.reduce((v,p)=>v+p.x,0)/pts.length,centerZ=pts.reduce((v,p)=>v+p.y,0)/pts.length;
  const visibleFloors=Math.min(Math.max(1,Math.floor(h/3)),8);
@@ -628,8 +649,50 @@ const busNumberCtx=busNumberCanvas.getContext('2d');
 busNumberCtx.fillStyle='#172b38';busNumberCtx.fillRect(0,0,512,128);
 busNumberCtx.fillStyle='#ffcb53';busNumberCtx.font='bold 85px sans-serif';busNumberCtx.textAlign='center';busNumberCtx.fillText('432',256,94);
 const busNumberTexture=new THREE.CanvasTexture(busNumberCanvas);busNumberTexture.colorSpace=THREE.SRGBColorSpace;
+// Glass reflections, chrome beltlines, wheel hub detailing and cleaner modern coach proportions.
+const busBlueGlass=new THREE.MeshPhysicalMaterial({color:0x2b667d,metalness:.18,roughness:.13,clearcoat:.9,clearcoatRoughness:.08,transparent:true,opacity:.86});
+const busChrome=new THREE.MeshStandardMaterial({color:0xc9d6d7,metalness:.74,roughness:.24});
+const busBlack=new THREE.MeshStandardMaterial({color:0x1b252b,metalness:.18,roughness:.54});
+const busIndicator=new THREE.MeshBasicMaterial({color:0xffa72b});
+const wheelRimGeometry=new THREE.CylinderGeometry(.33,.33,.35,24);
+const wheelHubGeometry=new THREE.CylinderGeometry(.105,.105,.38,20);
+for(const side of [-1,1]){
+  for(let k=0;k<6;k++){
+   const zz=-3.45+k*1.28;
+   cube(.046,.69,1.04,busBlueGlass,side*1.323,2.22,zz,bus);
+   cube(.045,.025,.95,busChrome,side*1.35,2.59,zz,bus);
+  }
+  for(const zz of [-2.8,2.7]){
+   const rim=new THREE.Mesh(wheelRimGeometry,busChrome);rim.rotation.z=Math.PI/2;rim.position.set(side*1.49,.58,zz);bus.add(rim);
+   const hub=new THREE.Mesh(wheelHubGeometry,busBlack);hub.rotation.z=Math.PI/2;hub.position.set(side*1.5,.58,zz);bus.add(hub);
+  }
+  cube(.07,.08,8.4,busChrome,side*1.355,1.59,0,bus);
+  cube(.07,.09,8.35,busBlack,side*1.355,1.18,0,bus);
+  cube(.17,.13,.09,busIndicator,side*1.16,1.43,-4.51,bus);
+  cube(.17,.13,.09,busIndicator,side*1.16,1.43,4.51,bus);
+}
+cube(2.29,.89,.06,busBlueGlass,0,2.18,4.52,bus);
+cube(2.29,.92,.06,busBlueGlass,0,2.21,-4.51,bus);
+cube(2.34,.06,.12,busChrome,0,1.65,-4.55,bus);
+cube(2.34,.06,.12,busChrome,0,1.65,4.55,bus);
 const busNumberPanel=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.39),new THREE.MeshBasicMaterial({map:busNumberTexture,side:THREE.DoubleSide}));
 busNumberPanel.position.set(0,2.46,-4.49);bus.add(busNumberPanel);
+
+// Road surface decals: thin center markings and subtle curb strips with shared materials.
+// Keep these as static geometry; no work is performed during animation.
+const cityRoadEdge=new THREE.MeshStandardMaterial({color:0xb3ada0,roughness:1});
+const cityRoadLine=new THREE.MeshBasicMaterial({color:0xe8e4d9});
+const originalRoads=scene.children.filter(o=>o.isMesh&&o.geometry?.type==='BoxGeometry'&&o.position.y<.3);
+for(const o of originalRoads){
+ if(o.material===road || o.material===asphalt){
+  // preserve road layout while giving asphalt more depth through surface material
+  o.material= new THREE.MeshStandardMaterial({map:streetTexture,color:0xffffff,roughness:.98});
+ }
+}
+// Soft daylight with physically based response; avoid costly dynamic shadows on phones.
+renderer.toneMappingExposure=1.30;
+sun.intensity=2.6;
+scene.fog.near=450;scene.fog.far=1200;
 let last=performance.now(),lastHud=0,lastMap=0,perfFrames=0,perfSince=performance.now();const perfEl=document.getElementById('perf');function animate(t){requestAnimationFrame(animate);const dt=Math.min(Math.max((t-last)/1000,0),.05);last=t;
 elapsed+=dt;
 if(walking){
