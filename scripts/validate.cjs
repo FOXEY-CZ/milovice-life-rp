@@ -4,7 +4,11 @@ const assert = require('node:assert/strict');
 const html = fs.readFileSync('index.html', 'utf8');
 const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(x => x[1]).filter(x => x.trim());
 assert(scripts.length, 'Missing inline game script');
-for (const [i, code] of scripts.entries()) new vm.Script(code, { filename: 'inline-' + i + '.js' });
+// Parse browser module imports without executing remote URLs in the CI runner.
+for (const [i, code] of scripts.entries()) {
+  const syntaxOnly = code.replace(/^\s*import\s+[^;]+;\s*$/gm, '');
+  new vm.Script(syntaxOnly, { filename: 'inline-' + i + '.js' });
+}
 for (const id of ['hud','perf','controls','minimap','maplaunch','realmap','speed','enter','doors','horn','camera','reset']) {
   assert(html.includes('id="' + id + '"'), 'Missing UI element: ' + id);
 }
