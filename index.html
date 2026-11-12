@@ -2137,21 +2137,40 @@ const visualMaterials={
 };
 const visualDetails=new THREE.Group();osmLayer.add(visualDetails);
 const visualTemp=new THREE.Object3D();
+const lampGlowMaterial=new THREE.MeshBasicMaterial({color:0xffe4a4});
 function visualBatch(geo,material,items){
- if(!items.length)return;
- const mesh=new THREE.InstancedMesh(geo,material,items.length);
- mesh.frustumCulled=false;mesh.instanceMatrix.setUsage(THREE.StaticDrawUsage);
- items.forEach((it,i)=>{visualTemp.position.set(it[0],it[1]+terrainAt(it[0],it[2]),it[2]);visualTemp.rotation.set(0,it[6]||0,0);visualTemp.scale.set(it[3],it[4],it[5]);visualTemp.updateMatrix();mesh.setMatrixAt(i,visualTemp.matrix)});
- mesh.instanceMatrix.needsUpdate=true;visualDetails.add(mesh);
+ if(!items.length){geo.dispose();return}
+ const buckets=new Map();
+ for(const it of items){
+  const key=Math.floor(it[0]/200)+','+Math.floor(it[2]/200);
+  if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(it);
+ }
+ for(const [key,batch] of buckets){
+  const mesh=new THREE.InstancedMesh(geo,material,batch.length);
+  mesh.instanceMatrix.setUsage(THREE.StaticDrawUsage);
+  batch.forEach((it,i)=>{
+   visualTemp.position.set(it[0],it[1]+terrainAt(it[0],it[2]),it[2]);
+   visualTemp.rotation.set(0,it[6]||0,0);
+   visualTemp.scale.set(it[3],it[4],it[5]);visualTemp.updateMatrix();
+   mesh.setMatrixAt(i,visualTemp.matrix);
+  });
+  mesh.instanceMatrix.needsUpdate=true;mesh.computeBoundingSphere();
+  const [gx,gz]=key.split(',').map(Number);
+  mesh.userData.lodX=(gx+.5)*200;mesh.userData.lodZ=(gz+.5)*200;
+  visualDetails.add(mesh);visualLodMeshes.push(mesh);
+ }
 }
 function improveMiloviceVisuals(){
- visualDetails.clear();
+ for(const mesh of visualLodMeshes)if(mesh.geometry)mesh.geometry.dispose();
+ visualLodMeshes.length=0;visualDetails.clear();
  const curbs=[],lines=[],trunks=[],crowns=[],crowns2=[],poles=[],lamps=[];
  let state=12637;const rnd=()=>((state=(state*16807)%2147483647)/2147483647);
  // A few street features per long road, rather than per tiny OSM segment.
  let count=0;
- for(const path of osmRoads){
-  if(count++>2300)break;
+ const stepRoad=Math.max(1,Math.ceil(osmRoads.length/2100));
+ for(let roadIndex=0;roadIndex<osmRoads.length;roadIndex+=stepRoad){
+  if(count++>2150)break;
+  const path=osmRoads[roadIndex];
   for(let j=1;j<path.length;j++){
    const a=path[j-1],b=path[j],dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);
    if(len<9||len>350)continue;
@@ -2179,7 +2198,8 @@ function improveMiloviceVisuals(){
  visualBatch(new THREE.IcosahedronGeometry(1,2),visualMaterials.foliage,crowns);
  visualBatch(new THREE.IcosahedronGeometry(1,2),visualMaterials.foliage2,crowns2);
  visualBatch(new THREE.CylinderGeometry(.5,.5,1,6),visualMaterials.roof,poles);
- visualBatch(new THREE.SphereGeometry(1,8,6),new THREE.MeshBasicMaterial({color:0xffe4a4}),lamps);
+ visualBatch(new THREE.SphereGeometry(1,8,6),lampGlowMaterial,lamps);
+ updateMiloviceChunks(true);
 }
 
 osmBtn.onclick=async()=>{
