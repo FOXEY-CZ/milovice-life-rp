@@ -85,7 +85,7 @@ def main():
             print("Raster", raster.width, raster.height, "bands", raster.count, "dtype", raster.dtypes)
             if raster.count != 1:
                 raise ValueError("ČÚZK did not return a single-band elevation raster")
-            if raster.crs and raster.crs.to_epsg() != 5514:
+            if raster.crs and raster.crs.to_epsg() not in (5514, None):
                 raise ValueError(f"Unexpected coordinate reference {raster.crs}")
             samples = np.asarray([row[0] for row in raster.sample(points)], dtype=float)
             if raster.nodata is not None:
