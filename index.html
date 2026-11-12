@@ -1043,7 +1043,7 @@ function finalizeFoundations(){
 }
 // Photo-referenced detail pass: repeated meshes are batched as instanced geometry.
 // Facades are modelled from mapped footprints, not copied from proprietary photos.
-const architectureColors={railSleeper:0x685643,railPole:0x777d7f,gothicGlass:0x263c48,stoneTrim:0xe8d9b7,whiteTrim:0xe3e6de,windowBar:0xd6e2e4,darkWood:0x514339,garageMetal:0x727f7b,bronze:0x8b6a48,glassAwning:0x7e9e9f,schoolRed:0xa3442e,roofGutter:0x687173,chimney:0xad6749,balcony:0xc9c1b7,railing:0x394447,shutter:0x8b705e,foundationBand:0x8e7f72};
+const architectureColors={blueStarPlaster:0xd68c34,blueStarRed:0xb7352c,starWhite:0xf0eae0,starBalcony:0xcfc6b5,railSleeper:0x685643,railPole:0x777d7f,gothicGlass:0x263c48,stoneTrim:0xe8d9b7,whiteTrim:0xe3e6de,windowBar:0xd6e2e4,darkWood:0x514339,garageMetal:0x727f7b,bronze:0x8b6a48,glassAwning:0x7e9e9f,schoolRed:0xa3442e,roofGutter:0x687173,chimney:0xad6749,balcony:0xc9c1b7,railing:0x394447,shutter:0x8b705e,foundationBand:0x8e7f72};
 const architectureQueues=Object.fromEntries(Object.keys(architectureColors).map(k=>[k,[]]));
 const architectureMaterials=Object.fromEntries(Object.entries(architectureColors).map(([k,v])=>[k,new THREE.MeshStandardMaterial({color:v,roughness:k==='glassAwning'?.3:.8,metalness:k==='roofGutter'||k==='railing'?.4:.04})]));
 const archUnitBox=new THREE.BoxGeometry(1,1,1),archPlacement=new THREE.Object3D();
@@ -1184,6 +1184,55 @@ function stationFacadeSign(text,x,y,z,orientation){
  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(3.7,.91),new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide}));
  mesh.position.set(x,y,z);mesh.rotation.y=orientation;osmLayer.add(mesh);
 }
+function blueStarFacadeSign(x,y,z,yaw){
+ const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=220;
+ const c=canvas.getContext('2d');c.fillStyle='#f9f4e8';c.fillRect(0,0,1024,220);
+ c.fillStyle='#34628e';c.font='bold 73px Arial';c.textAlign='center';c.textBaseline='middle';
+ c.fillText('MODRÁ HVĚZDA',515,115,980);
+ c.fillStyle='#274e8d';const cx=55,cy=105,r1=46,r2=20;
+ c.beginPath();for(let i=0;i<10;i++){const a=i*Math.PI/5-Math.PI/2,r=i%2===0?r1:r2;
+  if(i===0)c.moveTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);else c.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r)}
+ c.closePath();c.fill();
+ const t=new THREE.CanvasTexture(canvas);t.colorSpace=THREE.SRGBColorSpace;
+ const o=new THREE.Mesh(new THREE.PlaneGeometry(4.7,1.05),new THREE.MeshBasicMaterial({map:t,side:THREE.DoubleSide}));
+ o.position.set(x,y,z);o.rotation.y=yaw;osmLayer.add(o);
+}
+// Address Mírová 134/11 verified by public RÚIAN coordinates;
+// exterior style follows ŠJů's 2024 CC BY 4.0 Wikimedia Commons photo.
+function miloviceBlueStarDetail(pts,base,h,cx,cz){
+ let corner=pts[0],score=Infinity;
+ // Photo camera point: 50.2280572, 14.8840981, just south of the hotel.
+ const photo=osmPoint({lat:50.2280572,lon:14.8840981});
+ for(const p of pts){const dist=p.distanceTo(photo);if(dist<score){score=dist;corner=p}}
+ // A photo-visible corner entrance with the distinctive balcony above.
+ let dirX=corner.x-cx,dirZ=corner.y-cz,inv=Math.hypot(dirX,dirZ)||1;
+ dirX/=inv;dirZ/=inv;
+ const entranceX=corner.x+dirX*.39,entranceZ=corner.y+dirZ*.39;
+ const yaw=Math.atan2(dirX,dirZ);
+ archPart('blueStarRed',entranceX,base+1.31,entranceZ,2.35,2.62,.19,yaw);
+ archPart('starWhite',entranceX,base+1.35,entranceZ+0.02,1.58,2.36,.24,yaw);
+ archPart('darkWood',entranceX+dirX*.16,base+1.23,entranceZ+dirZ*.16,1.28,2.18,.17,yaw);
+ // Historic-style white balcony, metal balustrade and the pale upper door.
+ archPart('starBalcony',entranceX+dirX*.93,base+3.49,entranceZ+dirZ*.93,3.0,.22,1.45,yaw);
+ archPart('railing',entranceX+dirX*1.62,base+4.02,entranceZ+dirZ*1.62,2.96,.99,.09,yaw);
+ archPart('windowBar',entranceX+dirX*.26,base+4.72,entranceZ+dirZ*.26,1.52,2.12,.12,yaw);
+ // Actual photo shows red ground-floor window surrounds and white windows.
+ for(let i=0;i<pts.length;i++){
+  const a=pts[i],b=pts[(i+1)%pts.length],dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);
+  if(len<4)return;
+  let nx=-dz/len,nz=dx/len;
+  const mx=(a.x+b.x)/2,mz=(a.y+b.y)/2;
+  if(nx*(mx-cx)+nz*(mz-cz)<0){nx=-nx;nz=-nz}
+  const rotation=Math.atan2(nx,nz),n=Math.max(1,Math.floor(len/4.7));
+  for(let j=0;j<n;j++){
+   const t=(j+.5)/n,px=a.x+dx*t,pz=a.y+dz*t;
+   if(Math.hypot(px-corner.x,pz-corner.y)<3.8)continue;
+   archPart('blueStarRed',px+nx*.53,base+1.48,pz+nz*.53,1.73,2.03,.15,rotation);
+   archPart('starWhite',px+nx*.62,base+1.48,pz+nz*.62,1.47,1.77,.14,rotation);
+  }
+ }
+ blueStarFacadeSign(entranceX+dirX*.55,base+3.04,entranceZ+dirZ*.55,yaw);
+}
 function osmBuilding(points,tags,index,osmId=null){
  if(points.length<4)return;
  const pts=points.map(osmPoint);
@@ -1240,6 +1289,7 @@ function osmBuilding(points,tags,index,osmId=null){
   const hip=!pitched&&(isHouse||isSchool||isChurch||isStation||isBlueStar)?miloviceHipRoof(pts,baseHeight,h,isChurch?osmRoofPalette[4]:isStation?osmRoofPalette[0]:isBlueStar?osmRoofPalette[1]:roofMat,isChurch?4.3:isStation?2.6:isBlueStar?.65:isSchool?1.05:Math.min(2.3,Math.min(w,d)*.25)):null;
   if(pitched||hip)osmLayer.add(pitched||hip);else osmLayer.add(roof);
   if(isChurch)miloviceChurchTower(pts,baseHeight,h);
+   if(isBlueStar)miloviceBlueStarDetail(pts,baseHeight,h,centerX,centerZ);
  // Small rooftop ventilation blocks create recognisable silhouettes without expensive meshes.
  if(!isHouse&&!isGarage&&!isSchool&&!isBlueStar&&!isChurch&&!isStation&&index%5===0&&w>10&&d>9){
   const cx=(Math.min(...xs)+Math.max(...xs))*.5,cz=(Math.min(...zs)+Math.max(...zs))*.5;
@@ -1262,6 +1312,11 @@ function osmBuilding(points,tags,index,osmId=null){
    archPart('roofGutter',mx+nx*.23,baseHeight+h+.11,mz+nz*.23,len,.075,.12,rotation);
    if(len>6&&i%2===0)archPart('roofGutter',p.x+nx*.21,baseHeight+h*.53,p.y+nz*.21,.10,h*.98,.12,rotation);
   }
+  if(isBlueStar){
+   archPart('blueStarRed',mx+nx*.18,baseHeight+.36,mz+nz*.18,len,.72,.17,rotation);
+   archPart('starWhite',mx+nx*.15,baseHeight+3.48,mz+nz*.15,len,.12,.16,rotation);
+   archPart('starWhite',mx+nx*.24,baseHeight+h-.27,mz+nz*.24,len,.23,.26,rotation);
+  }
   if(isSchool){
    // The photographed Školská school has a warm yellow upper facade and deep red ground floor.
    archPart('schoolRed',mx+nx*.14,baseHeight+1.28,mz+nz*.14,len,2.52,.15,rotation);
@@ -1280,7 +1335,7 @@ function osmBuilding(points,tags,index,osmId=null){
     addFacadePart(2,px+nx*.43,y,pz+nz*.43,rotation,baseHeight);
     addFacadePart(3,px+nx*.49,y-.85,pz+nz*.49,rotation,baseHeight);
     // Photo-referenced white mullions: panes stop looking like flat blue rectangles.
-    if(isHouse||isSchool||j%2===0){
+    if(isBlueStar||isHouse||isSchool||j%2===0){
      const wx=px+nx*.515,wz=pz+nz*.515;
      archPart('windowBar',wx,baseHeight+y,wz,.065,1.31,.09,rotation);
      archPart('windowBar',wx,baseHeight+y+.07,wz,1.40,.045,.09,rotation);
