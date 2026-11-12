@@ -2277,7 +2277,7 @@ function rpBuildCrosswalks(){
 function makeTrafficCar(index,segment){
  const type=index%9;
  // 8 different sculpted body archetypes; a regional PID-inspired bus is #7.
- const vehicle=type===7?makePidBus(THREE,'432'):makeRoadCar(THREE,index);
+ const vehicle=type===7?makePidBus(THREE,'432',true):makeRoadCar(THREE,index);
  const g=vehicle.group;trafficGroup.add(g);
  return {g,seg:segment,progress:(index*.137)%1,direction:index%2?-1:1,
   speed:type===7?6:5+(index%5)*1.15,turns:0,driven:false,parked:false,
@@ -2303,6 +2303,8 @@ function rpPopulate(){
   trafficPeople.push({g,rig,seg,progress:(i*.183)%1,direction:i%2?1:-1,
    speed:.75+(i%4)*.22,side:i%2?1:-1,legs:rig.legs,arms:rig.arms,phase:i*.87});
  }
+ window.__miloviceModelDebug={humans:trafficPeople.length,sculptedCars:trafficCars.filter(car=>car.type!==7).length,
+  articulatedBuses:trafficCars.filter(car=>car.service==='432').length,playerHuman:Boolean(playerRig?.group)};
 }
 function rpNextStreet(car){
  const point=car.direction===1?car.seg.b:car.seg.a;
