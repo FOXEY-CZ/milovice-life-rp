@@ -1887,15 +1887,32 @@ function osmAddLandmark(el){
  osmLandmarks.push({name:el.tags.name,point:p,kind:el.tags.building});
  if(!['church','school','train_station'].includes(el.tags.building))osmPlaceLabel(el.tags.name,p);
 }
+// 4.9: Build roads and their names BEFORE facades. OSM ways are not reliably
+// ordered by feature type; a one-pass iterator made nearby architectural styles
+// depend on arbitrary export order, especially when streaming newer districts.
 function rpAppendOSMElements(elements){
- for(const el of elements){if(!el.geometry?.length)continue;
-  if(seenCityOSMWays.has(el.id))continue;seenCityOSMWays.add(el.id);
- if(el.tags?.highway){const points=el.geometry.map(osmPoint);osmRoads.push(points);if(el.tags.name)osmNamedRoads.push({name:el.tags.name,points});const width=el.tags.highway==='primary'?11:el.tags.highway==='secondary'?9:el.tags.highway==='tertiary'?8:el.tags.highway==='pedestrian'?4:el.tags.highway==='footway'?1.8:el.tags.highway==='path'?1.65:el.tags.highway==='service'?4.5:7.8;
-  if(['primary','secondary','tertiary','residential','unclassified','living_street','service'].includes(el.tags.highway))osmDriveRoads.push({points,width,kind:el.tags.highway,oneway:el.tags.oneway==='yes'?1:el.tags.oneway==='-1'?-1:0});
- for(let i=1;i<points.length;i++){osmRoadSegment(points[i-1],points[i],width,el.tags.highway);osmRoadFurniture(points[i-1],points[i],width,el.tags.highway)}
- }else if(el.tags?.railway){osmRailways.push(el);miloviceRailTrack(el.geometry.map(osmPoint),el.tags)}
-  else if(el.tags?.building){osmBuilding(el.geometry,el.tags,osmBuildings,el.id);osmAddLandmark(el)}
+ const roadWays=[],railWays=[],buildingWays=[];
+ for(const el of elements){
+  if(!el.geometry?.length||seenCityOSMWays.has(el.id))continue;
+  seenCityOSMWays.add(el.id);
+  if(el.tags?.highway)roadWays.push(el);
+  else if(el.tags?.railway)railWays.push(el);
+  else if(el.tags?.building)buildingWays.push(el);
  }
+ for(const el of roadWays){
+  const points=el.geometry.map(osmPoint);osmRoads.push(points);
+  if(el.tags.name)osmNamedRoads.push({name:el.tags.name,points});
+  const kind=el.tags.highway;
+  const width=kind==='primary'?11:kind==='secondary'?9:kind==='tertiary'?8:kind==='pedestrian'?4:kind==='footway'?1.8:kind==='path'?1.65:kind==='service'?4.5:7.8;
+  if(['primary','secondary','tertiary','residential','unclassified','living_street','service'].includes(kind))
+   osmDriveRoads.push({points,width,kind,oneway:el.tags.oneway==='yes'?1:el.tags.oneway==='-1'?-1:0});
+  for(let i=1;i<points.length;i++){
+   osmRoadSegment(points[i-1],points[i],width,kind);
+   osmRoadFurniture(points[i-1],points[i],width,kind);
+  }
+ }
+ for(const el of railWays){osmRailways.push(el);miloviceRailTrack(el.geometry.map(osmPoint),el.tags)}
+ for(const el of buildingWays){osmBuilding(el.geometry,el.tags,osmBuildings,el.id);osmAddLandmark(el)}
 }
 // 4.8: Incremental geographic streaming; only the current area is meshed on phone.
 // Connected, overlapping OSM exports are deduplicated by their official way IDs.
