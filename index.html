@@ -1003,7 +1003,19 @@ function osmBuilding(points,tags,index){
   let nx=-dz/len,nz=dx/len;
   const mx=(p.x+q.x)/2,mz=(p.y+q.y)/2;
   if(nx*(mx-centerX)+nz*(mz-centerZ)<0){nx=-nx;nz=-nz}
-  const rotation=Math.atan2(nx,nz);
+  const rotation=Math.atan2(nx,nz),ux=dx/len,uz=dz/len;
+  if(isHouse||isSchool){
+   // Tile eaves, rain gutters, and drainpipes follow the actual OSM walls.
+   archPart('roofGutter',mx+nx*.23,baseHeight+h+.11,mz+nz*.23,len,.075,.12,rotation);
+   if(len>6&&i%2===0)archPart('roofGutter',p.x+nx*.21,baseHeight+h*.53,p.y+nz*.21,.10,h*.98,.12,rotation);
+  }
+  if(isSchool){
+   // The photographed Školská school has a warm yellow upper facade and deep red ground floor.
+   archPart('schoolRed',mx+nx*.14,baseHeight+1.28,mz+nz*.14,len,2.52,.15,rotation);
+   archPart('schoolRed',mx+nx*.20,baseHeight+3.48,mz+nz*.20,len,.20,.10,rotation);
+  }else if(isHouse&&oldCenter){
+   archPart('foundationBand',mx+nx*.22,baseHeight+.52,mz+nz*.22,len,1.02,.1,rotation);
+  }
   const windows=Math.min(18,Math.max(1,Math.floor(len/(isSchool?3.0:isHouse?4.2:3.5))));
   for(let floor=0;floor<visibleFloors;floor++){
    const y=(isSchool?1.84:1.85)+floor*(isSchool?3.15:3.05);
@@ -1014,6 +1026,22 @@ function osmBuilding(points,tags,index){
     addFacadePart(1,px+nx*.405,y,pz+nz*.405,rotation,baseHeight);
     addFacadePart(2,px+nx*.43,y,pz+nz*.43,rotation,baseHeight);
     addFacadePart(3,px+nx*.49,y-.85,pz+nz*.49,rotation,baseHeight);
+    // Photo-referenced white mullions: panes stop looking like flat blue rectangles.
+    if(isHouse||isSchool||j%2===0){
+     const wx=px+nx*.515,wz=pz+nz*.515;
+     archPart('windowBar',wx,baseHeight+y,wz,.065,1.31,.09,rotation);
+     archPart('windowBar',wx,baseHeight+y+.07,wz,1.40,.045,.09,rotation);
+    }
+    if(oldCenter&&isHouse&&j%2===0){
+     archPart('shutter',px+nx*.54+ux*.91,baseHeight+y,pz+nz*.54+uz*.91,.24,1.52,.13,rotation);
+    }
+    if(!isHouse&&!isSchool&&!isIndustrial&&floor>0&&j%3===0){
+     const bx=px+nx*.83,bz=pz+nz*.83,by=baseHeight+y-.93;
+     archPart('balcony',bx,by,bz,2.22,.13,1.02,rotation);
+     archPart('railing',bx+nx*.59,by+.52,bz+nz*.59,2.10,.93,.055,rotation);
+     archPart('railing',bx+ux*1.04,by+.50,bz+uz*1.04,.055,.94,1.10,rotation);
+     archPart('railing',bx-ux*1.04,by+.50,bz-uz*1.04,.055,.94,1.10,rotation);
+    }
    }
   }
  }
@@ -1021,11 +1049,20 @@ function osmBuilding(points,tags,index){
  if(!isGarage){
   let longest=null;
   for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length],len=a.distanceTo(b);if(len>5&&(!longest||len>longest.len))longest={a,b,len}}
-  if(longest){const a=longest.a,b=longest.b,dx=b.x-a.x,dz=b.y-a.y,len=longest.len;
+  if(longest){
+   const a=longest.a,b=longest.b,dx=b.x-a.x,dz=b.y-a.y,len=longest.len;
    let nx=-dz/len,nz=dx/len;const mx=(a.x+b.x)*.5,mz=(a.y+b.y)*.5;
    if(nx*(mx-centerX)+nz*(mz-centerZ)<0){nx=-nx;nz=-nz}
-   const entrance=new THREE.Mesh(new THREE.PlaneGeometry(1.65,2.35),osmDoorMaterial);
-   entrance.position.set(mx+nx*.46,baseHeight+1.18,mz+nz*.46);entrance.rotation.y=Math.atan2(nx,nz);osmLayer.add(entrance);
+   const yaw=Math.atan2(nx,nz),ux=dx/len,uz=dz/len;
+   const doorx=mx+nx*.60,doorz=mz+nz*.60;
+   archPart('darkWood',doorx,baseHeight+1.16,doorz,1.28,2.22,.12,yaw);
+   archPart('bronze',doorx+ux*.48,baseHeight+1.23,doorz+uz*.48,.06,.14,.16,yaw);
+   if(isSchool){
+    archPart('glassAwning',mx+nx*1.42,baseHeight+2.58,mz+nz*1.42,4.2,.13,2.45,yaw);
+    schoolFacadeSign('ZŠ T. G. MASARYKA',mx+nx*.78,baseHeight+4.34,mz+nz*.78,yaw);
+   }else if(oldCenter||!isIndustrial){
+    archPart('glassAwning',mx+nx*.88,baseHeight+2.53,mz+nz*.88,2.45,.11,.88,yaw);
+   }
   }
  }
  // Roof edge silhouette to make flat-roof buildings more recognizable.
