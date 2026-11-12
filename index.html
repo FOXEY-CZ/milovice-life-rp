@@ -563,7 +563,117 @@ document.addEventListener('mousemove',e=>{
  if(!walking||document.pointerLockElement!==renderer.domElement)return;
  orbitYaw-=e.movementX*.0028;
  orbitPitch=Math.max(-.35,Math.min(.95,orbitPitch+e.movementY*.0028));
-});addEventListener('blur',()=>keys.clear());document.addEventListener('visibilitychange',()=>{if(document.hidden)keys.clear()});function reset(){keys.clear();z=16;x=-3;angle=0;speed=0;pass=0;next=0;open=false;cam=0;elapsed=0;rating=100;walking=false;walkCam=0;paid=false;activeCar=null;busPark={x,z,angle};avatar.visible=false;document.getElementById('status').textContent='Volná jízda po Milovicích.';if(osmReady){osmSetActive(true)}else{osmBtn.click()}updateUI()}function updateUI(){document.getElementById('speed').textContent=Math.round(Math.abs(speed)*3.6);document.getElementById('pass').textContent=pass;document.getElementById('stop').textContent=stops[next]?.name||'Konečná – hotovo!';doors.visible=!open;document.getElementById('progress').textContent=next+' / '+stops.length;document.getElementById('distance').textContent=next<stops.length?Math.round(Math.hypot(z-stops[next].z,x-3))+' m':'CÍL';document.getElementById('clock').textContent=String(Math.floor(elapsed/60)).padStart(2,'0')+':'+String(Math.floor(elapsed%60)).padStart(2,'0');document.getElementById('rating').textContent=rating;document.getElementById('mode').textContent=walking?'Pěšky':activeCar?'Řidič auta':'Řidič autobusu';document.getElementById('pass-wrap').style.display=activeCar?'none':'';document.getElementById('doors').style.display=activeCar?'none':'';document.getElementById('vehicle-stats').style.display=walking?'none':'';document.getElementById('car-count').textContent=trafficCars.length;document.getElementById('people-count').textContent=trafficPeople.length;document.getElementById('money').textContent=money;document.getElementById('enter').textContent=walking?'🚗 Nastoupit':'🚶 Vystoupit';document.getElementById('camera').textContent=walking?(walkCam===1?'📷 3. osoba':'📷 1. osoba'):'📷 Kamera';document.querySelector('[data-key="KeyW"]').textContent=walking?'▲ Jít':'▲ Plyn';document.querySelector('[data-key="KeyS"]').textContent=walking?'▼ Zpět':'▼ Brzda / R';}document.addEventListener('keydown',e=>{if(['Space','KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();keys.add(({ArrowUp:'KeyW',ArrowDown:'KeyS',ArrowLeft:'KeyA',ArrowRight:'KeyD'})[e.code]||e.code);if(!e.repeat){if(e.code==='Space')toggleDoors();if(e.code==='KeyC')cycleCamera();if(e.code==='KeyR')reset();if(e.code==='KeyE')toggleVehicle()}});document.addEventListener('keyup',e=>keys.delete(({ArrowUp:'KeyW',ArrowDown:'KeyS',ArrowLeft:'KeyA',ArrowRight:'KeyD'})[e.code]||e.code));document.querySelectorAll('[data-key]').forEach(b=>{let k=b.dataset.key;b.addEventListener('pointerdown',e=>{e.preventDefault();keys.add(k);b.classList.add('held');try{b.setPointerCapture(e.pointerId)}catch(_){}});for(let event of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(event,e=>{keys.delete(k);b.classList.remove('held')})});function toggleDoors(){if(walking||activeCar){notify('Dveře linkového autobusu lze ovládat jen z autobusu.');return}if(Math.abs(speed)>.6){document.getElementById('status').textContent='Nejdřív zastav!';return}open=!open;if(open&&next<stops.length&&Math.abs(z-stops[next].z)<13&&Math.abs(x+3)<5){pass+=2+next*2;document.getElementById('status').textContent='✅ Zastávka odbavena: '+stops[next].name;next++;if(next===stops.length&&!paid){paid=true;const wage=300+rating*4;money+=wage;try{localStorage.setItem('milovice_rp_money',String(money))}catch(e){}notify('🏁 Linka dokončena! Výplata '+wage+' Kč.')}}else document.getElementById('status').textContent=open?'Dveře otevřené':'Dveře zavřené';updateUI()}document.querySelectorAll('#controls button').forEach(b=>{b.addEventListener('contextmenu',e=>e.preventDefault());b.addEventListener('dragstart',e=>e.preventDefault())});document.getElementById('enter').onclick=toggleVehicle;document.getElementById('doors').onclick=toggleDoors;document.getElementById('camera').onclick=cycleCamera;document.getElementById('reset').onclick=reset;let audioCtx=null;document.getElementById('horn').onclick=()=>{try{audioCtx ||= new (window.AudioContext||window.webkitAudioContext)();const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type='sawtooth';osc.frequency.value=220;gain.gain.value=.055;osc.connect(gain).connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+.22)}catch(e){}};
+});addEventListener('blur',()=>keys.clear());document.addEventListener('visibilitychange',()=>{if(document.hidden)keys.clear()});function reset(){
+ keys.clear();speed=0;pass=0;next=0;open=false;cam=0;elapsed=0;rating=100;paid=false;busJob=null;walkCam=0;
+ if(activeCar){activeCar.driven=false;activeCar.parked=true;activeCar=null}
+ if(playerSpawnCar){
+  const index=trafficCars.indexOf(playerSpawnCar);
+  if(index>=0)trafficCars.splice(index,1);
+  trafficGroup.remove(playerSpawnCar.g);playerSpawnCar=null;
+ }
+ rpCloseOverlays();walking=true;avatar.visible=true;
+ document.getElementById('status').textContent='Vyber si nové vozidlo.';
+ if(osmReady)osmSetActive(true);else osmBtn.click();
+ updateUI();
+}
+function updateUI(){
+ const driving=!walking,working=!!busJob,busWorking=working&&driving&&!activeCar;
+ document.getElementById('speed').textContent=Math.round(Math.abs(speed)*3.6);
+ document.getElementById('vehicle-stats').hidden=walking;
+ document.getElementById('pass').textContent=pass;
+ document.getElementById('rp-job-progress').hidden=!working;
+ document.getElementById('rp-job-extra').hidden=!working;
+ document.getElementById('rp-rating-wrap').hidden=!working;
+ document.getElementById('doors').hidden=!busWorking;
+ document.getElementById('horn').hidden=walking;
+ document.getElementById('rp-job-end').hidden=!working;
+ document.getElementById('rp-job-start').hidden=working;
+ frontLed.visible=working;backLed.visible=working;
+ doors.visible=!open;
+ const waypoint=busJob?.stops[busJob.next];
+ document.getElementById('stop').textContent=waypoint?.name||'Hotovo';
+ document.getElementById('progress').textContent=busJob?busJob.next+' / '+busJob.stops.length:'0 / 0';
+ document.getElementById('distance').textContent=waypoint?Math.round(Math.hypot(x-waypoint.x,z-waypoint.z))+' m':'CÍL';
+ document.getElementById('clock').textContent=String(Math.floor(elapsed/60)).padStart(2,'0')+':'+String(Math.floor(elapsed%60)).padStart(2,'0');
+ document.getElementById('rating').textContent=rating;
+ document.getElementById('mode').textContent=walking?'Pěšky':activeCar?'Řidič auta':working?'Autobusová směna':'Volná jízda – autobus';
+ document.getElementById('car-count').textContent=trafficCars.length;
+ document.getElementById('people-count').textContent=trafficPeople.length;
+ document.getElementById('money').textContent=money;
+ document.getElementById('enter').textContent=walking?'🚗 Nastoupit':'🚶 Vystoupit';
+ document.getElementById('camera').textContent=walking?(walkCam===1?'📷 3. osoba':'📷 1. osoba'):'📷 Kamera';
+ document.querySelector('[data-key="KeyW"]').textContent=walking?'▲ Jít':'▲ Plyn';
+ document.querySelector('[data-key="KeyS"]').textContent=walking?'▼ Zpět':'▼ Brzda / R';
+}
+const remap={ArrowUp:'KeyW',ArrowDown:'KeyS',ArrowLeft:'KeyA',ArrowRight:'KeyD'};
+document.addEventListener('keydown',e=>{
+ const mapped=remap[e.code]||e.code;
+ if(['Space','KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
+ if(e.code==='Escape'){rpCloseOverlays();return}
+ if(!document.getElementById('rp-spawn').hidden||!document.getElementById('rp-job-panel').hidden)return;
+ keys.add(mapped);
+ if(e.repeat)return;
+ if(e.code==='Space'&&busJob)toggleDoors();
+ if(e.code==='KeyC')cycleCamera();
+ if(e.code==='KeyR')reset();
+ if(e.code==='KeyE')toggleVehicle();
+ if(e.code==='KeyM')document.getElementById('minimap').classList.toggle('rp-expanded');
+ if(e.code==='KeyJ')document.getElementById('rp-jobs').click();
+});
+document.addEventListener('keyup',e=>keys.delete(remap[e.code]||e.code));
+document.querySelectorAll('[data-key]').forEach(b=>{
+ const k=b.dataset.key;
+ b.addEventListener('pointerdown',e=>{e.preventDefault();keys.add(k);b.classList.add('held');try{b.setPointerCapture(e.pointerId)}catch(_){}});
+ for(const event of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(event,()=>{keys.delete(k);b.classList.remove('held')});
+});
+function toggleDoors(){
+ if(walking||activeCar||!busJob){notify('🚌 Ovládání dveří je dostupné až po zahájení autobusové směny.');return}
+ if(Math.abs(speed)>.6){notify('Nejdřív zastav autobus!');return}
+ open=!open;
+ if(!open){notify('Dveře zavřené.');updateUI();return}
+ const stop=busJob.stops[busJob.next];
+ if(!stop){open=false;return}
+ const dist=Math.hypot(x-stop.x,z-stop.z);
+ if(dist>19){notify('Dveře otevřeny. K dalšímu kontrolnímu bodu zbývá '+Math.round(dist)+' m.');updateUI();return}
+ pass+=2+busJob.next*2;busJob.next++;
+ if(busJob.next>=busJob.stops.length){
+  paid=true;const wage=350+pass*25+rating*2;money+=wage;
+  try{localStorage.setItem('milovice_rp_money',String(money))}catch(_){}
+  busJob=null;open=false;
+  notify('🏁 Směna dokončena! Výplata '+wage+' Kč. Mise se automaticky vypnula.');
+ }else{
+  notify('✅ Kontrolní bod odbaven, cestující nastoupili. Zavři dveře a pokračuj.');
+ }
+ updateUI();
+}
+document.querySelectorAll('#controls button').forEach(b=>{
+ b.addEventListener('contextmenu',e=>e.preventDefault());
+ b.addEventListener('dragstart',e=>e.preventDefault());
+});
+document.getElementById('enter').onclick=toggleVehicle;
+document.getElementById('doors').onclick=toggleDoors;
+document.getElementById('camera').onclick=cycleCamera;
+document.getElementById('reset').onclick=reset;
+document.getElementById('rp-vehicles').onclick=rpShowSpawnPicker;
+document.getElementById('rp-jobs').onclick=()=>{
+ if(Math.abs(speed)>.45){notify('Nejdřív zastav vozidlo, pak otevři menu povolání.');return}
+ document.getElementById('rp-spawn').hidden=true;
+ document.getElementById('rp-job-panel').hidden=false;
+ keys.clear();updateUI();
+};
+document.getElementById('rp-job-start').onclick=rpStartBusJob;
+document.getElementById('rp-job-end').onclick=rpEndBusJob;
+document.getElementById('rp-job-close').onclick=rpCloseOverlays;
+document.getElementById('rp-spawn-close').onclick=rpCloseOverlays;
+document.querySelectorAll('[data-spawn]').forEach(b=>b.onclick=()=>rpSelectSpawn(b.dataset.spawn));
+document.getElementById('minimap').addEventListener('click',e=>{e.preventDefault();e.currentTarget.classList.toggle('rp-expanded')});
+const controlStrip=document.getElementById('controls');
+function rpMeasureControls(){
+ document.documentElement.style.setProperty('--rp-controls-height',Math.ceil(controlStrip.getBoundingClientRect().height+10)+'px');
+}
+if(window.ResizeObserver)new ResizeObserver(rpMeasureControls).observe(controlStrip);
+addEventListener('resize',rpMeasureControls);rpMeasureControls();
+let audioCtx=null;document.getElementById('horn').onclick=()=>{try{audioCtx ||= new (window.AudioContext||window.webkitAudioContext)();const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type='sawtooth';osc.frequency.value=220;gain.gain.value=.055;osc.connect(gain).connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+.22)}catch(e){}};
 
 
 /* Milovice 2.1: voluntary OSM-based 3D road layer; original city stays available. */
@@ -941,6 +1051,7 @@ function osmSetActive(active){
  }
  osmBtn.style.display=active?'none':'block';osmBtn.textContent=active?'🗺️ Milovice 3D':'🔄 Načíst Milovice';
  updateUI();
+ if(active&&osmReady)rpShowSpawnPicker();
 }
 
 /* Visual pass 3.6: lightweight physically shaded details, batched for mobile. */
