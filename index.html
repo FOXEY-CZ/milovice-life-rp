@@ -1716,6 +1716,96 @@ function rpAppendOSMElements(elements){
   else if(el.tags?.building){osmBuilding(el.geometry,el.tags,osmBuildings,el.id);osmAddLandmark(el)}
  }
 }
+// 4.8: Incremental geographic streaming; only the current area is meshed on phone.
+// Connected, overlapping OSM exports are deduplicated by their official way IDs.
+async function loadCityAreaManifest(){
+ if(cityAreaManifest)return cityAreaManifest;
+ try{
+  const resp=await fetch('./data/regions/index.json?v=city-48',{cache:'no-store'});
+  if(!resp.ok)throw Error('region index HTTP '+resp.status);
+  const data=await resp.json();
+  if(!Array.isArray(data.regions)||data.regions.length<2)throw Error('invalid index');
+  cityAreaManifest=data.regions;
+ }catch(e){
+  console.warn('Milovice region list unavailable:',e);
+  cityAreaManifest=[{id:'old',name:'Staré Milovice',center:[50.226,14.889]}];
+ }
+ const select=document.getElementById('rp-area-select');
+ if(select){
+  select.replaceChildren();
+  for(const area of cityAreaManifest){
+   const opt=document.createElement('option');opt.value=area.id;opt.textContent=area.name;select.appendChild(opt);
+  }
+ }
+ return cityAreaManifest;
+}
+function cityAreaDistance(x,z,bbox){
+ const c=111320*Math.cos(50.226*Math.PI/180);
+ const left=(bbox[0]-14.889)*c,right=(bbox[2]-14.889)*c;
+ const top=-(bbox[3]-50.226)*111320,bottom=-(bbox[1]-50.226)*111320;
+ return Math.hypot(Math.max(left-x,0,x-right),Math.max(top-z,0,z-bottom));
+}
+async function rpLoadCityArea(id){
+ await loadCityAreaManifest();
+ if(loadedCityAreas.has(id))return true;
+ const area=cityAreaManifest.find(r=>r.id===id);
+ if(!area||!area.file||!area.terrain)return false;
+ if(loadingCityAreas.has(id)){
+  while(loadingCityAreas.has(id))await new Promise(resolve=>setTimeout(resolve,200));
+  return loadedCityAreas.has(id);
+ }
+ loadingCityAreas.add(id);osmMessage('🏙️ Načítám '+area.name+' ze skutečné mapy…');
+ try{
+  const [osmRes,demRes]=await Promise.all([
+   fetch('./data/regions/'+area.file+'?v=48',{cache:'no-store'}),
+   fetch('./data/regions/'+area.terrain+'?v=48',{cache:'no-store'})
+  ]);
+  if(!osmRes.ok)throw Error('OSM HTTP '+osmRes.status);
+  if(!demRes.ok)throw Error('ČÚZK HTTP '+demRes.status);
+  const [osm,dem]=await Promise.all([osmRes.json(),demRes.json()]);
+  if(!Array.isArray(osm.elements)||osm.elements.length<10)throw Error('empty OSM area');
+  if(!Array.isArray(dem.values)||dem.values.length!==dem.nx*dem.nz||!dem.source?.includes('DMR 4G'))throw Error('invalid official DEM tile');
+  // First add the matching elevation patch. Buildings, rails and roads use this DEM immediately.
+  regionGroundMesh(dem);
+  cityRegionGrids.push(dem);
+  osmFurnitureCount=0;
+  rpAppendOSMElements(osm.elements);
+  finalizeFoundations();finalizeFacades();finalizeArchitecture();
+  chunkMilovice();rpBuildRoadGraph();rpPopulateRegionalTraffic(area);
+  loadedCityAreas.add(id);
+  notify('🏙️ '+area.name+' – '+osm.elements.length+' prvků mapy načteno.');
+  osmNotice.style.display='none';updateUI();
+  return true;
+ }catch(e){
+  console.error('Regional Milovice data error:',id,e);
+  osmMessage('Oblast '+area.name+': '+e.message);
+  notify('Oblast '+area.name+' zatím nejde načíst. Původní mapa zůstává funkční.');
+  return false;
+ }finally{loadingCityAreas.delete(id)}
+}
+function rpPopulateRegionalTraffic(area){
+ if(trafficCars.length>=62)return;
+ const center=osmPoint({lat:area.center[0],lon:area.center[1]});
+ const segments=driveSegments.filter(s=>s.len>10&&s.width>=6&&Math.hypot((s.a.x+s.b.x)*.5-center.x,(s.a.y+s.b.y)*.5-center.y)<820);
+ const max=Math.min(9,62-trafficCars.length);
+ for(let i=0;i<max&&segments.length;i++){
+  const segment=segments[(i*21+3)%segments.length];
+  const car=makeTrafficCar(trafficCars.length,segment);
+  if(segment.oneway)car.direction=segment.oneway;
+  trafficCars.push(car);
+ }
+}
+let lastCityStreamingX=Infinity,lastCityStreamingZ=Infinity;
+function maybeStreamCityAreas(){
+ if(!osmActive||!cityAreaManifest||loadingCityAreas.size>0)return;
+ const cx=walking?px:x,cz=walking?pz:z;
+ if(Math.hypot(cx-lastCityStreamingX,cz-lastCityStreamingZ)<120)return;
+ lastCityStreamingX=cx;lastCityStreamingZ=cz;
+ const candidate=cityAreaManifest.filter(r=>r.id!=='old'&&!loadedCityAreas.has(r.id)&&r.bbox)
+  .map(r=>({r,dist:cityAreaDistance(cx,cz,r.bbox)}))
+  .filter(v=>v.dist<340).sort((a,b)=>a.dist-b.dist)[0];
+ if(candidate)rpLoadCityArea(candidate.r.id);
+}
 async function fetchMiloviceOSM(){
  // Avoid stale GitHub Pages/browser caches after the automated OSM export.
  let lastError=null;
