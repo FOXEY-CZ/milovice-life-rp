@@ -2031,22 +2031,59 @@ function rpAnimateTraffic(dt){
  }
 }
 // Ground is flat until an authenticated DEM raster has been loaded; never invent elevations.
-let terrainGrid=null;
-// Terrain mesh and all world props use identical triangle-based interpolation.
-// Bilinear interpolation did NOT match Three.js ground triangles on steep slopes.
-function terrainAt(x,z){
- if(!terrainGrid)return 0;
- const {n,step,min,values}=terrainGrid;
- const fx=Math.max(0,Math.min(n-1.0001,(x-min)/step));
- const fz=Math.max(0,Math.min(n-1.0001,(z-min)/step));
- const ix=Math.floor(fx),iz=Math.floor(fz),tx=fx-ix,tz=fz-iz,i=iz*n+ix;
- const a=values[i],b=values[i+1],c=values[i+n],d=values[i+n+1];
- // Three.js PlaneGeometry triangulates from top-right to bottom-left.
- return (tx+tz<=1
-   ? a+tx*(b-a)+tz*(c-a)
-   : d+(1-tx)*(c-d)+(1-tz)*(b-d))*.1;
+let terrainGrid=null,cityRegionGrids=[];
+function insideElevationGrid(grid,x,z){
+ const minX=grid.minX??grid.min,minZ=grid.minZ??grid.min;
+ const nx=grid.nx??grid.n,nz=grid.nz??grid.n;
+ return x>=minX&&z>=minZ&&x<=minX+(nx-1)*grid.step&&z<=minZ+(nz-1)*grid.step;
 }
-
+function sampleElevationGrid(grid,x,z){
+ const minX=grid.minX??grid.min,minZ=grid.minZ??grid.min;
+ const nx=grid.nx??grid.n,nz=grid.nz??grid.n;
+ const fx=Math.max(0,Math.min(nx-1.00001,(x-minX)/grid.step));
+ const fz=Math.max(0,Math.min(nz-1.00001,(z-minZ)/grid.step));
+ const ix=Math.floor(fx),iz=Math.floor(fz),tx=fx-ix,tz=fz-iz;
+ const i=iz*nx+ix,values=grid.values;
+ const a=values[i],b=values[i+1],c=values[i+nx],d=values[i+nx+1];
+ // Triangle interpolation matches the actual ground mesh vertices.
+ const v=tx+tz<=1?a+tx*(b-a)+tz*(c-a):d+(1-tx)*(c-d)+(1-tz)*(b-d);
+ return v*.1+(terrainGrid&&grid!==terrainGrid?(grid.base-terrainGrid.base):0);
+}
+function terrainAt(x,z){
+ if(terrainGrid&&insideElevationGrid(terrainGrid,x,z))return sampleElevationGrid(terrainGrid,x,z);
+ for(const grid of cityRegionGrids)if(insideElevationGrid(grid,x,z))return sampleElevationGrid(grid,x,z);
+ // Unloaded areas cannot be assigned invented hills: keep their ground at
+ // the last official old-town DEM edge until the next region is streamed in.
+ if(terrainGrid)return sampleElevationGrid(terrainGrid,x,z);
+ return 0;
+}
+function regionGroundMesh(grid){
+ const nx=grid.nx,nz=grid.nz,extentX=(nx-1)*grid.step,extentZ=(nz-1)*grid.step;
+ const geom=new THREE.PlaneGeometry(extentX,extentZ,nx-1,nz-1);
+ geom.rotateX(-Math.PI/2);
+ const pos=geom.attributes.position;
+ for(let iz=0;iz<nz;iz++)for(let ix=0;ix<nx;ix++){
+  const i=iz*nx+ix;
+  pos.setY(i,grid.values[i]*.1+(grid.base-(terrainGrid?.base||grid.base))-.10);
+ }
+ pos.needsUpdate=true;
+ // Avoid overlap/z-fighting against the higher resolution Old Milovice DEM,
+ // as well as older loaded rectangular official terrain tiles.
+ const oldBounds=terrainGrid?[terrainGrid]:[];
+ const occupied=[...oldBounds,...cityRegionGrids];
+ const indices=[];
+ for(let iz=0;iz<nz-1;iz++)for(let ix=0;ix<nx-1;ix++){
+  const cx=grid.minX+(ix+.5)*grid.step,cz=grid.minZ+(iz+.5)*grid.step;
+  if(occupied.some(other=>insideElevationGrid(other,cx,cz)))continue;
+  const k=iz*nx+ix;
+  indices.push(k,k+nx,k+1,k+1,k+nx,k+nx+1);
+ }
+ geom.setIndex(indices);geom.computeVertexNormals();
+ const material=new THREE.MeshLambertMaterial({color:0xffffff,map:groundTexture,side:THREE.DoubleSide});
+ const ground=new THREE.Mesh(geom,material);
+ ground.position.set(grid.minX+extentX*.5,0,grid.minZ+extentZ*.5);
+ osmLayer.add(ground);return ground;
+}
 async function rpLoadTerrain(){
  try{
   const response=await fetch('./data/milovice-terrain.json?v=4.5-dmr',{cache:'no-store'});
