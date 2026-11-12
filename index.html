@@ -1241,13 +1241,14 @@ function osmSetActive(active){
   activeCar=null;
   if(!oldPosition)oldPosition={x,z,angle};
   // Use a genuine two-lane drivable OSM street near the center, never a walkway or narrow service track.
+  const churchTarget=osmPoint({lat:50+13/60+41.268/3600,lon:14+53/60+.003/3600}); // Verified Noc kostelů GPS.
   let best=null,bestScore=Infinity;
   for(const r of osmDriveRoads){
    if(r.width<7.2||r.kind==='service')continue;
    for(let j=1;j<r.points.length;j++){
     const a=r.points[j-1],b=r.points[j],len=a.distanceTo(b);
     if(len<13||len>160)continue;
-    const centerX=(a.x+b.x)*.5,centerZ=(a.y+b.y)*.5,score=Math.hypot(centerX,centerZ)+(r.kind==='residential'?0:12);
+    const centerX=(a.x+b.x)*.5,centerZ=(a.y+b.y)*.5,score=Math.hypot(centerX-churchTarget.x,centerZ-churchTarget.y)+(r.kind==='secondary'?-8:0);
     if(score<bestScore){bestScore=score;best={a,b,len,width:r.width}}
    }
   }
@@ -1270,7 +1271,7 @@ function osmSetActive(active){
    nearby.g.rotation.y=angle+Math.PI;
    nearby.g.visible=true;
   }
-  px=x-3.7*Math.cos(angle);pz=z+3.7*Math.sin(angle);walkYaw=angle;orbitYaw=angle;
+  px=x-3.7*Math.cos(angle);pz=z+3.7*Math.sin(angle);orbitYaw=Math.atan2(-(churchTarget.x-px),-(churchTarget.y-pz));walkYaw=orbitYaw;
   avatar.visible=walkCam!==1;updateMiloviceChunks(true);
   notify('Jsi v Milovicích. WASD = chůze, tažením otáčíš kameru, E = nastoupit.');
  }else{
