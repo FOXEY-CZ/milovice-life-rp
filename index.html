@@ -478,7 +478,8 @@ for(let i=0;i<asphaltPixels.data.length;i+=4){const grain=Math.floor(asphaltRand
 asphaltCtx.putImageData(asphaltPixels,0,0);
 const asphaltTexture=new THREE.CanvasTexture(asphaltCanvas);asphaltTexture.wrapS=asphaltTexture.wrapT=THREE.RepeatWrapping;asphaltTexture.repeat.set(1,1);asphaltTexture.colorSpace=THREE.SRGBColorSpace;
 const osmRoadMaterial=new THREE.MeshLambertMaterial({color:0x666b6e,map:asphaltTexture,side:THREE.DoubleSide});
-const osmBuildingMaterial=[0xcbbba3,0xe1d5c0,0xaebec0,0xd8b8a3,0xe2d4bc,0xb7c8b1,0xc2a69a,0xd2d4cf].map((c,i)=>new THREE.MeshStandardMaterial({color:c,map:facadeTexture(i+1),roughness:.93,metalness:0}));
+// Facade palette based on photo references from Milovice (e.g. 5. května), not building-specific surveyed colors.
+const osmBuildingMaterial=[0xe3c38c,0xe3d5b8,0xd8c3a7,0xe8d6b9,0xc6c9bb,0xe1c4ac,0xd6d7ce,0xe4d7c7].map((c,i)=>new THREE.MeshStandardMaterial({color:c,map:facadeTexture(i+1),roughness:.93,metalness:0}));
 const osmParkMaterial=mat(0x769b65),osmStripeMaterial=mat(0xf5e8c8);
 let osmActive=false,osmReady=false,osmLoading=false,oldPosition=null,osmRoads=[],osmBuildings=0,osmNamedRoads=[],osmLandmarks=[];
 const osmDriveRoads=[];
@@ -489,7 +490,7 @@ const osmNotice=document.createElement('div');osmNotice.style.cssText='display:n
 function osmMessage(message){osmNotice.style.display='block';osmNotice.textContent=message}
 document.body.appendChild(osmBtn);
 function osmPoint(p){const lat0=50.226,lon0=14.889;return new THREE.Vector2((p.lon-lon0)*111320*Math.cos(lat0*Math.PI/180),-(p.lat-lat0)*111320)}
-const osmSidewalkMat=new THREE.MeshStandardMaterial({color:0xc9c6bf,roughness:1}),osmRoofMat=mat(0x666a68),osmWindowMat=mat(0x4b7683);const osmRoofPalette=[mat(0x575c60),mat(0x8c5446),mat(0x676d71),mat(0x887966),mat(0x555d5c)];
+const osmSidewalkMat=new THREE.MeshStandardMaterial({color:0xc9c6bf,roughness:1}),osmRoofMat=mat(0x666a68),osmWindowMat=mat(0x4b7683);const osmRoofPalette=[mat(0x985e49),mat(0xb5684d),mat(0x745652),mat(0x87766a),mat(0x545a5e)];
 function osmStrip(a,b,width,material,y=.15){
  const dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);if(len<.15||len>800)return;
  if(!terrainGrid){
@@ -564,7 +565,7 @@ const facadeBatches=[new Map(),new Map(),new Map(),new Map()];
 const facadeGeo=[new THREE.PlaneGeometry(1.75,1.65),new THREE.PlaneGeometry(1.42,1.34),new THREE.BoxGeometry(.085,1.35,.065),new THREE.BoxGeometry(1.92,.13,.30)];
 const facadeMat=[new THREE.MeshStandardMaterial({color:0xe6e4dd,roughness:.85,side:THREE.DoubleSide}),new THREE.MeshStandardMaterial({color:0x3b657a,metalness:.22,roughness:.18,side:THREE.DoubleSide}),new THREE.MeshStandardMaterial({color:0xe3dfd5,roughness:.8,side:THREE.DoubleSide}),new THREE.MeshStandardMaterial({color:0x9d9b95,roughness:.92})];
 const facadePosition=new THREE.Vector3(),facadeRotation=new THREE.Quaternion(),facadeScale=new THREE.Vector3(1,1,1),facadeMatrix=new THREE.Matrix4();
-function addFacadePart(kind,x,y,z,rotation){facadePosition.set(x,y+terrainAt(x,z),z);facadeRotation.setFromAxisAngle(new THREE.Vector3(0,1,0),rotation);facadeMatrix.compose(facadePosition,facadeRotation,facadeScale);{const key=Math.floor(x/120)+','+Math.floor(z/120);if(!facadeBatches[kind].has(key))facadeBatches[kind].set(key,[]);facadeBatches[kind].get(key).push(facadeMatrix.clone())}}
+function addFacadePart(kind,x,y,z,rotation,baseHeight=terrainAt(x,z)){facadePosition.set(x,y+baseHeight,z);facadeRotation.setFromAxisAngle(new THREE.Vector3(0,1,0),rotation);facadeMatrix.compose(facadePosition,facadeRotation,facadeScale);{const key=Math.floor(x/120)+','+Math.floor(z/120);if(!facadeBatches[kind].has(key))facadeBatches[kind].set(key,[]);facadeBatches[kind].get(key).push(facadeMatrix.clone())}}
 function finalizeFacades(){for(let i=0;i<4;i++){for(const batch of facadeBatches[i].values()){if(!batch.length)continue;const inst=new THREE.InstancedMesh(facadeGeo[i],facadeMat[i],batch.length);for(let j=0;j<batch.length;j++)inst.setMatrixAt(j,batch[j]);inst.instanceMatrix.needsUpdate=true;inst.computeBoundingSphere();osmLayer.add(inst)}facadeBatches[i].clear()}}
 
 // 4.0: richer architecture: distinct wall materials, glazed entrances and roof equipment.
@@ -580,30 +581,30 @@ function osmBuilding(points,tags,index){
  if(pts.length<3)return;
  const xs=pts.map(p=>p.x),zs=pts.map(p=>p.y),w=Math.max(...xs)-Math.min(...xs),d=Math.max(...zs)-Math.min(...zs);
  if(w<2||d<2||w>140||d>140)return;
- const floors=Math.min(9,Math.max(1,Number(tags['building:levels'])||2));
+ const floors=Math.min(9,Math.max(1,Number(tags['building:levels'])||(tags.building==='garage'||tags.building==='garages'?1:2)));
  const h=Math.min(32,Math.max(3,Number.parseFloat(tags.height)||floors*3));
  const shape=new THREE.Shape();shape.moveTo(pts[0].x,-pts[0].y);
  for(let i=1;i<pts.length;i++)shape.lineTo(pts[i].x,-pts[i].y);
  shape.closePath();
  const geometry=new THREE.ExtrudeGeometry(shape,{depth:h,bevelEnabled:false,curveSegments:1,steps:1});
  geometry.rotateX(-Math.PI/2);
- const mesh=new THREE.Mesh(geometry,osmBuildingMaterial[index%osmBuildingMaterial.length]);osmLayer.add(mesh);
+ const centerX=pts.reduce((v,p)=>v+p.x,0)/pts.length,centerZ=pts.reduce((v,p)=>v+p.y,0)/pts.length,baseHeight=terrainAt(centerX,centerZ);
+ const mesh=new THREE.Mesh(geometry,osmBuildingMaterial[index%osmBuildingMaterial.length]);mesh.position.y=baseHeight;osmLayer.add(mesh);
  const roofShape=new THREE.Shape();roofShape.moveTo(pts[0].x,-pts[0].y);
  for(let i=1;i<pts.length;i++)roofShape.lineTo(pts[i].x,-pts[i].y);
  roofShape.closePath();
  const roofGeo=new THREE.ShapeGeometry(roofShape);roofGeo.rotateX(-Math.PI/2);
  const roof=new THREE.Mesh(roofGeo,osmRoofPalette[index%osmRoofPalette.length]);
- roof.position.y=h+.025;osmLayer.add(roof);
+ roof.position.y=baseHeight+h+.025;osmLayer.add(roof);
  // Small rooftop ventilation blocks create recognisable silhouettes without expensive meshes.
  if(index%4===0 && w>10 && d>9){
   const cx=(Math.min(...xs)+Math.max(...xs))*.5,cz=(Math.min(...zs)+Math.max(...zs))*.5;
   const vent=new THREE.Mesh(new THREE.BoxGeometry(Math.min(w*.23,4),.48,Math.min(d*.22,3)),roofDetailMat);
-  vent.position.set(cx,h+.28,cz);osmLayer.add(vent);
+  vent.position.set(cx,baseHeight+h+.28,cz);osmLayer.add(vent);
   const ventTop=new THREE.Mesh(new THREE.BoxGeometry(Math.min(w*.24,4.1),.12,Math.min(d*.23,3.1)),roofVentMat);
-  ventTop.position.set(cx,h+.58,cz);osmLayer.add(ventTop);
+  ventTop.position.set(cx,baseHeight+h+.58,cz);osmLayer.add(ventTop);
  }
  // Building facade upgrade: per-building window allocation and visible architectural details.
- const centerX=pts.reduce((v,p)=>v+p.x,0)/pts.length,centerZ=pts.reduce((v,p)=>v+p.y,0)/pts.length;
  const visibleFloors=Math.min(Math.max(1,Math.floor(h/3)),8);
  for(let i=0;i<pts.length;i++){
   const p=pts[i],q=pts[(i+1)%pts.length],dx=q.x-p.x,dz=q.y-p.y,len=Math.hypot(dx,dz);
@@ -618,10 +619,10 @@ function osmBuilding(points,tags,index){
    if(y+1.2>=h)continue;
    for(let j=0;j<windows;j++){
     const t=(j+1)/(windows+1),px=p.x+dx*t,pz=p.y+dz*t;
-    addFacadePart(0,px+nx*.38,y,pz+nz*.38,rotation);
-    addFacadePart(1,px+nx*.405,y,pz+nz*.405,rotation);
-    addFacadePart(2,px+nx*.43,y,pz+nz*.43,rotation);
-    addFacadePart(3,px+nx*.49,y-.85,pz+nz*.49,rotation);
+    addFacadePart(0,px+nx*.38,y,pz+nz*.38,rotation,baseHeight);
+    addFacadePart(1,px+nx*.405,y,pz+nz*.405,rotation,baseHeight);
+    addFacadePart(2,px+nx*.43,y,pz+nz*.43,rotation,baseHeight);
+    addFacadePart(3,px+nx*.49,y-.85,pz+nz*.49,rotation,baseHeight);
    }
   }
  }
@@ -633,11 +634,11 @@ function osmBuilding(points,tags,index){
    let nx=-dz/len,nz=dx/len;const mx=(a.x+b.x)*.5,mz=(a.y+b.y)*.5;
    if(nx*(mx-centerX)+nz*(mz-centerZ)<0){nx=-nx;nz=-nz}
    const entrance=new THREE.Mesh(new THREE.PlaneGeometry(1.65,2.35),osmDoorMaterial);
-   entrance.position.set(mx+nx*.46,1.18,mz+nz*.46);entrance.rotation.y=Math.atan2(nx,nz);osmLayer.add(entrance);
+   entrance.position.set(mx+nx*.46,baseHeight+1.18,mz+nz*.46);entrance.rotation.y=Math.atan2(nx,nz);osmLayer.add(entrance);
   }
  }
  // Roof edge silhouette to make flat-roof buildings more recognizable.
- const roofTrim=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts.map(p=>new THREE.Vector3(p.x,h+.12,p.y))),new THREE.LineBasicMaterial({color:0x454d50}));
+ const roofTrim=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts.map(p=>new THREE.Vector3(p.x,baseHeight+h+.12,p.y))),new THREE.LineBasicMaterial({color:0x454d50}));
  osmLayer.add(roofTrim);
 
  osmBuildings++;
