@@ -17,3 +17,5 @@ jobs:
           node-version: '22'
       - name: Validate HTML and JavaScript
         run: node scripts/validate.cjs
+      - name: Validate expanded Milovice districts and real elevation data
+        run: python3 scripts/validate_regions.py
