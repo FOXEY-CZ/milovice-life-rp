@@ -58,7 +58,9 @@ try{
  await page.locator('#rp-area-select').selectOption('mlada');
  await page.locator('[data-spawn="walking"]').click();
  await page.waitForFunction(()=>window.__miloviceAreasLoaded?.includes('mlada'),null,{timeout:105000});
- console.log('Mladá streamed:',JSON.stringify(await page.evaluate(()=>window.__miloviceAreaStats)));
+ const mladaStats=await page.evaluate(()=>window.__miloviceAreaStats);
+ console.log('Mladá streamed:',JSON.stringify(mladaStats));
+ if(mladaStats?.landscape<5)throw new Error('Missing mapped Mladá parks/forest/grass: '+JSON.stringify(mladaStats));
  await page.screenshot({path:'browser-artifacts/milovice-mlada.png'});
  await page.locator('#rp-vehicles').click();
  await page.locator('#rp-area-select').selectOption('bozidar');
