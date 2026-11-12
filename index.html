@@ -1,37 +1,193 @@
-<!doctype html>
-<html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice Life RP</title>
-<style>*{box-sizing:border-box}body{margin:0;background:#101e2b;color:white;font:14px system-ui;overflow:hidden;touch-action:none;user-select:none}#hud{position:absolute;top:10px;left:10px;background:#102337e8;padding:12px;border-radius:12px;max-width:300px}h2{margin:0 0 7px}p{margin:5px 0}#controls{position:absolute;bottom:8px;left:1%;width:98%;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;background:#13293ce8;border-radius:12px;padding:7px}button{background:#285275;color:white;border:1px solid #779bb7;border-radius:8px;min-height:50px;min-width:55px;flex:1;touch-action:none;font-weight:bold}button:active{background:#468bb9}#tip{position:absolute;right:10px;top:10px;background:#102337c9;padding:10px;border-radius:9px}@media(max-width:650px){#hud{font-size:11px;padding:8px;max-width:65vw}#tip{display:none}button{font-size:12px;min-width:0}}</style></head><body>
-<div id="hud"><h2>🚌 MILOVICE LIFE RP</h2><p>Modelové Milovice · Singleplayer</p><p>Linka 432 · <span id="mode">Autobus</span></p><p>Rychlost: <b id="speed">0</b> km/h · Cestující: <b id="pass">0</b></p><p>Zastávka: <b id="stop">Milovice, žel. st.</b></p><p>Odměny: <b id="money">0</b> Kč</p><p id="status">Vyjeď na trasu!</p></div>
-<div id="tip">WASD / šipky · E nastoupit/vystoupit · mezerník dveře · C kamera · R reset</div>
-<div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Plyn</button><button data-key="KeyS">▼ Brzda / R</button><button data-key="KeyD">▶</button><button id="enter">🚶 Vystoupit</button><button id="doors">🚪 Dveře</button><button id="camera">📷 Kamera</button><button id="reset">↺ Reset</button></div>
-<script type="module">
-import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-const scene=new T.Scene();scene.background=new T.Color(0x9dc8e6);scene.fog=new T.Fog(0x9dc8e6,260,800);
-const camera=new T.PerspectiveCamera(68,innerWidth/innerHeight,.1,1100);
-const renderer=new T.WebGLRenderer({antialias:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);
-scene.add(new T.HemisphereLight(0xffffff,0x61705a,2));const sun=new T.DirectionalLight(0xffeac5,1.5);sun.position.set(60,100,30);scene.add(sun);
-const m=c=>new T.MeshLambertMaterial({color:c}), grass=m(0x72935e),asphalt=m(0x41464a),sidewalk=m(0xb5b5ae),line=m(0xf4ebd8),yellow=m(0xe9bf30),glass=m(0x548ca2),dark=m(0x242e34),rubber=m(0x191d20);
-function box(w,h,d,mat,x,y,z,parent=scene){const o=new T.Mesh(new T.BoxGeometry(w,h,d),mat);o.position.set(x,y,z);parent.add(o);return o}
-box(3000,.2,3000,grass,0,-.2,0);box(18,.1,420,asphalt,0,.01,-150);
-for(let z=30;z>-365;z-=17)box(.17,.025,7,line,0,.08,z);
-for(const x of [-11,11])box(2,.12,420,sidewalk,x,.03,-150);
-for(const z of [-48,-155,-266]){box(270,.11,16,asphalt,0,.04,z);for(let x=-125;x<130;x+=15)if(Math.abs(x)>15)box(6,.02,.15,line,x,.12,z)}
-const stops=[['Milovice, žel. st.',0],['Milovice, radnice',-105],['Milovice, Armádní',-210],['Milovice, Mirakulum',-320]];
-for(const [name,z] of stops){box(4,.1,17,sidewalk,12,.12,z);box(.25,3,.25,m(0x225a8e),13,1.5,z);box(1.7,.85,.15,yellow,13,3.1,z);box(3,.15,2,dark,17,2.8,z);box(3,1.7,.1,glass,17,1.7,z+1)}
-let seed=3456;function rand(){seed=seed*16807%2147483647;return seed/2147483647}
-const walls=[m(0xd9c5ae),m(0xc0cbd0),m(0xe1d6c6),m(0xd7c0a9)],roof=m(0x69636a),windowMat=m(0x5d8798),tree=m(0x4c7b41),trunk=m(0x6c513b);
-for(let z=-335;z<40;z+=27)for(const side of [-1,1]){const x=side*(32+rand()*12),h=6+Math.floor(rand()*4)*3,w=12+rand()*7,d=12+rand()*5;box(w,h,d,walls[Math.floor(rand()*4)],x,h/2,z);box(w+1,.5,d+1,roof,x,h+.3,z);for(let yy=2.3;yy<h;yy+=3)for(let xx=-w/2+2;xx<w/2-1;xx+=3.5)box(1.6,1.4,.12,windowMat,x+xx,yy,z-d/2-.1);if(rand()>.3){const tx=side*18;box(.5,3,.5,trunk,tx,1.5,z+8);const crown=new T.Mesh(new T.IcosahedronGeometry(2.7,0),tree);crown.position.set(tx,5,z+8);scene.add(crown)}}
-const bus=new T.Group();scene.add(bus);box(2.5,1.95,8.7,yellow,0,1.55,0,bus);box(2.55,.35,8.8,m(0xf0d85c),0,2.64,0,bus);box(2.55,.14,8.8,m(0xd0d5d5),0,2.9,0,bus);box(2.4,1.05,.08,glass,0,2.2,-4.38,bus);box(2.4,.75,.08,glass,0,2.2,4.38,bus);
-for(const side of [-1,1]){for(let i=0;i<6;i++)box(.055,.85,1.13,glass,side*1.28,2.18,-3.5+i*1.28,bus);for(const z of [-2.8,2.7]){const wheel=new T.Mesh(new T.CylinderGeometry(.54,.54,.32,18),rubber);wheel.rotation.z=Math.PI/2;wheel.position.set(side*1.34,.57,z);bus.add(wheel);const rim=new T.Mesh(new T.CylinderGeometry(.29,.29,.34,14),m(0x9ca6aa));rim.rotation.z=Math.PI/2;rim.position.copy(wheel.position);bus.add(rim)}box(.4,.4,.12,dark,side*1.55,2.45,-4.25,bus);box(.4,.25,.12,m(0xffedbc),side*1.0,1.15,-4.42,bus)}
-const avatar=new T.Group();scene.add(avatar);box(.65,1.1,.35,m(0x316188),0,1.35,0,avatar);box(.4,.4,.4,m(0xe0aa80),0,2.15,0,avatar);for(const s of [-1,1])box(.23,.85,.27,dark,s*.2,.44,0,avatar);avatar.visible=false;
-const $=id=>document.getElementById(id),keys=new Set();let x=-3,z=16,angle=0,speed=0,next=0,pass=0,walking=false,px=-6,pz=16,cam=0,open=false,paid=false,money=0;try{money=Number(localStorage.getItem('milovice_money')||0)||0}catch{}
-function ui(msg){$('speed').textContent=Math.round(Math.abs(speed)*3.6);$('pass').textContent=pass;$('stop').textContent=stops[next]?.[0]||'Konečná';$('mode').textContent=walking?'Pěšky':'Autobus';$('money').textContent=money;$('enter').textContent=walking?'🚌 Nastoupit':'🚶 Vystoupit';if(msg)$('status').textContent=msg}
-function enter(){if(!walking){if(Math.abs(speed)>.3)return ui('Nejdřív zastav!');walking=true;px=x-3;pz=z+2;avatar.visible=true;ui('Pěší režim. E pro nastoupení.')}else{if(Math.hypot(px-x,pz-z)>7)return ui('Přibliž se k autobusu.');walking=false;avatar.visible=false;ui('Nastoupil jsi.')}keys.clear()}
-function doors(){if(walking)return ui('Nastup do autobusu.');if(Math.abs(speed)>.4)return ui('Nejdřív zastav!');open=!open;if(open&&next<stops.length&&Math.abs(z-stops[next][1])<13&&Math.abs(x+3)<6){pass+=2+next*2;ui('✅ Odbavena '+stops[next][0]);next++;if(next===stops.length&&!paid){paid=true;money+=700;try{localStorage.setItem('milovice_money',String(money))}catch{}ui('🏁 Linka dokončena! +700 Kč')}}else ui(open?'Dveře otevřeny':'Dveře zavřeny')}
-function reset(){x=-3;z=16;angle=0;speed=0;next=0;pass=0;walking=false;open=false;paid=false;avatar.visible=false;keys.clear();ui('Nová jízda!')}
-const alias={ArrowUp:'KeyW',ArrowDown:'KeyS',ArrowLeft:'KeyA',ArrowRight:'KeyD'};
-document.addEventListener('keydown',e=>{const k=alias[e.code]||e.code;if(['KeyW','KeyA','KeyS','KeyD','Space'].includes(k))e.preventDefault();keys.add(k);if(!e.repeat){if(k==='KeyE')enter();if(k==='Space')doors();if(k==='KeyC')cam=(cam+1)%3;if(k==='KeyR')reset()}});document.addEventListener('keyup',e=>keys.delete(alias[e.code]||e.code));addEventListener('blur',()=>keys.clear());
-document.querySelectorAll('[data-key]').forEach(b=>{const k=b.dataset.key;b.addEventListener('pointerdown',e=>{e.preventDefault();keys.add(k);b.setPointerCapture(e.pointerId)});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>keys.delete(k))});
-$('enter').onclick=enter;$('doors').onclick=doors;$('camera').onclick=()=>cam=(cam+1)%3;$('reset').onclick=reset;
-let last=performance.now();function frame(t){requestAnimationFrame(frame);const dt=Math.min(.05,(t-last)/1000);last=t;if(walking){let dx=Number(keys.has('KeyD'))-Number(keys.has('KeyA')),dz=Number(keys.has('KeyS'))-Number(keys.has('KeyW'));const len=Math.hypot(dx,dz)||1;px+=dx/len*4.2*dt;pz+=dz/len*4.2*dt;avatar.position.set(px,0,pz);speed=0}else{if(open)speed+=Math.sign(-speed)*Math.min(Math.abs(speed),12*dt);else if(keys.has('KeyW')&&!keys.has('KeyS'))speed=Math.min(13,speed+6*dt);else if(keys.has('KeyS')&&!keys.has('KeyW'))speed=Math.max(-4.5,speed-12*dt);else speed+=Math.sign(-speed)*Math.min(Math.abs(speed),2.5*dt);const steer=Number(keys.has('KeyD'))-Number(keys.has('KeyA'));angle-=steer*(speed/13)*.95*dt;x-=Math.sin(angle)*speed*dt;z-=Math.cos(angle)*speed*dt}bus.position.set(x,0,z);bus.rotation.y=angle;const forward=new T.Vector3(-Math.sin(angle),0,-Math.cos(angle));let dest,target;if(walking){dest=new T.Vector3(px,3.5,pz+7);target=new T.Vector3(px,1.4,pz)}else if(cam===0){dest=new T.Vector3(x,5.5,z).addScaledVector(forward,-12);target=new T.Vector3(x,1.7,z).addScaledVector(forward,9)}else if(cam===1){dest=new T.Vector3(x,2.4,z).addScaledVector(forward,2.6);target=new T.Vector3(x,2.2,z).addScaledVector(forward,30)}else{dest=new T.Vector3(x+17,17,z+17);target=new T.Vector3(x,1,z)}camera.position.lerp(dest,Math.min(1,dt*8));camera.lookAt(target);ui();renderer.render(scene,camera)}requestAnimationFrame(frame);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice Life RP – 1.0</title><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style></head><body><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><p>Verze 1.0 · <strong id="mapmode">Singleplayer RP</strong></p><p>Linka <strong>432 (modelová jízda)</strong></p><p>Rychlost: <strong id="speed">0</strong> km/h · Cestující: <strong id="pass">0</strong></p><p>Další zastávka: <strong id="stop">Milovice, žel. st.</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p>Trasa: <strong id="progress">0 / 4</strong> · Do zastávky: <strong id="distance">16 m</strong></p><p>Čas: <strong id="clock">00:00</strong> · Hodnocení: <strong id="rating">100</strong> %</p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · mezerník: dveře · C: kamera · R: reset. Za dokončenou autobusovou linku dostaneš výplatu.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Plyn</button><button data-key="KeyS">▼ Brzda / R</button><button data-key="KeyD">▶</button><button id="enter">🚶 Vystoupit</button><button id="doors">🚪 Dveře</button><button id="horn">📣 Klakson</button><button id="camera">📷 Kamera</button><button id="reset">↺ Reset</button></div><script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x9bc8ec);scene.fog=new THREE.Fog(0x9bc8ec,280,850);const camera=new THREE.PerspectiveCamera(67,innerWidth/innerHeight,.1,1400);const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.4));renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x65725a,2));const sun=new THREE.DirectionalLight(0xffefcc,1.7);sun.position.set(50,100,30);scene.add(sun);
+const mat=c=>new THREE.MeshLambertMaterial({color:c});const grass=mat(0x71905d),road=mat(0x363a3e),walk=mat(0xa7a7a2),white=mat(0xf3e8c4),yellow=mat(0xe3b531),blue=mat(0x1e568f),glass=mat(0x75b4d0);function cube(w,h,d,m,x,y,z,parent=scene){let o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);parent.add(o);return o}cube(4000,.2,4000,grass,0,-.15,0);const stops=[{name:'Milovice, žel. st.',z:0},{name:'Milovice, radnice',z:-105},{name:'Milovice, Armádní',z:-210},{name:'Milovice, Park Mirakulum',z:-320}];cube(18,.12,400,road,0,.01,-156);for(let zz=-344;zz<35;zz+=7){for(let xx of [-8.8,8.8])cube(.11,.018,5,mat(0xb3b3a8),xx,.095,zz);}cube(2,.13,400,walk,-11,.05,-156);cube(2,.13,400,walk,11,.05,-156);for(let z=36;z>-350;z-=17)cube(.17,.03,7,white,0,.1,z);for(let i=0;i<4;i++){let z=stops[i].z;cube(4,.12,17,walk,12,.13,z);cube(.25,3,.25,blue,13,1.5,z);cube(1.6,.9,.12,yellow,13,3.1,z);cube(1.7,.18,.75,blue,14,.7,z+5)}// Modelová čtvrť Milovic: rozšířené ulice, křižovatky a orientační místa.
+// Uspořádání je herní aproximace, nikoliv geodeticky přesná silniční síť.
+const asphalt=mat(0x41474c), pavement=mat(0xb9b6aa), lineMat=mat(0xf6eee0);
+const sideRoads=[-48,-155,-266];
+for(const zz of sideRoads){
+ cube(280,.11,16,asphalt,0,.018,zz);
+ cube(280,.11,2,pavement,0,.045,zz-10);
+ cube(280,.11,2,pavement,0,.045,zz+10);
+ for(let xx=-130;xx<=130;xx+=17){
+  if(Math.abs(xx)<14)continue;
+  cube(6,.025,.16,lineMat,xx,.10,zz);
+ }
+ for(let xx of [-9,9]){
+  for(let off=-7;off<=7;off+=2.4)cube(1.25,.025,.5,lineMat,xx,.115,zz+off);
+ }
+}
+
+// Členitá čtvrť: fasády, balkony, střechy, zahrady, ploty, lampy a stromy.
+const walls=[mat(0xd6c4a8),mat(0xbac8c9),mat(0xd7d1c4),mat(0xe3c8b1),mat(0xc4d0ba)];
+const roofs=[mat(0x924d43),mat(0x555e67),mat(0x7d6155)];
+const dark=mat(0x232d35),trim=mat(0xe9e6d9),leaf=mat(0x477a3d),trunk=mat(0x6b513d);
+const windowMat=new THREE.MeshLambertMaterial({color:0x5c8495,emissive:0x132735,emissiveIntensity:.12});
+function building(xx,zz,w,d,h,type){
+ const m=walls[Math.abs(Math.floor(zz+xx))%walls.length];
+ cube(w,h,d,m,xx,h/2,zz);
+ cube(w+1,.6,d+1,roofs[Math.abs(Math.floor(zz))%3],xx,h+.3,zz);
+ const floors=Math.floor(h/3);
+ for(let f=0;f<floors;f++)for(let k=-w/2+2;k<w/2-1;k+=3.6){
+  cube(1.6,1.45,.11,windowMat,xx+k,2.2+f*3,zz-d/2-.08);
+  cube(1.6,1.45,.11,windowMat,xx+k,2.2+f*3,zz+d/2+.08);
+  cube(1.9,.12,.34,trim,xx+k,1.43+f*3,zz-d/2-.22);
+ }
+ cube(2.3,2.4,.15,dark,xx,h>8?1.2:1.2,zz-d/2-.15);
+ if(type==='shop'){
+  cube(w-1,2.8,.15,glass,xx,1.9,zz-d/2-.2);
+  cube(w+1,.35,2,mat(0x2c6475),xx,3.6,zz-d/2-1);
+ }
+}
+let seed=723;function rand(){seed=(seed*16807)%2147483647;return seed/2147483647}
+for(let zz=-334;zz<=25;zz+=29){
+ for(const side of [-1,1]){
+  const xx=side*(30+rand()*12);
+  const h=6+Math.floor(rand()*4)*3;
+  building(xx,zz,12+rand()*8,11+rand()*5,h,zz>-40?'shop':'home');
+  if(rand()>.3){
+   const tx=side*(17+rand()*3),tz=zz+rand()*11-5;
+   cube(.48,3,.48,trunk,tx,1.5,tz);
+   const crown=new THREE.Mesh(new THREE.IcosahedronGeometry(2.7,0),leaf);
+   crown.position.set(tx,5.2,tz);scene.add(crown);
+  }
+ }
+}
+// Průběžná zeleň, městské lampy, obrubníky, přechody a lavičky.
+for(let zz=30;zz>-365;zz-=24){
+ for(const side of [-1,1]){
+  const xx=side*13.5;
+  cube(.18,6,.18,mat(0x606b6e),xx,3,zz);
+  cube(1.7,.18,.65,mat(0xc8d5cb),xx-side*.65,6.05,zz);
+  cube(1.3,.07,.45,mat(0xffe6a8),xx-side*.8,5.94,zz);
+ }
+}
+for(const zz of sideRoads){
+ for(let k=-6;k<=6;k++)cube(1.5,.025,.55,lineMat,k*2.1,.16,zz-13);
+ for(let k=-6;k<=6;k++)cube(1.5,.025,.55,lineMat,k*2.1,.16,zz+13);
+}
+for(const stop of stops){
+ const zz=stop.z;
+ cube(4,.16,2.4,mat(0x3e5766),17,3.3,zz+4);
+ cube(4,.16,2.4,mat(0x3e5766),17,2.4,zz+4);
+ for(let side of [-1,1])cube(.14,3,.14,dark,17+side*1.8,1.5,zz+4);
+ cube(3.6,1.9,.1,glass,17,1.55,zz+5.15);
+ cube(2.7,.17,.65,mat(0x815a3d),17,.75,zz+3);
+}
+building(-72,12,32,17,7,'shop');building(70,-190,31,19,9,'shop');
+cube(48,.08,31,mat(0x7ba16b),-70,.03,-310);
+function label(text,x,z){
+ const cv=document.createElement('canvas');cv.width=512;cv.height=96;
+ const c=cv.getContext('2d');c.fillStyle='#18344a';c.fillRect(0,0,512,96);
+ c.fillStyle='#fff';c.font='bold 34px Arial';c.textAlign='center';c.fillText(text,256,60);
+ const mesh=new THREE.Mesh(new THREE.PlaneGeometry(12,2.25),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv),side:THREE.DoubleSide,transparent:true}));
+ mesh.position.set(x,5,z);mesh.rotation.y=Math.PI/2;scene.add(mesh);
+}
+label('MILOVICE • NÁDRAŽÍ',-15,8);
+label('CENTRUM / RADNICE',-15,-105);
+label('ARMÁDNÍ',-15,-210);
+label('SMĚR MIRAKULUM',-15,-320);
+const bus=new THREE.Group();scene.add(bus);
+// Detailnější nízkopolygonový autobus: tmavá prosklená kabina, oddělené panely,
+// dveře, nárazníky, blatníky, světlomety a kola. Směr jízdy je -Z.
+const body=mat(0xe5c12b), bodyLight=mat(0xf0d65e), charcoal=mat(0x22292d), rubber=mat(0x171b1d), metal=mat(0x8d9b9d), tail=mat(0xc72e24);
+const windowGlass=new THREE.MeshPhongMaterial({color:0x477c90,shininess:85,specular:0x7396a5,transparent:true,opacity:.88});
+const windshield=new THREE.MeshPhongMaterial({color:0x345767,shininess:100,specular:0x9ec1d0});
+const lampMat=new THREE.MeshBasicMaterial({color:0xffefc3});
+cube(2.48,1.85,8.65,body,0,1.54,0,bus);
+cube(2.54,.36,8.8,bodyLight,0,2.63,0,bus);
+cube(2.5,.12,8.7,mat(0xd7d9d5),0,2.88,0,bus);
+cube(2.53,.15,8.65,charcoal,0,.69,0,bus);
+// Prosklení obou boků, černé sloupky a příčky.
+for(const side of [-1,1]){
+ for(let i=0;i<6;i++){
+  const zz=-3.45+i*1.28;
+  cube(.045,.85,1.12,windowGlass,side*1.264,2.18,zz,bus);
+  cube(.065,1.02,.105,charcoal,side*1.298,2.2,zz+.61,bus);
+ }
+ cube(.07,.14,8.35,charcoal,side*1.29,1.67,0,bus);
+ cube(.09,.08,8.1,bodyLight,side*1.3,1.23,0,bus);
+ cube(.09,.08,8.1,metal,side*1.3,.82,0,bus);
+ for(const zz of [-2.8,2.7]){
+  const tire=new THREE.Mesh(new THREE.CylinderGeometry(.54,.54,.3,20),rubber);
+  tire.rotation.z=Math.PI/2;tire.position.set(side*1.33,.58,zz);bus.add(tire);
+  const rim=new THREE.Mesh(new THREE.CylinderGeometry(.29,.29,.32,16),metal);
+  rim.rotation.z=Math.PI/2;rim.position.copy(tire.position);bus.add(rim);
+  const center=new THREE.Mesh(new THREE.CylinderGeometry(.1,.1,.34,12),charcoal);
+  center.rotation.z=Math.PI/2;center.position.copy(tire.position);bus.add(center);
+ }
+ // Zrcátka na čele autobusu
+ cube(.075,.08,.8,charcoal,side*1.42,2.42,-3.9,bus);
+ cube(.4,.5,.12,charcoal,side*1.56,2.38,-4.26,bus);
+ cube(.27,.35,.13,metal,side*1.56,2.38,-4.33,bus);
+ cube(.33,.36,.11,tail,side*1.02,1.08,4.4,bus);
+ cube(.24,.13,.12,lampMat,side*.99,.85,-4.42,bus);
+ cube(.44,.31,.12,lampMat,side*1.01,1.12,-4.42,bus);
+}
+// Čelní sklo se stěrači a kabinou.
+cube(2.36,1.1,.09,windshield,0,2.17,-4.37,bus);
+cube(2.46,.15,.14,charcoal,0,1.55,-4.44,bus);
+cube(2.38,.19,.12,charcoal,0,2.78,-4.43,bus);
+for(const side of [-1,1]){
+ const wiper=cube(1.03,.035,.045,charcoal,side*.54,1.72,-4.47,bus);
+ wiper.rotation.z=side*.16;
+}
+cube(2.4,.28,.18,charcoal,0,.72,-4.42,bus);
+cube(2.3,.15,.14,metal,0,.57,-4.45,bus);
+cube(2.37,.78,.09,windowGlass,0,2.13,4.38,bus);
+cube(2.44,.24,.12,charcoal,0,.73,4.4,bus);
+// Dveře vpravo vpředu, otevírání zachovává dosavadní herní logiku.
+const doors=new THREE.Group();bus.add(doors);
+for(const zz of [-3.1,-2.4]){
+ cube(.11,1.76,.64,charcoal,1.32,1.54,zz,doors);
+ cube(.12,1.04,.51,windowGlass,1.39,1.88,zz,doors);
+}
+// Značení linky: přední i zadní LED panel.
+function led(text,w,h){const cv=document.createElement('canvas');cv.width=512;cv.height=128;const c=cv.getContext('2d');c.fillStyle='#121b1d';c.fillRect(0,0,512,128);c.fillStyle='#f9bb38';c.font='bold 90px Arial';c.textAlign='center';c.fillText(text,256,94);return new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv),side:THREE.DoubleSide}));}
+const frontLed=led('432',1.55,.37);frontLed.position.set(0,2.79,-4.46);bus.add(frontLed);
+const backLed=led('432',1.15,.31);backLed.position.set(0,2.64,4.47);bus.add(backLed);
+// Proporčnější vizuál z třetí osoby bez změny jízdní fyziky.
+let z=16,x=-3,angle=0,speed=0,pass=0,next=0,open=false,cam=0,elapsed=0,rating=100;
+let walking=false,paid=false,px=-6,pz=16,walkYaw=0;
+let money=0;try{money=Math.max(0,Number(localStorage.getItem('milovice_rp_money')||0)||0)}catch(e){}
+const avatar=new THREE.Group();scene.add(avatar);
+const jacket=mat(0x2a587a),skin=mat(0xd9a67e),pants=mat(0x29343d);
+cube(.65,1.05,.34,jacket,0,1.4,0,avatar);cube(.4,.43,.4,skin,0,2.16,0,avatar);
+for(const side of [-1,1]){cube(.22,.85,.25,jacket,side*.48,1.42,0,avatar);cube(.24,.82,.27,pants,side*.18,.47,0,avatar)}
+avatar.visible=false;
+function notify(t){document.getElementById('status').textContent=t}
+function toggleVehicle(){
+ if(!walking){if(Math.abs(speed)>.25){notify('Nejdřív zastav autobus!');return}walking=true;px=x-3*Math.cos(angle);pz=z+2*Math.sin(angle);walkYaw=angle;avatar.visible=true;notify('Jsi venku. Přijdi k autobusu a stiskni E pro nastoupení.');}
+ else{if(Math.hypot(px-x,pz-z)>7){notify('Pro nastoupení se přibliž k autobusu.');return}walking=false;avatar.visible=false;notify('Nastoupil jsi do autobusu.');}
+ keys.clear();updateUI();
+}
+const keys=new Set();addEventListener('blur',()=>keys.clear());document.addEventListener('visibilitychange',()=>{if(document.hidden)keys.clear()});function reset(){keys.clear();z=16;x=-3;angle=0;speed=0;pass=0;next=0;open=false;cam=0;elapsed=0;rating=100;walking=false;paid=false;avatar.visible=false;document.getElementById('status').textContent='Nastup a vyjeď!';updateUI()}function updateUI(){document.getElementById('speed').textContent=Math.round(Math.abs(speed)*3.6);document.getElementById('pass').textContent=pass;document.getElementById('stop').textContent=stops[next]?.name||'Konečná – hotovo!';doors.visible=!open;document.getElementById('progress').textContent=next+' / '+stops.length;document.getElementById('distance').textContent=next<stops.length?Math.round(Math.hypot(z-stops[next].z,x-3))+' m':'CÍL';document.getElementById('clock').textContent=String(Math.floor(elapsed/60)).padStart(2,'0')+':'+String(Math.floor(elapsed%60)).padStart(2,'0');document.getElementById('rating').textContent=rating;document.getElementById('mode').textContent=walking?'Pěšky':'Řidič autobusu';document.getElementById('money').textContent=money;document.getElementById('enter').textContent=walking?'🚌 Nastoupit':'🚶 Vystoupit';}document.addEventListener('keydown',e=>{if(['Space','KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();keys.add(({ArrowUp:'KeyW',ArrowDown:'KeyS',ArrowLeft:'KeyA',ArrowRight:'KeyD'})[e.code]||e.code);if(!e.repeat){if(e.code==='Space')toggleDoors();if(e.code==='KeyC')cam=(cam+1)%3;if(e.code==='KeyR')reset();if(e.code==='KeyE')toggleVehicle()}});document.addEventListener('keyup',e=>keys.delete(({ArrowUp:'KeyW',ArrowDown:'KeyS',ArrowLeft:'KeyA',ArrowRight:'KeyD'})[e.code]||e.code));document.querySelectorAll('[data-key]').forEach(b=>{let k=b.dataset.key;b.addEventListener('pointerdown',e=>{e.preventDefault();keys.add(k);b.classList.add('held');try{b.setPointerCapture(e.pointerId)}catch(_){}});for(let event of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(event,e=>{keys.delete(k);b.classList.remove('held')})});function toggleDoors(){if(walking){notify('Dveře se ovládají z autobusu.');return}if(Math.abs(speed)>.6){document.getElementById('status').textContent='Nejdřív zastav!';return}open=!open;if(open&&next<stops.length&&Math.abs(z-stops[next].z)<13&&Math.abs(x+3)<5){pass+=2+next*2;document.getElementById('status').textContent='✅ Zastávka odbavena: '+stops[next].name;next++;if(next===stops.length&&!paid){paid=true;const wage=300+rating*4;money+=wage;try{localStorage.setItem('milovice_rp_money',String(money))}catch(e){}notify('🏁 Linka dokončena! Výplata '+wage+' Kč.')}}else document.getElementById('status').textContent=open?'Dveře otevřené':'Dveře zavřené';updateUI()}document.querySelectorAll('#controls button').forEach(b=>{b.addEventListener('contextmenu',e=>e.preventDefault());b.addEventListener('dragstart',e=>e.preventDefault())});document.getElementById('enter').onclick=toggleVehicle;document.getElementById('doors').onclick=toggleDoors;document.getElementById('camera').onclick=()=>cam=(cam+1)%3;document.getElementById('reset').onclick=reset;let audioCtx=null;document.getElementById('horn').onclick=()=>{try{audioCtx ||= new (window.AudioContext||window.webkitAudioContext)();const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type='sawtooth';osc.frequency.value=220;gain.gain.value=.055;osc.connect(gain).connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+.22)}catch(e){}};
+
+const mini=document.getElementById('minimap'),mc=mini.getContext('2d');
+function drawMini(){mc.clearRect(0,0,180,180);mc.fillStyle='#203b33';mc.fillRect(0,0,180,180);const scale=.34,ox=90-x*scale,oz=90-z*scale;mc.strokeStyle='#a7b0b4';mc.lineWidth=7;mc.beginPath();mc.moveTo(ox,oz+40*scale);mc.lineTo(ox,oz-350*scale);mc.stroke();for(const zz of sideRoads){mc.beginPath();mc.moveTo(ox-140*scale,oz+zz*scale);mc.lineTo(ox+140*scale,oz+zz*scale);mc.stroke()}mc.fillStyle='#ffd54f';for(let s of stops){mc.beginPath();mc.arc(ox+13*scale,oz+s.z*scale,4,0,Math.PI*2);mc.fill()}mc.fillStyle='#ff6565';mc.beginPath();mc.arc(90,90,5,0,Math.PI*2);mc.fill();mc.fillStyle='white';mc.font='11px sans-serif';mc.fillText('MILOVICE 0.9',8,15)}
+let last=performance.now();function animate(t){requestAnimationFrame(animate);const dt=Math.min(Math.max((t-last)/1000,0),.05);last=t;
+elapsed+=dt;
+if(walking){
+ let dx=(keys.has('KeyD')?1:0)-(keys.has('KeyA')?1:0);
+ let dz=(keys.has('KeyS')?1:0)-(keys.has('KeyW')?1:0);
+ const len=Math.hypot(dx,dz);
+ if(len>0){dx/=len;dz/=len;px+=dx*4.2*dt;pz+=dz*4.2*dt;walkYaw=Math.atan2(-dx,-dz)}
+ avatar.position.set(px,0,pz);avatar.rotation.y=walkYaw;
+}
+const gas=keys.has('KeyW'),brake=keys.has('KeyS');
+// Signed velocity: forward positive, reverse negative. Braking first, then reverse.
+if(walking){speed=0}else if(open){if(speed>0)speed=Math.max(0,speed-12*dt);else speed=Math.min(0,speed+12*dt)}
+else if(gas&&!brake){speed=Math.min(13,speed+6*dt)}
+else if(brake&&!gas){speed=Math.max(-4.5,speed-12*dt)}
+else if(speed>0){speed=Math.max(0,speed-2.4*dt)}
+else{speed=Math.min(0,speed+2.4*dt)}
+const steer=(keys.has('KeyD')?1:0)-(keys.has('KeyA')?1:0);
+if(!walking&&Math.abs(speed)>.02){
+ // Positive yaw rotates the bus toward screen-left in this coordinate convention.
+ // Negate to make right button turn right while driving forward.
+ angle-=steer*(speed/13)*.95*dt;
+ x-=Math.sin(angle)*speed*dt;z-=Math.cos(angle)*speed*dt;
+}
+if(Math.abs(speed)*3.6>46&&rating>40)rating=Math.max(40,rating-Math.ceil(dt*2));x=Math.max(-1700,Math.min(1700,x));z=Math.max(-1500,Math.min(1500,z));bus.position.set(x,0,z);bus.rotation.y=angle;
+const forward=new THREE.Vector3(-Math.sin(angle),0,-Math.cos(angle));let desired,target;if(walking){desired=new THREE.Vector3(px,3.5,pz+7);target=new THREE.Vector3(px,1.35,pz)}else if(cam===0){desired=new THREE.Vector3(x,5.4,z).addScaledVector(forward,-12);target=new THREE.Vector3(x,1.7,z).addScaledVector(forward,9)}else if(cam===1){desired=new THREE.Vector3(x,2.42,z).addScaledVector(forward,2.7);target=new THREE.Vector3(x,2.1,z).addScaledVector(forward,32)}else{desired=new THREE.Vector3(x+16,17,z+16);target=new THREE.Vector3(x,1,z)}camera.position.lerp(desired,Math.min(1,dt*8));camera.lookAt(target);updateUI();drawMini();renderer.render(scene,camera)}requestAnimationFrame(animate);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 </script></body></html>
