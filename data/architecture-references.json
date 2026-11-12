@@ -1,5 +1,5 @@
 {
-  "version": "2026-11-12-4.7",
+  "version": "2026-11-12-4.8",
   "scope": "Staré Milovice (mapped footprint extent; not the whole town)",
   "rule": "Photographs are used solely as visual reference. No source photo pixels or proprietary Street View tiles are embedded in the game.",
   "geoData": {
@@ -109,11 +109,39 @@
       "source": "https://commons.wikimedia.org/wiki/Category:Milovice_(train_station)",
       "architecture": "Pedestrian portico through station street-level mass; two opposing walls removed; auxiliary storefront labeled OBCHOD",
       "precision": "Passage and shop requested by local player, portal width and shop face approximate pending a photo facing the exact passage"
+    },
+    {
+      "name": "Sídliště Mladá – blue/gray panelák character",
+      "location": "Milovice-Mladá, neighbourhood-level reference only",
+      "source": "https://radiozurnal.rozhlas.cz/milovice-jsou-uz-bez-vojaku-a-plne-mladych-rodin-6227625",
+      "architecture": "Refurbished Soviet-era panel apartment blocks with pale-blue rectangular facade fields, repeating windows and concrete balconies",
+      "precision": "General neighbourhood architecture; no one-to-one assignment to a specific OSM way"
+    },
+    {
+      "name": "Braniborská – pale yellow apartment block",
+      "location": "Braniborská, Milovice",
+      "source": "https://milenabaresova.cz/nemovitosti",
+      "architecture": "Five-storey pale-ochre/cream building, small dark balcony railings, plain rectangular windows, yellow entrance canopy",
+      "precision": "Visual reference for similar residential building archetypes only; proprietary listing photo is not embedded as an in-game texture"
+    },
+    {
+      "name": "Rakouská – modern terraced housing",
+      "location": "Rakouská, Milovice",
+      "source": "https://milenabaresova.cz/nemovitosti",
+      "architecture": "Gray and orange 3-level terraced apartment facades, vertical color panels and small balconies",
+      "precision": "Area style guide only. Not all OSM building models have verified colors"
+    },
+    {
+      "name": "Milovice older military panel blocks",
+      "source": "https://zpravy.aktualne.cz/domaci/milovice-dnes/r~863b36cecdc411eb878fac1f6b220ee8/",
+      "architecture": "Gray-beige 6–8 level apartment buildings with flat or shallowly pitched roofs and stacked balconies",
+      "precision": "Style-only source; no exact georeferenced 3D model"
     }
   ],
   "notes": [
     "Primary geometry uses OSM outlines. Finer roof & entrance details are not surveyed unless labeled as measured.",
     "Historical 2024 photographs can differ from actual 2026 facades.",
-    "Shop location at station follows player report and is provisional; Modrá hvězda, Mírová 243/36, Potraviny 74/4 are georeferenced."
+    "Shop location at station follows player report and is provisional; Modrá hvězda, Mírová 243/36, Potraviny 74/4 are georeferenced.",
+    "Citywide building footprints extend to Mladá, Benátecká Vrutice and Boží Dar through independent streamed OSM tiles. Only individually grounded buildings should be described as photographic matches."
   ]
 }
