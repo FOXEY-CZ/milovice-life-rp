@@ -681,7 +681,7 @@ const originalCity=scene.children.filter(o=>o!==bus&&o!==avatar&&!(o.isLight));
 const osmLayer=new THREE.Group();osmLayer.visible=true;scene.add(osmLayer);
 // OSM world streaming: only render city blocks close to the player.
 // Mesh geometry and original OSM coordinates remain unchanged.
-const osmChunks=new Map();const OSM_CHUNK=160,OSM_VIEW=740;
+const osmChunks=new Map();const OSM_CHUNK=160,OSM_VIEW=610;
 function chunkMilovice(){
  osmChunks.clear();osmLayer.updateMatrixWorld(true);
  for(const object of [...osmLayer.children]){
@@ -1063,6 +1063,28 @@ function osmBuilding(points,tags,index){
    }else if(oldCenter||!isIndustrial){
     archPart('glassAwning',mx+nx*.88,baseHeight+2.53,mz+nz*.88,2.45,.11,.88,yaw);
    }
+  }
+ }
+ // Roof chimneys and proper garage shutter doors in the 5. května residential area.
+ if(isHouse&&index%3===0&&w>6&&d>5){
+  const rise=Math.min(2.3,Math.min(w,d)*.25);
+  archPart('chimney',centerX+w*.10,baseHeight+h+rise*.70,centerZ-d*.08,.52,2.25,.52);
+  archPart('roofGutter',centerX+w*.10,baseHeight+h+rise*1.25,centerZ-d*.08,.66,.1,.66);
+ }
+ if(isGarage){
+  // Garage footprints are OSM surveyed; garage door orientation is inferred.
+  let front=null;
+  for(let i=0;i<pts.length;i++){
+   const a=pts[i],b=pts[(i+1)%pts.length],len=a.distanceTo(b);
+   if(len>2.25&&len<16&&(!front||len>front.len))front={a,b,len};
+  }
+  if(front){
+   const {a,b,len}=front,dx=b.x-a.x,dz=b.y-a.y;
+   let nx=-dz/len,nz=dx/len;const mx=(a.x+b.x)/2,mz=(a.y+b.y)/2;
+   if(nx*(mx-centerX)+nz*(mz-centerZ)<0){nx=-nx;nz=-nz}
+   const yaw=Math.atan2(nx,nz),doorWidth=Math.min(2.7,len-.42);
+   archPart('garageMetal',mx+nx*.24,baseHeight+1.25,mz+nz*.24,doorWidth,2.12,.13,yaw);
+   for(let j=0;j<5;j++)archPart('windowBar',mx+nx*.31,baseHeight+.46+j*.38,mz+nz*.31,doorWidth,.025,.07,yaw);
   }
  }
  // Roof edge silhouette to make flat-roof buildings more recognizable.
