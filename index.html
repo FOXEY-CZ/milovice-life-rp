@@ -764,6 +764,7 @@ function miloviceChurchBrickTexture(){
  tex.repeat.set(3,3);tex.colorSpace=THREE.SRGBColorSpace;return tex;
 }
 const churchWalls=new THREE.MeshStandardMaterial({color:0xffffff,map:miloviceChurchBrickTexture(),roughness:.91});
+const stationWalls=new THREE.MeshStandardMaterial({color:0xe6e3d5,map:facadeTexture(87),roughness:.92});
 const schoolWalls=new THREE.MeshStandardMaterial({color:0xe3b42f,map:facadeTexture(37),roughness:.9});
 const schoolPlinth=new THREE.MeshStandardMaterial({color:0xb34a31,roughness:.86,side:THREE.DoubleSide});
 const garageWalls=new THREE.MeshStandardMaterial({color:0xb1afa4,roughness:.92});
@@ -1084,6 +1085,14 @@ function miloviceChurchTower(pts,base,h){
   }
  }
 }
+function stationFacadeSign(text,x,y,z,orientation){
+ const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;const g=canvas.getContext('2d');
+ g.fillStyle='#215aa3';g.fillRect(0,0,512,128);
+ g.fillStyle='#fff';g.font='bold 85px Arial';g.textAlign='center';g.textBaseline='middle';g.fillText(text,256,66,490);
+ const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
+ const mesh=new THREE.Mesh(new THREE.PlaneGeometry(3.7,.91),new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide}));
+ mesh.position.set(x,y,z);mesh.rotation.y=orientation;osmLayer.add(mesh);
+}
 function osmBuilding(points,tags,index){
  if(points.length<4)return;
  const pts=points.map(osmPoint);
@@ -1095,6 +1104,7 @@ function osmBuilding(points,tags,index){
  const isIndustrial=type==='warehouse'||type==='industrial';
  const isSchool=type==='school'&&tags.name==='ZŠ T. G. Masaryka';
  const isChurch=type==='church'&&tags.name==='sv. Kateřina Alexandrijská';
+ const isStation=type==='train_station'&&tags.name==='Milovice';
  const floors=Math.min(9,Math.max(1,Number(tags['building:levels'])||(isGarage||isIndustrial?1:2)));
  const explicitHeight=parseFloat(tags.height);
  const h=Math.min(32,Math.max(isGarage?2.35:3.0,Number.isFinite(explicitHeight)&&explicitHeight>2?explicitHeight:isGarage?2.75:isIndustrial?5.3:isChurch?11.5:floors*(isSchool?3.4:3.05)));
@@ -1125,7 +1135,7 @@ function osmBuilding(points,tags,index){
    }
   }
  }
- const wallMat=isSchool?schoolWalls:isChurch?churchWalls:isGarage?garageWalls:isIndustrial?workWalls:osmBuildingMaterial[(oldCenter?index+3:index)%osmBuildingMaterial.length];
+ const wallMat=isSchool?schoolWalls:isChurch?churchWalls:isStation?stationWalls:isGarage?garageWalls:isIndustrial?workWalls:osmBuildingMaterial[(oldCenter?index+3:index)%osmBuildingMaterial.length];
  const mesh=new THREE.Mesh(geometry,wallMat);mesh.position.y=baseHeight;osmLayer.add(mesh);
  const roofShape=new THREE.Shape();roofShape.moveTo(pts[0].x,-pts[0].y);
  for(let i=1;i<pts.length;i++)roofShape.lineTo(pts[i].x,-pts[i].y);
@@ -1135,7 +1145,7 @@ function osmBuilding(points,tags,index){
  roof.position.y=baseHeight+h+.025;
   const roofMat=isSchool?osmRoofPalette[4]:oldCenter?osmRoofPalette[0]:osmRoofPalette[index%osmRoofPalette.length];
   const pitched=isHouse?miloviceGableRoof(pts,baseHeight,h,roofMat):null;
-  const hip=!pitched&&(isHouse||isSchool||isChurch)?miloviceHipRoof(pts,baseHeight,h,isChurch?osmRoofPalette[4]:roofMat,isChurch?4.3:isSchool?1.05:Math.min(2.3,Math.min(w,d)*.25)):null;
+  const hip=!pitched&&(isHouse||isSchool||isChurch||isStation)?miloviceHipRoof(pts,baseHeight,h,isChurch?osmRoofPalette[4]:isStation?osmRoofPalette[0]:roofMat,isChurch?4.3:isStation?2.6:isSchool?1.05:Math.min(2.3,Math.min(w,d)*.25)):null;
   if(pitched||hip)osmLayer.add(pitched||hip);else osmLayer.add(roof);
   if(isChurch)miloviceChurchTower(pts,baseHeight,h);
  // Small rooftop ventilation blocks create recognisable silhouettes without expensive meshes.
@@ -1155,7 +1165,7 @@ function osmBuilding(points,tags,index){
   const mx=(p.x+q.x)/2,mz=(p.y+q.y)/2;
   if(nx*(mx-centerX)+nz*(mz-centerZ)<0){nx=-nx;nz=-nz}
   const rotation=Math.atan2(nx,nz),ux=dx/len,uz=dz/len;
-  if(isHouse||isSchool){
+  if(isHouse||isSchool||isStation){
    // Tile eaves, rain gutters, and drainpipes follow the actual OSM walls.
    archPart('roofGutter',mx+nx*.23,baseHeight+h+.11,mz+nz*.23,len,.075,.12,rotation);
    if(len>6&&i%2===0)archPart('roofGutter',p.x+nx*.21,baseHeight+h*.53,p.y+nz*.21,.10,h*.98,.12,rotation);
@@ -1211,6 +1221,9 @@ function osmBuilding(points,tags,index){
    if(isSchool){
     archPart('glassAwning',mx+nx*1.42,baseHeight+2.58,mz+nz*1.42,4.2,.13,2.45,yaw);
     schoolFacadeSign('ZŠ T. G. MASARYKA',mx+nx*.78,baseHeight+4.34,mz+nz*.78,yaw);
+   }else if(isStation){
+    archPart('glassAwning',mx+nx*1.45,baseHeight+2.9,mz+nz*1.45,Math.min(11,len*.72),.24,2.9,yaw);
+    stationFacadeSign('Milovice',mx+nx*.85,baseHeight+4.45,mz+nz*.85,yaw);
    }else if(oldCenter||!isIndustrial){
     archPart('glassAwning',mx+nx*.88,baseHeight+2.53,mz+nz*.88,2.45,.11,.88,yaw);
    }
@@ -1258,7 +1271,7 @@ function osmAddLandmark(el){
  const points=el.geometry.map(osmPoint);
  const p=new THREE.Vector2(points.reduce((sum,v)=>sum+v.x,0)/points.length,points.reduce((sum,v)=>sum+v.y,0)/points.length);
  osmLandmarks.push({name:el.tags.name,point:p,kind:el.tags.building});
- if(!['church','school'].includes(el.tags.building))osmPlaceLabel(el.tags.name,p);
+ if(!['church','school','train_station'].includes(el.tags.building))osmPlaceLabel(el.tags.name,p);
 }
 async function fetchMiloviceOSM(){
  // Avoid stale GitHub Pages/browser caches after the automated OSM export.
