@@ -1356,6 +1356,18 @@ function drawMini(){const mapX=walking?px:x,mapZ=walking?pz:z,heading=walking?or
  mc.save();mc.translate(w/2,h/2);mc.rotate(-heading);
  mc.strokeStyle='#aeb6b5';mc.lineCap='round';mc.lineJoin='round';mc.lineWidth=3;
  for(const road of osmRoads){if(road.length<2)continue;mc.beginPath();let started=false;for(const p of road){const u=(p.x-mapX)*scale,v=(p.y-mapZ)*scale;if(Math.abs(u)>200||Math.abs(v)>200){started=false;continue}if(!started){mc.moveTo(u,v);started=true}else mc.lineTo(u,v)}mc.stroke()}
+ // During a bus job, point toward the real-road checkpoint on the minimap,
+ // even when the next checkpoint is outside the 180px visible area.
+ if(busJob?.stops[busJob.next]){
+  const wp=busJob.stops[busJob.next];
+  const dx=(wp.x-mapX)*scale,dz=(wp.z-mapZ)*scale;
+  const bound=Math.max(Math.abs(dx),Math.abs(dz),1),factor=Math.min(1,72/bound);
+  const cx=dx*factor,cz=dz*factor;
+  mc.fillStyle='#ff8d4c';mc.strokeStyle='#471e16';mc.lineWidth=2.5;
+  mc.beginPath();mc.arc(cx,cz,7,0,Math.PI*2);mc.fill();mc.stroke();
+  mc.fillStyle='#fff';mc.font='bold 10px system-ui';mc.textAlign='center';mc.fillText('CÍL',cx,cz-12);
+  mc.textAlign='start';
+ }
  mc.restore();
  mc.fillStyle='#ffe28b';for(const place of osmLandmarks){const dx=(place.point.x-x)*scale,dz=(place.point.y-z)*scale;const ca=Math.cos(-heading),sa=Math.sin(-heading);const u=90+dx*ca-dz*sa,v=90+dx*sa+dz*ca;if(u>5&&u<175&&v>22&&v<160){mc.beginPath();mc.arc(u,v,3.3,0,Math.PI*2);mc.fill()}}
  mc.fillStyle='#ffda57';mc.beginPath();mc.moveTo(90,78);mc.lineTo(83,99);mc.lineTo(97,99);mc.closePath();mc.fill();
