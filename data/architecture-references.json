@@ -1,0 +1,48 @@
+{
+  "version": "2026-11-12",
+  "scope": "Staré Milovice (mapped footprint extent; not the whole town)",
+  "rule": "Photographs are used solely as visual reference. No source photo pixels or proprietary Street View tiles are embedded in the game.",
+  "geoData": {
+    "source": "OpenStreetMap",
+    "license": "ODbL",
+    "notes": "Building outlines and mapped building:levels only; many missing roof/facade/material tags."
+  },
+  "elevation": {
+    "source": "ČÚZK DMR 4G",
+    "license": "CC BY 4.0",
+    "sampleSpacingMeters": 10
+  },
+  "references": [
+    {
+      "osmWayId": 118487991,
+      "name": "Kostel sv. Kateřiny Alexandrijské",
+      "location": "Mírová, Milovice",
+      "source": "https://nockostelu.cz/kostel/830/",
+      "architecture": "light brick neo-Gothic nave, square tall clock tower, dark round clock, red four-sided spire",
+      "precision": "OSM footprint and verified GPS; facade details and tower heights are inferred/approximate"
+    },
+    {
+      "osmWayId": 118487979,
+      "name": "ZŠ T. G. Masaryka",
+      "location": "Školská, Milovice",
+      "source": "https://detske-zastupitelstvo-milovice.webnode.cz/skola-pro-demokracii/nase-skola/",
+      "architecture": "warm yellow facade, red lower floors, rows of rectangular school windows, school entry",
+      "precision": "OSM footprint and 3 building levels; facade patterns from photo, not surveyed"
+    },
+    {
+      "osmWayId": 53865956,
+      "name": "Železniční stanice Milovice",
+      "location": "Nádražní, Milovice",
+      "source": "https://www.stellwerke.info/stw/stw.php?id=22402",
+      "architecture": "light plaster, red pitched roof, blue station sign, canopy",
+      "precision": "OSM footprint and 2 levels; decorative dimensions approximated"
+    },
+    {
+      "location": "5. května, Milovice",
+      "source": "https://commons.wikimedia.org/wiki/File:Milovice_-_5._kv%C4%9Btna.jpg",
+      "photoDate": "2014-07-26",
+      "architecture": "cream/ochre stucco, red ceramic tiles, gabled roofs, rain gutters, simple shuttered windows, narrow paved sidewalk",
+      "precision": "Street-level style palette only; 2014 reference may not reflect contemporary renovations"
+    }
+  ]
+}
