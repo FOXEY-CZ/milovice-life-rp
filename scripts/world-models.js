@@ -139,7 +139,7 @@ function textPanel(THREE,text,w,h,background='#12191e',foreground='#ffd75a'){
  const texture=new THREE.CanvasTexture(cv);texture.colorSpace=THREE.SRGBColorSpace;
  return new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide}));
 }
-export function makePidBus(THREE,route='432'){
+export function makePidBus(THREE,route='432',articulated=false){
  const group=new THREE.Group(),w=2.55,length=11.0;
  const white=automotivePaint(THREE,0xeaeae5),red=automotivePaint(THREE,0xc72931),dark=material(THREE,0x20292f);
  const tinted=material(THREE,0x305b70,.25,.25),silver=material(THREE,0xa9b7bc,.65,.4);
@@ -164,6 +164,31 @@ export function makePidBus(THREE,route='432'){
  part(THREE,group,new THREE.BoxGeometry(2.36,.15,.12),dark,0,2.85,-5.57);
  part(THREE,group,new THREE.BoxGeometry(2.30,.29,.10),red,0,1.10,-5.54);
  part(THREE,group,new THREE.BoxGeometry(1.48,.12,2.55),white,0,3.15,.34);
+ // Articulated regional vehicle option: approx. 18m SOR NS18 proportions.
+ // The visual joint flex is stylized; axle steering is not separately simulated.
+ if(articulated){
+  const trailer=[ [4.45,.49],[4.45,2.78],[4.66,3.02],[11.94,3.02],[12.15,2.73],[12.17,.49] ];
+  part(THREE,group,sideExtrusion(THREE,trailer,w,.085),white,0,0,0);
+  const rubber=material(THREE,0x24292d),redTrim=red;
+  // Bellows at the articulation, separated from the main passenger cabin.
+  part(THREE,group,new THREE.BoxGeometry(2.60,2.47,.86),rubber,0,1.69,5.49);
+  for(let fold=0;fold<6;fold++){
+   const z=5.06+fold*.18;
+   part(THREE,group,new THREE.BoxGeometry(2.65,2.43,.055),material(THREE,0x4e5355),0,1.69,z);
+  }
+  for(const side of [-1,1]){
+   part(THREE,group,new THREE.BoxGeometry(.084,.82,7.50),redTrim,side*1.29,1.02,8.39);
+   for(let k=0;k<5;k++){
+    const z=6.15+k*1.28;
+    part(THREE,group,new THREE.BoxGeometry(.075,1.02,1.12),tinted,side*1.335,2.19,z);
+    part(THREE,group,new THREE.BoxGeometry(.088,1.07,.06),dark,side*1.38,2.19,z+.58);
+   }
+   carWheel(THREE,group,side,10.35,.57,1.32);
+   part(THREE,group,new THREE.BoxGeometry(.08,.24,.36),material(THREE,0xd03035),side*.95,1.12,12.21);
+  }
+  part(THREE,group,new THREE.BoxGeometry(2.24,.85,.12),tinted,0,2.15,12.21);
+  group.userData.articulated=true;
+ }
  const destination=textPanel(THREE,route+' MILOVICE',2.0,.46);
  destination.position.set(0,2.76,-5.65);group.add(destination);
  const sidePanel=textPanel(THREE,'PID '+route,2.2,.43,'#e6e8e5','#be2030');
