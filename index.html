@@ -204,21 +204,11 @@ function osmPoint(p){const lat0=50.226,lon0=14.889;return new THREE.Vector2((p.l
 function osmStrip(a,b,width,material,y=.15){const dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);if(len<.15||len>800)return;const mesh=new THREE.Mesh(new THREE.BoxGeometry(width,.11,len),material);mesh.position.set((a.x+b.x)/2,y,(a.y+b.y)/2);mesh.rotation.y=Math.atan2(-dx,-dz);osmLayer.add(mesh)}
 function osmBuilding(points,tags,index){if(points.length<4)return;const pts=points.map(osmPoint),xs=pts.map(p=>p.x),zs=pts.map(p=>p.y),w=Math.max(...xs)-Math.min(...xs),d=Math.max(...zs)-Math.min(...zs);if(w<2||d<2||w>140||d>140)return;const floors=Math.min(9,Math.max(1,Number(tags['building:levels'])||2));const h=Math.min(32,Math.max(3,Number.parseFloat(tags.height)||floors*3));const x=(Math.max(...xs)+Math.min(...xs))/2,z=(Math.max(...zs)+Math.min(...zs))/2;cube(w,h,d,osmBuildingMaterial[index%osmBuildingMaterial.length],x,h/2,z,osmLayer);cube(w+.4,.3,d+.4,mat(0x686a68),x,h+.15,z,osmLayer);osmBuildings++}
 async function fetchMiloviceOSM(){
- const bbox='50.223,14.885,50.229,14.895';
- const q='[out:json][timeout:12];(way["highway"~"^(residential|living_street|tertiary|secondary|primary|service|unclassified|pedestrian)$"]('+bbox+');way["building"]('+bbox+'););out geom;';
- const urls=['https://overpass.kumi.systems/api/interpreter','https://overpass.private.coffee/api/interpreter','https://overpass-api.de/api/interpreter'];
- const jobs=urls.map(async endpoint=>{
-  const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),6500);
-  try{
-   const response=await fetch(endpoint+'?data='+encodeURIComponent(q),{signal:controller.signal});
-   if(!response.ok)throw Error('HTTP '+response.status);
-   const data=await response.json();
-   if(!Array.isArray(data.elements)||!data.elements.some(el=>el.tags?.highway))throw Error('Žádná silniční data');
-   return data.elements;
-  }finally{clearTimeout(timer)}
- });
- try{return await Promise.any(jobs)}
- catch{throw Error('Mapové servery neodpověděly do 7 sekund. Zkus to později.')}
+ const response=await fetch('./data/milovice-osm.json',{cache:'no-cache'});
+ if(!response.ok)throw Error('Lokální mapa není dostupná (HTTP '+response.status+')');
+ const data=await response.json();
+ if(!Array.isArray(data.elements)||!data.elements.some(e=>e.tags?.highway&&Array.isArray(e.geometry)))throw Error('Lokální mapa zatím neobsahuje ověřené silnice Milovic');
+ return data.elements;
 }
 function osmSetActive(active){
  osmActive=active;osmLayer.visible=active;
@@ -231,7 +221,7 @@ osmBtn.onclick=async()=>{
  if(osmActive){osmNotice.style.display='none';osmSetActive(false);return}
  if(osmReady){osmSetActive(true);return}
  if(osmLoading)return;
- osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';osmMessage('Stahuji mapová data Milovic (max. 7 sekund). Pokud servery neodpoví, zobrazím chybu.');
+ osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';osmMessage('Načítám místní soubor mapy ze stejného GitHub Pages webu…');
  try{
  const elements=await fetchMiloviceOSM();osmRoads=[];osmBuildings=0;
  cube(2200,.16,2200,osmParkMaterial,0,-.18,0,osmLayer);
@@ -242,7 +232,7 @@ osmBtn.onclick=async()=>{
  }
  if(!osmRoads.length)throw Error('Žádné silnice v odpovědi');
  osmReady=true;osmNotice.style.display='none';osmSetActive(true);
- }catch(e){osmLayer.clear();osmReady=false;osmBtn.textContent='⚠️ Zkusit načíst 3D ulice';notify('Nepodařilo se načíst 3D ulice. Původní hra zůstává funkční.');osmNotice.textContent='3D ulice se nepodařilo stáhnout ('+e.message+'). Může jít o nedostupnost mapového serveru. Zkus to později nebo použij tlačítko Skutečná mapa.'}
+ }catch(e){osmLayer.clear();osmReady=false;osmBtn.textContent='🏙️ 3D ulice (čekají na data)';notify('Nepodařilo se načíst 3D ulice. Původní hra zůstává funkční.');osmNotice.textContent='3D mapa zatím není připravena: '+e.message+'. Původní hra funguje dál. Potřebujeme skutečný OSM export pro Milovice.'}
  finally{osmLoading=false}
 };
 
