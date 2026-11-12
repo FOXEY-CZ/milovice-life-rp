@@ -622,9 +622,11 @@ document.querySelectorAll('[data-key]').forEach(b=>{
 // 5.0 boarding animation: pedestrians appear beside the actual game-world bus door,
 // walk up to it, and disappear only after reaching it (boarded into the interior).
 const boardingActors=[];
-function spawnBusBoarding(count){
- const yaw=angle,doorX=x+Math.cos(yaw)*1.45+Math.sin(yaw)*(-3.35);
- const doorZ=z-Math.sin(yaw)*1.45+Math.cos(yaw)*(-3.35);
+function spawnBusBoarding(count,vehicle=null){
+ const yaw=vehicle?vehicle.g.rotation.y:angle;
+ const bx=vehicle?vehicle.g.position.x:x,bz=vehicle?vehicle.g.position.z:z;
+ const doorX=bx+Math.cos(yaw)*1.45+Math.sin(yaw)*(-3.35);
+ const doorZ=bz-Math.sin(yaw)*1.45+Math.cos(yaw)*(-3.35);
  for(let i=0;i<Math.min(6,count);i++){
   const rig=makeHumanRig(THREE,i+8,[0x445a74,0x9d594d,0x566850,0xa18f75][i%4]);
   const walker=rig.group;trafficGroup.add(walker);
@@ -2327,7 +2329,18 @@ function rpAnimateTraffic(dt){
  const playerX=walking?px:x,playerZ=walking?pz:z;
  for(const obj of trafficCars){
   const {g}=obj;
-  const proximity=Math.hypot(g.position.x-x,g.position.z-z);
+  const proximity=Math.hypot(g.position.x-playerX,g.position.z-playerZ);
+  if(obj.service){
+   if(obj.dwell>0){
+    obj.dwell-=dt;g.visible=proximity<230;continue;
+   }
+   // Visible gameplay stop every several junctions, not an official PID timetable.
+   if(obj.turns>0&&obj.turns%6===0&&obj.stopAtTurn!==obj.turns&&obj.progress>.48&&obj.progress<.61){
+    obj.stopAtTurn=obj.turns;obj.dwell=4.8;
+    if(proximity<230)spawnBusBoarding(2,obj);
+    g.visible=proximity<230;continue;
+   }
+  }
   if(obj.driven||obj.parked){g.visible=Boolean(obj.driven)||Math.hypot(g.position.x-playerX,g.position.z-playerZ)<170;continue}
   let frontDist=Infinity;
   for(const other of trafficCars){
@@ -2350,7 +2363,7 @@ function rpAnimateTraffic(dt){
   const side=dir*Math.min(2.25,seg.width*.25);
   g.position.set(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,terrainAt(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side)+.045,seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side);
   g.rotation.y=Math.atan2(-dx*dir,-dz*dir);
-  g.visible=Math.hypot(g.position.x-playerX,g.position.z-playerZ)<170;
+  g.visible=Math.hypot(g.position.x-playerX,g.position.z-playerZ)<Math.min(270,OSM_VIEW*.52);
  }
  for(const obj of trafficPeople){
   obj.progress+=obj.direction*dt*obj.speed/obj.seg.len;
