@@ -1333,6 +1333,39 @@ function stationShape(pts){
  for(let i=1;i<pts.length;i++)shape.lineTo(pts[i].x,-pts[i].y);
  shape.closePath();return shape;
 }
+// Rectangular pitched roof aligned with the photographed long station wings.
+// Unlike a pyramid/hip-roof fan, this has an honest continuous ridge.
+function stationGabledRoof(pts,base,height,rise,material){
+ const cx=pts.reduce((a,p)=>a+p.x,0)/pts.length,cz=pts.reduce((a,p)=>a+p.y,0)/pts.length;
+ const {ax,az}=stationAxis(pts,cx,cz);
+ let minS=Infinity,maxS=-Infinity,minT=Infinity,maxT=-Infinity;
+ for(const p of pts){
+  const dx=p.x-cx,dz=p.y-cz,s=dx*ax+dz*az,t=-dx*az+dz*ax;
+  minS=Math.min(minS,s);maxS=Math.max(maxS,s);minT=Math.min(minT,t);maxT=Math.max(maxT,t);
+ }
+ if(maxS-minS<3||maxT-minT<2)return null;
+ const half=.33,rt=(minT+maxT)*.5,y=base+height+.09;
+ const world=(along,across,up)=>[cx+ax*along-az*across,up,cz+az*along+ax*across];
+ const faces=[
+  [world(minS-half,minT-.16,y),world(maxS+half,minT-.16,y),world(maxS+half,rt,y+rise),world(minS-half,rt,y+rise)],
+  [world(minS-half,rt,y+rise),world(maxS+half,rt,y+rise),world(maxS+half,maxT+.16,y),world(minS-half,maxT+.16,y)]
+ ];
+ const verts=[],uv=[],indices=[];
+ for(const face of faces){
+  const off=verts.length/3;
+  for(let i=0;i<4;i++){verts.push(...face[i]);uv.push(i===0||i===3?0:Math.min(6,(maxS-minS)/3),i<2?0:2)}
+  indices.push(off,off+1,off+2,off,off+2,off+3);
+ }
+ const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));
+ geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(indices);geo.computeVertexNormals();
+ const g=new THREE.Mesh(geo,material);osmLayer.add(g);
+ for(const edgeS of [minS,maxS]){
+  const coords=[world(edgeS,minT,y),world(edgeS,maxT,y),world(edgeS,rt,y+rise)];
+  const gg=new THREE.BufferGeometry();gg.setAttribute('position',new THREE.Float32BufferAttribute(coords.flat(),3));gg.computeVertexNormals();
+  const cap=new THREE.Mesh(gg,stationWalls);cap.material.side=THREE.DoubleSide;osmLayer.add(cap);
+ }
+ return g;
+}
 function stationSection(pts,base,fromHeight,toHeight,roofRise,material){
  if(pts.length<3)return;
  const footprint=stationShape(pts);
@@ -1344,8 +1377,7 @@ function stationSection(pts,base,fromHeight,toHeight,roofRise,material){
  const roofShape=new THREE.ShapeGeometry(footprint);roofShape.rotateX(-Math.PI/2);
  const roofBase=new THREE.Mesh(roofShape,material);roofBase.position.y=base+toHeight+.05;osmLayer.add(roofBase);
  // A pitched, independently raised roof with overhang, not the previous giant flat cap.
- const roof=miloviceHipRoof(pts,base,toHeight,material,roofRise);
- if(roof)osmLayer.add(roof);
+ const roof=stationGabledRoof(pts,base,toHeight,roofRise,material);
  const cX=pts.reduce((sum,p)=>sum+p.x,0)/pts.length,cZ=pts.reduce((sum,p)=>sum+p.y,0)/pts.length;
  archPart('roofGutter',cX,base+toHeight+.1,cZ,.06,.06,.06);
 }
