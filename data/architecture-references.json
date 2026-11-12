@@ -1,6 +1,6 @@
 {
-  "version": "2026-11-12-4.8",
-  "scope": "Staré Milovice (mapped footprint extent; not the whole town)",
+  "version": "2026-11-13-4.9",
+  "scope": "Milovice (multi-region OSM windows, with individually photo-matched landmarks chiefly around the old station center)",
   "rule": "Photographs are used solely as visual reference. No source photo pixels or proprietary Street View tiles are embedded in the game.",
   "geoData": {
     "source": "OpenStreetMap",
@@ -35,7 +35,9 @@
       "location": "Nádražní, Milovice",
       "source": "https://www.stellwerke.info/stw/stw.php?id=22402",
       "architecture": "light plaster, red pitched roof, blue station sign, canopy",
-      "precision": "OSM footprint and 2 levels; decorative dimensions approximated"
+      "precision": "Footprint verified; roof, canopy and sign positions photo-informed approximations rather than surveyed measurements",
+      "additionalPhoto": "https://commons.wikimedia.org/wiki/File:%C5%BDelezni%C4%8Dn%C3%AD_stanice_Milovice_(z%C3%A1%C5%99%C3%AD_2024).jpg",
+      "modelUpdate49": "Original generated red standing-seam sheet roof, rail-side wooden platform shelter and 2 station nameplates; surveyed silhouette only at footprint level"
     },
     {
       "location": "5. května, Milovice",
@@ -136,12 +138,28 @@
       "source": "https://zpravy.aktualne.cz/domaci/milovice-dnes/r~863b36cecdc411eb878fac1f6b220ee8/",
       "architecture": "Gray-beige 6–8 level apartment buildings with flat or shallowly pitched roofs and stacked balconies",
       "precision": "Style-only source; no exact georeferenced 3D model"
+    },
+    {
+      "name": "Braniborská, Komenského and Spojovací housing reference photos",
+      "location": "Mladá / Milovice",
+      "source": "https://commons.wikimedia.org/wiki/Category:Soviet_modernist_architecture_in_Milovice",
+      "photoDate": "various, including 2025",
+      "architecture": "Renovated panel apartment blocks with colored plaster, horizontal facade divisions, multiple floor levels and repeating balconies.",
+      "precision": "Neighborhood-only architectural reference. Specific buildings have not been individually matched to image locations."
+    },
+    {
+      "name": "Rakouská residential facade reference",
+      "location": "Rakouská, Milovice",
+      "source": "https://rbe.eu/stavby/bytovy-dum-milovice-2022/",
+      "architecture": "Contemporary cream and light-gray massing, regular windows, pitched roof and dark rainwater elements.",
+      "precision": "Design direction only; project photograph does not prove nearby buildings share this exterior."
     }
   ],
   "notes": [
     "Primary geometry uses OSM outlines. Finer roof & entrance details are not surveyed unless labeled as measured.",
     "Historical 2024 photographs can differ from actual 2026 facades.",
     "Shop location at station follows player report and is provisional; Modrá hvězda, Mírová 243/36, Potraviny 74/4 are georeferenced.",
-    "Citywide building footprints extend to Mladá, Benátecká Vrutice and Boží Dar through independent streamed OSM tiles. Only individually grounded buildings should be described as photographic matches."
+    "Citywide building footprints extend to Mladá, Benátecká Vrutice and Boží Dar through independent streamed OSM tiles. Only individually grounded buildings should be described as photographic matches.",
+    "4.9 changes are geometric and generative material upgrades, not a complete photorealistic city reconstruction."
   ]
 }
