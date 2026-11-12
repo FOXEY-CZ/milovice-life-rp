@@ -1120,7 +1120,7 @@ function finalizeFoundations(){
 }
 // Photo-referenced detail pass: repeated meshes are batched as instanced geometry.
 // Facades are modelled from mapped footprints, not copied from proprietary photos.
-const architectureColors={panelSeam:0x838e94,panelAccent:0x72a0c3,panelEntry:0x356a87,commercialSign:0x435b66,panelPlinth:0x7e8587,industrialDoor:0x68717a,stationPlaster:0xe6e4d9,stationGlass:0x4a7480,stationFrames:0xf2f0e7,stationIron:0x3a3e40,stationCanopy:0x903f35,blueStarPlaster:0xd68c34,blueStarRed:0xb7352c,starWhite:0xf0eae0,starBalcony:0xcfc6b5,railSleeper:0x685643,railPole:0x777d7f,gothicGlass:0x263c48,stoneTrim:0xe8d9b7,whiteTrim:0xe3e6de,windowBar:0xd6e2e4,darkWood:0x514339,garageMetal:0x727f7b,bronze:0x8b6a48,glassAwning:0x7e9e9f,schoolRed:0xa3442e,roofGutter:0x687173,chimney:0xad6749,balcony:0xc9c1b7,railing:0x394447,shutter:0x8b705e,foundationBand:0x8e7f72,stationTimber:0x554338,stationPaving:0xaba6a1};
+const architectureColors={panelSeam:0x838e94,panelAccent:0x72a0c3,panelEntry:0x356a87,commercialSign:0x435b66,panelPlinth:0x7e8587,industrialDoor:0x68717a,stationPlaster:0xe6e4d9,stationGlass:0x4a7480,stationFrames:0xf2f0e7,stationIron:0x3a3e40,stationCanopy:0x903f35,blueStarPlaster:0xd68c34,blueStarRed:0xb7352c,starWhite:0xf0eae0,starBalcony:0xcfc6b5,railSleeper:0x685643,railPole:0x777d7f,gothicGlass:0x263c48,stoneTrim:0xe8d9b7,whiteTrim:0xe3e6de,windowBar:0xd6e2e4,darkWood:0x514339,garageMetal:0x727f7b,bronze:0x8b6a48,glassAwning:0x7e9e9f,schoolRed:0xa3442e,roofGutter:0x687173,chimney:0xad6749,balcony:0xc9c1b7,railing:0x394447,shutter:0x8b705e,foundationBand:0x8e7f72,stationTimber:0x554338,stationPaving:0xaba6a1,panelTint:0xb1c5cc};
 const architectureQueues=Object.fromEntries(Object.keys(architectureColors).map(k=>[k,[]]));
 const architectureMaterials=Object.fromEntries(Object.entries(architectureColors).map(([k,v])=>[k,new THREE.MeshStandardMaterial({color:v,roughness:k==='glassAwning'?.3:.8,metalness:k==='roofGutter'||k==='railing'?.4:.04})]));
 const archUnitBox=new THREE.BoxGeometry(1,1,1),archPlacement=new THREE.Object3D();
@@ -1333,6 +1333,10 @@ function stationWall(a,b,base,height){
   archPart('stationFrames',x+nx*.19,base+1.55,z+nz*.19,Math.min(1.48,len*.62),1.80,.15,yaw);
   archPart('stationGlass',x+nx*.28,base+1.55,z+nz*.28,Math.min(1.22,len*.56),1.55,.13,yaw);
   archPart('windowBar',x+nx*.35,base+1.55,z+nz*.35,.055,1.42,.07,yaw);
+   // White arched window heads, prominent in the station platform photographs.
+   const windowArch=new THREE.Mesh(new THREE.TorusGeometry(Math.min(.66,len*.27),.065,5,14,Math.PI),stationArchMaterial);
+   windowArch.position.set(x+nx*.34,base+2.22,z+nz*.34);windowArch.rotation.y=Math.atan2(nx,nz);
+   osmLayer.add(windowArch);
  }
 }
 function stationArch(x,z,dx,dz,base,w){
@@ -1530,6 +1534,22 @@ function miloviceStationGroundFloor(pts,base,h,cx,cz){
   archPart('stationFrames',sx+nx*.34,base+1.55,sz+nz*.34,2.5,2.28,.21,r.yaw);
   archPart('stationGlass',sx+nx*.48,base+1.54,sz+nz*.48,2.14,2.02,.15,r.yaw);
   stationBoard('OBCHOD',sx+nx*.55,base+2.88,sz+nz*.55,r.yaw,'#365a64');
+   // The opposite (street-facing) long wall receives its own station nameplate.
+   const candidates=[];
+   for(let k=0;k<pts.length;k++){
+    const a=pts[k],b=pts[(k+1)%pts.length],edgeLength=a.distanceTo(b);
+    if(edgeLength<7)continue;
+    const xm=(a.x+b.x)*.5,zm=(a.y+b.y)*.5;
+    candidates.push({a,b,xm,zm,edgeLength,side:(xm-cx)*(railProbe.x-cx)+(zm-cz)*(railProbe.y-cz)});
+   }
+   candidates.sort((a,b)=>a.side-b.side);
+   if(candidates.length){
+    const face=candidates[0],dx=face.b.x-face.a.x,dz=face.b.y-face.a.y;
+    let fx=-dz/face.edgeLength,fz=dx/face.edgeLength;
+    if(fx*(face.xm-cx)+fz*(face.zm-cz)<0){fx=-fx;fz=-fz}
+    stationBoard('Milovice',face.xm+fx*.43,base+3.12,face.zm+fz*.43,Math.atan2(fx,fz));
+    window.__miloviceLandmarkDebug.stationStreetSign=true;
+   }
  }
 }
 // Photo-verified corner building Mírová 243/36: ivory walls, dark-red steep
@@ -1646,7 +1666,9 @@ function osmBuilding(points,tags,index,osmId=null){
  const explicitHeight=parseFloat(tags.height);
  const h=Math.min(isPanelBlock?54:36,Math.max(isGarage?2.35:3.0,Number.isFinite(explicitHeight)&&explicitHeight>2?explicitHeight:isBlueStar?7.15:isMirova36?6.75:isGrocer74?3.65:isStation?7.4:isGarage?2.75:isIndustrial?5.3:isChurch?11.5:floors*(isSchool?3.4:3.05)));
  const isHouse=!isBlueStar&&!isMirova36&&!isGrocer74&&(type==='house'||(type==='residential'&&floors<=2&&w*d<1000));
- const oldCenter=osmNearestRoadName((Math.min(...xs)+Math.max(...xs))*.5,(Math.min(...zs)+Math.max(...zs))*.5)==='5. května';
+ const neighborhoodRoad=osmNearestRoadName((Math.min(...xs)+Math.max(...xs))*.5,(Math.min(...zs)+Math.max(...zs))*.5);
+ const oldCenter=neighborhoodRoad==='5. května';
+ const braniborska=neighborhoodRoad==='Braniborská',rakouska=neighborhoodRoad==='Rakouská';
  const shape=new THREE.Shape();shape.moveTo(pts[0].x,-pts[0].y);
  for(let i=1;i<pts.length;i++)shape.lineTo(pts[i].x,-pts[i].y);
  shape.closePath();
@@ -1673,7 +1695,7 @@ function osmBuilding(points,tags,index,osmId=null){
    }
   }
  }
- const wallMat=isBlueStar?blueStarWalls:isMirova36?mirova36Walls:isGrocer74?grocerWalls:isSchool?schoolWalls:isChurch?churchWalls:isStation?stationWalls:isGarage?garageWalls:isPanelBlock?panelFacadeMaterials[Math.abs(osmId||index)%panelFacadeMaterials.length]:isCommerce?commerceFacadeMaterials[Math.abs(osmId||index)%commerceFacadeMaterials.length]:isIndustrial?workWalls:osmBuildingMaterial[(oldCenter?index+3:index)%osmBuildingMaterial.length];
+ const wallMat=isBlueStar?blueStarWalls:isMirova36?mirova36Walls:isGrocer74?grocerWalls:isSchool?schoolWalls:isChurch?churchWalls:isStation?stationWalls:isGarage?garageWalls:isPanelBlock?panelFacadeMaterials[braniborska?1:rakouska?3:Math.abs(osmId||index)%panelFacadeMaterials.length]:isCommerce?commerceFacadeMaterials[Math.abs(osmId||index)%commerceFacadeMaterials.length]:isIndustrial?workWalls:osmBuildingMaterial[(oldCenter?index+3:index)%osmBuildingMaterial.length];
  if(isBikeTower){miloviceBikeTower(pts,baseHeight);osmBuildings++;return}
  if(isStation){miloviceStationMassing(pts,baseHeight,centerX,centerZ);miloviceStationGroundFloor(pts,baseHeight,h,centerX,centerZ);osmBuildings++;return}
  const mesh=new THREE.Mesh(geometry,wallMat);mesh.position.y=baseHeight+stationPortalHeight;mesh.receiveShadow=true;osmLayer.add(mesh);
@@ -1718,6 +1740,13 @@ function osmBuilding(points,tags,index,osmId=null){
    archPart('panelPlinth',mx+nx*.23,baseHeight+.66,mz+nz*.23,len,1.30,.15,rotation);
    archPart('panelSeam',mx+nx*.25,baseHeight+h*.52,mz+nz*.25,len,.045,.13,rotation);
    archPart('panelSeam',mx+nx*.28,baseHeight+h-.38,mz+nz*.28,len,.10,.14,rotation);
+    // Recognizable palette variants: Braniborská pale-ochre, Rakouská cooler accents.
+    // Street-level treatment is indicative, not a claim of surveyed individual paintwork.
+    if(braniborska||rakouska){
+     for(let floorBand=1;floorBand<Math.min(floors,10);floorBand+=2){
+      archPart(braniborska?'panelTint':'panelAccent',mx+nx*.27,baseHeight+floorBand*3.05,mz+nz*.27,len,.23,.14,rotation);
+     }
+    }
   }else if(isCommerce&&!isBlueStar){
    archPart('commercialSign',mx+nx*.30,baseHeight+3.08,mz+nz*.30,len,.34,.18,rotation);
    archPart('stationGlass',mx+nx*.31,baseHeight+1.52,mz+nz*.31,Math.max(1.0,len-.55),2.15,.13,rotation);
@@ -1923,7 +1952,7 @@ async function rpLoadCityArea(id){
   osmFurnitureCount=0;
   rpAppendOSMElements(osm.elements);
   finalizeFoundations();finalizeFacades();finalizeArchitecture();
-  chunkMilovice();rpBuildRoadGraph();rpPopulateRegionalTraffic(area);
+  chunkMilovice();rpBuildRoadGraph();rpPopulateRegionalTraffic(area);improveMiloviceVisuals();
   loadedCityAreas.add(id);
   window.__miloviceAreasLoaded=[...loadedCityAreas];
   window.__miloviceAreaStats={buildings:osmBuildings,roads:osmRoads.length};
@@ -2079,7 +2108,10 @@ function improveMiloviceVisuals(){
     const t=(k+.5)/steps,xx=a.x+dx*t,zz=a.y+dz*t,side=k%2?1:-1;
     if(rnd()<.46){
      const offset=9+rnd()*3,tx=xx+nx*offset*side,tz=zz+nz*offset*side;
-     trunks.push([tx,1.7,tz,.35,3.4,.35,0]);
+     // Avoid random tree placement right against the station and church facades.
+      const stationCenter=osmPoint({lat:50.22910,lon:14.88210}),churchCenter=osmPoint({lat:50.22805,lon:14.88403});
+      if(Math.hypot(tx-stationCenter.x,tz-stationCenter.y)<34||Math.hypot(tx-churchCenter.x,tz-churchCenter.y)<24)continue;
+      trunks.push([tx,1.7,tz,.35,3.4,.35,0]);
      crowns.push([tx,4.7,tz,2.6+rnd(),2.7+rnd(),2.6+rnd(),rnd()*6]);
      crowns2.push([tx+.55,5.1,tz-.45,1.8,2,1.8,rnd()*6]);
     }else if(rnd()<.25){
@@ -2091,8 +2123,8 @@ function improveMiloviceVisuals(){
   }
  }
  visualBatch(new THREE.BoxGeometry(1,1,1),visualMaterials.bark,trunks);
- visualBatch(new THREE.IcosahedronGeometry(1,1),visualMaterials.foliage,crowns);
- visualBatch(new THREE.IcosahedronGeometry(1,1),visualMaterials.foliage2,crowns2);
+ visualBatch(new THREE.IcosahedronGeometry(1,2),visualMaterials.foliage,crowns);
+ visualBatch(new THREE.IcosahedronGeometry(1,2),visualMaterials.foliage2,crowns2);
  visualBatch(new THREE.CylinderGeometry(.5,.5,1,6),visualMaterials.roof,poles);
  visualBatch(new THREE.SphereGeometry(1,8,6),new THREE.MeshBasicMaterial({color:0xffe4a4}),lamps);
 }
