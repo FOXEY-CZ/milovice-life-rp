@@ -783,6 +783,7 @@ function chunkMilovice(){
  osmChunks.clear();osmLayer.updateMatrixWorld(true);
  for(const object of [...osmLayer.children]){
   if(!object.isMesh&&!object.isLine)continue;
+  if(object.isInstancedMesh)continue; // All town-wide instances retain visibility; source unit cube is not their geographic bounds.
   object.geometry.computeBoundingSphere();
   const center=object.geometry.boundingSphere.center.clone().applyMatrix4(object.matrixWorld);
   const radius=object.geometry.boundingSphere.radius*object.matrixWorld.getMaxScaleOnAxis();
@@ -2294,7 +2295,7 @@ renderer.toneMappingExposure=1.30;
 sun.intensity=2.6;
 scene.fog.near=450;scene.fog.far=1200;
 let last=performance.now(),lastHud=0,lastMap=0,perfFrames=0,perfSince=performance.now();const perfEl=document.getElementById('perf');function animate(t){requestAnimationFrame(animate);const dt=Math.min(Math.max((t-last)/1000,0),.05);last=t;
-elapsed+=dt;rpAnimateTraffic(dt);
+elapsed+=dt;rpAnimateTraffic(dt);if(Math.floor(elapsed/3)!==Math.floor((elapsed-dt)/3))maybeStreamCityAreas();
 if(walking){
  avatar.visible=walkCam!==1;
  let strafe=(keys.has('KeyD')?1:0)-(keys.has('KeyA')?1:0);
