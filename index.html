@@ -348,113 +348,32 @@ function upgradeBusAppearance(){
  for(let i=0;i<5;i++)cube(.08,.045,.55,detailDark,-.55+i*.27,3.31,.35,bus);
 }
 upgradeBusAppearance();
-// 4.3 — complete replacement of the previous boxy bus silhouette.
-// Preserve the existing bus root, doors and driving logic, but rebuild all visible body panels.
-for(const child of [...bus.children]){if(child!==doors)bus.remove(child);}
+// 5.0 modern PID-inspired regional vehicle. Red/white sculpted geometry, tinted
+// glazing, destination board and rotating capable wheels. The exact bus make is unverified.
+for(const child of [...bus.children])if(child!==doors)bus.remove(child);
 const coach=new THREE.Group();bus.add(coach);
-const cPaint=new THREE.MeshStandardMaterial({color:0xf3c72d,roughness:.44,metalness:.18});
-const cWhite=new THREE.MeshStandardMaterial({color:0xe7e9e5,roughness:.65,metalness:.08});
-const cBlack=new THREE.MeshStandardMaterial({color:0x151d23,roughness:.65});
-const cTrim=new THREE.MeshStandardMaterial({color:0x334d5a,roughness:.38,metalness:.4});
-const cGlass=new THREE.MeshStandardMaterial({color:0x23485c,roughness:.13,metalness:.3,transparent:true,opacity:.83,side:THREE.DoubleSide});
-const cRubber=new THREE.MeshStandardMaterial({color:0x181b1d,roughness:.92});
-const cHub=new THREE.MeshStandardMaterial({color:0xbfc6c7,roughness:.34,metalness:.7});
-const cHead=new THREE.MeshBasicMaterial({color:0xfff4ce});
-const cRear=new THREE.MeshBasicMaterial({color:0xe3271e});
-function cp(w,h,d,m,x,y,z,parent=coach){return cube(w,h,d,m,x,y,z,parent)}
-// Full-size urban low-floor bus: 10.8m long, 2.55m wide, 3.05m tall.
-// Narrow lower skirt and panoramic continuous glazing instead of a solid rectangular block.
-cp(2.46,.75,10.65,cPaint,0,1.05,0);
-cp(2.52,.16,10.72,cBlack,0,.67,0);
-cp(2.48,.12,10.7,cWhite,0,2.97,0);
-cp(2.46,.20,10.7,cPaint,0,2.78,0);
-cp(2.48,.12,10.72,cBlack,0,1.48,0);
-cp(2.44,.20,10.6,cTrim,0,1.36,0);
-// Black window belt and recessed glass panels.
-for(const side of [-1,1]){
- cp(.055,1.22,10.32,cBlack,side*1.245,2.11,0);
- for(let i=0;i<8;i++){
-  const zz=-4.49+i*1.27;
-  cp(.065,1.03,1.13,cGlass,side*1.285,2.15,zz);
-  cp(.085,1.18,.055,cTrim,side*1.30,2.14,zz+.60);
- }
- cp(.075,.07,10.4,cHub,side*1.285,2.76,0);
- cp(.085,.12,10.4,cWhite,side*1.285,1.48,0);
- cp(.08,.08,10.35,cTrim,side*1.29,.95,0);
- // Wheel wells are dark recessed arches with correctly scaled, visible tyres.
- for(const zz of [-3.45,3.55]){
-  const arch=new THREE.Mesh(new THREE.TorusGeometry(.69,.095,8,24,Math.PI),cBlack);
-  arch.rotation.y=side*Math.PI/2;arch.position.set(side*1.30,.75,zz);coach.add(arch);
-  const wheel=new THREE.Mesh(new THREE.CylinderGeometry(.60,.60,.29,28),cRubber);
-  wheel.rotation.z=Math.PI/2;wheel.position.set(side*1.30,.61,zz);coach.add(wheel);
-  const rim=new THREE.Mesh(new THREE.CylinderGeometry(.35,.35,.31,24),cHub);
-  rim.rotation.z=Math.PI/2;rim.position.copy(wheel.position);coach.add(rim);
-  const hub=new THREE.Mesh(new THREE.CylinderGeometry(.13,.13,.34,16),cTrim);
-  hub.rotation.z=Math.PI/2;hub.position.copy(wheel.position);coach.add(hub);
- }
- // Folding mirrors: arm, black casing and silver reflection.
- cp(.45,.075,.08,cBlack,side*1.42,2.46,-5.02);
- cp(.28,.45,.17,cBlack,side*1.59,2.36,-5.05);
- cp(.23,.36,.03,cHub,side*1.59,2.36,-5.16);
- // City-bus side livery.
- cp(.08,.11,10.3,cWhite,side*1.29,1.10,0);
- cp(.09,.07,10.3,cTrim,side*1.30,1.21,0);
+const playerBusDetailed=makePidBus(THREE,'432');
+coach.add(playerBusDetailed.group);
+doors.clear();doors.visible=true;
+const doorFrame=new THREE.MeshStandardMaterial({color:0x212b30,roughness:.46});
+const doorGlass=new THREE.MeshStandardMaterial({color:0x376175,metalness:.19,roughness:.22,transparent:true,opacity:.72});
+for(const zz of [-3.80,-3.11]){
+ const shell=new THREE.Mesh(new THREE.BoxGeometry(.085,1.77,.64),doorFrame);
+ shell.position.set(1.35,1.70,zz);doors.add(shell);
+ const pane=new THREE.Mesh(new THREE.BoxGeometry(.092,1.09,.55),doorGlass);
+ pane.position.set(1.40,1.97,zz);doors.add(pane);
 }
-// Panoramic front and rear windows, separated from the lower fascia.
-cp(2.38,1.32,.09,cBlack,0,2.11,-5.37);
-cp(2.28,1.18,.10,cGlass,0,2.14,-5.43);
-cp(2.36,.94,.10,cBlack,0,2.17,5.37);
-cp(2.25,.82,.11,cGlass,0,2.18,5.44);
-cp(2.50,.45,.20,cPaint,0,1.19,-5.37);
-cp(2.50,.31,.20,cBlack,0,.78,-5.39);
-cp(2.45,.28,.17,cPaint,0,1.15,5.39);
-cp(2.50,.30,.20,cBlack,0,.78,5.41);
-// Sloping rounded nose impression with shallow angled fascia.
-const nose=cp(2.32,.38,.18,cWhite,0,1.42,-5.41);nose.rotation.x=-.17;
-for(const side of [-1,1]){
- cp(.37,.20,.11,cHead,side*.97,1.14,-5.52);
- cp(.18,.15,.12,cHead,side*.97,.95,-5.52);
- cp(.31,.38,.10,cRear,side*.99,1.25,5.51);
- cp(.31,.14,.11,cHead,side*.99,.96,5.52);
- cp(.12,.16,.08,cHead,side*1.2,2.68,-5.42);
+function led(text,w,h){
+ const cv=document.createElement('canvas');cv.width=512;cv.height=128;
+ const ctx=cv.getContext('2d');ctx.fillStyle='#141b20';ctx.fillRect(0,0,512,128);
+ ctx.fillStyle='#f0ba45';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 70px system-ui';
+ ctx.fillText(text,256,70,490);
+ const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;
+ return new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));
 }
-cp(1.15,.09,.10,cHub,0,.77,-5.54);
-cp(1.2,.10,.10,cHub,0,.77,5.52);
-// Realistic roof HVAC and ventilators.
-cp(1.55,.18,2.4,cWhite,0,3.13,.35);
-cp(1.18,.13,1.55,cTrim,0,3.26,.35);
-for(let i=0;i<6;i++)cp(.10,.045,.85,cBlack,-.44+i*.18,3.34,.35);
-// Two-piece door glazing stays tied to the existing door opening state.
-doors.clear();doors.visible=true; // 'open' is initialized below; updateUI controls door state after startup.
-for(const zz of [-3.48,-2.75]){
- cp(.075,1.67,.64,cBlack,1.31,1.76,zz,doors);
- cp(.083,1.04,.54,cGlass,1.37,2.00,zz,doors);
- cp(.10,.08,.65,cHub,1.39,1.47,zz,doors);
-}
-// Modern low-floor coach accents and physically placed fittings at the 10.8 m proportions.
-const coachBlue=new THREE.MeshStandardMaterial({color:0x0f7196,metalness:.22,roughness:.44});
-for(const side of [-1,1]){
- cp(.082,.145,9.70,coachBlue,side*1.317,1.53,0);
- cp(.087,.095,10.0,cWhite,side*1.322,1.15,0);
- cp(.11,.16,.52,cHead,side*1.25,.94,-4.95);
- cp(.11,.17,.49,cRear,side*1.25,.95,4.95);
- // Mid-door frame on the right-hand passenger side.
- if(side===1){
-  cp(.090,1.63,.07,cBlack,1.35,1.76,.47);
-  cp(.090,1.63,.07,cBlack,1.35,1.76,1.80);
-  cp(.10,.09,1.33,cHub,1.36,2.56,1.14);
- }
-}
-// Visible front wipers and fleet plate.
-for(const side of [-1,1]){
- const wipe=cp(1.03,.035,.065,cBlack,side*.56,1.70,-5.59);wipe.rotation.z=side*.13;
-}
-cp(1.02,.21,.08,cBlack,0,.76,-5.59);
-cp(.68,.095,.09,cWhite,0,.76,-5.65);
-// Značení linky: přední i zadní LED panel.
-function led(text,w,h){const cv=document.createElement('canvas');cv.width=512;cv.height=128;const c=cv.getContext('2d');c.fillStyle='#121b1d';c.fillRect(0,0,512,128);c.fillStyle='#f9bb38';c.font='bold 90px Arial';c.textAlign='center';c.fillText(text,256,94);return new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv),side:THREE.DoubleSide}));}
-const frontLed=led('432',1.55,.37);frontLed.position.set(0,2.79,-5.57);bus.add(frontLed);
-const backLed=led('432',1.15,.31);backLed.position.set(0,2.64,5.57);bus.add(backLed);frontLed.visible=false;backLed.visible=false;
+const frontLed=led('432 • MILOVICE',1.85,.39);frontLed.position.set(0,2.78,-5.65);bus.add(frontLed);
+const backLed=led('432',1.15,.33);backLed.position.set(0,2.65,5.60);bus.add(backLed);
+frontLed.visible=false;backLed.visible=false;
 // Proporčnější vizuál z třetí osoby bez změny jízdní fyziky.
 let z=16,x=-3,angle=0,speed=0,pass=0,next=0,open=false,cam=0,elapsed=0,rating=100;
 let walking=true,paid=false,px=-6,pz=16,walkYaw=0;
