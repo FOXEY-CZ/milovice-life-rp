@@ -737,6 +737,50 @@ function updateMiloviceChunks(force=false){
 for(const item of originalCity)item.visible=false;
 // Never render the legacy fictional town while real Milovice is loading.
 const loadingScreen=document.createElement('div');loadingScreen.id='milovice-loading';loadingScreen.style.cssText='position:fixed;inset:0;background:#102538;z-index:1;display:flex;align-items:center;justify-content:center;color:white;font:600 18px system-ui;text-align:center;padding:24px;pointer-events:none';loadingScreen.textContent='🗺️ Připravuji skutečné Milovice…';document.body.appendChild(loadingScreen);
+// 4.6: Build railway tracks from REAL OpenStreetMap railway centerlines.
+// Gauge comes from OSM (1435 mm standard); sleepers, catenary and ballast dimensions
+// are game approximations, not engineering survey data.
+const railSteel=new THREE.MeshStandardMaterial({color:0xa7acb0,roughness:.36,metalness:.72,side:THREE.DoubleSide});
+const railBallast=new THREE.MeshStandardMaterial({color:0x74716d,roughness:1,side:THREE.DoubleSide});
+const railPlatformMat=new THREE.MeshStandardMaterial({color:0xb1aaa0,roughness:.96,side:THREE.DoubleSide});
+function miloviceRailTrack(points,tags){
+ if(points.length<2)return;
+ if(tags.railway==='platform'){
+  if(tags.area!=='yes'||points.length<3)return;
+  const sh=new THREE.Shape();sh.moveTo(points[0].x,-points[0].y);
+  for(let i=1;i<points.length;i++)sh.lineTo(points[i].x,-points[i].y);sh.closePath();
+  const geom=new THREE.ShapeGeometry(sh);geom.rotateX(-Math.PI/2);
+  const p=geom.attributes.position;
+  for(let i=0;i<p.count;i++)p.setY(i,terrainAt(p.getX(i),p.getZ(i))+.29);
+  p.needsUpdate=true;geom.computeVertexNormals();osmLayer.add(new THREE.Mesh(geom,railPlatformMat));
+  return;
+ }
+ if(tags.railway!=='rail')return; // Disused tracks should not look actively maintained.
+ let sleepers=0;
+ for(let i=1;i<points.length;i++){
+  const a=points[i-1],b=points[i],dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);
+  if(len<.2||len>300)continue;
+  const nx=-dz/len,nz=dx/len;
+  osmStrip(a,b,3.2,railBallast,.13);
+  for(const side of [-1,1]){
+   osmStrip(new THREE.Vector2(a.x+nx*.735*side,a.y+nz*.735*side),
+            new THREE.Vector2(b.x+nx*.735*side,b.y+nz*.735*side),.115,railSteel,.39);
+  }
+  const yaw=Math.atan2(-dx,-dz);
+  for(let d=1.0;d<len-.5;d+=1.42){
+   const px=a.x+dx*d/len,pz=a.y+dz*d/len;
+   archPart('railSleeper',px,terrainAt(px,pz)+.245,pz,2.48,.18,.24,yaw);
+   sleepers++;
+  }
+  if(tags.electrified==='contact_line'){
+   for(let d=11;d<len-5;d+=42){
+    const px=a.x+dx*d/len+nx*3.7,pz=a.y+dz*d/len+nz*3.7;
+    archPart('railPole',px,terrainAt(px,pz)+3.2,pz,.18,6.4,.18);
+    archPart('railPole',px-nx*1.9,terrainAt(px,pz)+6.18,pz-nz*1.9,3.7,.11,.11,yaw);
+   }
+  }
+ }
+}
 // Procedural asphalt: deterministic micro-grain, no remote textures or extra draw calls.
 const asphaltCanvas=document.createElement('canvas');asphaltCanvas.width=128;asphaltCanvas.height=128;
 const asphaltCtx=asphaltCanvas.getContext('2d');const asphaltPixels=asphaltCtx.createImageData(128,128);
@@ -772,6 +816,7 @@ const workWalls=new THREE.MeshStandardMaterial({color:0xb9b9b0,roughness:.92});
 const osmParkMaterial=mat(0x769b65),osmStripeMaterial=mat(0xf5e8c8);
 let osmActive=false,osmReady=false,osmLoading=false,oldPosition=null,osmRoads=[],osmBuildings=0,osmNamedRoads=[],osmLandmarks=[];
 const osmDriveRoads=[];
+const osmRailways=[];
 const osmBtn=document.createElement('button');
 osmBtn.id='osm3d';osmBtn.type='button';osmBtn.textContent='⏳ Načítám Milovice…';
 osmBtn.style.cssText='position:fixed;right:12px;top:132px;z-index:46;background:#193d58;border:1px solid #93b4c7;min-height:39px;font-size:12px;padding:8px';
@@ -952,7 +997,7 @@ function finalizeFoundations(){
 }
 // Photo-referenced detail pass: repeated meshes are batched as instanced geometry.
 // Facades are modelled from mapped footprints, not copied from proprietary photos.
-const architectureColors={gothicGlass:0x263c48,stoneTrim:0xe8d9b7,whiteTrim:0xe3e6de,windowBar:0xd6e2e4,darkWood:0x514339,garageMetal:0x727f7b,bronze:0x8b6a48,glassAwning:0x7e9e9f,schoolRed:0xa3442e,roofGutter:0x687173,chimney:0xad6749,balcony:0xc9c1b7,railing:0x394447,shutter:0x8b705e,foundationBand:0x8e7f72};
+const architectureColors={railSleeper:0x685643,railPole:0x777d7f,gothicGlass:0x263c48,stoneTrim:0xe8d9b7,whiteTrim:0xe3e6de,windowBar:0xd6e2e4,darkWood:0x514339,garageMetal:0x727f7b,bronze:0x8b6a48,glassAwning:0x7e9e9f,schoolRed:0xa3442e,roofGutter:0x687173,chimney:0xad6749,balcony:0xc9c1b7,railing:0x394447,shutter:0x8b705e,foundationBand:0x8e7f72};
 const architectureQueues=Object.fromEntries(Object.keys(architectureColors).map(k=>[k,[]]));
 const architectureMaterials=Object.fromEntries(Object.entries(architectureColors).map(([k,v])=>[k,new THREE.MeshStandardMaterial({color:v,roughness:k==='glassAwning'?.3:.8,metalness:k==='roofGutter'||k==='railing'?.4:.04})]));
 const archUnitBox=new THREE.BoxGeometry(1,1,1),archPlacement=new THREE.Object3D();
@@ -1277,7 +1322,7 @@ async function fetchMiloviceOSM(){
  // Avoid stale GitHub Pages/browser caches after the automated OSM export.
  let lastError=null;
  for(let attempt=0;attempt<2;attempt++){
-  const url='./data/milovice-osm.json?map=20261112-461&retry='+attempt;
+  const url='./data/milovice-osm.json?map=20261112-architecture-rails&retry='+attempt;
   try{
    const response=await fetch(url,{cache:'no-store'});
    if(!response.ok)throw Error('Soubor mapy: HTTP '+response.status);
@@ -1416,7 +1461,7 @@ osmBtn.onclick=async()=>{
  if(osmLoading)return;
  osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';osmMessage('Načítám místní soubor mapy ze stejného GitHub Pages webu…');
  try{
- const elements=await fetchMiloviceOSM();await rpLoadTerrain();foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;osmFurnitureCount=0;
+ const elements=await fetchMiloviceOSM();await rpLoadTerrain();foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;osmFurnitureCount=0;
   if(trafficGroup.parent!==osmLayer)osmLayer.add(trafficGroup);
   if(visualDetails.parent!==osmLayer)osmLayer.add(visualDetails);for(const batch of facadeBatches)batch.clear();
  if(terrainGrid)rpTerrainMesh();else cube(2200,.16,2200,osmParkMaterial,0,-.18,0,osmLayer);
@@ -1424,7 +1469,8 @@ osmBtn.onclick=async()=>{
  if(el.tags?.highway){const points=el.geometry.map(osmPoint);osmRoads.push(points);if(el.tags.name)osmNamedRoads.push({name:el.tags.name,points});const width=el.tags.highway==='primary'?11:el.tags.highway==='secondary'?9:el.tags.highway==='tertiary'?8:el.tags.highway==='pedestrian'?4:el.tags.highway==='footway'?1.8:el.tags.highway==='path'?1.65:el.tags.highway==='service'?4.5:7.8;
   if(['primary','secondary','tertiary','residential','unclassified','living_street','service'].includes(el.tags.highway))osmDriveRoads.push({points,width,kind:el.tags.highway,oneway:el.tags.oneway==='yes'?1:el.tags.oneway==='-1'?-1:0});
  for(let i=1;i<points.length;i++){osmRoadSegment(points[i-1],points[i],width,el.tags.highway);osmRoadFurniture(points[i-1],points[i],width,el.tags.highway)}
- }else if(el.tags?.building){osmBuilding(el.geometry,el.tags,osmBuildings);osmAddLandmark(el)}
+ }else if(el.tags?.railway){osmRailways.push(el);miloviceRailTrack(el.geometry.map(osmPoint),el.tags)}
+  else if(el.tags?.building){osmBuilding(el.geometry,el.tags,osmBuildings);osmAddLandmark(el)}
  }
  if(!osmRoads.length)throw Error('Žádné silnice v odpovědi');finalizeFoundations();finalizeFacades();finalizeArchitecture();osmStreetLabels();chunkMilovice();improveMiloviceVisuals();rpPopulate();
  osmReady=true;osmNotice.style.display='none';osmSetActive(true);document.getElementById('status').textContent='Prozkoumávej skutečné Milovice. Na mapě najdeš pojmenované ulice a budovy.';
