@@ -9,7 +9,7 @@
 #perf{backdrop-filter:blur(8px);border-radius:12px}
 #minimap{box-shadow:0 6px 20px #0007}
 </style></head><body><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><p>Verze 4.5 · build <strong id="build-label">20261112-drive</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h <span id="pass-wrap">· Cestující: <strong id="pass">0</strong></span></p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p style="display:none">Další zastávka: <strong id="stop">Milovice, žel. st.</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p style="display:none">Trasa: <strong id="progress">0 / 4</strong> · Do zastávky: <strong id="distance">16 m</strong></p><p>Čas: <strong id="clock">00:00</strong> · Hodnocení: <strong id="rating">100</strong> %</p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Plyn</button><button data-key="KeyS">▼ Brzda / R</button><button data-key="KeyD">▶</button><button id="enter">🚶 Vystoupit</button><button id="doors">🚪 Dveře</button><button id="horn">📣 Klakson</button><button id="camera">📷 Kamera</button><button id="reset">↺ Reset</button></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
-<section id="realmap" aria-label="Skutečná mapa Milovic"><div id="maphead"><strong>🗺️ Milovice – skutečná mapa</strong><button id="closemap" type="button">✕ Zpět do hry</button></div><div id="osmmap"></div><div id="mapfoot">Mapová data © přispěvatelé OpenStreetMap. <strong>3D herní svět je zatím modelový</strong> – poloha autobusu není napojena na skutečné GPS souřadnice. Mapa slouží jako podklad pro budoucí přestavbu.</div></section><script>
+<section id="realmap" aria-label="Skutečná mapa Milovic"><div id="maphead"><strong>🗺️ Milovice – skutečná mapa</strong><button id="closemap" type="button">✕ Zpět do hry</button></div><div id="osmmap"></div><div id="mapfoot">Silnice a půdorysy: © přispěvatelé OpenStreetMap (ODbL). Výškopis: © ČÚZK / Zeměměřický úřad, DMR 4G (CC BY 4.0), nadmořské výšky jsou interpolovány na herní síť 10 m. Fasády a barvy jsou herní aproximací podle veřejných fotografií, nikoli přesnou kopií každého objektu.</div></section><script>
 (function(){
  const box=document.createElement('div');box.id='startup-error';box.style.cssText='display:none;position:fixed;z-index:999999;left:12px;right:12px;top:35%;background:#301b24;color:white;border:2px solid #ff8792;border-radius:14px;padding:18px;font:15px system-ui;box-shadow:0 10px 35px #0008;white-space:pre-wrap;max-height:45vh;overflow:auto';
  document.addEventListener('DOMContentLoaded',()=>document.body.appendChild(box));
@@ -490,7 +490,50 @@ const osmNotice=document.createElement('div');osmNotice.style.cssText='display:n
 function osmMessage(message){osmNotice.style.display='block';osmNotice.textContent=message}
 document.body.appendChild(osmBtn);
 function osmPoint(p){const lat0=50.226,lon0=14.889;return new THREE.Vector2((p.lon-lon0)*111320*Math.cos(lat0*Math.PI/180),-(p.lat-lat0)*111320)}
-const osmSidewalkMat=new THREE.MeshStandardMaterial({color:0xc9c6bf,roughness:1}),osmRoofMat=mat(0x666a68),osmWindowMat=mat(0x4b7683);const osmRoofPalette=[mat(0x985e49),mat(0xb5684d),mat(0x745652),mat(0x87766a),mat(0x545a5e)];
+const osmSidewalkMat=new THREE.MeshStandardMaterial({color:0xbcb5a9,roughness:1}),osmRoofMat=mat(0x666a68),osmWindowMat=mat(0x4b7683);
+function miloviceRoofTiles(){
+ const cv=document.createElement('canvas');cv.width=cv.height=256;const ctx=cv.getContext('2d');
+ ctx.fillStyle='#b57558';ctx.fillRect(0,0,256,256);
+ let state=1614;const rnd=()=>((state=Math.imul(state,1664525)+1013904223)>>>0)/4294967296;
+ for(let yy=0;yy<256;yy+=24){
+  ctx.fillStyle='#84533e';ctx.fillRect(0,yy,256,2);
+  for(let xx=-20;xx<270;xx+=34){
+   const offset=(Math.floor(yy/24)%2)*17;
+   ctx.fillStyle=rnd()>.48?'rgba(106,53,34,.11)':'rgba(239,185,122,.11)';
+   ctx.fillRect(xx+offset,yy+2,33,21);
+   ctx.fillStyle='rgba(90,48,33,.25)';ctx.fillRect(xx+offset,yy+2,1,21);
+  }
+ }
+ for(let i=0;i<1100;i++){ctx.fillStyle='rgba(63,46,35,.04)';ctx.fillRect(rnd()*256,rnd()*256,2,2)}
+ const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(2,2);t.colorSpace=THREE.SRGBColorSpace;return t;
+}
+const roofTileMap=miloviceRoofTiles();
+const osmRoofPalette=[
+ new THREE.MeshStandardMaterial({color:0xffffff,map:roofTileMap,roughness:.96,side:THREE.DoubleSide}),
+ mat(0xb5684d),mat(0x745652),mat(0x87766a),mat(0x545a5e)
+];
+function miloviceGableRoof(pts,base,h,material){
+ if(pts.length!==4)return null;
+ const [a,b,c,d]=pts,ab=a.distanceTo(b),bc=b.distanceTo(c);
+ if(Math.min(ab,bc)<4||Math.max(ab,bc)>42)return null;
+ const rise=Math.min(3.2,Math.min(ab,bc)*.32),ridgeY=base+h+rise,eaveY=base+h+.06;
+ const mid=(p,q)=>({x:(p.x+q.x)/2,z:(p.y+q.y)/2});
+ let q1,q2,faces;
+ if(ab>=bc){q1=mid(a,d);q2=mid(b,c);faces=[[a,b,q2,q1],[q1,q2,c,d]]}
+ else{q1=mid(a,b);q2=mid(d,c);faces=[[a,q1,q2,d],[q1,b,c,q2]]}
+ const points=[],uvs=[],indices=[];
+ for(let f=0;f<2;f++){
+  const verts=faces[f];
+  for(let k=0;k<4;k++){
+   const p=verts[k],isRidge=(p===q1||p===q2);
+   points.push(p.x,isRidge?ridgeY:eaveY,p.y===undefined?p.z:p.y);
+   uvs.push(k===0||k===3?0:2,k<2?0:2);
+  }
+  const j=f*4;indices.push(j,j+1,j+2,j,j+2,j+3);
+ }
+ const geom=new THREE.BufferGeometry();geom.setAttribute('position',new THREE.Float32BufferAttribute(points,3));geom.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));geom.setIndex(indices);geom.computeVertexNormals();
+ return new THREE.Mesh(geom,material);
+}
 function osmStrip(a,b,width,material,y=.15){
  const dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);if(len<.15||len>800)return;
  if(!terrainGrid){
@@ -595,7 +638,10 @@ function osmBuilding(points,tags,index){
  roofShape.closePath();
  const roofGeo=new THREE.ShapeGeometry(roofShape);roofGeo.rotateX(-Math.PI/2);
  const roof=new THREE.Mesh(roofGeo,osmRoofPalette[index%osmRoofPalette.length]);
- roof.position.y=baseHeight+h+.025;osmLayer.add(roof);
+ roof.position.y=baseHeight+h+.025;
+  const home=tags.building==='house'||tags.building==='residential';
+  const pitched=home?miloviceGableRoof(pts,baseHeight,h,osmRoofPalette[0]):null;
+  if(pitched)osmLayer.add(pitched);else osmLayer.add(roof);
  // Small rooftop ventilation blocks create recognisable silhouettes without expensive meshes.
  if(index%4===0 && w>10 && d>9){
   const cx=(Math.min(...xs)+Math.max(...xs))*.5,cz=(Math.min(...zs)+Math.max(...zs))*.5;
