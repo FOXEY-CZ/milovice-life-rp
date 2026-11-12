@@ -134,6 +134,7 @@ document.getElementById('closemap').addEventListener('click',()=>mapPanel.classL
 document.addEventListener('keydown',e=>{if(e.code==='Escape'&&mapPanel.classList.contains('open')){mapPanel.classList.remove('open');e.stopImmediatePropagation()}},true);
 
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+import {makeHumanRig,makeRoadCar,makePidBus,makeCityElefantStyleTrain} from './scripts/world-models.js?v=50';
 const BUILD_ID='20261113-worldlod-50';
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x9bc8ec);scene.fog=new THREE.Fog(0x9bc8ec,280,850);const camera=new THREE.PerspectiveCamera(67,innerWidth/innerHeight,.1,1400);const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.25));renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x65725a,1.6));const sun=new THREE.DirectionalLight(0xffefcc,1.7);sun.position.set(50,100,30);scene.add(sun);
 
@@ -462,35 +463,11 @@ let walkCam=0; // 0 = third-person orbit, 1 = first-person look
 let activeCar=null,busPark={x,z,angle}; // Player-controlled vehicle; bus stays parked while another car is driven.
 let busJob=null,playerSpawnCar=null; // Missions never start merely by entering a bus.
 let money=0;try{money=Math.max(0,Number(localStorage.getItem('milovice_rp_money')||0)||0)}catch(e){}
-// 4.6: Civilian silhouette with rounded geometry, clothing seams, hair and moving limbs.
-// Fewer than 20 static meshes; the third-person player should no longer resemble a Roblox cube.
+// 5.0 sculpted player with face, hairstyle, separate arms and legs.
 const avatar=new THREE.Group();scene.add(avatar);
-const skin=new THREE.MeshStandardMaterial({color:0xd4a181,roughness:.96});
-const jacket=new THREE.MeshStandardMaterial({color:0x245c7c,roughness:.86});
-const jacketLight=new THREE.MeshStandardMaterial({color:0x3b7895,roughness:.88});
-const pants=new THREE.MeshStandardMaterial({color:0x303d45,roughness:.95});
-const sneaker=new THREE.MeshStandardMaterial({color:0x20282f,roughness:.8});
-const hair=new THREE.MeshStandardMaterial({color:0x34302d,roughness:1});
-const shirt=new THREE.MeshStandardMaterial({color:0xe4ddd1,roughness:.96});
-function avatarDetail(geo,material,x,y,z){
- const mesh=new THREE.Mesh(geo,material);mesh.position.set(x,y,z);avatar.add(mesh);return mesh;
-}
-avatarDetail(new THREE.CapsuleGeometry(.35,.56,3,9),jacket,0,1.34,0);
-avatarDetail(new THREE.BoxGeometry(.19,.60,.12),jacketLight,0,1.28,-.31);
-avatarDetail(new THREE.BoxGeometry(.10,.49,.13),shirt,0,1.42,-.38);
-avatarDetail(new THREE.CylinderGeometry(.125,.135,.28,10),skin,0,1.95,0);
-avatarDetail(new THREE.SphereGeometry(.29,14,10),skin,0,2.18,-.02);
-const hairCap=avatarDetail(new THREE.SphereGeometry(.30,14,8,0,Math.PI*2,0,Math.PI*.56),hair,0,2.34,-.02);
-avatarDetail(new THREE.BoxGeometry(.15,.045,.08),hair,0,2.17,-.29);
-avatarDetail(new THREE.BoxGeometry(.85,.11,.15),jacketLight,0,1.83,-.02);
-const playerArms=[],playerLegs=[];
-for(const side of [-1,1]){
- const arm=avatarDetail(new THREE.CapsuleGeometry(.135,.51,3,7),jacket,side*.47,1.35,.02);
- const hand=avatarDetail(new THREE.SphereGeometry(.13,9,7),skin,side*.47,.94,.02);
- const leg=avatarDetail(new THREE.CapsuleGeometry(.15,.48,3,8),pants,side*.19,.58,0);
- avatarDetail(new THREE.BoxGeometry(.31,.16,.53),sneaker,side*.19,.115,-.11);
- playerArms.push(arm);playerLegs.push(leg);
-}
+const playerRig=makeHumanRig(THREE,0,0x245c7c,true);
+avatar.add(playerRig.group);
+const playerArms=playerRig.arms,playerLegs=playerRig.legs;
 avatar.visible=true;
 function notify(t){document.getElementById('status').textContent=t}
 function cycleCamera(){
@@ -2269,32 +2246,13 @@ function rpBuildCrosswalks(){
  }
 }
 function makeTrafficCar(index,segment){
- const g=new THREE.Group(),type=index%9,paint=type===8?carPaint[1]:carPaint[index%carPaint.length];
- let length=3.85,roofHeight=.59;
- if(type===2||type===5){length=4.52;roofHeight=.72}
- if(type===6){length=4.9;roofHeight=1.04}
- if(type===7){length=5.8;roofHeight=1.42}
- const body=new THREE.Mesh(carBaseGeo,paint);body.castShadow=true;body.position.y=.70;body.scale.z=length/3.85;g.add(body);
- const roof=new THREE.Mesh(carCabGeo,paint);roof.position.set(0,1.18+Math.max(0,roofHeight-.59)*.35,-.12);roof.scale.set(1,roofHeight/.59,(type===6||type===7)?1.36:1);g.add(roof);
- const windshield=new THREE.Mesh(new THREE.BoxGeometry(1.38,.39,.035),carGlass);windshield.position.set(0,1.30,-1.13);g.add(windshield);
- const rearGlass=new THREE.Mesh(new THREE.BoxGeometry(1.38,.35,.035),carGlass);rearGlass.position.set(0,1.30,.89);g.add(rearGlass);
- for(const side of [-1,1]){
-  const window=new THREE.Mesh(new THREE.BoxGeometry(.038,.36,1.50),carGlass);window.position.set(side*.756,1.30,-.13);g.add(window);
-  for(const zz of [-length*.34,length*.32]){
-   const wheel=new THREE.Mesh(carWheelGeo,carTyre);wheel.rotation.z=Math.PI/2;wheel.position.set(side*.92,.40,zz);g.add(wheel);
-   const rim=new THREE.Mesh(new THREE.CylinderGeometry(.17,.17,.21,10),carChrome);rim.rotation.z=Math.PI/2;rim.position.copy(wheel.position);g.add(rim);
-  }
-  const frontLamp=new THREE.Mesh(new THREE.BoxGeometry(.37,.14,.055),carHeadlight);frontLamp.position.set(side*.55,.74,-length*.505);g.add(frontLamp);
-  const rearLamp=new THREE.Mesh(new THREE.BoxGeometry(.35,.15,.055),carTaillight);rearLamp.position.set(side*.55,.77,length*.505);g.add(rearLamp);
- }
- if(type===8){
-  const stripe=new THREE.Mesh(new THREE.BoxGeometry(1.85,.19,2.8),new THREE.MeshStandardMaterial({color:0x225eaa,roughness:.55}));stripe.position.y=.91;g.add(stripe);
-  const bar=new THREE.Mesh(new THREE.BoxGeometry(.85,.12,.28),new THREE.MeshBasicMaterial({color:0x285bda}));bar.position.set(0,1.65,.05);g.add(bar);
- }else if(type===7){
-  const stripe=new THREE.Mesh(new THREE.BoxGeometry(1.82,.24,4.5),new THREE.MeshStandardMaterial({color:0xf4d846,roughness:.54}));stripe.position.y=.98;g.add(stripe);
- }
- trafficGroup.add(g);
- return {g,seg:segment,progress:(index*.137)%1,direction:index%2?-1:1,speed:5.0+(index%5)*1.15,turns:0,driven:false,parked:false,type};
+ const type=index%9;
+ // 8 different sculpted body archetypes; a regional PID-inspired bus is #7.
+ const vehicle=type===7?makePidBus(THREE,'432'):makeRoadCar(THREE,index);
+ const g=vehicle.group;trafficGroup.add(g);
+ return {g,seg:segment,progress:(index*.137)%1,direction:index%2?-1:1,
+  speed:type===7?6:5+(index%5)*1.15,turns:0,driven:false,parked:false,
+  type,wheels:vehicle.wheels||[],service:type===7?'432':null,modelName:vehicle.kind||'regionální autobus'};
 }
 function rpPopulate(){
  trafficGroup.clear();trafficCars.length=0;trafficPeople.length=0;
@@ -2310,13 +2268,11 @@ function rpPopulate(){
   trafficCars.push(car);
  }
  for(let i=0;i<30;i++){
-  const seg=segments[(i*23+7)%segments.length],g=new THREE.Group();
-  const torso=new THREE.Mesh(npcBodyGeo,npcClothes[i%npcClothes.length]);torso.position.y=1.13;g.add(torso);
-  const head=new THREE.Mesh(npcHeadGeo,npcSkin);head.position.y=1.87;g.add(head);
-  const leftLeg=new THREE.Mesh(npcLegGeo,carTyre);leftLeg.position.set(-.13,.40,0);g.add(leftLeg);
-  const rightLeg=new THREE.Mesh(npcLegGeo,carTyre);rightLeg.position.set(.13,.40,0);g.add(rightLeg);
-  trafficGroup.add(g);
-  trafficPeople.push({g,seg,progress:(i*.183)%1,direction:i%2?1:-1,speed:.75+(i%4)*.22,side:i%2?1:-1,legs:[leftLeg,rightLeg],phase:i*.87});
+  const seg=segments[(i*23+7)%segments.length];
+  const rig=makeHumanRig(THREE,i,npcClothes[i%npcClothes.length].color.getHex());
+  const g=rig.group;trafficGroup.add(g);
+  trafficPeople.push({g,rig,seg,progress:(i*.183)%1,direction:i%2?1:-1,
+   speed:.75+(i%4)*.22,side:i%2?1:-1,legs:rig.legs,arms:rig.arms,phase:i*.87});
  }
 }
 function rpNextStreet(car){
@@ -2378,7 +2334,15 @@ function rpAnimateTraffic(dt){
   g.position.set(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,terrainAt(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side),seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side);
   g.rotation.y=Math.atan2(-dx*obj.direction,-dz*obj.direction);
   g.visible=Math.hypot(g.position.x-playerX,g.position.z-playerZ)<120;
-  if(g.visible){obj.legs[0].rotation.x=Math.sin(elapsed*6+obj.phase)*.34;obj.legs[1].rotation.x=-obj.legs[0].rotation.x}
+  if(g.visible){
+   const d=Math.hypot(g.position.x-playerX,g.position.z-playerZ);
+   obj.rig.high.visible=d<64;obj.rig.low.visible=d>=64;
+   if(d<64){
+    const phase=Math.sin(elapsed*6+obj.phase)*.48;
+    obj.legs[0].rotation.x=phase;obj.legs[1].rotation.x=-phase;
+    obj.arms[0].rotation.x=-phase*.67;obj.arms[1].rotation.x=phase*.67;
+   }
+  }
  }
 }
 // Ground is flat until an authenticated DEM raster has been loaded; never invent elevations.
@@ -2538,7 +2502,7 @@ if(walking){
  let forwardMove=(keys.has('KeyW')?1:0)-(keys.has('KeyS')?1:0);
  const len=Math.hypot(strafe,forwardMove);
  if(len>0){strafe/=len;forwardMove/=len;const dx=strafe*Math.cos(orbitYaw)-forwardMove*Math.sin(orbitYaw),dz=-strafe*Math.sin(orbitYaw)-forwardMove*Math.cos(orbitYaw);px+=dx*4.2*dt;pz+=dz*4.2*dt;walkYaw=Math.atan2(-dx,-dz)}
-  const swing=len>0?Math.sin(elapsed*8.1)*.38:0;playerLegs[0].rotation.x=swing;playerLegs[1].rotation.x=-swing;playerArms[0].rotation.x=-swing*.75;playerArms[1].rotation.x=swing*.75;
+  const swing=len>0?Math.sin(elapsed*8.1)*.47:0;playerLegs[0].rotation.x=swing;playerLegs[1].rotation.x=-swing;playerArms[0].rotation.x=-swing*.7;playerArms[1].rotation.x=swing*.7;
  avatar.position.set(px,terrainAt(px,pz),pz);avatar.rotation.y=walkYaw;
 }
 const gas=keys.has('KeyW'),brake=keys.has('KeyS');
