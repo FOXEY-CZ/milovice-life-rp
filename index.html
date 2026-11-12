@@ -1043,7 +1043,7 @@ function finalizeFoundations(){
 }
 // Photo-referenced detail pass: repeated meshes are batched as instanced geometry.
 // Facades are modelled from mapped footprints, not copied from proprietary photos.
-const architectureColors={blueStarPlaster:0xd68c34,blueStarRed:0xb7352c,starWhite:0xf0eae0,starBalcony:0xcfc6b5,railSleeper:0x685643,railPole:0x777d7f,gothicGlass:0x263c48,stoneTrim:0xe8d9b7,whiteTrim:0xe3e6de,windowBar:0xd6e2e4,darkWood:0x514339,garageMetal:0x727f7b,bronze:0x8b6a48,glassAwning:0x7e9e9f,schoolRed:0xa3442e,roofGutter:0x687173,chimney:0xad6749,balcony:0xc9c1b7,railing:0x394447,shutter:0x8b705e,foundationBand:0x8e7f72};
+const architectureColors={stationPlaster:0xe6e4d9,stationGlass:0x4a7480,stationFrames:0xf2f0e7,stationIron:0x3a3e40,stationCanopy:0x903f35,blueStarPlaster:0xd68c34,blueStarRed:0xb7352c,starWhite:0xf0eae0,starBalcony:0xcfc6b5,railSleeper:0x685643,railPole:0x777d7f,gothicGlass:0x263c48,stoneTrim:0xe8d9b7,whiteTrim:0xe3e6de,windowBar:0xd6e2e4,darkWood:0x514339,garageMetal:0x727f7b,bronze:0x8b6a48,glassAwning:0x7e9e9f,schoolRed:0xa3442e,roofGutter:0x687173,chimney:0xad6749,balcony:0xc9c1b7,railing:0x394447,shutter:0x8b705e,foundationBand:0x8e7f72};
 const architectureQueues=Object.fromEntries(Object.keys(architectureColors).map(k=>[k,[]]));
 const architectureMaterials=Object.fromEntries(Object.entries(architectureColors).map(([k,v])=>[k,new THREE.MeshStandardMaterial({color:v,roughness:k==='glassAwning'?.3:.8,metalness:k==='roofGutter'||k==='railing'?.4:.04})]));
 const archUnitBox=new THREE.BoxGeometry(1,1,1),archPlacement=new THREE.Object3D();
@@ -1219,7 +1219,7 @@ function miloviceBlueStarDetail(pts,base,h,cx,cz){
  // Actual photo shows red ground-floor window surrounds and white windows.
  for(let i=0;i<pts.length;i++){
   const a=pts[i],b=pts[(i+1)%pts.length],dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);
-  if(len<4)return;
+  if(len<4)continue;
   let nx=-dz/len,nz=dx/len;
   const mx=(a.x+b.x)/2,mz=(a.y+b.y)/2;
   if(nx*(mx-cx)+nz*(mz-cz)<0){nx=-nx;nz=-nz}
@@ -1232,6 +1232,106 @@ function miloviceBlueStarDetail(pts,base,h,cx,cz){
   }
  }
  blueStarFacadeSign(entranceX+dirX*.55,base+3.04,entranceZ+dirZ*.55,yaw);
+}
+// 4.7 hand-authored station ground floor. True open passage through the precise
+// surveyed OSM footprint. Previous one-piece solid extrusion blocked this completely.
+const stationArchMaterial=new THREE.MeshStandardMaterial({color:0xf0e4cb,roughness:.86,side:THREE.DoubleSide});
+function stationBoard(text,x,y,z,yaw,bg='#174f84'){
+ const c=document.createElement('canvas');c.width=1024;c.height=180;
+ const g=c.getContext('2d');g.fillStyle=bg;g.fillRect(0,0,1024,180);
+ g.fillStyle='#fff';g.font='bold 76px system-ui';g.textAlign='center';g.textBaseline='middle';
+ g.fillText(text,512,96,990);
+ const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;
+ const mesh=new THREE.Mesh(new THREE.PlaneGeometry(5.3,.94),new THREE.MeshBasicMaterial({map:t,side:THREE.DoubleSide}));
+ mesh.position.set(x,y,z);mesh.rotation.y=yaw;osmLayer.add(mesh);
+}
+function stationWall(a,b,base,height){
+ const dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);if(len<.05)return;
+ const x=(a.x+b.x)*.5,z=(a.y+b.y)*.5,yaw=Math.atan2(-dz,dx);
+ archPart('stationPlaster',x,base+height*.5,z,len,height,.32,yaw);
+ // Low warm stone sill and red roof trim on the actual building perimeter.
+ archPart('foundationBand',x,base+.20,z,len,.40,.35,yaw);
+ if(len>2.9){
+  const nx=-dz/len,nz=dx/len;
+  archPart('stationFrames',x+nx*.19,base+1.55,z+nz*.19,Math.min(1.48,len*.62),1.80,.15,yaw);
+  archPart('stationGlass',x+nx*.28,base+1.55,z+nz*.28,Math.min(1.22,len*.56),1.55,.13,yaw);
+  archPart('windowBar',x+nx*.35,base+1.55,z+nz*.35,.055,1.42,.07,yaw);
+ }
+}
+function stationArch(x,z,dx,dz,base,w){
+ const len=Math.hypot(dx,dz),ux=dx/len,uz=dz/len,yaw=Math.atan2(-dz,dx);
+ // Posts and semicircular masonry arch visibly frame the passage from both sides.
+ for(const side of [-1,1])archPart('stoneTrim',x+ux*side*w*.5,base+1.23,z+uz*side*w*.5,.24,2.46,.48,yaw);
+ const arch=new THREE.Mesh(new THREE.TorusGeometry(w*.5,.15,7,24,Math.PI),stationArchMaterial);
+ arch.rotation.y=yaw;arch.position.set(x,base+2.41,z);osmLayer.add(arch);
+ archPart('stationPlaster',x,base+3.45,z,w+.20,.38,.34,yaw);
+}
+function miloviceStationGroundFloor(pts,base,h,cx,cz){
+ // Longitudinal building axis from the mapped irregular ~38x8m footprint.
+ let xx=0,zz=0,xz=0;
+ for(const p of pts){const dx=p.x-cx,dz=p.y-cz;xx+=dx*dx;zz+=dz*dz;xz+=dx*dz}
+ const theta=.5*Math.atan2(2*xz,xx-zz),ax=Math.cos(theta),az=Math.sin(theta);
+ const levelHeight=3.70,halfOpening=1.75;
+ let openings=0,platformChoice=null,bestPlatformScore=-Infinity;
+ const railProbe=osmPoint({lat:50.22940,lon:14.88188});
+ for(let i=0;i<pts.length;i++){
+  const a=pts[i],b=pts[(i+1)%pts.length],dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);
+  if(len<.3)continue;
+  const s0=(a.x-cx)*ax+(a.y-cz)*az,s1=(b.x-cx)*ax+(b.y-cz)*az,ds=s1-s0;
+  const yaw=Math.atan2(-dz,dx),nx=-dz/len,nz=dx/len;
+  const mx=(a.x+b.x)*.5,mz=(a.y+b.y)*.5;
+  if(nx*(mx-cx)+nz*(mz-cz)<0){ // exterior normal
+   // Only used for café/shop orientation; wall position remains on real OSM perimeter.
+  }
+  const towardRail=(mx-cx)*(railProbe.x-cx)+(mz-cz)*(railProbe.y-cz);
+  if(len>4&&towardRail>bestPlatformScore){
+   bestPlatformScore=towardRail;
+   platformChoice={a,b,len,dx,dz,mx,mz,yaw};
+  }
+  const entranceFace=len>4&&Math.abs(ds)>3&&Math.min(s0,s1)<0&&Math.max(s0,s1)>0;
+  if(entranceFace){
+   const t0=Math.max(0,Math.min(1,(-halfOpening-s0)/ds)),t1=Math.max(0,Math.min(1,(halfOpening-s0)/ds));
+   const low=Math.min(t0,t1),high=Math.max(t0,t1);
+   const cutA=new THREE.Vector2(a.x+dx*low,a.y+dz*low);
+   const cutB=new THREE.Vector2(a.x+dx*high,a.y+dz*high);
+   stationWall(a,cutA,base,levelHeight);stationWall(cutB,b,base,levelHeight);
+   stationArch((cutA.x+cutB.x)/2,(cutA.y+cutB.y)/2,dx,dz,base,cutA.distanceTo(cutB));
+   openings++;
+  }else stationWall(a,b,base,levelHeight);
+ }
+ // A pair of opposing open entrance faces yields a walk-through passage.
+ window.__miloviceLandmarkDebug ||= {};
+ window.__miloviceLandmarkDebug.stationPassageFaces=openings;
+ const r=platformChoice;
+ if(r){
+  let nx=-r.dz/r.len,nz=r.dx/r.len;
+  if(nx*(railProbe.x-r.mx)+nz*(railProbe.y-r.mz)<0){nx=-nx;nz=-nz}
+  // Platform-side café and actual Nádražka on the edge of the waiting room.
+  const t=.69,x=r.a.x+r.dx*t,z=r.a.y+r.dz*t;
+  const outwardX=nx,outwardZ=nz;
+  archPart('stationCanopy',x+outwardX*1.42,base+3.05,z+outwardZ*1.42,Math.min(r.len*.35,6.8),.13,2.65,r.yaw);
+  archPart('stationGlass',x+outwardX*.39,base+1.55,z+outwardZ*.39,2.6,1.75,.15,r.yaw);
+  stationBoard('MILOVICKÁ NÁDRAŽKA',x+outwardX*.53,base+2.73,z+outwardZ*.53,r.yaw,'#243d53');
+  // A bakery/coffee serving window facing the seasonal courtyard.
+  archPart('stationFrames',x+outwardX*.78,base+1.05,z+outwardZ*.78,3.0,.18,.65,r.yaw);
+  for(const side of [-1,1]){
+   const tableX=x+outwardX*4.5+r.dx/r.len*side*2.0;
+   const tableZ=z+outwardZ*4.5+r.dz/r.len*side*2.0;
+   const hh=terrainAt(tableX,tableZ);
+   archPart('starBalcony',tableX,hh+.82,tableZ,.92,.08,.92,r.yaw);
+   archPart('stationIron',tableX,hh+.43,tableZ,.09,.85,.09);
+   for(const chairSide of [-1,1]){
+    archPart('stationIron',tableX+chairSide*.87,hh+.40,tableZ,.5,.08,.48);
+    archPart('stationIron',tableX+chairSide*.87,hh+.75,tableZ+.24,.5,.72,.06);
+   }
+  }
+  // A second small ground-floor retail/service frontage mentioned by local players;
+  // signage is generic until a storefront-specific photograph is available.
+  const q=.23,sx=r.a.x+r.dx*q,sz=r.a.y+r.dz*q;
+  archPart('stationFrames',sx+nx*.34,base+1.55,sz+nz*.34,2.5,2.28,.21,r.yaw);
+  archPart('stationGlass',sx+nx*.48,base+1.54,sz+nz*.48,2.14,2.02,.15,r.yaw);
+  stationBoard('OBCHOD',sx+nx*.55,base+2.88,sz+nz*.55,r.yaw,'#365a64');
+ }
 }
 function osmBuilding(points,tags,index,osmId=null){
  if(points.length<4)return;
@@ -1254,7 +1354,8 @@ function osmBuilding(points,tags,index,osmId=null){
  const shape=new THREE.Shape();shape.moveTo(pts[0].x,-pts[0].y);
  for(let i=1;i<pts.length;i++)shape.lineTo(pts[i].x,-pts[i].y);
  shape.closePath();
- const geometry=new THREE.ExtrudeGeometry(shape,{depth:h,bevelEnabled:false,curveSegments:1,steps:1});
+ const stationPortalHeight=isStation?3.70:0;
+ const geometry=new THREE.ExtrudeGeometry(shape,{depth:h-stationPortalHeight,bevelEnabled:false,curveSegments:1,steps:1});
  geometry.rotateX(-Math.PI/2);
  const centerX=pts.reduce((v,p)=>v+p.x,0)/pts.length,centerZ=pts.reduce((v,p)=>v+p.y,0)/pts.length;
  // Level the building foundation to the highest sampled point of its perimeter.
@@ -1277,7 +1378,8 @@ function osmBuilding(points,tags,index,osmId=null){
   }
  }
  const wallMat=isBlueStar?blueStarWalls:isSchool?schoolWalls:isChurch?churchWalls:isStation?stationWalls:isGarage?garageWalls:isIndustrial?workWalls:osmBuildingMaterial[(oldCenter?index+3:index)%osmBuildingMaterial.length];
- const mesh=new THREE.Mesh(geometry,wallMat);mesh.position.y=baseHeight;osmLayer.add(mesh);
+ const mesh=new THREE.Mesh(geometry,wallMat);mesh.position.y=baseHeight+stationPortalHeight;osmLayer.add(mesh);
+ if(isStation)miloviceStationGroundFloor(pts,baseHeight,h,centerX,centerZ);
  const roofShape=new THREE.Shape();roofShape.moveTo(pts[0].x,-pts[0].y);
  for(let i=1;i<pts.length;i++)roofShape.lineTo(pts[i].x,-pts[i].y);
  roofShape.closePath();
@@ -1326,6 +1428,7 @@ function osmBuilding(points,tags,index,osmId=null){
   }
   const windows=Math.min(18,Math.max(1,Math.floor(len/(isBlueStar?3.6:isSchool?3.0:isHouse?4.2:3.5))));
   for(let floor=0;floor<visibleFloors;floor++){
+   if(isStation&&floor===0)continue;
    const y=(isSchool?1.84:1.85)+floor*(isSchool?3.15:3.05);
    if(y+.78>=h)continue; // Allow ground-floor windows on genuine one-storey houses.
    for(let j=0;j<windows;j++){
