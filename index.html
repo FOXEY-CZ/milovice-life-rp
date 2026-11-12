@@ -619,6 +619,40 @@ document.querySelectorAll('[data-key]').forEach(b=>{
  b.addEventListener('pointerdown',e=>{e.preventDefault();keys.add(k);b.classList.add('held');try{b.setPointerCapture(e.pointerId)}catch(_){}});
  for(const event of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(event,()=>{keys.delete(k);b.classList.remove('held')});
 });
+// 5.0 boarding animation: pedestrians appear beside the actual game-world bus door,
+// walk up to it, and disappear only after reaching it (boarded into the interior).
+const boardingActors=[];
+function spawnBusBoarding(count){
+ const yaw=angle,doorX=x+Math.cos(yaw)*1.45+Math.sin(yaw)*(-3.35);
+ const doorZ=z-Math.sin(yaw)*1.45+Math.cos(yaw)*(-3.35);
+ for(let i=0;i<Math.min(6,count);i++){
+  const rig=makeHumanRig(THREE,i+8,[0x445a74,0x9d594d,0x566850,0xa18f75][i%4]);
+  const walker=rig.group;trafficGroup.add(walker);
+  const sideX=Math.cos(yaw),sideZ=-Math.sin(yaw);
+  const aheadX=-Math.sin(yaw),aheadZ=-Math.cos(yaw);
+  const startX=doorX+sideX*(2.7+i*.24)+aheadX*(i-1.5)*.72;
+  const startZ=doorZ+sideZ*(2.7+i*.24)+aheadZ*(i-1.5)*.72;
+  walker.position.set(startX,terrainAt(startX,startZ),startZ);
+  walker.rotation.y=yaw-Math.PI/2;
+  boardingActors.push({rig,walker,startX,startZ,targetX:doorX,targetZ:doorZ,
+   elapsed:0,delay:i*.55,duration:1.85});
+ }
+ window.__miloviceBoardingCount=(window.__miloviceBoardingCount||0)+Math.min(6,count);
+}
+function animateBoarding(dt){
+ for(let i=boardingActors.length-1;i>=0;i--){
+  const person=boardingActors[i];person.elapsed+=dt;
+  const t=Math.max(0,Math.min(1,(person.elapsed-person.delay)/person.duration));
+  const ease=t*t*(3-2*t);
+  const bx=person.startX+(person.targetX-person.startX)*ease;
+  const bz=person.startZ+(person.targetZ-person.startZ)*ease;
+  person.walker.position.set(bx,terrainAt(bx,bz),bz);
+  const gait=Math.sin(person.elapsed*8)*.37;
+  person.rig.legs[0].rotation.x=gait;person.rig.legs[1].rotation.x=-gait;
+  person.rig.arms[0].rotation.x=-gait*.7;person.rig.arms[1].rotation.x=gait*.7;
+  if(t>=1){trafficGroup.remove(person.walker);boardingActors.splice(i,1)}
+ }
+}
 function toggleDoors(){
  if(walking||activeCar||!busJob){notify('🚌 Ovládání dveří je dostupné až po zahájení autobusové směny.');return}
  if(Math.abs(speed)>.6){notify('Nejdřív zastav autobus!');return}
@@ -628,7 +662,9 @@ function toggleDoors(){
  if(!stop){open=false;return}
  const dist=Math.hypot(x-stop.x,z-stop.z);
  if(dist>19){notify('Dveře otevřeny. K dalšímu kontrolnímu bodu zbývá '+Math.round(dist)+' m.');updateUI();return}
- pass+=2+busJob.next*2;busJob.next++;
+ const boardingCount=2+busJob.next*2;
+ spawnBusBoarding(boardingCount);
+ pass+=boardingCount;busJob.next++;
  if(busJob.next>=busJob.stops.length){
   paid=true;const wage=350+pass*25+rating*2;money+=wage;
   try{localStorage.setItem('milovice_rp_money',String(money))}catch(_){}
@@ -2408,7 +2444,7 @@ renderer.toneMappingExposure=1.30;
 sun.intensity=2.6;
 scene.fog.near=Math.max(180,OSM_VIEW*.54);scene.fog.far=OSM_VIEW+145;
 let last=performance.now(),lastHud=0,lastMap=0,perfFrames=0,perfSince=performance.now();const perfEl=document.getElementById('perf');function animate(t){requestAnimationFrame(animate);const dt=Math.min(Math.max((t-last)/1000,0),.05);last=t;
-elapsed+=dt;rpAnimateTraffic(dt);if(Math.floor(elapsed/3)!==Math.floor((elapsed-dt)/3))maybeStreamCityAreas();
+elapsed+=dt;rpAnimateTraffic(dt);animateBoarding(dt);rpUpdateRailTraffic(dt);if(Math.floor(elapsed/3)!==Math.floor((elapsed-dt)/3))maybeStreamCityAreas();
 if(rpRealisticMode){
  const cx=walking?px:x,cz=walking?pz:z;
  sun.position.set(cx+68,110,cz+44);
