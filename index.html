@@ -135,6 +135,7 @@ document.addEventListener('keydown',e=>{if(e.code==='Escape'&&mapPanel.classList
 
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 import {makeHumanRig,makeRoadCar,makePidBus,makeCityElefantStyleTrain} from './scripts/world-models.js?v=50';
+import {addLanduseFeature,forestInstancePlacements} from './scripts/landscapes.js?v=50';
 const BUILD_ID='20261113-worldlod-50';
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x9bc8ec);scene.fog=new THREE.Fog(0x9bc8ec,280,850);const camera=new THREE.PerspectiveCamera(67,innerWidth/innerHeight,.1,1400);const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.25));renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x65725a,1.6));const sun=new THREE.DirectionalLight(0xffefcc,1.7);sun.position.set(50,100,30);scene.add(sun);
 
@@ -1978,15 +1979,19 @@ function osmAddLandmark(el){
 // 4.9: Build roads and their names BEFORE facades. OSM ways are not reliably
 // ordered by feature type; a one-pass iterator made nearby architectural styles
 // depend on arbitrary export order, especially when streaming newer districts.
+const landscapeZones=[];
 function rpAppendOSMElements(elements){
- const roadWays=[],railWays=[],buildingWays=[];
+ const roadWays=[],railWays=[],buildingWays=[],landscapeWays=[];
  for(const el of elements){
   if(!el.geometry?.length||seenCityOSMWays.has(el.id))continue;
   seenCityOSMWays.add(el.id);
   if(el.tags?.highway)roadWays.push(el);
   else if(el.tags?.railway)railWays.push(el);
   else if(el.tags?.building)buildingWays.push(el);
+  else if(el.tags?.landuse||el.tags?.leisure)landscapeWays.push(el);
  }
+ for(const el of landscapeWays)
+  addLanduseFeature(THREE,el,osmPoint,terrainAt,osmLayer,landscapeZones);
  for(const el of roadWays){
   const points=el.geometry.map(osmPoint);osmRoads.push(points);
   if(el.tags.name)osmNamedRoads.push({name:el.tags.name,points});
@@ -2060,7 +2065,7 @@ async function rpLoadCityArea(id){
   chunkMilovice();rpBuildRoadGraph();rpPopulateRegionalTraffic(area);improveMiloviceVisuals();rpInitRailTraffic();
   loadedCityAreas.add(id);
   window.__miloviceAreasLoaded=[...loadedCityAreas];
-  window.__miloviceAreaStats={buildings:osmBuildings,roads:osmRoads.length};
+  window.__miloviceAreaStats={buildings:osmBuildings,roads:osmRoads.length,landscape:landscapeZones.length};
   notify('🏙️ '+area.name+' – '+osm.elements.length+' prvků mapy načteno.');
   osmNotice.style.display='none';updateUI();
   return true;
@@ -2246,6 +2251,7 @@ function improveMiloviceVisuals(){
    }
   }
  }
+ forestInstancePlacements(landscapeZones,trunks,crowns,crowns2,rnd);
  visualBatch(new THREE.BoxGeometry(1,1,1),visualMaterials.bark,trunks);
  visualBatch(new THREE.IcosahedronGeometry(1,2),visualMaterials.foliage,crowns);
  visualBatch(new THREE.IcosahedronGeometry(1,2),visualMaterials.foliage2,crowns2);
@@ -2260,7 +2266,7 @@ osmBtn.onclick=async()=>{
  if(osmLoading)return;
  osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';osmMessage('Načítám místní soubor mapy ze stejného GitHub Pages webu…');
  try{
- const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;osmFurnitureCount=0;
+ const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;osmFurnitureCount=0;landscapeZones.length=0;
   if(trafficGroup.parent!==osmLayer)osmLayer.add(trafficGroup);
   if(visualDetails.parent!==osmLayer)osmLayer.add(visualDetails);for(const batch of facadeBatches)batch.clear();
  if(terrainGrid)rpTerrainMesh();else cube(2200,.16,2200,osmParkMaterial,0,-.18,0,osmLayer);
