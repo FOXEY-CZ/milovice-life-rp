@@ -718,6 +718,17 @@ function osmSetActive(active){
    z=a.y+dz*.5+dx/len*laneOffset;
   }
   speed=0;open=false;walking=true;busPark={x,z,angle};
+  // Keep a driveable car close to the initial walkable spawn, without colliding with the bus.
+  const nearby=trafficCars[0];
+  if(nearby&&best){
+   const dx=(best.b.x-best.a.x)/best.len,dz=(best.b.y-best.a.y)/best.len;
+   const adjacent=best.width*.25;
+   const spotX=x+dx*11+dz*adjacent*2,spotZ=z+dz*11-dx*adjacent*2;
+   nearby.parked=true;nearby.driven=false;
+   nearby.g.position.set(spotX,terrainAt(spotX,spotZ)+.045,spotZ);
+   nearby.g.rotation.y=angle+Math.PI;
+   nearby.g.visible=true;
+  }
   px=x-3.7*Math.cos(angle);pz=z+3.7*Math.sin(angle);walkYaw=angle;orbitYaw=angle;
   avatar.visible=walkCam!==1;updateMiloviceChunks(true);
   notify('Jsi v Milovicích. WASD = chůze, tažením otáčíš kameru, E = nastoupit.');
@@ -992,10 +1003,13 @@ async function rpLoadTerrain(){
  }
 }
 function rpTerrainMesh(){
- const n=terrainGrid.n,extent=(n-1)*terrainGrid.step;
- const meshGeo=new THREE.PlaneGeometry(extent,extent,n-1,n-1);meshGeo.rotateX(-Math.PI/2);
+ const n=terrainGrid.n,extent=(n-1)*terrainGrid.step,segments=Math.min(110,n-1);
+ const meshGeo=new THREE.PlaneGeometry(extent,extent,segments,segments);meshGeo.rotateX(-Math.PI/2);
  const p=meshGeo.attributes.position;
- for(let iz=0;iz<n;iz++)for(let ix=0;ix<n;ix++)p.setY(iz*n+ix,terrainGrid.values[iz*n+ix]*.1-.10);
+ for(let iz=0;iz<=segments;iz++)for(let ix=0;ix<=segments;ix++){
+  const xx=terrainGrid.min+extent*ix/segments,zz=terrainGrid.min+extent*iz/segments;
+  p.setY(iz*(segments+1)+ix,terrainAt(xx,zz)-.10);
+ }
  p.needsUpdate=true;meshGeo.computeVertexNormals();
  const terrainMat=new THREE.MeshLambertMaterial({color:0x789966,roughness:1,side:THREE.DoubleSide});
  const ground=new THREE.Mesh(meshGeo,terrainMat);osmLayer.add(ground);
