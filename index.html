@@ -612,6 +612,7 @@ function addFacadePart(kind,x,y,z,rotation,baseHeight=terrainAt(x,z)){facadePosi
 function finalizeFacades(){for(let i=0;i<4;i++){for(const batch of facadeBatches[i].values()){if(!batch.length)continue;const inst=new THREE.InstancedMesh(facadeGeo[i],facadeMat[i],batch.length);for(let j=0;j<batch.length;j++)inst.setMatrixAt(j,batch[j]);inst.instanceMatrix.needsUpdate=true;inst.computeBoundingSphere();osmLayer.add(inst)}facadeBatches[i].clear()}}
 
 // 4.0: richer architecture: distinct wall materials, glazed entrances and roof equipment.
+const foundationMat=new THREE.MeshStandardMaterial({color:0x8f8e88,roughness:.98,side:THREE.DoubleSide});
 const osmDoorMaterial=new THREE.MeshStandardMaterial({color:0x394a50,metalness:.25,roughness:.28,side:THREE.DoubleSide});
 const roofDetailMat=new THREE.MeshStandardMaterial({color:0x777e7c,metalness:.34,roughness:.68});
 const roofVentMat=new THREE.MeshStandardMaterial({color:0x39484b,metalness:.42,roughness:.43});
@@ -631,7 +632,31 @@ function osmBuilding(points,tags,index){
  shape.closePath();
  const geometry=new THREE.ExtrudeGeometry(shape,{depth:h,bevelEnabled:false,curveSegments:1,steps:1});
  geometry.rotateX(-Math.PI/2);
- const centerX=pts.reduce((v,p)=>v+p.x,0)/pts.length,centerZ=pts.reduce((v,p)=>v+p.y,0)/pts.length,baseHeight=terrainAt(centerX,centerZ);
+ const centerX=pts.reduce((v,p)=>v+p.x,0)/pts.length,centerZ=pts.reduce((v,p)=>v+p.y,0)/pts.length;
+ // Level the building foundation to the highest sampled point of its perimeter.
+ // A light stone plinth fills gaps downhill instead of leaving houses floating.
+ let baseHeight=-Infinity;
+ for(let i=0;i<pts.length;i++){
+  const a=pts[i],b=pts[(i+1)%pts.length],steps=Math.max(1,Math.ceil(a.distanceTo(b)/3));
+  for(let j=0;j<=steps;j++){const t=j/steps;baseHeight=Math.max(baseHeight,terrainAt(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t))}
+ }
+ baseHeight+=.10;
+ if(terrainGrid){
+  const foundationVertices=[],foundationIndices=[];
+  for(let i=0;i<pts.length;i++){
+   const a=pts[i],b=pts[(i+1)%pts.length],steps=Math.max(1,Math.ceil(a.distanceTo(b)/3));
+   for(let j=0;j<steps;j++){
+    const t0=j/steps,t1=(j+1)/steps,x0=a.x+(b.x-a.x)*t0,z0=a.y+(b.y-a.y)*t0,x1=a.x+(b.x-a.x)*t1,z1=a.y+(b.y-a.y)*t1;
+    const floor0=terrainAt(x0,z0)-.045,floor1=terrainAt(x1,z1)-.045,idx=foundationVertices.length/3;
+    foundationVertices.push(x0,floor0,z0,x1,floor1,z1,x1,baseHeight+.015,z1,x0,baseHeight+.015,z0);
+    foundationIndices.push(idx,idx+1,idx+2,idx,idx+2,idx+3);
+   }
+  }
+  const foundationGeom=new THREE.BufferGeometry();
+  foundationGeom.setAttribute('position',new THREE.Float32BufferAttribute(foundationVertices,3));
+  foundationGeom.setIndex(foundationIndices);foundationGeom.computeVertexNormals();
+  osmLayer.add(new THREE.Mesh(foundationGeom,foundationMat));
+ }
  const mesh=new THREE.Mesh(geometry,osmBuildingMaterial[index%osmBuildingMaterial.length]);mesh.position.y=baseHeight;osmLayer.add(mesh);
  const roofShape=new THREE.Shape();roofShape.moveTo(pts[0].x,-pts[0].y);
  for(let i=1;i<pts.length;i++)roofShape.lineTo(pts[i].x,-pts[i].y);
@@ -1030,7 +1055,21 @@ function rpAnimateTraffic(dt){
 }
 // Ground is flat until an authenticated DEM raster has been loaded; never invent elevations.
 let terrainGrid=null;
-function terrainAt(x,z){if(!terrainGrid)return 0;const {n,step,min,values}=terrainGrid;const fx=Math.max(0,Math.min(n-1.001,(x-min)/step)),fz=Math.max(0,Math.min(n-1.001,(z-min)/step));const ix=Math.floor(fx),iz=Math.floor(fz),tx=fx-ix,tz=fz-iz;const i=iz*n+ix;const a=values[i],b=values[i+1],c=values[i+n],d=values[i+n+1];return ((a*(1-tx)+b*tx)*(1-tz)+(c*(1-tx)+d*tx)*tz)*.1}
+// Terrain mesh and all world props use identical triangle-based interpolation.
+// Bilinear interpolation did NOT match Three.js ground triangles on steep slopes.
+function terrainAt(x,z){
+ if(!terrainGrid)return 0;
+ const {n,step,min,values}=terrainGrid;
+ const fx=Math.max(0,Math.min(n-1.0001,(x-min)/step));
+ const fz=Math.max(0,Math.min(n-1.0001,(z-min)/step));
+ const ix=Math.floor(fx),iz=Math.floor(fz),tx=fx-ix,tz=fz-iz,i=iz*n+ix;
+ const a=values[i],b=values[i+1],c=values[i+n],d=values[i+n+1];
+ // Three.js PlaneGeometry triangulates from top-right to bottom-left.
+ return (tx+tz<=1
+   ? a+tx*(b-a)+tz*(c-a)
+   : d+(1-tx)*(c-d)+(1-tz)*(b-d))*.1;
+}
+
 async function rpLoadTerrain(){
  try{
   const response=await fetch('./data/milovice-terrain.json?v=4.5-dmr',{cache:'no-store'});
@@ -1049,7 +1088,7 @@ async function rpLoadTerrain(){
  }
 }
 function rpTerrainMesh(){
- const n=terrainGrid.n,extent=(n-1)*terrainGrid.step,segments=Math.min(110,n-1);
+ const n=terrainGrid.n,extent=(n-1)*terrainGrid.step,segments=n-1; // 10m mesh exactly matches 10m DMR-derived road elevations.
  const meshGeo=new THREE.PlaneGeometry(extent,extent,segments,segments);meshGeo.rotateX(-Math.PI/2);
  const p=meshGeo.attributes.position;
  for(let iz=0;iz<=segments;iz++)for(let ix=0;ix<=segments;ix++){
@@ -1057,7 +1096,7 @@ function rpTerrainMesh(){
   p.setY(iz*(segments+1)+ix,terrainAt(xx,zz)-.10);
  }
  p.needsUpdate=true;meshGeo.computeVertexNormals();
- const terrainMat=new THREE.MeshLambertMaterial({color:0x789966,roughness:1,side:THREE.DoubleSide});
+ const terrainMat=new THREE.MeshLambertMaterial({color:0xffffff,map:groundTexture,side:THREE.DoubleSide});
  const ground=new THREE.Mesh(meshGeo,terrainMat);osmLayer.add(ground);
 }
 const mini=document.getElementById('minimap'),mc=mini.getContext('2d');
