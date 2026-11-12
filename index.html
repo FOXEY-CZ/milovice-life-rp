@@ -783,17 +783,21 @@ function osmStrip(a,b,width,material,y=.15){
   mesh.position.set((a.x+b.x)/2,y,(a.y+b.y)/2);
   mesh.rotation.y=Math.atan2(-dx,-dz);osmLayer.add(mesh);return;
  }
- // Tessellated ribbon follows the true DEM surface. No floating horizontal road slabs.
- const steps=Math.max(1,Math.ceil(len/10)),nx=-dz/len,nz=dx/len;
- const vertices=[],uvs=[],indices=[];
- for(let i=0;i<=steps;i++){
-  const t=i/steps,cx=a.x+dx*t,cz=a.y+dz*t;
-  for(const side of [-1,1]){
-   const xx=cx+nx*width*.5*side,zz=cz+nz*width*.5*side;
+ // Roads/sidewalks: tessellate longitudinally AND laterally, sampling exactly
+ // the same triangular DEM height field as the visible ground mesh.
+ const along=Math.max(1,Math.ceil(len/(width>=2?4:7))),across=width>=3?4:1;
+ const nx=-dz/len,nz=dx/len,vertices=[],uvs=[],indices=[];
+ for(let i=0;i<=along;i++){
+  const t=i/along,cx=a.x+dx*t,cz=a.y+dz*t;
+  for(let j=0;j<=across;j++){
+   const u=j/across,xx=cx+nx*(u-.5)*width,zz=cz+nz*(u-.5)*width;
    vertices.push(xx,terrainAt(xx,zz)+y,zz);
-   uvs.push(side===-1?0:1,t*len/8);
+   uvs.push(u,t*len/8);
+   if(i<along&&j<across){
+    const k=i*(across+1)+j,next=k+across+1;
+    indices.push(k,k+1,next,k+1,next+1,next);
+   }
   }
-  if(i<steps){const k=i*2;indices.push(k,k+1,k+2,k+1,k+3,k+2)}
  }
  const geometry=new THREE.BufferGeometry();
  geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));
