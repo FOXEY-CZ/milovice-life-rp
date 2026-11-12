@@ -1,0 +1,36 @@
+name: Browser smoke test (Milovice RP)
+on:
+  push:
+    paths:
+      - index.html
+      - data/milovice-osm.json
+      - data/milovice-terrain.json
+      - scripts/browser_smoke.mjs
+      - .github/workflows/browser-smoke.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Playwright runtime
+        run: npm install --no-save --no-package-lock playwright-core
+      - name: Start local GitHub Pages equivalent and run Chromium WebGL smoke test
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 > /tmp/milovice-http.log 2>&1 &
+          node scripts/browser_smoke.mjs
+      - name: Attach browser screenshot if available
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: milovice-city-browser-shot
+          path: browser-artifacts/
+          if-no-files-found: ignore
