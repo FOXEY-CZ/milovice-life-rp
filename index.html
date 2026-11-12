@@ -1629,6 +1629,21 @@ function osmBuilding(points,tags,index,osmId=null){
    archPart('roofGutter',mx+nx*.23,baseHeight+h+.11,mz+nz*.23,len,.075,.12,rotation);
    if(len>6&&i%2===0)archPart('roofGutter',p.x+nx*.21,baseHeight+h*.53,p.y+nz*.21,.10,h*.98,.12,rotation);
   }
+  if(isPanelBlock){
+   archPart('panelPlinth',mx+nx*.23,baseHeight+.66,mz+nz*.23,len,1.30,.15,rotation);
+   archPart('panelSeam',mx+nx*.25,baseHeight+h*.52,mz+nz*.25,len,.045,.13,rotation);
+   archPart('panelSeam',mx+nx*.28,baseHeight+h-.38,mz+nz*.28,len,.10,.14,rotation);
+  }else if(isCommerce&&!isBlueStar){
+   archPart('commercialSign',mx+nx*.30,baseHeight+3.08,mz+nz*.30,len,.34,.18,rotation);
+   archPart('stationGlass',mx+nx*.31,baseHeight+1.52,mz+nz*.31,Math.max(1.0,len-.55),2.15,.13,rotation);
+   archPart('stationCanopy',mx+nx*.88,baseHeight+2.89,mz+nz*.88,Math.max(1.0,len-.15),.13,1.13,rotation);
+  }else if(isIndustrial&&len>=7){
+   const bays=Math.max(1,Math.floor(len/6));
+   for(let j=0;j<bays;j++){
+    const t=(j+.5)/bays;
+    archPart('industrialDoor',p.x+dx*t+nx*.41,baseHeight+1.9,p.y+dz*t+nz*.41,Math.min(3.9,len/bays-.4),3.62,.21,rotation);
+   }
+  }
   if(isBlueStar){
    archPart('blueStarRed',mx+nx*.18,baseHeight+.36,mz+nz*.18,len,.72,.17,rotation);
    archPart('starWhite',mx+nx*.15,baseHeight+3.48,mz+nz*.15,len,.12,.16,rotation);
@@ -1641,7 +1656,7 @@ function osmBuilding(points,tags,index,osmId=null){
   }else if(isHouse&&oldCenter){
    archPart('foundationBand',mx+nx*.22,baseHeight+.52,mz+nz*.22,len,1.02,.1,rotation);
   }
-  const windows=Math.min(18,Math.max(1,Math.floor(len/(isBlueStar?3.6:isSchool?3.0:isHouse?4.2:3.5))));
+  const windows=Math.min(24,Math.max(1,Math.floor(len/(isPanelBlock?3.12:isBlueStar?3.6:isSchool?3.0:isHouse?4.2:3.5))));
   for(let floor=0;floor<visibleFloors;floor++){
    if(isStation&&floor===0)continue;
    const y=(isSchool?1.84:1.85)+floor*(isSchool?3.15:3.05);
@@ -1653,15 +1668,32 @@ function osmBuilding(points,tags,index,osmId=null){
     addFacadePart(2,px+nx*.43,y,pz+nz*.43,rotation,baseHeight);
     addFacadePart(3,px+nx*.49,y-.85,pz+nz*.49,rotation,baseHeight);
     // Photo-referenced white mullions: panes stop looking like flat blue rectangles.
-    if(isBlueStar||isHouse||isSchool||j%2===0){
+    if(isBlueStar||isHouse||isSchool||isPanelBlock||j%2===0){
      const wx=px+nx*.515,wz=pz+nz*.515;
      archPart('windowBar',wx,baseHeight+y,wz,.065,1.31,.09,rotation);
      archPart('windowBar',wx,baseHeight+y+.07,wz,1.40,.045,.09,rotation);
     }
+    if(isPanelBlock&&j%3===0){
+     archPart('panelSeam',px+nx*.35+ux*1.45,baseHeight+h*.5,pz+nz*.35+uz*1.45,.09,h-.32,.11,rotation);
+     if(floor>0){
+      const by=baseHeight+y-.95,bx=px+nx*.91,bz=pz+nz*.91;
+      archPart('balcony',bx,by,bz,2.34,.13,1.15,rotation);
+      archPart('railing',bx+nx*.62,by+.57,bz+nz*.62,2.22,1.07,.055,rotation);
+      archPart('railing',bx+ux*1.07,by+.53,bz+uz*1.07,.06,1.01,1.22,rotation);
+      archPart('railing',bx-ux*1.07,by+.53,bz-uz*1.07,.06,1.01,1.22,rotation);
+     }
+    }
+    if(isHouse){
+     archPart('whiteTrim',px+nx*.55,baseHeight+y-.77,pz+nz*.55,1.53,.13,.32,rotation);
+     if((index+j+floor)%4===0){
+      const side=j%2?1:-1;
+      archPart('shutter',px+nx*.56+ux*side*.90,baseHeight+y,pz+nz*.56+uz*side*.90,.23,1.51,.13,rotation);
+     }
+    }
     if(oldCenter&&isHouse&&j%2===0){
      archPart('shutter',px+nx*.54+ux*.91,baseHeight+y,pz+nz*.54+uz*.91,.24,1.52,.13,rotation);
     }
-    if(!isHouse&&!isSchool&&!isIndustrial&&!isBlueStar&&!isMirova36&&!isGrocer74&&floor>0&&j%3===0){
+    if(!isHouse&&!isSchool&&!isIndustrial&&!isPanelBlock&&!isBlueStar&&!isMirova36&&!isGrocer74&&floor>0&&j%3===0){
      const bx=px+nx*.83,bz=pz+nz*.83,by=baseHeight+y-.93;
      archPart('balcony',bx,by,bz,2.22,.13,1.02,rotation);
      archPart('railing',bx+nx*.59,by+.52,bz+nz*.59,2.10,.93,.055,rotation);
@@ -1689,6 +1721,9 @@ function osmBuilding(points,tags,index,osmId=null){
    }else if(isStation){
     archPart('glassAwning',mx+nx*1.45,baseHeight+2.9,mz+nz*1.45,Math.min(11,len*.72),.24,2.9,yaw);
     stationFacadeSign('Milovice',mx+nx*.85,baseHeight+4.45,mz+nz*.85,yaw);
+   }else if(isPanelBlock){
+    archPart('panelEntry',mx+nx*.96,baseHeight+2.57,mz+nz*.96,3.2,.18,1.6,yaw);
+    archPart('whiteTrim',mx+nx*.50,baseHeight+1.37,mz+nz*.50,1.65,2.42,.12,yaw);
    }else if(oldCenter||!isIndustrial){
     archPart('glassAwning',mx+nx*.88,baseHeight+2.53,mz+nz*.88,2.45,.11,.88,yaw);
    }
