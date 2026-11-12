@@ -19,6 +19,9 @@ try{
   const el=document.getElementById('rp-spawn');
   return el&&!el.hidden;
  },{timeout:45000});
+ const landmarkChecks=await page.evaluate(()=>window.__miloviceLandmarkDebug||{});
+ console.log('Landmark geometry:',JSON.stringify(landmarkChecks));
+ if(landmarkChecks.stationPassageFaces!==2)throw new Error('Milovice station does not have two opposing real open passage portals: '+JSON.stringify(landmarkChecks));
  const terrain=await page.locator('#terrain-status').innerText();
  console.log('Loaded terrain:',terrain);
  if(!terrain.includes('ČÚZK DMR 4G'))throw new Error('Official DEM did not load');
@@ -27,6 +30,12 @@ try{
  await page.locator('[data-spawn="walking"]').click();
  if((await page.locator('#mode').innerText())!=='Pěšky')throw new Error('Walking spawn did not work');
  await page.screenshot({path:'browser-artifacts/milovice-realistic-city.png'});
+ await page.locator('#maplaunch').click();
+ await page.waitForSelector('.milovice-player-marker .milovice-player-arrow',{timeout:25000});
+ if(!(await page.locator('#mapfollow').isVisible()))throw new Error('Full-map recenter missing');
+ console.log('Full map marker: OK');
+ await page.screenshot({path:'browser-artifacts/milovice-full-map.png'});
+ await page.locator('#closemap').click();
  await page.locator('#rp-vehicles').click();
  await page.locator('[data-spawn="sedan"]').click();
  if(!(await page.locator('#mode').innerText()).includes('Řidič auta'))throw new Error('Car spawn did not work');
