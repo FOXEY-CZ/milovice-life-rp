@@ -103,6 +103,7 @@ function addRealMapLandmarks(){
   {name:'⛪ Kostel sv. Kateřiny',gps:[50.2281408,14.8833112]},
   {name:'🏨 Modrá hvězda',gps:[50.2283844444,14.8841363889]},
   {name:'🚉 Nádraží Milovice · Nádražka',gps:[50.229105,14.88199]},
+  {name:'🚲 Cyklověž',gps:[50.229274,14.882217]},
   {name:'🏫 ZŠ T. G. Masaryka',gps:[50.2288325,14.8868342]}
  ];
  for(const p of locs)leafletMarks.push(window.L.circleMarker(p.gps,{
@@ -1383,6 +1384,50 @@ function miloviceGrocer74Detail(pts,base,h,cx,cz){
  archPart('stationCanopy',mx+nx*.80,base+2.82,mz+nz*.80,Math.min(7.5,len*.90),.13,1.0,yaw);
  stationBoard('POTRAVINY',mx+nx*.66,base+3.12,mz+nz*.66,yaw,'#2b5670');
 }
+// 4.7: Milovice 2021 glass biketower – 8m surveyed OSM footprint and
+// 11.4m public reported height. Reference: Wikimedia ŠJů, 30 May 2024.
+function miloviceBikeTower(pts,base){
+ const cx=pts.reduce((n,p)=>n+p.x,0)/pts.length,cz=pts.reduce((n,p)=>n+p.y,0)/pts.length;
+ let rad=0;
+ for(const p of pts)rad+=Math.hypot(p.x-cx,p.y-cz)/pts.length;
+ rad=Math.max(3.2,Math.min(4.1,rad));
+ const g=new THREE.Group();g.position.set(cx,base,cz);osmLayer.add(g);
+ const steel=new THREE.MeshStandardMaterial({color:0x455259,metalness:.55,roughness:.42});
+ const dark=new THREE.MeshStandardMaterial({color:0x252e36,metalness:.42,roughness:.55});
+ const glass=new THREE.MeshPhysicalMaterial({color:0x9ab8bc,metalness:.1,roughness:.18,transparent:true,opacity:.32,side:THREE.DoubleSide,depthWrite:false});
+ const visibleHeight=11.4,segments=16;
+ const side=new THREE.Mesh(new THREE.CylinderGeometry(rad,rad,visibleHeight-.7,segments,1,true),glass);
+ side.position.y=visibleHeight*.5;g.add(side);
+ const roof=new THREE.Mesh(new THREE.CylinderGeometry(rad+.32,rad+.32,.3,segments),dark);
+ roof.position.y=visibleHeight-.27;g.add(roof);
+ const mullionGeo=new THREE.BoxGeometry(.115,visibleHeight-.75,.115);
+ const mullions=new THREE.InstancedMesh(mullionGeo,steel,segments);
+ const temp=new THREE.Object3D();
+ for(let i=0;i<segments;i++){
+  const a=i*2*Math.PI/segments;
+  temp.position.set(Math.cos(a)*rad,(visibleHeight-.75)/2,Math.sin(a)*rad);
+  temp.rotation.set(0,-a,0);temp.scale.set(1,1,1);temp.updateMatrix();mullions.setMatrixAt(i,temp.matrix);
+ }
+ mullions.instanceMatrix.needsUpdate=true;g.add(mullions);
+ const horizontalRing=new THREE.TorusGeometry(rad,.068,5,segments*2);
+ for(let level=1;level<7;level++){
+  const ring=new THREE.Mesh(horizontalRing,steel);
+  ring.position.y=level*visibleHeight/7;ring.rotation.x=Math.PI/2;g.add(ring);
+ }
+ // Visible machinery floor decks make the cylinder recognizable as bike storage.
+ const deckMat=new THREE.MeshStandardMaterial({color:0x576874,roughness:.68,metalness:.25});
+ for(let level=1;level<5;level++){
+  const shelf=new THREE.Mesh(new THREE.CylinderGeometry(rad*.84,rad*.84,.07,16),deckMat);
+  shelf.position.y=level*2.18;g.add(shelf);
+ }
+ const entranceSide=osmPoint({lat:50.2290656,lon:14.8822978}),dx=entranceSide.x-cx,dz=entranceSide.y-cz;
+ const norm=Math.hypot(dx,dz)||1,nx=dx/norm,nz=dz/norm,yaw=Math.atan2(nx,nz);
+ archPart('stationCanopy',cx+nx*(rad+.3),base+2.52,cz+nz*(rad+.3),3.5,.20,1.5,yaw);
+ archPart('stationGlass',cx+nx*(rad+.25),base+1.36,cz+nz*(rad+.25),2.6,2.38,.18,yaw);
+ stationBoard('BIKE TOWER',cx+nx*(rad+.37),base+2.94,cz+nz*(rad+.37),yaw,'#166299');
+ window.__miloviceLandmarkDebug ||= {};
+ window.__miloviceLandmarkDebug.bikeTower=true;
+}
 function osmBuilding(points,tags,index,osmId=null){
  if(points.length<4)return;
  const pts=points.map(osmPoint);
@@ -1398,6 +1443,7 @@ function osmBuilding(points,tags,index,osmId=null){
  const isBlueStar=osmId===202367194; // verified Mírová 134/11 building; photographed 2024, 2 floors.
  const isMirova36=osmId===202367254; // verified Mírová 243/36 photographed May 2024, cadastral 3 floors incl. attic.
  const isGrocer74=osmId===202298645; // verified Mírová 74/4, Můj obchod - Potraviny D a Š.
+ const isBikeTower=osmId===1011197691; // mapped round 118-bike automated storage near station.
  const floors=Math.min(9,Math.max(1,Number(tags['building:levels'])||(isGarage||isIndustrial?1:2)));
  const explicitHeight=parseFloat(tags.height);
  const h=Math.min(32,Math.max(isGarage?2.35:3.0,Number.isFinite(explicitHeight)&&explicitHeight>2?explicitHeight:isBlueStar?7.15:isMirova36?6.75:isGrocer74?3.65:isStation?7.4:isGarage?2.75:isIndustrial?5.3:isChurch?11.5:floors*(isSchool?3.4:3.05)));
@@ -1430,6 +1476,7 @@ function osmBuilding(points,tags,index,osmId=null){
   }
  }
  const wallMat=isBlueStar?blueStarWalls:isMirova36?mirova36Walls:isGrocer74?grocerWalls:isSchool?schoolWalls:isChurch?churchWalls:isStation?stationWalls:isGarage?garageWalls:isIndustrial?workWalls:osmBuildingMaterial[(oldCenter?index+3:index)%osmBuildingMaterial.length];
+ if(isBikeTower){miloviceBikeTower(pts,baseHeight);osmBuildings++;return}
  const mesh=new THREE.Mesh(geometry,wallMat);mesh.position.y=baseHeight+stationPortalHeight;osmLayer.add(mesh);
  if(isStation)miloviceStationGroundFloor(pts,baseHeight,h,centerX,centerZ);
  const roofShape=new THREE.Shape();roofShape.moveTo(pts[0].x,-pts[0].y);
