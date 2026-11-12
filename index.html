@@ -204,11 +204,21 @@ function osmPoint(p){const lat0=50.226,lon0=14.889;return new THREE.Vector2((p.l
 function osmStrip(a,b,width,material,y=.15){const dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);if(len<.15||len>800)return;const mesh=new THREE.Mesh(new THREE.BoxGeometry(width,.11,len),material);mesh.position.set((a.x+b.x)/2,y,(a.y+b.y)/2);mesh.rotation.y=Math.atan2(-dx,-dz);osmLayer.add(mesh)}
 function osmBuilding(points,tags,index){if(points.length<4)return;const pts=points.map(osmPoint),xs=pts.map(p=>p.x),zs=pts.map(p=>p.y),w=Math.max(...xs)-Math.min(...xs),d=Math.max(...zs)-Math.min(...zs);if(w<2||d<2||w>140||d>140)return;const floors=Math.min(9,Math.max(1,Number(tags['building:levels'])||2));const h=Math.min(32,Math.max(3,Number.parseFloat(tags.height)||floors*3));const x=(Math.max(...xs)+Math.min(...xs))/2,z=(Math.max(...zs)+Math.min(...zs))/2;cube(w,h,d,osmBuildingMaterial[index%osmBuildingMaterial.length],x,h/2,z,osmLayer);cube(w+.4,.3,d+.4,mat(0x686a68),x,h+.15,z,osmLayer);osmBuildings++}
 async function fetchMiloviceOSM(){
- const response=await fetch('./data/milovice-osm.json',{cache:'no-cache'});
- if(!response.ok)throw Error('Lokální mapa není dostupná (HTTP '+response.status+')');
- const data=await response.json();
- if(!Array.isArray(data.elements)||!data.elements.some(e=>e.tags?.highway&&Array.isArray(e.geometry)))throw Error('Lokální mapa zatím neobsahuje ověřené silnice Milovic');
- return data.elements;
+ // Avoid stale GitHub Pages/browser caches after the automated OSM export.
+ let lastError=null;
+ for(let attempt=0;attempt<2;attempt++){
+  const url='./data/milovice-osm.json?map=20261112-461&retry='+attempt;
+  try{
+   const response=await fetch(url,{cache:'no-store'});
+   if(!response.ok)throw Error('Soubor mapy: HTTP '+response.status);
+   const data=await response.json();
+   const roads=Array.isArray(data.elements)?data.elements.filter(e=>e.tags?.highway&&Array.isArray(e.geometry)):[];
+   if(roads.length===0)throw Error('Web stále vrací starý prázdný export (0 silnic)');
+   osmMessage('Načteno '+roads.length+' silnic a '+data.elements.filter(e=>e.tags?.building).length+' budov. Připravuji 3D svět…');
+   return data.elements;
+  }catch(err){lastError=err;if(attempt===0)await new Promise(resolve=>setTimeout(resolve,1000))}
+ }
+ throw new Error(lastError?.message||'Mapový soubor nelze načíst');
 }
 function osmSetActive(active){
  osmActive=active;osmLayer.visible=active;
