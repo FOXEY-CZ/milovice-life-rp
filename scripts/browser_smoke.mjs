@@ -25,6 +25,11 @@ try{
  if(!landmarkChecks.stationParts?.center||!landmarkChecks.stationParts?.left||!landmarkChecks.stationParts?.right)throw new Error('Station wing/center massing missing');
  if(!landmarkChecks.stationSign||!landmarkChecks.stationCanopy||!landmarkChecks.stationStreetSign)
   throw new Error('4.9 station architecture missing: '+JSON.stringify(landmarkChecks));
+ const diagnostics=await page.evaluate(()=>({rail:window.__miloviceRailDebug,models:window.__miloviceModelDebug,range:window.__miloviceDrawDistance}));
+ console.log('5.0 models and train:',JSON.stringify(diagnostics));
+ if(diagnostics.rail?.loaded!==true||diagnostics.rail?.cars!==3)throw new Error('Three-coach rail traffic missing');
+ if(diagnostics.models?.humans!==30||diagnostics.models?.articulatedBuses<1||!diagnostics.models?.playerHuman)throw new Error('Human/vehicle population missing');
+ if(diagnostics.range!==620)throw new Error('Default Milovice draw distance not applied');
  const terrain=await page.locator('#terrain-status').innerText();
  console.log('Loaded terrain:',terrain);
  if(!terrain.includes('ČÚZK DMR 4G'))throw new Error('Official DEM did not load');
@@ -45,6 +50,8 @@ try{
  if(await page.locator('#doors').isVisible())throw new Error('Bus-only door button visible during car free roam');
  await page.locator('#rp-jobs').click();
  await page.locator('#rp-job-start').click();
+ const stopCount=await page.evaluate(()=>window.__miloviceTransitStops);
+ if(stopCount!==3)throw new Error('Waiting pedestrians/stops not spawned: '+stopCount);
  if(!(await page.locator('#mode').innerText()).includes('Autobusová směna'))throw new Error('Job did not start');
  if(!(await page.locator('#doors').isVisible()))throw new Error('Job door button missing');
  await page.locator('#rp-vehicles').click();
@@ -60,6 +67,9 @@ try{
  console.log('Boží Dar streamed:',JSON.stringify(await page.evaluate(()=>window.__miloviceAreaStats)));
  await page.screenshot({path:'browser-artifacts/milovice-bozidar.png'});
  await page.locator('#rp-vehicles').click();
+ await page.locator('#rp-distance-select').selectOption('1000');
+ if(await page.evaluate(()=>window.__miloviceDrawDistance)!==1000)throw new Error('Distance selector failed');
+ await page.locator('#rp-distance-select').selectOption('620');
  await page.locator('#rp-graphics-select').selectOption('realistic');
  await page.waitForTimeout(1800);
  if(!(await page.locator('#rp-graphics-select').inputValue()).includes('realistic'))throw new Error('Quality preset selection failed');
