@@ -33,7 +33,7 @@
  #minimap{width:146px;height:146px;right:7px!important;max-width:38vw;max-height:38vw}
  .rp-modal{padding:12px}.rp-choice-grid{gap:7px}.rp-choice-grid button{min-height:81px;padding:7px;font-size:13px}
 }
-</style></head><body><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><p>Verze 4.5.1 · build <strong id="build-label">20261112-rpui</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong> · Hodnocení: <strong id="rating">100</strong> %</p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
+</style></head><body><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><p>Verze 4.5.1 · build <strong id="build-label">20261112-rpui</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
 <section class="rp-overlay" id="rp-spawn" aria-label="Výběr vozidla" hidden>
  <div class="rp-modal">
   <div class="rp-modal-head"><div><h2>🚘 Jak chceš začít?</h2><p>Vyber si vozidlo nebo vyraz pěšky. Vozidla slouží pro volnou jízdu.</p></div><button id="rp-spawn-close" type="button">✕</button></div>
@@ -404,13 +404,14 @@ cp(.68,.095,.09,cWhite,0,.76,-5.65);
 // Značení linky: přední i zadní LED panel.
 function led(text,w,h){const cv=document.createElement('canvas');cv.width=512;cv.height=128;const c=cv.getContext('2d');c.fillStyle='#121b1d';c.fillRect(0,0,512,128);c.fillStyle='#f9bb38';c.font='bold 90px Arial';c.textAlign='center';c.fillText(text,256,94);return new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv),side:THREE.DoubleSide}));}
 const frontLed=led('432',1.55,.37);frontLed.position.set(0,2.79,-5.57);bus.add(frontLed);
-const backLed=led('432',1.15,.31);backLed.position.set(0,2.64,5.57);bus.add(backLed);
+const backLed=led('432',1.15,.31);backLed.position.set(0,2.64,5.57);bus.add(backLed);frontLed.visible=false;backLed.visible=false;
 // Proporčnější vizuál z třetí osoby bez změny jízdní fyziky.
 let z=16,x=-3,angle=0,speed=0,pass=0,next=0,open=false,cam=0,elapsed=0,rating=100;
 let walking=true,paid=false,px=-6,pz=16,walkYaw=0;
 let orbitYaw=0,orbitPitch=.25,orbitDistance=7;
 let walkCam=0; // 0 = third-person orbit, 1 = first-person look
 let activeCar=null,busPark={x,z,angle}; // Player-controlled vehicle; bus stays parked while another car is driven.
+let busJob=null,playerSpawnCar=null; // Missions never start merely by entering a bus.
 let money=0;try{money=Math.max(0,Number(localStorage.getItem('milovice_rp_money')||0)||0)}catch(e){}
 const avatar=new THREE.Group();scene.add(avatar);
 const jacket=mat(0x2a587a),skin=mat(0xd9a67e),pants=mat(0x29343d);
@@ -431,6 +432,93 @@ function closestDriveableCar(){
   if(dist<best){best=dist;nearest=car}
  }
  return nearest;
+}
+function rpShowSpawnPicker(){
+ if(!osmReady){notify('Nejdřív se musí načíst město.');return}
+ if(Math.abs(speed)>.45){notify('Nejdřív zastav vozidlo.');return}
+ document.getElementById('rp-job-panel').hidden=true;
+ document.getElementById('rp-spawn').hidden=false;keys.clear();
+}
+function rpCloseOverlays(){
+ document.getElementById('rp-spawn').hidden=true;
+ document.getElementById('rp-job-panel').hidden=true;
+}
+function rpSelectSpawn(kind){
+ if(!osmReady)return;
+ const kinds={sedan:0,suv:2,van:6,police:8};
+ if(!['walking','bus',...Object.keys(kinds)].includes(kind))return;
+ rpCloseOverlays();open=false;speed=0;cam=0;busJob=null;pass=0;
+ if(activeCar){activeCar.driven=false;activeCar.parked=true;activeCar.g.rotation.y=angle;activeCar.g.position.set(x,terrainAt(x,z)+.045,z);activeCar=null}
+ // Remove a previously spawned custom car to prevent unbounded meshes / draw calls.
+ if(playerSpawnCar){
+  const idx=trafficCars.indexOf(playerSpawnCar);
+  if(idx>=0)trafficCars.splice(idx,1);
+  trafficGroup.remove(playerSpawnCar.g);playerSpawnCar=null;
+ }
+ const bx=busPark.x,bz=busPark.z,ba=busPark.angle;
+ x=bx;z=bz;angle=ba;
+ if(kind==='walking'){
+  walking=true;px=bx-3.5*Math.cos(ba);pz=bz+3.5*Math.sin(ba);walkYaw=ba;orbitYaw=ba;avatar.visible=walkCam!==1;
+  notify('🚶 Volná chůze. E nastupuje do vozidla v blízkosti.');
+ }else if(kind==='bus'){
+  walking=false;avatar.visible=false;
+  notify('🚌 Volná jízda autobusem. Linku zapneš přes 💼 Práce.');
+ }else{
+  if(!driveSegments.length){walking=true;px=bx;pz=bz;notify('Silnice pro spawn vozidla se nenačetly.');updateUI();return}
+  const seg=driveSegments.find(v=>v.len>=12&&v.width>=6)||driveSegments[0];
+  const car=makeTrafficCar(kinds[kind],seg);
+  car.driven=true;car.parked=false;trafficCars.push(car);playerSpawnCar=car;activeCar=car;
+  x=bx-Math.sin(ba)*11;z=bz-Math.cos(ba)*11;angle=ba;
+  car.g.position.set(x,terrainAt(x,z)+.045,z);car.g.rotation.y=angle;
+  walking=false;avatar.visible=false;
+  notify('🚗 Volná jízda. Šipky / WASD řídí, E vystoupí.');
+ }
+ keys.clear();updateUI();
+}
+function rpJobStops(){
+ const selected=[],names=new Set(),bx=busPark.x,bz=busPark.z;
+ const choices=[];
+ for(const road of osmNamedRoads){
+  if(names.has(road.name)||road.points.length<2)continue;
+  const p=road.points[Math.floor(road.points.length/2)];
+  const dist=Math.hypot(p.x-bx,p.y-bz);
+  if(dist>40&&dist<470)choices.push({x:p.x,z:p.y,name:road.name,dist});
+ }
+ choices.sort((a,b)=>a.dist-b.dist);
+ for(const p of choices){
+  if(selected.length>=3)break;
+  if(names.has(p.name)||selected.some(q=>Math.hypot(q.x-p.x,q.z-p.z)<60))continue;
+  selected.push({x:p.x,z:p.z,name:'Kontrolní bod: '+p.name});names.add(p.name);
+ }
+ // These are fictional gameplay checkpoints positioned on genuine mapped roads,
+ // NOT real/public-transit stop locations.
+ if(selected.length<3){
+  for(const edge of driveSegments){
+   if(selected.length>=3)break;
+   const cx=(edge.a.x+edge.b.x)/2,cz=(edge.a.y+edge.b.y)/2,dist=Math.hypot(cx-bx,cz-bz);
+   if(dist<45||dist>450||selected.some(q=>Math.hypot(q.x-cx,q.z-cz)<65))continue;
+   selected.push({x:cx,z:cz,name:'Kontrolní bod '+(selected.length+1)});
+  }
+ }
+ return selected;
+}
+function rpStartBusJob(){
+ if(!osmReady){notify('Město se ještě načítá.');return}
+ const targets=rpJobStops();
+ if(!targets.length){notify('Na mapě nejsou dostatečná data pro směnu.');return}
+ if(activeCar){activeCar.driven=false;activeCar.parked=true;activeCar.g.position.set(x,terrainAt(x,z)+.045,z);activeCar.g.rotation.y=angle;activeCar=null}
+ walking=false;x=busPark.x;z=busPark.z;angle=busPark.angle;avatar.visible=false;
+ open=false;speed=0;cam=0;pass=0;rating=100;paid=false;
+ busJob={stops:targets,next:0};
+ rpCloseOverlays();keys.clear();
+ notify('🚌 Směna zahájena! Dojeď ke kontrolnímu bodu a při zastavení otevři dveře.');
+ updateUI();
+}
+function rpEndBusJob(){
+ if(!busJob)return;
+ busJob=null;open=false;pass=0;rpCloseOverlays();
+ notify('Směna ukončena. Pokračuj ve volné jízdě.');
+ updateUI();
 }
 function toggleVehicle(){
  if(!walking){
