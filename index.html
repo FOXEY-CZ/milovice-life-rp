@@ -722,6 +722,23 @@ const asphaltTexture=new THREE.CanvasTexture(asphaltCanvas);asphaltTexture.wrapS
 const osmRoadMaterial=new THREE.MeshLambertMaterial({color:0x666b6e,map:asphaltTexture,side:THREE.DoubleSide});
 // Facade palette based on photo references from Milovice (e.g. 5. května), not building-specific surveyed colors.
 const osmBuildingMaterial=[0xe3c38c,0xe3d5b8,0xd8c3a7,0xe8d6b9,0xc6c9bb,0xe1c4ac,0xd6d7ce,0xe4d7c7].map((c,i)=>new THREE.MeshStandardMaterial({color:c,map:facadeTexture(i+1),roughness:.93,metalness:0}));
+function miloviceChurchBrickTexture(){
+ const cv=document.createElement('canvas');cv.width=cv.height=256;const c=cv.getContext('2d');
+ c.fillStyle='#d2c19d';c.fillRect(0,0,256,256);
+ let r=731;const rand=()=>((r=Math.imul(r,1664525)+1013904223)>>>0)/4294967296;
+ for(let y=0;y<256;y+=16){
+  c.fillStyle='#cbb38a';c.fillRect(0,y,256,1.5);
+  for(let x=-34;x<280;x+=46){
+   const x0=x+(Math.floor(y/16)%2)*23;
+   c.fillStyle=rand()>.5?'#e2d3ad':'#dfcba4';c.fillRect(x0+1,y+2,44,13);
+   c.fillStyle='rgba(99,80,58,.18)';c.fillRect(x0+1,y+1,1,14);
+  }
+ }
+ for(let i=0;i<1600;i++){c.fillStyle='rgba(64,55,42,.07)';c.fillRect(rand()*256,rand()*256,2,2)}
+ const tex=new THREE.CanvasTexture(cv);tex.wrapS=tex.wrapT=THREE.RepeatWrapping;
+ tex.repeat.set(3,3);tex.colorSpace=THREE.SRGBColorSpace;return tex;
+}
+const churchWalls=new THREE.MeshStandardMaterial({color:0xffffff,map:miloviceChurchBrickTexture(),roughness:.91});
 const schoolWalls=new THREE.MeshStandardMaterial({color:0xe3b42f,map:facadeTexture(37),roughness:.9});
 const schoolPlinth=new THREE.MeshStandardMaterial({color:0xb34a31,roughness:.86,side:THREE.DoubleSide});
 const garageWalls=new THREE.MeshStandardMaterial({color:0xb1afa4,roughness:.92});
@@ -874,7 +891,7 @@ function finalizeFoundations(){
 }
 // Photo-referenced detail pass: repeated meshes are batched as instanced geometry.
 // Facades are modelled from mapped footprints, not copied from proprietary photos.
-const architectureColors={whiteTrim:0xe3e6de,windowBar:0xd6e2e4,darkWood:0x514339,garageMetal:0x727f7b,bronze:0x8b6a48,glassAwning:0x7e9e9f,schoolRed:0xa3442e,roofGutter:0x687173,chimney:0xad6749,balcony:0xc9c1b7,railing:0x394447,shutter:0x8b705e,foundationBand:0x8e7f72};
+const architectureColors={gothicGlass:0x263c48,stoneTrim:0xe8d9b7,whiteTrim:0xe3e6de,windowBar:0xd6e2e4,darkWood:0x514339,garageMetal:0x727f7b,bronze:0x8b6a48,glassAwning:0x7e9e9f,schoolRed:0xa3442e,roofGutter:0x687173,chimney:0xad6749,balcony:0xc9c1b7,railing:0x394447,shutter:0x8b705e,foundationBand:0x8e7f72};
 const architectureQueues=Object.fromEntries(Object.keys(architectureColors).map(k=>[k,[]]));
 const architectureMaterials=Object.fromEntries(Object.entries(architectureColors).map(([k,v])=>[k,new THREE.MeshStandardMaterial({color:v,roughness:k==='glassAwning'?.3:.8,metalness:k==='roofGutter'||k==='railing'?.4:.04})]));
 const archUnitBox=new THREE.BoxGeometry(1,1,1),archPlacement=new THREE.Object3D();
@@ -945,9 +962,10 @@ function osmBuilding(points,tags,index){
  const type=tags.building||'yes',isGarage=type==='garage'||type==='garages';
  const isIndustrial=type==='warehouse'||type==='industrial';
  const isSchool=type==='school'&&tags.name==='ZŠ T. G. Masaryka';
+ const isChurch=type==='church'&&tags.name==='sv. Kateřina Alexandrijská';
  const floors=Math.min(9,Math.max(1,Number(tags['building:levels'])||(isGarage||isIndustrial?1:2)));
  const explicitHeight=parseFloat(tags.height);
- const h=Math.min(32,Math.max(isGarage?2.35:3.0,Number.isFinite(explicitHeight)&&explicitHeight>2?explicitHeight:isGarage?2.75:isIndustrial?5.3:floors*(isSchool?3.4:3.05)));
+ const h=Math.min(32,Math.max(isGarage?2.35:3.0,Number.isFinite(explicitHeight)&&explicitHeight>2?explicitHeight:isGarage?2.75:isIndustrial?5.3:isChurch?11.5:floors*(isSchool?3.4:3.05)));
  const isHouse=type==='house'||(type==='residential'&&floors<=2&&w*d<1000);
  const oldCenter=osmNearestRoadName((Math.min(...xs)+Math.max(...xs))*.5,(Math.min(...zs)+Math.max(...zs))*.5)==='5. května';
  const shape=new THREE.Shape();shape.moveTo(pts[0].x,-pts[0].y);
@@ -975,7 +993,7 @@ function osmBuilding(points,tags,index){
    }
   }
  }
- const wallMat=isSchool?schoolWalls:isGarage?garageWalls:isIndustrial?workWalls:osmBuildingMaterial[(oldCenter?index+3:index)%osmBuildingMaterial.length];
+ const wallMat=isSchool?schoolWalls:isChurch?churchWalls:isGarage?garageWalls:isIndustrial?workWalls:osmBuildingMaterial[(oldCenter?index+3:index)%osmBuildingMaterial.length];
  const mesh=new THREE.Mesh(geometry,wallMat);mesh.position.y=baseHeight;osmLayer.add(mesh);
  const roofShape=new THREE.Shape();roofShape.moveTo(pts[0].x,-pts[0].y);
  for(let i=1;i<pts.length;i++)roofShape.lineTo(pts[i].x,-pts[i].y);
@@ -985,7 +1003,7 @@ function osmBuilding(points,tags,index){
  roof.position.y=baseHeight+h+.025;
   const roofMat=isSchool?osmRoofPalette[4]:oldCenter?osmRoofPalette[0]:osmRoofPalette[index%osmRoofPalette.length];
   const pitched=isHouse?miloviceGableRoof(pts,baseHeight,h,roofMat):null;
-  const hip=!pitched&&(isHouse||isSchool)?miloviceHipRoof(pts,baseHeight,h,roofMat,isSchool?1.05:Math.min(2.3,Math.min(w,d)*.25)):null;
+  const hip=!pitched&&(isHouse||isSchool||isChurch)?miloviceHipRoof(pts,baseHeight,h,isChurch?osmRoofPalette[4]:roofMat,isChurch?4.3:isSchool?1.05:Math.min(2.3,Math.min(w,d)*.25)):null;
   if(pitched||hip)osmLayer.add(pitched||hip);else osmLayer.add(roof);
  // Small rooftop ventilation blocks create recognisable silhouettes without expensive meshes.
  if(!isHouse&&!isGarage&&!isSchool&&index%5===0&&w>10&&d>9){
@@ -996,7 +1014,7 @@ function osmBuilding(points,tags,index){
   ventTop.position.set(cx,baseHeight+h+.58,cz);osmLayer.add(ventTop);
  }
  // Building facade upgrade: per-building window allocation and visible architectural details.
- const visibleFloors=isGarage?0:Math.min(Math.max(1,Math.floor(h/3)),8);
+ const visibleFloors=isGarage||isChurch?0:isIndustrial?1:Math.min(Math.max(1,Math.floor(h/3)),8);
  for(let i=0;i<pts.length;i++){
   const p=pts[i],q=pts[(i+1)%pts.length],dx=q.x-p.x,dz=q.y-p.y,len=Math.hypot(dx,dz);
   if(len<5||len>90)continue;
@@ -1019,7 +1037,7 @@ function osmBuilding(points,tags,index){
   const windows=Math.min(18,Math.max(1,Math.floor(len/(isSchool?3.0:isHouse?4.2:3.5))));
   for(let floor=0;floor<visibleFloors;floor++){
    const y=(isSchool?1.84:1.85)+floor*(isSchool?3.15:3.05);
-   if(y+1.2>=h)continue;
+   if(y+.78>=h)continue; // Allow ground-floor windows on genuine one-storey houses.
    for(let j=0;j<windows;j++){
     const t=(j+1)/(windows+1),px=p.x+dx*t,pz=p.y+dz*t;
     addFacadePart(0,px+nx*.38,y,pz+nz*.38,rotation,baseHeight);
@@ -1046,7 +1064,7 @@ function osmBuilding(points,tags,index){
   }
  }
  // Ground-floor entrance: a lightweight facade panel, placed on the longest building wall.
- if(!isGarage){
+ if(!isGarage&&!isChurch){
   let longest=null;
   for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length],len=a.distanceTo(b);if(len>5&&(!longest||len>longest.len))longest={a,b,len}}
   if(longest){
