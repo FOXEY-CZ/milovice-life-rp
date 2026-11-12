@@ -1,0 +1,107 @@
+{
+  "version": "2026-11-12-city-expansion-1",
+  "description": "Streaming geographic areas covering central Milovice, Mladá, Benátecká Vrutice and Boží Dar. BBOX values are approximate gameplay coverage, not cadastral boundaries.",
+  "origin": [
+    50.226,
+    14.889
+  ],
+  "regions": [
+    {
+      "id": "old",
+      "name": "Staré Milovice",
+      "bbox": [
+        14.882,
+        50.2225,
+        14.896,
+        50.2307
+      ],
+      "center": [
+        50.226,
+        14.889
+      ],
+      "file": "../milovice-osm.json",
+      "terrain": "../milovice-terrain.json",
+      "available": true
+    },
+    {
+      "id": "mlada",
+      "name": "Mladá",
+      "bbox": [
+        14.852,
+        50.218,
+        14.887,
+        50.239
+      ],
+      "center": [
+        50.228609,
+        14.877114
+      ],
+      "file": "mlada.json",
+      "terrain": "terrain-mlada.json"
+    },
+    {
+      "id": "vrutice",
+      "name": "Benátecká Vrutice",
+      "bbox": [
+        14.828,
+        50.222,
+        14.861,
+        50.242
+      ],
+      "center": [
+        50.230534,
+        14.837956
+      ],
+      "file": "vrutice.json",
+      "terrain": "terrain-vrutice.json"
+    },
+    {
+      "id": "westlink",
+      "name": "Západní propojení",
+      "bbox": [
+        14.846,
+        50.222,
+        14.874,
+        50.24
+      ],
+      "center": [
+        50.232,
+        14.86
+      ],
+      "file": "westlink.json",
+      "terrain": "terrain-westlink.json"
+    },
+    {
+      "id": "centerlink",
+      "name": "Mladá – Staré Milovice – Boží Dar",
+      "bbox": [
+        14.882,
+        50.228,
+        14.911,
+        50.246
+      ],
+      "center": [
+        50.238,
+        14.897
+      ],
+      "file": "centerlink.json",
+      "terrain": "terrain-centerlink.json"
+    },
+    {
+      "id": "bozidar",
+      "name": "Boží Dar",
+      "bbox": [
+        14.901,
+        50.234,
+        14.934,
+        50.251
+      ],
+      "center": [
+        50.242003,
+        14.917989
+      ],
+      "file": "bozidar.json",
+      "terrain": "terrain-bozidar.json"
+    }
+  ]
+}
