@@ -1273,6 +1273,82 @@ function stationArch(x,z,dx,dz,base,w){
  arch.rotation.y=yaw;arch.position.set(x,base+2.41,z);osmLayer.add(arch);
  archPart('stationPlaster',x,base+3.45,z,w+.20,.38,.34,yaw);
 }
+// 4.8: Three-part station silhouette, unlike the generic 7.4 m monolithic extrusion.
+// OSM measures the perimeter; relative wing/center proportions are photo-informed.
+function stationAxis(pts,cx,cz){
+ let xx=0,zz=0,xz=0;
+ for(const p of pts){const dx=p.x-cx,dz=p.y-cz;xx+=dx*dx;zz+=dz*dz;xz+=dx*dz}
+ const theta=.5*Math.atan2(2*xz,xx-zz);
+ return {ax:Math.cos(theta),az:Math.sin(theta)};
+}
+function stationClip(pts,cx,cz,ax,az,threshold,keepGreater){
+ const inside=p=>keepGreater?((p.x-cx)*ax+(p.y-cz)*az>=threshold-1e-6):((p.x-cx)*ax+(p.y-cz)*az<=threshold+1e-6);
+ const intersection=(a,b)=>{
+  const da=(a.x-cx)*ax+(a.y-cz)*az-threshold;
+  const db=(b.x-cx)*ax+(b.y-cz)*az-threshold;
+  const t=da/(da-db||1e-10);
+  return new THREE.Vector2(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t);
+ };
+ const out=[];
+ for(let i=0;i<pts.length;i++){
+  const a=pts[i],b=pts[(i+1)%pts.length],ina=inside(a),inb=inside(b);
+  if(ina)out.push(a.clone());
+  if(ina!==inb)out.push(intersection(a,b));
+ }
+ return out;
+}
+function stationShape(pts){
+ const shape=new THREE.Shape();shape.moveTo(pts[0].x,-pts[0].y);
+ for(let i=1;i<pts.length;i++)shape.lineTo(pts[i].x,-pts[i].y);
+ shape.closePath();return shape;
+}
+function stationSection(pts,base,fromHeight,toHeight,roofRise,material){
+ if(pts.length<3)return;
+ const footprint=stationShape(pts);
+ if(toHeight>fromHeight){
+  const bodyGeo=new THREE.ExtrudeGeometry(footprint,{depth:toHeight-fromHeight,bevelEnabled:false,steps:1});
+  bodyGeo.rotateX(-Math.PI/2);
+  const body=new THREE.Mesh(bodyGeo,stationWalls);body.position.y=base+fromHeight;osmLayer.add(body);
+ }
+ const roofShape=new THREE.ShapeGeometry(footprint);roofShape.rotateX(-Math.PI/2);
+ const roofBase=new THREE.Mesh(roofShape,material);roofBase.position.y=base+toHeight+.05;osmLayer.add(roofBase);
+ // A pitched, independently raised roof with overhang, not the previous giant flat cap.
+ const roof=miloviceHipRoof(pts,base,toHeight,material,roofRise);
+ if(roof)osmLayer.add(roof);
+ const cX=pts.reduce((sum,p)=>sum+p.x,0)/pts.length,cZ=pts.reduce((sum,p)=>sum+p.y,0)/pts.length;
+ archPart('roofGutter',cX,base+toHeight+.1,cZ,.06,.06,.06);
+}
+function miloviceStationMassing(pts,base,cx,cz){
+ const {ax,az}=stationAxis(pts,cx,cz);
+ const sVals=pts.map(p=>(p.x-cx)*ax+(p.y-cz)*az);
+ const min=Math.min(...sVals),max=Math.max(...sVals);
+ const middle=Math.min(9.5,Math.max(6,(max-min)*.23));
+ const left=stationClip(pts,cx,cz,ax,az,-middle,false);
+ const center=stationClip(stationClip(pts,cx,cz,ax,az,-middle,true),cx,cz,ax,az,middle,false);
+ const right=stationClip(pts,cx,cz,ax,az,middle,true);
+ if(left.length>=3)stationSection(left,base,3.62,3.62,1.45,osmRoofPalette[0]);
+ if(right.length>=3)stationSection(right,base,3.62,3.62,1.45,osmRoofPalette[0]);
+ if(center.length>=3){
+  stationSection(center,base,3.62,6.65,2.40,osmRoofPalette[0]);
+  // Central first-floor windows, scaled to true local footprint and a photo-inspired rhythm.
+  for(let i=0;i<center.length;i++){
+   const a=center[i],b=center[(i+1)%center.length],len=a.distanceTo(b);
+   if(len<4.8)continue;
+   const dx=b.x-a.x,dz=b.y-a.y,n=Math.max(1,Math.floor(len/3.2));
+   let nx=-dz/len,nz=dx/len,mx=(a.x+b.x)/2,mz=(a.y+b.y)/2;
+   if(nx*(mx-cx)+nz*(mz-cz)<0){nx=-nx;nz=-nz}
+   const yaw=Math.atan2(nx,nz);
+   for(let j=0;j<n;j++){
+    const t=(j+.5)/n,x=a.x+dx*t,z=a.y+dz*t;
+    archPart('stationFrames',x+nx*.21,base+5.19,z+nz*.21,1.35,1.54,.16,yaw);
+    archPart('stationGlass',x+nx*.34,base+5.19,z+nz*.34,1.08,1.31,.13,yaw);
+    archPart('windowBar',x+nx*.40,base+5.19,z+nz*.40,.055,1.26,.09,yaw);
+   }
+  }
+ }
+ window.__miloviceLandmarkDebug ||= {};
+ window.__miloviceLandmarkDebug.stationParts={left:left.length,center:center.length,right:right.length,heights:[3.62,6.65,3.62]};
+}
 function miloviceStationGroundFloor(pts,base,h,cx,cz){
  // Longitudinal building axis from the mapped irregular ~38x8m footprint.
  let xx=0,zz=0,xz=0;
@@ -1480,6 +1556,7 @@ function osmBuilding(points,tags,index,osmId=null){
  }
  const wallMat=isBlueStar?blueStarWalls:isMirova36?mirova36Walls:isGrocer74?grocerWalls:isSchool?schoolWalls:isChurch?churchWalls:isStation?stationWalls:isGarage?garageWalls:isIndustrial?workWalls:osmBuildingMaterial[(oldCenter?index+3:index)%osmBuildingMaterial.length];
  if(isBikeTower){miloviceBikeTower(pts,baseHeight);osmBuildings++;return}
+ if(isStation){miloviceStationMassing(pts,baseHeight,centerX,centerZ);miloviceStationGroundFloor(pts,baseHeight,h,centerX,centerZ);osmBuildings++;return}
  const mesh=new THREE.Mesh(geometry,wallMat);mesh.position.y=baseHeight+stationPortalHeight;osmLayer.add(mesh);
  if(isStation)miloviceStationGroundFloor(pts,baseHeight,h,centerX,centerZ);
  const roofShape=new THREE.Shape();roofShape.moveTo(pts[0].x,-pts[0].y);
