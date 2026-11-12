@@ -827,7 +827,7 @@ function osmStrip(a,b,width,material,y=.15){
  osmLayer.add(new THREE.Mesh(geometry,material));
 }
 function osmRoadSegment(a,b,width,kind){
- if(kind!=='pedestrian'&&kind!=='service'){
+ if(!['pedestrian','service','footway','path'].includes(kind)){
   osmStrip(a,b,width+3,osmSidewalkMat,.065);
  }
  osmStrip(a,b,width,osmRoadMaterial,.17);
@@ -849,7 +849,7 @@ function osmRoadSegment(a,b,width,kind){
 const osmTrunkMaterial=new THREE.MeshStandardMaterial({color:0x71503a,roughness:1}),osmLeavesMaterial=[0x396b39,0x4c7b40,0x5c8748].map(c=>new THREE.MeshStandardMaterial({color:c,roughness:.9,flatShading:false})),osmLampMaterial=mat(0x647078),osmLightMaterial=new THREE.MeshBasicMaterial({color:0xffe7a3});
 let osmFurnitureCount=0;
 function osmRoadFurniture(a,b,width,kind){
- if(kind==='pedestrian'||kind==='service'||osmFurnitureCount>=260)return;
+ if(['pedestrian','service','footway','path'].includes(kind)||osmFurnitureCount>=260)return;
  const dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);
  if(len<18)return;
  const nx=-dz/len,nz=dx/len;
@@ -1198,7 +1198,7 @@ function osmAddLandmark(el){
  const points=el.geometry.map(osmPoint);
  const p=new THREE.Vector2(points.reduce((sum,v)=>sum+v.x,0)/points.length,points.reduce((sum,v)=>sum+v.y,0)/points.length);
  osmLandmarks.push({name:el.tags.name,point:p,kind:el.tags.building});
- osmPlaceLabel(el.tags.name,p);
+ if(!['church','school'].includes(el.tags.building))osmPlaceLabel(el.tags.name,p);
 }
 async function fetchMiloviceOSM(){
  // Avoid stale GitHub Pages/browser caches after the automated OSM export.
@@ -1347,7 +1347,7 @@ osmBtn.onclick=async()=>{
   if(visualDetails.parent!==osmLayer)osmLayer.add(visualDetails);for(const batch of facadeBatches)batch.clear();
  if(terrainGrid)rpTerrainMesh();else cube(2200,.16,2200,osmParkMaterial,0,-.18,0,osmLayer);
  for(const el of elements){if(!el.geometry?.length)continue;
- if(el.tags?.highway){const points=el.geometry.map(osmPoint);osmRoads.push(points);if(el.tags.name)osmNamedRoads.push({name:el.tags.name,points});const width=el.tags.highway==='primary'?11:el.tags.highway==='secondary'?9:el.tags.highway==='tertiary'?8:el.tags.highway==='pedestrian'?4:el.tags.highway==='service'?4.5:7.8;
+ if(el.tags?.highway){const points=el.geometry.map(osmPoint);osmRoads.push(points);if(el.tags.name)osmNamedRoads.push({name:el.tags.name,points});const width=el.tags.highway==='primary'?11:el.tags.highway==='secondary'?9:el.tags.highway==='tertiary'?8:el.tags.highway==='pedestrian'?4:el.tags.highway==='footway'?1.8:el.tags.highway==='path'?1.65:el.tags.highway==='service'?4.5:7.8;
   if(['primary','secondary','tertiary','residential','unclassified','living_street','service'].includes(el.tags.highway))osmDriveRoads.push({points,width,kind:el.tags.highway,oneway:el.tags.oneway==='yes'?1:el.tags.oneway==='-1'?-1:0});
  for(let i=1;i<points.length;i++){osmRoadSegment(points[i-1],points[i],width,el.tags.highway);osmRoadFurniture(points[i-1],points[i],width,el.tags.highway)}
  }else if(el.tags?.building){osmBuilding(el.geometry,el.tags,osmBuildings);osmAddLandmark(el)}
