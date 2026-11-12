@@ -872,6 +872,36 @@ function finalizeFoundations(){
  const mesh=new THREE.Mesh(geo,foundationMat);mesh.frustumCulled=false;osmLayer.add(mesh);
  foundationPositions.length=0;foundationFaces.length=0;
 }
+// Photo-referenced detail pass: repeated meshes are batched as instanced geometry.
+// Facades are modelled from mapped footprints, not copied from proprietary photos.
+const architectureColors={whiteTrim:0xe3e6de,windowBar:0xd6e2e4,darkWood:0x514339,garageMetal:0x727f7b,bronze:0x8b6a48,glassAwning:0x7e9e9f,schoolRed:0xa3442e,roofGutter:0x687173,chimney:0xad6749,balcony:0xc9c1b7,railing:0x394447,shutter:0x8b705e,foundationBand:0x8e7f72};
+const architectureQueues=Object.fromEntries(Object.keys(architectureColors).map(k=>[k,[]]));
+const architectureMaterials=Object.fromEntries(Object.entries(architectureColors).map(([k,v])=>[k,new THREE.MeshStandardMaterial({color:v,roughness:k==='glassAwning'?.3:.8,metalness:k==='roofGutter'||k==='railing'?.4:.04})]));
+const archUnitBox=new THREE.BoxGeometry(1,1,1),archPlacement=new THREE.Object3D();
+function archPart(kind,x,y,z,w,h,d,rotation=0){
+ const queue=architectureQueues[kind];if(queue)queue.push([x,y,z,w,h,d,rotation]);
+}
+function finalizeArchitecture(){
+ for(const [kind,items] of Object.entries(architectureQueues)){
+  if(!items.length)continue;
+  const instance=new THREE.InstancedMesh(archUnitBox,architectureMaterials[kind],items.length);
+  for(let i=0;i<items.length;i++){
+   const [x,y,z,w,h,d,yaw]=items[i];
+   archPlacement.position.set(x,y,z);archPlacement.rotation.set(0,yaw,0);
+   archPlacement.scale.set(w,h,d);archPlacement.updateMatrix();instance.setMatrixAt(i,archPlacement.matrix);
+  }
+  instance.instanceMatrix.needsUpdate=true;instance.frustumCulled=false;osmLayer.add(instance);items.length=0;
+ }
+}
+function schoolFacadeSign(text,x,y,z,orientation){
+ const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=176;const ctx=canvas.getContext('2d');
+ ctx.fillStyle='#fff4d5';ctx.fillRect(0,0,1024,176);
+ ctx.fillStyle='#9d3a2a';ctx.fillRect(0,0,1024,8);
+ ctx.font='bold 83px system-ui';ctx.fillStyle='#243e52';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,512,94,990);
+ const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
+ const label=new THREE.Mesh(new THREE.PlaneGeometry(7.7,1.32),new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide}));
+ label.position.set(x,y,z);label.rotation.y=orientation;osmLayer.add(label);
+}
 const osmDoorMaterial=new THREE.MeshStandardMaterial({color:0x394a50,metalness:.25,roughness:.28,side:THREE.DoubleSide});
 const roofDetailMat=new THREE.MeshStandardMaterial({color:0x777e7c,metalness:.34,roughness:.68});
 const roofVentMat=new THREE.MeshStandardMaterial({color:0x39484b,metalness:.42,roughness:.43});
@@ -1162,7 +1192,7 @@ osmBtn.onclick=async()=>{
  if(osmLoading)return;
  osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';osmMessage('Načítám místní soubor mapy ze stejného GitHub Pages webu…');
  try{
- const elements=await fetchMiloviceOSM();await rpLoadTerrain();foundationPositions.length=0;foundationFaces.length=0;osmRoads=[];osmDriveRoads.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;osmFurnitureCount=0;
+ const elements=await fetchMiloviceOSM();await rpLoadTerrain();foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;osmFurnitureCount=0;
   if(trafficGroup.parent!==osmLayer)osmLayer.add(trafficGroup);
   if(visualDetails.parent!==osmLayer)osmLayer.add(visualDetails);for(const batch of facadeBatches)batch.clear();
  if(terrainGrid)rpTerrainMesh();else cube(2200,.16,2200,osmParkMaterial,0,-.18,0,osmLayer);
@@ -1172,7 +1202,7 @@ osmBtn.onclick=async()=>{
  for(let i=1;i<points.length;i++){osmRoadSegment(points[i-1],points[i],width,el.tags.highway);osmRoadFurniture(points[i-1],points[i],width,el.tags.highway)}
  }else if(el.tags?.building){osmBuilding(el.geometry,el.tags,osmBuildings);osmAddLandmark(el)}
  }
- if(!osmRoads.length)throw Error('Žádné silnice v odpovědi');finalizeFoundations();finalizeFacades();osmStreetLabels();chunkMilovice();improveMiloviceVisuals();rpPopulate();
+ if(!osmRoads.length)throw Error('Žádné silnice v odpovědi');finalizeFoundations();finalizeFacades();finalizeArchitecture();osmStreetLabels();chunkMilovice();improveMiloviceVisuals();rpPopulate();
  osmReady=true;osmNotice.style.display='none';osmSetActive(true);document.getElementById('status').textContent='Prozkoumávej skutečné Milovice. Na mapě najdeš pojmenované ulice a budovy.';
  }catch(e){osmLayer.clear();for(const batch of facadeBatches)batch.clear();osmReady=false;osmBtn.textContent='🔄 Zkusit načíst Milovice';notify('Skutečná mapa se nenačetla. Zkus znovu tlačítko vpravo.');osmNotice.style.display='block';osmNotice.textContent='3D mapa se nenačetla: '+e.message+'. Zkus znovu načíst mapu.';loadingScreen.textContent='⚠️ Skutečnou mapu Milovic se nepodařilo načíst. Klepni na Zkusit načíst Milovice.'}
  finally{osmLoading=false}
