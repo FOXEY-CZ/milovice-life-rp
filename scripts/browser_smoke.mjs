@@ -23,6 +23,8 @@ try{
  console.log('Landmark geometry:',JSON.stringify(landmarkChecks));
  if(landmarkChecks.stationPassageFaces!==2)throw new Error('Milovice station does not have two opposing real open passage portals: '+JSON.stringify(landmarkChecks));
  if(!landmarkChecks.stationParts?.center||!landmarkChecks.stationParts?.left||!landmarkChecks.stationParts?.right)throw new Error('Station wing/center massing missing');
+ if(!landmarkChecks.stationSign||!landmarkChecks.stationCanopy||!landmarkChecks.stationStreetSign)
+  throw new Error('4.9 station architecture missing: '+JSON.stringify(landmarkChecks));
  const terrain=await page.locator('#terrain-status').innerText();
  console.log('Loaded terrain:',terrain);
  if(!terrain.includes('ČÚZK DMR 4G'))throw new Error('Official DEM did not load');
