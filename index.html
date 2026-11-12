@@ -828,7 +828,12 @@ function updateMiloviceChunks(force=false){
  lastChunkX=cx;lastChunkZ=cz;
  for(const chunk of osmChunks.values()){
   const visible=Math.hypot(cx-chunk.x,cz-chunk.z)<OSM_VIEW;
-  for(const object of chunk.objects)object.visible=visible;
+  for(const object of chunk.objects){
+   object.visible=visible;
+   if(object.isMesh&&object.geometry?.type==='ExtrudeGeometry'){
+    object.castShadow=rpRealisticMode&&visible&&Math.hypot(cx-chunk.x,cz-chunk.z)<135;
+   }
+  }
  }
 }
 for(const item of originalCity)item.visible=false;
@@ -2396,6 +2401,12 @@ sun.intensity=2.6;
 scene.fog.near=450;scene.fog.far=1200;
 let last=performance.now(),lastHud=0,lastMap=0,perfFrames=0,perfSince=performance.now();const perfEl=document.getElementById('perf');function animate(t){requestAnimationFrame(animate);const dt=Math.min(Math.max((t-last)/1000,0),.05);last=t;
 elapsed+=dt;rpAnimateTraffic(dt);if(Math.floor(elapsed/3)!==Math.floor((elapsed-dt)/3))maybeStreamCityAreas();
+if(rpRealisticMode){
+ const cx=walking?px:x,cz=walking?pz:z;
+ sun.position.set(cx+68,110,cz+44);
+ sun.target.position.set(cx,0,cz);
+ sun.target.updateMatrixWorld();
+}
 if(walking){
  avatar.visible=walkCam!==1;
  let strafe=(keys.has('KeyD')?1:0)-(keys.has('KeyA')?1:0);
