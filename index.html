@@ -18,6 +18,7 @@
 .rp-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
 .rp-modal h2{font-size:20px;margin:0 0 5px}.rp-modal p{font-size:13px;color:#d0dfeb;margin:4px 0 14px;line-height:1.4}
 .rp-modal-head button{flex:0 0 auto;padding:7px 10px;min-height:36px}
+.rp-region-label{display:block;margin:10px 0 15px;font-weight:700;color:#e1f4fa}.rp-region-label select{display:block;width:100%;margin-top:6px;background:#284a66;color:#fff;padding:11px;border:1px solid #9fcee1;border-radius:8px;font-size:15px}
 .rp-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .rp-choice-grid button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:91px;padding:10px;background:#27455e;color:white;font-size:15px}
 .rp-choice-grid button span{font-size:26px}.rp-choice-grid button small{font-size:11px;color:#c9dce9;font-weight:400}
@@ -45,7 +46,7 @@
 <section class="rp-overlay" id="rp-spawn" aria-label="Výběr vozidla" hidden>
  <div class="rp-modal">
   <div class="rp-modal-head"><div><h2>🚘 Jak chceš začít?</h2><p>Vyber si vozidlo nebo vyraz pěšky. Vozidla slouží pro volnou jízdu.</p></div><button id="rp-spawn-close" type="button">✕</button></div>
-  <div class="rp-choice-grid">
+  <label class="rp-region-label" for="rp-area-select">📍 Kde se chceš objevit?<select id="rp-area-select"><option value="old">Staré Milovice</option></select></label><div class="rp-choice-grid">
    <button data-spawn="walking" type="button"><span>🚶</span> Pěšky<small>Volné prozkoumávání</small></button>
    <button data-spawn="sedan" type="button"><span>🚗</span> Osobní auto<small>Běžná jízda</small></button>
    <button data-spawn="suv" type="button"><span>🚙</span> SUV<small>Větší osobní vůz</small></button>
@@ -516,10 +517,33 @@ function rpCloseOverlays(){
  document.getElementById('rp-spawn').hidden=true;
  document.getElementById('rp-job-panel').hidden=true;
 }
-function rpSelectSpawn(kind){
+async function rpSelectSpawn(kind){
  if(!osmReady)return;
  const kinds={sedan:0,suv:2,van:6,police:8};
  if(!['walking','bus',...Object.keys(kinds)].includes(kind))return;
+ const areaId=document.getElementById('rp-area-select')?.value||'old';
+ if(areaId!=='old'&&!loadedCityAreas.has(areaId)){
+  const ok=await rpLoadCityArea(areaId);
+  if(!ok)return;
+ }
+ // Spawn on a real drivable road in the chosen district.
+ const area=cityAreaManifest?.find(r=>r.id===areaId);
+ if(area){
+  const gps=area.id==='old'?{lat:50.2281408,lon:14.8833112}:{lat:area.center[0],lon:area.center[1]};
+  const target=osmPoint(gps);
+  let chosen=null,best=Infinity;
+  for(const seg of driveSegments){
+   if(seg.width<6.3||seg.kind==='service'||seg.len<12)continue;
+   const midx=(seg.a.x+seg.b.x)*.5,midz=(seg.a.y+seg.b.y)*.5;
+   const d=Math.hypot(midx-target.x,midz-target.y);
+   if(d<best){best=d;chosen=seg}
+  }
+  if(chosen){
+   const vx=(chosen.b.x-chosen.a.x)/chosen.len,vz=(chosen.b.y-chosen.a.y)/chosen.len;
+   const theta=Math.atan2(-vx,-vz),side=chosen.width*.25;
+   busPark={x:(chosen.a.x+chosen.b.x)*.5-vz*side,z:(chosen.a.y+chosen.b.y)*.5+vx*side,angle:theta};
+  }
+ }
  rpCloseOverlays();open=false;speed=0;cam=0;busJob=null;pass=0;
  if(activeCar){activeCar.driven=false;activeCar.parked=true;activeCar.g.rotation.y=angle;activeCar.g.position.set(x,terrainAt(x,z)+.045,z);activeCar=null}
  // Remove a previously spawned custom car to prevent unbounded meshes / draw calls.
@@ -546,7 +570,7 @@ function rpSelectSpawn(kind){
   walking=false;avatar.visible=false;
   notify('🚗 Volná jízda. Šipky / WASD řídí, E vystoupí.');
  }
- keys.clear();updateUI();
+ keys.clear();updateMiloviceChunks(true);updateUI();
 }
 function rpJobStops(){
  const selected=[],names=new Set(),bx=busPark.x,bz=busPark.z;
