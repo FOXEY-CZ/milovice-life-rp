@@ -104,6 +104,8 @@ function addRealMapLandmarks(){
   {name:'🏨 Modrá hvězda',gps:[50.2283844444,14.8841363889]},
   {name:'🚉 Nádraží Milovice · Nádražka',gps:[50.229105,14.88199]},
   {name:'🚲 Cyklověž',gps:[50.229274,14.882217]},
+  {name:'🏘️ Dům Mírová 36',gps:[50.22815472,14.88442361]},
+  {name:'🛒 Potraviny D a Š',gps:[50.2275263,14.88278904]},
   {name:'🏫 ZŠ T. G. Masaryka',gps:[50.2288325,14.8868342]}
  ];
  for(const p of locs)leafletMarks.push(window.L.circleMarker(p.gps,{
@@ -2016,7 +2018,7 @@ function drawMini(){const mapX=walking?px:x,mapZ=walking?pz:z,heading=walking?or
   mc.textAlign='start';
  }
  mc.restore();
- mc.fillStyle='#ffe28b';for(const place of osmLandmarks){const dx=(place.point.x-x)*scale,dz=(place.point.y-z)*scale;const ca=Math.cos(-heading),sa=Math.sin(-heading);const u=90+dx*ca-dz*sa,v=90+dx*sa+dz*ca;if(u>5&&u<175&&v>22&&v<160){mc.beginPath();mc.arc(u,v,3.3,0,Math.PI*2);mc.fill()}}
+ mc.fillStyle='#ffe28b';for(const place of osmLandmarks){const dx=(place.point.x-mapX)*scale,dz=(place.point.y-mapZ)*scale;const ca=Math.cos(-heading),sa=Math.sin(-heading);const u=90+dx*ca-dz*sa,v=90+dx*sa+dz*ca;if(u>5&&u<175&&v>22&&v<160){mc.beginPath();mc.arc(u,v,3.3,0,Math.PI*2);mc.fill()}}
  mc.fillStyle='#ffda57';mc.beginPath();mc.moveTo(90,78);mc.lineTo(83,99);mc.lineTo(97,99);mc.closePath();mc.fill();
  mc.fillStyle='white';mc.font='bold 11px sans-serif';mc.fillText('MILOVICE · OSM',8,16);
  let nearest='',best=Infinity;for(const road of osmNamedRoads){for(const p of road.points){const dist=(p.x-mapX)**2+(p.y-mapZ)**2;if(dist<best){best=dist;nearest=road.name}}}
