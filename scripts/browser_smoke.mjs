@@ -22,6 +22,7 @@ try{
  const landmarkChecks=await page.evaluate(()=>window.__miloviceLandmarkDebug||{});
  console.log('Landmark geometry:',JSON.stringify(landmarkChecks));
  if(landmarkChecks.stationPassageFaces!==2)throw new Error('Milovice station does not have two opposing real open passage portals: '+JSON.stringify(landmarkChecks));
+ if(!landmarkChecks.stationParts?.center||!landmarkChecks.stationParts?.left||!landmarkChecks.stationParts?.right)throw new Error('Station wing/center massing missing');
  const terrain=await page.locator('#terrain-status').innerText();
  console.log('Loaded terrain:',terrain);
  if(!terrain.includes('ČÚZK DMR 4G'))throw new Error('Official DEM did not load');
@@ -44,6 +45,18 @@ try{
  await page.locator('#rp-job-start').click();
  if(!(await page.locator('#mode').innerText()).includes('Autobusová směna'))throw new Error('Job did not start');
  if(!(await page.locator('#doors').isVisible()))throw new Error('Job door button missing');
+ await page.locator('#rp-vehicles').click();
+ await page.locator('#rp-area-select').selectOption('mlada');
+ await page.locator('[data-spawn="walking"]').click();
+ await page.waitForFunction(()=>window.__miloviceAreasLoaded?.includes('mlada'),null,{timeout:105000});
+ console.log('Mladá streamed:',JSON.stringify(await page.evaluate(()=>window.__miloviceAreaStats)));
+ await page.screenshot({path:'browser-artifacts/milovice-mlada.png'});
+ await page.locator('#rp-vehicles').click();
+ await page.locator('#rp-area-select').selectOption('bozidar');
+ await page.locator('[data-spawn="walking"]').click();
+ await page.waitForFunction(()=>window.__miloviceAreasLoaded?.includes('bozidar'),null,{timeout:105000});
+ console.log('Boží Dar streamed:',JSON.stringify(await page.evaluate(()=>window.__miloviceAreaStats)));
+ await page.screenshot({path:'browser-artifacts/milovice-bozidar.png'});
  console.log('Smoke OK: rendered 3D, terrain, walking, car, mission controls');
  if(errors.length)console.log('Nonfatal browser messages:',errors.slice(0,6));
  await context.close();
