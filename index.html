@@ -197,16 +197,18 @@ let osmActive=false,osmReady=false,osmLoading=false,oldPosition=null,osmRoads=[]
 const osmBtn=document.createElement('button');
 osmBtn.id='osm3d';osmBtn.type='button';osmBtn.textContent='🏙️ Skutečné ulice 3D';
 osmBtn.style.cssText='position:fixed;right:12px;top:132px;z-index:46;background:#193d58;border:1px solid #93b4c7;min-height:39px;font-size:12px;padding:8px';
+const osmNotice=document.createElement('div');osmNotice.style.cssText='display:none;position:fixed;z-index:49;right:10px;top:184px;max-width:min(320px,80vw);background:#142c3ef5;color:white;border:1px solid #90b2c8;border-radius:10px;padding:12px;font:13px system-ui;box-shadow:0 3px 14px #0007';document.body.appendChild(osmNotice);
+function osmMessage(message){osmNotice.style.display='block';osmNotice.textContent=message}
 document.body.appendChild(osmBtn);
 function osmPoint(p){const lat0=50.226,lon0=14.889;return new THREE.Vector2((p.lon-lon0)*111320*Math.cos(lat0*Math.PI/180),-(p.lat-lat0)*111320)}
 function osmStrip(a,b,width,material,y=.15){const dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);if(len<.15||len>800)return;const mesh=new THREE.Mesh(new THREE.BoxGeometry(width,.11,len),material);mesh.position.set((a.x+b.x)/2,y,(a.y+b.y)/2);mesh.rotation.y=Math.atan2(-dx,-dz);osmLayer.add(mesh)}
 function osmBuilding(points,tags,index){if(points.length<4)return;const pts=points.map(osmPoint),xs=pts.map(p=>p.x),zs=pts.map(p=>p.y),w=Math.max(...xs)-Math.min(...xs),d=Math.max(...zs)-Math.min(...zs);if(w<2||d<2||w>140||d>140)return;const floors=Math.min(9,Math.max(1,Number(tags['building:levels'])||2));const h=Math.min(32,Math.max(3,Number.parseFloat(tags.height)||floors*3));const x=(Math.max(...xs)+Math.min(...xs))/2,z=(Math.max(...zs)+Math.min(...zs))/2;cube(w,h,d,osmBuildingMaterial[index%osmBuildingMaterial.length],x,h/2,z,osmLayer);cube(w+.4,.3,d+.4,mat(0x686a68),x,h+.15,z,osmLayer);osmBuildings++}
 async function fetchMiloviceOSM(){
- const bbox='50.221,14.881,50.231,14.898';
+ const bbox='50.223,14.885,50.229,14.895';
  const q='[out:json][timeout:25];(way["highway"~"^(residential|living_street|tertiary|secondary|primary|service|unclassified|pedestrian)$"]('+bbox+');way["building"]('+bbox+'););out geom;';
- const urls=['https://overpass.kumi.systems/api/interpreter','https://overpass-api.de/api/interpreter'];
+ const urls=['https://overpass.nchc.org.tw/api/interpreter','https://overpass.private.coffee/api/interpreter','https://overpass-api.de/api/interpreter'];
  let error=null;
- for(const endpoint of urls){try{const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),18000);let res;try{res=await fetch(endpoint+'?data='+encodeURIComponent(q),{signal:controller.signal})}finally{clearTimeout(timeout)}if(!res.ok)throw Error('HTTP '+res.status);const data=await res.json();if(!data.elements?.length)throw Error('Prázdná data');return data.elements}catch(e){error=e}}
+ for(const endpoint of urls){try{const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),8500);let res;try{res=await fetch(endpoint,{method:'POST',body:new URLSearchParams({data:q}),signal:controller.signal})}finally{clearTimeout(timeout)}if(!res.ok)throw Error('HTTP '+res.status);const data=await res.json();if(!data.elements?.length)throw Error('Prázdná data');return data.elements}catch(e){error=e}}
  throw error||Error('OSM data nejsou dostupná')
 }
 function osmSetActive(active){
@@ -217,10 +219,10 @@ function osmSetActive(active){
  osmBtn.textContent=active?'↩️ Modelové město':'🏙️ Skutečné ulice 3D';
 }
 osmBtn.onclick=async()=>{
- if(osmActive){osmSetActive(false);return}
+ if(osmActive){osmNotice.style.display='none';osmSetActive(false);return}
  if(osmReady){osmSetActive(true);return}
  if(osmLoading)return;
- osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';
+ osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';osmMessage('Stahuji mapová data Milovic. Na mobilu to může chvíli trvat…');
  try{
  const elements=await fetchMiloviceOSM();osmRoads=[];osmBuildings=0;
  cube(2200,.16,2200,osmParkMaterial,0,-.18,0,osmLayer);
@@ -230,8 +232,8 @@ osmBtn.onclick=async()=>{
  }else if(el.tags?.building)osmBuilding(el.geometry,el.tags,osmBuildings);
  }
  if(!osmRoads.length)throw Error('Žádné silnice v odpovědi');
- osmReady=true;osmSetActive(true);
- }catch(e){osmLayer.clear();osmReady=false;osmBtn.textContent='⚠️ Zkusit načíst 3D ulice';notify('Nepodařilo se načíst 3D ulice: '+e.message+'. Původní hra zůstává funkční.')}
+ osmReady=true;osmNotice.style.display='none';osmSetActive(true);
+ }catch(e){osmLayer.clear();osmReady=false;osmBtn.textContent='⚠️ Zkusit načíst 3D ulice';notify('Nepodařilo se načíst 3D ulice. Původní hra zůstává funkční.');osmNotice.textContent='3D ulice se nepodařilo stáhnout ('+e.message+'). Může jít o nedostupnost mapového serveru. Zkus to později nebo použij tlačítko Skutečná mapa.'}
  finally{osmLoading=false}
 };
 
