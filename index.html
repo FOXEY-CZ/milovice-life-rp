@@ -440,7 +440,7 @@ async function rpSelectSpawn(kind){
    busPark={x:(chosen.a.x+chosen.b.x)*.5-vz*side,z:(chosen.a.y+chosen.b.y)*.5+vx*side,angle:theta};
   }
  }
- rpCloseOverlays();open=false;speed=0;cam=0;busJob=null;pass=0;
+ rpCloseOverlays();rpClearGameplayStops();open=false;speed=0;cam=0;busJob=null;pass=0;
  if(activeCar){activeCar.driven=false;activeCar.parked=true;activeCar.g.rotation.y=angle;activeCar.g.position.set(x,terrainAt(x,z)+.045,z);activeCar=null}
  // Remove a previously spawned custom car to prevent unbounded meshes / draw calls.
  if(playerSpawnCar){
@@ -503,12 +503,14 @@ function rpStartBusJob(){
  walking=false;x=busPark.x;z=busPark.z;angle=busPark.angle;avatar.visible=false;
  open=false;speed=0;cam=0;pass=0;rating=100;paid=false;
  busJob={stops:targets,next:0};
+ rpCreateGameplayStops(targets);
  rpCloseOverlays();keys.clear();
  notify('🚌 Směna zahájena! Dojeď ke kontrolnímu bodu a při zastavení otevři dveře.');
  updateUI();
 }
 function rpEndBusJob(){
  if(!busJob)return;
+ rpClearGameplayStops();
  busJob=null;open=false;pass=0;rpCloseOverlays();
  notify('Směna ukončena. Pokračuj ve volné jízdě.');
  updateUI();
@@ -564,7 +566,7 @@ document.addEventListener('mousemove',e=>{
   if(index>=0)trafficCars.splice(index,1);
   trafficGroup.remove(playerSpawnCar.g);playerSpawnCar=null;
  }
- rpCloseOverlays();walking=true;avatar.visible=true;
+ rpCloseOverlays();rpClearGameplayStops();walking=true;avatar.visible=true;
  document.getElementById('status').textContent='Vyber si nové vozidlo.';
  if(osmReady)osmSetActive(true);else osmBtn.click();
  updateUI();
@@ -619,6 +621,53 @@ document.querySelectorAll('[data-key]').forEach(b=>{
  b.addEventListener('pointerdown',e=>{e.preventDefault();keys.add(k);b.classList.add('held');try{b.setPointerCapture(e.pointerId)}catch(_){}});
  for(const event of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(event,()=>{keys.delete(k);b.classList.remove('held')});
 });
+// Route markers: these are SIMULATED gameplay stops along surveyed OSM roads,
+// not asserted to be official PID stop geolocations until GTFS coordinates are imported.
+let gameplayStopGroup=null;
+const gameplayWaiting=[];
+function rpClearGameplayStops(){
+ if(gameplayStopGroup){osmLayer.remove(gameplayStopGroup);gameplayStopGroup.clear()}
+ gameplayWaiting.length=0;
+ window.__miloviceTransitStops=0;
+}
+function rpCreateGameplayStops(stops){
+ rpClearGameplayStops();
+ gameplayStopGroup=new THREE.Group();osmLayer.add(gameplayStopGroup);
+ const postMat=new THREE.MeshStandardMaterial({color:0x586979,metalness:.5,roughness:.48});
+ const blueMat=new THREE.MeshStandardMaterial({color:0x225a89,roughness:.58});
+ for(let n=0;n<stops.length;n++){
+  const stop=stops[n];
+  const nearest=driveSegments.reduce((best,s)=>{
+   const mx=(s.a.x+s.b.x)*.5,mz=(s.a.y+s.b.y)*.5,d=Math.hypot(mx-stop.x,mz-stop.z);
+   return !best||d<best.d?{s,d}:best;
+  },null);
+  if(!nearest)continue;
+  const s=nearest.s,dx=(s.b.x-s.a.x)/s.len,dz=(s.b.y-s.a.y)/s.len;
+  const side=n%2?1:-1,offset=s.width*.5+1.15;
+  const baseX=stop.x-dz*offset*side,baseZ=stop.z+dx*offset*side;
+  const h=terrainAt(baseX,baseZ);
+  const pole=new THREE.Mesh(new THREE.CylinderGeometry(.055,.068,2.4,6),postMat);
+  pole.position.set(baseX,h+1.2,baseZ);gameplayStopGroup.add(pole);
+  const sign=new THREE.Mesh(new THREE.BoxGeometry(.58,.68,.09),blueMat);
+  sign.position.set(baseX,h+2.30,baseZ);gameplayStopGroup.add(sign);
+  for(let k=0;k<2;k++){
+   const rig=makeHumanRig(THREE,n*3+k+2,[0x45607b,0x8b6b51][k]);
+   const px=baseX+dx*(k*1.2-.6),pz=baseZ+dz*(k*1.2-.6);
+   rig.group.position.set(px,terrainAt(px,pz),pz);
+   rig.group.rotation.y=Math.atan2(-dx,-dz);
+   gameplayStopGroup.add(rig.group);
+   gameplayWaiting.push({stopIndex:n,rig});
+  }
+ }
+ window.__miloviceTransitStops=stops.length;
+}
+function rpClearBoardedWaiters(stopIndex){
+ for(let i=gameplayWaiting.length-1;i>=0;i--){
+  if(gameplayWaiting[i].stopIndex!==stopIndex)continue;
+  gameplayStopGroup?.remove(gameplayWaiting[i].rig.group);
+  gameplayWaiting.splice(i,1);
+ }
+}
 // 5.0 boarding animation: pedestrians appear beside the actual game-world bus door,
 // walk up to it, and disappear only after reaching it (boarded into the interior).
 const boardingActors=[];
@@ -665,12 +714,13 @@ function toggleDoors(){
  const dist=Math.hypot(x-stop.x,z-stop.z);
  if(dist>19){notify('Dveře otevřeny. K dalšímu kontrolnímu bodu zbývá '+Math.round(dist)+' m.');updateUI();return}
  const boardingCount=2+busJob.next*2;
+ rpClearBoardedWaiters(busJob.next);
  spawnBusBoarding(boardingCount);
  pass+=boardingCount;busJob.next++;
  if(busJob.next>=busJob.stops.length){
   paid=true;const wage=350+pass*25+rating*2;money+=wage;
   try{localStorage.setItem('milovice_rp_money',String(money))}catch(_){}
-  busJob=null;open=false;
+  busJob=null;open=false;rpClearGameplayStops();
   notify('🏁 Směna dokončena! Výplata '+wage+' Kč. Mise se automaticky vypnula.');
  }else{
   notify('✅ Kontrolní bod odbaven, cestující nastoupili. Zavři dveře a pokračuj.');
