@@ -64,6 +64,9 @@ try{
     !houseRoof.automaticRoofClipping||!houseRoof.shellFacesClipped||
     !houseRoof.openingProfileFromPhoto||houseRoof.sharedRoofFeatureCount!==2||
     !(houseRoof.mainRoofOpeningArea>1.0)||
+    houseRoof.backJunctionsAutoClosed!==2||
+    !(houseRoof.maximumRoofBackGapCovered>=0)||
+    !houseRoof.geometricFeatureOverlap||
     !(houseRoof.gapSealedMetres>.10)||
     !(houseRoof.wallInfillTriangles>3)||
     Math.abs(houseRoof.eaveOverhang-.30)>1e-7||
@@ -129,7 +132,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('roof-system-2-5300'))
+ if(!(await page.locator('#build-label').innerText()).includes('seam-safe-roofs-5301'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
