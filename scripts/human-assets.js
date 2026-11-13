@@ -23,7 +23,7 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
   const ret={
    mode,loaded:[...assets.keys()],status:Object.fromEntries(status),
    playerReady:!!player,activeNpc:[...attached.values()].filter(v=>v.container.visible).length,
-   clips:player?.clips||[],license:'CC0-1.0',fallback:!player
+   clips:player?.clips||[],bones:assets.get('casualMan')?.bones?.slice(0,56)||[],license:'CC0-1.0',fallback:!player
   };
   if(typeof window!=='undefined')window.__miloviceHumans=ret;
   return ret;
@@ -84,7 +84,8 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
    if(!data?.scene)throw Error('GLB without a scene');
    const box=new THREE.Box3().setFromObject(data.scene),h=box.max.y-box.min.y;
    if(!(h>.25&&h<200))throw Error('Unexpected character height '+h);
-   assets.set(key,{scene:data.scene,clips:data.animations||[]});
+   const bones=[];data.scene.traverse(o=>{if(o.isBone)bones.push(o.name)});
+   assets.set(key,{scene:data.scene,clips:data.animations||[],bones});
    status.set(key,'ready');
    if(key==='casualMan'&&!player){player=takeModel(key,playerRig);if(player)player.clips=(data.animations||[]).map(a=>a.name)}
   }catch(error){
