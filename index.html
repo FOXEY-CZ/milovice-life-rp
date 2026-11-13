@@ -3755,7 +3755,18 @@ const forward=new THREE.Vector3(-Math.sin(angle),0,-Math.cos(angle));const eleva
 // not just unit-test triangles. Normal game controls never see this branch.
 const inspect=rpStationRoofAuditCamera?window.__miloviceRoofAuditView:null;
 const roofInfo=window.__miloviceStationRoofGeometry;
-if(inspect&&roofInfo?.center&&roofInfo?.globalAxis){
+const selectedPhotoHouse={
+ 'house-skolska':{
+  eye:{lat:50.2290672,lon:14.8822619},target:{lat:50.2291689,lon:14.8825051}},
+ 'house-mirova36':{
+  eye:{lat:50.2280572,lon:14.8840981},target:{lat:50.2281280,lon:14.8843914}}
+}[inspect];
+if(selectedPhotoHouse){
+ const eye=osmPoint(selectedPhotoHouse.eye),target=osmPoint(selectedPhotoHouse.target);
+ camera.position.set(eye.x,terrainAt(eye.x,eye.y)+3.7,eye.y);
+ camera.lookAt(target.x,terrainAt(target.x,target.y)+8.1,target.y);
+ window.__miloviceRoofAuditRendered=inspect;
+}else if(inspect&&roofInfo?.center&&roofInfo?.globalAxis){
  const {x:rx,z:rz,base:rb}=roofInfo.center;
  const {ax:ra,az:rzAxis}=roofInfo.globalAxis;
  const normalX=-rzAxis,normalZ=ra;
