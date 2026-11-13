@@ -33,3 +33,15 @@ const stationHtml=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert(stationHtml.includes('const stationRoofMaterial=new THREE.MeshStandardMaterial({color:0xffffff,map:roofTileMap'));
 assert(!stationHtml.includes('stationRoofMaterial=new THREE.MeshStandardMaterial({color:0xffffff,map:citySurfaceKit.standingSeam'));
 assert(stationHtml.includes("stationRoofSurface='red-tile-photo-informed'"));
+
+// v5.27.2 photo-faithful facade safety: the long station faces may keep the
+// earlier arched-window study but the two UNSURVEYED side end caps cannot
+// automatically receive decorative windows or an imaginary cafe frontage.
+const frontend=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+assert(frontend.includes("stationUnverifiedSideWindowsRemoved"));
+assert(frontend.includes("if(along<.70)"));
+assert(frontend.includes("stationUpperSideWindowsRemoved"));
+assert(frontend.includes("stationCafeMapOnly=true"));
+assert(frontend.includes("kind:'cafe-indoor-approximate'"));
+assert(!frontend.includes("Nádraží Milovice · Nádražka"));
+assert(frontend.includes("name:'🚉 Nádraží Milovice'"));
