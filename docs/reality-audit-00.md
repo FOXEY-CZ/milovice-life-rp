@@ -64,3 +64,28 @@ The 2014 photo does not prove the precise side or position of every plant, gate 
 those remain approximate and must be revisited from other angles. Checks run when the
 photo scene is created (not in the per-frame rendering loop), preserving the phone
 LOD/mesh batching strategy. Unit and browser smoke tests cover rotation and entry paths.
+
+## Pass 0.3 — v5.27.0: dvojice nádražních portálů podle vnitřní pěší OSM cesty
+
+**New direct topological evidence:** OSM way [1550920096](https://www.openstreetmap.org/way/1550920096)
+(highway=footway) has exactly two endpoints on the opposite railway-station
+building perimeter edges: street side **50.2291626, 14.8820820** and platform
+side **50.2291912, 14.8819771**. The street-side endpoint is shared with the
+previously used approach footway [549346217](https://www.openstreetmap.org/way/549346217).
+
+**Bug fixed:** The old planner forced the longitudinal passage axis from the
+mapped s≈8.76m to s≈10.75m so that each 3.5m doorway fit within *one*
+individual OSM facade edge. But the actual mapped line meets two adjoining
+long facades at a corner. The new builder splits every relevant adjacent edge,
+keeping one arch on each actual footway endpoint. It also moves the inner
+paving's longitudinal centre to the doorway axis (old floor stayed at s=0 even
+after the portal was shifted). Consequently there is no need to paint four
+fictional connector slabs on the road, through the building, or the platform.
+The mapped outdoor/indoor OSM footways and the aligned internal walkway already
+provide the pedestrian route. Camera collision probes require both exits clear.
+
+**Proven:** geospatial agreement with the checked-in OSM snapshot and
+uncollided gameplay walk-through. **Not proven:** exact architectural arch width
+(3.5m assumed), doorframe ornaments, wall heights, or the 2026 photographed
+entry geometry. Those still need a licensed multi-view survey. No photos are
+copied into game textures. This change reduces speculative geometry and draw calls.
