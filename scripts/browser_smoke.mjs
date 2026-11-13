@@ -103,7 +103,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('station-tile-roof-5271'))
+ if(!(await page.locator('#build-label').innerText()).includes('station-front-cafe-5272'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -231,6 +231,12 @@ try{
  if(landmarkChecks.stationRoofSurface!=='red-tile-photo-informed'||
     landmarkChecks.stationRoofIsMetal!==false)
   throw new Error('5.27.1 railway station red tile roof photo model missing: '+JSON.stringify(landmarkChecks));
+ if(!landmarkChecks.stationCafeMapOnly||!landmarkChecks.stationCafeMarkerApproximate||
+    !(landmarkChecks.stationUnverifiedSideWindowsRemoved>=2)||
+    !landmarkChecks.stationCafeMapPosition||
+    !Number.isFinite(landmarkChecks.stationCafeMapPosition.x)||
+    !Number.isFinite(landmarkChecks.stationCafeMapPosition.z))
+  throw new Error('5.27.2 Nádražka must be inside the waiting room, without invented side facade windows: '+JSON.stringify(landmarkChecks));
  if(landmarkChecks.stationFacadeWindows<8||!landmarkChecks.stationPassagePaving)
   throw new Error('5.1.4 station facade windows or passage paving missing: '+JSON.stringify(landmarkChecks));
  if(landmarkChecks.stationSidewalkConnected!==true||landmarkChecks.stationFootwayId!==549346217||
