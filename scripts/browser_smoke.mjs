@@ -51,8 +51,22 @@ try{
     landmark.rooflights<2||landmark.hedgeGroups<1||
     !(landmark.meshesSavedByBatching>0&&landmark.detailDrawMeshes<landmark.detailMeshes)||
     !['202367194','202367254','118487980'].every(id=>landmark.landmarkIds.includes(id))||
-    landmark.actualArchedWindowMeshes!==4||landmark.rectangularFakeArchRemoved!==2)
+    landmark.actualArchedWindowMeshes!==4||landmark.rectangularFakeArchRemoved!==2||
+    landmark.anchoredDormerRoofs!==2||landmark.removedDetachedRoofBoxPanels!==4)
    throw Error('5.14 photographed street block geometry missing: '+JSON.stringify(landmark));
+ const houseRoof=await page.evaluate(()=>window.__miloviceSkolskaRoof||null);
+ if(!houseRoof||houseRoof.osmId!==118487980||
+    houseRoof.footprintVertices!==7||houseRoof.mainRoofType!=='hip'||
+    !houseRoof.photoSpecific||!houseRoof.closedWallAndEave||
+    !houseRoof.noUnconnectedRoofParts||
+    !(houseRoof.gapSealedMetres>.10)||
+    !(houseRoof.wallInfillTriangles>3)||
+    Math.abs(houseRoof.eaveOverhang-.30)>1e-7||
+    !(houseRoof.eaveTiles>=10&&houseRoof.eaveSoffit>=10&&houseRoof.eaveFascia>=10)||
+    houseRoof.roofFootprintError>1e-5)
+   throw new Error('5.29.1 Školská detached hip or dormer roof survived: '+
+    JSON.stringify({houseRoof,landmark}));
+ console.log('5.29.1 photo house roof rebuilt and sealed:',JSON.stringify(houseRoof));
  const photoBuildingPass=await page.evaluate(()=>window.__milovicePhotoBuildingPass||null);
  if(!photoBuildingPass||
     photoBuildingPass.representativeHouse!=='Školská 220/1'||
@@ -110,7 +124,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('skolska-photo-pass-5290'))
+ if(!(await page.locator('#build-label').innerText()).includes('skolska-roof-rebuild-5291'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
