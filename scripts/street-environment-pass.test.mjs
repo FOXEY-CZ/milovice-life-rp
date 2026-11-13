@@ -69,3 +69,12 @@ assert(streetHTML.includes('if(!markedCrossing(el.tags))continue;'),
  'Only evidenced marked crossing paths may generate zebra paint');
 assert(streetHTML.includes('osmStrip(a,b,width,osmRoadMaterial,.17)'),
  'Removing speculative paint must not remove street asphalt');
+
+// v5.28.1: a district teleport must instantly move the third-person camera
+// to the current player, never interpolate over hundreds of metres through
+// an unrelated terrain tile. Test the browser behaviour in WebGL smoke.
+const cameraHTML=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+assert(cameraHTML.includes('let cameraSnapPending=false'));
+assert(cameraHTML.includes('cameraSnapPending=true'));
+assert(cameraHTML.includes('camera.position.copy(desired)'));
+assert(cameraHTML.includes('window.__miloviceCameraSpawnAudit='));
