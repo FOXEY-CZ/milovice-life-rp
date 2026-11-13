@@ -246,6 +246,11 @@ try{
  await page.waitForFunction(()=>window.__miloviceAreasLoaded?.includes('mlada'),null,{timeout:105000});
  const mladaStats=await page.evaluate(()=>window.__miloviceAreaStats);
  console.log('Mladá streamed:',JSON.stringify(mladaStats));
+  const cityWalls=await page.evaluate(()=>window.__miloviceCityWallBatch);
+  if(!cityWalls||cityWalls.rawWalls<20||
+     cityWalls.drawMeshes>=cityWalls.rawWalls||cityWalls.meshesSaved<1)
+   throw new Error('5.16 ordinary wall batches did not reduce draw objects: '+JSON.stringify(cityWalls));
+  console.log('5.16 wall batching:',JSON.stringify(cityWalls));
  const regionalParking=await page.evaluate(()=>window.__miloviceParkingDebug);
  if(!regionalParking||regionalParking.parked<=parking.parked)
   throw new Error('Newly loaded Mladá region did not add parked cars: '+JSON.stringify(regionalParking));
