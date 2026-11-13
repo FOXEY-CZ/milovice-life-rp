@@ -1778,6 +1778,7 @@ function miloviceBikeTower(pts,base){
 // 5.1.2 — Named OSM storefronts. Name/location come from the imported map,
 // but awning colour, shopfront glass and architectural placement are approximate.
 const businessFrontsSeen=new Set(),businessFronts=[];
+const businessSignGeometry=new THREE.PlaneGeometry(1,1); // Shared geometry for mapped storefront signs.
 window.__miloviceCommerceDebug={count:0,names:[]};
 const groceryCladding=new THREE.MeshStandardMaterial({color:0xb9c2c4,roughness:.80,side:THREE.DoubleSide});
 const tescoCorrugation=new THREE.MeshStandardMaterial({color:0xf0f1ee,roughness:.73,side:THREE.DoubleSide});
@@ -1876,7 +1877,8 @@ function miloviceBusinessFront(pts,tags,base,height,cx,cz,osmId){
  do{g.font='900 '+font+'px system-ui, sans-serif';if(g.measureText(upper).width<=952)break;font-=8}while(font>34);
  g.fillText(upper,512,101,962);
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
- const sign=new THREE.Mesh(new THREE.PlaneGeometry(panelWidth,panelHeight),new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide}));
+ const sign=new THREE.Mesh(businessSignGeometry,new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide}));
+  sign.scale.set(panelWidth,panelHeight,1);
  sign.position.set(mx+nx*.70,signY,mz+nz*.70);sign.rotation.y=yaw;
  sign.userData.lodDetail=true;sign.userData.lodX=mx;sign.userData.lodZ=mz;
  osmLayer.add(sign);
