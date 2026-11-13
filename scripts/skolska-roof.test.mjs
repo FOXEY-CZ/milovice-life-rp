@@ -57,13 +57,18 @@ const join=planSkolskaRoofJoins({
 assert(join?.closedWallAndEave);
 assert(join.wallSections>0&&join.joinFaces.length>3,
  'A seven-sided roof must actually close its formerly hovering plaster edge');
-assert(join.maxWallGap>.10&&join.maxWallGap<3,
- 'Actual Školská OSM footprint must have a measurable former roof-wall gap');
+assert(roof.roofModel==='perimeter-constrained'&&roof.maxEaveError<.025,
+ 'A complicated roof must be level at ALL true exterior walls');
+assert(roof.roofBoundaryGapBefore>.10,
+ 'The broken bounding-box roof would previously have hovered above masonry');
+assert(join.maxWallGap>=0&&join.maxWallGap<.025,
+ 'A formerly metre-wide gap must now be at most a construction clearance');
 assert.equal(join.eave.exteriorEdges,7);
 assert.equal(join.eave.closedEndCaps,0);
 assert(join.eave.maxActualOverhang>.29&&join.eave.maxActualOverhang<.56);
 assert(join.eave.tiles.length>=10&&join.eave.soffit.length>=10);
 assert(join.eave.fascia.length>=10&&join.eave.exactPlanePartitions);
+assert.equal(join.eave.perimeterSafe,true,'Roof overhang uses planar perimeter strips');
 for(const faces of [join.joinFaces,join.eave.tiles,join.eave.soffit,join.eave.fascia])
  for(const tri of faces)for(const v of tri)
   assert([v.x,v.y,v.z,v.u,v.v].every(Number.isFinite));
