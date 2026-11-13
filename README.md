@@ -1,14 +1,20 @@
-# Milovice Life RP — 5.1.1 Realistic Models & Station
+# Milovice Life RP — 5.1.2 Cars, Shops & Landmarks
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/
 
 Browser-based singleplayer RP prototype using real OpenStreetMap footprints of Milovice and official ČÚZK terrain. **Not** yet a photorealistic digital twin or an exact reconstruction of every house. Some regional buildings have mapped heights; untagged buildings use archetype-based approximations.
 
+## 5.1.2 — Live OSM storefronts
+
+- Named OpenStreetMap grocery buildings **BILLA**, **Tesco** and **Penny** now have large readable street-facing signs, prominent glass entrances, colour-specific signage, canopies, surrounding paving and bicycle stands. This uses imported OSM building footprints and names: **no new unmapped shops** were invented.
+- Additional OSM-named services such as **Šperky Milovice** and **Poliklinika Milovice** get their own exterior glazing and shopfront signs. Storefront style and entrance placement are *approximate*, not scans or facade surveys.
+- Repeated facade details are batched; individual signs are only rendered near the player as part of the existing 3D draw-distance LOD system.
+
 ## 5.1.1 — Licensed 3D cars and realistic station
 
 - Real Three.js GLTFLoader imports high-detail GLB car geometry and materials, not a 2D car picture.
 - Spectral GT RS is a 4.7 MB CC0 sculpted sports coupe with interior, glass, rims and paint. It is an original unbranded car, NOT a Škoda, Toyota or BMW.
-- An unbranded CC0 Innerscene SUV GLB (about 623 KB) is loaded on demand when driving a suitable SUV.
+- A small CC0 **Quaternius SUV** GLB (~182 KB, pinned GitHub redistributor) is loaded on demand when driving a suitable SUV. An earlier external SUV host was unavailable in browser tests, so it was replaced.
 - On desktop the model setting defaults to Auto. On touchscreens the cheaper procedural cars remain standard; the player can override it. Only ONE high-polygon vehicle can be active near the player or while driving, keeping distant traffic inexpensive.
 - GLB network failures automatically return to original working procedural vehicles with visible status.
 - The railway station gains a glass-fronted street entrance, verified address marker 469/13, waiting benches, information case, trash bins and a tactile strip, without sealing the pedestrian through-passage.
@@ -19,9 +25,9 @@ Browser-based singleplayer RP prototype using real OpenStreetMap footprints of M
 | Model | Author | License | Source |
 | --- | --- | --- | --- |
 | Spectral GT RS GLB | JaronKBragg7337 | CC0 1.0 | https://github.com/JaronKBragg7337/spectral-gt-rs |
-| Unbranded SUV GLB | Innerscene | CC0 1.0 | https://www.innerscene.com/tools/library/3d-parts/suv-dc972cab |
+| Quaternius SUV GLB | Quaternius | CC0 1.0 | https://quaternius.itch.io/lowpoly-cars and https://github.com/bennibeni/garage |
 
-The native Three.js loader downloads CC0 assets directly from their original author hosts. Source files are not modified or redistributed in this repository. No manufacturer endorsement is implied.
+The Three.js loader downloads the Spectral asset from its author and the Quaternius SUV from the exact GitHub revision of a third-party redistributor; sources are not bundled in this repository. Model license and provenance are documented above. No manufacturer endorsement is implied.
 
 Remaining limits: accurate GLB bodies for real Škoda, BMW and Toyota models are not installed; the playable PID bus and train are still original approximations, and not every Milovice building has been photo-modeled. Official Škoda fan 3D print models forbid commercial use and cannot be substituted into this commercial-capable game.
 
