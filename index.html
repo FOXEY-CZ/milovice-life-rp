@@ -178,7 +178,7 @@ import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
 import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5110';
 import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5301';
-import {clipRoofFacesForFeatures} from './scripts/roof-opening-geometry.js?v=5300';
+import {clipRoofFacesForFeatures,planRoofFeatureBackClosures} from './scripts/roof-opening-geometry.js?v=5301';
 import {makePhotoStreetEnvironment} from './scripts/street-environment-reality.js?v=5262';
 import {createRoadClearance} from './scripts/road-clearance.js?v=5262';
 import {isCarriageway,isPedestrianWay,safePedestrianPieces,pedestrianPieceKey,markedCrossing,planZebraPieces,planStationPassage} from './scripts/reality-walkways.js?v=5270';
@@ -2760,6 +2760,16 @@ function osmBuilding(points,tags,index,osmId=null){
    'Milovice_skolska_220_roof_soffit');
   stationEaveMesh(fascia.faces,roofMat,
    'Milovice_skolska_220_roof_fascia');
+  // The upper back of a cross-gable cannot float over the hip.
+  // Use the same host roof planes to seal its back automatically,
+  // regardless of the house's footprint or orientation.
+  const rearJoins=planRoofFeatureBackClosures(photoRoofFeatures,source,
+   {wallTopY:baseHeight+h});
+  if(!rearJoins?.supportedByHostRoof||
+     rearJoins.closures!==photoRoofFeatures.length)
+   throw Error('Cross-gable host roof back join failed');
+  stationEaveMesh(rearJoins.faces,renderWall,
+   'Milovice_documented_cross_gable_rear_closure');
   window.__miloviceSkolskaRoof={
    osmId:SKOLSKA_WAY_ID,footprintVertices:pts.length,
    mainRoofType:'hip',photoSpecific:true,
@@ -2782,7 +2792,10 @@ function osmBuilding(points,tags,index,osmId=null){
    automaticRoofClipping:true,
    shellFacesClipped:true,
    openingProfileFromPhoto:true,
-   manualRoofPatchNeeded:false
+   manualRoofPatchNeeded:false,
+   backJunctionsAutoClosed:rearJoins.closures,
+   maximumRoofBackGapCovered:rearJoins.maxUnsupportedHeight,
+   geometricFeatureOverlap:true
   };
  }
  else{
