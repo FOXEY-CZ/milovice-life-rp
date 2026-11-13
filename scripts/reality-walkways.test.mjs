@@ -32,7 +32,8 @@ const originalStation=station.geometry.map(point),originalFootway=foot.geometry.
 const plan=planStationPassage({footprint:originalStation,footway:originalFootway,halfOpening:1.75});
 assert(plan,'Must align passage with documented OSM pedestrian way');
 assert(plan.alignedFromMappedFootway&&plan.sourceFootwayId===549346217);
-assert(plan.s>3&&plan.s<8,'Passage must move from arbitrary center toward mapped footway: '+JSON.stringify(plan));
+assert(plan.s>8&&plan.s<14,'Passage must move toward the mapped station entrance footway, including its east wing: '+JSON.stringify(plan));
+assert(plan.offset<2.5,'Passage should be within 2.5m along the station wall from the OSM path endpoint');
 assert(Math.abs(plan.s-plan.footS)<Math.abs(plan.footS),
  'New station axis nearer than old s=0');
 assert(plan.footwayEndpoint&&Number.isFinite(plan.footwayEndpoint.x));
