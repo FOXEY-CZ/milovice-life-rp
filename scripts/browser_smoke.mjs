@@ -61,7 +61,8 @@ try{
  const environment=await page.evaluate(()=>window.__miloviceStreetEnvironment||null);
  if(!environment||environment.sceneCount!==1||
     environment.sources!==1||environment.ids[0]!=='street-5-kvetna-2014'||
-    environment.featureCount<35||environment.instances<50||
+    environment.featureCount<130||environment.instances<130||
+    environment.pavementPieces<60||environment.roadRejected<0||
     environment.drawMeshes>24||environment.spatiallyApproximate!==true||
      !(environment.minRoadClearance>=1.9))
    throw new Error('5.21 5. května photographed streetscape missing, unbatched or unsourced: '+JSON.stringify(environment));
