@@ -25,6 +25,8 @@ jobs:
         run: node scripts/street-environment-pass.test.mjs
       - name: Prevent roadside trees, lamps and fences from occupying OSM roads
         run: node scripts/road-clearance.test.mjs
+      - name: Verify 360 reality audit OSM footway, station portals and actual crossings
+        run: node scripts/reality-walkways.test.mjs
       - name: Verify photo-sourced station forecourt object clearances and OSM building anchors
         run: node scripts/station-forecourt-pass.test.mjs
       - name: Validate 2025 station platform steel canopy and source-based roof form
