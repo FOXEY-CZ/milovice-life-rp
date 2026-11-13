@@ -19,6 +19,13 @@ try{
   const el=document.getElementById('rp-spawn');
   return el&&!el.hidden;
  },{timeout:45000});
+ const gfx=await page.evaluate(()=>window.__miloviceGraphics2||null);
+ if(!gfx?.active||gfx.albedoTiles!==8||gfx.contactShadow!==true||
+    !gfx.surfaceMaterials||Object.values(gfx.surfaceMaterials).some(v=>v!==true))
+  throw new Error('Graphics 2.0 materials did not initialize correctly: '+JSON.stringify(gfx));
+ console.log('5.2.0 shared city surfaces:',JSON.stringify(gfx.surfaceMaterials));
+ if(!(await page.locator('#build-label').innerText()).includes('graphics-520'))
+  throw new Error('5.2.0 build identifier missing');
  const landmarkChecks=await page.evaluate(()=>window.__miloviceLandmarkDebug||{});
  console.log('Landmark geometry:',JSON.stringify(landmarkChecks));
  if(landmarkChecks.stationPassageFaces!==2)throw new Error('Milovice station does not have two opposing real open passage portals: '+JSON.stringify(landmarkChecks));
