@@ -1,3 +1,12 @@
+## Milovice RP 5.28.2 — OPRAVA ROZBITÉ STŘECHY NÁDRAŽÍ
+
+- Opravená skutečná příčina velkých béžových „trojúhelníků“ a divokých přesahů: každé křídlo nádraží si dříve odvozovalo **jinou osu střechy**. Prostřední nástavba měla střechu dokonce skoro o 90° otočenou a střešní desky překračovaly půdorys.
+- Kompletně nový výpočet 3D střech: všechny tři části sdílejí **jednu osu celé nádražní budovy** a střešní plochy jsou **přesně ořezané na mapovaný půdorys OSM**. Dvě nízká křídla mají sedlové, střední zvýšená část valbovou střechu. Žádné vymyšlené obří štíty, střešní plachty a desky na chodníku.
+- Nové automatické geometrické testy ohlídají plochu, polohu a sklon každého střešního dílu, včetně rohového půdorysu. Browser test navíc ukládá **pět screenshotů střechy** kolem celé budovy.
+- Průchod, cyklověž, původní obvodové stěny, navázané OSM chodníky a železniční nástupiště zůstávají. Přesná architektonická shoda se všemi reálnými fotkami je stále cílem, nikoli zatím prokázaným faktem.
+
+---
+
 ## Milovice RP 5.28.1 — kamera už při přesunu neprolétává zemí
 
 Při kontrole **skutečných screenshotů z Chromium WebGL** jsem odhalila chybu, kterou automatické testy přehlédly: po přesunu například na 5. května se kamera mohla pomalu posouvat od minulého místa a na chvíli ukazovat černý spodek terénu. Nově se při výběru jiné oblasti **okamžitě přemístí do správné výšky za postavou**. Při obyčejné chůzi a jízdě zůstává kamera plynulá. WebGL test teď čeká na dokončené usazení kamery a kontroluje její výšku, než pořídí záběr.
