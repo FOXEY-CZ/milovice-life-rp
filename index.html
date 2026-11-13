@@ -1876,11 +1876,14 @@ function stationArch(x,z,dx,dz,base,w){
  // fabricated HALF-TORUS arch whose crest crossed the lintel and roof tiles.
  // The floor remains fully clear for mapped OSM footway and collisions.
  for(const side of [-1,1])
-  archPart('stoneTrim',x+ux*side*w*.5,base+1.48,z+uz*side*w*.5,.24,2.96,.48,yaw);
- archPart('stationPlaster',x,base+3.20,z,w+.25,.30,.42,yaw);
+  archPart('stoneTrim',x+ux*side*w*.5,base+1.51,z+uz*side*w*.5,.24,3.02,.48,yaw);
+ // The masonry top meets the 3.70m roof eave with NO floating 35cm slit.
+ // A broad horizontal lintel keeps the walk-through physically open below 3m.
+ archPart('stationPlaster',x,base+3.36,z,w+.25,.68,.42,yaw);
  window.__miloviceLandmarkDebug ||= {};
  window.__miloviceLandmarkDebug.stationInventedSemicircleRemoved=true;
  window.__miloviceLandmarkDebug.stationPassageHeaderType='straight-mapped-portal';
+ window.__miloviceLandmarkDebug.stationPassageLintelMeetsEave=true;
 }
 // 4.8: Three-part station silhouette, unlike the generic 7.4 m monolithic extrusion.
 // OSM measures the perimeter; relative wing/center proportions are photo-informed.
