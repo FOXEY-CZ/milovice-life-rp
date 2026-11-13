@@ -103,7 +103,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('station-mapped-throughway-5270'))
+ if(!(await page.locator('#build-label').innerText()).includes('station-tile-roof-5271'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -228,6 +228,9 @@ try{
   throw new Error('4.9 station architecture missing: '+JSON.stringify(landmarkChecks));
  if(!landmarkChecks.stationForecourt||!landmarkChecks.actualEntranceIsStationPassage||landmarkChecks.stationStreetEntrance!==false)
   throw new Error('5.1.1 station forecourt/entry missing: '+JSON.stringify(landmarkChecks));
+ if(landmarkChecks.stationRoofSurface!=='red-tile-photo-informed'||
+    landmarkChecks.stationRoofIsMetal!==false)
+  throw new Error('5.27.1 railway station red tile roof photo model missing: '+JSON.stringify(landmarkChecks));
  if(landmarkChecks.stationFacadeWindows<8||!landmarkChecks.stationPassagePaving)
   throw new Error('5.1.4 station facade windows or passage paving missing: '+JSON.stringify(landmarkChecks));
  if(landmarkChecks.stationSidewalkConnected!==true||landmarkChecks.stationFootwayId!==549346217||
