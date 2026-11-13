@@ -2,7 +2,8 @@
 // Each entry has an OSM way ID and a dated, attributed CC BY 4.0 photograph.
 // Exterior dimensions that cannot be measured from the photos remain approximate.
 // Models are ORIGINAL geometry: source photograph pixels are never copied to game.
-import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
+// BufferGeometryUtils is injected from the main Three.js browser entrypoint,
+ // keeping this module importable in standalone Node geometry tests.
 export const PHOTO_STREET_BLOCK=[
  {id:'202367194',name:'Mírová 134/11 · Modrá hvězda',street:'Mírová / 5. května',
   source:'https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_11,_hotel_Modr%C3%A1_hv%C4%9Bzda.jpg',
@@ -43,7 +44,7 @@ export function photoFacingEdges(points,camera,{minLength=4,limit=2}={}){
  }
  return edges.sort((a,b)=>a.score-b.score).slice(0,limit);
 }
-export function makePhotoStreetBlock(THREE,{layer,osmPoint}={}){
+export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  const roofMaterial=new THREE.MeshStandardMaterial({color:0x583b38,roughness:.88});
  const darkRoof=new THREE.MeshStandardMaterial({color:0x404348,roughness:.90});
  const creamWall=new THREE.MeshStandardMaterial({color:0xe5d5bb,roughness:.92});

@@ -177,7 +177,8 @@ import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
 import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5110';
-import {makePhotoStreetBlock} from './scripts/street-photo-block.js?v=5140b';
+import {makePhotoStreetBlock} from './scripts/street-photo-block.js?v=5150';
+import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {loadLocalArchitectureCards} from './scripts/street-architecture.js?v=5130';
 import {loadApprovedArchitecture,mergeApprovedWithLocal} from './scripts/architecture-manifest.js?v=5130';
 import {makeCitySurfaceKit,makeContactShadow} from './scripts/graphics2.js?v=520';
@@ -1234,7 +1235,7 @@ document.body.appendChild(osmBtn);
 function osmPoint(p){const lat0=50.226,lon0=14.889;return new THREE.Vector2((p.lon-lon0)*111320*Math.cos(lat0*Math.PI/180),-(p.lat-lat0)*111320)}
 // Geographically limited architectural prototype: old-town houses around the
 // church and station. Generic window/door geometry is NOT an exact photo survey.
-const photoStreetBlock=makePhotoStreetBlock(THREE,{layer:osmLayer,osmPoint});
+const photoStreetBlock=makePhotoStreetBlock(THREE,{layer:osmLayer,osmPoint,mergeGeometries});
 const heroBuildings=makeMiloviceHeroArchitecture(THREE,{
  sites:[
   {x:osmPoint({lat:50.22805,lon:14.88403}).x,z:osmPoint({lat:50.22805,lon:14.88403}).y},
