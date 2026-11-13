@@ -158,6 +158,22 @@ export function makeRoadCar(THREE,index=0){
  // Tinted windscreen angled to match sloping hood; softened low-triangle bonnet lines.
  const windshield=part(THREE,group,new THREE.BoxGeometry(width*.83,.43,.035),glass,0,height*.84,-length*.19);
  windshield.rotation.x=-.45;
+ // Detailed but GPU-conservative: curved arch trim is a single instanced draw,
+ // and extra glazing/plate/bumper significantly improve the road silhouettes.
+ const rear=part(THREE,group,new THREE.BoxGeometry(width*.79,.35,.035),glass,0,height*.81,length*.215);
+ rear.rotation.x=.48;
+ part(THREE,group,new THREE.BoxGeometry(width*.60,.19,.07),black,0,.70,-length*.505);
+ const plate=material(THREE,0xdde0da,.10,.65);
+ part(THREE,group,new THREE.BoxGeometry(.45,.12,.065),plate,0,.55,-length*.515);
+ part(THREE,group,new THREE.BoxGeometry(.45,.12,.065),plate,0,.56,length*.505);
+ const arch=new THREE.InstancedMesh(new THREE.TorusGeometry(.42,.042,5,14,Math.PI),
+  material(THREE,0x22282c),4);
+ const tmp=new THREE.Object3D();let ai=0;
+ for(const side of [-1,1])for(const axle of [-length*.32,length*.32]){
+  tmp.position.set(side*(width*.5+.025),.44,axle);
+  tmp.rotation.set(0,side*Math.PI/2,0);tmp.updateMatrix();arch.setMatrixAt(ai++,tmp.matrix);
+ }
+ arch.instanceMatrix.needsUpdate=true;arch.computeBoundingSphere();group.add(arch);
  if(variant===4||variant===5||variant===6){
   for(const side of [-1,1])
    part(THREE,group,new THREE.BoxGeometry(.052,.055,length*.45),chrome,

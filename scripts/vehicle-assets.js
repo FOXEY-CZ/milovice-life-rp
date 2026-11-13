@@ -38,7 +38,7 @@ export const LICENSED_VEHICLES={
 // Object3D cannot have two parents at once. Preserve car identity across exit.
 export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
  const loader=new GLTFLoader();
- const scenes=new Map(),states=new Map(),pending=new Map(),active=new Map();
+ const scenes=new Map(),states=new Map(),pending=new Map(),active=new Map(),rejected=new Map();
  let mode='auto',lastUpdate=-1,activeKey='cityCar';
  const pc=()=>typeof window!=='undefined'&&window.matchMedia?.('(pointer:fine)').matches
    &&(typeof navigator.deviceMemory!=='number'||navigator.deviceMemory>=4);
@@ -57,9 +57,9 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
    state:states.get(asset)||'idle',mode,ready:scenes.has(asset),active:active.size>0,
    activeCount:active.size,maxActive:budget(),activeModel:asset,
    loaded:[...scenes.keys()],source:LICENSED_VEHICLES[asset]?.source,
-   models:Object.fromEntries(states),
+   models:Object.fromEntries(states),rejected:Object.fromEntries(rejected),
    assignments:[...active].map(([car,inst])=>({id:car.id,type:car.type,key:inst.key,
-    wheels:inst.wheels.length,overlay:!!car.g.userData.wheelOverlay?.visible,parked:car.parked,driven:car.driven})),
+    wheels:inst.wheels.length,overlay:false,parked:car.parked,driven:car.driven})),
    orientation:Object.fromEntries([...scenes].map(([key,model])=>[key,{
     frontAxis:model.userData.miloviceFrontAxis,correctionRadians:model.userData.miloviceFrontCorrection
    }]))
@@ -112,42 +112,55 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
   car.g.remove(instance.group);
   const fallback=car.g.userData.proceduralLOD;
   if(fallback)fallback.visible=true;
-  if(car.g.userData.wheelOverlay)car.g.userData.wheelOverlay.visible=true;
+  // No wheel overlay from an unrelated procedural car.
   car.g.userData.licensedGLB=null;active.delete(car);
  }
  function detachAll(){for(const car of [...active.keys()])detach(car)}
+
+ // A certified GLB needs FOUR independent wheel nodes at four plausible axle
+ // locations. Models with baked-in/merged wheels stay fully procedural instead
+ // of receiving unrelated wheels at the wrong scale or on the car roof.
+ function certifiedWheels(root){
+  root.updateMatrixWorld(true);
+  const hull=new THREE.Box3().setFromObject(root),length=hull.max.z-hull.min.z,width=hull.max.x-hull.min.x;
+  const midX=(hull.min.x+hull.max.x)*.5,midZ=(hull.min.z+hull.max.z)*.5;
+  const found=[];
+  root.traverse(node=>{
+   if(!node.name||!/(wheel|tire|tyre)/i.test(node.name))return;
+   if(!(node.isGroup||node.isMesh)||!node.parent)return;
+   if(node.children.some(c=>/(wheel|tire|tyre)/i.test(c.name||'')))return;
+   const bounds=new THREE.Box3().setFromObject(node),center=bounds.getCenter(new THREE.Vector3());
+   const size=bounds.getSize(new THREE.Vector3());
+   if(Math.abs(center.x-midX)<=width*.20||Math.abs(center.z-midZ)<=length*.13||
+     center.y>hull.min.y+1.0||size.z>length*.4||size.x>width*.65)return;
+   found.push({node,center});
+  });
+  if(found.length!==4)return null;
+  if(found.filter(w=>w.center.x>midX).length!==2||found.filter(w=>w.center.z>midZ).length!==2)return null;
+  for(let i=0;i<4;i++)for(let j=i+1;j<4;j++)
+   if(found[i].center.distanceTo(found[j].center)<.38)return null;
+  return found;
+ }
  function install(car,key){
-  const original=scenes.get(key);if(!original)return false;
-  const previous=active.get(car);
-  if(previous?.key===key)return true;
-  if(previous)detach(car);
-  // Once-only wrapper for the original vehicle; preserves its wheel pivots.
+  const original=scenes.get(key);
+  if(!original||rejected.has(key))return false;
+  if(active.get(car)?.key===key)return true;
+  if(active.has(car))detach(car);
+  const model=original.clone(true);model.name='Licensed3D_'+key;
+  const wheels=certifiedWheels(model);
+  if(!wheels){
+   rejected.set(key,'GLB nemá 4 samostatné správně umístěné otočné osy kol');
+   publish('🚗 '+key+': nepoužitelná geometrie kol – bezpečný automobil místo rozpadlého modelu.');
+   return false;
+  }
   if(!car.g.userData.proceduralLOD){
-   const fallback=new THREE.Group();
-   fallback.name='ProceduralVehicleFallback';
+   const fallback=new THREE.Group();fallback.name='ProceduralVehicleFallback';
    for(const child of [...car.g.children])fallback.add(child);
    car.g.add(fallback);car.g.userData.proceduralLOD=fallback;
   }
-  const model=original.clone(true);
-  model.name='Licensed3D_'+key;
-  const wheels=[];
-  model.traverse(o=>{
-   if(!o.name||!/(?:wheel|tyre|tire|rim)/i.test(o.name))return;
-   // Only independently pivotable wheel nodes; never rotate an entire car shell.
-   if(o.isGroup||o.isMesh&&o.position.lengthSq()>.03)wheels.push(o);
-  });
   car.g.add(model);
   car.g.userData.licensedGLB=model;
   car.g.userData.proceduralLOD.visible=false;
-  // Some CC0 mobile GLBs merge all wheel geometry into the body mesh. Retain the
-  // original animated wheels as a minimal overlay in that case, rather than
-  // leaving the visible car with permanently static wheels.
-  if(wheels.length<4&&car.wheels?.length>=4&&!car.g.userData.wheelOverlay){
-   const overlay=new THREE.Group();overlay.name='AnimatedWheelFallback';
-   for(const wheel of car.wheels)overlay.add(wheel);
-   car.g.add(overlay);car.g.userData.wheelOverlay=overlay;
-  }
-  if(car.g.userData.wheelOverlay)car.g.userData.wheelOverlay.visible=wheels.length<4;
   active.set(car,{group:model,key,wheels});
   return true;
  }
@@ -183,7 +196,13 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
  function spin(car,distance){
   if(!distance||!Number.isFinite(distance))return;
   const item=active.get(car);if(!item)return;
-  for(const wheel of item.wheels)wheel.rotation.x-=distance/.38;
+  const worldAxis=new THREE.Vector3(1,0,0),carQ=new THREE.Quaternion(),parentQ=new THREE.Quaternion();
+  item.group.getWorldQuaternion(carQ);
+  for(const wheel of item.wheels){
+   wheel.node.parent.getWorldQuaternion(parentQ);
+   const axis=worldAxis.clone().applyQuaternion(carQ).applyQuaternion(parentQ.invert()).normalize();
+   wheel.node.quaternion.premultiply(new THREE.Quaternion().setFromAxisAngle(axis,-distance/.385));
+  }
  }
  function reset(){
   detachAll();lastUpdate=-1;publish();

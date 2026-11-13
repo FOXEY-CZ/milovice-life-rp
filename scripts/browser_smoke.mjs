@@ -24,8 +24,14 @@ try{
     !gfx.surfaceMaterials||Object.values(gfx.surfaceMaterials).some(v=>v!==true))
   throw new Error('Graphics 2.0 materials did not initialize correctly: '+JSON.stringify(gfx));
  console.log('5.2.0 shared city surfaces:',JSON.stringify(gfx.surfaceMaterials));
- if(!(await page.locator('#build-label').innerText()).includes('collision-550'))
-  throw new Error('5.5.0 world collision build identifier missing');
+ const visual=await page.evaluate(()=>window.__miloviceBigUpdate||null);
+ if(visual?.version!=='5.6.0'||visual.surfaces!==8||visual.streetDecor<20||
+    visual.safeWheelRig!==true||visual.mobileDetailRadius>200)
+  throw new Error('5.6.0 streetscape texture and performance pass not initialized: '+JSON.stringify(visual));
+ console.log('5.6.0 detailed surface materials, instanced decorations and LOD:',JSON.stringify(visual));
+
+ if(!(await page.locator('#build-label').innerText()).includes('bigvisual-560'))
+  throw new Error('5.6.0 big visual update build identifier missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
     !(sidewalkCheck.separatedSidewalks>15))
@@ -159,8 +165,13 @@ try{
  const assetStats=await page.evaluate(()=>window.__miloviceGLBDebug);
  console.log('5.1.1 CC0 GLB diagnostics:',JSON.stringify(assetStats));
  if(assetStats.state!=='ready')throw new Error('Licensed high-resolution GLB failed to load: '+JSON.stringify(assetStats));
- await page.waitForFunction(()=>window.__miloviceGLBDebug?.active===true&&
-  window.__miloviceGLBDebug?.assignments?.some(a=>a.key==='spectralGT'&&a.driven),null,{timeout:30000});
+ await page.waitForFunction(()=>window.__miloviceGLBDebug?.rejected?.spectralGT||
+    window.__miloviceGLBDebug?.assignments?.some(a=>a.key==='spectralGT'&&a.driven),
+  null,{timeout:30000});
+ const gtWheelAudit=await page.evaluate(()=>window.__miloviceGLBDebug);
+ if(gtWheelAudit.assignments.some(a=>a.overlay||a.wheels!==4))
+  throw new Error('5.6.0 unsupported wheels overlaid on a licensed car: '+JSON.stringify(gtWheelAudit));
+ console.log('5.6.0 safely rejected incompatible GLB wheel rigs:',JSON.stringify(gtWheelAudit.rejected));
  await page.screenshot({path:'browser-artifacts/milovice-real-glb-vehicle.png'});
  await page.locator('#rp-vehicles').click();
  await page.locator('[data-spawn="suv"]').click();
@@ -168,13 +179,16 @@ try{
  const suvState=await page.evaluate(()=>window.__miloviceGLBDebug);
  console.log('5.1.1 second CC0 GLB SUV:',JSON.stringify(suvState));
  if(suvState.models.citySUV!=='ready')throw new Error('Licensed SUV GLB unavailable: '+JSON.stringify(suvState));
- await page.waitForFunction(()=>window.__miloviceGLBDebug?.assignments?.some(a=>a.key==='citySUV'&&a.driven),
+ await page.waitForFunction(()=>window.__miloviceGLBDebug?.rejected?.citySUV||
+    window.__miloviceGLBDebug?.assignments?.some(a=>a.key==='citySUV'&&a.driven),
   null,{timeout:45000});
  const suvInstalled=await page.evaluate(()=>window.__miloviceGLBDebug);
  const drivenSUV=suvInstalled.assignments.find(a=>a.key==='citySUV'&&a.driven);
- if(!(drivenSUV.wheels>0||drivenSUV.overlay))
-  throw new Error('5.4.1 imported SUV has permanently static wheels: '+JSON.stringify(suvInstalled));
- console.log('5.4.1 installed SUV with animated wheel rig:',JSON.stringify(drivenSUV));
+ if(drivenSUV&&(drivenSUV.wheels!==4||drivenSUV.overlay))
+  throw new Error('5.6.0 GLB SUV has unsafe duplicate or unrigged wheels: '+JSON.stringify(suvInstalled));
+ if(!drivenSUV&&!suvInstalled.rejected?.citySUV)
+  throw new Error('5.6.0 SUV rig neither certified nor rejected: '+JSON.stringify(suvInstalled));
+ console.log('5.6.0 SUV wheel safety: ',JSON.stringify({drivenSUV,rejected:suvInstalled.rejected?.citySUV}));
  await page.screenshot({path:'browser-artifacts/milovice-cc0-suv.png'});
  await page.locator('#rp-jobs').click();
  await page.locator('#rp-job-start').click();
