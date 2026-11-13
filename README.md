@@ -1,3 +1,12 @@
+## Milovice RP 5.28.0 — fotoprůchod nádraží a ulice 5. května (13. 11. 2026)
+
+- Zúžená **zvýšená střední část milovického nádraží**: fotografie ukazuje mnohem menší jednopatrovou nástavbu než původní herní velký blok. Model teď dostal kratší čtyřstrannou taškovou střechu a dvě střídmá horní okna pouze na skutečných obvodových stěnách; nikdy na umělých hranách mezi částmi stavby.
+- Přízemní oblouková okna dostala **bílé příčky a vodorovné členění** místo souvislých modrých tabulí. Modrá cedule „Milovice“ na straně kolejí je zmenšená podle fotografického vzoru. Vše je přiznaně přibližné.
+- Na 5. května (2014 fotografický podklad) nebyla vidět vůbec žádná bílá souvislá čára ani středové přerušované značení. **Zrušené automatické čáry i přerušované pruhy** na všech ulicích, kde chybí přesný podklad; pouze mapované přechody se dál vykreslují. Silnice a jízda zůstaly.
+- Podklady: [fotografie nádražní budovy](https://stellwerke.info/stw/stw.php?id=22402), [Nádražní 2024](https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_autobusov%C3%A1_zast%C3%A1vka_a_cyklov%C4%9B%C5%BE.jpg), [5. května 2014](https://commons.wikimedia.org/wiki/File:Milovice_-_5._kv%C4%9Btna.jpg). Fotografie nejsou použity jako textury; přesné rozměry zůstávají k ověření.
+
+---
+
 ## Milovice RP 5.27.4 — žádné náhodné obdélníky chodníků a čáry na obytných ulicích
 
 - U supermarketů Billa, Tesco, Penny a dalších zmizela automaticky generovaná **dlažba 8 × 4,2 m** a dvě náhodně umístěná stojanová kola/stojany před každým obchodem. Neznali jsme jejich skutečné pozice; někde mohly zasahovat až do cesty nebo překrývat chodník. Mapované OSM chodníky zůstávají.
