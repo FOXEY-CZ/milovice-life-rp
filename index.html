@@ -2553,7 +2553,7 @@ function osmBuilding(points,tags,index,osmId=null){
   const baseRoofMat=isSchool?osmRoofPalette[4]:oldCenter?osmRoofPalette[0]:osmRoofPalette[index%osmRoofPalette.length];
   const roofMat=modelCard?.roofColor?localArchitectureMaterial(baseRoofMat,modelCard.roofColor):baseRoofMat;
   const roofPreference=modelCard?.roofKind||'auto';
-  const pitched=tags.name==='Penny'&&tags.shop==='supermarket'?stationGabledRoof(pts,baseHeight,h,2.65,pennyRoof):isHouse&&roofPreference!=='flat'&&roofPreference!=='hip'?miloviceGableRoof(pts,baseHeight,h,roofMat):null;
+  const pitched=tags.name==='Penny'&&tags.shop==='supermarket'?miloviceGableRoof(pts,baseHeight,h,pennyRoof):isHouse&&roofPreference!=='flat'&&roofPreference!=='hip'?miloviceGableRoof(pts,baseHeight,h,roofMat):null;
   const hip=roofPreference!=='flat'&&!pitched&&(roofPreference==='hip'||roofPreference==='auto')&&(isHouse||isSchool||isChurch||isStation||isBlueStar||isMirova36)?
    miloviceHipRoof(pts,baseHeight,h,isChurch?osmRoofPalette[4]:isStation?osmRoofPalette[0]:(isMirova36||isBlueStar)&&!modelCard?.roofColor?
    (isMirova36?mirova36Roof:osmRoofPalette[1]):roofMat,
