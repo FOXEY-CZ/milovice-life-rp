@@ -58,6 +58,20 @@ const features=planPhotoRoofFeatures('118487980',ring);
 assert.equal(features.length,2);
 assert.equal(features[0].source,PHOTO_ROOF_PROFILES['118487980'].evidence);
 assert(features.every(f=>f.profile.arched===true));
+for(const feature of features){
+ const p=feature.profile;
+ const halfOverlap=(p.width-feature.width)/2-feature.padding;
+ const rearOverlap=p.depth-(feature.depth+feature.rearPadding);
+ assert(halfOverlap>=.069&&halfOverlap<.1,
+  'Roof hole must finish INSIDE solid gable wall on both sides to prevent sky slits');
+ assert(rearOverlap>=.19&&rearOverlap<.3,
+  'Main roof must tuck beneath dormer rear masonry instead of leaving an open cavity');
+ assert(feature.front>=.04&&feature.front<=.1,
+  'Front roof cut should not remove the whole street-facing gutter or facade');
+ assert(feature.width>p.width*.8&&feature.depth>p.depth*.75,
+  'Opening must remain large enough to avoid main roof passing through attic windows');
+}
+
 const index=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert(index.includes('clipRoofFacesForFeatures(data.faces,openings)'));
 assert(index.includes('const wallJoin=cut(fixed.joinFaces'));
