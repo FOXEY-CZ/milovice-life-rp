@@ -1915,7 +1915,11 @@ function osmBuilding(points,tags,index,osmId=null){
  const isMirova36=osmId===202367254; // verified Mírová 243/36 photographed May 2024, cadastral 3 floors incl. attic.
  const isGrocer74=osmId===202298645; // verified Mírová 74/4, Můj obchod - Potraviny D a Š.
  const isBikeTower=osmId===1011197691; // mapped round 118-bike automated storage near station.
- const floors=Math.min(16,Math.max(1,Number(tags['building:levels'])||(isGarage||isIndustrial?1:2)));
+ // OSM building:levels=0 is an explicit tag, not a reason to assume two residential storeys.
+ // Retail, storage and industrial buildings without a positive level count default to one storey.
+ const mappedLevels=Number(tags['building:levels']);
+ const defaultLevels=(isGarage||isIndustrial||['retail','supermarket','commercial','warehouse','shed','service'].includes(type))?1:2;
+ const floors=Math.min(16,Math.max(1,Number.isFinite(mappedLevels)&&mappedLevels>0?mappedLevels:defaultLevels));
  const isPanelBlock=(type==='residential'||type==='yes')&&floors>=4;
  const isCommerce=['commercial','retail','supermarket','hotel'].includes(type);
  // Named OSM shops receive a separate ground-floor glass frontage; avoid generic residential windows over it.
