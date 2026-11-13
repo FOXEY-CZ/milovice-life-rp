@@ -55,3 +55,16 @@ assert(gameHTML.includes('inventedRetailBikeStandsRemoved:true'));
 assert(!gameHTML.includes("archPart('stationPaving',mx+nx*2.7"));
 assert(!gameHTML.includes("archPart('stationIron',tx+nx*k*.55"));
 assert(gameHTML.includes("stationPaving',cx+ax*passageS+acrossX*shift"));
+
+// 5.28.0: Even secondary street classification is not proof of white
+// edge-lines or center dashes. 2014 street photograph at the geotagged
+// 5. května scene shows unstriped asphalt at the pictured location.
+const streetHTML=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+assert(streetHTML.includes('inventedEdgeLinesDisabled:true'));
+assert(streetHTML.includes('inventedCentreDashesDisabled:true'));
+assert(!streetHTML.includes('for(let d=5;d<len-2;d+=13)'));
+assert(!streetHTML.includes('const nx=-dz/len,nz=dx/len,edge=width*.5-.28'));
+assert(streetHTML.includes('if(!markedCrossing(el.tags))continue;'),
+ 'Only evidenced marked crossing paths may generate zebra paint');
+assert(streetHTML.includes('osmStrip(a,b,width,osmRoadMaterial,.17)'),
+ 'Removing speculative paint must not remove street asphalt');
