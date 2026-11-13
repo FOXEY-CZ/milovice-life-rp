@@ -57,12 +57,12 @@ try{
   console.log('5.20 full-resolution DEM with fewer GPU submissions:',
     JSON.stringify({oldGround,oldFoundation}));
  const roofEnvelope=await page.evaluate(()=>window.__miloviceRoofEnvelopeAudit||null);
- if(!roofEnvelope||roofEnvelope.version!=='5.31.1'||
+ if(!roofEnvelope||roofEnvelope.version!=='5.32.0'||
      roofEnvelope.pitchedRoofs<25||roofEnvelope.checkedWallJoins<20||
      roofEnvelope.sealedWallJoins<5||roofEnvelope.seamTriangles<10||
      roofEnvelope.duplicateFlatRoofs!==0||roofEnvelope.failedWallJoins!==0)
-   throw new Error('5.31.1 duplicated/unsealed roof geometry: '+JSON.stringify(roofEnvelope));
- console.log('5.31.1 one roof per building + batched perimeter closure:',
+   throw new Error('5.32.0 duplicated/unsealed roof geometry: '+JSON.stringify(roofEnvelope));
+ console.log('5.32.0 one roof per building + batched perimeter closure:',
    JSON.stringify(roofEnvelope));
  const landmark=await page.evaluate(()=>window.__milovicePhotoStreetPass||null);
  if(!landmark||landmark.buildings!==3||landmark.dormers<3||
@@ -89,7 +89,10 @@ try{
     !(houseRoof.wallInfillTriangles>3)||
     Math.abs(houseRoof.eaveOverhang-.30)>1e-7||
     !(houseRoof.eaveTiles>=10&&houseRoof.eaveSoffit>=10&&houseRoof.eaveFascia>=10)||
-    houseRoof.roofFootprintError>1e-5)
+    houseRoof.roofFootprintError>1e-5||
+    houseRoof.roofModel!=='perimeter-constrained'||
+    !(houseRoof.originalBoundaryGap>.5)||
+    !(houseRoof.currentBoundaryGap<.025))
    throw new Error('5.29.1 Školská detached hip or dormer roof survived: '+
     JSON.stringify({houseRoof,landmark}));
  console.log('5.30 Roof System 2.0 photo-driven intersections and closed shell:',JSON.stringify(houseRoof));
@@ -150,8 +153,8 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('roof-envelope-5311'))
-  throw new Error('5.31.1 browser loaded a stale HTML build');
+ if(!(await page.locator('#build-label').innerText()).includes('perimeter-roof-5320'))
+  throw new Error('5.32.0 browser loaded a stale HTML build');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
     sidewalkCheck.separatedSidewalks!==0||
@@ -257,7 +260,10 @@ try{
  if(!cityRoof||cityRoof.version!=='5.28.5'||cityRoof.buildings<8||
     cityRoof.inverseFanRemoved!==true||
     cityRoof.maxFootprintOvershoot!==0||cityRoof.areaErrors>1e-4||
-    cityRoof.hip+cityRoof.gable!==cityRoof.buildings)
+    cityRoof.hip+cityRoof.gable!==cityRoof.buildings||
+    !(cityRoof.perimeterSafeFallbacks>0)||
+    !(cityRoof.maxRejectedEaveGap>.5)||
+    cityRoof.maxRenderedEaveError>.025)
   throw new Error('5.28.5 citywide roof polygons still have inverted/floating faces: '+JSON.stringify(cityRoof));
  const houseDetails=await page.evaluate(()=>window.__miloviceHeroArchitecture||null);
  if(!houseDetails||!Number.isFinite(houseDetails.suppressedArbitraryChimneys)||
