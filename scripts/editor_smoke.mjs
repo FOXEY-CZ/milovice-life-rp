@@ -20,6 +20,14 @@ try{
  await page.evaluate(()=>window.__miloviceEditor.openBuilding(118487963));
  const selected=await page.evaluate(()=>window.__miloviceEditor.chosenId);
  assert(selected>0,'clicking a house did not open the inspector');
+ const roofAudit=await page.evaluate(()=>window.__miloviceEditor.roofPlan);
+ assert(roofAudit&&typeof roofAudit.ok==='boolean'&&
+    Number.isInteger(roofAudit.volumeCount)&&
+    roofAudit.documentedPassages===0,
+   'Editor Roof 3.0 must classify the selected OSM house without inventing passages');
+ assert((await page.locator('#roof-topology-summary').innerText()).length>25,
+   'Roof System 3.0 building inspector must explain the construction profile');
+ console.log('Roof System 3.0 source-safe building inspector:',roofAudit);
  const faces=await page.evaluate(()=>({
   count:window.__miloviceEditor.facades,selected:window.__miloviceEditor.currentFace
  }));
