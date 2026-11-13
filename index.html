@@ -2826,7 +2826,7 @@ function rpAnimateTraffic(dt){
   g.visible=Math.hypot(g.position.x-playerX,g.position.z-playerZ)<120;
   if(g.visible){
    const d=Math.hypot(g.position.x-playerX,g.position.z-playerZ);
-   obj.rig.high.visible=d<64;obj.rig.low.visible=d>=64;
+   obj.rig.high.visible=!g.userData.cc0Active&&d<64;obj.rig.low.visible=!g.userData.cc0Active&&d>=64;
    if(d<64){
     const phase=Math.sin(elapsed*6+obj.phase)*.48;
     obj.legs[0].rotation.x=phase;obj.legs[1].rotation.x=-phase;
