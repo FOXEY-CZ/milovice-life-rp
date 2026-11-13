@@ -103,7 +103,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('roadside-paving-cleanup-5274'))
+ if(!(await page.locator('#build-label').innerText()).includes('station-tower-photo-5280'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -224,6 +224,12 @@ try{
  console.log('5.5.0 spatial world collisions + both station portals:',JSON.stringify(collisionCheck));
 
  if(!landmarkChecks.stationParts?.center||!landmarkChecks.stationParts?.left||!landmarkChecks.stationParts?.right)throw new Error('Station wing/center massing missing');
+ if(!(landmarkChecks.stationParts.centerHalfSpan>=4.15&&landmarkChecks.stationParts.centerHalfSpan<=5.5)||
+    landmarkChecks.stationCentralRoofType!=='hip'||
+    landmarkChecks.stationUpperArtificialCutWindows!==0||
+    landmarkChecks.stationUpperExteriorWindows!==2||
+    landmarkChecks.stationUpperFacadeAccuracy!=='photo-informed-not-surveyed')
+  throw new Error('5.28 station central one-window bay and exterior-only upper sash missing: '+JSON.stringify(landmarkChecks));
  if(!landmarkChecks.stationSign||landmarkChecks.stationCanopy!==false||
     !landmarkChecks.unverifiedStreetDoorRemoved||landmarkChecks.stationStreetSign!==false)
   throw new Error('4.9 station architecture missing: '+JSON.stringify(landmarkChecks));
@@ -365,7 +371,9 @@ try{
  if(mladaStats?.landscape<5)throw new Error('Missing mapped Mladá parks/forest/grass: '+JSON.stringify(mladaStats));
  const roadside=await page.evaluate(()=>({streets:window.__miloviceStreetGeometryAudit,
   commerce:window.__miloviceCommerceReality}));
- if(!roadside.streets?.residentialInventedEdgeLinesDisabled||
+ if(!roadside.streets?.inventedEdgeLinesDisabled||
+    !roadside.streets?.inventedCentreDashesDisabled||
+    !roadside.streets?.residentialInventedEdgeLinesDisabled||
     !roadside.commerce?.inventedRetailPadsRemoved||
     !roadside.commerce?.inventedRetailBikeStandsRemoved||
     roadside.commerce.actualPavingPadsSpawned!==0||
