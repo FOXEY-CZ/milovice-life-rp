@@ -42,6 +42,26 @@ for(const kind of ['hip','gable']){
  assert.equal(back.edgeSections,closure.edgeSections);
  assert(Math.abs(back.maxGapBefore-closure.maxGapBefore)<eps);
 }
+// Low wings join the raised station wall: their artificial end cut
+// must not acquire a separate stucco triangular sidewall.
+const whole=[v(0,0),v(12,0),v(12,8),v(0,8)];
+const wing=[v(0,0),v(6,0),v(6,8),v(0,8)];
+const wingRoof=planFootprintPitchedRoof({
+ triangles:rect(0,0,6,8),origin,axis,kind:'hip',
+ eaveY:3.70,rise:1.45
+});
+const wingClosure=planRoofPerimeterClosure({
+ outline:wing,originalOutline:whole,roof:wingRoof,origin,wallTopY:3.70
+});
+assert.equal(wingClosure.excludedVirtualEdges,1);
+assert(wingClosure.faces.length>0);
+assert(!wingClosure.faces.some(tri=>tri.every(pt=>Math.abs(pt.x-6)<eps)),
+ 'Do not add an artificial triangular wall across the raised-centre cut');
+const centralClosure=planRoofPerimeterClosure({
+ outline:wing,roof:wingRoof,origin,wallTopY:3.70
+});
+assert.equal(centralClosure.excludedVirtualEdges,0,
+ 'Raised upper body needs roof closing along its actual exposed upper wall');
 assert.equal(planRoofPerimeterClosure({outline:[],roof:{},origin,wallTopY:3}),null);
 const game=await import('node:fs').then(m=>m.readFileSync(new URL('../index.html',import.meta.url),'utf8'));
 assert(game.includes("import {planRoofPerimeterClosure} from './scripts/station-roof-seams.js"));
