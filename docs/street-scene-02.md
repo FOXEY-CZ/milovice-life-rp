@@ -32,3 +32,9 @@ The mobile rendering pass uses spatially localized groups and instances. Existin
 `window.__miloviceStreetEnvironment` publishes the scene ID, count of instances and draw meshes, photo reference, and approximate-location flag. The Chromium smoke test checks the photo-scene source and OSM anchoring, that the environment appears in the old-town map and that the shared **v5.20 GPU profile** remains enabled for mobile. It cannot certify real-phone FPS.
 
 Performance principle: no forced DPR downscaling; batch plant/prop geometry, and cull distant scene detail normally through the existing 160m spatial LOD manager.
+
+## 5.23 street-detail pass
+
+Added **original, instanced** paving slabs, a narrow curb line, drainage-grate details, masonry capstones, shallow mortar joints, and wooden gate slats to the already source-referenced 5. května scene. These are visual interpretations of typical materials in the referenced streetscape, **not individually surveyed positions or an assertion that each stone/slat appears in the historical photo**.
+
+Every pavement and curb candidate is tested against `createRoadClearance.isClear` using **all loaded OSM road and footway ways** before drawing. Rejected paving is counted in `window.__miloviceStreetEnvironment.roadRejected`, and accepted pieces in `pavementPieces`. These surfaces use instanced boxes and share existing Lambert materials, keeping the GPU optimization and removal of random roadside lamps/trees intact.
