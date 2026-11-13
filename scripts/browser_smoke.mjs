@@ -44,6 +44,7 @@ try{
     null,{timeout:30000});
  const animated=await page.evaluate(()=>window.__miloviceHumans);
  if(!(animated.heightMeters>=1.65&&animated.heightMeters<=2.2))throw new Error('5.3.2 the character is still giant or floating; height='+animated.heightMeters+' originalGLBScale='+JSON.stringify(animated.originalGLBScale));
+ if(animated.armsDown!==true)throw new Error('5.3.2 human is still T-posed: '+JSON.stringify(animated));
  console.log('5.3.2 normalized humanoid standing height:',animated.heightMeters,'m, source scale',animated.originalGLBScale);
  if(animated.bones?.length<35||animated.runtimeSkeletalWalk!==true)
   throw new Error('5.3.0 loaded human has no usable locomotion skeleton: '+JSON.stringify(animated));
