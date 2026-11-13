@@ -9,7 +9,8 @@ export function makeMiloviceHeroArchitecture(THREE,{
 }={}){
  const chunks=new Map(),selected=new Set();
  const appliedFaces=[];
- const state={buildings:0,verifiedOverrides:0,verifiedFaces:0,solidWalls:0,cutoutWindows:0,cutoutDoors:0,gables:0,
+ const state={buildings:0,verifiedOverrides:0,verifiedFaces:0,photoMappedFaces:0,
+  photoMappedWindows:0,solidWalls:0,cutoutWindows:0,cutoutDoors:0,gables:0,
   detailInstances:0,drawMeshes:0,chunkCount:0};
  const box=new THREE.BoxGeometry(1,1,1),glassPlane=new THREE.PlaneGeometry(1,1);
  const mats={
@@ -108,7 +109,8 @@ export function makeMiloviceHeroArchitecture(THREE,{
   const sides=pts.map((a,i)=>({a,b:pts[(i+1)%pts.length],len:a.distanceTo(pts[(i+1)%pts.length])}));
   const entrySide=sides.reduce((best,s,i)=>s.len>best.len?{i,len:s.len}:best,{i:0,len:0}).i;
   const faceEdges=selectFacadeEdges(pts);
-  const explicitDoor=Object.values(override?.facades||{}).some(f=>['left','center','right'].includes(f.doorAt));
+  const explicitDoor=Object.values(override?.facades||{}).some(f=>
+   ['left','center','right'].includes(f.doorAt)||f.openings?.some(o=>o.type==='door'));
   const levels=Math.min(6,Math.max(1,floors));
   for(let sideIndex=0;sideIndex<sides.length;sideIndex++){
    const {a,b,len}=sides[sideIndex];
@@ -122,18 +124,24 @@ export function makeMiloviceHeroArchitecture(THREE,{
    // surveyed wall; corners/chamfers and unreviewed sides keep the old model.
    const cardinal=faceEdges.get(sideIndex);
    const sideLayout=cardinal?override?.facades?.[cardinal]||null:null;
-   const autoEntrance=sideIndex===entrySide&&len>5&&!explicitDoor;
+   const autoEntrance=sideIndex===entrySide&&len>5&&!explicitDoor&&!sideLayout?.openings?.length;
    const planned=planFaceOpenings({length:len,height,levels,side:sideLayout,
     legacyWindows:override?.windowsPerWall||Math.min(6,Math.max(1,Math.floor((len-1.4)/3.0))),
     autoEntrance});
    const entry=!!planned.door;
    const entranceU=planned.door?.x??len*.5;
    const doorWidth=planned.door?.w??1.21;
+   const doorBottom=planned.door?.y??.13,doorHeight=planned.door?.h??2.27;
    if(entry){holes.push(planned.door);state.cutoutDoors++}
    if(sideLayout){
     state.verifiedFaces++;
+    if(planned.photoMapped){
+     state.photoMappedFaces++;state.photoMappedWindows+=planned.windows.length;
+    }
     appliedFaces.push({id:String(identity),side:cardinal,windows:planned.windows.length,
-     door:entry,wallColor:sideLayout.wallColor||null});
+     door:entry,wallColor:sideLayout.wallColor||null,
+     photoMapped:!!planned.photoMapped,
+     windowPositions:planned.photoMapped?planned.windows.slice(0,10).map(w=>({x:+w.x.toFixed(2),y:+w.y.toFixed(2),w:+w.w.toFixed(2),h:+w.h.toFixed(2)})):[]});
    }
    let windowIndex=0;
    for(const window of planned.windows){
@@ -167,15 +175,15 @@ export function makeMiloviceHeroArchitecture(THREE,{
    // Actual front door opening, framed with a 3D threshold/hood.
    if(entry){
     const xx=a.x+ux*entranceU,zz=a.y+uz*entranceU;
-    placement(chunk,'dark',xx-nx*.15,base+1.265,zz-nz*.15,doorWidth+.03,2.26,.07,yaw);
-    placement(chunk,'wood',xx-nx*.105,base+1.26,zz-nz*.105,doorWidth-.14,2.15,.07,yaw);
+    placement(chunk,'dark',xx-nx*.15,base+doorBottom+doorHeight*.5,zz-nz*.15,doorWidth+.03,doorHeight,.07,yaw);
+    placement(chunk,'wood',xx-nx*.105,base+doorBottom+doorHeight*.5,zz-nz*.105,doorWidth-.14,doorHeight-.11,.07,yaw);
     for(const d of [-1,1]){
-     placement(chunk,'frame',xx+ux*d*(doorWidth*.5+.06)+nx*.07,base+1.27,
-       zz+uz*d*(doorWidth*.5+.06)+nz*.07,.11,2.45,.24,yaw);
+     placement(chunk,'frame',xx+ux*d*(doorWidth*.5+.06)+nx*.07,base+doorBottom+doorHeight*.5,
+       zz+uz*d*(doorWidth*.5+.06)+nz*.07,.11,doorHeight+.18,.24,yaw);
     }
-    placement(chunk,'frame',xx+nx*.08,base+2.45,zz+nz*.08,doorWidth+.22,.12,.27,yaw);
-    placement(chunk,'base',xx+nx*.53,base+.11,zz+nz*.53,doorWidth+.36,.20,.82,yaw);
-    if(!sideLayout)placement(chunk,'awning',xx+nx*.37,base+2.78,zz+nz*.37,doorWidth+.77,.16,.85,yaw);
+    placement(chunk,'frame',xx+nx*.08,base+doorBottom+doorHeight+.055,zz+nz*.08,doorWidth+.22,.12,.27,yaw);
+    placement(chunk,'base',xx+nx*.53,base+doorBottom-.025,zz+nz*.53,doorWidth+.36,.20,.82,yaw);
+    if(!sideLayout)placement(chunk,'awning',xx+nx*.37,base+doorBottom+doorHeight+.40,zz+nz*.37,doorWidth+.77,.16,.85,yaw);
    }
    placement(chunk,'base',mx+nx*.09,base+.23,mz+nz*.09,len,.46,.16,yaw);
    placement(chunk,'sill',mx+nx*.15,base+height-.12,mz+nz*.15,len,.20,.28,yaw);

@@ -1,3 +1,17 @@
+## Milovice RP 5.11.0 – Foto-zaměřování fasád (13. listopadu 2026)
+
+**Nový praktický fotografický pracovní postup** ve Street Editoru. Uživatel může importovat *vlastní nebo oprávněně použitelnou* fotografii celé fasády (JPG, PNG nebo WebP, max. 12 MB). Obrázek se zpracovává **jen lokálně** a NEPOSÍLÁ se do cloudu, NEUKLÁDÁ do JSON ani do herních souborů. V exportované kartě zůstávají pouze souřadnice anotací, druh (okno/dveře), SHA-256 otisk zdrojového souboru a potvrzení práv.
+
+Uživatel na snímku vyznačí čtyři rohy celé fasády v pořadí levý horní → pravý horní → pravý dolní → levý dolní. Geometrický převod homografií opraví perspektivní zkreslení rovinné stěny. Systém nabízí buď ruční obdélníky jednotlivých oken/dveří nebo **experimentální automatické návrhy tmavých pravoúhlých oblastí** z pixelů snímku bez nahrávání na server. Návrhy mají viditelnou jinou barvu a bez samostatného potvrzení uživatele se NIKDY neaplikují do hry. Práva musí uživatel potvrdit a pro fasádu musí vyplnit pozorování. Záznam se použije **jen po celkovém ověření karty domu**.
+
+V 3D generátoru mají jednotlivé potvrzené fotografické anotace přednost před dřívějším stejnoměrným rozmístěním oken. Souřadnice oken se násobí délkou skutečné OSM stěny a výškou aktuálního domu; dveře získají přesné umístění a proporce z anotací, kolizní půdorys je zachován. U neověřených stran není změna. Aplikace diagnosticky vypisuje počet fotograficky zaměřených fasád a polohy použitých oken pro browser testy.
+
+**Omezení:** Získané metry jsou pouze aproximací, pokud výška fasády není přesně změřená; projekce jediné fotografie neumí rekonstruovat celé skryté části domu. Přesnost je ovlivněna kvalitou snímku, výběrem rohů, perspektivou, případnou optickou deformací a půdorysem. Heuristické detekování tmavých oblastí není spolehlivé rozpoznávání oken, a může navrhovat stíny či jiné objekty. Pro více pater, členité fasády, balkony a nepravidelné výlohy je často lepší ruční anotace. Ani zde nepoužíváme snímky Mapy.com/Google bez relevantního oprávnění.
+
+**Testováno:** Jednotkové testy perspektivní transformace, validace otvorů, heuristického návrhu oken, evidence práv a propojení se staršími fasádami; Chromium prochází syntetickou vlastněnou fotkou, ruční anotací, potvrzením práv, uložením, reloadem a skutečným převodem na různě rozmístěná 3D okna ve hře.
+
+---
+
 # Milovice RP 5.10.0 – Geometrie z ověřených fasád (13. 11. 2026)
 
 Stavební editor nyní nabízí **strukturovaná pole pro každou ze čtyř hlavních stěn zvlášť**. Záznam severní, jižní, východní nebo západní strany umí nést počty oken pro jednotlivá patra (např. `2,3,2`), přibližnou šířku a výšku oken, polohu a šířku vstupu, barvu fasády v HEX a přítomnost okenic.

@@ -30,4 +30,30 @@ assert.equal(b.windows.length,6);
 const c=planFaceOpenings({length:12,height:7.2,levels:2,legacyWindows:3,autoEntrance:true});
 assert(c.door);assert(c.windows.length>0);
 assert.equal(planFaceOpenings({length:12,height:7.2,levels:2,side:{rows:[0,0],doorAt:'none'}}).windows.length,0);
+const photoEvidence={kind:'local-owned-photo',sha256:'a'.repeat(64),rightsConfirmed:true};
+const annotated=normalizeVerifiedFacades({S:{
+ status:'seen',source:'',notes:'My authorized photo, full facade four-corner calibrated',
+ photoEvidence,
+ layout:{photoConfirmed:true,openings:[
+  {type:'window',x:.12,y:.25,w:.12,h:.20},
+  {type:'window',x:.65,y:.21,w:.13,h:.22},
+  {type:'door',x:.42,y:.69,w:.11,h:.31}
+ ]}}
+}});
+assert.equal(annotated.S.openings.length,3);
+assert.equal(annotated.S.source,'');
+assert.equal(annotated.S.photoEvidence.sha256,'a'.repeat(64));
+const coords=planFaceOpenings({length:12,height:7.2,levels:2,side:annotated.S});
+assert.equal(coords.windows.length,2);
+assert.equal(coords.door.x,12*.475);
+assert(Math.abs(coords.windows[0].x-12*.18)<.01);
+assert(Math.abs(coords.windows[0].y-7.2*.55)<.01);
+assert.equal(coords.photoMapped,true);
+assert.equal(normalizeVerifiedFacades({N:{status:'seen',notes:'test',photoEvidence,
+ layout:{openings:[{type:'window',x:.1,y:.1,w:.1,h:.1}]}}}).N,undefined,
+ 'unconfirmed photo detections must NEVER enter final geometry');
+assert.equal(normalizeVerifiedFacades({N:{status:'seen',notes:'test',
+ photoEvidence:{...photoEvidence,rightsConfirmed:false},
+ layout:{photoConfirmed:true,openings:[{type:'window',x:.1,y:.1,w:.1,h:.1}]}}}).N,undefined,
+ 'photo annotations without license attestation must not become game assets');
 console.log('Verified per-facade 3D contract OK: evidence, cardinal wall matching, per-floor windows, door placement and geometry');

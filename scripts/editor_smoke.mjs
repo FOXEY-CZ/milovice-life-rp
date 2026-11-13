@@ -46,6 +46,47 @@ try{
  assert((await page.locator('#face-progress').innerText()).includes('1/'),'Review progress missing');
  await page.locator('#pano-open').click();
  assert((await page.locator('#pano-message').innerText()).includes('API klíč'),'No-key panorama fallback unavailable');
+ // Photo-to-3D: draw a locally generated synthetic OWNED reference image.
+ // Never copy real provider panoramas to CI, local storage or game assets.
+ const photoLoaded=await page.evaluate(async()=>{
+  const c=document.createElement('canvas');c.width=600;c.height=400;
+  const g=c.getContext('2d');
+  g.fillStyle='#d5c1ab';g.fillRect(0,0,600,400);
+  g.fillStyle='#425e75';g.fillRect(98,118,76,80);g.fillRect(406,118,72,80);
+  g.fillStyle='#75513d';g.fillRect(310,279,82,100);
+  const blob=await new Promise(resolve=>c.toBlob(resolve,'image/png'));
+  await window.__milovicePhotoSurvey.loadForTest(new File([blob],'synthetic-owned-test.png',{type:'image/png'}));
+  return window.__milovicePhotoSurvey.metrics;
+ });
+ assert(photoLoaded.image&&photoLoaded.digest,'Local synthetic photo was not opened or fingerprinted');
+ const pic=page.locator('#photo-canvas');
+ await pic.scrollIntoViewIfNeeded();
+ let rect=await pic.boundingBox();
+ const tap=async(x,y)=>page.mouse.click(rect.x+rect.width*x,rect.y+rect.height*y);
+ // Four facade corners: TL -> TR -> BR -> BL.
+ for(const p of [[.08,.06],[.92,.06],[.92,.95],[.08,.95]])await tap(...p);
+ assert.equal(await page.evaluate(()=>window.__milovicePhotoSurvey.metrics.quad),4);
+ async function drawAnnotation(tool,from,to){
+  await page.locator('[data-photo-mode="'+tool+'"]').click();
+  await pic.scrollIntoViewIfNeeded();rect=await pic.boundingBox();
+  await page.mouse.move(rect.x+rect.width*from[0],rect.y+rect.height*from[1]);
+  await page.mouse.down();await page.mouse.move(rect.x+rect.width*to[0],rect.y+rect.height*to[1],{steps:5});
+  await page.mouse.up();
+ }
+ await drawAnnotation('window',[.15,.30],[.29,.49]);
+ await drawAnnotation('window',[.69,.30],[.80,.49]);
+ await drawAnnotation('door',[.53,.70],[.67,.94]);
+ assert.equal(await page.evaluate(()=>window.__milovicePhotoSurvey.metrics.boxes),3);
+ await page.locator('#photo-rights').check();
+ await page.locator('#photo-confirm').click();
+ assert((await page.locator('#photo-status').innerText()).includes('Potvrzeno'),'Photo annotation confirmation failed');
+ const proof=await page.evaluate(id=>{
+  const card=JSON.parse(localStorage.getItem('milovice_rp_street_editor_v1'))[String(id)];
+  return card?.facades?.[Object.keys(card.facades).find(x=>card.facades[x].layout?.photoConfirmed)];
+ },selected);
+ assert(proof?.layout?.openings?.length===3&&proof?.photoEvidence?.rightsConfirmed,
+  'Photo geometry was not retained as authorized coordinates');
+ assert(!JSON.stringify(proof).includes('data:image'),'Image data must NOT be stored in building card');
  await page.locator('#next').click();
  assert.notEqual(await page.evaluate(()=>window.__miloviceEditor.chosenId),selected,
    'Next house re-selected the same building');
@@ -76,15 +117,19 @@ try{
  assert.equal(await page.locator('#stage').inputValue(),'verified','local progress not persisted');
  assert.equal(await page.locator('#face-status').inputValue(),'seen','Per-facade review not persisted');
  assert.equal(await page.locator('#face-rows').inputValue(),'2,3','Per-floor geometry not persisted');
+ assert((await page.locator('#photo-status').innerText()).includes('3 potvrzených otvorů'),
+  'Local photograph annotations were not preserved after reload');
  assert.equal(await page.locator('#facadeColor').inputValue(),'#b2a090');
  assert.equal(await page.locator('#roofKind').inputValue(),'gable');
  const bridge=await page.evaluate(async()=>{
-  const mod=await import('./scripts/street-architecture.js?v=5100');
+  const mod=await import('./scripts/street-architecture.js?v=5110');
   return [...mod.loadLocalArchitectureCards(localStorage)].map(([id,data])=>
    ({id,color:data.facadeColor,height:data.height,roof:data.roofKind,facades:data.facades}));
  });
  assert(bridge.some(x=>x.id===String(selected)&&x.color==='#b2a090'&&x.height===7.2&&x.roof==='gable'&&
-  x.facades?.[firstFace]?.rows?.join(',')==='2,3'&&x.facades[firstFace].doorAt==='right'),
+  x.facades?.[firstFace]?.rows?.join(',')==='2,3'&&
+  x.facades[firstFace].openings?.length===3&&
+  x.facades[firstFace].photoEvidence?.kind==='local-owned-photo'),
   'Editor per-facade layout did not become loadable verified 3D geometry input');
  await page.locator('#district').selectOption('mlada');
  await page.waitForFunction(()=>window.__miloviceEditor?.currentDistrict==='mlada'&&
@@ -99,8 +144,9 @@ try{
  }));
  if(!(applied.bridge.loadedVerified>=1&&applied.bridge.loadedFacadeLayouts>=1&&
       applied.bridge.applied>=1&&applied.hero?.verifiedOverrides>=1&&applied.hero?.verifiedFaces>=1&&
+      applied.hero.photoMappedFaces>=1&&applied.hero.photoMappedWindows>=2&&
       applied.hero.faceAudits.some(f=>f.id===String(selected)&&f.side===firstFace&&
-       f.wallColor==='#d3b39c'&&f.windows>=1)))
+       f.wallColor==='#d3b39c'&&f.photoMapped&&f.windows===2&&f.windowPositions.length===2)))
   throw Error('Verified individual facade geometry was not applied to the correct 3D house wall: '+
    JSON.stringify({applied,firstFace}));
  if(errors.length)throw Error(errors.slice(0,5).join('\n'));

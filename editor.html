@@ -32,6 +32,15 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
 @media(max-width:650px){header{padding:10px}h1{font-size:16px}main{display:flex;flex-direction:column;height:auto}aside{overflow:visible;padding:11px}#map{height:46dvh;min-height:310px;order:-1}#streets{max-height:180px;overflow:auto}aside:last-child{max-height:none}#buildings{max-height:330px;overflow:auto}}
 #facade-switches{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0}#facade-switches button.active{border-color:var(--hot);background:#465b6a}#facade-switches button{text-align:left}#facade-switches small{display:block;color:var(--muted)}
 #pano-host{height:300px;background:#172a3b;border:1px solid #628395;border-radius:9px;overflow:hidden}#pano-message{font-size:12px}
+#photo-panel{border:1px solid #607c8f;border-radius:10px;padding:10px;margin:14px 0;background:#102332}
+#photo-canvas{width:100%;height:auto;max-height:62dvh;touch-action:none;display:block;background:#101820;border-radius:7px;border:1px solid #617e8e}
+#photo-tools{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}#photo-tools button{font-size:12px}
+#photo-tools button.active{background:#396e8e;border-color:#f8ca71}
+#photo-panel .row{margin:8px 0;flex-wrap:wrap}
+#photo-counter{font-size:12px;color:#d6edfa}
+#photo-rights{width:auto;margin-right:6px}
+#photo-status{min-height:32px;font-size:12px;color:#d4eaf5}
+[hidden]{display:none!important}
 </style></head><body>
 <header><div><h1>🏗️ Milovice RP · Stavební editor</h1><div class="muted">Ulice → dům → panorama → ověřené parametry → 3D model</div></div>
 <a href="./index.html">🎮 Do hry</a></header>
@@ -64,6 +73,28 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
    <option value="unreviewed">⬜ Neprohlédnuto</option><option value="seen">📷 Prohlédnuto</option><option value="unavailable">🚫 Nedostupné</option></select>
   <label for="face-source">Odkaz na fotografii této strany</label><input type="url" id="face-source" placeholder="https://...">
   <label for="face-note">Co vidíme / co chybí?</label><textarea id="face-note" rows="2"></textarea>
+  <section id="photo-panel">
+   <h2>📷 Fotografie → přesné polohy oken a dveří</h2>
+   <p class="muted">Vlož vlastní nebo oprávněně použitý snímek <strong>celé fasády</strong> (max. 12 MB). Fotografie zůstane pouze v zařízení, neuloží se do hry ani na GitHub. Nejprve čtyřmi body vyznač její celé rohy. Pak označ okna/dveře, nebo nech lokálně vyhledat možné tmavé obdélníky. Návrhy musíš osobně zkontrolovat — mohou být nepřesné.</p>
+   <label for="photo-file">Vlastní / povolená fotografie této fasády</label>
+   <input id="photo-file" type="file" accept="image/png,image/jpeg,image/webp">
+   <p id="photo-counter"></p>
+   <canvas id="photo-canvas" hidden aria-label="Fotografie s měřením rohů fasády a otvorů"></canvas>
+   <div id="photo-tools">
+    <button type="button" class="active" data-photo-mode="corners">1. Čtyři rohy</button>
+    <button type="button" data-photo-mode="window">2. Okno</button>
+    <button type="button" data-photo-mode="door">3. Dveře</button>
+   </div>
+   <div class="row">
+    <button id="photo-analyze" type="button">✨ Navrhnout okna</button>
+    <button id="photo-undo" type="button">↩ Zpět</button>
+    <button id="photo-reset" type="button">↻ Nové zaměření</button>
+   </div>
+   <label><input id="photo-rights" type="checkbox">Potvrzuji, že mám právo snímek použít jako referenci pro svůj model.</label>
+   <button id="photo-confirm" class="primary" type="button" style="width:100%">✅ Potvrdit vyznačená okna/dveře</button>
+   <p id="photo-status" role="status">Vlož fotografii. Obrázky se nikam neposílají.</p>
+   <p class="muted">Ukládáme jen normalizované souřadnice otvorů, jejich druh a SHA-256 otisk obrázku. Rozměry v metrech se odvozují z ověřených rozměrů domu/půdorysu; při šikmém záběru je to stále aproximace, nikoliv geodetické měření.</p>
+  </section>
   <h2>🪟 Převod této fasády do 3D</h2>
   <p class="muted">Ověřené údaje o této <strong>jedné straně domu</strong> se použijí v geometrii až po uložení celé karty jako „Ručně ověřeno“ a obnovení hry. Okna se zatím rozmisťují pravidelně — přesná nepravidelná poloha vyžaduje další zaměření.</p>
   <label for="face-rows">Počet oken podle podlaží (přízemí, 1. patro, …)</label>
@@ -133,7 +164,8 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script type="module">
 import {planFacadeViews,nextStreetHouse} from './scripts/facade-review.js?v=590';
-import {normalizeFacadeLayout} from './scripts/facade-model.js?v=5100';
+import {normalizeFacadeLayout} from './scripts/facade-model.js?v=5110';
+import {initPhotoSurvey} from './scripts/photo-survey-ui.js?v=5110';
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
@@ -260,13 +292,14 @@ function saveFace(){
  if(!chosen||!currentFace)return;
  const key=String(chosen.id),card=records[key]||{},faces={...(card.facades||{})};
  const status=$('face-status').value,source=$('face-source').value.trim(),notes=$('face-note').value.trim();
- const layout={rows:$('face-rows').value.trim(),windowWidth:$('face-window-width').value.trim(),
+ const previous=faces[currentFace.id]||{};
+ const layout={...(previous.layout||{}),rows:$('face-rows').value.trim(),windowWidth:$('face-window-width').value.trim(),
   windowHeight:$('face-window-height').value.trim(),doorAt:$('face-door').value.trim(),
   doorWidth:$('face-door-width').value.trim(),wallColor:$('face-wall-color').value.trim(),
   shutters:$('face-shutters').value.trim()};
  const hasLayout=Object.values(layout).some(Boolean);
- if(status==='unreviewed'&&!source&&!notes&&!hasLayout)delete faces[currentFace.id];
- else faces[currentFace.id]={status,source,notes,layout,reviewedAt:new Date().toISOString()};
+ if(status==='unreviewed'&&!source&&!notes&&!hasLayout&&!previous.photoEvidence)delete faces[currentFace.id];
+ else faces[currentFace.id]={...previous,status,source,notes,layout,reviewedAt:new Date().toISOString()};
  records[key]={...card,facades:faces};save();
 }
 function faceButtons(){
@@ -283,7 +316,7 @@ function faceButtons(){
 function chooseFace(id){
  if(!chosen)return;
  if(currentFace&&currentFace.id!==id)saveFace();
- stopPanorama();currentFace=facadeViews.find(v=>v.id===id)||null;
+ stopPanorama();photoSurvey.clear();currentFace=facadeViews.find(v=>v.id===id)||null;
  if(!currentFace)return;
  faceButtons();
  const note=entry(chosen).facades?.[currentFace.id]||{};
@@ -295,6 +328,7 @@ function chooseFace(id){
   ['face-wall-color','wallColor'],['face-shutters','shutters']]){
   $(field).value=layout[key]??'';
  }
+ photoSurvey.showSaved(note);
  const accepted=normalizeFacadeLayout(note);
  $('face-model-state').textContent=accepted?
   '✅ Tato fasáda má ověřený zdroj a 3D parametry. Změna se promítne po ověření celé karty a novém spuštění hry.':
@@ -354,6 +388,25 @@ $('facade-switches').addEventListener('click',event=>{
 $('face-status').addEventListener('change',()=>{saveFace();faceButtons()});
 $('pano-open').addEventListener('click',openPanorama);
 $('pano-close').addEventListener('click',()=>{stopPanorama();$('pano-message').textContent='Panorama zavřena.'});
+// The photo controller has no network calls and never persists image pixels.
+const photoSurvey=initPhotoSurvey({
+ getSelection:()=>({buildingId:chosen?.id||null,faceId:currentFace?.id||null}),
+ saveEvidence:(selection,evidence)=>{
+  if(!chosen||!currentFace||String(selection.buildingId)!==String(chosen.id)||
+     selection.faceId!==currentFace.id)return;
+  saveFace();
+  const id=String(chosen.id),card=records[id]||{},faces={...(card.facades||{})};
+  const before=faces[currentFace.id]||{};
+  const layout={...(before.layout||{}),photoConfirmed:true,openings:evidence.openings};
+  faces[currentFace.id]={...before,status:'seen',notes:$('face-note').value.trim(),
+   photoEvidence:evidence.photoEvidence,layout,reviewedAt:new Date().toISOString()};
+  records[id]={...card,facades:faces};save();
+  $('face-status').value='seen';faceButtons();
+  $('face-model-state').textContent='✅ Z vlastní autorizované fotografie je připravených '+
+   evidence.openings.length+' přesně umístěných otvorů. Po ověření celé karty se převedou do 3D.';
+ }
+});
+window.__milovicePhotoSurvey=photoSurvey;
 
 function nextBuilding(){
  if(currentFace)saveFace();

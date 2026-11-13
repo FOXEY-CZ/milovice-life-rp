@@ -1,6 +1,7 @@
-// Milovice RP 5.10: deterministic facade-to-geometry contract.
+// Milovice RP 5.11: deterministic facade-to-geometry contract, including local photo annotation.
 // Nothing is inferred from external photographs. Only explicitly verified
 // numeric details for an individually documented side can change the model.
+import {validatePhotoOpenings} from './photo-survey.js';
 const DIRECTIONS=['N','E','S','W'];
 const HEX=/^#[0-9a-f]{6}$/i;
 const allowed=(s)=>{try{const v=new URL(s);return ['http:','https:'].includes(v.protocol)&&!!v.hostname}catch{return false}};
@@ -11,8 +12,12 @@ const number=(v,min,max)=>{
 };
 export function normalizeFacadeLayout(raw){
  if(!raw||typeof raw!=='object'||raw.status!=='seen'||
-   typeof raw.source!=='string'||raw.source.length>2048||!allowed(raw.source)||
    typeof raw.notes!=='string'||!raw.notes.trim())return null;
+ const trustedUrl=typeof raw.source==='string'&&raw.source.length<=2048&&allowed(raw.source);
+ const proof=raw.photoEvidence;
+ const trustedLocal=proof?.kind==='local-owned-photo'&&proof.rightsConfirmed===true&&
+  typeof proof.sha256==='string'&&/^[a-f0-9]{64}$/.test(proof.sha256);
+ if(!trustedUrl&&!trustedLocal)return null;
  const v=raw.layout;
  if(!v||typeof v!=='object')return null;
  // Explicit floor-by-floor visible window counts. "0" means no windows.
@@ -31,9 +36,13 @@ export function normalizeFacadeLayout(raw){
  const doorAt=['auto','none','left','center','right'].includes(v.doorAt)?v.doorAt:null;
  const wallColor=typeof v.wallColor==='string'&&HEX.test(v.wallColor)?v.wallColor.toLowerCase():null;
  const shutters=v.shutters==='yes'?true:v.shutters==='no'?false:null;
- if(rows===null&&windowWidth===null&&windowHeight===null&&doorAt===null&&doorWidth===null&&wallColor===null&&shutters===null)return null;
+ const openings= v.photoConfirmed===true?validatePhotoOpenings(v.openings):null;
+ const approvedOpenings=openings?.length?openings:null;
+ if(rows===null&&windowWidth===null&&windowHeight===null&&doorAt===null&&doorWidth===null&&wallColor===null&&shutters===null&&!approvedOpenings)return null;
  return {rows,windowWidth,windowHeight,doorAt,doorWidth,wallColor,shutters,
-  source:raw.source,notes:raw.notes.trim()};
+  openings:approvedOpenings,source:trustedUrl?raw.source:'',
+  photoEvidence:trustedLocal?{kind:'local-owned-photo',sha256:proof.sha256,rightsConfirmed:true}:null,
+  notes:raw.notes.trim()};
 }
 export function normalizeVerifiedFacades(raw){
  const output={};
@@ -67,6 +76,24 @@ export function selectFacadeEdges(points){
 }
 export function planFaceOpenings({length,height,levels,side=null,legacyWindows=3,autoEntrance=false}={}){
  if(!Number.isFinite(length)||length<3||!Number.isFinite(height)||height<2.5)return {windows:[],door:null};
+ // Verified photo annotations take precedence over uniform fallback windows.
+ // An image must have been manually calibrated to the FULL facade outline.
+ if(side?.openings?.length){
+  const windows=[];let door=null;
+  for(const r of side.openings){
+   const x=(r.x+r.w*.5)*length,w=r.w*length;
+   const h=r.h*height,y=(1-r.y-r.h)*height;
+   if(!Number.isFinite(x)||!Number.isFinite(w)||!Number.isFinite(y)||!Number.isFinite(h)||
+      x-w*.5<=.16||x+w*.5>=length-.16||y<-.025||y+h>height+.025)continue;
+   if(r.type==='window'&&w>=.4&&h>=.45&&h<=3.1){
+    windows.push({x,y:Math.max(0,y),w,h,floor:Math.max(0,Math.floor(y/3.05))});
+   }else if(r.type==='door'&&door===null&&w>=.72&&w<=2.4&&
+            h>=1.5&&h<=3.2&&y<=.75){
+    door={x,y:Math.max(0,y),w,h};
+   }
+  }
+  return {windows,door,photoMapped:true};
+ }
  const doorSetting=side?.doorAt;
  const hasDoor=doorSetting==='none'?false:(doorSetting&&doorSetting!=='auto'?true:autoEntrance);
  const doorWidth=Math.min(side?.doorWidth??1.21,Math.max(.76,length-1));
