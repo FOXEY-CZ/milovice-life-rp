@@ -23,6 +23,8 @@ jobs:
         run: node scripts/street-photo-block.test.mjs
       - name: Validate photo-referenced whole-street environment and OSM alignment
         run: node scripts/street-environment-pass.test.mjs
+      - name: Prevent roadside trees, lamps and fences from occupying OSM roads
+        run: node scripts/road-clearance.test.mjs
       - name: Validate permanent source-reviewed architecture and local preview overlays
         run: node scripts/architecture-manifest.test.mjs
       - name: Validate official Mapillary metadata discovery and per-street coverage
