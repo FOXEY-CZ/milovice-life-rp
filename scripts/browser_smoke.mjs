@@ -125,7 +125,7 @@ try{
  }));
  // Existing roadside vegetation must actually be replaced with imported GLB,
  // not just be a hidden loader or another spherical procedurally generated tree.
- await page.waitForFunction(()=>['ready','fallback'].includes(window.__miloviceNatureGLB?.state),
+ await page.waitForFunction(()=>['ready','fallback','idle'].includes(window.__miloviceNatureGLB?.state),
    null,{timeout:30000});
  const nature=await page.evaluate(()=>window.__miloviceNatureGLB);
  console.log('5.3.0 real tree assets:',JSON.stringify(nature));
@@ -142,8 +142,8 @@ try{
  console.log('5.3.0 mobile CC0 car successfully fetched:',JSON.stringify(mobileCar));
 
  if(!(await page.locator('#rp-model-select').locator('option[value="auto"]').innerText()).includes('PC i mobil'))throw new Error('New mobile vehicle quality mode absent');
- if(nature.state!=='ready'||nature.instances<3||nature.loaded.length<1)
-  throw new Error('Near-station GLB tree replacement did not materialize: '+JSON.stringify(nature));
+ if(!['idle','ready','fallback'].includes(nature.state)||nature.instances!==0)
+  throw new Error('5.22 deprecated random roadside GLB trees still visible: '+JSON.stringify(nature));
 
  // 5.4: parked cars come from an OSM-based road/parking layout and
  // may not occupy roads blocked to traffic or become parked buses.
