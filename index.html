@@ -442,6 +442,10 @@ function cycleCamera(){
  updateUI();
 }
 function closestDriveableCar(){
+ // When the player just stepped out of a vehicle, prefer re-entering that exact
+ // parked instance instead of an AI car that happened to pass closer.
+ const previous=trafficCars.find(c=>c.id===lastExitedVehicle?.id&&!c.driven&&c.g.visible);
+ if(previous&&Math.hypot(px-previous.g.position.x,pz-previous.g.position.z)<5.4)return previous;
  let nearest=null,best=5.4;
  for(const car of trafficCars){
   if(car.driven||!car.g.visible)continue;
