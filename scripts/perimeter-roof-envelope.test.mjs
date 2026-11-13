@@ -140,8 +140,9 @@ for(const b of osm.elements.filter(e=>e.tags?.building&&e.geometry?.length>=3)){
  }else assert(oldGap<=.101,'OSM '+b.id+' should have used safe hip');
  assert(roof.relativeAreaError<1e-4,'OSM '+b.id+' roof area mismatch');
 }
-assert.equal(core.mapped,684);
-assert(core.checked>=580,'Too many buildings bypassed the citywide safety gate');
+assert(core.mapped>=684,'Keep all original Milovice buildings');
+assert(core.checked>=core.mapped*.85,
+ 'Too many buildings bypassed the citywide safety gate');
 assert(core.perimeterSafe>30,'The city audit must cover multiple unsafe hips');
 results.citywide=core;
 console.log('Roof System 3.1 perimeter QA PASS',JSON.stringify(results));
