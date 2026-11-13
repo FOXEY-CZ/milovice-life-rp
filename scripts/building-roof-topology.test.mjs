@@ -56,16 +56,31 @@ assert(skew.ok&&!skew.partitionable&&skew.geometryOnly,
  'A distorted OSM quadrilateral must be safely rejected, never forced into a fake rectangle');
 const bow=[p(0,0),p(10,10),p(10,0),p(0,10)];
 assert(!planBuildingRoofTopology(bow).ok,'Self-intersections are invalid');
-const approved=planBuildingRoofTopology(L,{roofProfile:{
+const profile={
  approved:true,source:'https://commons.wikimedia.org/wiki/File:Verified.jpg',
- parts:[{kind:'hip'},{kind:'gable'}]
-}});
+ parts:[{id:'mass-1',kind:'hip',rise:1.8},
+  {id:'mass-2',kind:'gable',rise:1.4}],
+ joins:[{from:'mass-1',to:'mass-2',kind:'valley'}]
+};
+const approved=planBuildingRoofTopology(L,{roofProfile:profile});
 assert(approved.ok&&approved.partitionable&&approved.topologyApproved);
+assert(approved.needsMeshAssembly);
 assert.deepEqual(approved.volumes.map(v=>v.proposedRoofKind),['hip','gable']);
-const unapproved=planBuildingRoofTopology(L,{roofProfile:{
- approved:false,source:'https://commons.wikimedia.org/wiki/File:Verified.jpg',
- parts:[{kind:'hip'},{kind:'gable'}]
+assert.equal(approved.junctions[0].approvedConnection,'valley');
+const incomplete=planBuildingRoofTopology(L,{roofProfile:{...profile,joins:[]}});
+assert(!incomplete.topologyApproved&&incomplete.geometryOnly);
+assert.equal(incomplete.missingJunctionPlans,1);
+assert.equal(incomplete.junctions[0].approvedConnection,null);
+const invalidJoin=planBuildingRoofTopology(L,{roofProfile:{
+ ...profile,joins:[{from:'mass-1',to:'mass-2',kind:'imaginary'}]
 }});
+assert(!invalidJoin.topologyApproved);
+const wrongMasses=planBuildingRoofTopology(L,{roofProfile:{
+ ...profile,parts:[{id:'mass-2',kind:'hip',rise:1.8},
+  {id:'mass-1',kind:'gable',rise:1.4}]
+}});
+assert(!wrongMasses.topologyApproved,'Do not swap two unique photographed roof masses');
+const unapproved=planBuildingRoofTopology(L,{roofProfile:{...profile,approved:false}});
 assert(!unapproved.topologyApproved,'Unreviewed metadata is not trusted');
 const osm=JSON.parse(readFileSync(new URL('../data/milovice-osm.json',import.meta.url),'utf8'));
 const buildings=osm.elements.filter(x=>x.tags?.building&&x.geometry?.length>=3);
