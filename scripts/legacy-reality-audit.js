@@ -42,7 +42,7 @@ export function makeRetrospectiveAuditTracker(){
   verifiedFootprintsInsideZone:0,removedLegacy3DLabels:0,removedRandomStreetProps:0,
   suppressedDoors:0,suppressedShutters:0,suppressedBalconies:0,
   suppressedVents:0,suppressedChimneys:0,suppressedCommerceAwnings:0,
-  suppressedGarageDoors:0};
+  suppressedGarageDoors:0,suppressedUnverifiedTrees:0};
  const inspectedIds=new Set();
  function building(id,x,z){
   const zone=auditZoneAt(x,z);
@@ -64,5 +64,9 @@ export function makeRetrospectiveAuditTracker(){
   globalGuessedStreetFurnitureDisabled:true,unreviewedWorldBuildingDetailsRemain:true,
   ...counts
  }}
- return {building,suppressed,summary};
+ function reset(){
+  for(const key of Object.keys(counts))counts[key]=0;
+  inspectedIds.clear();
+ }
+ return {building,suppressed,summary,reset};
 }
