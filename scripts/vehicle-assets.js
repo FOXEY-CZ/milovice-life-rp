@@ -97,7 +97,7 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
   states.set(key,'loading');activeKey=key;publish('🚘 Načítám '+spec.name+' (CC0)…');
   const task=loader.loadAsync(spec.uri).then(result=>{
    const scene=normalize(result.scene,spec);
-   scenes.set(key,scene);states.set(key,'ready');activeKey=key;
+   scenes.set(key,scene);states.set(key,'ready');activeKey=key;lastUpdate=-1; // force next frame to attach freshly loaded mesh
    publish('🚘 Model '+spec.name+' je připraven.');
    return scene;
   }).catch(err=>{
