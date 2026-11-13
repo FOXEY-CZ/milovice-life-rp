@@ -71,3 +71,10 @@ assert(!currentStationPage.includes('installCanopyBraces('));
 assert(!currentStationPage.includes("archPart('stationPaving',r.mx+nx*2.65"));
 assert(currentStationPage.includes("stationBoard('Milovice'"));
 assert(currentStationPage.includes('stationPassagePortals'));
+
+// 5.28.2b: The station-specific gable builder was removed to fix giant
+// overhanging roofs. Penny's retail roof must never call that deleted function.
+const pennyHTML=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+assert(!pennyHTML.includes('stationGabledRoof('),
+ 'Deleted stationGabledRoof builder referenced by a non-station supermarket');
+assert(pennyHTML.includes("tags.name==='Penny'&&tags.shop==='supermarket'?miloviceGableRoof("));
