@@ -24,8 +24,8 @@ try{
     !gfx.surfaceMaterials||Object.values(gfx.surfaceMaterials).some(v=>v!==true))
   throw new Error('Graphics 2.0 materials did not initialize correctly: '+JSON.stringify(gfx));
  console.log('5.2.0 shared city surfaces:',JSON.stringify(gfx.surfaceMaterials));
- if(!(await page.locator('#build-label').innerText()).includes('vehicles-534'))
-  throw new Error('5.3.0 build identifier missing');
+ if(!(await page.locator('#build-label').innerText()).includes('traffic-540'))
+  throw new Error('5.4.0 vehicle update build identifier missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
     !(sidewalkCheck.separatedSidewalks>15))
@@ -75,6 +75,16 @@ try{
  if(nature.state!=='ready'||nature.instances<3||nature.loaded.length<1)
   throw new Error('Near-station GLB tree replacement did not materialize: '+JSON.stringify(nature));
 
+ // 5.4: parked cars come from an OSM-based road/parking layout and
+ // may not occupy roads blocked to traffic or become parked buses.
+ const parking=await page.evaluate(()=>window.__miloviceParkingDebug||null);
+ if(!parking||parking.parked<7||parking.distinctTypes.length<4||
+     !Array.isArray(parking.cars)||parking.cars.length!==parking.parked)
+  throw new Error('5.4.0 missing varied parked vehicles in the old town: '+JSON.stringify(parking));
+ console.log('5.4.0 OSM roadside parking:',JSON.stringify(parking));
+ await page.waitForFunction(()=>window.__miloviceVehicleDebug?.wheelSpinMeters>0,null,{timeout:18000});
+ const wheels=await page.evaluate(()=>window.__miloviceVehicleDebug);
+ console.log('5.4.0 moving car and bus wheel rotation:',JSON.stringify(wheels));
  const landmarkChecks=await page.evaluate(()=>window.__miloviceLandmarkDebug||{});
  console.log('Landmark geometry:',JSON.stringify(landmarkChecks));
  if(landmarkChecks.stationPassageFaces!==2)throw new Error('Milovice station does not have two opposing real open passage portals: '+JSON.stringify(landmarkChecks));
@@ -113,6 +123,25 @@ try{
  await page.locator('[data-spawn="sedan"]').click();
  if(!(await page.locator('#mode').innerText()).includes('Řidič auta'))throw new Error('Car spawn did not work');
  if(await page.locator('#doors').isVisible())throw new Error('Bus-only door button visible during car free roam');
+ // Regression: exiting a sedan must never transform it into an unrelated bus.
+ // A vehicle must keep its stable identity and unique 3D appearance.
+ await page.waitForTimeout(550);
+ const chosenCar=await page.evaluate(()=>window.__miloviceVehicleDebug?.activeCarId);
+ if(!(chosenCar>0))throw new Error('Selected car does not have a stable ID: '+chosenCar);
+ await page.locator('#enter').click();
+ await page.waitForFunction(()=>window.__miloviceVehicleDebug?.activeCarId===null&&
+    window.__miloviceVehicleDebug?.lastExitedVehicle?.id>0,null,{timeout:6000});
+ const exited=await page.evaluate(()=>window.__miloviceVehicleDebug);
+ const busSeparation=Math.hypot(exited.bus.x-exited.lastExitedVehicle.x,exited.bus.z-exited.lastExitedVehicle.z);
+ if(!exited.busAtPark||exited.lastExitedVehicle.id!==chosenCar||busSeparation<6)
+  throw new Error('5.4.0 car became a bus after exit: '+JSON.stringify({chosenCar,exited,busSeparation}));
+ console.log('5.4.0 car retained identity after exit; separate bus still parked:',JSON.stringify({
+  id:chosenCar,busSeparation,parked:exited.parked
+ }));
+ await page.screenshot({path:'browser-artifacts/milovice-car-exit-preserved.png'});
+ await page.locator('#enter').click();
+ await page.waitForFunction((id)=>window.__miloviceVehicleDebug?.activeCarId===id,chosenCar,{timeout:6000});
+
  await page.locator('#rp-vehicles').click();
  await page.locator('#rp-model-select').selectOption('on');
  await page.locator('#rp-spawn-close').click();
