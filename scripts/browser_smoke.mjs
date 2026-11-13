@@ -103,7 +103,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('remove-false-side-canopy-5273'))
+ if(!(await page.locator('#build-label').innerText()).includes('roadside-paving-cleanup-5274'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -363,6 +363,15 @@ try{
   throw new Error('Newly loaded Mladá region did not add parked cars: '+JSON.stringify(regionalParking));
  console.log('5.4.1 Mladá parked traffic:',JSON.stringify(regionalParking));
  if(mladaStats?.landscape<5)throw new Error('Missing mapped Mladá parks/forest/grass: '+JSON.stringify(mladaStats));
+ const roadside=await page.evaluate(()=>({streets:window.__miloviceStreetGeometryAudit,
+  commerce:window.__miloviceCommerceReality}));
+ if(!roadside.streets?.residentialInventedEdgeLinesDisabled||
+    !roadside.commerce?.inventedRetailPadsRemoved||
+    !roadside.commerce?.inventedRetailBikeStandsRemoved||
+    roadside.commerce.actualPavingPadsSpawned!==0||
+    roadside.commerce.speculativeBikeStandsSpawned!==0)
+  throw new Error('5.27.4 fabricated retail asphalt/pavement or residential edge paint still present: '+JSON.stringify(roadside));
+ console.log('5.27.4 no false supermarket forecourts or residential edge markings:',JSON.stringify(roadside));
  const commerce=await page.evaluate(()=>window.__miloviceCommerceDebug);
  console.log('5.1.2 surveyed shop storefronts:',JSON.stringify(commerce));
  if(!commerce?.names?.some(n=>n==='Billa')||!commerce.names.includes('Tesco')||!commerce.names.includes('Penny'))
