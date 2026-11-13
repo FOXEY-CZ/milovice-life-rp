@@ -103,7 +103,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('station-facade-sign-5283'))
+ if(!(await page.locator('#build-label').innerText()).includes('city-roof-system-5284'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -206,6 +206,18 @@ try{
     landmarkChecks.stationPassageAudit.splitWallOpeningEdges<5||
     Math.abs(landmarkChecks.stationPavingAxisS-landmarkChecks.stationPassageAudit.s)>.02)
   throw new Error('5.26 station entrance is not aligned with mapped footway: '+JSON.stringify(landmarkChecks.stationPassageAudit));
+ const cityRoof=await page.evaluate(()=>window.__miloviceCityRoofAudit||null);
+ if(!cityRoof||cityRoof.version!=='5.28.4'||cityRoof.buildings<8||
+    cityRoof.inverseFanRemoved!==true||
+    cityRoof.maxFootprintOvershoot!==0||cityRoof.areaErrors>1e-4||
+    cityRoof.hip+cityRoof.gable!==cityRoof.buildings)
+  throw new Error('5.28.4 citywide roof polygons still have inverted/floating faces: '+JSON.stringify(cityRoof));
+ const houseDetails=await page.evaluate(()=>window.__miloviceHeroArchitecture||null);
+ if(!houseDetails||!Number.isFinite(houseDetails.suppressedArbitraryChimneys)||
+    !Number.isFinite(houseDetails.skippedUnverifiedGables))
+  throw new Error('Hero houses still generate imaginary index-based chimneys or misaligned gables: '+JSON.stringify(houseDetails));
+ console.log('5.28.4 roof generation across all city houses:',JSON.stringify({cityRoof,
+  suppressedArbitraryChimneys:houseDetails.suppressedArbitraryChimneys}));
  const roofVisual=await page.evaluate(()=>window.__miloviceStationRoofGeometry||null);
  if(roofVisual?.sections?.length!==3||roofVisual.mode!=='footprint-constrained'||
     !roofVisual.axisShared||roofVisual.source!=='OSM 53865956'||
@@ -235,6 +247,17 @@ try{
   await page.waitForFunction(name=>window.__miloviceRoofAuditRendered===name,
    view,{timeout:12000});
   await page.screenshot({path:'browser-artifacts/station-roof-'+view+'.png'});
+ }
+ // Photograph both real 2024 house reference views (not just station).
+ // These caught flying inverted black dormer roofs in the user's screenshot.
+ for(const view of ['house-skolska','house-mirova36']){
+  await page.evaluate(name=>{
+   window.__miloviceRoofAuditView=name;
+   window.__miloviceRoofAuditRendered=null;
+  },view);
+  await page.waitForFunction(name=>window.__miloviceRoofAuditRendered===name,
+   view,{timeout:12000});
+  await page.screenshot({path:'browser-artifacts/review-'+view+'-roof.png'});
  }
  await page.evaluate(()=>window.__miloviceRoofAuditView=null);
  await page.locator('#rp-vehicles').click();
