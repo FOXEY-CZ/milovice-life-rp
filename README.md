@@ -1,3 +1,19 @@
+## Milovice RP 5.32.0 — AUTOMATICKÁ OCHRANA VŠECH DALŠÍCH STŘECH (Part 9)
+
+Podnět: pět hráčských screenshotů ukázalo, že Školská 220/1 stále měla výrazné černé střešní klíny a svislé mezery. Oprava jednoho konkrétního domu by neřešila další budovy.
+
+- **Společný předletový geometrický test:** před vykreslením KAŽDÉ sedlové/valbové střechy se přezkouší výškový rozdíl mezi jejím plánovaným okapem a skutečným polygonálním OSM obvodem. Obdélníkový generátor s výrazným rozdílem není povolen.
+- **Bezpečná náhradní geometrie:** nepravidelný valbový půdorys s rozdílem nad 10 cm přejde na adaptivní střechu, jejíž okap sleduje přesně skutečné zdi a jejíž střešní trojúhelníky jsou v hranicích budovy. Opakované výškové body sdílejí stejnou hodnotu a nemohou vytvořit škvíru na společných hranách. Dílky jsou omezené geometrickým rozpočtem. Pokud ani náhradní model nelze bezpečně sestavit, ponechá se jednoduchý plochý model místo nedoloženého pokrouceného.
+- **Jednotné okapy a stěny:** sdílené geometrické funkce u nepravidelných střech používají výšku skutečného obvodu místo výšky hypotetického obdélníku. Odstraňují tak velké falešné trojúhelníkové nástavby. Okapové pásy se kontrolují na obrácené/self-intersecting plochy; je-li geometrie chybná, nevykreslí se vadný přesah.
+- **Vikýře:** napojení zezadu používá výšku skutečné vykreslované hlavní střechy; už ji nevypočítává podle staré nesouvisející roviny.
+- **Regresní brána:** `scripts/perimeter-roof-envelope.test.mjs` kontroluje obdélníky, L/T/U tvary, zkosené domy, obrácené pořadí a otočení bodů, reálných 7 hran Školské 220/1 i kompletní inventář **684 OSM budov** (nedostatečné/chybné půdorysy se výslovně evidují). GitHub Actions test nepustí zelený build, pokud se znovu objeví visící okap nebo nespárovaná výška sousedních trojúhelníků.
+- **Měřitelná diagnostika:** `window.__miloviceCityRoofAudit.perimeterSafeFallbacks` počítá přepnuté budovy; `maxRejectedEaveGap` původní rozdíl, `maxRenderedEaveError` maximální zbývající rozdíl.
+- **Zachovaný výkon:** bezpečná náhradní střecha se generuje jen jednou na objekt, bez výpočtu v každém snímku, a má omezený počet dílků.
+
+**Důležité:** Geometricky čistá střecha není zaručeně skutečný historický tvar. Fotografie/3D podklady jsou nadále potřeba pro individuální správné hřebeny, úžlabí a vikýře. Model nádraží zůstává samostatný a nezměněný; tato oprava řeší obecné domy. Reálná vizuální kontrola telefonu a FPS po vydání je stále nutná.
+
+---
+
 ## Milovice RP 5.31.1 — střešní obálka bez dvojitých ploch (Part 9)
 
 - **Opravená hlavní chyba všech běžných střech:** hra dříve po vytvoření sedlové/valbové střechy přidala také druhou rovnou desku na úroveň okapu. Výsledkem byly průniky, tmavé klíny, překryté spodní části střech a pohledově obrácené plochy. Rovná střecha se teď vytvoří **jen pokud nevznikla žádná šikmá**; dům má právě jednu hlavní střešní plochu.
