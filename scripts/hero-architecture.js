@@ -3,7 +3,7 @@
 // approximation and not a surveyed record of each individual house.
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {selectFacadeEdges,planFaceOpenings} from './facade-model.js';
-import {dominantRoofAxis} from './city-roof-geometry.js';
+import {analyzeGableFootprint} from './city-roof-geometry.js';
 
 export function makeMiloviceHeroArchitecture(THREE,{
   sites=[],radius=240,maxBuildings=68,terrainAt=()=>0
@@ -198,22 +198,17 @@ export function makeMiloviceHeroArchitecture(THREE,{
   // cadastral polygons — they were plainly visible as floating dark spikes.
   // The new roof generator uses dominantRoofAxis on this same footprint.
   const roofKind=override?.roofKind||'auto';
-  if(pts.length===4&&roofKind!=='hip'&&roofKind!=='flat'){
-   const axis=dominantRoofAxis(pts);
-   const segments=pts.map((a,i)=>{
-    const b=pts[(i+1)%pts.length],len=a.distanceTo(b);
-    const dx=b.x-a.x,dz=b.y-a.y;
-    return {a,b,len,across:axis?Math.abs((dx*axis.ax+dz*axis.az)/(len||1)):1};
-   });
-   const ends=segments.filter(e=>e.len>=2.2&&e.len<=65&&e.across<.15);
-   if(ends.length===2){
-    const rise=Math.min(3.2,Math.min(...segments.map(x=>x.len))*.32);
-    for(const end of ends)
-     chunk.walls.push(triangleGeometry(end.a,end.b,base,height,rise,tone));
-    state.gables+=2;
-   }else state.skippedUnverifiedGables++;
-  }
-  // No fake chimney every third building. Rooftop accessories must be
+ const gable=roofKind==='hip'||roofKind==='flat'?null:
+  analyzeGableFootprint(pts,{allowSquare:roofKind==='gable'});
+ if(gable){
+  const rise=Math.min(3.2,gable.width*.32);
+  for(const i of gable.endIndices)
+   chunk.walls.push(triangleGeometry(pts[i],pts[(i+1)%4],base,height,rise,tone));
+  state.gables+=2;
+ }else if(pts.length===4&&roofKind!=='hip'&&roofKind!=='flat'){
+  state.skippedUnverifiedGables++;
+ }
+ // No fake chimney every third building. Rooftop accessories must be
   // supplied by an individual surveyed/photo-verified house model.
   if(index%3===0)state.suppressedArbitraryChimneys++;
   state.buildings++;publish();return true;

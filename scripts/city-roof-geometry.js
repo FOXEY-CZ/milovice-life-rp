@@ -1,4 +1,4 @@
-// Milovice RP v5.28.4 — shared, deterministic roof geometry for OSM houses.
+// Milovice RP v5.28.5 — shared, deterministic roof geometry for OSM houses.
 // The former generic hip generator made a cone-like fan to an arbitrary
 // vertex-average; the former 4-point gable assumed OSM corners were ordered
 // a particular way. Both could turn roof planes inside-out on rotated sites.
@@ -41,6 +41,47 @@ export function dominantRoofAxis(footprint){
  const same=Math.abs(principal.ax*maxEdge.ax+principal.az*maxEdge.az);
  return same>.94?maxEdge:principal;
 }
+
+/**
+ * Four OSM corners do not guarantee a rectangular building. Never generate
+ * auto gables on skewed quadrilaterals: the roof and end-wall wedges must
+ * agree on the same two measured-looking perpendicular facade edges.
+ * Verified gables may be square, but still require rectangular walls.
+ */
+export function analyzeGableFootprint(footprint,{allowSquare=false}={}){
+ if(!Array.isArray(footprint)||footprint.length<4)return null;
+ const pts=footprint.map(coord);
+ if(pts.length===5&&Math.hypot(pts[0].x-pts[4].x,
+  pts[0].z-pts[4].z)<.05)pts.pop();
+ if(pts.length!==4||pts.some(p=>!Number.isFinite(p.x)||!Number.isFinite(p.z)))return null;
+ const edges=pts.map((a,i)=>{
+  const b=pts[(i+1)%4],dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz);
+  return {len,ux:dx/len,uz:dz/len};
+ });
+ if(edges.some(e=>!Number.isFinite(e.len)||e.len<2.2||e.len>65))return null;
+ for(let i=0;i<4;i++){
+  const a=edges[i],b=edges[(i+1)%4];
+  if(Math.abs(a.ux*b.ux+a.uz*b.uz)>.17)return null;
+ }
+ for(let i=0;i<2;i++){
+  const a=edges[i],b=edges[i+2];
+  if(Math.abs(a.ux*b.ux+a.uz*b.uz)<.985||
+   Math.abs(a.len-b.len)/Math.max(a.len,b.len)>.18)return null;
+ }
+ const sideA=(edges[0].len+edges[2].len)*.5;
+ const sideB=(edges[1].len+edges[3].len)*.5;
+ const aspect=Math.max(sideA,sideB)/Math.min(sideA,sideB);
+ if(!allowSquare&&aspect<1.18)return null;
+ const axis=dominantRoofAxis(pts);
+ if(!axis)return null;
+ const endIndices=edges.map((e,i)=>({i,
+  parallel:Math.abs(e.ux*axis.ax+e.uz*axis.az)}))
+  .filter(e=>e.parallel<.17).map(e=>e.i);
+ if(endIndices.length!==2||(endIndices[0]+2)%4!==endIndices[1])return null;
+ return {axis,endIndices,length:Math.max(sideA,sideB),
+  width:Math.min(sideA,sideB),aspect};
+}
+
 export function planCityBuildingRoof({footprint,triangles,baseY,rise,
  kind='hip'}={}){
  const axis=dominantRoofAxis(footprint);

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {dominantRoofAxis,planCityBuildingRoof} from './city-roof-geometry.js';
+import {dominantRoofAxis,planCityBuildingRoof,analyzeGableFootprint} from './city-roof-geometry.js';
 import {planDormerRoofSlopes} from './street-photo-block.js';
 
 const p=(x,z)=>({x,z});
@@ -32,6 +32,15 @@ function check(input,kind){
  return plan;
 }
 const rect=rectangle(18,8),norm=dominantRoofAxis(rect.outline);
+assert.equal(analyzeGableFootprint(rect.outline).endIndices.length,2);
+assert.equal(analyzeGableFootprint(rect.outline).width,8);
+assert.equal(analyzeGableFootprint([...rect.outline,rect.outline[0]]).length,18);
+assert.equal(analyzeGableFootprint(rect.outline.slice().reverse()).endIndices.length,2);
+assert.equal(analyzeGableFootprint([p(0,0),p(14,0),p(16,8),p(2,8)]),null);
+assert.equal(analyzeGableFootprint([p(0,0),p(14,0),p(11,8),p(1,8)]),null);
+assert.equal(analyzeGableFootprint(rectangle(9,8).outline),null);
+assert.equal(analyzeGableFootprint(rectangle(9,8).outline,{allowSquare:true}).endIndices.length,2);
+assert.equal(analyzeGableFootprint([p(0,0),p(12,0),p(12,4),p(6,4),p(6,9),p(0,9)]),null);
 assert(Math.abs(norm.ax-1)<1e-6&&Math.abs(norm.az)<1e-6);
 check(rect,'gable');check(rect,'hip');
 const reverse={outline:rect.outline.slice().reverse(),
@@ -45,6 +54,7 @@ const angle=Math.PI*.38,rot=p=>({
 const diagonal={outline:rect.outline.map(rot),triangles:rect.triangles.map(t=>t.map(rot))};
 const diaAxis=dominantRoofAxis(diagonal.outline);
 assert(Math.abs(diaAxis.ax-Math.cos(angle))<.001);
+assert.equal(analyzeGableFootprint(diagonal.outline).endIndices.length,2);
 assert(Math.abs(Math.abs(diaAxis.az)-Math.sin(angle))<.001);
 check(diagonal,'gable');check(diagonal,'hip');
 const concave={
@@ -73,9 +83,11 @@ for(const width of [2.12,2.35,2.65]){
  assert(Math.abs(yAt(right,width/2)-right.eaveY)<1e-7);
 }
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(html.includes("import {planCityBuildingRoof} from './scripts/city-roof-geometry.js"));
+assert(html.includes("import {planCityBuildingRoof,analyzeGableFootprint} from './scripts/city-roof-geometry.js"));
 assert(html.includes('return miloviceRoofOfKind(pts,base,h,material,rise,\'hip\')'));
 assert(html.includes('const data=planCityBuildingRoof({footprint:pts,triangles,'));
+assert(html.includes('baseY:base+h+.012,rise,kind}'));
+assert(html.includes("const fallbackFromGable=roofPreference==='gable'&&!pitched;"));
 assert(!html.includes('vertices.push(a.x,base+h+.07,a.y,b.x,base+h+.07,b.y,cx,base+h+rise,cz)'));
 const blocks=readFileSync(new URL('./street-photo-block.js',import.meta.url),'utf8');
 assert(!blocks.includes('sign*w*.25,1.90,0,0,0,sign*.63'));

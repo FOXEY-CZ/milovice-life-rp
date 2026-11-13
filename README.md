@@ -1,3 +1,14 @@
+## Milovice RP 5.28.5 — PŘESNĚJŠÍ STŘECHY A LEPŠÍ VÝKON (PART 8)
+
+- **Sedlové střechy se nepřidávají na falešně obdélníkové domy.** Kontroluje se pravoúhlost, délky a rovnoběžnost stěn i orientace hřebene. Nepravidelné čtyřúhelníky dostanou bezpečnější valbu či jednoduchou střechu.
+- **Střecha a štít používají stejnou geometrickou kontrolu**, takže nepodpírané trojúhelníkové štíty už nevzniknou pouze z počtu čtyř OSM vrcholů.
+- **Napojení střech na fasády:** u běžných sedlových a valbových střech snížen původní odstup od horní hrany z 6,5 cm na 1,2 cm. Proti z-fightingu zůstává malá rezerva.
+- **Výkon:** šetří se zbytečné alokace 3D geometrie rovné střechy, která se při vykreslení sedlové/valbové vůbec nepoužila.
+- **Regresní testy:** pravoúhlé a otočené domy, prohozené pořadí OSM bodů, kosodélníky, lichoběžníky, téměř čtvercové a členité půdorysy.
+- Oprava geometrie **neznamená, že fasády nebo skutečné střechy už odpovídají fotkám**. Stále platí [plán postupné přestavby všech 684 budov základní mapy](docs/building-rebuild-program.md).
+
+---
+
 ## Milovice RP 5.28.4 — GLOBÁLNÍ OPRAVA STŘECH + PLÁN PŘESTAVBY VŠECH BUDOV
 
 - **Všechny běžné sedlové a valbové střechy** prošly na nový generátor založený na skutečném OSM půdorysu. Hřeben se orientuje podle skutečných stěn, plochy nemohou přesahovat za půdorys a nesmějí vznikat náhodné invertované černé trojúhelníky. Konkrétní reálný sklon bez fotky ale stále neznáme.
