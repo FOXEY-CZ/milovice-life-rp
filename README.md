@@ -1,3 +1,10 @@
+## Milovice RP 5.27.1 — fotorealističtější střecha nádraží
+
+- Střecha **nádražní budovy** má nyní červenou taškovou texturu a matný materiál, nikoli plechové pásy. Barevný a materiálový podklad: [fotografie výpravní budovy ŠJů](https://stellwerke.info/stw/stw.php?id=22402).
+- Ocelové **zastřešení nástupiště** zůstává zelené a oddělené. Textura je již existující původní herní grafika, ne kopie fotografie, a nepřidává GPU texturu navíc.
+
+---
+
 ## Milovice RP 5.27.0 — skutečná pěší osa skrz nádraží (13. 11. 2026)
 
 - **Zásadní oprava vstupu:** našli jsme opomíjenou OSM cestu **1550920096** vedoucí přímo mezi oběma stranami nádražní budovy, navázanou na venkovní cestu **549346217**. Průchod se neodsouvá o ~2 m jen proto, aby se vešel do jedné části fasády. Správně se rozdělí stěny i přes jejich společné rohy.
