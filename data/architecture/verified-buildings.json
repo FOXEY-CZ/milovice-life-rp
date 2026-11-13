@@ -6,11 +6,11 @@
     "118487980": {
       "stage": "verified",
       "source": "https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_1.jpg",
-      "notes": "Photo 2024-05-30 Školská 220/1: cream single full masonry wall storey with dark pitched roof and two prominent roof-integrated arched front gables; usable attic is the second mapped OSM level, NOT a second full-height facade. Indicative eave-wall height 3.75 m is modelled from photograph, NOT surveyed. Actual roof geometry and opening coordinates require multi-view validation.",
+      "notes": "Photo 2024-05-30 Školská 220/1: cream single full masonry wall storey with dark pitched roof and two prominent roof-integrated arched front gables; usable attic is the second mapped OSM level, NOT a second full-height facade. Indicative eave-wall height 3.75 m is modelled from photograph, NOT surveyed. Actual roof geometry and opening coordinates require multi-view validation. Main roof uses a bounded hip approximation under two original cross-gable bays; the roof is deliberately not an unsupported four-corner gable.",
       "floors": "2",
       "facadeColor": "#e2d0b4",
       "roofColor": "#404348",
-      "roofKind": "gable",
+      "roofKind": "hip",
       "review": {
         "approved": true,
         "reviewer": "Milovice RP — manual Commons visual comparison",
