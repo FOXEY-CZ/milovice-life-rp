@@ -1,3 +1,4 @@
+import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
 import {REAL_PLATFORM_CANOPY_REFERENCE,planPhotoPlatformCanopy} from './station-platform-reality.js';
 
@@ -25,3 +26,10 @@ const canopyLength=p.boxes.find(b=>b.kind==='stationCanopyGreen').w;
 assert(canopyLength>10&&canopyLength<=23);
 assert.equal(p.boxes.some(b=>b.kind==='stationTimber'),false);
 console.log('5.25 station photo canopy validated',JSON.stringify({roofRibs:p.ribCount,posts:p.posts,braceInstances:p.braces.length,boxParts:p.boxes.length,drawTypes:5,span:canopyLength}));
+
+// v5.27.1: the photographic station building has RED ROOF TILES, while the
+// separate platform canopy remains dark-green steel from 2025 Commons images.
+const stationHtml=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+assert(stationHtml.includes('const stationRoofMaterial=new THREE.MeshStandardMaterial({color:0xffffff,map:roofTileMap'));
+assert(!stationHtml.includes('stationRoofMaterial=new THREE.MeshStandardMaterial({color:0xffffff,map:citySurfaceKit.standingSeam'));
+assert(stationHtml.includes("stationRoofSurface='red-tile-photo-informed'"));
