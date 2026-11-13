@@ -48,8 +48,13 @@ export function planPhotoRoofFeatures(id,pts){
    // These 3D specs are ORIGINAL wall-relative coordinates, not a second
    // separately guessed coordinate frame for the roof hole.
    cx:edge.mx,cz:edge.mz,nx:edge.nx,nz:edge.nz,
-   width:spec.width+.27,depth:spec.depth+.04,
-   front:.39,padding:.045,rearPadding:.07,
+   // Cut ONLY the interior footprint, not the entire external facade.
+   // Previously width exceeded the dormer wall by 36 cm and the depth
+   // was longer than its wall, leaving actual SKY slits beside both gables.
+   // The eave must slightly OVERLAP opaque dormer masonry at both cheeks
+   // and behind it. The front clip still clears the real window face.
+   width:spec.width-.14,depth:spec.depth-.20,
+   front:.08,padding:0,rearPadding:0,
    source:profile.evidence
   };
  });
