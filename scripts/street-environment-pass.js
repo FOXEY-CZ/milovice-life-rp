@@ -53,7 +53,12 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
   stone:new THREE.MeshLambertMaterial({color:0xc8c2b3}),
   pole:new THREE.MeshLambertMaterial({color:0x79614e}),
   fence:new THREE.MeshLambertMaterial({color:0x5a4d43}),
-  roadSign:new THREE.MeshBasicMaterial({color:0x4a3327})
+  roadSign:new THREE.MeshBasicMaterial({color:0x4a3327}),
+  pavement:new THREE.MeshLambertMaterial({color:0xb9b6a9}),
+  pavementAlt:new THREE.MeshLambertMaterial({color:0xa8a79f}),
+  curb:new THREE.MeshLambertMaterial({color:0xd1cec1}),
+  drainage:new THREE.MeshLambertMaterial({color:0x4c5556}),
+  mortar:new THREE.MeshLambertMaterial({color:0x968e82})
  };
  const geometries={
   box:new THREE.BoxGeometry(1,1,1),
@@ -65,9 +70,11 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
   wire:new THREE.CylinderGeometry(.015,.015,1,4)
  };
  let drawMeshes=0,instances=0,featureCount=0;
+ let pavementPieces=0,roadRejected=0;
  const emptyStats=()=>({sources:PHOTO_STREET_ENVIRONMENT.length,sceneCount:entries.size,
   minRoadClearance:data.length?Math.min(...data.map(v=>v.minimumRoadClearance)):null,
   chosenSides:data.map(v=>v.sideSign),
+  pavementPieces,roadRejected,
   drawMeshes,instances,featureCount,ids:[...entries],spatiallyApproximate:true,
   scope:'Photo-informed street environments, not exact surveyed positions'});
  function report(){if(typeof window!=='undefined')window.__miloviceStreetEnvironment=emptyStats()}
@@ -93,6 +100,45 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
  function itemAt(anchor,along,sideDistance,y,sx=1,sy=1,sz=1,ry=0){
   const p=placeOnRoad(anchor,along,sideDistance);
   return {x:p.x,y:terrainAt(p.x,p.z)+y,z:p.z,sx,sy,sz,ry};
+ }
+ // Original modular street paving. These are visual surface details, not a
+ // claim that every 2014 paving slab survives today. The road clearance
+ // prevents slabs from painting over ANY mapped traffic lane or footpath.
+ function paving(group,anchor,side){
+  const stones=[],alternating=[],curbs=[],grates=[];
+  const angle=Math.atan2(-anchor.uz,anchor.ux),out=Math.sign(side);
+  const onSafeGround=(along,offset,radius=.5)=>{
+   const p=placeOnRoad(anchor,along,offset);
+   const safe=!roadClearance||roadClearance.isClear(p.x,p.z,radius,.14);
+   if(!safe)roadRejected++;
+   return safe;
+  };
+  // The paving strip begins outside the actual 5. května carriageway,
+  // and never replaces the mapped road surface or mapped pedestrian path.
+  for(let i=0;i<52;i++){
+   const along=-32+i*1.2;
+   for(let j=0;j<2;j++){
+    const offset=side+out*(.3+j*.84);
+    if(!onSafeGround(along,offset,.44))continue;
+    const item=itemAt(anchor,along,offset,.025,1.15,.045,.77,angle);
+    ((i+j)%4===0?alternating:stones).push(item);pavementPieces++;
+   }
+   const edge=side-out*1.28;
+   if(onSafeGround(along,edge,.2)){
+    curbs.push(itemAt(anchor,along,edge,.11,1.18,.22,.21,angle));
+    pavementPieces++;
+   }
+  }
+  for(const along of [-12,18]){
+   const offset=side+out*.25;
+   if(!onSafeGround(along,offset,.52))continue;
+   grates.push(itemAt(anchor,along,offset,.06,.78,.065,.45,angle));
+  }
+  addParts(group,geometries.box,colors.pavement,stones);
+  addParts(group,geometries.box,colors.pavementAlt,alternating);
+  addParts(group,geometries.box,colors.curb,curbs);
+  addParts(group,geometries.box,colors.drainage,grates);
+  featureCount+=pavementPieces+grates.length;
  }
  function treeRow(group,anchor,side){
   // Y rotation aligns a local box X-axis with the real OSM street tangent.
@@ -217,6 +263,7 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
    root.userData.lodDetail=true;
    root.userData.photoEnvironment=true;
    root.userData.photoReference=ref.id;
+   paving(root,anchor,side);
    treeRow(root,anchor,side);
    signs(root,anchor,side);
    wallAndGate(root,anchor,side);
@@ -239,7 +286,7 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
    });
   }
   entries.clear();groups.clear();data.length=0;
-  drawMeshes=instances=featureCount=0;report();
+  drawMeshes=instances=featureCount=pavementPieces=roadRejected=0;report();
  }
  report();
  return {addFromRoads,reset,status:emptyStats,anchors:()=>data.slice()};
