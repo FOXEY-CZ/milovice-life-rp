@@ -38,7 +38,7 @@ export function nearestPhotoRoadSegment(road,latitude,longitude){
  }
  return best;
 }
-export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0}={}){
+export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClearance=null}={}){
  const entries=new Set(),groups=new Set(),data=[];
  const colors={
   bark:new THREE.MeshLambertMaterial({color:0x69503d}),
@@ -66,6 +66,8 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0}={}){
  };
  let drawMeshes=0,instances=0,featureCount=0;
  const emptyStats=()=>({sources:PHOTO_STREET_ENVIRONMENT.length,sceneCount:entries.size,
+  minRoadClearance:data.length?Math.min(...data.map(v=>v.minimumRoadClearance)):null,
+  chosenSides:data.map(v=>v.sideSign),
   drawMeshes,instances,featureCount,ids:[...entries],spatiallyApproximate:true,
   scope:'Photo-informed street environments, not exact surveyed positions'});
  function report(){if(typeof window!=='undefined')window.__miloviceStreetEnvironment=emptyStats()}
@@ -105,13 +107,13 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0}={}){
    smallCrowns.push({...pos,x:pos.x+.21*size,y:y+3.31*size,z:pos.z-.14*size,sx:1.15*size,sy:.93*size,sz:1.1*size});
   }
   for(let i=0;i<6;i++){
-   const a=-26+i*2.05,at=itemAt(anchor,a,side+.76,0);
+   const a=-26+i*2.05,at=itemAt(anchor,a,side+Math.sign(side)*.76,0);
    beds.push({...at,y:at.y+.015,sx:2.00,sy:.06,sz:1.05,ry:Math.atan2(-anchor.uz,anchor.ux)});
    hedges.push({...at,y:at.y+.43,sx:1.68,sy:.79,sz:.6,ry:Math.atan2(-anchor.uz,anchor.ux)});
   }
   for(let i=0;i<23;i++){
    const along=-24+(i%12)*1.1;
-   const out=side+.1+(Math.floor(i/12))*.4;
+   const out=side+Math.sign(side)*(.1+(Math.floor(i/12))*.4);
    const at=itemAt(anchor,along,out,.1);
    stems.push({...at,y:at.y+.16});
    flowers.push({...at,y:at.y+.43,sx:.9,sy:.75,sz:.9});
@@ -138,7 +140,7 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0}={}){
  function signs(group,anchor,side){
   // These THREE sign inscriptions are visible in the dated public photo.
   // The exact pole position/orientation cannot be recovered from one image.
-  const at=itemAt(anchor,6,side+.08,0);
+  const at=itemAt(anchor,6,side+Math.sign(side)*.08,0);
   addParts(group,geometries.wire,colors.metal,[{...at,y:at.y+2.02,sy:4.04,sx:2.8,sz:2.8}]);
   for(const [i,text] of ['Městská policie','Sběrný dvůr','Mirakulum'].entries()){
    const texture=makeSignMap(text);
@@ -154,9 +156,9 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0}={}){
   // Property edge in 2014 photo: low stone masonry and a dark vehicle gate.
   // Its exact footprint is not established; position is photo-relative.
   const stone=[],timber=[];
-  for(let i=0;i<4;i++)stone.push(itemAt(anchor,12+i*2.25,side+4.30,.65,2.24,1.3,.34,Math.atan2(-anchor.uz,anchor.ux)));
-  for(const a of [11.25,21.9])stone.push(itemAt(anchor,a,side+4.30,.97,.48,1.94,.50));
-  timber.push(itemAt(anchor,20.0,side+4.36,1.09,3.5,1.77,.13,Math.atan2(-anchor.uz,anchor.ux)));
+  for(let i=0;i<4;i++)stone.push(itemAt(anchor,12+i*2.25,side+Math.sign(side)*4.30,.65,2.24,1.3,.34,Math.atan2(-anchor.uz,anchor.ux)));
+  for(const a of [11.25,21.9])stone.push(itemAt(anchor,a,side+Math.sign(side)*4.30,.97,.48,1.94,.50));
+  timber.push(itemAt(anchor,20.0,side+Math.sign(side)*4.36,1.09,3.5,1.77,.13,Math.atan2(-anchor.uz,anchor.ux)));
   addParts(group,geometries.box,colors.stone,stone);
   addParts(group,geometries.box,colors.timber,timber);
   featureCount+=stone.length+timber.length;
@@ -164,7 +166,7 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0}={}){
  function utility(group,anchor,side){
   // 2014 source clearly shows a timber utility pole and overhead lines;
   // wire routes are schematic, not a survey of the electricity grid.
-  const a=itemAt(anchor,28,side+3.6,0),b=itemAt(anchor,-35,side+3.6,0);
+  const a=itemAt(anchor,28,side+Math.sign(side)*3.6,0),b=itemAt(anchor,-35,side+Math.sign(side)*3.6,0);
   const poles=[a,b].map(p=>({...p,y:p.y+3.4,sx:1.1,sy:5.2/2.8,sz:1.1}));
   addParts(group,geometries.trunk,colors.pole,poles);
   // Keeping overhead cable segments within the local group prevents a city-wide draw.
@@ -190,9 +192,26 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0}={}){
    if(!road)continue;
    const anchor=nearestPhotoRoadSegment(road,ref.latitude,ref.longitude);
    if(!anchor||anchor.distance>18)continue;
-   // Observed planted frontage is on the +normal side of the OSM street.
-   // At this camera GPS that side faces the building group SE of the road.
-   const side=anchor.width*.5+2.65;
+   // A photo GPS position alone cannot prove which side contains each prop.
+   // Test both possible frontages against ALL OSM roads and footpaths.
+   // The +normal side of this segment crosses a mapped footpath; prefer a
+   // side with a wide enough empty verge rather than inventing sidewalk trees.
+   const halfWidth=anchor.width*.5+2.65;
+   function clearanceScore(sign){
+    if(!roadClearance)return Infinity;
+    let minimum=Infinity;
+    for(const along of [-35,-26,-17,-4,6,12,20,28]){
+     const p=placeOnRoad(anchor,along,sign*halfWidth);
+     const match=roadClearance.nearest(p.x,p.z);
+     minimum=Math.min(minimum,match?.clearance??Infinity);
+    }
+    return minimum;
+   }
+   const leftScore=clearanceScore(1),rightScore=clearanceScore(-1);
+   const sideSign=leftScore>=rightScore?1:-1;
+   const minimumRoadClearance=Math.max(leftScore,rightScore);
+   if(minimumRoadClearance<1.9)continue;
+   const side=sideSign*halfWidth;
    const root=new THREE.Group();
    root.userData.lodX=anchor.x;root.userData.lodZ=anchor.z;
    root.userData.lodDetail=true;
@@ -205,7 +224,7 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0}={}){
    if(layer)layer.add(root);
    groups.add(root);entries.add(ref.id);created++;
    data.push({id:ref.id,osmRoadId:ref.osmRoadId,anchorDistance:anchor.distance,
-    x:anchor.x,z:anchor.z,source:ref.source,photoDate:ref.photoDate});
+    x:anchor.x,z:anchor.z,sideSign,minimumRoadClearance,source:ref.source,photoDate:ref.photoDate});
   }
   report();return created;
  }
