@@ -52,9 +52,9 @@ export function planStationForecourt(elements,roadClearance){
  // The relative offsets were manually estimated from May 2024 forecourt photos,
  // NOT inferred as meter-accurate survey data from the camera GPS alone.
  const candidates=[
-  {id:'broadleaf',type:'tree',dx:-11,dz:9.7,radius:.58,buffer:1.4},
+  {id:'broadleaf',type:'tree',dx:-14.6,dz:10.4,radius:.58,buffer:1.4},
   {id:'twin-lamp',type:'lamp',dx:7,dz:3.7,radius:.35,buffer:1.15},
-  {id:'flowerbed',type:'garden',dx:-8,dz:8.7,radius:1.0,buffer:1.1},
+  {id:'flowerbed',type:'garden',dx:-16.6,dz:5.4,radius:1.0,buffer:1.1},
   {id:'bus-A',type:'stop',dx:19,dz:18.7,radius:.28,buffer:1.20,letter:'A'},
   {id:'bus-B',type:'stop',dx:13,dz:-8.3,radius:.28,buffer:1.20,letter:'B'}
  ];
