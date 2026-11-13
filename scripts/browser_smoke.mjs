@@ -103,7 +103,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('station-roof-footprint-5282'))
+ if(!(await page.locator('#build-label').innerText()).includes('station-facade-sign-5283'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -210,8 +210,8 @@ try{
  if(roofVisual?.sections?.length!==3||roofVisual.mode!=='footprint-constrained'||
     !roofVisual.axisShared||roofVisual.source!=='OSM 53865956'||
     !roofVisual.center||!roofVisual.globalAxis||
-    roofVisual.sections.filter(p=>p.kind==='gable').length!==2||
-    roofVisual.sections.filter(p=>p.kind==='hip').length!==1||
+    roofVisual.sections.filter(p=>p.kind==='gable').length!==0||
+    roofVisual.sections.filter(p=>p.kind==='hip').length!==3||
     roofVisual.sections.some(p=>!p.clippedToOSM||p.hasFakeEndCap||
       p.areaError>1e-4||p.footprintOverhang!==0||p.outputTriangles<3||
       Math.hypot(p.axis.ax-roofVisual.globalAxis.ax,
@@ -264,6 +264,14 @@ try{
     landmarkChecks.stationUpperExteriorWindows!==2||
     landmarkChecks.stationUpperFacadeAccuracy!=='photo-informed-not-surveyed')
   throw new Error('5.28 station central one-window bay and exterior-only upper sash missing: '+JSON.stringify(landmarkChecks));
+ if(!landmarkChecks.stationSignOnRailLongFacade||
+    landmarkChecks.stationSignOnEndWall!==false||
+    !landmarkChecks.stationSignOneSided||
+    !landmarkChecks.stationSignCenter||
+    !(landmarkChecks.stationSignCenter.y<landmarkChecks.stationRoofGeometry.center.base+3.7)||
+    !landmarkChecks.stationInventedSemicircleRemoved||
+    landmarkChecks.stationPassageHeaderType!=='straight-mapped-portal')
+  throw new Error('5.28.3 station plaque must be below roof on real rail facade, no fake semicircle: '+JSON.stringify(landmarkChecks));
  if(!landmarkChecks.stationSign||landmarkChecks.stationCanopy!==false||
     !landmarkChecks.unverifiedStreetDoorRemoved||landmarkChecks.stationStreetSign!==false)
   throw new Error('4.9 station architecture missing: '+JSON.stringify(landmarkChecks));
