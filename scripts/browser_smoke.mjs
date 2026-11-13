@@ -103,7 +103,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('station-front-cafe-5272'))
+ if(!(await page.locator('#build-label').innerText()).includes('remove-false-side-canopy-5273'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -185,18 +185,19 @@ try{
     !landmarkChecks.unverifiedCafeFurnitureRemoved||
     !landmarkChecks.unverifiedShopLabelRemoved)
   throw new Error('5.24 unverified station furniture/signs not removed: '+JSON.stringify(landmarkChecks));
- if(!landmarkChecks.stationCanopyReality?.greenSteel||
-     landmarkChecks.stationCanopyReality.timber!==false||
-     landmarkChecks.stationCanopyReality.roofRibs<12||
-     landmarkChecks.stationCanopyReality.steelPosts<4||
-     landmarkChecks.stationCanopyReality.forkBraces<8||
-     !landmarkChecks.stationCanopyReality.photoObservedShape||
-     landmarkChecks.stationCanopyReality.spacingSurveyed!==false)
-  throw new Error('5.25 platform roof is not real green steel or lacks photo-backed ribs/forks: '+JSON.stringify(landmarkChecks.stationCanopyReality));
+ if(!landmarkChecks.stationSideAwningRemoved||
+    landmarkChecks.stationCanopy!==false||
+    landmarkChecks.stationCanopyReality!==null||
+    landmarkChecks.stationCanopyRoofPieces!==0||
+    landmarkChecks.stationCanopyPosts!==0||
+    landmarkChecks.stationCanopyBraces!==0||
+    !landmarkChecks.stationUnverifiedSidePavingRemoved)
+  throw new Error('5.27.3 false green awning by station and bike tower still exists: '+JSON.stringify(landmarkChecks));
  if(!landmarkChecks.stationCafeWaitingRoom||!landmarkChecks.unverifiedExteriorCafeRemoved)
   throw new Error('5.25 invented external Nádražka cafe still exists or indoor location not documented: '+JSON.stringify(landmarkChecks));
- console.log('5.25 station green steel roof and real Nádražka waiting-room entrance:',
-  JSON.stringify(landmarkChecks.stationCanopyReality));
+ console.log('5.27.3 false green SIDE awning, pillars, braces and fake paving removed:',
+  JSON.stringify({sideAwningRemoved:landmarkChecks.stationSideAwningRemoved,
+   remainingCanopyPosts:landmarkChecks.stationCanopyPosts}));
  if(!landmarkChecks.stationPassageAudit?.matchedMappedFootway||
     !(landmarkChecks.stationPassageAudit.newMappedAlignedS>8)||
     !(landmarkChecks.stationPassageAudit.offset<.15)||
@@ -223,7 +224,7 @@ try{
  console.log('5.5.0 spatial world collisions + both station portals:',JSON.stringify(collisionCheck));
 
  if(!landmarkChecks.stationParts?.center||!landmarkChecks.stationParts?.left||!landmarkChecks.stationParts?.right)throw new Error('Station wing/center massing missing');
- if(!landmarkChecks.stationSign||!landmarkChecks.stationCanopy||
+ if(!landmarkChecks.stationSign||landmarkChecks.stationCanopy!==false||
     !landmarkChecks.unverifiedStreetDoorRemoved||landmarkChecks.stationStreetSign!==false)
   throw new Error('4.9 station architecture missing: '+JSON.stringify(landmarkChecks));
  if(!landmarkChecks.stationForecourt||!landmarkChecks.actualEntranceIsStationPassage||landmarkChecks.stationStreetEntrance!==false)
