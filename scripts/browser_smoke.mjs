@@ -216,7 +216,8 @@ try{
  // not play forward locomotion while the face points backwards.
  await mobile.mouse.move(cx,cy+rad*.82);await mobile.waitForTimeout(720);
  const backward=await mobile.evaluate(()=>window.__miloviceMovementDebug);
- if(!(backward.speed>2.5&&backward.travel.z>0&&backward.facingDot>.93))
+ if(!(backward.speed>2.5&&backward.facingDot>.93&&
+      slow.travel.x*backward.travel.x+slow.travel.z*backward.travel.z<-.93))
   throw new Error('5.3.3 backward joystick rotates the model to actual travel direction: '+JSON.stringify(backward));
  await mobile.screenshot({path:'browser-artifacts/milovice-facing-backward.png'});
  await mobile.mouse.up();await mobile.waitForTimeout(460);
