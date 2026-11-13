@@ -178,7 +178,7 @@ import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
 import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5110';
 import {makePhotoStreetBlock} from './scripts/street-photo-block.js?v=5150';
-import {makePhotoStreetEnvironment} from './scripts/street-environment-pass.js?v=5231';
+import {makePhotoStreetEnvironment} from './scripts/street-environment-reality.js?v=5260';
 import {createRoadClearance} from './scripts/road-clearance.js?v=5220';
 import {isCarriageway,isPedestrianWay,safePedestrianPieces,pedestrianPieceKey,markedCrossing,planZebraPieces,planStationPassage} from './scripts/reality-walkways.js?v=5260';
 import {makeStationForecourtScene} from './scripts/station-forecourt-pass.js?v=5241';
@@ -2768,7 +2768,7 @@ async function rpLoadCityArea(id){
   
   rpAppendOSMElements(osm.elements);
   finalizeRoadStrips();finalizeCityWalls();finalizeFoundations();finalizeFacades();finalizeArchitecture();heroBuildings.flush(osmLayer);
-  chunkMilovice();rpBuildRoadGraph();rpPopulateRegionalTraffic(area);improveMiloviceVisuals();rpInitRailTraffic();
+  chunkMilovice();rpBuildRoadGraph();rpPopulateRegionalTraffic(area);improveMiloviceVisuals();publishLegacyRealityAudit();rpInitRailTraffic();
   loadedCityAreas.add(id);
   window.__miloviceAreasLoaded=[...loadedCityAreas];
   window.__miloviceAreaStats={buildings:osmBuildings,roads:osmRoads.length,landscape:landscapeZones.length};
@@ -2939,30 +2939,31 @@ function improveMiloviceVisuals(){
  // that point can still be a neighboring lane, junction or walkway.
  // Keep only vegetation within mapped forest/park polygons, after checking
  // clearance against ALL mapped roads and paths in the loaded districts.
- const greenPlacement={accepted:0,rejected:0};
+ const greenPlacement={accepted:0,rejected:0,suppressedByPhotoAudit:0};
  forestInstancePlacements(landscapeZones,trunks,crowns,crowns2,rnd,(x,z)=>{
+  if(!isLegacyGuessAllowed(x,z)){
+   greenPlacement.suppressedByPhotoAudit++;
+   legacyRealityAudit.suppressed('suppressedUnverifiedTrees');
+   return false;
+  }
   const safe=osmRoadClearance.isClear(x,z,2.25,1.15);
   if(safe)greenPlacement.accepted++;else greenPlacement.rejected++;
   return safe;
  });
- // Dense but batched street-level material cues. Locations are plausible game
- // decoration on real OSM roads, not verified real-world manholes or bollards.
- const streetProps=planMiloviceStreetProps(osmDriveRoads);
- const originalBollards=streetProps.bollards.length;
- streetProps.bollards=streetProps.bollards.filter(p=>osmRoadClearance.isClear(p[0],p[2],.25,.55));
+ // Source-first 360 review: manholes, drains, fake wear patches and
+ // bollards were arbitrary and did not belong to photo-surveyed locations.
+ // Remove all global procedural props; only future surveyed objects return.
+ legacyRealityAudit.suppressed('removedRandomStreetProps',4);
  window.__miloviceRoadsideSafety={
   ...osmRoadClearance.stats(),randomRoadTrees:0,randomRoadLamps:0,
   mappedGreenTrees:greenPlacement.accepted,
   rejectedGreenTrees:greenPlacement.rejected,
-  rejectedBollards:originalBollards-streetProps.bollards.length,
-  source:'OSM roads and footways, with modeled widths',
-  notes:'All unverified global roadside trees and lamps removed'
+  suppressedUnverifiedGreenTrees:greenPlacement.suppressedByPhotoAudit,
+  rejectedBollards:0,disabledRandomStreetProps:true,
+  source:'OSM paths, carriageways and audited photo evidence',
+  notes:'Generic procedural manholes, bollards, road wear and drains disabled'
  };
- visualBatch(new THREE.BoxGeometry(1,1,1),streetWearMat,streetProps.patches);
- visualBatch(new THREE.BoxGeometry(1,1,1),streetDrainMat,streetProps.drains);
- visualBatch(new THREE.CylinderGeometry(.5,.5,1,12),streetManholeMat,streetProps.manholes);
- visualBatch(new THREE.CylinderGeometry(.5,.5,1,8),streetBollardMat,streetProps.bollards);
- window.__miloviceBigUpdate.streetDecor=Object.values(streetProps).reduce((n,a)=>n+a.length,0);
+ window.__miloviceBigUpdate.streetDecor=0;
  visualBatch(new THREE.BoxGeometry(1,1,1),visualMaterials.bark,trunks);
  visualBatch(new THREE.IcosahedronGeometry(1,2),visualMaterials.foliage,crowns);
  visualBatch(new THREE.IcosahedronGeometry(1,2),visualMaterials.foliage2,crowns2);
@@ -2978,12 +2979,12 @@ osmBtn.onclick=async()=>{
  if(osmLoading)return;
  osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';osmMessage('Načítám místní soubor mapy ze stejného GitHub Pages webu…');
  try{
- const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();collisionWorld.reset();heroBuildings.reset();photoStreetBlock.reset();photoStreetEnvironment.reset();stationPhotoForecourt.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;landscapeZones.length=0;
+ const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();legacyRealityAudit.reset();renderedPedestrianPieces.clear();collisionWorld.reset();heroBuildings.reset();photoStreetBlock.reset();photoStreetEnvironment.reset();stationPhotoForecourt.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;landscapeZones.length=0;
   if(trafficGroup.parent!==osmLayer)osmLayer.add(trafficGroup);
   if(visualDetails.parent!==osmLayer)osmLayer.add(visualDetails);for(const batch of facadeBatches)batch.clear();
  if(terrainGrid)rpTerrainMesh();else cube(2200,.16,2200,osmParkMaterial,0,-.18,0,osmLayer);
  rpAppendOSMElements(elements);
- if(!osmRoads.length)throw Error('Žádné silnice v odpovědi');finalizeRoadStrips();finalizeCityWalls();finalizeFoundations();finalizeFacades();finalizeArchitecture();heroBuildings.flush(osmLayer);osmStreetLabels();chunkMilovice();improveMiloviceVisuals();rpPopulate();rpInitRailTraffic();
+ if(!osmRoads.length)throw Error('Žádné silnice v odpovědi');finalizeRoadStrips();finalizeCityWalls();finalizeFoundations();finalizeFacades();finalizeArchitecture();heroBuildings.flush(osmLayer);osmStreetLabels();chunkMilovice();improveMiloviceVisuals();publishLegacyRealityAudit();rpPopulate();rpInitRailTraffic();
  osmReady=true;window.__miloviceAreasLoaded=[...loadedCityAreas];osmNotice.style.display='none';osmSetActive(true);document.getElementById('status').textContent='Prozkoumávej skutečné Milovice. Na mapě najdeš pojmenované ulice a budovy.';
  }catch(e){osmLayer.clear();heroBuildings.reset();for(const batch of facadeBatches)batch.clear();osmReady=false;osmBtn.textContent='🔄 Zkusit načíst Milovice';notify('Skutečná mapa se nenačetla. Zkus znovu tlačítko vpravo.');osmNotice.style.display='block';osmNotice.textContent='3D mapa se nenačetla: '+e.message+'. Zkus znovu načíst mapu.';loadingScreen.textContent='⚠️ Skutečnou mapu Milovic se nepodařilo načíst. Klepni na Zkusit načíst Milovice.'}
  finally{osmLoading=false}
