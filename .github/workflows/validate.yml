@@ -33,6 +33,10 @@ jobs:
         run: node scripts/station-forecourt-pass.test.mjs
       - name: Verify OSM station roof facets do not overhang and preserve the real footprint
         run: node scripts/station-roof-geometry.test.mjs
+      - name: Validate every OSM house roof and photographed dormer angles across city
+        run: node scripts/city-roof-geometry.test.mjs
+      - name: Verify building-by-building rebuild inventory covers all 684 core OSM structures
+        run: node scripts/building-audit-queue.test.mjs
       - name: Validate historical station facade references and removal of wrong-side canopy
         run: node scripts/station-platform-reality.test.mjs
       - name: Validate permanent source-reviewed architecture and local preview overlays
