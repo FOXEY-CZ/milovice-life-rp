@@ -42,7 +42,23 @@
 .milovice-player-arrow{font-size:22px;color:white;text-shadow:0 2px 2px #004c83;line-height:1;transform-origin:50% 50%;transition:transform .11s linear}
 #realmap .leaflet-marker-pane,#realmap .leaflet-overlay-pane{z-index:410}
 @media(max-width:700px){#maphead{padding:8px;gap:4px;font-size:12px}#maphead .mapactions{gap:4px}#maphead .mapactions button{font-size:11px;padding:8px 6px;min-height:36px}#mapfoot{font-size:10px}}
-</style></head><body><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><p>Verze 5.1.3 · build <strong id="build-label">20261113-platform-513</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
+</style><style id="rp-mobile-exploration-hud">
+/* Keep the town visible on portrait phones: detailed telemetry is one tap away. */
+#rp-hud-toggle{display:none}
+@media(max-width:700px){
+ #hud{width:min(218px,57vw)!important;max-width:none!important;top:8px!important;left:8px!important;padding:9px 10px!important;pointer-events:auto!important;box-sizing:border-box;max-height:58dvh;overflow:hidden;transition:width .15s ease}
+ #hud h2{font-size:12px!important;line-height:1.25;margin:0 0 6px!important;padding-right:66px}
+ #rp-hud-toggle{position:absolute;right:5px;top:5px;display:block;min-height:26px;padding:3px 7px;border-radius:8px;font-size:10px;line-height:1.2;background:#28516c;border:1px solid #8fb7d0;color:#fff;z-index:1}
+ #hud p{display:none!important}
+ #hud p:has(#mode),#hud #status{display:block!important;font-size:10px;line-height:1.3;margin:3px 0}
+ #hud #status{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;max-width:100%}
+ #hud.rp-open{width:min(345px,calc(100vw - 24px))!important;max-height:64dvh;overflow-y:auto;box-shadow:0 15px 38px #000a}
+ #hud.rp-open h2{font-size:14px!important}
+ #hud.rp-open p{display:block!important;white-space:normal!important;overflow:visible!important;font-size:11px;line-height:1.35;margin:5px 0}
+ #perf{padding:4px 6px!important;font-size:11px!important;min-width:80px}
+ #perf small{font-size:9px}
+}
+</style></head><body><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.1.3 · build <strong id="build-label">20261113-platform-513</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
 <section class="rp-overlay" id="rp-spawn" aria-label="Výběr vozidla" hidden>
  <div class="rp-modal">
   <div class="rp-modal-head"><div><h2>🚘 Jak chceš začít?</h2><p>Vyber si vozidlo nebo vyraz pěšky. Vozidla slouží pro volnou jízdu.</p></div><button id="rp-spawn-close" type="button">✕</button></div>
@@ -63,6 +79,18 @@
  </div>
 </section>
 <section id="realmap" aria-label="Skutečná mapa Milovic"><div id="maphead"><strong>🗺️ Milovice – skutečná mapa</strong><div class="mapactions"><button id="mapfollow" type="button" title="Vycentrovat mapu na postavu">🎯 Kde jsem?</button><button id="closemap" type="button">✕ Zpět do hry</button></div></div><div id="osmmap"></div><div id="mapfoot">Silnice a půdorysy: © přispěvatelé OpenStreetMap (ODbL). Výškopis: © ČÚZK / Zeměměřický úřad, DMR 4G (CC BY 4.0), nadmořské výšky jsou interpolovány na herní síť 10 m. Fasády a barvy jsou herní aproximací podle veřejných fotografií, nikoli přesnou kopií každého objektu.</div></section><script>
+(function(){
+ const hud=document.getElementById('hud'),toggle=document.getElementById('rp-hud-toggle');
+ if(!hud||!toggle)return;
+ toggle.addEventListener('click',()=>{
+  const open=hud.classList.toggle('rp-open');
+  toggle.setAttribute('aria-expanded',String(open));
+  toggle.setAttribute('aria-label',open?'Sbalit podrobnosti hry':'Zobrazit podrobnosti hry');
+  toggle.textContent=open?'✕ Zavřít':'☰ Info';
+ });
+})();
+</script>
+<script>
 (function(){
  const box=document.createElement('div');box.id='startup-error';box.style.cssText='display:none;position:fixed;z-index:999999;left:12px;right:12px;top:35%;background:#301b24;color:white;border:2px solid #ff8792;border-radius:14px;padding:18px;font:15px system-ui;box-shadow:0 10px 35px #0008;white-space:pre-wrap;max-height:45vh;overflow:auto';
  document.addEventListener('DOMContentLoaded',()=>document.body.appendChild(box));
