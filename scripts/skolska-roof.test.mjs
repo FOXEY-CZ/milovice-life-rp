@@ -77,6 +77,18 @@ assert(d.minX>-1.4&&d.maxX<1.4);
 assert(d.frontZ<1&&d.rearZ>-.9,
  'Photo dormer roof must stay within a real small gable, not extend metres');
 assert(d.eaveY<1.43&&d.ridgeY>2.35);
+for(const config of [
+ {width:3.20,depth:1.90,rise:1.55},
+ {width:2.75,depth:1.72,rise:1.32}
+]){
+ const roof=planSkolskaDormerRoof(config);
+ assert(roof?.closed&&roof.roofFaces.length===4&&roof.fasciaFaces.length===12);
+ assert(roof.minX>=-1.75&&roof.maxX<=1.75,
+  'A photo gable must remain roof-sized and never grow an airborne slab');
+ assert(roof.ridgeY<3.1&&roof.ridgeY>2.6);
+ const slope=Math.atan(config.rise/(config.width*.5))*180/Math.PI;
+ assert(slope>40&&slope<50,'Actual gables need credible steep roof pitch');
+}
 assert.equal(planSkolskaDormerRoof({width:8}),null);
 const index=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const photo=readFileSync(new URL('./street-photo-block.js',import.meta.url),'utf8');
@@ -89,5 +101,7 @@ assert(index.includes('Milovice_skolska_220_roof_soffit'));
 assert(photo.includes('joinedRoofFaces(p,joined.roofFaces,roof)'));
 assert(photo.includes('joinedRoofFaces(p,joined.soffitFaces,roof)'));
 assert(photo.includes('joinedRoofFaces(p,joined.fasciaFaces,roof)'));
+assert(photo.includes('roofRise:j===0?1.55:1.32'));
+assert(photo.includes('w:j===0?3.20:2.75'));
 assert(!photo.includes('arch.scale.y=.33'));
 console.log('5.29.1 Školská 220/1: real seven-edge OSM, roof facade seal, .30m solid eaves, 2 sealed dormer gables PASS');
