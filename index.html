@@ -172,13 +172,13 @@ document.addEventListener('keydown',e=>{if(e.code==='Escape'&&mapPanel.classList
 
 import * as THREE from 'three';
 import {makeHumanRig,makeRoadCar,makePidBus,makeCityElefantStyleTrain} from './scripts/world-models.js?v=560';
-import {addLanduseFeature,forestInstancePlacements} from './scripts/landscapes.js?v=501';
+import {addLanduseFeature,forestInstancePlacements} from './scripts/landscapes.js?v=5220';
 import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
 import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5110';
 import {makePhotoStreetBlock} from './scripts/street-photo-block.js?v=5150';
-import {makePhotoStreetEnvironment} from './scripts/street-environment-pass.js?v=5210';
+import {makePhotoStreetEnvironment} from './scripts/street-environment-pass.js?v=5220';
 import {createRoadClearance} from './scripts/road-clearance.js?v=5220';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {loadLocalArchitectureCards} from './scripts/street-architecture.js?v=5130';
@@ -187,7 +187,7 @@ import {makeCitySurfaceKit,makeContactShadow} from './scripts/graphics2.js?v=520
 import {makeMiloviceVisualKit,planMiloviceStreetProps,makeVehicleContactShadows} from './scripts/visual-overhaul.js?v=560';
 import {makeMiloviceHumanAssets} from './scripts/human-assets.js?v=533-forward';
 import {createPerformanceGovernor} from './scripts/performance-governor.js?v=5170';
-import {makeNearFieldTreeKit} from './scripts/nature-assets.js?v=531';
+import {makeNearFieldTreeKit} from './scripts/nature-assets.js?v=5220';
 import {makeWalkJoystick,pedestrianSpeed,keyboardPedestrianSpeed} from './scripts/analog-controls.js?v=532a';
 const citySurfaceKit=makeCitySurfaceKit(THREE);
 Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
