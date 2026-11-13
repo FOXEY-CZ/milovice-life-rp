@@ -74,7 +74,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('performance-5170'))
+ if(!(await page.locator('#build-label').innerText()).includes('performance-5180'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -256,6 +256,14 @@ try{
      roadBatch.drawMeshes>=roadBatch.inputStrips)
    throw new Error('5.17 OSM roadway geometry was not batch-rendered: '+JSON.stringify(roadBatch));
   console.log('5.17 road batching:',JSON.stringify(roadBatch));
+  const streetFurniture=await page.evaluate(()=>window.__miloviceFurnitureBatch);
+  if(!streetFurniture||streetFurniture.objects<120||
+     streetFurniture.instances!==streetFurniture.objects||
+     streetFurniture.drawMeshes>=streetFurniture.objects*.7||
+     streetFurniture.meshesSaved!==streetFurniture.objects-streetFurniture.drawMeshes||
+     streetFurniture.queued!==0)
+   throw new Error('5.18 spatial streetlight and tree instances failed or lost objects: '+JSON.stringify(streetFurniture));
+  console.log('5.18 street furniture batching:',JSON.stringify(streetFurniture));
  const regionalParking=await page.evaluate(()=>window.__miloviceParkingDebug);
  if(!regionalParking||regionalParking.parked<=parking.parked)
   throw new Error('Newly loaded Mladá region did not add parked cars: '+JSON.stringify(regionalParking));
