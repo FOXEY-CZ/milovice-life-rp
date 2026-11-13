@@ -29,3 +29,15 @@
 
 ### Still needs evidence
 Photo viewpoints covering the street side and both ends of station building, photographed window/door grid, exact Nádražka door in waiting room and external serving window, roof pitches and bay count, canopy post locations and cutout positions. **Do not claim total 1:1 reality until these have been measured**.
+
+## 5.27.1: roof-material visual correction
+
+The platform *canopy* is still dark green painted steel (2025 Doronenko,
+Wikimedia Commons). The main *station building's pitched roof* is reddish
+interlocking roof tile, not red standing-seam sheet: it is visible in the
+railway-side building photograph catalogued at
+https://stellwerke.info/stw/stw.php?id=22402 (ŠJů/Commons attribution).
+The v5.27.1 material now reuses the game's own original red-clay tile texture
+and a matte nonmetallic surface, with zero new GPU texture allocations. The
+pattern is an interpretation, not a measured roof plan. The rail platform
+canopy's green metal roof remains a separate material and unchanged model.
