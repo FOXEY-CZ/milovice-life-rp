@@ -1,6 +1,69 @@
 {
   "schema": "milovice-rp-approved-buildings-v1",
-  "updatedAt": "2026-11-13T00:00:00Z",
-  "description": "Only source-checked, manually approved real buildings appear here. Initial release intentionally contains no unverified entries.",
-  "buildings": {}
+  "updatedAt": "2026-11-13T13:00:00Z",
+  "description": "First documented intersection group Mírová/5. května/Školská, 3 real photo-reviewed exteriors; geometric heights and openings are approximations.",
+  "buildings": {
+    "118487980": {
+      "stage": "verified",
+      "source": "https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_1.jpg",
+      "notes": "Photo 2024-05-30: cream corner house at Skolska 220/1, 5. kvetna, dark pitched roof with two prominent street-oriented gables and arched attic glazing. Two occupied levels corroborated by OSM/RUIAN. Exact dormer dimensions not measured.",
+      "floors": "2",
+      "facadeColor": "#e2d0b4",
+      "roofColor": "#404348",
+      "roofKind": "gable",
+      "review": {
+        "approved": true,
+        "reviewer": "Milovice RP — manual Commons visual comparison",
+        "summary": "Verified photo and OSM ID 118487980: cream corner two-level house, dark pitched roof, arched attic dormers. Real ridge heights and per-face window locations are not surveyed.",
+        "reviewedAt": "2026-11-13T13:00:00Z"
+      },
+      "provenance": {
+        "photoAuthor": "ŠJů",
+        "photoLicense": "CC BY 4.0",
+        "photoDate": "2024-05-30",
+        "precision": "visual approximation only"
+      }
+    },
+    "202367194": {
+      "stage": "verified",
+      "source": "https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_11,_hotel_Modr%C3%A1_hv%C4%9Bzda.jpg",
+      "notes": "Photo 2024-05-30: orange two-level corner house, small upper balcony, white frames, red window surrounds, very shallow dark brown roof. Heights and precise aperture positions unknown. OSM levels=1 contradicts two visibly occupied levels.",
+      "floors": "2",
+      "facadeColor": "#d48a35",
+      "roofColor": "#6d493b",
+      "roofKind": "hip",
+      "review": {
+        "approved": true,
+        "reviewer": "Milovice RP — manual Commons visual comparison",
+        "summary": "Visual cross-check of 2024 Commons photograph and OSM way 202367194 for orange corner silhouette, white balcony, two levels and shallow hip roof; measurements remain approximate.",
+        "reviewedAt": "2026-11-13T13:00:00Z"
+      },
+      "provenance": {
+        "photoAuthor": "ŠJů",
+        "photoLicense": "CC BY 4.0",
+        "photoDate": "2024-05-30",
+        "precision": "visual approximation only"
+      }
+    },
+    "202367254": {
+      "stage": "verified",
+      "source": "https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_36.jpg",
+      "notes": "Photo 2024-05-30: cream 243/36 corner building with steep dark red-brown hipped roof, a central projecting gabled upper section, two rectangular skylights and clipped hedges along street. Eave and ridge dimensions are estimated, not surveyed.",
+      "facadeColor": "#dfcfb1",
+      "roofColor": "#553f3d",
+      "roofKind": "hip",
+      "review": {
+        "approved": true,
+        "reviewer": "Milovice RP — manual Commons visual comparison",
+        "summary": "Photo and OSM ID checked: 243/36 has pale walls, dark red tiled hip roof, projecting front gable, sloping rooflights and hedges. Exact slope, dimensions, door and shopfront details remain unmeasured.",
+        "reviewedAt": "2026-11-13T13:00:00Z"
+      },
+      "provenance": {
+        "photoAuthor": "ŠJů",
+        "photoLicense": "CC BY 4.0",
+        "photoDate": "2024-05-30",
+        "precision": "visual approximation only"
+      }
+    }
+  }
 }

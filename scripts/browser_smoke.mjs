@@ -36,6 +36,17 @@ try{
     hero.solidWalls<10||hero.drawMeshes<4)
   throw new Error('5.7.0 genuinely cut-out old-town buildings absent: '+JSON.stringify(hero));
  console.log('5.7.0 actual wall cut-outs in Old Milovice:',JSON.stringify(hero));
+ const landmark=await page.evaluate(()=>window.__milovicePhotoStreetPass||null);
+ if(!landmark||landmark.buildings!==3||landmark.dormers<3||
+    landmark.rooflights<2||landmark.hedgeGroups<1||
+    !['202367194','202367254','118487980'].every(id=>landmark.landmarkIds.includes(id)))
+   throw Error('5.14 photographed street block geometry missing: '+JSON.stringify(landmark));
+ const official=await page.evaluate(()=>window.__miloviceArchitectureBridge);
+ if(!official||official.publishedVerified!==3||
+    !['202367194','202367254','118487980'].every(id=>official.appliedIds.includes(id)))
+   throw Error('Three source-reviewed public building cards were not applied to OSM ways: '+JSON.stringify(official));
+ console.log('5.14 photo-grounded block: original building detail meshes + permanent 3 source-checked public cards',
+   JSON.stringify({landmark,published:official.publishedVerified}));
 
  const cutoutTest=await page.evaluate(async()=>{
   const THREE=await import('three');
@@ -62,8 +73,8 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('shared-architecture-5130'))
-  throw new Error('5.13.0 shared reviewed architecture build identifier missing');
+ if(!(await page.locator('#build-label').innerText()).includes('street-block-5140'))
+  throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
     !(sidewalkCheck.separatedSidewalks>15))

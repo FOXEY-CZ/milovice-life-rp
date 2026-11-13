@@ -17,6 +17,8 @@ jobs:
           node-version: '22'
       - name: Validate HTML and JavaScript
         run: node scripts/validate.cjs
+      - name: Validate photographed street block and mapped building IDs
+        run: node scripts/street-photo-block.test.mjs
       - name: Validate permanent source-reviewed architecture and local preview overlays
         run: node scripts/architecture-manifest.test.mjs
       - name: Validate official Mapillary metadata discovery and per-street coverage

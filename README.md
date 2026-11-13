@@ -1,3 +1,9 @@
+## Milovice RP 5.14 – reálná přestavba první skupiny budov (13. 11. 2026)
+
+Konečně nejde o nové menu: v okolí **Mírová × 5. května × Školská** jsou přímo ve 3D městě přestavěné tři existující budovy se specifickými **foto-doloženými** vnějšími prvky (Školská 220/1, Modrá hvězda a Mírová 243/36). Do společné databáze přibyly **3 zdrojově ověřené karty**. Vedle starších částí dostaly nové modelované štíty, střešní okna, římsy a nízké živé ploty. Podrobnosti, zdrojové fotografie a meze přesnosti: [První uliční blok](docs/street-pass-01.md).
+
+---
+
 ## Milovice RP 5.13 — Shared Street Architecture: natrvalo vydané domy
 
 Stavební editor doposud používal výhradně místní `localStorage`; změny byly vidět jen ve stejném prohlížeči. Nově hra automaticky načte společný verzovaný manifest `data/architecture/verified-buildings.json` a smíchá schválené údaje s lokálními náhledy.
