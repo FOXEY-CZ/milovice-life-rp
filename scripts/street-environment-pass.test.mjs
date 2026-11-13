@@ -30,6 +30,14 @@ assert(!runtime.includes('   paving(root,anchor,side);'),
  'Old photo paving slab generator must not run in strict reality mode');
 assert(runtime.includes('checkedGreeneryAgainstRoads:true'),
  'Every actual photo-scene tree and hedge must pass road/footway clearance');
+assert(runtime.includes('fullFootprintChecked:true'));
+assert(runtime.includes('isRoadFreeRect(roadClearance'));
+assert(runtime.includes('photoRectClearance(anchor,a,offset,2.0,1.05)'),
+ 'The hedge bed must be tested with its whole ground footprint');
+assert(runtime.includes('photoRectClearance(anchor,gateAlong,gateOffset,3.5,.35)'),
+ 'A 3.5m wooden gate may not be cleared solely at its centre');
+assert(!runtime.includes('function paving('),
+ 'Keep old speculative 5. května paving removed, not merely disabled');
 assert(runtime.includes('photoGroundClearance(anchor,along,side,.8*size)'),
  'Stem positions cannot be inferred without physical OSM road-clearance test');
 
