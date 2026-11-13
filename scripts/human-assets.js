@@ -25,6 +25,7 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
    playerReady:!!player,activeNpc:[...attached.values()].filter(v=>v.container.visible).length,
    runtimeSkeletalWalk:!!(player?.boneState?.nodes?.leftLeg&&player?.boneState?.nodes?.rightLeg)&&!player?.mixer,
    heightMeters:player?.root.userData.heightMeters||0,originalGLBScale:player?.root.userData.originalGLBScale||null,
+   armsDown:player?.boneState?.armsDown===true,
    clips:player?.clips||[],bones:assets.get('casualMan')?.bones?.slice(0,56)||[],license:'CC0-1.0',fallback:!player
   };
   if(typeof window!=='undefined')window.__miloviceHumans=ret;
@@ -57,9 +58,27 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
    leftArm:role('l','arm'),rightArm:role('r','arm'),
    leftElbow:role('l','elbow'),rightElbow:role('r','elbow'),spine
   };
+  // The source mirror exports an actual T-pose. Orient each upper arm towards
+  // the ground using the vector from shoulder to elbow, in its real bone space.
+  // A fixed rotation.z was ineffective because each GLB joint has its own axes.
+  let posed=0;
+  for(const [upperName,lowerName] of [['leftArm','leftElbow'],['rightArm','rightElbow']]){
+   const upper=nodes[upperName],lower=nodes[lowerName];
+   if(!upper||!lower)continue;
+   imported.updateMatrixWorld(true);
+   const from=lower.getWorldPosition(new THREE.Vector3()).sub(upper.getWorldPosition(new THREE.Vector3())).normalize();
+   const target=new THREE.Vector3(Math.sign(from.x)*.12,-1,0).normalize();
+   const worldDelta=new THREE.Quaternion().setFromUnitVectors(from,target);
+   const parentWorld=upper.parent.getWorldQuaternion(new THREE.Quaternion());
+   const localDelta=parentWorld.clone().invert().multiply(worldDelta).multiply(parentWorld);
+   upper.quaternion.premultiply(localDelta);
+   imported.updateMatrixWorld(true);
+   const after=lower.getWorldPosition(new THREE.Vector3()).sub(upper.getWorldPosition(new THREE.Vector3())).normalize();
+   if(after.y<-.72)posed++;
+  }
   const rest={};
   for(const [name,bone] of Object.entries(nodes))if(bone)rest[name]=bone.rotation.clone();
-  return {nodes,rest,count:all.length};
+  return {nodes,rest,count:all.length,armsDown:posed===2};
  }
  function proceduralWalk(record,delta,seconds,intensity){
   const p=Math.max(0,Math.min(1,Number(intensity)||0));
@@ -73,7 +92,7 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
   rotate('leftKnee',moving?Math.max(0,walk)*.34:0);
   rotate('rightKnee',moving?Math.max(0,-walk)*.34:0);
   // GLB export is in T-pose. Fold arms down at rest and add opposite arm swing.
-  rotate('leftArm',-.91,'z');rotate('rightArm',.91,'z');
+  // The calculated rest quaternion already points both arms down.
   rotate('leftArm',-walk*(running?.42:.27));
   rotate('rightArm',walk*(running?.42:.27));
   rotate('leftElbow',moving?Math.max(0,-walk)*.22:.07);
