@@ -93,6 +93,7 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0}={}){
   return {x:p.x,y:terrainAt(p.x,p.z)+y,z:p.z,sx,sy,sz,ry};
  }
  function treeRow(group,anchor,side){
+  // Y rotation aligns a local box X-axis with the real OSM street tangent.
   // One dense, pruned street tree is clearly visible in the 2014 image;
   // the second smaller crown gives the adjacent planted frontage depth.
   const trunks=[],crowns=[],smallCrowns=[],hedges=[],beds=[],soil=[],flowers=[],stems=[];
@@ -105,8 +106,8 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0}={}){
   }
   for(let i=0;i<6;i++){
    const a=-26+i*2.05,at=itemAt(anchor,a,side+.76,0);
-   beds.push({...at,y:at.y+.015,sx:2.00,sy:.06,sz:1.05,ry:Math.atan2(anchor.ux,anchor.uz)});
-   hedges.push({...at,y:at.y+.43,sx:1.68,sy:.79,sz:.6,ry:Math.atan2(anchor.ux,anchor.uz)});
+   beds.push({...at,y:at.y+.015,sx:2.00,sy:.06,sz:1.05,ry:Math.atan2(-anchor.uz,anchor.ux)});
+   hedges.push({...at,y:at.y+.43,sx:1.68,sy:.79,sz:.6,ry:Math.atan2(-anchor.uz,anchor.ux)});
   }
   for(let i=0;i<23;i++){
    const along=-24+(i%12)*1.1;
@@ -144,7 +145,7 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0}={}){
    const signMaterial=new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide});
    const sign=new THREE.Mesh(new THREE.PlaneGeometry(2.12,.365),signMaterial);
    sign.position.set(at.x,at.y+3.26-i*.43,at.z);
-   sign.rotation.y=Math.atan2(anchor.ux,anchor.uz);
+   sign.rotation.y=Math.atan2(-anchor.uz,anchor.ux);
    group.add(sign);drawMeshes++;
   }
   featureCount+=4;
@@ -153,9 +154,9 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0}={}){
   // Property edge in 2014 photo: low stone masonry and a dark vehicle gate.
   // Its exact footprint is not established; position is photo-relative.
   const stone=[],timber=[];
-  for(let i=0;i<4;i++)stone.push(itemAt(anchor,12+i*2.25,side+4.30,.65,2.24,1.3,.34,Math.atan2(anchor.ux,anchor.uz)));
+  for(let i=0;i<4;i++)stone.push(itemAt(anchor,12+i*2.25,side+4.30,.65,2.24,1.3,.34,Math.atan2(-anchor.uz,anchor.ux)));
   for(const a of [11.25,21.9])stone.push(itemAt(anchor,a,side+4.30,.97,.48,1.94,.50));
-  timber.push(itemAt(anchor,20.0,side+4.36,1.09,3.5,1.77,.13,Math.atan2(anchor.ux,anchor.uz)));
+  timber.push(itemAt(anchor,20.0,side+4.36,1.09,3.5,1.77,.13,Math.atan2(-anchor.uz,anchor.ux)));
   addParts(group,geometries.box,colors.stone,stone);
   addParts(group,geometries.box,colors.timber,timber);
   featureCount+=stone.length+timber.length;
