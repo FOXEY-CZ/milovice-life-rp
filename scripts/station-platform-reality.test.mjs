@@ -78,3 +78,18 @@ const pennyHTML=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert(!pennyHTML.includes('stationGabledRoof('),
  'Deleted stationGabledRoof builder referenced by a non-station supermarket');
 assert(pennyHTML.includes("tags.name==='Penny'&&tags.shop==='supermarket'?miloviceGableRoof("));
+
+// v5.28.3 — user photo shows reversed blue "Milovice" hanging at the bike
+// tower end. Real railway-side photo shows the plaque on the LONG facade.
+const plaqueHTML=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+assert(plaqueHTML.includes("stationSignOnRailLongFacade=true"));
+assert(plaqueHTML.includes("stationSignOnEndWall=false"));
+assert(plaqueHTML.includes("stationSignOneSided=true"));
+assert(plaqueHTML.includes("new THREE.MeshBasicMaterial({map:t,side:THREE.FrontSide})"));
+assert(!plaqueHTML.includes("stationBoard('Milovice',r.mx+nx*.45"));
+assert(plaqueHTML.includes("const plaqueS=-2.4"));
+assert(plaqueHTML.includes("stationInventedSemicircleRemoved=true"));
+assert(!plaqueHTML.includes("new THREE.TorusGeometry(w*.5"));
+assert(plaqueHTML.includes("stationPassageHeaderType='straight-mapped-portal'"));
+assert(plaqueHTML.includes("stationSection(left,base,3.62,3.62,1.45,stationRoofMaterial,'hip'"));
+assert(plaqueHTML.includes("stationSection(right,base,3.62,3.62,1.45,stationRoofMaterial,'hip'"));
