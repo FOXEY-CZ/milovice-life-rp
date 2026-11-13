@@ -116,7 +116,9 @@ export function makeRoadCar(THREE,index=0){
  const height=[1.60,1.58,1.57,1.75,1.60,1.72,2.16,1.60][variant];
  const width=isVan?2.04:1.81;
  const colors=[0x164a71,0xa0afb8,0x393d43,0x8f3937,0x4c7566,0xc7c5bd,0xf0ece1,0x8f8d80];
- const paint=automotivePaint(THREE,colors[variant]),chrome=material(THREE,0xb6bec4,.72,.35);
+ // Body palette is keyed by vehicle instance, not only its silhouette.
+ const paintIndex=(variant*3+Math.floor(index/8)*5)%colors.length;
+ const paint=automotivePaint(THREE,colors[paintIndex]),chrome=material(THREE,0xb6bec4,.72,.35);
  const glass=material(THREE,0x223e50,.22,.19),black=material(THREE,0x20272e),light=material(THREE,0xf8e5b5);
  const back=material(THREE,0xb82e29),headStart=isVan?1.13:height*.68;
  const profile=[[-length*.50,.46],[-length*.49,.87],[-length*.39,1.03],[length*.36,1.03],[length*.49,.83],[length*.50,.50]];
@@ -156,6 +158,17 @@ export function makeRoadCar(THREE,index=0){
  // Tinted windscreen angled to match sloping hood; softened low-triangle bonnet lines.
  const windshield=part(THREE,group,new THREE.BoxGeometry(width*.83,.43,.035),glass,0,height*.84,-length*.19);
  windshield.rotation.x=-.45;
+ if(variant===4||variant===5||variant===6){
+  for(const side of [-1,1])
+   part(THREE,group,new THREE.BoxGeometry(.052,.055,length*.45),chrome,
+    side*width*.37,height+.035,length*.015);
+ }
+ if(variant===3||variant===5){
+  for(const side of [-1,1])
+   part(THREE,group,new THREE.BoxGeometry(.046,.12,length*.72),black,
+    side*width*.51,.52,0);
+ }
+ group.userData.vehiclePaint=colors[paintIndex];
  group.userData.vehicleKind=['hatchback','compact','sedan','crossover','estate','SUV','van','sedan'][variant];
  return {group,wheels,kind:group.userData.vehicleKind};
 }
