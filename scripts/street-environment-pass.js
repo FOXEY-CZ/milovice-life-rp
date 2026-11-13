@@ -47,7 +47,7 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0}={}){
   hedge:new THREE.MeshLambertMaterial({color:0x355e35,flatShading:true}),
   grass:new THREE.MeshLambertMaterial({color:0x718e51}),
   soil:new THREE.MeshLambertMaterial({color:0x796c50}),
-  flowers:new THREE.MeshLambertMaterial({vertexColors:true,side:THREE.DoubleSide}),
+  flowers:new THREE.MeshLambertMaterial({color:0xffffff,side:THREE.DoubleSide}),
   metal:new THREE.MeshLambertMaterial({color:0x4a5553}),
   timber:new THREE.MeshLambertMaterial({color:0x5e4234}),
   stone:new THREE.MeshLambertMaterial({color:0xc8c2b3}),
