@@ -225,7 +225,8 @@ try{
     roofVisual.sections.filter(p=>p.kind==='gable').length!==0||
     roofVisual.sections.filter(p=>p.kind==='hip').length!==3||
     roofVisual.sections.some(p=>!p.clippedToOSM||p.hasFakeEndCap||
-      !p.seamClosedToActualRoof||!Number.isFinite(p.maxFormerRoofWallGap)||
+      !p.seamClosedToActualRoof||!(p.perimeterInfillTriangles>0)||
+      !(p.maxFormerRoofWallGap>.01)||
       p.areaError>1e-4||p.footprintOverhang!==0||p.outputTriangles<3||
       Math.hypot(p.axis.ax-roofVisual.globalAxis.ax,
        p.axis.az-roofVisual.globalAxis.az)>.001))
