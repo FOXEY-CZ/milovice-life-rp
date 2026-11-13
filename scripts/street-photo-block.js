@@ -4,6 +4,8 @@
 // Models are ORIGINAL geometry: source photograph pixels are never copied to game.
 // BufferGeometryUtils is injected from the main Three.js browser entrypoint,
  // keeping this module importable in standalone Node geometry tests.
+import {planSkolskaDormerRoof} from './skolska-roof.js';
+
 export const PHOTO_STREET_BLOCK=[
  {id:'202367194',name:'Mírová 134/11 · Modrá hvězda',street:'Mírová / 5. května',
   source:'https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_11,_hotel_Modr%C3%A1_hv%C4%9Bzda.jpg',
@@ -95,6 +97,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  const grout=new THREE.MeshStandardMaterial({color:0xc8b99d,roughness:.94});
  let buildings=0,dormers=0,rooflights=0,hedgeGroups=0,detailMeshes=0;
  let actualArchedWindowMeshes=0,rectangularFakeArchRemoved=0;
+ let anchoredDormerRoofs=0,removedDetachedRoofBoxPanels=0;
  let detailDrawMeshes=0,meshesSavedByBatching=0;
  const ids=new Set(),ownedGroups=new Set();
  // Each photo-referenced facade is statically batched by material. A dozen
@@ -140,6 +143,17 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  }
  function part(parent,w,h,d,material,x,y,z,rx=0,ry=0,rz=0){
   return addMesh(parent,new THREE.BoxGeometry(w,h,d),material,x,y,z,rx,ry,rz);
+ }
+ function joinedRoofFaces(group,faces,material){
+  const coords=[],uv=[];
+  for(const f of faces)for(const p of f){
+   coords.push(p.x,p.y,p.z);uv.push(p.u,p.v);
+  }
+  const geometry=new THREE.BufferGeometry();
+  geometry.setAttribute('position',new THREE.Float32BufferAttribute(coords,3));
+  geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
+  geometry.computeVertexNormals();
+  return addMesh(group,geometry,material,0,0,0);
  }
  function exteriorGroup(edge,base){
   const g=new THREE.Group();g.position.set(edge.mx,base,edge.mz);g.rotation.y=edge.yaw;
@@ -198,14 +212,22 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   shape.moveTo(-w*.5,1.43);shape.lineTo(w*.5,1.43);shape.lineTo(0,2.37);shape.closePath();
   const geom=new THREE.ShapeGeometry(shape);
   addMesh(p,geom,wall,0,0,front+.01);
-  const slopes=planDormerRoofSlopes(w,.94);
-  for(const slope of slopes){
-   // Exactly meet the masonry ridge; the left slope must rise to the
-   // RIGHT and the right slope must rise to the LEFT.
-   part(p,slope.panelLength,.095,depth+.28,roof,
-    slope.x,slope.y,0,0,0,slope.rotationZ);
+  if(arched){
+   const joined=planSkolskaDormerRoof({width:w,depth,rise:.94,wallEaveY:1.43});
+   if(!joined?.closed)throw Error('Školská roof gable did not close');
+   // Two ONE-PIECE planar roof slopes and connected underside/end faces.
+   // No rotated detached plates, no floating dark roof polygons.
+   joinedRoofFaces(p,joined.roofFaces,roof);
+   joinedRoofFaces(p,joined.soffitFaces,roof);
+   joinedRoofFaces(p,joined.fasciaFaces,roof);
+   anchoredDormerRoofs++;removedDetachedRoofBoxPanels+=2;
+  }else{
+   const slopes=planDormerRoofSlopes(w,.94);
+   for(const slope of slopes)
+    part(p,slope.panelLength,.095,depth+.28,roof,
+     slope.x,slope.y,0,0,0,slope.rotationZ);
+   part(p,w+.27,.095,.16,roof,0,1.43,front+.18);
   }
-  part(p,w+.27,.095,.16,roof,0,1.43,front+.18);
   dormers++;
   return g;
  }
@@ -283,6 +305,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  function getStatus(){return {buildings,dormers,rooflights,hedgeGroups,detailMeshes,
   detailDrawMeshes,meshesSavedByBatching,
   actualArchedWindowMeshes,rectangularFakeArchRemoved,
+  anchoredDormerRoofs,removedDetachedRoofBoxPanels,
   landmarkIds:[...ids],photoReferenceCount:PHOTO_STREET_BLOCK.length,
   scope:'Mírová–5. května–Školská; photographed geometry approximation'};}
  function publish(){if(typeof window!=='undefined')window.__milovicePhotoStreetPass=getStatus()}
@@ -294,6 +317,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   ownedGroups.clear();buildings=dormers=rooflights=hedgeGroups=detailMeshes=0;
   detailDrawMeshes=meshesSavedByBatching=0;
   actualArchedWindowMeshes=rectangularFakeArchRemoved=0;
+  anchoredDormerRoofs=removedDetachedRoofBoxPanels=0;
   ids.clear();publish()
  }
  publish();
