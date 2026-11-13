@@ -13,7 +13,7 @@ try{
  const errors=[];
  page.on('pageerror',error=>errors.push(String(error.stack||error)));
  page.on('console',message=>{if(message.type()==='error')errors.push('console: '+message.text())});
- await page.goto('http://127.0.0.1:8080/',{waitUntil:'domcontentloaded',timeout:30000});
+ await page.goto('http://127.0.0.1:8080/?roofAudit=1',{waitUntil:'domcontentloaded',timeout:30000});
  await page.waitForFunction(()=>window.__miloviceStarted===true,{timeout:45000});
  await page.waitForFunction(()=>{
   const el=document.getElementById('rp-spawn');
@@ -103,7 +103,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('instant-camera-snap-5281'))
+ if(!(await page.locator('#build-label').innerText()).includes('station-roof-footprint-5282'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -206,6 +206,31 @@ try{
     landmarkChecks.stationPassageAudit.splitWallOpeningEdges<5||
     Math.abs(landmarkChecks.stationPavingAxisS-landmarkChecks.stationPassageAudit.s)>.02)
   throw new Error('5.26 station entrance is not aligned with mapped footway: '+JSON.stringify(landmarkChecks.stationPassageAudit));
+ const roofVisual=await page.evaluate(()=>window.__miloviceStationRoofGeometry||null);
+ if(roofVisual?.sections?.length!==3||roofVisual.mode!=='footprint-constrained'||
+    !roofVisual.axisShared||roofVisual.source!=='OSM 53865956'||
+    !roofVisual.center||!roofVisual.globalAxis||
+    roofVisual.sections.filter(p=>p.kind==='gable').length!==2||
+    roofVisual.sections.filter(p=>p.kind==='hip').length!==1||
+    roofVisual.sections.some(p=>!p.clippedToOSM||p.hasFakeEndCap||
+      p.areaError>1e-4||p.footprintOverhang!==0||p.outputTriangles<3||
+      Math.hypot(p.axis.ax-roofVisual.globalAxis.ax,
+       p.axis.az-roofVisual.globalAxis.az)>.001))
+  throw new Error('5.28.2 station roof must have 3 OSM-clipped shapes on ONE global axis: '+
+    JSON.stringify(roofVisual));
+ console.log('5.28.2 station 360 roof geometry/conservation:',
+  JSON.stringify(roofVisual));
+ await mkdir('browser-artifacts',{recursive:true});
+ for(const view of ['street','rail','left','right','elevated']){
+  await page.evaluate(name=>{
+   window.__miloviceRoofAuditView=name;
+   window.__miloviceRoofAuditRendered=null;
+  },view);
+  await page.waitForFunction(name=>window.__miloviceRoofAuditRendered===name,
+   view,{timeout:12000});
+  await page.screenshot({path:'browser-artifacts/station-roof-'+view+'.png'});
+ }
+ await page.evaluate(()=>window.__miloviceRoofAuditView=null);
  const coverAudit=await page.evaluate(()=>window.__miloviceStationRoofAudit||null);
  if(!coverAudit||coverAudit.roofOnlyWaysExcluded<1||
     !coverAudit.osmRoofIds.includes(1550920095))
