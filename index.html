@@ -1127,6 +1127,11 @@ function osmRoadSegment(a,b,width,kind){
 }
 const osmTrunkMaterial=new THREE.MeshStandardMaterial({color:0x71503a,roughness:1}),osmLeavesMaterial=[0x396b39,0x4c7b40,0x5c8748].map(c=>new THREE.MeshStandardMaterial({color:c,roughness:.9,flatShading:false})),osmLampMaterial=mat(0x647078),osmLightMaterial=new THREE.MeshBasicMaterial({color:0xffe7a3});
 let osmFurnitureCount=0;
+// Reuse roadside primitives across streamed regions to reduce GPU buffer churn.
+const osmLampPoleGeometry=new THREE.CylinderGeometry(.07,.10,6.3,6);
+const osmLampBulbGeometry=new THREE.SphereGeometry(.24,6,4);
+const osmTreeTrunkGeometry=new THREE.CylinderGeometry(.18,.26,2.5,6);
+const osmTreeCrownGeometry=new THREE.IcosahedronGeometry(2.0,2);
 function osmRoadFurniture(a,b,width,kind){
  if(['pedestrian','service','footway','path'].includes(kind)||osmFurnitureCount>=260)return;
  const dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);
@@ -1136,14 +1141,14 @@ function osmRoadFurniture(a,b,width,kind){
   const side=osmFurnitureCount%2===0?1:-1,offset=width/2+3.6;
   const px=a.x+dx*d/len+nx*offset*side,pz=a.y+dz*d/len+nz*offset*side;
   if(osmFurnitureCount%3===0){
-   const pole=new THREE.Mesh(new THREE.CylinderGeometry(.07,.10,6.3,6),osmLampMaterial);
+   const pole=new THREE.Mesh(osmLampPoleGeometry,osmLampMaterial);
    pole.position.set(px,terrainAt(px,pz)+3.15,pz);osmLayer.add(pole);
-   const bulb=new THREE.Mesh(new THREE.SphereGeometry(.24,6,4),osmLightMaterial);
+   const bulb=new THREE.Mesh(osmLampBulbGeometry,osmLightMaterial);
    bulb.position.set(px,terrainAt(px,pz)+6.35,pz);osmLayer.add(bulb);
   }else{
-   const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.18,.26,2.5,6),osmTrunkMaterial);
+   const trunk=new THREE.Mesh(osmTreeTrunkGeometry,osmTrunkMaterial);
    trunk.position.set(px,terrainAt(px,pz)+1.25,pz);osmLayer.add(trunk);
-   const crown=new THREE.Mesh(new THREE.IcosahedronGeometry(2.0,2),osmLeavesMaterial[osmFurnitureCount%3]);
+   const crown=new THREE.Mesh(osmTreeCrownGeometry,osmLeavesMaterial[osmFurnitureCount%3]);
    crown.position.set(px,terrainAt(px,pz)+3.45,pz);osmLayer.add(crown);
   }
   osmFurnitureCount++;
