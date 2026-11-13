@@ -105,3 +105,82 @@ export function clipRoofFacesForFeatures(faces,featureSpecs){
   cutoutVerified:true,cutoutSource:'explicit photo-backed roof features',
   tests:features.map(f=>({id:f.id,center:f.center,width:f.width,depth:f.depth}))};
 }
+
+/**
+ * Project the host roof's true affine height onto a point. The same
+ * min-of-planes contract underlies the original gable/hip roof mesh.
+ * No independent guessed "support height" that could open a side gap.
+ */
+export function roofHeightAtPoint(roof,point,origin=roof?.origin){
+ if(!roof?.bounds||!roof?.globalAxis||!origin||
+  !Number.isFinite(point?.x)||!Number.isFinite(point?.z))return null;
+ const {ax,az}=roof.globalAxis,{minS,maxS,minT,maxT}=roof.bounds;
+ const dx=point.x-origin.x,dz=point.z-origin.z;
+ const s=dx*ax+dz*az,t=-dx*az+dz*ax;
+ const midT=(minT+maxT)*.5;
+ if(midT<=minT||maxT<=midT)return null;
+ const values=[(t-minT)/(midT-minT),(maxT-t)/(maxT-midT)];
+ if(roof.kind==='hip'){
+  if(!(roof.endInset>0))return null;
+  values.push((s-minS)/roof.endInset,(maxS-s)/roof.endInset);
+ }
+ const y=roof.eaveY+(roof.ridgeY-roof.eaveY)*
+  Math.max(0,Math.min(1,Math.min(...values)));
+ return Number.isFinite(y)?y:null;
+}
+/**
+ * Auto-build a back junction wall (roof cheek) between the gable's
+ * REAR gable roof and the existing host roof. Without it, two
+ * disconnected tilted planes can visibly end in mid-air.
+ * This is reusable for every sourced cross-gable. Photo data controls
+ * the existence/placement; this algorithm supplies structural joining.
+ */
+export function planRoofFeatureBackClosures(features,hostRoof,
+ {wallTopY,wallOriginDrop=.28,wallEaveY=1.43,overhang=.12,
+  segmentsPerSide=10}={}){
+ if(!Array.isArray(features)||features.length>32||
+  !Number.isFinite(wallTopY)||!Number.isFinite(wallOriginDrop)||
+  !Number.isInteger(segmentsPerSide)||segmentsPerSide<4||
+  segmentsPerSide>20)return null;
+ const faces=[];let maxUnsupportedHeight=0,closures=0;
+ for(const f of features){
+  const profile=f.profile;
+  if(!profile||![f.cx,f.cz,f.nx,f.nz,profile.width,
+   profile.depth,profile.rise].every(Number.isFinite))return null;
+  const half=profile.width*.5,reach=half+overhang;
+  if(half<.5||profile.depth<.5||profile.rise<=0)return null;
+  // This matches the actual GableDormer local group transform:
+  // zOffset = -(depth / 2) + .04, rear roof ends at
+  // z = -(depth / 2) - overhang => world recess depth+.08.
+  const rear=-(profile.depth+overhang-.04);
+  const upperEave=wallTopY-wallOriginDrop+wallEaveY-
+   profile.rise*overhang/half;
+  const upperRidge=wallTopY-wallOriginDrop+wallEaveY+profile.rise;
+  const p=(x,y)=>{
+   const wx=f.cx+f.nz*x+f.nx*rear;
+   const wz=f.cz-f.nx*x+f.nz*rear;
+   return {x:wx,y,z:wz,u:x*.22,v:y*.22};
+  };
+  const steps=segmentsPerSide*2;
+  for(let k=0;k<steps;k++){
+   const x0=-reach+2*reach*k/steps,x1=-reach+2*reach*(k+1)/steps;
+   const high=x=>upperEave+(upperRidge-upperEave)*(1-Math.abs(x)/reach);
+   const topA=p(x0,high(x0)),topB=p(x1,high(x1));
+   const hostA=roofHeightAtPoint(hostRoof,topA);
+   const hostB=roofHeightAtPoint(hostRoof,topB);
+   if(hostA===null||hostB===null)return null;
+   const lowA=p(x0,Math.min(topA.y,hostA-.012));
+   const lowB=p(x1,Math.min(topB.y,hostB-.012));
+   maxUnsupportedHeight=Math.max(maxUnsupportedHeight,
+    topA.y-lowA.y,topB.y-lowB.y);
+   const t1=[topA,lowA,lowB],t2=[topA,lowB,topB];
+   for(const face of [t1,t2]){
+    if(area3d(...face)>1e-6)faces.push(face);
+   }
+  }
+  closures++;
+ }
+ return {faces,closures,maxUnsupportedHeight,
+  supportedByHostRoof:true,
+  source:'shared roof-height solver, individual building feature profiles'};
+}
