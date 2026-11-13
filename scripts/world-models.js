@@ -11,42 +11,70 @@ function part(THREE,parent,geo,mat,x,y,z,sx=1,sy=1,sz=1){
  const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);m.scale.set(sx,sy,sz);parent.add(m);return m;
 }
 export function makeHumanRig(THREE,variant=0,clothing=0x355f78,player=false){
+ // 5.1.4: more human body proportions and clothing silhouettes, still lightweight,
+ // stylized procedural original meshes (not a scanned or photorealistic person).
  const root=new THREE.Group(),high=new THREE.Group(),low=new THREE.Group();
  root.add(high,low);low.visible=false;
  const skin=material(THREE,player?0xd2a184:[0xe1b092,0xc59070,0xb47f60,0x986747,0xefbda0][variant%5]);
- const hair=material(THREE,player?0x342e2c:[0x2c2928,0x735036,0x4b352b,0xab835b,0x222324][variant%5]);
+ const hair=material(THREE,player?0x2e292a:[0x302b29,0x735036,0x4b352b,0xab835b,0x222324][variant%5]);
  const coat=material(THREE,clothing),trousers=material(THREE,[0x303842,0x3d4548,0x514944][variant%3]);
  const shoes=material(THREE,0x22262b),eye=material(THREE,0xeceae2),pupil=material(THREE,0x263944);
- const oval=new THREE.SphereGeometry(1,12,10);
- // Shoulder, chest, tapered waist, hips; head has face direction -Z.
- part(THREE,high,oval,coat,0,1.27,0,.33,.37,.20);
- part(THREE,high,oval,coat,0,1.49,0,.375,.17,.207);
- part(THREE,high,oval,trousers,0,.94,0,.295,.16,.185);
- part(THREE,high,oval,skin,0,1.65,0,.085,.12,.08);
- part(THREE,high,oval,skin,0,1.83,-.021,.21,.233,.195);
- part(THREE,high,oval,hair,0,2.006,.016,.205,.11,.198);
- if(variant%3===0)part(THREE,high,oval,hair,0,1.995,-.122,.195,.056,.088);
- if(variant%3===1)part(THREE,high,oval,hair,0,1.967,.134,.185,.137,.076);
- if(variant%3===2)part(THREE,high,oval,hair,.07,2.07,-.02,.15,.073,.14);
- for(const side of [-1,1]){
-  part(THREE,high,oval,skin,side*.205,1.83,-.02,.044,.07,.043);
-  part(THREE,high,oval,eye,side*.085,1.866,-.210,.046,.028,.014);
-  part(THREE,high,oval,pupil,side*.085,1.866,-.225,.021,.020,.010);
- }
- part(THREE,high,oval,skin,0,1.817,-.224,.049,.067,.064);
- part(THREE,high,oval,material(THREE,0x8d5a55),0,1.758,-.204,.066,.010,.012);
- const arms=[],legs=[];
+ const oval=new THREE.SphereGeometry(1,14,12);
  const limb=new THREE.CapsuleGeometry(.5,1,6,8);
+ const armSleeve=material(THREE,player?0x204b66:clothing);
+ const coatShadow=material(THREE,player?0x183c53:0x414b53);
+ const coatHighlight=material(THREE,player?0x2e7091:clothing);
+ // Narrow waist, shaped shoulders and defined neck replace the old stacked round blocks.
+ part(THREE,high,oval,coat,0,1.25,0,.32,.37,.205);
+ part(THREE,high,oval,coat,0,1.49,0,.36,.19,.214);
+ part(THREE,high,oval,trousers,0,.91,0,.272,.17,.178);
+ part(THREE,high,oval,coatShadow,0,1.05,0,.29,.048,.18);
+ part(THREE,high,oval,skin,0,1.666,0,.080,.11,.078);
+ part(THREE,high,oval,skin,0,1.84,-.018,.187,.226,.174);
+ // More natural short hair: top, crown and a small front fringe, not a helmet-shaped cap.
+ part(THREE,high,oval,hair,0,2.004,.025,.189,.075,.175);
+ part(THREE,high,oval,hair,0,1.973,.119,.175,.103,.085);
+ if(variant%3===0)part(THREE,high,oval,hair,-.06,2.04,-.042,.135,.053,.130);
+ if(variant%3===1)part(THREE,high,oval,hair,.072,2.041,-.035,.121,.058,.129);
  for(const side of [-1,1]){
-  const arm=new THREE.Group();arm.position.set(side*.39,1.49,0);high.add(arm);
-  part(THREE,arm,limb,coat,0,-.26,0,.23,.28,.24);
-  part(THREE,arm,oval,skin,0,-.57,-.012,.10,.12,.09);arms.push(arm);
-  const leg=new THREE.Group();leg.position.set(side*.16,.89,0);high.add(leg);
-  part(THREE,leg,limb,trousers,0,-.33,0,.25,.32,.25);
-  part(THREE,leg,oval,shoes,0,-.77,-.085,.154,.09,.248);legs.push(leg);
+  part(THREE,high,oval,skin,side*.188,1.841,-.012,.039,.068,.037);
+  part(THREE,high,oval,eye,side*.073,1.871,-.187,.033,.021,.009);
+  part(THREE,high,oval,pupil,side*.073,1.87,-.194,.015,.016,.010);
  }
- part(THREE,low,oval,coat,0,1.20,0,.35,.45,.215);
- part(THREE,low,oval,skin,0,1.83,0,.21,.245,.19);
+ part(THREE,high,oval,skin,0,1.809,-.187,.039,.057,.038);
+ part(THREE,high,oval,material(THREE,0x995f59),0,1.764,-.180,.047,.008,.010);
+ const arms=[],legs=[];
+ for(const side of [-1,1]){
+  const arm=new THREE.Group();arm.position.set(side*.359,1.491,.006);high.add(arm);
+  part(THREE,arm,oval,coat,0,-.074,0,.125,.164,.141);
+  part(THREE,arm,limb,armSleeve,0,-.277,0,.212,.275,.212);
+  part(THREE,arm,oval,coatShadow,0,-.520,0,.100,.052,.098);
+  part(THREE,arm,oval,skin,0,-.606,-.014,.082,.111,.072);
+  arms.push(arm);
+  const leg=new THREE.Group();leg.position.set(side*.151,.87,0);high.add(leg);
+  part(THREE,leg,limb,trousers,0,-.325,0,.224,.298,.211);
+  part(THREE,leg,oval,trousers,0,-.570,-.005,.114,.12,.113);
+  part(THREE,leg,oval,shoes,0,-.763,-.060,.130,.085,.201);
+  if(player)part(THREE,leg,oval,coatShadow,0,-.831,-.060,.134,.026,.209);
+  legs.push(leg);
+ }
+ if(player){
+  // Cloth details are only added to the player to avoid dozens of extra NPC draw calls.
+  const block=new THREE.BoxGeometry(1,1,1);
+  // Padded jacket yoke, back panel and waist seam (most visible in third-person).
+  part(THREE,high,block,coatHighlight,0,1.466,.211,.415,.115,.018);
+  part(THREE,high,block,coat,0,1.283,.209,.470,.252,.018);
+  part(THREE,high,block,coatShadow,0,1.132,.204,.395,.020,.020);
+  for(const side of [-1,1]){
+   part(THREE,high,block,coatHighlight,side*.282,1.339,.155,.023,.355,.024);
+   part(THREE,high,oval,coatShadow,side*.126,1.569,-.155,.103,.09,.075);
+  }
+  part(THREE,high,block,coatShadow,0,1.345,-.208,.025,.43,.015);
+  part(THREE,high,block,coatHighlight,0,1.569,-.20,.138,.049,.026);
+ }
+ // Low-cost alternative for distant NPCs.
+ part(THREE,low,oval,coat,0,1.25,0,.315,.405,.198);
+ part(THREE,low,oval,skin,0,1.84,-.02,.186,.225,.175);
  return {group:root,high,low,arms,legs};
 }
 function sideExtrusion(THREE,points,width,bevel=.045){
