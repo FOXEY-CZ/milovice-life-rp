@@ -37,6 +37,8 @@ jobs:
         run: node scripts/city-roof-geometry.test.mjs
       - name: Verify photo-specific Školská 220/1 roof and closed dormer gables
         run: node scripts/skolska-roof.test.mjs
+      - name: Test universal roof cutouts around photographed gables in every orientation
+        run: node scripts/roof-opening-geometry.test.mjs
       - name: Verify no roof-to-wall gaps on irregular station footprints
         run: node scripts/station-roof-seams.test.mjs
       - name: Verify solid station eaves overhang only exterior mapped walls
