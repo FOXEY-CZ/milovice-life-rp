@@ -102,7 +102,7 @@ function automotivePaint(THREE,color){
 }
 function carWheel(THREE,parent,side,z,radius=.38,xOffset=.87){
  const tyre=material(THREE,0x171a1d),rim=material(THREE,0xabb4b8,.74,.35),spoke=material(THREE,0x505b65,.6,.42);
- const pivot=new THREE.Group();pivot.position.set(side*xOffset,radius+.045,z);parent.add(pivot);
+ const pivot=new THREE.Group();pivot.position.set(side*xOffset,radius+.045,z);pivot.userData.wheelRadius=radius;pivot.userData.wheelSide=side;parent.add(pivot);
  const rubber=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,.19,18),tyre);rubber.rotation.z=Math.PI/2;pivot.add(rubber);
  const face=new THREE.Mesh(new THREE.CylinderGeometry(radius*.57,radius*.57,.20,12),rim);face.rotation.z=Math.PI/2;pivot.add(face);
  for(let i=0;i<5;i++){const a=i*Math.PI*2/5;part(THREE,pivot,new THREE.BoxGeometry(.025,.28,.07),spoke,side*.114,Math.cos(a)*radius*.33,Math.sin(a)*radius*.33).rotation.x=a}
@@ -168,7 +168,7 @@ function textPanel(THREE,text,w,h,background='#12191e',foreground='#ffd75a'){
  return new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide}));
 }
 export function makePidBus(THREE,route='432',articulated=false){
- const group=new THREE.Group(),w=2.55,length=11.0;
+ const group=new THREE.Group(),w=2.55,length=11.0,wheels=[];
  const white=automotivePaint(THREE,0xeaeae5),red=automotivePaint(THREE,0xc72931),dark=material(THREE,0x20292f);
  const tinted=material(THREE,0x305b70,.25,.25),silver=material(THREE,0xa9b7bc,.65,.4);
  const profile=[[-5.5,.47],[-5.49,2.69],[-5.25,3.04],[5.23,3.04],[5.48,2.70],[5.50,.47]];
@@ -183,7 +183,7 @@ export function makePidBus(THREE,route='432',articulated=false){
    part(THREE,group,new THREE.BoxGeometry(.075,1.02,1.34),tinted,side*1.335,2.19,z);
    part(THREE,group,new THREE.BoxGeometry(.095,1.06,.06),dark,side*1.38,2.18,z+.69);
   }
-  for(const z of [-3.35,3.50])carWheel(THREE,group,side,z,.57,1.32);
+  for(const z of [-3.35,3.50])wheels.push(carWheel(THREE,group,side,z,.57,1.32));
   part(THREE,group,new THREE.BoxGeometry(.13,.35,.31),dark,side*1.48,2.49,-5.16);
   part(THREE,group,new THREE.BoxGeometry(.10,.22,.50),material(THREE,0xfff0cc),side*.88,1.13,-5.53);
   part(THREE,group,new THREE.BoxGeometry(.08,.20,.41),material(THREE,0xcd2626),side*.95,1.13,5.53);
@@ -211,7 +211,7 @@ export function makePidBus(THREE,route='432',articulated=false){
     part(THREE,group,new THREE.BoxGeometry(.075,1.02,1.12),tinted,side*1.335,2.19,z);
     part(THREE,group,new THREE.BoxGeometry(.088,1.07,.06),dark,side*1.38,2.19,z+.58);
    }
-   carWheel(THREE,group,side,10.35,.57,1.32);
+   wheels.push(carWheel(THREE,group,side,10.35,.57,1.32));
    part(THREE,group,new THREE.BoxGeometry(.08,.24,.36),material(THREE,0xd03035),side*.95,1.12,12.21);
   }
   part(THREE,group,new THREE.BoxGeometry(2.24,.85,.12),tinted,0,2.15,12.21);
@@ -221,7 +221,7 @@ export function makePidBus(THREE,route='432',articulated=false){
  destination.position.set(0,2.76,-5.65);group.add(destination);
  const sidePanel=textPanel(THREE,'PID '+route,2.2,.43,'#e6e8e5','#be2030');
  sidePanel.rotation.y=Math.PI/2;sidePanel.position.set(1.38,1.2,2.20);group.add(sidePanel);
- return {group,route};
+ return {group,route,wheels};
 }
 export function makeCityElefantStyleTrain(THREE){
  const group=new THREE.Group(),cars=[];
