@@ -25,9 +25,9 @@ try{
   throw new Error('Graphics 2.0 materials did not initialize correctly: '+JSON.stringify(gfx));
  console.log('5.2.0 shared city surfaces:',JSON.stringify(gfx.surfaceMaterials));
  const visual=await page.evaluate(()=>window.__miloviceBigUpdate||null);
- if(visual?.version!=='5.6.0'||visual.surfaces!==8||visual.streetDecor<20||
+ if(visual?.version!=='5.6.0'||visual.surfaces!==8||visual.streetDecor!==0||
     visual.safeWheelRig!==true||visual.mobileDetailRadius>200)
-  throw new Error('5.6.0 streetscape texture and performance pass not initialized: '+JSON.stringify(visual));
+  throw new Error('5.26 real street-surfaces and audit performance not initialized: '+JSON.stringify(visual));
  console.log('5.6.0 detailed surface materials, instanced decorations and LOD:',JSON.stringify(visual));
  // The upgrade must replace solid house blocks with actual facade holes in
  // the old-town core. An instance count alone is not sufficient evidence.
@@ -61,8 +61,8 @@ try{
  const environment=await page.evaluate(()=>window.__miloviceStreetEnvironment||null);
  if(!environment||environment.sceneCount!==1||
     environment.sources!==1||environment.ids[0]!=='street-5-kvetna-2014'||
-    environment.featureCount<130||environment.instances<130||
-    environment.pavementPieces<60||environment.roadRejected<0||
+    environment.featureCount<30||environment.instances<40||
+    environment.pavementPieces!==0||!environment.unverifiedPhotoPavingDisabled||environment.roadRejected<0||
     environment.drawMeshes>24||environment.spatiallyApproximate!==true||
      !(environment.minRoadClearance>=1.9))
    throw new Error('5.21 5. května photographed streetscape missing, unbatched or unsourced: '+JSON.stringify(environment));
@@ -102,7 +102,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('station-canopy-5250'))
+ if(!(await page.locator('#build-label').innerText()).includes('360-reality-audit-5260'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -114,6 +114,17 @@ try{
     !(sidewalkCheck.mappedMarkedCrossings>=1))
   throw new Error('5.26 360 reality audit: only actual OSM pedestrian way meshes and true marked crosswalks are allowed: '+JSON.stringify(sidewalkCheck));
  console.log('5.2.1 sidewalk road-edge diagnostics:',JSON.stringify(sidewalkCheck));
+ const crossingAudit=await page.evaluate(()=>window.__miloviceCrossingAudit||null);
+ if(!crossingAudit?.disabledRandomGraphCrosswalks||crossingAudit.inventedCrossings!==0||
+     crossingAudit.mappedMarkedCrossings<1||crossingAudit.paintedStripeSegments<1)
+  throw new Error('5.26 fictitious zebra crossing still present: '+JSON.stringify(crossingAudit));
+ const oldRealityAudit=await page.evaluate(()=>window.__miloviceLegacyRealityAudit||null);
+ if(!oldRealityAudit||oldRealityAudit.inspectedInZone<10||
+     oldRealityAudit.suppressedDoors<2||
+     oldRealityAudit.removedLegacy3DLabels<1||
+     !oldRealityAudit.globalGuessedStreetFurnitureDisabled)
+  throw new Error('5.26 legacy fictional props are still spawned: '+JSON.stringify(oldRealityAudit));
+ console.log('5.26 historic visual audit:',JSON.stringify({crossingAudit,oldRealityAudit}));
  // The imported character library starts asynchronously and may fall back safely
  // when a third-party CDN fails; verify the status and UI without blocking game startup.
  const humans=await page.evaluate(()=>window.__miloviceHumans||null);
@@ -319,7 +330,7 @@ try{
   if(!streetFurniture?.disabled||streetFurniture.objects!==0||
      streetFurniture.instances!==0||streetFurniture.drawMeshes!==0||
      !safety||safety.indexedRoutes<100||safety.segments<200||
-     safety.randomRoadTrees!==0||safety.randomRoadLamps!==0||
+     safety.randomRoadTrees!==0||safety.randomRoadLamps!==0||!safety.disabledRandomStreetProps||
      !(safety.mappedGreenTrees>=0)||!(safety.rejectedGreenTrees>=0))
    throw new Error('5.22 unsafe global street plants or lamps remain: '+JSON.stringify({streetFurniture,safety}));
   console.log('5.22 road-crossing and greenery safety:',JSON.stringify({streetFurniture,safety}));
