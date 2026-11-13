@@ -23,7 +23,7 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
   const ret={
    mode,loaded:[...assets.keys()],status:Object.fromEntries(status),
    playerReady:!!player,activeNpc:[...attached.values()].filter(v=>v.container.visible).length,
-   runtimeSkeletalWalk:!!(player?.boneState?.count)&&!player?.mixer,
+   runtimeSkeletalWalk:!!(player?.boneState?.nodes?.leftLeg&&player?.boneState?.nodes?.rightLeg)&&!player?.mixer,
    clips:player?.clips||[],bones:assets.get('casualMan')?.bones?.slice(0,56)||[],license:'CC0-1.0',fallback:!player
   };
   if(typeof window!=='undefined')window.__miloviceHumans=ret;
@@ -36,17 +36,26 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
   const all=[];
   imported.traverse(o=>{if(o.isBone)all.push(o)});
   const role=(side,type)=>{
-   const terms=side==='l'?['left','_l','.l','l_']:['right','_r','.r','r_'];
    return all.find(b=>{
-    const n=b.name.toLowerCase();
-    if(!terms.some(k=>n.includes(k)))return false;
-    if(type==='leg')return /upleg|upperleg|thigh|legupper|hip_leg/.test(n);
-    if(type==='arm')return /upperarm|uparm|shoulder|armupper/.test(n);
+    const n=b.name.toLowerCase(),clean=n.replace(/[^a-z]/g,'');
+    const matchesSide=side==='l'
+      ?(/left/.test(n)||/_l$|\.l$|l_/.test(n)||/^(?:upperleg|lowerleg|upperarm|lowerarm|shoulder|hand|foot)l$/.test(clean))
+      :(/right/.test(n)||/_r$|\.r$|r_/.test(n)||/^(?:upperleg|lowerleg|upperarm|lowerarm|shoulder|hand|foot)r$/.test(clean));
+    if(!matchesSide)return false;
+    if(type==='leg')return /upleg|upperleg|thigh|legupper/.test(n);
+    if(type==='knee')return /lowerleg|calf|shin/.test(n);
+    if(type==='arm')return /upperarm|uparm|armupper/.test(n);
+    if(type==='elbow')return /lowerarm|forearm/.test(n);
     return false;
    });
   };
-  const spine=all.find(b=>/spine|chest|torso/i.test(b.name));
-  const nodes={leftLeg:role('l','leg'),rightLeg:role('r','leg'),leftArm:role('l','arm'),rightArm:role('r','arm'),spine};
+  const spine=all.find(b=>/chest|torso|spine/i.test(b.name));
+  const nodes={
+   leftLeg:role('l','leg'),rightLeg:role('r','leg'),
+   leftKnee:role('l','knee'),rightKnee:role('r','knee'),
+   leftArm:role('l','arm'),rightArm:role('r','arm'),
+   leftElbow:role('l','elbow'),rightElbow:role('r','elbow'),spine
+  };
   const rest={};
   for(const [name,bone] of Object.entries(nodes))if(bone)rest[name]=bone.rotation.clone();
   return {nodes,rest,count:all.length};
@@ -56,8 +65,12 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
   const phase=record.phase,walk=moving?Math.sin(phase):0,sway=Math.sin(phase*.5);
   const {nodes,rest}=record.boneState;
   const rotate=(key,amount)=>{const b=nodes[key];if(b)b.rotation.x=rest[key].x+amount};
-  rotate('leftLeg',walk*.42);rotate('rightLeg',-walk*.42);
-  rotate('leftArm',-walk*.30);rotate('rightArm',walk*.30);
+  rotate('leftLeg',walk*.41);rotate('rightLeg',-walk*.41);
+  rotate('leftKnee',moving?Math.max(0,walk)*.26:0);
+  rotate('rightKnee',moving?Math.max(0,-walk)*.26:0);
+  rotate('leftArm',-walk*.28);rotate('rightArm',walk*.28);
+  rotate('leftElbow',moving?Math.max(0,-walk)*.12:0);
+  rotate('rightElbow',moving?Math.max(0,walk)*.12:0);
   rotate('spine',sway*(moving?.025:.014));
   // Contact movement subtly flexes the pose even on non-skeletal GLB exports.
   record.container.position.y=moving?Math.abs(Math.sin(phase))*.045:Math.sin(phase)*.004;
