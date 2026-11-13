@@ -1,3 +1,11 @@
+## Milovice RP 5.27.0 — skutečná pěší osa skrz nádraží (13. 11. 2026)
+
+- **Zásadní oprava vstupu:** našli jsme opomíjenou OSM cestu **1550920096** vedoucí přímo mezi oběma stranami nádražní budovy, navázanou na venkovní cestu **549346217**. Průchod se neodsouvá o ~2 m jen proto, aby se vešel do jedné části fasády. Správně se rozdělí stěny i přes jejich společné rohy.
+- **Dlažba a přístupy:** podlaha v průchodu se konečně posouvá *spolu s průchodem*; předtím zůstávala v podélném středu budovy. Zmizely čtyři odhadované propojovací pruhy dlažby — mapované pěší cesty už skutečný spoj obsahují.
+- **Věrnost:** vstupní body vycházejí z OSM, nikoli z tvrzení, že máme centimetrově přesné fotografie. Přesná šířka a dekorativní fasáda vyžadují další měření. Kontrolováno jednotkovým testem i browser WebGL + kolizními sondami; mobilní výkon chrání stávající batching a LOD.
+
+---
+
 ## Milovice RP 5.15 — mobilní výkon / optimalizace 27 FPS (13. 11. 2026)
 
 Po hlášení **27 FPS na telefonu** byla priorita přesunuta od přidávání výzdoby k obnově plynulosti. Oprava je zaměřena na reálné náklady GPU, nikoli na prázdné tvrzení o 60 FPS. Číslo z konkrétního mobilního zařízení nelze garantovat bez měření na tomto zařízení.
