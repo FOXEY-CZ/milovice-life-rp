@@ -103,7 +103,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('roof-guard-5285'))
+ if(!(await page.locator('#build-label').innerText()).includes('exact-station-seams-5286'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -225,6 +225,7 @@ try{
     roofVisual.sections.filter(p=>p.kind==='gable').length!==0||
     roofVisual.sections.filter(p=>p.kind==='hip').length!==3||
     roofVisual.sections.some(p=>!p.clippedToOSM||p.hasFakeEndCap||
+      !p.seamClosedToActualRoof||!Number.isFinite(p.maxFormerRoofWallGap)||
       p.areaError>1e-4||p.footprintOverhang!==0||p.outputTriangles<3||
       Math.hypot(p.axis.ax-roofVisual.globalAxis.ax,
        p.axis.az-roofVisual.globalAxis.az)>.001))
