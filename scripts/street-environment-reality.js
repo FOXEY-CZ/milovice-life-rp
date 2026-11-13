@@ -74,7 +74,7 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
  const emptyStats=()=>({sources:PHOTO_STREET_ENVIRONMENT.length,sceneCount:entries.size,
   minRoadClearance:data.length?Math.min(...data.map(v=>v.minimumRoadClearance)):null,
   chosenSides:data.map(v=>v.sideSign),
-  pavementPieces,roadRejected,unverifiedPhotoPavingDisabled:true,
+  pavementPieces,roadRejected,unverifiedPhotoPavingDisabled:true,checkedGreeneryAgainstRoads:true,
   drawMeshes,instances,featureCount,ids:[...entries],spatiallyApproximate:true,
   scope:'Photo-informed street environments, not exact surveyed positions'});
  function report(){if(typeof window!=='undefined')window.__miloviceStreetEnvironment=emptyStats()}
@@ -101,6 +101,15 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
   const p=placeOnRoad(anchor,along,sideDistance);
   return {x:p.x,y:terrainAt(p.x,p.z)+y,z:p.z,sx,sy,sz,ry};
  }
+ // Check EACH actual model footprint against all mapped vehicle and
+ // pedestrian surfaces, not only the source photo's rough camera anchor.
+ function photoGroundClearance(anchor,along,sideDistance,radius=.5){
+  const p=placeOnRoad(anchor,along,sideDistance);
+  const safe=!roadClearance||roadClearance.isClear(p.x,p.z,radius,.20);
+  if(!safe)roadRejected++;
+  return safe;
+ }
+ // Old modular street paving has been DISABLED by the strict reality pass.
  // Original modular street paving. These are visual surface details, not a
  // claim that every 2014 paving slab survives today. The road clearance
  // prevents slabs from painting over ANY mapped traffic lane or footpath.
@@ -146,6 +155,7 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
   // the second smaller crown gives the adjacent planted frontage depth.
   const trunks=[],crowns=[],smallCrowns=[],hedges=[],beds=[],soil=[],flowers=[],stems=[];
   for(const [along,size] of [[-17,1],[-4,.79]]){
+   if(!photoGroundClearance(anchor,along,side,.8*size))continue;
    const pos=itemAt(anchor,along,side,0);
    const y=terrainAt(pos.x,pos.z);
    trunks.push({...pos,y:y+1.40*size,sx:size,sy:size,sz:size});
@@ -153,13 +163,16 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
    smallCrowns.push({...pos,x:pos.x+.21*size,y:y+3.31*size,z:pos.z-.14*size,sx:1.15*size,sy:.93*size,sz:1.1*size});
   }
   for(let i=0;i<6;i++){
-   const a=-26+i*2.05,at=itemAt(anchor,a,side+Math.sign(side)*.76,0);
+   const a=-26+i*2.05,offset=side+Math.sign(side)*.76;
+   if(!photoGroundClearance(anchor,a,offset,.8))continue;
+   const at=itemAt(anchor,a,offset,0);
    beds.push({...at,y:at.y+.015,sx:2.00,sy:.06,sz:1.05,ry:Math.atan2(-anchor.uz,anchor.ux)});
    hedges.push({...at,y:at.y+.43,sx:1.68,sy:.79,sz:.6,ry:Math.atan2(-anchor.uz,anchor.ux)});
   }
   for(let i=0;i<23;i++){
    const along=-24+(i%12)*1.1;
    const out=side+Math.sign(side)*(.1+(Math.floor(i/12))*.4);
+   if(!photoGroundClearance(anchor,along,out,.25))continue;
    const at=itemAt(anchor,along,out,.1);
    stems.push({...at,y:at.y+.16});
    flowers.push({...at,y:at.y+.43,sx:.9,sy:.75,sz:.9});
@@ -171,7 +184,7 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
   addParts(group,geometries.hedge,colors.hedge,hedges);
   addParts(group,geometries.stem,colors.hedge,stems);
   addParts(group,geometries.flower,colors.flowers,flowers,{colorsList:[0xe6b355,0xe8d6c7,0xc78b88,0xf0e3be,0xa57cba]});
-  featureCount+=2+6+23;
+  featureCount+=trunks.length+hedges.length+flowers.length;
  }
  function makeSignMap(text){
   const c=document.createElement('canvas');c.width=512;c.height=88;
@@ -186,6 +199,7 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
  function signs(group,anchor,side){
   // These THREE sign inscriptions are visible in the dated public photo.
   // The exact pole position/orientation cannot be recovered from one image.
+  if(!photoGroundClearance(anchor,6,side+Math.sign(side)*.08,.4))return;
   const at=itemAt(anchor,6,side+Math.sign(side)*.08,0);
   addParts(group,geometries.wire,colors.metal,[{...at,y:at.y+2.02,sy:4.04,sx:2.8,sz:2.8}]);
   for(const [i,text] of ['Městská policie','Sběrný dvůr','Mirakulum'].entries()){
@@ -202,7 +216,11 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
   // Property edge in 2014 photo: low stone masonry and a dark vehicle gate.
   // Its exact footprint is not established; position is photo-relative.
   const stone=[],timber=[];
-  for(let i=0;i<4;i++)stone.push(itemAt(anchor,12+i*2.25,side+Math.sign(side)*4.30,.65,2.24,1.3,.34,Math.atan2(-anchor.uz,anchor.ux)));
+  for(let i=0;i<4;i++){
+   const along=12+i*2.25,offset=side+Math.sign(side)*4.30;
+   if(!photoGroundClearance(anchor,along,offset,.85))continue;
+   stone.push(itemAt(anchor,along,offset,.65,2.24,1.3,.34,Math.atan2(-anchor.uz,anchor.ux)));
+  }
   for(const a of [11.25,21.9])stone.push(itemAt(anchor,a,side+Math.sign(side)*4.30,.97,.48,1.94,.50));
   timber.push(itemAt(anchor,20.0,side+Math.sign(side)*4.36,1.09,3.5,1.77,.13,Math.atan2(-anchor.uz,anchor.ux)));
   addParts(group,geometries.box,colors.stone,stone);
@@ -226,6 +244,8 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
  function utility(group,anchor,side){
   // 2014 source clearly shows a timber utility pole and overhead lines;
   // wire routes are schematic, not a survey of the electricity grid.
+  if(!photoGroundClearance(anchor,28,side+Math.sign(side)*3.6,.52)||
+     !photoGroundClearance(anchor,-35,side+Math.sign(side)*3.6,.52))return;
   const a=itemAt(anchor,28,side+Math.sign(side)*3.6,0),b=itemAt(anchor,-35,side+Math.sign(side)*3.6,0);
   const poles=[a,b].map(p=>({...p,y:p.y+3.4,sx:1.1,sy:5.2/2.8,sz:1.1}));
   addParts(group,geometries.trunk,colors.pole,poles);
