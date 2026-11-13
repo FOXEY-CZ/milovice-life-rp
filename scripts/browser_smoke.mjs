@@ -27,6 +27,8 @@ try{
   throw new Error('4.9 station architecture missing: '+JSON.stringify(landmarkChecks));
  if(!landmarkChecks.stationForecourt||!landmarkChecks.stationStreetEntrance)
   throw new Error('5.1.1 station forecourt/entry missing: '+JSON.stringify(landmarkChecks));
+ if(landmarkChecks.stationFacadeWindows<8||!landmarkChecks.stationPassagePaving)
+  throw new Error('5.1.4 station facade windows or passage paving missing: '+JSON.stringify(landmarkChecks));
  if(landmarkChecks.platformTactileStrips<3||landmarkChecks.platformEdgeMeters<30)
   throw new Error('5.1.3 mapped station platform tactile edging missing: '+JSON.stringify(landmarkChecks));
  const diagnostics=await page.evaluate(()=>({rail:window.__miloviceRailDebug,models:window.__miloviceModelDebug,range:window.__miloviceDrawDistance}));
@@ -104,6 +106,20 @@ try{
  await page.locator('#rp-graphics-select').selectOption('balanced');
  await page.locator('#rp-spawn-close').click();
  console.log('Graphics: balanced and dynamic-shadow mode both rendered');
+ // Mobile screenshot regression: don't let the giant diagnostics box hide the city.
+ await page.setViewportSize({width:390,height:820});
+ await page.waitForTimeout(300);
+ const hudWidth=await page.locator('#hud').evaluate(el=>el.getBoundingClientRect().width);
+ if(hudWidth>250)throw new Error('Mobile HUD is still oversized: '+hudWidth);
+ if(!(await page.locator('#rp-hud-toggle').isVisible()))throw new Error('Mobile HUD info toggle missing');
+ await page.locator('#rp-hud-toggle').click();
+ if(!(await page.locator('#hud').evaluate(el=>el.classList.contains('rp-open'))))
+  throw new Error('Mobile HUD could not expand');
+ await page.locator('#rp-hud-toggle').click();
+ if(await page.locator('#hud').evaluate(el=>el.classList.contains('rp-open')))
+  throw new Error('Mobile HUD could not collapse');
+ console.log('5.1.4 mobile compact HUD and toggle: OK');
+
  console.log('Smoke OK: rendered 3D, terrain, walking, car, mission controls');
  if(errors.length)console.log('Nonfatal browser messages:',errors.slice(0,6));
  await context.close();
