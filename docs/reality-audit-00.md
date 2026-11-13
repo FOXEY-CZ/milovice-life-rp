@@ -114,3 +114,9 @@ residential road has lines; individual examples may later be recreated from
 licensed, geotagged views and mapped geometries. Counts exposed via
 `window.__miloviceCommerceReality` and the existing sidewalk geometry audit;
 static and browser checks prevent regression. No new meshes or materials.
+
+## Pass 0.6 — v5.28.0: 5. května as photographed, no synthetic lane paint
+
+**Evidence:** the 26 July **2014** photograph [*Milovice – 5. května*](https://commons.wikimedia.org/wiki/File:Milovice_-_5._kv%C4%9Btna.jpg), by Tiia Monto, geotagged **50.227797 / 14.884813** (CC BY-SA 4.0). In that view, the asphalt has **no marked continuous white edge stripes and no centre dashed line**. Existing code nevertheless painted edge-lines and alternating centre dashes automatically on every primary/secondary/tertiary OSM way, including the 5. května OSM segment 219273174.
+
+**Fix:** no inferred street edge or centre markings from road classification. Those two automatic generators are deleted; legitimate OSM marked-crossing paint logic remains, and car/driving asphalt paths are unchanged. This is conservative for areas that lack a photo, not a claim that every roadway in Milovice is unmarked in 2026. Confirm current markings street-by-street before reintroducing them. Debug: `window.__miloviceStreetGeometryAudit.inventedEdgeLinesDisabled` and `inventedCentreDashesDisabled`.
