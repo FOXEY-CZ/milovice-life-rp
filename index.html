@@ -2097,33 +2097,15 @@ function miloviceStationGroundFloor(pts,base,h,cx,cz){
   window.__miloviceLandmarkDebug.unverifiedExteriorCafeRemoved=true;
   window.__miloviceLandmarkDebug.unverifiedCafeFurnitureRemoved=true;
   window.__miloviceLandmarkDebug.unverifiedShopLabelRemoved=true;
-   // The opposite (street-facing) long wall receives its own station nameplate.
-   const candidates=[];
-   for(let k=0;k<pts.length;k++){
-    const a=pts[k],b=pts[(k+1)%pts.length],edgeLength=a.distanceTo(b);
-    if(edgeLength<7)continue;
-    const xm=(a.x+b.x)*.5,zm=(a.y+b.y)*.5;
-    candidates.push({a,b,xm,zm,edgeLength,side:(xm-cx)*(railProbe.x-cx)+(zm-cz)*(railProbe.y-cz)});
-   }
-   candidates.sort((a,b)=>a.side-b.side);
-   if(candidates.length){
-    const face=candidates[0],dx=face.b.x-face.a.x,dz=face.b.y-face.a.y;
-    let fx=-dz/face.edgeLength,fz=dx/face.edgeLength;
-    if(fx*(face.xm-cx)+fz*(face.zm-cz)<0){fx=-fx;fz=-fz}
-    const streetYaw=Math.atan2(fx,fz);
-    stationBoard('Milovice',face.xm+fx*.43,base+3.12,face.zm+fz*.43,streetYaw);
-    const ux=dx/face.edgeLength,uz=dz/face.edgeLength;
-    // Place retail/cafe side glazing away from the central pedestrian passage.
-    const sideOffset=Math.min(7.8,face.edgeLength*.30);
-    const entranceX=face.xm+ux*sideOffset+fx*.46,entranceZ=face.zm+uz*sideOffset+fz*.46;
-    archPart('stationFrames',entranceX,base+1.44,entranceZ,1.42,2.49,.14,streetYaw);
-    archPart('stationGlass',entranceX+fx*.11,base+1.46,entranceZ+fz*.11,1.16,2.22,.09,streetYaw);
-    archPart('stationTimber',entranceX,base+2.90,entranceZ,1.84,.16,.22,streetYaw);
-    // No building-number plate without a verified address and matching photograph.
-    archPart('stationPaving',entranceX+fx*.65,base+.045,entranceZ+fz*.65,2.7,.085,1.4,streetYaw);
-    window.__miloviceLandmarkDebug.stationStreetSign=true;
-    window.__miloviceLandmarkDebug.stationStreetEntrance=true;
-   }
+   // Photo audit 5.26: old code painted a SECOND fictitious "entrance",
+   // canopy and station nameboard on an arbitrary opposite long facade.
+   // It did not align with OSM footway 549346217 or a documented camera
+   // coordinate and confused the actual walk-through entrance.
+   // Use only the newly aligned TWO real passage openings above.
+   window.__miloviceLandmarkDebug.stationStreetSign=false;
+   window.__miloviceLandmarkDebug.stationStreetEntrance=false;
+   window.__miloviceLandmarkDebug.unverifiedStreetDoorRemoved=true;
+   window.__miloviceLandmarkDebug.actualEntranceIsStationPassage=true;
  }
 }
 // Photo-verified corner building Mírová 243/36: ivory walls, dark-red steep
