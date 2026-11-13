@@ -24,7 +24,7 @@ try{
     !gfx.surfaceMaterials||Object.values(gfx.surfaceMaterials).some(v=>v!==true))
   throw new Error('Graphics 2.0 materials did not initialize correctly: '+JSON.stringify(gfx));
  console.log('5.2.0 shared city surfaces:',JSON.stringify(gfx.surfaceMaterials));
- if(!(await page.locator('#build-label').innerText()).includes('analog-532'))
+ if(!(await page.locator('#build-label').innerText()).includes('facing-533'))
   throw new Error('5.3.0 build identifier missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -45,6 +45,8 @@ try{
  const animated=await page.evaluate(()=>window.__miloviceHumans);
  if(!(animated.heightMeters>=1.65&&animated.heightMeters<=2.2))throw new Error('5.3.2 the character is still giant or floating; height='+animated.heightMeters+' originalGLBScale='+JSON.stringify(animated.originalGLBScale));
  if(animated.armsDown!==true)throw new Error('5.3.2 human is still T-posed: '+JSON.stringify(animated));
+  if(Math.abs(animated.facingCorrectionRadians-Math.PI)>.0001)
+   throw new Error('5.3.3 import needs +Z to -Z heading correction: '+JSON.stringify(animated));
  console.log('5.3.2 normalized humanoid standing height:',animated.heightMeters,'m, source scale',animated.originalGLBScale);
  if(animated.bones?.length<35||animated.runtimeSkeletalWalk!==true)
   throw new Error('5.3.0 loaded human has no usable locomotion skeleton: '+JSON.stringify(animated));
@@ -204,17 +206,24 @@ try{
  await mobile.mouse.move(cx,cy-rad*.44);
  await mobile.waitForTimeout(650);
  const slow=await mobile.evaluate(()=>window.__miloviceMovementDebug);
- if(!(slow.speed>.1&&slow.speed<3.1&&slow.stick.magnitude>.3&&!slow.running))
+ if(!(slow.speed>.1&&slow.speed<3.1&&slow.stick.magnitude>.3&&!slow.running&&slow.facingDot>.93))
   throw new Error('Partial joystick deflection did not produce walking: '+JSON.stringify(slow));
  await mobile.mouse.move(cx,cy-rad*.99);await mobile.waitForTimeout(800);
  const fast=await mobile.evaluate(()=>window.__miloviceMovementDebug);
- if(!(fast.speed>3.1&&fast.running&&fast.speed>slow.speed))
+ if(!(fast.speed>3.1&&fast.running&&fast.speed>slow.speed&&fast.facingDot>.93))
   throw new Error('Full joystick deflection did not produce running: '+JSON.stringify({slow,fast}));
+ // Moving the thumb behind the center must make the character turn around,
+ // not play forward locomotion while the face points backwards.
+ await mobile.mouse.move(cx,cy+rad*.82);await mobile.waitForTimeout(720);
+ const backward=await mobile.evaluate(()=>window.__miloviceMovementDebug);
+ if(!(backward.speed>2.5&&backward.travel.z>0&&backward.facingDot>.93))
+  throw new Error('5.3.3 backward joystick rotates the model to actual travel direction: '+JSON.stringify(backward));
+ await mobile.screenshot({path:'browser-artifacts/milovice-facing-backward.png'});
  await mobile.mouse.up();await mobile.waitForTimeout(460);
  const released=await mobile.evaluate(()=>window.__miloviceMovementDebug);
  if(released.stick.magnitude!==0||released.speed>.08)
   throw new Error('Joystick failed to stop when thumb released: '+JSON.stringify(released));
- console.log('5.3.2 mobile analog control verified:',JSON.stringify({walk:slow.speed,run:fast.speed,released:released.speed}));
+ console.log('5.3.3 joystick + GLB front alignment verified:',JSON.stringify({walk:slow.speed,run:fast.speed,forwardDot:slow.facingDot,runDot:fast.facingDot,reverseDot:backward.facingDot,released:released.speed}));
  await mobile.screenshot({path:'browser-artifacts/milovice-analog-joystick.png'});
  if(mobileErrors.length)throw new Error('Mobile JavaScript errors: '+mobileErrors.slice(0,3).join(' | '));
  await mobileContext.close();
