@@ -1,3 +1,13 @@
+## Milovice RP 5.28.6 — DOKONČENÍ STŘECH NAD ZDMI NÁDRAŽÍ (PART 8)
+
+- **Oprava děr:** u členitých a šikmých částí OSM půdorysu může sedlová/valbová střecha ležet nad rovnou hranou zdi. Nový modul přesně vypočítá její skutečnou výšku podél celého obvodu a vytvoří chybějící štukovou výplň pouze v existující mezeře.
+- **Bez nové vymyšlené střechy:** výplň přesně sleduje stávající sklon všech střešních rovin; je po částech rozdělena i v místech změny roviny, nesmí přesahovat půdorys ani zakrýt průchod nádražím.
+- **Tři části stanice:** levé a pravé přízemní křídlo a vyvýšená střední část. Nové trojúhelníky se pro každou střechu slučují do jediného 3D objektu, aby se FPS zbytečně nezhoršovaly.
+- **Regresní ověření:** L-půdorys, sedlová i valbová střecha, obrácené pořadí rohů, nepřesahující geometrie a plná WebGL kontrola po nasazení.
+- Geometricky navazující střecha neznamená, že byl její skutečný tvar již změřen podle 360° fotografií. Na to navazuje samostatný program budova po budově.
+
+---
+
 ## Milovice RP 5.28.5 — PŘESNĚJŠÍ STŘECHY A LEPŠÍ VÝKON (PART 8)
 
 - **Sedlové střechy se nepřidávají na falešně obdélníkové domy.** Kontroluje se pravoúhlost, délky a rovnoběžnost stěn i orientace hřebene. Nepravidelné čtyřúhelníky dostanou bezpečnější valbu či jednoduchou střechu.
