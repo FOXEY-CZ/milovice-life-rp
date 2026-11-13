@@ -1,3 +1,18 @@
+## 5.29.1 — Oprava celého profilu střechy Školská 220/1
+
+**Zdroj:** [ŠJů, Wikimedia Commons, 30. 5. 2024](https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_1.jpg), CC BY 4.0. Fotografie ukazuje přízemní plnou fasádu a vysokou tmavou střechu s obytným podkrovím a **dvěma výraznými příčnými štíty s obloukovými okny**. Předchozí herní model měl nesprávné druhé plné fasádní podlaží a izolované „krabičky“ vikýřů.
+
+**Konkrétní změny:**
+
+- OSM 118487980 má nepravidelný sedmibodový půdorys. Hlavní čtyřsklonová střecha používá stále jeho původní identifikaci a obrys. Nové souvislé svislé plochy od vrchu zdiva po matematickou střešní rovinu a 30cm uzavřené okapní přesahy zabraňují pohledu skrz dům pod šikmou střechou.
+- Dva výrazné štítové prvky mají nové originální spojité střešní plochy, podbití, štítové boky a zakončení. Původní samostatně rotované kvádry střech se u této budovy **vůbec nepoužívají**.
+- Na základě foto-proporcí je výška **plné obvodové stěny k okapu přibližně 3,75 m**, zatímco druhá mapovaná úroveň je ztvárněna jako podkroví **pod hlavní střechou**, nikoliv plné druhé patro s pravidelnou řadou oken. Přibližné výšky nejsou geodeticky změřené.
+- Výrazné příčné štíty mají rozdílné orientační rozměry a přibližně 43° sklon odvozený z vizuálního poměru na fotografii; přesný rozměr, poloha oken a boční či zadní fasáda zatím **nejsou 360° doložené**.
+- Oprava se uplatní **jen** na OSM ID 118487980. Nádraží, kostel, okolní jiné domy, cesty, průchod a mobilní ovládání se nemění.
+- Matematická kontrola používá přímo sedm hran z `data/milovice-osm.json` a vyžaduje uzavřený spoj, podbití, roviny střech a průchod browserovým WebGL testem. Uživatelovy screenshoty z mobilu jsou finální vizuální kontrola.
+
+---
+
 # Milovice RP — Street pass 02: Školská 220/1 and adjoining roofs (v5.29.0)
 
 **13 November 2026 — first building-by-building reconstruction after station roof approval.**
