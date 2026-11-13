@@ -48,7 +48,8 @@ console.log('Photo-street environment OK:',JSON.stringify({reference:ref.id,road
 // shop=supermarket. Keep surface geometry on actual OSM streets/footways.
 const gameHTML=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert(gameHTML.includes('residentialInventedEdgeLinesDisabled:true'));
-assert(gameHTML.includes("if(kind==='primary'||kind==='secondary'||kind==='tertiary'){"));
+assert(gameHTML.includes('inventedEdgeLinesDisabled:true'));
+assert(gameHTML.includes('inventedCentreDashesDisabled:true'));
 assert(!gameHTML.includes("kind==='tertiary'||kind==='residential'"));
 assert(gameHTML.includes('inventedRetailPadsRemoved:true'));
 assert(gameHTML.includes('inventedRetailBikeStandsRemoved:true'));
