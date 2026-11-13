@@ -7,7 +7,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
   sites=[],radius=240,maxBuildings=68,terrainAt=()=>0
 }={}){
  const chunks=new Map(),selected=new Set();
- const state={buildings:0,solidWalls:0,cutoutWindows:0,cutoutDoors:0,gables:0,
+ const state={buildings:0,verifiedOverrides:0,solidWalls:0,cutoutWindows:0,cutoutDoors:0,gables:0,
   detailInstances:0,drawMeshes:0,chunkCount:0};
  const box=new THREE.BoxGeometry(1,1,1),glassPlane=new THREE.PlaneGeometry(1,1);
  const mats={
@@ -80,12 +80,12 @@ export function makeMiloviceHeroArchitecture(THREE,{
   if(typeof window!=='undefined')window.__miloviceHeroArchitecture={...state,
    selectedIds:[...selected].slice(0,8),radius,maxBuildings};
  }
- function supports({points,height,floors,type,index,id,excluded=false}){
-  if(excluded||selected.size>=maxBuildings||points?.length<4||points.length>10||
-    !(height>=2.7&&height<=12.5)||floors>3)return false;
+ function supports({points,height,floors,type,index,id,excluded=false,override=null}){
+  if(excluded||(!override&&selected.size>=maxBuildings)||points?.length<4||points.length>10||
+    !(height>=2.7&&height<=(override?25:12.5))||floors>(override?6:3))return false;
   if(!['house','residential','yes','detached','semidetached_house','terrace'].includes(type))return false;
   const center=points.reduce((a,p)=>({x:a.x+p.x/points.length,z:a.z+p.y/points.length}),{x:0,z:0});
-  if(!sites.some(p=>Math.hypot(p.x-center.x,p.z-center.z)<radius))return false;
+  if(!override&&!sites.some(p=>Math.hypot(p.x-center.x,p.z-center.z)<radius))return false;
   const xs=points.map(p=>p.x),zs=points.map(p=>p.y);
   const width=Math.max(...xs)-Math.min(...xs),depth=Math.max(...zs)-Math.min(...zs);
   if(width<4||depth<4||width>44||depth>44||width*depth>850)return false;
@@ -93,15 +93,16 @@ export function makeMiloviceHeroArchitecture(THREE,{
   if(selected.has(identity))return false;
   return true;
  }
- function addBuilding({points,base,height,floors,type,index,id,excluded=false}){
-  if(!supports({points,height,floors,type,index,id,excluded}))return false;
+ function addBuilding({points,base,height,floors,type,index,id,excluded=false,override=null}){
+  if(!supports({points,height,floors,type,index,id,excluded,override}))return false;
   const identity=id??('local-'+index);
   selected.add(identity);
   const pts=[...points];
   if(pts.length>4&&pts[0].distanceTo(pts[pts.length-1])<.10)pts.pop();
   const centroid=pts.reduce((a,p)=>({x:a.x+p.x/pts.length,z:a.z+p.y/pts.length}),{x:0,z:0});
   const chunk=bucket(centroid.x,centroid.z);
-  const tone=colors[Math.abs(Number(id)||index)%colors.length];
+  const tone=override?.facadeColor||colors[Math.abs(Number(id)||index)%colors.length];
+  if(override)state.verifiedOverrides++;
   const sides=pts.map((a,i)=>({a,b:pts[(i+1)%pts.length],len:a.distanceTo(pts[(i+1)%pts.length])}));
   const entrySide=sides.reduce((best,s,i)=>s.len>best.len?{i,len:s.len}:best,{i:0,len:0}).i;
   const levels=Math.min(3,Math.max(1,floors));
@@ -114,7 +115,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
    if(nx*(mx-centroid.x)+nz*(mz-centroid.z)<0){nx=-nx;nz=-nz}
    const yaw=Math.atan2(nx,nz),holes=[];
    const entry=sideIndex===entrySide&&len>5;
-   const n=Math.min(6,Math.max(1,Math.floor((len-1.4)/3.0)));
+   const n=override?.windowsPerWall||Math.min(6,Math.max(1,Math.floor((len-1.4)/3.0)));
    const entranceU=len*.5;
    // Ground-floor front door has an actual hole and a recessed wooden panel,
    // not a decal pasted onto a solid wall.

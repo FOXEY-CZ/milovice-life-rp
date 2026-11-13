@@ -71,13 +71,26 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
   <label for="facade">Fasáda a odstín</label><input id="facade" placeholder="např. světle okrová">
   <label for="windows">Počet a rozmístění oken</label><input id="windows" placeholder="např. 4× v přízemí, 5× patro">
   <label for="doors">Vstupy, výlohy, přístavby</label><input id="doors" placeholder="např. dveře vlevo, schody">
+  <h2 style="margin-top:18px">3D údaje pro hru</h2>
+  <p class="muted">Jen ověřené karty se po znovunačtení hry mohou propsat do 3D. Nevyplněné údaje ponechají původní model. Odhad nesmíš vydávat za přesné měření.</p>
+  <div class="row">
+   <div><label for="facadeColor">Barva fasády HEX</label><input id="facadeColor" placeholder="#d5c2aa" pattern="#[0-9a-fA-F]{6}" maxlength="7"></div>
+   <div><label for="roofColor">Barva střechy HEX</label><input id="roofColor" placeholder="#884b3d" pattern="#[0-9a-fA-F]{6}" maxlength="7"></div>
+  </div>
+  <div class="row">
+   <div><label for="roofKind">Geometrie střechy</label><select id="roofKind">
+    <option value="">Automatická</option><option value="gable">Sedlová</option><option value="hip">Valbová</option><option value="flat">Plochá</option>
+   </select></div>
+   <div><label for="windowsPerWall">Okna na stěně (zatím přibližně)</label><input id="windowsPerWall" type="number" min="1" max="12" step="1" placeholder="nezadáno"></div>
+  </div>
   <label for="source">Odkaz na oprávněně použitelný zdroj</label><input id="source" type="url" placeholder="https://...">
   <label for="notes">Poznámky / nejistoty</label><textarea id="notes" placeholder="Co je jisté? Kterou stranu domu nevidíme?"></textarea>
   <button class="primary" type="submit" style="width:100%">💾 Uložit kartu domu</button>
+  <div class="links"><a href="./index.html" target="_blank" rel="noopener">🎮 Spustit hru se změnami (stejné zařízení)</a></div>
   <div id="message" role="status"></div>
  </form>
  <h2>3. Evidence projektu</h2>
- <p>Editor ukládá rozepsané karty <strong>lokálně v tomto prohlížeči</strong>. Aby se stav neztratil při změně zařízení a mohl být použit pro modelování v repozitáři, exportuj soubor JSON. Automatický zápis na GitHub zatím není zapojený.</p>
+ <p>Editor ukládá rozepsané karty <strong>lokálně v tomto prohlížeči</strong>. Hra na stejném webu při novém spuštění načte údaje označené jako „Ručně ověřeno“ a použije jejich číselné/barvové hodnoty pro podporované obytné budovy. Mezi zařízeními se data nesynchronizují; k tomu slouží export/import JSON. Není to automatická rekonstrukce podle fotografií.</p>
  <div class="row"><button id="export" type="button" style="flex:1">⬇ Export JSON</button><button id="import" type="button" style="flex:1">⬆ Import JSON</button></div>
  <input id="file" type="file" accept=".json,application/json" hidden>
  <footer>Základní půdorysy a cesty: © přispěvatelé OpenStreetMap (ODbL). Foto reference zobrazuje výhradně externí poskytovatel; respektuj jejich podmínky. Při nedostupnosti panoramatu nevymýšlej detaily.</footer>
@@ -186,7 +199,7 @@ function selectBuilding(id){
  $('mapy').href='https://mapy.com/cs/zakladni?x='+lon+'&y='+lat+'&z=19';
  $('mapillary').href='https://www.mapillary.com/app/?lat='+lat+'&lng='+lon+'&z=18';
  $('osm').href='https://www.openstreetmap.org/way/'+b.id;
- for(const k of ['stage','floors','height','roof','facade','windows','doors','source','notes'])
+ for(const k of ['stage','floors','height','roof','facade','windows','doors','facadeColor','roofColor','roofKind','windowsPerWall','source','notes'])
   $(k).value=d[k]??(k==='stage'?'todo':'');
  $('message').textContent='';
  renderLists();
@@ -233,11 +246,14 @@ $('inspector').addEventListener('submit',event=>{
  event.preventDefault();if(!chosen)return;
  const d={id:chosen.id,street:chosen.street,lat:chosen.center[0],lon:chosen.center[1],
    changedAt:new Date().toISOString()};
- for(const k of ['stage','floors','height','roof','facade','windows','doors','source','notes'])
+ for(const k of ['stage','floors','height','roof','facade','windows','doors','facadeColor','roofColor','roofKind','windowsPerWall','source','notes'])
   d[k]=$(k).value.trim();
  // A verified card should have an independently traceable source and actual notes.
- if(d.stage==='verified'&&(!d.source||(!d.notes&&!d.facade&&!d.roof))){
-  $('message').textContent='⚠ Ověřeno vyžaduje zdroj a aspoň jedno pozorování.';return;
+ if(d.stage==='verified'&&(!d.source||!d.notes)){
+  $('message').textContent='⚠ Ověřeno vyžaduje odkaz na zdroj a poznámku s pozorováním.';return;
+ }
+ if(d.stage==='verified'&&![d.floors,d.height,d.facadeColor,d.roofColor,d.roofKind,d.windowsPerWall].some(Boolean)){
+  $('message').textContent='⚠ Aby se model změnil, vyplň aspoň jeden ověřený 3D parametr.';return;
  }
  records[String(chosen.id)]=d;save();renderLists();
  const layer=polygons.get(String(chosen.id));if(layer)layer.setStyle(style(chosen));

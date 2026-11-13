@@ -1,4 +1,4 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.7.0 Architecture Geometry Update · build 20261113-architecture-570</title><meta name="milovice-build" content="20261113-architecture-570"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
+<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.8.0 Street Architecture Bridge · build 20261113-streetbridge-580</title><meta name="milovice-build" content="20261113-streetbridge-580"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
 #realmap{position:fixed;inset:0;z-index:100;background:#101e2c;display:none;flex-direction:column;color:#fff;font-family:system-ui}#realmap.open{display:flex}#maphead{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#142c3e}#maphead button{flex:0 0 auto;min-height:40px}#osmmap{flex:1;min-height:0;touch-action:pan-x pan-y}#mapfoot{padding:8px 12px;background:#142c3e;font-size:12px;line-height:1.4}#maplaunch{position:fixed;right:12px;top:75px;z-index:45;background:#193d58;border:1px solid #93b4c7;box-shadow:0 2px 8px #0006}#realmap .leaflet-container{background:#d7e5da}#realmap a{color:#aedbff} @media(max-width:700px){#maplaunch{top:72px;right:8px;padding:7px 10px;font-size:12px;min-height:36px}#maphead{font-size:13px}}
 </style><style>#perf{position:fixed;top:10px;right:10px;z-index:42;background:#102437e8;border:1px solid #77a7b6;border-radius:10px;padding:7px 10px;color:#c8f6d4;font:600 12px system-ui;pointer-events:none;min-width:100px;text-align:center}#perf small{display:block;color:#c9d5dd;font-size:10px;font-weight:400}@media(max-width:700px){#perf{top:8px;right:8px;padding:5px 7px;font-size:11px}#maplaunch{top:100px!important}}</style><style id="milovice-modern-ui">
 #hud{background:linear-gradient(145deg,rgba(9,24,39,.88),rgba(20,44,61,.82));backdrop-filter:blur(12px);border:1px solid rgba(176,214,235,.3);box-shadow:0 10px 30px #061b2b33;border-radius:18px}
@@ -66,7 +66,7 @@
 #rp-joystick[data-intensity="běh"]{border-color:#ffd36e}#rp-joystick[data-intensity="běh"] #rp-joystick-knob{background:linear-gradient(145deg,#e3a84c,#8e5720);border-color:#fff0ae}
 @media(max-width:850px){html.rp-analog-controls #rp-joystick{display:block}html.rp-analog-controls #controls button[data-key]{display:none!important}}
 @media(max-width:400px){#rp-joystick{width:113px;height:113px;left:8px}}
-</style></head><body><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.7.0 · build <strong id="build-label">20261113-architecture-570</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
+</style></head><body><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.8.0 · build <strong id="build-label">20261113-streetbridge-580</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
 <section class="rp-overlay" id="rp-spawn" aria-label="Výběr vozidla" hidden>
  <div class="rp-modal">
   <div class="rp-modal-head"><div><h2>🚘 Jak chceš začít?</h2><p>Vyber si vozidlo nebo vyraz pěšky. Vozidla slouží pro volnou jízdu.</p></div><button id="rp-spawn-close" type="button">✕</button></div>
@@ -176,7 +176,8 @@ import {addLanduseFeature,forestInstancePlacements} from './scripts/landscapes.j
 import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
-import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=570';
+import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=580';
+import {loadLocalArchitectureCards} from './scripts/street-architecture.js?v=580';
 import {makeCitySurfaceKit,makeContactShadow} from './scripts/graphics2.js?v=520';
 import {makeMiloviceVisualKit,planMiloviceStreetProps,makeVehicleContactShadows} from './scripts/visual-overhaul.js?v=560';
 import {makeMiloviceHumanAssets} from './scripts/human-assets.js?v=533-forward';
@@ -187,7 +188,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261113-architecture-570';
+const BUILD_ID='20261113-streetbridge-580';
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x9bc8ec);scene.fog=new THREE.Fog(0x9bc8ec,280,850);const camera=new THREE.PerspectiveCamera(67,innerWidth/innerHeight,.1,1400);const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.25));renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x65725a,1.6));const sun=new THREE.DirectionalLight(0xffefcc,1.7);sun.position.set(50,100,30);scene.add(sun);
 
 // Visual pipeline 3.8: cinematic tonemapping, improved sky and material response.
@@ -1149,6 +1150,27 @@ let stationMappedFootway=null; // OSM 549346217: mapped pedestrian route from 5.
 const osmRailways=[];
 let cityAreaManifest=null;
 const loadedCityAreas=new Set(['old']),loadingCityAreas=new Set(),seenCityOSMWays=new Set();
+// Editor/game share an origin, so checked observations can affect *this browser's*
+// 3D view after reloading. Nothing is uploaded or globally applied.
+const localArchitecture=loadLocalArchitectureCards(localStorage);
+const localPaintMaterials=new Map(),appliedArchitectureIds=new Set();
+function localArchitectureMaterial(base,hex){
+ if(!hex)return base;
+ const key=base.uuid+':'+hex;
+ if(!localPaintMaterials.has(key)){
+  const variant=base.clone();variant.color.set(hex);variant.needsUpdate=true;
+  localPaintMaterials.set(key,variant);
+ }
+ return localPaintMaterials.get(key);
+}
+function architectureStatus(){
+ window.__miloviceArchitectureBridge={
+  loadedVerified:localArchitecture.size,applied:appliedArchitectureIds.size,
+  appliedIds:[...appliedArchitectureIds].slice(0,30),
+  modelStatus:'verified-local-only',requiresReload:true
+ };
+}
+architectureStatus();
 const osmBtn=document.createElement('button');
 osmBtn.id='osm3d';osmBtn.type='button';osmBtn.textContent='⏳ Načítám Milovice…';
 osmBtn.style.cssText='position:fixed;right:12px;top:132px;z-index:46;background:#193d58;border:1px solid #93b4c7;min-height:39px;font-size:12px;padding:8px';
@@ -2165,11 +2187,15 @@ function osmBuilding(points,tags,index,osmId=null){
  const isMirova36=osmId===202367254; // verified Mírová 243/36 photographed May 2024, cadastral 3 floors incl. attic.
  const isGrocer74=osmId===202298645; // verified Mírová 74/4, Můj obchod - Potraviny D a Š.
  const isBikeTower=osmId===1011197691; // mapped round 118-bike automated storage near station.
+ const isEditableHouse=['house','residential','yes','detached','terrace','semidetached_house'].includes(type)&&
+  !isSchool&&!isChurch&&!isStation&&!isBlueStar&&!isMirova36&&!isGrocer74&&!isBikeTower;
+ const modelCard=isEditableHouse?localArchitecture.get(String(osmId))||null:null;
+ if(modelCard){appliedArchitectureIds.add(String(osmId));architectureStatus()}
  // OSM building:levels=0 is an explicit tag, not a reason to assume two residential storeys.
  // Retail, storage and industrial buildings without a positive level count default to one storey.
  const mappedLevels=Number(tags['building:levels']);
  const defaultLevels=(isGarage||isIndustrial||['retail','supermarket','commercial','warehouse','shed','service'].includes(type))?1:2;
- const floors=Math.min(16,Math.max(1,Number.isFinite(mappedLevels)&&mappedLevels>0?mappedLevels:defaultLevels));
+ const floors=modelCard?.floors??Math.min(16,Math.max(1,Number.isFinite(mappedLevels)&&mappedLevels>0?mappedLevels:defaultLevels));
  const isPanelBlock=(type==='residential'||type==='yes')&&floors>=4;
  const isCommerce=['commercial','retail','supermarket','hotel'].includes(type);
  // Named OSM shops receive a separate ground-floor glass frontage; avoid generic residential windows over it.
@@ -2178,6 +2204,7 @@ function osmBuilding(points,tags,index,osmId=null){
  const explicitHeight=parseFloat(tags.height);
  let h=Math.min(isPanelBlock?54:36,Math.max(isGarage?2.35:3.0,Number.isFinite(explicitHeight)&&explicitHeight>2?explicitHeight:isBlueStar?7.15:isMirova36?6.75:isGrocer74?3.65:isStation?7.4:isGarage?2.75:isIndustrial?5.3:isChurch?11.5:floors*(isSchool?3.4:3.05)));
   if(!(Number.isFinite(explicitHeight)&&explicitHeight>2)&&photoEstimatedStoreHeights.has(osmId))h=photoEstimatedStoreHeights.get(osmId);
+ if(modelCard&&modelCard.height!==null)h=modelCard.height;
  const isHouse=!isBlueStar&&!isMirova36&&!isGrocer74&&(type==='house'||(type==='residential'&&floors<=2&&w*d<1000));
  const neighborhoodRoad=osmNearestRoadName((Math.min(...xs)+Math.max(...xs))*.5,(Math.min(...zs)+Math.max(...zs))*.5);
  const oldCenter=neighborhoodRoad==='5. května';
@@ -2208,7 +2235,8 @@ function osmBuilding(points,tags,index,osmId=null){
    }
   }
  }
- const wallMat=tags.shop==='supermarket'?(tags.name==='Tesco'?tescoCorrugation:tags.name==='Penny'?pennyFacade:groceryCladding):isBlueStar?blueStarWalls:isMirova36?mirova36Walls:isGrocer74?grocerWalls:isSchool?schoolWalls:isChurch?churchWalls:isStation?stationWalls:isGarage?garageWalls:isPanelBlock?panelFacadeMaterials[braniborska?1:rakouska?3:Math.abs(osmId||index)%panelFacadeMaterials.length]:isCommerce?commerceFacadeMaterials[Math.abs(osmId||index)%commerceFacadeMaterials.length]:isIndustrial?workWalls:osmBuildingMaterial[(oldCenter?index+3:index)%osmBuildingMaterial.length];
+ const baseWallMat=tags.shop==='supermarket'?(tags.name==='Tesco'?tescoCorrugation:tags.name==='Penny'?pennyFacade:groceryCladding):isBlueStar?blueStarWalls:isMirova36?mirova36Walls:isGrocer74?grocerWalls:isSchool?schoolWalls:isChurch?churchWalls:isStation?stationWalls:isGarage?garageWalls:isPanelBlock?panelFacadeMaterials[braniborska?1:rakouska?3:Math.abs(osmId||index)%panelFacadeMaterials.length]:isCommerce?commerceFacadeMaterials[Math.abs(osmId||index)%commerceFacadeMaterials.length]:isIndustrial?workWalls:osmBuildingMaterial[(oldCenter?index+3:index)%osmBuildingMaterial.length];
+ const wallMat=modelCard?.facadeColor?localArchitectureMaterial(baseWallMat,modelCard.facadeColor):baseWallMat;
  // Ordinary buildings are solid on the ground floor; the open station is handled
  // as separate wall segments so the real public passage never becomes blocked.
  if(!isStation)collisionWorld.addPolygon(pts.map(p=>({x:p.x,z:p.y})),{id:osmId});
@@ -2218,7 +2246,8 @@ function osmBuilding(points,tags,index,osmId=null){
  // openings in the wall mesh (not opaque wall behind a window decal).
  const heroFacade=heroBuildings.addBuilding({
   points:pts,base:baseHeight,height:h,floors,type,index,id:osmId,
-  excluded:!isHouse||isBlueStar||isMirova36||isGrocer74||isGarage||isIndustrial||isSchool||isChurch||isCommerce||isBikeTower
+  excluded:!isHouse||isBlueStar||isMirova36||isGrocer74||isGarage||isIndustrial||isSchool||isChurch||isCommerce||isBikeTower,
+  override:modelCard
  });
  if(!heroFacade){
   const mesh=new THREE.Mesh(geometry,wallMat);
@@ -2233,10 +2262,14 @@ function osmBuilding(points,tags,index,osmId=null){
  const roofGeo=new THREE.ShapeGeometry(roofShape);roofGeo.rotateX(-Math.PI/2);
  const roof=new THREE.Mesh(roofGeo,osmRoofPalette[index%osmRoofPalette.length]);
  roof.position.y=baseHeight+h+.025;
-  const roofMat=isSchool?osmRoofPalette[4]:oldCenter?osmRoofPalette[0]:osmRoofPalette[index%osmRoofPalette.length];
-  const pitched=tags.name==='Penny'&&tags.shop==='supermarket'?stationGabledRoof(pts,baseHeight,h,2.65,pennyRoof):isHouse?miloviceGableRoof(pts,baseHeight,h,roofMat):null;
-  const hip=!pitched&&(isHouse||isSchool||isChurch||isStation||isBlueStar||isMirova36)?miloviceHipRoof(pts,baseHeight,h,isChurch?osmRoofPalette[4]:isStation?osmRoofPalette[0]:isMirova36?mirova36Roof:isBlueStar?osmRoofPalette[1]:roofMat,isChurch?4.3:isStation?2.6:isBlueStar?.65:isMirova36?2.9:isSchool?1.05:Math.min(2.3,Math.min(w,d)*.25)):null;
-  if(pitched||hip)osmLayer.add(pitched||hip);else osmLayer.add(roof);
+  const baseRoofMat=isSchool?osmRoofPalette[4]:oldCenter?osmRoofPalette[0]:osmRoofPalette[index%osmRoofPalette.length];
+  const roofMat=modelCard?.roofColor?localArchitectureMaterial(baseRoofMat,modelCard.roofColor):baseRoofMat;
+  const roofPreference=modelCard?.roofKind||'auto';
+  const pitched=tags.name==='Penny'&&tags.shop==='supermarket'?stationGabledRoof(pts,baseHeight,h,2.65,pennyRoof):isHouse&&roofPreference!=='flat'&&roofPreference!=='hip'?miloviceGableRoof(pts,baseHeight,h,roofMat):null;
+  const hip=roofPreference!=='flat'&&!pitched&&(roofPreference==='hip'||roofPreference==='auto')&&(isHouse||isSchool||isChurch||isStation||isBlueStar||isMirova36)?
+   miloviceHipRoof(pts,baseHeight,h,isChurch?osmRoofPalette[4]:isStation?osmRoofPalette[0]:isMirova36?mirova36Roof:isBlueStar?osmRoofPalette[1]:roofMat,
+   isChurch?4.3:isStation?2.6:isBlueStar?.65:isMirova36?2.9:isSchool?1.05:Math.min(2.3,Math.min(w,d)*.25)):null;
+  if(pitched||hip)osmLayer.add(pitched||hip);else{roof.material=roofMat;osmLayer.add(roof)}
   if(isChurch)miloviceChurchTower(pts,baseHeight,h);
    if(isBlueStar)miloviceBlueStarDetail(pts,baseHeight,h,centerX,centerZ);
    if(isMirova36)miloviceMirova36Detail(pts,baseHeight,h,centerX,centerZ);
