@@ -1915,6 +1915,8 @@ function osmBuilding(points,tags,index,osmId=null){
  const floors=Math.min(16,Math.max(1,Number(tags['building:levels'])||(isGarage||isIndustrial?1:2)));
  const isPanelBlock=(type==='residential'||type==='yes')&&floors>=4;
  const isCommerce=['commercial','retail','supermarket','hotel'].includes(type);
+ // Named OSM shops receive a separate ground-floor glass frontage; avoid generic residential windows over it.
+ const hasMappedShopfront=Boolean(String(tags.name||'').trim()&&(tags.shop||['restaurant','fast_food','clinic','school','pharmacy','cafe'].includes(tags.amenity)||['retail','supermarket','commercial'].includes(type)));
  const isOldResidential=type==='house'&&floors<=3;
  const explicitHeight=parseFloat(tags.height);
  let h=Math.min(isPanelBlock?54:36,Math.max(isGarage?2.35:3.0,Number.isFinite(explicitHeight)&&explicitHeight>2?explicitHeight:isBlueStar?7.15:isMirova36?6.75:isGrocer74?3.65:isStation?7.4:isGarage?2.75:isIndustrial?5.3:isChurch?11.5:floors*(isSchool?3.4:3.05)));
@@ -2027,7 +2029,7 @@ function osmBuilding(points,tags,index,osmId=null){
   }
   const windows=Math.min(24,Math.max(1,Math.floor(len/(isPanelBlock?3.12:isBlueStar?3.6:isSchool?3.0:isHouse?4.2:3.5))));
   for(let floor=0;floor<visibleFloors;floor++){
-   if(isStation&&floor===0)continue;
+   if((isStation||hasMappedShopfront)&&floor===0)continue;
    const y=(isSchool?1.84:1.85)+floor*(isSchool?3.15:3.05);
    if(y+.78>=h)continue; // Allow ground-floor windows on genuine one-storey houses.
    for(let j=0;j<windows;j++){
