@@ -27,7 +27,7 @@ for(const kind of ['hip','gable']){
   outline,roof,origin,wallTopY:3.70
  });
  assert(closure?.closedToRoof);
- assert(closure.maxGapBefore>1.0,'Missing irregular edge high above wall');
+ assert(closure.maxGapBefore>1.0,'Missing irregular edge high above wall: '+JSON.stringify({kind,maxGapBefore:closure.maxGapBefore,edgeSections:closure.edgeSections,faces:closure.faces.length,bounds:roof.bounds,axis:roof.globalAxis,eaveY:roof.eaveY,rise:roof.rise}));
  assert(closure.edgeSections>1&&closure.faces.length>1);
  assert(closure.faces.length<100,'Keep station meshes lightweight');
  for(const face of closure.faces)for(const p of face){
