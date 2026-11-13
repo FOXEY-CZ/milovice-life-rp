@@ -106,8 +106,13 @@ try{
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
-    !(sidewalkCheck.separatedSidewalks>15))
-  throw new Error('5.2.1 sidewalk bands must flank roadway, never cover it: '+JSON.stringify(sidewalkCheck));
+    sidewalkCheck.separatedSidewalks!==0||
+    !sidewalkCheck.proceduralSidewalksDisabled||
+    !sidewalkCheck.removedInventedCrosswalks||
+    !(sidewalkCheck.mappedFootwaySegments>20)||
+    !(sidewalkCheck.clippedByCarriageway>0)||
+    !(sidewalkCheck.mappedMarkedCrossings>=1))
+  throw new Error('5.26 360 reality audit: only actual OSM pedestrian way meshes and true marked crosswalks are allowed: '+JSON.stringify(sidewalkCheck));
  console.log('5.2.1 sidewalk road-edge diagnostics:',JSON.stringify(sidewalkCheck));
  // The imported character library starts asynchronously and may fall back safely
  // when a third-party CDN fails; verify the status and UI without blocking game startup.
@@ -180,6 +185,10 @@ try{
   throw new Error('5.25 invented external Nádražka cafe still exists or indoor location not documented: '+JSON.stringify(landmarkChecks));
  console.log('5.25 station green steel roof and real Nádražka waiting-room entrance:',
   JSON.stringify(landmarkChecks.stationCanopyReality));
+ if(!landmarkChecks.stationPassageAudit?.matchedMappedFootway||
+    !(landmarkChecks.stationPassageAudit.newMappedAlignedS>8)||
+    !(landmarkChecks.stationPassageAudit.offset<2.5))
+  throw new Error('5.26 station entrance is not aligned with mapped footway: '+JSON.stringify(landmarkChecks.stationPassageAudit));
  console.log('Landmark geometry:',JSON.stringify(landmarkChecks));
  if(landmarkChecks.stationPassageFaces!==2)throw new Error('Milovice station does not have two opposing real open passage portals: '+JSON.stringify(landmarkChecks));
  const collisionCheck=await page.evaluate(()=>{
