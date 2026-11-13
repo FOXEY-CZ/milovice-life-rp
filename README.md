@@ -1,3 +1,15 @@
+## Milovice RP 5.28.7 — PŘESAHUJÍCÍ STŘECHA BEZ ŠKVÍR (PART 8)
+
+- **Nádraží má skutečný 32cm přesah střechy přes obvodové zdi.** Přesah je konstrukční a není náhradou za předchozí vyplnění mezer podle sklonu střechy.
+- **Uzavřené podbití a čelo:** střešní tašky, souvislá spodní plocha a tmavá okapová hrana tvoří jeden uzavřený tvar, aby nebylo vidět skrz.
+- **Žádný přesah na falešných hranách:** tři části nádraží sdílejí původní OSM obvod; střešní přesah se neobjeví na virtuálních hranicích oddělujících střed od křídel.
+- **Rohy:** omezování délky napojení, aby u nepravidelných půdorysů nevznikaly nové špičaté flapy.
+- **Výkon:** tašky, podbití a čelo mají na jednu část po jedné dávkované geometrii; ne desítky jednotlivých 3D objektů.
+- **Kontroly:** automatické geometrické testy úplného podbití, falešných hran, nepravého přesahu, L-půdorysu a prohlížečová WebGL kontrola.
+- Přesah je vizuální aproximací (32 cm), nikoli přesným změřením stavby.
+
+---
+
 ## Milovice RP 5.28.6 — DOKONČENÍ STŘECH NAD ZDMI NÁDRAŽÍ (PART 8)
 
 - **Oprava děr:** u členitých a šikmých částí OSM půdorysu může sedlová/valbová střecha ležet nad rovnou hranou zdi. Nový modul přesně vypočítá její skutečnou výšku podél celého obvodu a vytvoří chybějící štukovou výplň pouze v existující mezeře.
