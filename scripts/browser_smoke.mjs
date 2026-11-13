@@ -59,6 +59,14 @@ try{
  if(assetStats.state!=='ready')throw new Error('Licensed high-resolution GLB failed to load: '+JSON.stringify(assetStats));
  await page.waitForFunction(()=>window.__miloviceGLBDebug?.active===true,null,{timeout:12000});
  await page.screenshot({path:'browser-artifacts/milovice-real-glb-vehicle.png'});
+ await page.locator('#rp-vehicles').click();
+ await page.locator('[data-spawn="suv"]').click();
+ await page.waitForFunction(()=>['ready','fallback'].includes(window.__miloviceGLBDebug?.models?.citySUV),null,{timeout:45000});
+ const suvState=await page.evaluate(()=>window.__miloviceGLBDebug);
+ console.log('5.1.1 second CC0 GLB SUV:',JSON.stringify(suvState));
+ if(suvState.models.citySUV!=='ready')throw new Error('Licensed SUV GLB unavailable: '+JSON.stringify(suvState));
+ await page.waitForFunction(()=>window.__miloviceGLBDebug?.activeModel==='citySUV'&&window.__miloviceGLBDebug?.active===true,null,{timeout:12000});
+ await page.screenshot({path:'browser-artifacts/milovice-cc0-suv.png'});
  await page.locator('#rp-jobs').click();
  await page.locator('#rp-job-start').click();
  const stopCount=await page.evaluate(()=>window.__miloviceTransitStops);
