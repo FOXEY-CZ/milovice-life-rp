@@ -1,3 +1,14 @@
+## Milovice RP 5.28.8 — ČISTÉ NAPOJENÍ STŘECH NÁDRAŽÍ (Part 8)
+
+- **Žádné tmavé „schůdky“ na každém uzlu:** přesahy střech vytvářejí koncová čela jen na skutečně otevřených koncích u vyvýšené středové části; spojité úseky OSM zůstávají spojité.
+- **Tašky a podbití sledují střešní roviny:** okapová část se při výpočtu rozdělí přesně na jednotlivé sedlové/valbové plochy. Žádné pokřivené čtyřúhelníky přes hranice sklonu.
+- **Bez falešných bílých štítů:** nižší křídla nedostávají štukové uzávěry na umělých hranách jejich rozdělení. Vyvýšená část si zachovává svou skutečnou stěnu až ke střeše.
+- **Odstraněná nepravá vodorovná okapová lišta** pod šikmým okrajem; okapní hranu nyní tvoří spojitý model střechy a podbití.
+- Zachováno **32cm orientační přesazení, 10cm podbití, průchod nádražím, fasády, OSM terén a mobilní rozpočet vykreslení**.
+- Testy kontrolují členité L-půdorysy, obrácené řazení vrcholů, rovinnost každého střešního trojúhelníku a absenci zbytečných uzávěrů. Podoba nádraží je stále fotografická aproximace, nikoli zaměření skutečných rozměrů.
+
+---
+
 ## Milovice RP 5.28.7 — PŘESAHUJÍCÍ STŘECHA BEZ ŠKVÍR (PART 8)
 
 - **Nádraží má skutečný 32cm přesah střechy přes obvodové zdi.** Přesah je konstrukční a není náhradou za předchozí vyplnění mezer podle sklonu střechy.
