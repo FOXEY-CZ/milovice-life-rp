@@ -1,3 +1,13 @@
+## Milovice RP 5.28.3 — opravy podle sedmi screenshotů nádraží
+
+- **Opraven modrý nápis MILOVICE:** byl zrcadlově otočený a visel nad bočním koncem u cyklověže. Přesunutý na dlouhou fasádu směrem ke kolejím, otočený správným směrem a usazený níž pod střechu. Z opačné strany už nebude vidět text pozpátku.
+- **Konce obou nízkých střech** již nemají otevřený černý sedlový trojúhelník: kompaktní valbové ukončení zachovává střešní tašky a přesné ořezání podle půdorysu OSM.
+- **Průchod nádražím:** odstraněný nedoměřený bílý půlkruh, který protínal vlastní překlad. Nyní čistý rovný překlad a boční pilíře bez kolize s mapovanou trasou chodců.
+- Přidané regresní testy pro otočení a polohu cedule, průchod i střešní křídla. Geometrické střešní testy zachovány. Současné rozměry jsou přiznaně fotografické odhady.
+- Fotografie pro srovnání: [Stellwerke.info – nádražní fasáda](https://stellwerke.info/stw/stw.php?id=22402).
+
+---
+
 ## Milovice RP 5.28.2 — OPRAVA ROZBITÉ STŘECHY NÁDRAŽÍ
 
 - Opravená skutečná příčina velkých béžových „trojúhelníků“ a divokých přesahů: každé křídlo nádraží si dříve odvozovalo **jinou osu střechy**. Prostřední nástavba měla střechu dokonce skoro o 90° otočenou a střešní desky překračovaly půdorys.
