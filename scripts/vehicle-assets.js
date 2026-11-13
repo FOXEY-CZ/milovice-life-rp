@@ -33,54 +33,60 @@ export const LICENSED_VEHICLES={
  }
 };
 
+// 5.4.0 - mixed nearby models with a strict mobile GPU budget.
+// Crucially, multiple GLB cars require independent scene instances; a Three
+// Object3D cannot have two parents at once. Preserve car identity across exit.
 export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
  const loader=new GLTFLoader();
- const scenes=new Map(),states=new Map(),pending=new Map();
- let mode='auto',current=null,lastUpdate=-1,activeKey=null;
+ const scenes=new Map(),states=new Map(),pending=new Map(),active=new Map();
+ let mode='auto',lastUpdate=-1,activeKey='cityCar';
  const pc=()=>typeof window!=='undefined'&&window.matchMedia?.('(pointer:fine)').matches
    &&(typeof navigator.deviceMemory!=='number'||navigator.deviceMemory>=4);
- const enabled=()=>mode==='on'||mode==='auto'; // auto: one low-memory GLB on mobile, one high-detail GLB on PC
- const publish=(message='')=>{
+ const enabled=()=>mode!=='off';
+ const budget=()=>pc()?5:3;
+ const modelFor=(car)=>{
+  if(car.type===2||car.type===5||car.type===6)return 'citySUV';
+  if(car.type===3||car.type===4)return 'citySport';
+  return (pc()||mode==='on')?'spectralGT':'cityCar';
+ };
+ function publish(message=''){
   if(message)status(message);
-  const asset=activeKey||'spectralGT';
+  const asset=activeKey||'cityCar';
   if(typeof window!=='undefined')window.__miloviceGLBDebug={
-   state:states.get(asset)||'idle',mode,ready:scenes.has(asset),active:!!current,
-   activeModel:asset,loaded:[...scenes.keys()],source:LICENSED_VEHICLES[asset].source,
+   state:states.get(asset)||'idle',mode,ready:scenes.has(asset),active:active.size>0,
+   activeCount:active.size,maxActive:budget(),activeModel:asset,
+   loaded:[...scenes.keys()],source:LICENSED_VEHICLES[asset]?.source,
    models:Object.fromEntries(states),
+   assignments:[...active].map(([car,inst])=>({id:car.id,type:car.type,key:inst.key,
+    wheels:inst.wheels.length,parked:car.parked,driven:car.driven})),
    orientation:Object.fromEntries([...scenes].map(([key,model])=>[key,{
-    frontAxis:model.userData.miloviceFrontAxis,
-    correctionRadians:model.userData.miloviceFrontCorrection,
-    expectedForward:'-Z'
+    frontAxis:model.userData.miloviceFrontAxis,correctionRadians:model.userData.miloviceFrontCorrection
    }]))
   };
- };
+ }
  function normalize(scene,spec){
   scene.updateMatrixWorld(true);
   const bbox=new THREE.Box3().setFromObject(scene),initial=bbox.getSize(new THREE.Vector3());
   if(Math.min(initial.x,initial.y,initial.z)<.002||Math.max(initial.x,initial.y,initial.z)>500)
    throw Error('Unexpected GLB bounds for '+spec.name);
-  // All driving and camera code uses -Z as forward. glTF authored vehicle
-  // front is +Z, so Quaternius cars need a 180-degree visual correction.
-  // Spectral GT is explicitly authored +X and retains its 90-degree correction.
-  // Rotate the imported mesh only; NEVER reverse steering, road AI or the camera.
+  // Our car simulation and camera use -Z forward. All Quaternius cars face +Z.
   const rotations={'+X':Math.PI*.5,'+Z':Math.PI,'-X':-Math.PI*.5,'-Z':0};
   const axis=spec.frontAxis==='AUTO'?(initial.x>initial.z?'+X':'-Z'):spec.frontAxis;
   if(!(axis in rotations))throw Error('Unknown model front axis: '+axis);
-  const modelYawCorrection=rotations[axis];
-  if(modelYawCorrection)scene.rotateY(modelYawCorrection); // preserve authored transform
+  const correction=rotations[axis];
+  if(correction)scene.rotateY(correction);
   scene.userData.miloviceFrontAxis=axis;
-  scene.userData.miloviceFrontCorrection=modelYawCorrection;
+  scene.userData.miloviceFrontCorrection=correction;
   scene.updateMatrixWorld(true);
   const rotatedBox=new THREE.Box3().setFromObject(scene),length=rotatedBox.getSize(new THREE.Vector3()).z;
   if(!Number.isFinite(length)||length<.15)throw Error('No GLB road length');
+  // Preserve source scale just as with our humanoid GLB normalisation.
   scene.scale.multiplyScalar(spec.length/length);
   scene.updateMatrixWorld(true);
   const groundedBox=new THREE.Box3().setFromObject(scene),center=groundedBox.getCenter(new THREE.Vector3());
   scene.position.x-=center.x;scene.position.z-=center.z;scene.position.y-=groundedBox.min.y;
   scene.updateMatrixWorld(true);
-  scene.traverse(o=>{
-   if(o.isMesh){o.castShadow=false;o.receiveShadow=true}
-  });
+  scene.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=true}});
   return scene;
  }
  function load(key){
@@ -88,71 +94,89 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
   if(pending.has(key))return pending.get(key);
   const spec=LICENSED_VEHICLES[key];if(!spec)return Promise.resolve(null);
   states.set(key,'loading');activeKey=key;publish('🚘 Načítám '+spec.name+' (CC0)…');
-  const task=loader.loadAsync(spec.uri)
-   .then(result=>{
-    const scene=normalize(result.scene,spec);
-    scenes.set(key,scene);states.set(key,'ready');
-    activeKey=key;publish('🚘 Detailní '+spec.name+' připraveno.');
-    return scene;
-   })
-   .catch(error=>{
-    console.warn('Could not load licensed GLB, using procedural vehicles',key,error);
-    states.set(key,'fallback');activeKey=key;
-    publish('🚘 Externí GLB není dostupné, používám záložní auto.');
-    return null;
-   });
-  pending.set(key,task);
-  return task;
+  const task=loader.loadAsync(spec.uri).then(result=>{
+   const scene=normalize(result.scene,spec);
+   scenes.set(key,scene);states.set(key,'ready');activeKey=key;
+   publish('🚘 Model '+spec.name+' je připraven.');
+   return scene;
+  }).catch(err=>{
+   console.warn('Licensed car unavailable, retaining procedural car',key,String(err));
+   states.set(key,'fallback');activeKey=key;publish('🚘 Model nedostupný, původní auto zůstává.');
+   return null;
+  });
+  pending.set(key,task);return task;
  }
- function showFallback(car){
-  if(!car)return;
-  const glb=car.g.userData.licensedGLB;
-  if(glb)car.g.remove(glb);
-  if(car.g.userData.proceduralLOD)car.g.userData.proceduralLOD.visible=true;
-  car.g.userData.licensedGLB=null;
+ function detach(car){
+  const instance=active.get(car);if(!instance)return;
+  car.g.remove(instance.group);
+  const fallback=car.g.userData.proceduralLOD;
+  if(fallback)fallback.visible=true;
+  car.g.userData.licensedGLB=null;active.delete(car);
+ }
+ function detachAll(){for(const car of [...active.keys()])detach(car)}
+ function install(car,key){
+  const original=scenes.get(key);if(!original)return false;
+  const previous=active.get(car);
+  if(previous?.key===key)return true;
+  if(previous)detach(car);
+  // Once-only wrapper for the original vehicle; preserves its wheel pivots.
+  if(!car.g.userData.proceduralLOD){
+   const fallback=new THREE.Group();
+   fallback.name='ProceduralVehicleFallback';
+   for(const child of [...car.g.children])fallback.add(child);
+   car.g.add(fallback);car.g.userData.proceduralLOD=fallback;
+  }
+  const model=original.clone(true);
+  model.name='Licensed3D_'+key;
+  const wheels=[];
+  model.traverse(o=>{
+   if(!o.name||!/(?:wheel|tyre|tire|rim)/i.test(o.name))return;
+   // Only independently pivotable wheel nodes; never rotate an entire car shell.
+   if(o.isGroup||o.isMesh&&o.position.lengthSq()>.03)wheels.push(o);
+  });
+  car.g.add(model);
+  car.g.userData.licensedGLB=model;
+  car.g.userData.proceduralLOD.visible=false;
+  active.set(car,{group:model,key,wheels});
+  return true;
  }
  function configure(next){
   if(!['auto','on','off'].includes(next))return;
-  mode=next;if(!enabled()){showFallback(current);current=null}
+  mode=next;
+  if(!enabled())detachAll();
   if(enabled()&&!states.has(pc()?'spectralGT':'cityCar'))load(pc()?'spectralGT':'cityCar');
-  publish(enabled()?'🚘 Skutečné GLB modely aktivní poblíž hráče.':'🚘 Úsporná procedurální auta.');
+  publish(enabled()?'🚘 Rozmanitá detailní auta aktivní v okolí hráče.':'🚘 Úsporné procedurální modely.');
  }
  function update(cars,x,z,t,playerCar=null){
-  if(t-lastUpdate<.75)return;
+  if(t-lastUpdate<.65)return;
   lastUpdate=t;
-  if(!enabled()){if(current)showFallback(current);current=null;publish();return}
-  let chosen=playerCar&&!playerCar.service?playerCar:null;
-  if(!chosen){
-   let min=85;
-   for(const car of cars){
-    if(car.service||car.type===7||car.driven||car.g.visible===false)continue;
-    const d=Math.hypot(car.g.position.x-x,car.g.position.z-z);
-    if(d<min){min=d;chosen=car}
-   }
+  if(!enabled()){detachAll();publish();return}
+  const nearby=cars.filter(c=>!c.service&&c.type!==7&&c.g.visible!==false)
+   .map(c=>({car:c,dist:Math.hypot(c.g.position.x-x,c.g.position.z-z)}))
+   .filter(item=>item.dist<100||item.car===playerCar)
+   .sort((a,b)=>(a.car===playerCar?-10000:a.dist)-(b.car===playerCar?-10000:b.dist))
+   .slice(0,budget());
+  const wanted=new Set(nearby.map(o=>o.car));
+  for(const car of [...active.keys()])if(!wanted.has(car))detach(car);
+  for(const {car} of nearby){
+   const key=modelFor(car);activeKey=car===playerCar?key:activeKey;
+   if(!scenes.has(key)){if(!states.has(key))load(key);continue}
+   install(car,key);
   }
-  // One textured GLB near the camera: small licensed models on touch devices,
-  // higher-detail sports coupe only on PCs or if manually forced.
-  const key=chosen&&(chosen.type===2||chosen.type===5)?'citySUV'
-   :mode==='on'||pc()?'spectralGT'
-   :chosen?.type===3||chosen?.type===4?'citySport':'cityCar';
-  activeKey=key;
-  if(chosen&&!states.has(key))load(key);
-  const loaded=scenes.get(key);
-  if(current===chosen&&chosen?.g.userData.licensedGLB===loaded){publish();return}
-  if(current)showFallback(current);current=null;
-  // One detailed near-field model maximum: low draw-call meshes render everywhere else.
-  if(!chosen||!loaded){publish();return}
-  if(!chosen.g.userData.proceduralLOD){
-   const fallback=new THREE.Group();
-   for(const child of [...chosen.g.children])fallback.add(child);
-   chosen.g.add(fallback);chosen.g.userData.proceduralLOD=fallback;
-  }
-  chosen.g.add(loaded);
-  chosen.g.userData.licensedGLB=loaded;
-  chosen.g.userData.proceduralLOD.visible=false;
-  current=chosen;activeKey=key;publish();
+  // Test harness and HUD keep a live current model indicator.
+  if(playerCar)activeKey=modelFor(playerCar);
+  else if(nearby.length)activeKey=modelFor(nearby[0].car);
+  publish();
  }
- function getState(){return {mode,enabled:enabled(),states:Object.fromEntries(states),active:!!current}}
+ function spin(car,distance){
+  if(!distance||!Number.isFinite(distance))return;
+  const item=active.get(car);if(!item)return;
+  for(const wheel of item.wheels)wheel.rotation.x-=distance/.38;
+ }
+ function reset(){
+  detachAll();lastUpdate=-1;publish();
+ }
+ function getState(){return {mode,enabled:enabled(),states:Object.fromEntries(states),activeCount:active.size}}
  publish();
- return {configure,update,load,getState};
+ return {configure,update,load,getState,spin,reset};
 }
