@@ -1249,7 +1249,7 @@ function osmPoint(p){const lat0=50.226,lon0=14.889;return new THREE.Vector2((p.l
 // Geographically limited architectural prototype: old-town houses around the
 // church and station. Generic window/door geometry is NOT an exact photo survey.
 const photoStreetBlock=makePhotoStreetBlock(THREE,{layer:osmLayer,osmPoint,mergeGeometries});
-const photoStreetEnvironment=makePhotoStreetEnvironment(THREE,{layer:osmLayer,terrainAt});
+const photoStreetEnvironment=makePhotoStreetEnvironment(THREE,{layer:osmLayer,terrainAt,roadClearance:osmRoadClearance});
 // This documented photo survey replaces random street-prop distribution
 // in a SMALL, surveyed section of 5. května, rather than faking precision.
 function insidePhotoStreetZone(x,z,radius=34){
