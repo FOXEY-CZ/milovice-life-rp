@@ -24,7 +24,7 @@ try{
     !gfx.surfaceMaterials||Object.values(gfx.surfaceMaterials).some(v=>v!==true))
   throw new Error('Graphics 2.0 materials did not initialize correctly: '+JSON.stringify(gfx));
  console.log('5.2.0 shared city surfaces:',JSON.stringify(gfx.surfaceMaterials));
- if(!(await page.locator('#build-label').innerText()).includes('humans-530'))
+ if(!(await page.locator('#build-label').innerText()).includes('models-530'))
   throw new Error('5.3.0 build identifier missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -54,6 +54,7 @@ try{
    null,{timeout:30000});
  const nature=await page.evaluate(()=>window.__miloviceNatureGLB);
  console.log('5.3.0 real tree assets:',JSON.stringify(nature));
+ if(!(await page.locator('#rp-model-select').locator('option[value="auto"]').innerText()).includes('PC i mobil'))throw new Error('New mobile vehicle quality mode absent');
  if(nature.state!=='ready'||nature.instances<3||nature.loaded.length<1)
   throw new Error('Near-station GLB tree replacement did not materialize: '+JSON.stringify(nature));
 
