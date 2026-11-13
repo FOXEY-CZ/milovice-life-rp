@@ -45,3 +45,18 @@ assert(frontend.includes("stationCafeMapOnly=true"));
 assert(frontend.includes("kind:'cafe-indoor-approximate'"));
 assert(!frontend.includes("Nádraží Milovice · Nádražka"));
 assert(frontend.includes("name:'🚉 Nádraží Milovice'"));
+
+// v5.27.3: User screenshots showed an erroneous GREEN CANOPY next to the
+// bike tower / on the wrong side of the station. Do not spawn its panels,
+// metal uprights, transverse beams or fake pavement; a source photo of the
+// other-side rail platform is NOT evidence for the wrong-side location.
+const currentStationPage=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+assert(currentStationPage.includes('stationSideAwningRemoved=true'));
+assert(currentStationPage.includes('stationCanopyPosts=0'));
+assert(currentStationPage.includes('stationCanopyBraces=0'));
+assert(currentStationPage.includes('stationUnverifiedSidePavingRemoved=true'));
+assert(!currentStationPage.includes('planPhotoPlatformCanopy('));
+assert(!currentStationPage.includes('installCanopyBraces('));
+assert(!currentStationPage.includes("archPart('stationPaving',r.mx+nx*2.65"));
+assert(currentStationPage.includes("stationBoard('Milovice'"));
+assert(currentStationPage.includes('stationPassagePortals'));
