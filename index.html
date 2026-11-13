@@ -2050,7 +2050,7 @@ function miloviceStationMassing(pts,base,cx,cz){
 function miloviceStationForecourt(r,base,nx,nz){
  // Strict reality pass: the old benches, bins, fake board "ODJEZDY"
  // and ticket window were placed at invented offsets, not from photo GPS.
- // Existing physical street/platform passage and station awning remain.
+ // The real OSM street/rail passage stays; false side awning was removed in 5.27.3.
  window.__miloviceLandmarkDebug ||= {};
  window.__miloviceLandmarkDebug.stationForecourt=true;
  window.__miloviceLandmarkDebug.unverifiedPlatformPropsRemoved=true;
@@ -2216,7 +2216,7 @@ function miloviceStationGroundFloor(pts,base,h,cx,cz){
   window.__miloviceLandmarkDebug.stationUnverifiedSidePavingRemoved=true;
   // Keep the existing independent railway-station name board and mapped
   // passages; this removal targets ONLY the false green side canopy.
-  stationBoard('Milovice',r.mx+nx*.45,base+4.42,r.mz+nz*.45,r.yaw);
+  stationBoard('Milovice',r.mx+nx*.45,base+4.42,r.mz+nz*.45,r.yaw,'#215aa3',2.65,.57);
   window.__miloviceLandmarkDebug.stationSign=true;
    miloviceStationForecourt(r,base,nx,nz);
   // The Nádražka is INSIDE the station waiting-room area. We do not
