@@ -61,6 +61,12 @@ try{
  await page.locator('#height').fill('7.2');
  await page.locator('#notes').fill('Ověřeno pouze pro test editoru, ne ve skutečnosti.');
  await page.locator('#source').fill('https://commons.wikimedia.org/');
+ const formValidity=await page.locator('#inspector').evaluate(form=>({
+  valid:form.checkValidity(),
+  invalid:[...form.elements].filter(el=>el.willValidate&&!el.checkValidity())
+   .map(el=>({id:el.id,value:el.value,message:el.validationMessage}))
+ }));
+ if(!formValidity.valid)throw Error('Facade survey HTML form invalid: '+JSON.stringify(formValidity));
  await page.locator('#inspector button[type=submit]').click();
  assert((await page.locator('#message').innerText()).includes('Karta uložena'),'Save did not work');
  assert(await page.evaluate(()=>window.__miloviceEditor.cards)>0);
