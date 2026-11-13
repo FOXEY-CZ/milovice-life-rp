@@ -23,12 +23,46 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
   const ret={
    mode,loaded:[...assets.keys()],status:Object.fromEntries(status),
    playerReady:!!player,activeNpc:[...attached.values()].filter(v=>v.container.visible).length,
+   runtimeSkeletalWalk:!!(player?.boneState?.count)&&!player?.mixer,
    clips:player?.clips||[],bones:assets.get('casualMan')?.bones?.slice(0,56)||[],license:'CC0-1.0',fallback:!player
   };
   if(typeof window!=='undefined')window.__miloviceHumans=ret;
   return ret;
  };
  function allowed(){return mode!=='off'}
+ // Some web-ready CC0 mirror GLBs omit the included animation clips.
+ // Animate their actual skin bones at runtime instead of moving a rigid mannequin.
+ function findBones(imported){
+  const all=[];
+  imported.traverse(o=>{if(o.isBone)all.push(o)});
+  const role=(side,type)=>{
+   const terms=side==='l'?['left','_l','.l','l_']:['right','_r','.r','r_'];
+   return all.find(b=>{
+    const n=b.name.toLowerCase();
+    if(!terms.some(k=>n.includes(k)))return false;
+    if(type==='leg')return /upleg|upperleg|thigh|legupper|hip_leg/.test(n);
+    if(type==='arm')return /upperarm|uparm|shoulder|armupper/.test(n);
+    return false;
+   });
+  };
+  const spine=all.find(b=>/spine|chest|torso/i.test(b.name));
+  const nodes={leftLeg:role('l','leg'),rightLeg:role('r','leg'),leftArm:role('l','arm'),rightArm:role('r','arm'),spine};
+  const rest={};
+  for(const [name,bone] of Object.entries(nodes))if(bone)rest[name]=bone.rotation.clone();
+  return {nodes,rest,count:all.length};
+ }
+ function proceduralWalk(record,delta,seconds,moving){
+  record.phase+=Math.min(.06,delta)*(moving?8.3:1.2);
+  const phase=record.phase,walk=moving?Math.sin(phase):0,sway=Math.sin(phase*.5);
+  const {nodes,rest}=record.boneState;
+  const rotate=(key,amount)=>{const b=nodes[key];if(b)b.rotation.x=rest[key].x+amount};
+  rotate('leftLeg',walk*.42);rotate('rightLeg',-walk*.42);
+  rotate('leftArm',-walk*.30);rotate('rightArm',walk*.30);
+  rotate('spine',sway*(moving?.025:.014));
+  // Contact movement subtly flexes the pose even on non-skeletal GLB exports.
+  record.container.position.y=moving?Math.abs(Math.sin(phase))*.045:Math.sin(phase)*.004;
+  record.container.rotation.z=moving?Math.sin(phase)*.008:Math.sin(phase)*.003;
+ }
  function takeModel(key,rig){
   const asset=assets.get(key);if(!asset)return null;
   // SkeletonUtils is essential: a raw scene.clone breaks skinned joint bindings.
@@ -56,7 +90,7 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
    idle=by(/(?:^|[^a-z])idle(?:[^a-z]|$)|stand|breath/i)||asset.clips[0];
    walk=by(/walk|locomotion|run|jog/i)||idle;
   }
-  const record={root,mixer,clips:asset.clips.map(c=>c.name),idle,walk,action:null,phase:0,rig,key,container:root};
+  const record={root,mixer,clips:asset.clips.map(c=>c.name),idle,walk,action:null,phase:0,rig,key,container:root,boneState:findBones(imported)};
   attached.set(rig,record);
   return record;
  }
@@ -123,6 +157,7 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
   if(player){
    setVisible(player,true,moving);
    if(player.mixer)player.mixer.update(Math.min(dt,.05));
+   else proceduralWalk(player,dt,t,moving);
   }
   if(t-lastRefresh>.45){
    lastRefresh=t;
@@ -145,8 +180,10 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
    }
    state();
   }
-  for(const [rig,record] of attached)if(rig!==playerRig&&record.container.visible&&record.mixer)
-   record.mixer.update(Math.min(dt,.05));
+  for(const [rig,record] of attached)if(rig!==playerRig&&record.container.visible){
+   if(record.mixer)record.mixer.update(Math.min(dt,.05));
+   else proceduralWalk(record,dt,t,true);
+  }
  }
  state();
  return {load,configure,update,state,resetPeople};
