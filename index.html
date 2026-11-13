@@ -1503,22 +1503,33 @@ function stationBoard(text,x,y,z,yaw,bg='#174f84',width=5.3,height=.94){
  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,height),new THREE.MeshBasicMaterial({map:t,side:THREE.DoubleSide}));
  mesh.position.set(x,y,z);mesh.rotation.y=yaw;osmLayer.add(mesh);
 }
-function stationWall(a,b,base,height){
+function stationWall(a,b,base,height,cx,cz){
  const dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);if(len<.05)return;
  const x=(a.x+b.x)*.5,z=(a.y+b.y)*.5,yaw=Math.atan2(-dz,dx);
+ let nx=-dz/len,nz=dx/len;
+ // Window details face the exterior on both sides of the real OSM footprint.
+ if(nx*(x-cx)+nz*(z-cz)<0){nx=-nx;nz=-nz}
  archPart('stationPlaster',x,base+height*.5,z,len,height,.32,yaw);
- // Low warm stone sill and red roof trim on the actual building perimeter.
  archPart('foundationBand',x,base+.20,z,len,.40,.35,yaw);
- if(len>2.9){
-  const nx=-dz/len,nz=dx/len;
-  archPart('stationFrames',x+nx*.19,base+1.55,z+nz*.19,Math.min(1.48,len*.62),1.80,.15,yaw);
-  archPart('stationGlass',x+nx*.28,base+1.55,z+nz*.28,Math.min(1.22,len*.56),1.55,.13,yaw);
-  archPart('windowBar',x+nx*.35,base+1.55,z+nz*.35,.055,1.42,.07,yaw);
-   // White arched window heads, prominent in the station platform photographs.
-   const windowArch=new THREE.Mesh(new THREE.TorusGeometry(Math.min(.66,len*.27),.065,5,14,Math.PI),stationArchMaterial);
-   windowArch.position.set(x+nx*.34,base+2.22,z+nz*.34);windowArch.rotation.y=Math.atan2(nx,nz);
-   osmLayer.add(windowArch);
+ archPart('stoneTrim',x+nx*.20,base+height-.18,z+nz*.20,len,.16,.25,yaw);
+ archPart('roofGutter',x+nx*.28,base+height-.05,z+nz*.28,len,.075,.13,yaw);
+ if(len<2.9)return;
+ // Repeated white-framed arched windows visible in Milovice station photos.
+ const bays=Math.min(8,Math.max(1,Math.floor(len/3.15)));
+ for(let j=0;j<bays;j++){
+  const t=(j+.5)/bays,px=a.x+dx*t,pz=a.y+dz*t,fw=Math.min(1.50,len/bays*.72);
+  archPart('stationFrames',px+nx*.21,base+1.52,pz+nz*.21,fw,1.82,.15,yaw);
+  archPart('stationGlass',px+nx*.32,base+1.52,pz+nz*.32,fw-.21,1.53,.13,yaw);
+  archPart('windowBar',px+nx*.39,base+1.52,pz+nz*.39,.055,1.43,.08,yaw);
+  archPart('stoneTrim',px+nx*.32,base+.58,pz+nz*.32,fw+.24,.11,.35,yaw);
+  const arch=new THREE.Mesh(new THREE.TorusGeometry(Math.min(.69,fw*.45),.065,5,14,Math.PI),stationArchMaterial);
+  arch.position.set(px+nx*.37,base+2.24,pz+nz*.37);
+  arch.rotation.y=Math.atan2(nx,nz);
+  arch.userData.lodDetail=true;arch.userData.lodX=px;arch.userData.lodZ=pz;
+  osmLayer.add(arch);
  }
+ window.__miloviceLandmarkDebug ||= {};
+ window.__miloviceLandmarkDebug.stationFacadeWindows=(window.__miloviceLandmarkDebug.stationFacadeWindows||0)+bays;
 }
 function stationArch(x,z,dx,dz,base,w){
  const len=Math.hypot(dx,dz),ux=dx/len,uz=dz/len,yaw=Math.atan2(-dz,dx);
@@ -1688,14 +1699,22 @@ function miloviceStationGroundFloor(pts,base,h,cx,cz){
    const low=Math.min(t0,t1),high=Math.max(t0,t1);
    const cutA=new THREE.Vector2(a.x+dx*low,a.y+dz*low);
    const cutB=new THREE.Vector2(a.x+dx*high,a.y+dz*high);
-   stationWall(a,cutA,base,levelHeight);stationWall(cutB,b,base,levelHeight);
+   stationWall(a,cutA,base,levelHeight,cx,cz);stationWall(cutB,b,base,levelHeight,cx,cz);
    stationArch((cutA.x+cutB.x)/2,(cutA.y+cutB.y)/2,dx,dz,base,cutA.distanceTo(cutB));
    openings++;
-  }else stationWall(a,b,base,levelHeight);
+  }else stationWall(a,b,base,levelHeight,cx,cz);
  }
  // A pair of opposing open entrance faces yields a walk-through passage.
  window.__miloviceLandmarkDebug ||= {};
  window.__miloviceLandmarkDebug.stationPassageFaces=openings;
+ // True-through passage: original textured pavement where the game previously showed grass.
+ // Depth comes from the actual OSM building polygon across its shorter axis.
+ const acrossX=-az,acrossZ=ax;
+ const transverse=pts.map(p=>(p.x-cx)*acrossX+(p.y-cz)*acrossZ);
+ const passageDepth=Math.min(16,Math.max(4,Math.max(...transverse)-Math.min(...transverse)+1.4));
+ const passageYaw=Math.atan2(-az,ax);
+ archPart('stationPaving',cx,base+.058,cz,3.47,.115,passageDepth,passageYaw);
+ window.__miloviceLandmarkDebug.stationPassagePaving=true;
  const r=platformChoice;
  if(r){
   let nx=-r.dz/r.len,nz=r.dx/r.len;
