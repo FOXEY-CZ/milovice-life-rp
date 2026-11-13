@@ -56,6 +56,14 @@ try{
     throw new Error('5.19 tiled terrain or spatial foundations missing: '+JSON.stringify({oldGround,oldFoundation}));
   console.log('5.20 full-resolution DEM with fewer GPU submissions:',
     JSON.stringify({oldGround,oldFoundation}));
+ const roofEnvelope=await page.evaluate(()=>window.__miloviceRoofEnvelopeAudit||null);
+ if(!roofEnvelope||roofEnvelope.version!=='5.31.1'||
+     roofEnvelope.pitchedRoofs<25||roofEnvelope.checkedWallJoins<20||
+     roofEnvelope.sealedWallJoins<5||roofEnvelope.seamTriangles<10||
+     roofEnvelope.duplicateFlatRoofs!==0||roofEnvelope.failedWallJoins!==0)
+   throw new Error('5.31.1 duplicated/unsealed roof geometry: '+JSON.stringify(roofEnvelope));
+ console.log('5.31.1 one roof per building + batched perimeter closure:',
+   JSON.stringify(roofEnvelope));
  const landmark=await page.evaluate(()=>window.__milovicePhotoStreetPass||null);
  if(!landmark||landmark.buildings!==3||landmark.dormers<3||
     landmark.rooflights<2||landmark.hedgeGroups<1||
