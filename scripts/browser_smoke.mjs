@@ -69,6 +69,13 @@ try{
  if(!(await page.locator('#rp-area-select option[value="photo5"]').count()))
    throw new Error('5.21 photo street scene cannot be selected as a spawn location');
  console.log('5.21 original 5. května photo street environment:',JSON.stringify(environment));
+ const realityStation=await page.evaluate(()=>window.__miloviceStationForecourt||null);
+ if(!realityStation?.strictReality||realityStation.photoAnchoredStopCount!==2||
+    realityStation.features!==2||
+    !['bus-A','bus-B'].every(id=>realityStation.placements.some(p=>p.id===id&&p.cameraDisplacement<=6))||
+    realityStation.deferredWithoutSurvey.length!==3)
+  throw new Error('5.24 photo-GPS station A/B and strict reality contract broken: '+JSON.stringify(realityStation));
+ console.log('5.24 geotagged station forecourt:',JSON.stringify(realityStation));
 
  const cutoutTest=await page.evaluate(async()=>{
   const THREE=await import('three');
@@ -95,7 +102,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('station-environment-5230'))
+ if(!(await page.locator('#build-label').innerText()).includes('reality-station-5240'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -157,6 +164,10 @@ try{
  const wheels=await page.evaluate(()=>window.__miloviceVehicleDebug);
  console.log('5.4.0 moving car and bus wheel rotation:',JSON.stringify(wheels));
  const landmarkChecks=await page.evaluate(()=>window.__miloviceLandmarkDebug||{});
+ if(!landmarkChecks.unverifiedPlatformPropsRemoved||
+    !landmarkChecks.unverifiedCafeFurnitureRemoved||
+    !landmarkChecks.unverifiedShopLabelRemoved)
+  throw new Error('5.24 unverified station furniture/signs not removed: '+JSON.stringify(landmarkChecks));
  console.log('Landmark geometry:',JSON.stringify(landmarkChecks));
  if(landmarkChecks.stationPassageFaces!==2)throw new Error('Milovice station does not have two opposing real open passage portals: '+JSON.stringify(landmarkChecks));
  const collisionCheck=await page.evaluate(()=>{
