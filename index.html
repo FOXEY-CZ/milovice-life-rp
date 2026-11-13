@@ -166,14 +166,17 @@ import * as THREE from 'three';
 import {makeHumanRig,makeRoadCar,makePidBus,makeCityElefantStyleTrain} from './scripts/world-models.js?v=514';
 import {addLanduseFeature,forestInstancePlacements} from './scripts/landscapes.js?v=501';
 import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=512';
+import {makeCitySurfaceKit,makeContactShadow} from './scripts/graphics2.js?v=520';
+const citySurfaceKit=makeCitySurfaceKit(THREE);
+window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
 const BUILD_ID='20261113-connected-access-515';
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x9bc8ec);scene.fog=new THREE.Fog(0x9bc8ec,280,850);const camera=new THREE.PerspectiveCamera(67,innerWidth/innerHeight,.1,1400);const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.25));renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x65725a,1.6));const sun=new THREE.DirectionalLight(0xffefcc,1.7);sun.position.set(50,100,30);scene.add(sun);
 
 // Visual pipeline 3.8: cinematic tonemapping, improved sky and material response.
 renderer.outputColorSpace=THREE.SRGBColorSpace;
 renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.24;
-sun.intensity=2.04;
+renderer.toneMappingExposure=1.18;
+sun.intensity=2.24;
 sun.color.setHex(0xfff0d6);
 scene.children.find(o=>o.isHemisphereLight).intensity=1.23;
 const skyCanvas=document.createElement('canvas');skyCanvas.width=16;skyCanvas.height=512;
@@ -785,8 +788,8 @@ let rpRealisticMode=false;
 function rpSetGraphicsMode(mode){
  rpRealisticMode=mode==='realistic';
  renderer.shadowMap.enabled=rpRealisticMode;
- renderer.toneMappingExposure=rpRealisticMode?1.16:1.24;
- sun.intensity=rpRealisticMode?1.98:2.04;
+ renderer.toneMappingExposure=rpRealisticMode?1.12:1.18;
+ sun.intensity=rpRealisticMode?2.04:2.24;
  scene.children.find(o=>o.isHemisphereLight).intensity=rpRealisticMode?1.06:1.23;
  sun.castShadow=rpRealisticMode;
  sun.shadow.mapSize.set(rpRealisticMode?768:512,rpRealisticMode?768:512);
@@ -815,6 +818,8 @@ let audioCtx=null;document.getElementById('horn').onclick=()=>{try{audioCtx ||= 
 /* Milovice 2.1: voluntary OSM-based 3D road layer; original city stays available. */
 const originalCity=scene.children.filter(o=>o!==bus&&o!==avatar&&!(o.isLight));
 const osmLayer=new THREE.Group();osmLayer.visible=true;scene.add(osmLayer);
+// Lightweight ground-contact shadow: helps the pedestrian feel planted on the terrain.
+const avatarContactShadow=makeContactShadow(THREE);osmLayer.add(avatarContactShadow);
 // OSM world streaming: only render city blocks close to the player.
 // Mesh geometry and original OSM coordinates remain unchanged.
 // 5.0: adjustable draw distance + geographically partitioned detail meshes.
@@ -882,8 +887,8 @@ const loadingScreen=document.createElement('div');loadingScreen.id='milovice-loa
 // Gauge comes from OSM (1435 mm standard); sleepers, catenary and ballast dimensions
 // are game approximations, not engineering survey data.
 const railSteel=new THREE.MeshStandardMaterial({color:0xa7acb0,roughness:.36,metalness:.72,side:THREE.DoubleSide});
-const railBallast=new THREE.MeshStandardMaterial({color:0x74716d,roughness:1,side:THREE.DoubleSide});
-const railPlatformMat=new THREE.MeshStandardMaterial({color:0xb1aaa0,roughness:.96,side:THREE.DoubleSide});
+const railBallast=new THREE.MeshStandardMaterial({color:0xffffff,map:citySurfaceKit.ballast,roughness:1,side:THREE.DoubleSide});
+const railPlatformMat=new THREE.MeshStandardMaterial({color:0xffffff,map:citySurfaceKit.platform,roughness:.96,side:THREE.DoubleSide});
 // 5.1.3 — Tactile platform edging based on OSM polygon and existing railway lines.
 // Photo-inspired original art; exact platform tile dimensions are not surveyed.
 const railPlatformCurbMat=new THREE.MeshStandardMaterial({color:0xd8d1c5,roughness:.96,side:THREE.DoubleSide});
@@ -1038,7 +1043,7 @@ let asphaltSeed=432;function asphaltRandom(){asphaltSeed=(Math.imul(asphaltSeed,
 for(let i=0;i<asphaltPixels.data.length;i+=4){const grain=Math.floor(asphaltRandom()*29)-14;const v=104+grain;asphaltPixels.data[i]=v;asphaltPixels.data[i+1]=v+2;asphaltPixels.data[i+2]=v+3;asphaltPixels.data[i+3]=255}
 asphaltCtx.putImageData(asphaltPixels,0,0);
 const asphaltTexture=new THREE.CanvasTexture(asphaltCanvas);asphaltTexture.wrapS=asphaltTexture.wrapT=THREE.RepeatWrapping;asphaltTexture.repeat.set(1,1);asphaltTexture.colorSpace=THREE.SRGBColorSpace;
-const osmRoadMaterial=new THREE.MeshLambertMaterial({color:0x666b6e,map:asphaltTexture,side:THREE.DoubleSide});
+const osmRoadMaterial=new THREE.MeshStandardMaterial({color:0xffffff,map:citySurfaceKit.asphalt,roughness:.97,metalness:.01,side:THREE.DoubleSide});
 // Facade palette based on photo references from Milovice (e.g. 5. května), not building-specific surveyed colors.
 const osmBuildingMaterial=[0xe3c38c,0xe3d5b8,0xd8c3a7,0xe8d6b9,0xc6c9bb,0xe1c4ac,0xd6d7ce,0xe4d7c7].map((c,i)=>new THREE.MeshStandardMaterial({color:c,map:facadeTexture(i+1),roughness:.93,metalness:0}));
  // Milovice-Mladá facade palette: coloured/renovated panelák blocks, cream/blue/gray and regular balcony arrays.
@@ -1062,7 +1067,7 @@ function miloviceChurchBrickTexture(){
  tex.repeat.set(3,3);tex.colorSpace=THREE.SRGBColorSpace;return tex;
 }
 const churchWalls=new THREE.MeshStandardMaterial({color:0xffffff,map:miloviceChurchBrickTexture(),roughness:.91});
-const stationWalls=new THREE.MeshStandardMaterial({color:0xe6e3d5,map:facadeTexture(87),roughness:.92});
+const stationWalls=new THREE.MeshStandardMaterial({color:0xe6e3d5,map:citySurfaceKit.stucco,roughness:.89});
 const blueStarWalls=new THREE.MeshStandardMaterial({color:0xd48a35,map:facadeTexture(19),roughness:.9});
 const mirova36Walls=new THREE.MeshStandardMaterial({color:0xdac6a0,map:facadeTexture(26),roughness:.92});
 const grocerWalls=new THREE.MeshStandardMaterial({color:0xd2cdc1,map:facadeTexture(8),roughness:.9});
@@ -1107,7 +1112,7 @@ function milovicePavingTexture(){
  tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.repeat.set(1,1);tex.anisotropy=4;
  return tex;
 }
-const osmSidewalkMat=new THREE.MeshStandardMaterial({color:0xffffff,map:milovicePavingTexture(),roughness:.94}),osmRoofMat=mat(0x666a68),osmWindowMat=mat(0x4b7683);
+const osmSidewalkMat=new THREE.MeshStandardMaterial({color:0xffffff,map:citySurfaceKit.paving,roughness:.91}),osmRoofMat=mat(0x666a68),osmWindowMat=mat(0x4b7683);
 function miloviceRoofTiles(){
  const cv=document.createElement('canvas');cv.width=cv.height=256;const ctx=cv.getContext('2d');
  ctx.fillStyle='#b57558';ctx.fillRect(0,0,256,256);
@@ -1134,7 +1139,7 @@ function miloviceStationMetalTexture(){
  const tex=new THREE.CanvasTexture(cv);tex.wrapS=tex.wrapT=THREE.RepeatWrapping;
  tex.repeat.set(3,2);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=4;return tex;
 }
-const stationRoofMaterial=new THREE.MeshStandardMaterial({color:0xffffff,map:miloviceStationMetalTexture(),roughness:.78,metalness:.15,side:THREE.DoubleSide});
+const stationRoofMaterial=new THREE.MeshStandardMaterial({color:0xffffff,map:citySurfaceKit.standingSeam,roughness:.72,metalness:.19,side:THREE.DoubleSide});
 mirova36Roof.map=roofTileMap;mirova36Roof.needsUpdate=true; // Assign only after texture creation.
 const osmRoofPalette=[
  new THREE.MeshStandardMaterial({color:0xffffff,map:roofTileMap,roughness:.96,side:THREE.DoubleSide}),
@@ -1292,6 +1297,11 @@ function finalizeFoundations(){
 const architectureColors={panelSeam:0x838e94,panelAccent:0x72a0c3,panelEntry:0x356a87,commercialSign:0x435b66,panelPlinth:0x7e8587,industrialDoor:0x68717a,stationPlaster:0xe6e4d9,stationGlass:0x4a7480,stationFrames:0xf2f0e7,stationIron:0x3a3e40,stationCanopy:0x903f35,blueStarPlaster:0xd68c34,blueStarRed:0xb7352c,starWhite:0xf0eae0,starBalcony:0xcfc6b5,railSleeper:0x685643,railPole:0x777d7f,gothicGlass:0x263c48,stoneTrim:0xe8d9b7,whiteTrim:0xe3e6de,windowBar:0xd6e2e4,darkWood:0x514339,garageMetal:0x727f7b,bronze:0x8b6a48,glassAwning:0x7e9e9f,schoolRed:0xa3442e,roofGutter:0x687173,chimney:0xad6749,balcony:0xc9c1b7,railing:0x394447,shutter:0x8b705e,foundationBand:0x8e7f72,stationTimber:0x554338,stationPaving:0xaba6a1,panelTint:0xb1c5cc};
 const architectureQueues=Object.fromEntries(Object.keys(architectureColors).map(k=>[k,[]]));
 const architectureMaterials=Object.fromEntries(Object.entries(architectureColors).map(([k,v])=>[k,new THREE.MeshStandardMaterial({color:v,roughness:k==='glassAwning'?.3:.8,metalness:k==='roofGutter'||k==='railing'?.4:.04})]));
+ // Shared atlas-style surface response for every station architectural instance.
+ Object.assign(architectureMaterials.stationPlaster,{map:citySurfaceKit.stucco,roughness:.9});
+ Object.assign(architectureMaterials.stationGlass,{map:citySurfaceKit.glass,color:new THREE.Color(0xffffff),roughness:.21,metalness:.16});
+ Object.assign(architectureMaterials.stationPaving,{map:citySurfaceKit.paving,color:new THREE.Color(0xffffff),roughness:.94});
+ for(const kind of ['stationPlaster','stationGlass','stationPaving'])architectureMaterials[kind].needsUpdate=true;
 const archUnitBox=new THREE.BoxGeometry(1,1,1),archPlacement=new THREE.Object3D();
 function archPart(kind,x,y,z,w,h,d,rotation=0){
  const queue=architectureQueues[kind];if(queue)queue.push([x,y,z,w,h,d,rotation]);
@@ -2897,10 +2907,10 @@ function noiseTile(base,spread,seed,size=256){
  ctx.putImageData(im,0,0);
  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;return t;
 }
-const groundTexture=noiseTile([116,139,91],42,933);
+const groundTexture=citySurfaceKit.grass;
 groundTexture.repeat.set(95,95);
 grass.map=groundTexture;grass.color.setHex(0xffffff);grass.needsUpdate=true;
-const streetTexture=noiseTile([71,75,76],36,532);
+const streetTexture=citySurfaceKit.asphalt;
 streetTexture.repeat.set(1,8);
 osmRoadMaterial.map=streetTexture;osmRoadMaterial.color.setHex(0xffffff);osmRoadMaterial.needsUpdate=true;
 road.map=streetTexture;road.color.setHex(0xffffff);road.needsUpdate=true;
@@ -2919,8 +2929,8 @@ for(const o of originalRoads){
  }
 }
 // Soft daylight with physically based response; avoid costly dynamic shadows on phones.
-renderer.toneMappingExposure=1.30;
-sun.intensity=2.6;
+renderer.toneMappingExposure=1.18;
+sun.intensity=2.24;
 scene.fog.near=Math.max(180,OSM_VIEW*.54);scene.fog.far=OSM_VIEW+145;
 let last=performance.now(),lastHud=0,lastMap=0,perfFrames=0,perfSince=performance.now();const perfEl=document.getElementById('perf');function animate(t){requestAnimationFrame(animate);const dt=Math.min(Math.max((t-last)/1000,0),.05);last=t;
 elapsed+=dt;rpAnimateTraffic(dt);animateBoarding(dt);rpUpdateRailTraffic(dt);
@@ -2931,6 +2941,7 @@ if(rpRealisticMode){
  sun.target.position.set(cx,0,cz);
  sun.target.updateMatrixWorld();
 }
+avatarContactShadow.visible=walking&&walkCam!==1;
 if(walking){
  avatar.visible=walkCam!==1;
  let strafe=(keys.has('KeyD')?1:0)-(keys.has('KeyA')?1:0);
@@ -2939,6 +2950,7 @@ if(walking){
  if(len>0){strafe/=len;forwardMove/=len;const dx=strafe*Math.cos(orbitYaw)-forwardMove*Math.sin(orbitYaw),dz=-strafe*Math.sin(orbitYaw)-forwardMove*Math.cos(orbitYaw);px+=dx*4.2*dt;pz+=dz*4.2*dt;walkYaw=Math.atan2(-dx,-dz)}
   const swing=len>0?Math.sin(elapsed*8.1)*.47:0;playerLegs[0].rotation.x=swing;playerLegs[1].rotation.x=-swing;playerArms[0].rotation.x=-swing*.7;playerArms[1].rotation.x=swing*.7;
  avatar.position.set(px,terrainAt(px,pz),pz);avatar.rotation.y=walkYaw;
+ avatarContactShadow.position.set(px,terrainAt(px,pz)+.045,pz);
 }
 const gas=keys.has('KeyW'),brake=keys.has('KeyS');
 // Signed velocity: forward positive, reverse negative. Braking first, then reverse.
