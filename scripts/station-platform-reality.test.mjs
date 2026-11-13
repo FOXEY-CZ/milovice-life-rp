@@ -94,3 +94,8 @@ assert(!plaqueHTML.includes("new THREE.TorusGeometry(w*.5"));
 assert(plaqueHTML.includes("stationPassageHeaderType='straight-mapped-portal'"));
 assert(plaqueHTML.includes("stationSection(left,base,3.62,3.62,1.45,stationRoofMaterial,'hip'"));
 assert(plaqueHTML.includes("stationSection(right,base,3.62,3.62,1.45,stationRoofMaterial,'hip'"));
+
+// 5.28.3b: the rectangular, photographed-conservative passage must have
+// no floating slit between the lintel and the eaves.
+assert(plaqueHTML.includes("archPart('stationPlaster',x,base+3.36,z,w+.25,.68,.42,yaw)"));
+assert(plaqueHTML.includes('stationPassageLintelMeetsEave=true'));
