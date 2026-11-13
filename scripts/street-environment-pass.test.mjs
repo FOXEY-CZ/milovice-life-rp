@@ -42,3 +42,16 @@ assert(runtime.includes('photoGroundClearance(anchor,along,side,.8*size)'),
  'Stem positions cannot be inferred without physical OSM road-clearance test');
 
 console.log('Photo-street environment OK:',JSON.stringify({reference:ref.id,roadOSM:ref.osmRoadId,photoToRoadMeters:anchor.distance}));
+
+// v5.27.4: inferred road edge paint, retail pavement rectangles and bicycle
+// stands must never appear merely because OSM says highway=residential or
+// shop=supermarket. Keep surface geometry on actual OSM streets/footways.
+const gameHTML=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+assert(gameHTML.includes('residentialInventedEdgeLinesDisabled:true'));
+assert(gameHTML.includes("if(kind==='primary'||kind==='secondary'||kind==='tertiary'){"));
+assert(!gameHTML.includes("kind==='tertiary'||kind==='residential'"));
+assert(gameHTML.includes('inventedRetailPadsRemoved:true'));
+assert(gameHTML.includes('inventedRetailBikeStandsRemoved:true'));
+assert(!gameHTML.includes("archPart('stationPaving',mx+nx*2.7"));
+assert(!gameHTML.includes("archPart('stationIron',tx+nx*k*.55"));
+assert(gameHTML.includes("stationPaving',cx+ax*passageS+acrossX*shift"));
