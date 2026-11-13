@@ -107,6 +107,16 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
   }
   state();
  }
+ function resetPeople(){
+  for(const [rig,record] of attached){
+   if(rig===playerRig)continue;
+   if(record.action)record.action.stop();
+   if(record.mixer)record.mixer.stopAllAction();
+   record.root.parent?.remove(record.root);
+   attached.delete(rig);
+  }
+  state();
+ }
  function update(dt,t,moving,playerX,playerZ){
   if(!allowed()){if(player)setVisible(player,false,false);return}
   if(player){
@@ -138,5 +148,5 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
    record.mixer.update(Math.min(dt,.05));
  }
  state();
- return {load,configure,update,state};
+ return {load,configure,update,state,resetPeople};
 }
