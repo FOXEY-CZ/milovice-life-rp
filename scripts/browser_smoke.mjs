@@ -103,7 +103,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('exact-station-seams-5286'))
+ if(!(await page.locator('#build-label').innerText()).includes('solid-station-eaves-5287'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -225,6 +225,9 @@ try{
     roofVisual.sections.filter(p=>p.kind==='gable').length!==0||
     roofVisual.sections.filter(p=>p.kind==='hip').length!==3||
     roofVisual.sections.some(p=>!p.clippedToOSM||p.hasFakeEndCap||
+      !p.eaveSoffitClosed||!(p.actualEaveOverhang>=.30)||
+      !(p.eaveExteriorEdges>=1)||!(p.eaveTileTriangles>=2)||
+      !(p.eaveFasciaTriangles>=2)||
       !p.seamClosedToActualRoof||!(p.perimeterInfillTriangles>0)||
       !(p.maxFormerRoofWallGap>.01)||
       p.areaError>1e-4||p.footprintOverhang!==0||p.outputTriangles<3||
