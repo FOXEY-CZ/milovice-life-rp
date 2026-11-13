@@ -29,6 +29,9 @@ on:
       - scripts/skolska-roof.test.mjs
       - scripts/roof-opening-geometry.js
       - scripts/roof-opening-geometry.test.mjs
+      - scripts/facade-perimeter.js
+      - scripts/facade-perimeter.test.mjs
+      - scripts/hero-architecture.js
       - scripts/city-roof-geometry.js
       - scripts/city-roof-geometry.test.mjs
       - scripts/building-audit-queue.test.mjs
