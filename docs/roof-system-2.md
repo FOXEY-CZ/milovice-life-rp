@@ -1,3 +1,19 @@
+## v5.30.1 — After 360-degree mobile visual review (2026-11-13)
+
+Reported from five real phone screenshots of Školská 220/1: roof cutouts removed the original window/roof overlap, but each rectangular cutout was wider and deeper than its actual cross-gable facade. The two open side strips exposed the sky. Dark roof-join edges remained exposed in side views. Four screenshots ranged roughly 79–86 FPS, but one measured **29 FPS (JS 11 ms, 444 draw calls)**; this one spike is not proof of sustained low performance.
+
+**Shared geometry solution, not another hand-built address patch:**
+
+1. The photo-sourced feature profile now cuts an opening **14 cm narrower than the solid gable wall** (7 cm overlapping opaque material on each side), rather than 36 cm wider. Rearward clipping ends 20 cm inside the solid gable depth, rather than 11 cm beyond it. This covers the sky slits without reintroducing a roof through the arched glass.
+2. The universal roof solver now projects the **back edge of a cross-gable onto the host hip/gable roof's actual plane height**, then generates one batchable rear closure mesh connecting these planes. This is data-driven and applies to future documented cross-gables, without adding special case OSM ID logic.
+3. Photographed roofs with real overhang/soffit/fascia no longer receive duplicate invented level gutter rods on every facade. This removes both unrealistic parallel dark strips and unnecessary draw calls.
+4. New math tests enforce exact window cutout overlap contract, full roof triangles (rotated rectangles), and the back join. A browser smoke test checks both joins exist in the live scene.
+5. **Status:** geometric validity is automated; accurate appearance from 360° views and a sustained mobile FPS budget still require phone screenshots after deployment. Do not claim a complete citywide or photogrammetric roof solution.
+
+The core has **684 mapped OSM structures** and exactly **342 non-quadrilateral footprints**. The photo evidence registry is still incomplete. Profile discovery needs dated imagery before declaring another roof shape a verified landmark.
+
+---
+
 # Milovice RP — Roof System 2.0 (v5.30.0)
 
 ## Goal: unique photographed houses, shared physically sound topology
