@@ -58,6 +58,8 @@ try{
  if(!houseRoof||houseRoof.osmId!==118487980||
     houseRoof.footprintVertices!==7||houseRoof.mainRoofType!=='hip'||
     !houseRoof.photoSpecific||!houseRoof.closedWallAndEave||
+    !houseRoof.atticUnderPitchedRoof||houseRoof.upperFullStoreysModelled!==1||
+    Math.abs(houseRoof.modelledEaveWallHeight-3.75)>.001||
     !houseRoof.noUnconnectedRoofParts||
     !(houseRoof.gapSealedMetres>.10)||
     !(houseRoof.wallInfillTriangles>3)||
