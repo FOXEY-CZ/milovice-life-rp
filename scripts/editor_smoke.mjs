@@ -26,6 +26,13 @@ try{
  assert(faces.count>=3&&faces.selected,'Facade inspector must offer independent wall views');
  const firstFace=faces.selected;
  await page.locator('#face-status').selectOption('seen');
+ await page.locator('#face-rows').fill('2,3');
+ await page.locator('#face-window-width').fill('1.15');
+ await page.locator('#face-window-height').fill('1.25');
+ await page.locator('#face-door').selectOption('right');
+ await page.locator('#face-door-width').fill('1.04');
+ await page.locator('#face-wall-color').fill('#d3b39c');
+ await page.locator('#face-shutters').selectOption('yes');
  await page.locator('#face-source').fill('https://commons.wikimedia.org/');
  await page.locator('#face-note').fill('Test reference only, not a verified Milovice photo');
  const allFaces=page.locator('#facade-switches button[data-facade]');
@@ -33,6 +40,9 @@ try{
  await allFaces.nth(1).click();
  await page.locator('#facade-switches button[data-facade="'+firstFace+'"]').click();
  assert.equal(await page.locator('#face-status').inputValue(),'seen','Facade review was not stored on switch');
+ assert.equal(await page.locator('#face-rows').inputValue(),'2,3','Per-floor window counts not saved');
+ assert.equal(await page.locator('#face-door').inputValue(),'right','Facade entrance position not saved');
+ assert.equal(await page.locator('#face-wall-color').inputValue(),'#d3b39c','Side-specific wall paint not saved');
  assert((await page.locator('#face-progress').innerText()).includes('1/'),'Review progress missing');
  await page.locator('#pano-open').click();
  assert((await page.locator('#pano-message').innerText()).includes('API klíč'),'No-key panorama fallback unavailable');
@@ -59,14 +69,17 @@ try{
  await page.evaluate(id=>window.__miloviceEditor.openBuilding(id),selected);
  assert.equal(await page.locator('#stage').inputValue(),'verified','local progress not persisted');
  assert.equal(await page.locator('#face-status').inputValue(),'seen','Per-facade review not persisted');
+ assert.equal(await page.locator('#face-rows').inputValue(),'2,3','Per-floor geometry not persisted');
  assert.equal(await page.locator('#facadeColor').inputValue(),'#b2a090');
  assert.equal(await page.locator('#roofKind').inputValue(),'gable');
  const bridge=await page.evaluate(async()=>{
-  const mod=await import('./scripts/street-architecture.js?v=580');
-  return [...mod.loadLocalArchitectureCards(localStorage)].map(([id,data])=>({id,color:data.facadeColor,height:data.height,roof:data.roofKind}));
+  const mod=await import('./scripts/street-architecture.js?v=5100');
+  return [...mod.loadLocalArchitectureCards(localStorage)].map(([id,data])=>
+   ({id,color:data.facadeColor,height:data.height,roof:data.roofKind,facades:data.facades}));
  });
- assert(bridge.some(x=>x.id===String(selected)&&x.color==='#b2a090'&&x.height===7.2&&x.roof==='gable'),
-  'Editor verified card did not become loadable 3D architecture input');
+ assert(bridge.some(x=>x.id===String(selected)&&x.color==='#b2a090'&&x.height===7.2&&x.roof==='gable'&&
+  x.facades?.[firstFace]?.rows?.join(',')==='2,3'&&x.facades[firstFace].doorAt==='right'),
+  'Editor per-facade layout did not become loadable verified 3D geometry input');
  await page.locator('#district').selectOption('mlada');
  await page.waitForFunction(()=>window.__miloviceEditor?.currentDistrict==='mlada'&&
   window.__miloviceEditor?.buildings>100,null,{timeout:45000});
@@ -78,8 +91,12 @@ try{
  const applied=await page.evaluate(()=>({
   bridge:window.__miloviceArchitectureBridge,hero:window.__miloviceHeroArchitecture
  }));
- if(!(applied.bridge.loadedVerified>=1&&applied.bridge.applied>=1&&applied.hero?.verifiedOverrides>=1))
-  throw Error('Verified local architecture was not applied to actual 3D world: '+JSON.stringify(applied));
+ if(!(applied.bridge.loadedVerified>=1&&applied.bridge.loadedFacadeLayouts>=1&&
+      applied.bridge.applied>=1&&applied.hero?.verifiedOverrides>=1&&applied.hero?.verifiedFaces>=1&&
+      applied.hero.faceAudits.some(f=>f.id===String(selected)&&f.side===firstFace&&
+       f.wallColor==='#d3b39c'&&f.windows>=1)))
+  throw Error('Verified individual facade geometry was not applied to the correct 3D house wall: '+
+   JSON.stringify({applied,firstFace}));
  if(errors.length)throw Error(errors.slice(0,5).join('\n'));
  console.log('Street editor OK: OSM streets, reference URLs, persistence, Mladá + verified-card 3D model bridge.',JSON.stringify({stats,applied}));
 }finally{await browser.close()}

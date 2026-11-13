@@ -1,5 +1,6 @@
-// Milovice RP 5.8 — same-origin street editor -> game architecture bridge.
+// Milovice RP 5.10 — same-origin street editor -> game architecture bridge.
 // Uses only user-authored structured geometry hints; no scraping or image inference.
+import {normalizeVerifiedFacades} from './facade-model.js';
 export const STREET_STORAGE_KEY='milovice_rp_street_editor_v1';
 export const STREET_EXPORT_SCHEMA='milovice-rp-street-architecture-v1';
 const HEX=/^#[0-9a-fA-F]{6}$/;
@@ -21,7 +22,11 @@ export function normalizeArchitectureCards(raw){
  for(const [id,card] of Object.entries(raw)){
   if(!/^[1-9]\d{0,18}$/.test(id)||!card||typeof card!=='object')continue;
   // Local draft cards must never silently affect production-like gameplay.
-  if(card.stage!=='verified'||!allowedUrl(card.source)||typeof card.notes!=='string'||!card.notes.trim())continue;
+  if(card.stage!=='verified')continue;
+  const facades=normalizeVerifiedFacades(card.facades);
+  const hasFacades=Object.keys(facades).length>0;
+  const overallEvidence=allowedUrl(card.source)&&typeof card.notes==='string'&&!!card.notes.trim();
+  if(!hasFacades&&!overallEvidence)continue;
   const floors=safeNumber(card.floors,1,16,true);
   const height=safeNumber(card.height,2.5,60);
   const facadeColor=safeColor(card.facadeColor);
@@ -30,9 +35,9 @@ export function normalizeArchitectureCards(raw){
   const windowsPerWall=safeNumber(card.windowsPerWall,1,12,true);
   // Free-text facade/window descriptions remain notes only. Geometry must be
   // driven by explicit numeric inputs, not guessed from unstructured text.
-  if([floors,height,facadeColor,roofColor,roofKind,windowsPerWall].every(x=>x===null))continue;
+  if([floors,height,facadeColor,roofColor,roofKind,windowsPerWall].every(x=>x===null)&&!hasFacades)continue;
   result.set(id,{id,stage:'verified',floors,height,facadeColor,roofColor,roofKind,windowsPerWall,
-    source:card.source,notes:card.notes.trim()});
+    facades,source:overallEvidence?card.source:'',notes:overallEvidence?card.notes.trim():''});
  }
  return result;
 }

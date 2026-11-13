@@ -2,12 +2,14 @@
 // Public OSM footprints anchor the buildings. Window/door placement is a game
 // approximation and not a surveyed record of each individual house.
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
+import {selectFacadeEdges,planFaceOpenings} from './facade-model.js';
 
 export function makeMiloviceHeroArchitecture(THREE,{
   sites=[],radius=240,maxBuildings=68,terrainAt=()=>0
 }={}){
  const chunks=new Map(),selected=new Set();
- const state={buildings:0,verifiedOverrides:0,solidWalls:0,cutoutWindows:0,cutoutDoors:0,gables:0,
+ const appliedFaces=[];
+ const state={buildings:0,verifiedOverrides:0,verifiedFaces:0,solidWalls:0,cutoutWindows:0,cutoutDoors:0,gables:0,
   detailInstances:0,drawMeshes:0,chunkCount:0};
  const box=new THREE.BoxGeometry(1,1,1),glassPlane=new THREE.PlaneGeometry(1,1);
  const mats={
@@ -78,7 +80,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
  }
  function publish(){
   if(typeof window!=='undefined')window.__miloviceHeroArchitecture={...state,
-   selectedIds:[...selected].slice(0,8),radius,maxBuildings};
+   selectedIds:[...selected].slice(0,8),faceAudits:appliedFaces.slice(0,32),radius,maxBuildings};
  }
  function supports({points,height,floors,type,index,id,excluded=false,override=null}){
   if(excluded||(!override&&selected.size>=maxBuildings)||points?.length<4||points.length>10||
@@ -105,7 +107,9 @@ export function makeMiloviceHeroArchitecture(THREE,{
   if(override)state.verifiedOverrides++;
   const sides=pts.map((a,i)=>({a,b:pts[(i+1)%pts.length],len:a.distanceTo(pts[(i+1)%pts.length])}));
   const entrySide=sides.reduce((best,s,i)=>s.len>best.len?{i,len:s.len}:best,{i:0,len:0}).i;
-  const levels=Math.min(3,Math.max(1,floors));
+  const faceEdges=selectFacadeEdges(pts);
+  const explicitDoor=Object.values(override?.facades||{}).some(f=>['left','center','right'].includes(f.doorAt));
+  const levels=Math.min(6,Math.max(1,floors));
   for(let sideIndex=0;sideIndex<sides.length;sideIndex++){
    const {a,b,len}=sides[sideIndex];
    if(len<3||len>70)continue;
@@ -114,23 +118,26 @@ export function makeMiloviceHeroArchitecture(THREE,{
    const mx=(a.x+b.x)*.5,mz=(a.y+b.y)*.5;
    if(nx*(mx-centroid.x)+nz*(mz-centroid.z)<0){nx=-nx;nz=-nz}
    const yaw=Math.atan2(nx,nz),holes=[];
-   const entry=sideIndex===entrySide&&len>5;
-   const n=override?.windowsPerWall||Math.min(6,Math.max(1,Math.floor((len-1.4)/3.0)));
-   const entranceU=len*.5;
-   // Ground-floor front door has an actual hole and a recessed wooden panel,
-   // not a decal pasted onto a solid wall.
-   if(entry){
-    holes.push({x:entranceU,y:.13,w:1.21,h:2.27});
-    state.cutoutDoors++;
+   // One independently reviewed facade can replace only its own selected
+   // surveyed wall; corners/chamfers and unreviewed sides keep the old model.
+   const cardinal=faceEdges.get(sideIndex);
+   const sideLayout=cardinal?override?.facades?.[cardinal]||null:null;
+   const autoEntrance=sideIndex===entrySide&&len>5&&!explicitDoor;
+   const planned=planFaceOpenings({length:len,height,levels,side:sideLayout,
+    legacyWindows:override?.windowsPerWall||Math.min(6,Math.max(1,Math.floor((len-1.4)/3.0))),
+    autoEntrance});
+   const entry=!!planned.door;
+   const entranceU=planned.door?.x??len*.5;
+   const doorWidth=planned.door?.w??1.21;
+   if(entry){holes.push(planned.door);state.cutoutDoors++}
+   if(sideLayout){
+    state.verifiedFaces++;
+    appliedFaces.push({id:String(identity),side:cardinal,windows:planned.windows.length,
+     door:entry,wallColor:sideLayout.wallColor||null});
    }
-   for(let level=0;level<levels;level++){
-    const bottom=.98+level*3.05;
-    if(bottom+1.26>=height-.34)continue;
-    for(let i=0;i<n;i++){
-     const along=(i+.5)*len/n;
-     if(along<1.05||len-along<1.05||(entry&&level===0&&Math.abs(along-entranceU)<1.38))continue;
-     const w=Math.min(1.52,len/n*.49),h=1.26;
-     if(w<.55)continue;
+   let windowIndex=0;
+   for(const window of planned.windows){
+     const {x:along,y:bottom,w,h,floor}=window,i=windowIndex++;
      holes.push({x:along,y:bottom,w,h});
      state.cutoutWindows++;
      const wx=a.x+ux*along,wz=a.y+uz*along;
@@ -138,8 +145,6 @@ export function makeMiloviceHeroArchitecture(THREE,{
      const inner=front(-.18),frame=front(.065),sill=front(.18);
      placement(chunk,'dark',inner.x,base+bottom+h*.50,inner.z,w+.08,h+.08,.04,yaw);
      placement(chunk,'glass',wx+nx*(-.13),base+bottom+h*.5,wz+nz*(-.13),w-.035,h-.035,1,yaw,true);
-
-     // Horizontal head & sill and independent left/right jambs.
      placement(chunk,'frame',frame.x,base+bottom+h+.035,frame.z,w+.13,.085,.18,yaw);
      placement(chunk,'frame',frame.x,base+bottom-.035,frame.z,w+.13,.09,.18,yaw);
      placement(chunk,'frame',wx+ux*(w*.5+.038)+nx*.065,base+bottom+h*.5,
@@ -148,34 +153,33 @@ export function makeMiloviceHeroArchitecture(THREE,{
        wz-uz*(w*.5+.038)+nz*.065,.082,h+.10,.18,yaw);
      placement(chunk,'frame',frame.x,base+bottom+h*.5,frame.z,.054,h,.13,yaw);
      placement(chunk,'sill',sill.x,base+bottom-.055,sill.z,w+.28,.11,.32,yaw);
-     // Exterior lintel protrudes enough to cast a genuine self-shadow.
-     if((index+i+level)%2===0)
+     // On a verified facade never invent shutter/lintel ornaments at random.
+     if(!sideLayout&&(index+i+floor)%2===0)
       placement(chunk,'sill',frame.x,base+bottom+h+.16,frame.z,w+.22,.12,.23,yaw);
-     if(level===0&&i%3===1){
-      const shutterOffset=w*.5+.26;
-      for(const sign of [-1,1]){
-       placement(chunk,'wood',wx+ux*shutterOffset*sign+nx*.08,base+bottom+h*.5,
-         wz+uz*shutterOffset*sign+nz*.08,.22,h-.05,.09,yaw);
-      }
+     const useShutters=sideLayout?sideLayout.shutters===true:(floor===0&&i%3===1);
+     if(useShutters){
+      const off=w*.5+.26;
+      for(const sign of [-1,1])
+       placement(chunk,'wood',wx+ux*off*sign+nx*.08,base+bottom+h*.5,
+         wz+uz*off*sign+nz*.08,.22,h-.05,.09,yaw);
      }
-    }
    }
    // Actual front door opening, framed with a 3D threshold/hood.
    if(entry){
     const xx=a.x+ux*entranceU,zz=a.y+uz*entranceU;
-    placement(chunk,'dark',xx-nx*.15,base+1.265,zz-nz*.15,1.24,2.26,.07,yaw);
-    placement(chunk,'wood',xx-nx*.105,base+1.26,zz-nz*.105,1.05,2.15,.07,yaw);
+    placement(chunk,'dark',xx-nx*.15,base+1.265,zz-nz*.15,doorWidth+.03,2.26,.07,yaw);
+    placement(chunk,'wood',xx-nx*.105,base+1.26,zz-nz*.105,doorWidth-.14,2.15,.07,yaw);
     for(const d of [-1,1]){
-     placement(chunk,'frame',xx+ux*d*.66+nx*.07,base+1.27,
-       zz+uz*d*.66+nz*.07,.11,2.45,.24,yaw);
+     placement(chunk,'frame',xx+ux*d*(doorWidth*.5+.06)+nx*.07,base+1.27,
+       zz+uz*d*(doorWidth*.5+.06)+nz*.07,.11,2.45,.24,yaw);
     }
-    placement(chunk,'frame',xx+nx*.08,base+2.45,zz+nz*.08,1.43,.12,.27,yaw);
-    placement(chunk,'base',xx+nx*.53,base+.11,zz+nz*.53,1.58,.20,.82,yaw);
-    placement(chunk,'awning',xx+nx*.37,base+2.78,zz+nz*.37,1.98,.16,.85,yaw);
+    placement(chunk,'frame',xx+nx*.08,base+2.45,zz+nz*.08,doorWidth+.22,.12,.27,yaw);
+    placement(chunk,'base',xx+nx*.53,base+.11,zz+nz*.53,doorWidth+.36,.20,.82,yaw);
+    if(!sideLayout)placement(chunk,'awning',xx+nx*.37,base+2.78,zz+nz*.37,doorWidth+.77,.16,.85,yaw);
    }
    placement(chunk,'base',mx+nx*.09,base+.23,mz+nz*.09,len,.46,.16,yaw);
    placement(chunk,'sill',mx+nx*.15,base+height-.12,mz+nz*.15,len,.20,.28,yaw);
-   const geometry=wallGeometry(a,b,base,height,holes,tone);
+   const geometry=wallGeometry(a,b,base,height,holes,sideLayout?.wallColor||tone);
    if(geometry){chunk.walls.push(geometry);state.solidWalls++}
   }
   // The roof above is still anchored to the same footprint. Form actual
@@ -223,7 +227,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
   }
   state.chunkCount+=batches;publish();
  }
- function reset(){chunks.clear();selected.clear();for(const key of Object.keys(state))state[key]=0;publish()}
+ function reset(){chunks.clear();selected.clear();appliedFaces.length=0;for(const key of Object.keys(state))state[key]=0;publish()}
  publish();
  return {addBuilding,flush,reset,stats:()=>({...state})};
 }

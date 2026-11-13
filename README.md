@@ -1,3 +1,17 @@
+# Milovice RP 5.10.0 – Geometrie z ověřených fasád (13. 11. 2026)
+
+Stavební editor nyní nabízí **strukturovaná pole pro každou ze čtyř hlavních stěn zvlášť**. Záznam severní, jižní, východní nebo západní strany umí nést počty oken pro jednotlivá patra (např. `2,3,2`), přibližnou šířku a výšku oken, polohu a šířku vstupu, barvu fasády v HEX a přítomnost okenic.
+
+Podporované obytné domy použijí při novém spuštění hry tyto parametry pro **skutečná geometrická vyříznutí oken/dveří, zapuštěná skla, rámy, parapety, dřevěné dveřní prvky a barvu jen vybrané strany**. Dům je přiřazen podle stálého OSM ID a fasáda podle směru ze zaznamenaného půdorysu; neověřené strany zachovávají svůj dosavadní vzhled. Varianta bez vchodu a přízemí s nulou oken jsou nyní explicitně modelovatelné.
+
+**Ověřitelnost:** geometrické údaje se přijmou jen u karty `Ručně ověřeno` a jednotlivé fasády `Prohlédnuto` se samostatným HTTP(S) odkazem na zdroj a textovým popisem. Pole s chybnými rozměry, neověřená fasáda či chybějící zdroj se do 3D nepoužijí. Informace se ukládají lokálně v prohlížeči a exportují do JSON, neautomaticky na GitHub. Pro běžné městské budovy zůstává původní fallback.
+
+**Meze přesnosti:** Umístění oken je zatím **pravidelně interpolované** podle ověřeného počtu na patro, není automaticky rozpoznané z fotografie ani měřené na milimetry. Polohy dveří `vlevo / střed / vpravo` jsou schematické. Samotné prohlížení 360° není totéž co vytvoření 3D modelu; ukládáme vlastní parametry, ne cizí snímky. Přesné polohy každého otvoru, atypické střechy a automatické rozpoznávání panoramat jsou další práce.
+
+**Testy:** jednotkové ověření normalizace důkazních zdrojů, směru fasád, počtů oken, polohy vchodů a validace dat; Playwright ověří vyplnění jižní/severní strany, přežití změny strany a reloadu a skutečné použití příslušných fasád v 3D modelu OSM budovy.
+
+---
+
 # Milovice RP 5.9.0 — Street Facade Survey + Panorama (13. listopadu 2026)
 
 Nový postup po celé ulici: stavební editor rozděluje dům podle OSM půdorysu na čtyři hlavní fasády (severní, jižní, východní, západní), pro každou navrhne nejbližší místo pohledu z mapované silnice a natočení kamery, vyznačí ho na mapě a poskytne odpovídající externí odkazy na Mapy.com a Mapillary.

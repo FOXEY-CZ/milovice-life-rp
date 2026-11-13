@@ -64,6 +64,27 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
    <option value="unreviewed">⬜ Neprohlédnuto</option><option value="seen">📷 Prohlédnuto</option><option value="unavailable">🚫 Nedostupné</option></select>
   <label for="face-source">Odkaz na fotografii této strany</label><input type="url" id="face-source" placeholder="https://...">
   <label for="face-note">Co vidíme / co chybí?</label><textarea id="face-note" rows="2"></textarea>
+  <h2>🪟 Převod této fasády do 3D</h2>
+  <p class="muted">Ověřené údaje o této <strong>jedné straně domu</strong> se použijí v geometrii až po uložení celé karty jako „Ručně ověřeno“ a obnovení hry. Okna se zatím rozmisťují pravidelně — přesná nepravidelná poloha vyžaduje další zaměření.</p>
+  <label for="face-rows">Počet oken podle podlaží (přízemí, 1. patro, …)</label>
+  <input id="face-rows" placeholder="např. 2,3,2; nula = bez oken" spellcheck="false">
+  <div class="row">
+   <div><label for="face-window-width">Šířka okna (m)</label><input id="face-window-width" type="number" min=".4" max="2.8" step=".05" placeholder="nezjištěno"></div>
+   <div><label for="face-window-height">Výška okna (m)</label><input id="face-window-height" type="number" min=".45" max="2.6" step=".05" placeholder="nezjištěno"></div>
+  </div>
+  <div class="row">
+   <div><label for="face-door">Vchod na této straně</label><select id="face-door">
+    <option value="">Nezjištěno</option><option value="none">Není</option><option value="left">Vlevo</option><option value="center">Uprostřed</option><option value="right">Vpravo</option>
+   </select></div>
+   <div><label for="face-door-width">Šířka vchodu (m)</label><input id="face-door-width" type="number" min=".72" max="2.4" step=".05" placeholder="nezjištěno"></div>
+  </div>
+  <div class="row">
+   <div><label for="face-wall-color">Barva této stěny (HEX)</label><input id="face-wall-color" pattern="#[0-9a-fA-F]{6}" maxlength="7" placeholder="#c2b49a"></div>
+   <div><label for="face-shutters">Okenice</label><select id="face-shutters">
+    <option value="">Nezjištěno</option><option value="yes">Ano</option><option value="no">Ne</option>
+   </select></div>
+  </div>
+  <p id="face-model-state" class="muted">Nevyplněno. Změny jednotlivých stěn fungují u podporovaných obytných domů.</p>
   <h2>🌐 Panorama přímo v editoru</h2>
   <p class="muted">Oficiální Mapy.com API: pro vloženou 360° prohlídku potřebuješ veřejný API klíč omezený na tuto doménu. Klíč neukládáme. API může být zpoplatněné dle spotřeby; bez klíče lze použít odkazy výše.</p>
   <div class="row"><input id="pano-key" type="password" autocomplete="off" placeholder="API klíč Mapy.com"><button id="pano-open" type="button">▶</button><button id="pano-close" type="button">✕</button></div>
@@ -112,6 +133,7 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script type="module">
 import {planFacadeViews,nextStreetHouse} from './scripts/facade-review.js?v=590';
+import {normalizeFacadeLayout} from './scripts/facade-model.js?v=5100';
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
@@ -238,8 +260,13 @@ function saveFace(){
  if(!chosen||!currentFace)return;
  const key=String(chosen.id),card=records[key]||{},faces={...(card.facades||{})};
  const status=$('face-status').value,source=$('face-source').value.trim(),notes=$('face-note').value.trim();
- if(status==='unreviewed'&&!source&&!notes)delete faces[currentFace.id];
- else faces[currentFace.id]={status,source,notes,reviewedAt:new Date().toISOString()};
+ const layout={rows:$('face-rows').value.trim(),windowWidth:$('face-window-width').value.trim(),
+  windowHeight:$('face-window-height').value.trim(),doorAt:$('face-door').value.trim(),
+  doorWidth:$('face-door-width').value.trim(),wallColor:$('face-wall-color').value.trim(),
+  shutters:$('face-shutters').value.trim()};
+ const hasLayout=Object.values(layout).some(Boolean);
+ if(status==='unreviewed'&&!source&&!notes&&!hasLayout)delete faces[currentFace.id];
+ else faces[currentFace.id]={status,source,notes,layout,reviewedAt:new Date().toISOString()};
  records[key]={...card,facades:faces};save();
 }
 function faceButtons(){
@@ -262,6 +289,16 @@ function chooseFace(id){
  const note=entry(chosen).facades?.[currentFace.id]||{};
  $('face-status').value=note.status||'unreviewed';$('face-source').value=note.source||'';
  $('face-note').value=note.notes||'';
+ const layout=note.layout||{};
+ for(const [field,key] of [['face-rows','rows'],['face-window-width','windowWidth'],
+  ['face-window-height','windowHeight'],['face-door','doorAt'],['face-door-width','doorWidth'],
+  ['face-wall-color','wallColor'],['face-shutters','shutters']]){
+  $(field).value=layout[key]??'';
+ }
+ const accepted=normalizeFacadeLayout(note);
+ $('face-model-state').textContent=accepted?
+  '✅ Tato fasáda má ověřený zdroj a 3D parametry. Změna se promítne po ověření celé karty a novém spuštění hry.':
+  '⬜ Zatím jen poznámky. Aby se změnila 3D geometrie, nastav „Prohlédnuto“, zdroj, poznámku a rozměr/počet oken nebo vchod.';
  clearFaceMarker();
  const f=currentFace,pos=f.viewpoint||f.middle,lat=pos[0].toFixed(6),lon=pos[1].toFixed(6);
  $('mapy').href='https://mapy.com/cs/zakladni?x='+lon+'&y='+lat+'&z=19';
@@ -361,15 +398,19 @@ $('inspector').addEventListener('submit',event=>{
  for(const k of ['stage','floors','height','roof','facade','windows','doors','facadeColor','roofColor','roofKind','windowsPerWall','source','notes'])
   d[k]=$(k).value.trim();
  // A verified card should have an independently traceable source and actual notes.
- if(d.stage==='verified'&&(!d.source||!d.notes)){
-  $('message').textContent='⚠ Ověřeno vyžaduje odkaz na zdroj a poznámku s pozorováním.';return;
+ const verifiedFaces=Object.values(d.facades||{}).filter(face=>normalizeFacadeLayout(face));
+ const hasOverallEvidence=!!d.source&&!!d.notes;
+ const hasGlobal3D=[d.floors,d.height,d.facadeColor,d.roofColor,d.roofKind,d.windowsPerWall].some(Boolean);
+ if(d.stage==='verified'&&!hasOverallEvidence&&!verifiedFaces.length){
+  $('message').textContent='⚠ Ověření vyžaduje buď zdroj a poznámku k domu, nebo doložený pohled na alespoň jednu fasádu.';return;
  }
- if(d.stage==='verified'&&![d.floors,d.height,d.facadeColor,d.roofColor,d.roofKind,d.windowsPerWall].some(Boolean)){
-  $('message').textContent='⚠ Aby se model změnil, vyplň aspoň jeden ověřený 3D parametr.';return;
+ if(d.stage==='verified'&&!hasGlobal3D&&!verifiedFaces.length){
+  $('message').textContent='⚠ Chybějí ověřené 3D údaje o domu nebo jednotlivých stěnách.';return;
  }
  records[String(chosen.id)]=d;save();renderLists();
  const layer=polygons.get(String(chosen.id));if(layer)layer.setStyle(style(chosen));
- $('message').textContent='✅ Karta uložena lokálně. Pro přenos do projektu exportuj JSON.';
+ $('message').textContent='✅ Karta uložena lokálně · '+verifiedFaces.length+
+  ' ověřených fasád s 3D parametry. Načti znovu hru na stejném zařízení; pro přenos exportuj JSON.';
 });
 $('export').addEventListener('click',()=>{
  const data={schema:'milovice-rp-street-architecture-v1',exportedAt:new Date().toISOString(),
