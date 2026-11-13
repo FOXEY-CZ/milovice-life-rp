@@ -1,144 +1,177 @@
-// Milovice RP 5.28.7 — real eaves project OUTSIDE exterior walls.
-// Only the exterior edges of the ORIGINAL OSM footprint get an overhang.
-// Section cuts between lower wings and higher middle are NOT exterior edges.
-// The roof skin, continuous underside (soffit), front fascia and exposed
-// end returns share identical vertices: a physical overhang without holes.
-const EPS=1e-7;
-function point(p){return {x:p.x,z:p.z??p.y}}
-function area(poly){
- let total=0;
+// Milovice RP 5.28.8 — continuous mapped exterior eaves, no bogus caps.
+// Roof top and soffit are partitions of the SAME affine roof planes as the
+// source station roof, not bent quadrilaterals crossing hip creases.
+const EPS=1e-8;
+const point=p=>({x:p.x,z:p.z??p.y});
+function ring(input){
+ if(!Array.isArray(input)||input.length<3)return null;
+ const points=input.map(point);
+ if(points.some(p=>!Number.isFinite(p.x)||!Number.isFinite(p.z)))return null;
+ if(points.length>3&&Math.hypot(points[0].x-points.at(-1).x,points[0].z-points.at(-1).z)<.02)points.pop();
+ return points.length>=3?points:null;
+}
+function signedArea(poly){
+ let sum=0;
  for(let i=0;i<poly.length;i++){
   const a=poly[i],b=poly[(i+1)%poly.length];
-  total+=a.x*b.z-b.x*a.z;
+  sum+=a.x*b.z-b.x*a.z;
  }
- return total*.5;
+ return sum*.5;
 }
-function normalizeRing(input){
- if(!Array.isArray(input)||input.length<3)return null;
- const ring=input.map(point);
- if(ring.some(p=>!Number.isFinite(p.x)||!Number.isFinite(p.z)))return null;
- if(ring.length>3&&Math.hypot(ring[0].x-ring.at(-1).x,ring[0].z-ring.at(-1).z)<.02)ring.pop();
- return ring.length>=3?ring:null;
-}
-function matchedOuterEdge(a,b,boundary,sign){
- const mx=(a.x+b.x)*.5,mz=(a.z+b.z)*.5;
- for(let i=0;i<boundary.length;i++){
-  const p=boundary[i],q=boundary[(i+1)%boundary.length];
-  const dx=q.x-p.x,dz=q.z-p.z,length=Math.hypot(dx,dz);
-  if(length<.05)continue;
-  const lateral=(x,z)=>Math.abs(dx*(z-p.z)-dz*(x-p.x))/length;
-  const projection=(x,z)=>((x-p.x)*dx+(z-p.z)*dz)/(length*length);
-  // Clipping introduces points on the REAL edge, but also artificial
-  // edges across the building. Accept only segments ON a mapped wall.
-  if(lateral(a.x,a.z)>.075||lateral(b.x,b.z)>.075||
-   lateral(mx,mz)>.075)continue;
-  if([projection(a.x,a.z),projection(b.x,b.z)].some(t=>t<-.015||t>1.015))continue;
-  return {sourceIndex:i,nx:sign*dz/length,nz:-sign*dx/length};
+// A clipped section edge counts as exterior only if both ends are on
+// the same ORIGINAL OSM polygon edge. Virtual central-tower cuts fail this.
+export function stationExteriorEdge(a,b,originalOutline){
+ const original=ring(originalOutline);
+ if(!original)return null;
+ const sign=Math.sign(signedArea(original));
+ if(!sign)return null;
+ const pa=point(a),pb=point(b),mx=(pa.x+pb.x)*.5,mz=(pa.z+pb.z)*.5;
+ for(let i=0;i<original.length;i++){
+  const p=original[i],q=original[(i+1)%original.length];
+  const dx=q.x-p.x,dz=q.z-p.z,len=Math.hypot(dx,dz);
+  if(len<.05)continue;
+  const dist=(x,z)=>Math.abs(dx*(z-p.z)-dz*(x-p.x))/len;
+  const t=(x,z)=>((x-p.x)*dx+(z-p.z)*dz)/(len*len);
+  if(dist(pa.x,pa.z)>.045||dist(pb.x,pb.z)>.045||dist(mx,mz)>.045)continue;
+  if([t(pa.x,pa.z),t(pb.x,pb.z)].some(v=>v<-.01||v>1.01))continue;
+  return {sourceIndex:i,nx:sign*dz/len,nz:-sign*dx/len};
  }
  return null;
 }
-function miter(n1,n2,width){
- if(!n1)return {x:n2.nx*width,z:n2.nz*width};
- if(!n2)return {x:n1.nx*width,z:n1.nz*width};
- const dot=n1.nx*n2.nx+n1.nz*n2.nz;
- // Cap the miter to avoid enormous spikes on tiny zig-zag OSM segments.
- if(dot<-.45)return {x:n2.nx*width,z:n2.nz*width};
- const scale=width/(1+dot);
- const x=(n1.nx+n2.nx)*scale,z=(n1.nz+n2.nz)*scale;
- const length=Math.hypot(x,z);
- if(length>width*1.8)return {x:x*width*1.8/length,z:z*width*1.8/length};
- return {x,z};
+function miter(before,after,width){
+ const a=before||after,b=after||before;
+ if(!a)return {x:0,z:0};
+ const dot=a.nx*b.nx+a.nz*b.nz;
+ if(dot<-.45)return {x:b.nx*width,z:b.nz*width};
+ const scale=width/(1+dot),x=(a.nx+b.nx)*scale,z=(a.nz+b.nz)*scale;
+ const len=Math.hypot(x,z),max=width*1.8;
+ return len>max?{x:x*max/len,z:z*max/len}:{x,z};
 }
-function roofPlanes(roof,origin,p){
+function roofPlanes(roof,origin){
  const {ax,az}=roof.globalAxis,{minS,maxS,minT,maxT}=roof.bounds;
- const dx=p.x-origin.x,dz=p.z-origin.z;
- const s=dx*ax+dz*az,t=-dx*az+dz*ax;
  const midT=(minT+maxT)*.5;
- const values=[(t-minT)/(midT-minT),(maxT-t)/(maxT-midT)];
- if(roof.kind==='hip')values.push((s-minS)/roof.endInset,(maxS-s)/roof.endInset);
- return values;
+ return [
+  p=>{const dx=p.x-origin.x,dz=p.z-origin.z;return (-dx*az+dz*ax-minT)/(midT-minT)},
+  p=>{const dx=p.x-origin.x,dz=p.z-origin.z;return (maxT+dx*az-dz*ax)/(maxT-midT)},
+  ...(roof.kind==='hip'?[
+   p=>{const dx=p.x-origin.x,dz=p.z-origin.z;return (dx*ax+dz*az-minS)/roof.endInset},
+   p=>{const dx=p.x-origin.x,dz=p.z-origin.z;return (maxS-dx*ax-dz*az)/roof.endInset}
+  ]:[])
+ ];
 }
-function roofHeight(roof,values,inside){
- const v=Math.min(...values);
- // Outside the perimeter the REAL sloping plane continues downhill,
- // without clamping to eaveY (which would create an artificial flat flap).
- return roof.eaveY+(roof.ridgeY-roof.eaveY)*(inside?Math.max(0,Math.min(1,v)):Math.min(1,v));
-}
-function intersectPlanes(a,b){
- const roots=[0,1];
- for(let j=0;j<a.length;j++)for(let k=j+1;k<a.length;k++){
-  const before=a[j]-a[k],after=b[j]-b[k],delta=before-after;
-  if(Math.abs(delta)<EPS)continue;
-  const t=before/delta;
-  if(t>1e-6&&t<1-1e-6)roots.push(t);
+function cutsOnSegment(a,b,planes){
+ const t=[0,1];
+ for(let i=0;i<planes.length;i++)for(let j=i+1;j<planes.length;j++){
+  const d0=planes[i](a)-planes[j](a),d1=planes[i](b)-planes[j](b);
+  const den=d0-d1;
+  if(Math.abs(den)<EPS)continue;
+  const t0=d0/den;
+  if(t0>1e-7&&t0<1-1e-7)t.push(t0);
  }
- return roots;
+ t.sort((a,b)=>a-b);
+ return t.filter((v,i)=>i===0||v-t[i-1]>1e-7);
+}
+const mix=(p,q,t)=>({x:p.x+(q.x-p.x)*t,z:p.z+(q.z-p.z)*t});
+function clipBelow(polygon,first,second){
+ const output=[];
+ for(let i=0;i<polygon.length;i++){
+  const a=polygon[i],b=polygon[(i+1)%polygon.length];
+  const da=first(a)-second(a),db=first(b)-second(b);
+  const insideA=da<=EPS,insideB=db<=EPS;
+  if(insideA)output.push(a);
+  if(insideA!==insideB){
+   const t=da/(da-db);
+   output.push(mix(a,b,t));
+  }
+ }
+ const unique=[];
+ for(const p of output)if(!unique.length||
+  Math.hypot(p.x-unique.at(-1).x,p.z-unique.at(-1).z)>1e-7)unique.push(p);
+ if(unique.length>1&&Math.hypot(unique[0].x-unique.at(-1).x,
+  unique[0].z-unique.at(-1).z)<1e-7)unique.pop();
+ return unique;
 }
 function addTriangle(dest,a,b,c){
- const abx=b.x-a.x,aby=b.y-a.y,abz=b.z-a.z;
- const acx=c.x-a.x,acy=c.y-a.y,acz=c.z-a.z;
- const cross=Math.hypot(aby*acz-abz*acy,abz*acx-abx*acz,abx*acy-aby*acx);
+ const u=[b.x-a.x,b.y-a.y,b.z-a.z],v=[c.x-a.x,c.y-a.y,c.z-a.z];
+ const cross=Math.hypot(u[1]*v[2]-u[2]*v[1],
+  u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]);
  if(cross>1e-7)dest.push([a,b,c]);
 }
-function quad(dest,a,b,c,d){
- addTriangle(dest,a,b,c);addTriangle(dest,a,c,d);
-}
+const quad=(dest,a,b,c,d)=>{addTriangle(dest,a,b,c);addTriangle(dest,a,c,d)};
 export function planStationRoofEaves({outline,originalOutline,roof,origin,
  width=.32,thickness=.10}={}){
- const section=normalizeRing(outline),original=normalizeRing(originalOutline);
+ const section=ring(outline),original=ring(originalOutline);
  if(!section||!original||!roof?.bounds||!roof?.globalAxis||!origin||
+  !Number.isFinite(origin.x)||!Number.isFinite(origin.z)||
   !['hip','gable'].includes(roof.kind)||!Number.isFinite(roof.eaveY)||
   !Number.isFinite(roof.ridgeY)||!(roof.ridgeY>roof.eaveY)||
   !Number.isFinite(width)||width<.10||width>.65||
   !Number.isFinite(thickness)||thickness<.04||thickness>.20)return null;
- const sign=Math.sign(area(original));
- if(!sign)return null;
- const mapped=section.map((p,i)=>matchedOuterEdge(p,section[(i+1)%section.length],original,sign));
+ const edges=section.map((a,i)=>stationExteriorEdge(a,
+  section[(i+1)%section.length],original));
+ const corners=section.map((_,i)=>miter(edges[(i+section.length-1)%section.length],edges[i],width));
+ const planes=roofPlanes(roof,origin),rise=roof.ridgeY-roof.eaveY;
+ const yAt=p=>roof.eaveY+rise*Math.min(...planes.map(f=>f(p)));
+ const top=p=>{
+  const dx=p.x-origin.x,dz=p.z-origin.z;
+  const {ax,az}=roof.globalAxis;
+  return {...p,y:yAt(p),u:(dx*ax+dz*az)*.23,v:(-dx*az+dz*ax)*.23};
+ };
+ const bottom=p=>({...p,y:p.y-thickness});
  const tiles=[],soffit=[],fascia=[];
- let perimeter=0,exteriorEdges=0,excludedInteriorEdges=0,maxActualOverhang=0;
- const uv=(p,u,v)=>({x:p.x,y:p.y,z:p.z,u,v});
+ let exteriorEdges=0,excludedInteriorEdges=0,maxActualOverhang=0,faceRegions=0;
+ let closedEndCaps=0,unnecessaryCapsAvoided=0;
  for(let i=0;i<section.length;i++){
-  const a=section[i],b=section[(i+1)%section.length],match=mapped[i];
-  const length=Math.hypot(b.x-a.x,b.z-a.z);
-  if(!match){excludedInteriorEdges++;continue}
-  if(length<.05)continue;
+  const normal=edges[i];
+  if(!normal){excludedInteriorEdges++;continue}
+  const a=section[i],b=section[(i+1)%section.length],len=Math.hypot(b.x-a.x,b.z-a.z);
+  if(len<.05)continue;
   exteriorEdges++;
-  const prev=mapped[(i+section.length-1)%section.length];
-  const next=mapped[(i+1)%section.length];
-  const left=miter(prev,match,width),right=miter(match,next,width);
-  const outerA={x:a.x+left.x,z:a.z+left.z};
-  const outerB={x:b.x+right.x,z:b.z+right.z};
-  maxActualOverhang=Math.max(maxActualOverhang,Math.hypot(left.x,left.z),Math.hypot(right.x,right.z));
-  const ia=roofPlanes(roof,origin,a),ib=roofPlanes(roof,origin,b);
-  const oa=roofPlanes(roof,origin,outerA),ob=roofPlanes(roof,origin,outerB);
-  const splits=[...intersectPlanes(ia,ib),...intersectPlanes(oa,ob)].sort((x,y)=>x-y);
-  const cuts=splits.filter((t,j)=>j===0||t-splits[j-1]>1e-6);
-  const lerp=(p,q,t)=>({x:p.x+(q.x-p.x)*t,z:p.z+(q.z-p.z)*t});
-  const verts=t=>{
-   const inner=lerp(a,b,t),outer=lerp(outerA,outerB,t);
-   const innerY=roofHeight(roof,roofPlanes(roof,origin,inner),true);
-   const outerY=roofHeight(roof,roofPlanes(roof,origin,outer),false);
-   return {
-    it:uv({...inner,y:innerY},(perimeter+length*t)*.21,0),
-    ot:uv({...outer,y:outerY},(perimeter+length*t)*.21,width*.21),
-    ib:uv({...inner,y:innerY-thickness},(perimeter+length*t)*.21,0),
-    ob:uv({...outer,y:outerY-thickness},(perimeter+length*t)*.21,width*.21)
-   };
-  };
-  for(let j=1;j<cuts.length;j++){
-   const v=verts(cuts[j-1]),w=verts(cuts[j]);
-   quad(tiles,v.it,w.it,w.ot,v.ot);
-   quad(soffit,v.ib,v.ob,w.ob,w.ib);
-   quad(fascia,v.ot,w.ot,w.ob,v.ob);
+  const start=corners[i],end=corners[(i+1)%section.length];
+  const c={x:b.x+end.x,z:b.z+end.z},d={x:a.x+start.x,z:a.z+start.z};
+  maxActualOverhang=Math.max(maxActualOverhang,Math.hypot(start.x,start.z),Math.hypot(end.x,end.z));
+  // A strip quad is partitioned by EXACTLY the same four (or two) roof
+  // planes as the original tiled surface: no nonplanar bent triangles.
+  const strip=[a,b,c,d];
+  for(let plane=0;plane<planes.length;plane++){
+   let region=strip.slice();
+   for(let j=0;j<planes.length&&region.length>=3;j++){
+    if(plane!==j)region=clipBelow(region,planes[plane],planes[j]);
+   }
+   if(region.length<3)continue;
+   faceRegions++;
+   const t=region.map(top);
+   for(let k=1;k<t.length-1;k++){
+    addTriangle(tiles,t[0],t[k],t[k+1]);
+    addTriangle(soffit,bottom(t[0]),bottom(t[k+1]),bottom(t[k]));
+   }
   }
-  // Seal the cut ends too, including the ends beside the raised centre.
-  // This does not add a projecting canopy along artificial cut boundaries.
-  const first=verts(0),last=verts(1);
-  quad(fascia,first.it,first.ot,first.ob,first.ib);
-  quad(fascia,last.it,last.ib,last.ob,last.ot);
-  perimeter+=length;
+  // The fascia must follow true plane intersections on the OUTER edge.
+  const cuts=cutsOnSegment(d,c,planes);
+  for(let j=1;j<cuts.length;j++){
+   const p=top(mix(d,c,cuts[j-1])),q=top(mix(d,c,cuts[j]));
+   quad(fascia,p,q,bottom(q),bottom(p));
+  }
+  // Previous version added an end-cap at EVERY OSM vertex even when
+  // the next outer wall continues with the same eave. Those tiny dark
+  // squares caused most of the visible steps and fake roof tabs.
+  const addCap=(inside,outside,reverse)=>{
+   const ts=cutsOnSegment(inside,outside,planes);
+   for(let j=1;j<ts.length;j++){
+    const a0=top(mix(inside,outside,ts[j-1]));
+    const a1=top(mix(inside,outside,ts[j]));
+    if(reverse)quad(fascia,a1,a0,bottom(a0),bottom(a1));
+    else quad(fascia,a0,a1,bottom(a1),bottom(a0));
+   }
+   closedEndCaps++;
+  };
+  if(!edges[(i+section.length-1)%section.length])addCap(a,d,false);
+  else unnecessaryCapsAvoided++;
+  if(!edges[(i+1)%section.length])addCap(b,c,true);
+  else unnecessaryCapsAvoided++;
  }
  return {tiles,soffit,fascia,exteriorEdges,excludedInteriorEdges,
   width,thickness,maxActualOverhang,closedUnderside:true,
-  onlyMappedExterior:true};
+  onlyMappedExterior:true,faceRegions,closedEndCaps,
+  unnecessaryCapsAvoided,exactPlanePartitions:true};
 }
