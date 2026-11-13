@@ -13,7 +13,8 @@ export function makeMiloviceHeroArchitecture(THREE,{
  const state={buildings:0,verifiedOverrides:0,verifiedFaces:0,photoMappedFaces:0,
   photoMappedWindows:0,solidWalls:0,cutoutWindows:0,cutoutDoors:0,gables:0,
   detailInstances:0,drawMeshes:0,chunkCount:0,
-  suppressedArbitraryChimneys:0,skippedUnverifiedGables:0};
+  suppressedArbitraryChimneys:0,skippedUnverifiedGables:0,
+  suppressedUnverifiedPhotoOrnaments:0};
  const box=new THREE.BoxGeometry(1,1,1),glassPlane=new THREE.PlaneGeometry(1,1);
  const mats={
   wall:new THREE.MeshStandardMaterial({vertexColors:true,roughness:.92,side:THREE.DoubleSide}),
@@ -124,6 +125,9 @@ export function makeMiloviceHeroArchitecture(THREE,{
    const yaw=Math.atan2(nx,nz),holes=[];
    // One independently reviewed facade can replace only its own selected
    // surveyed wall; corners/chamfers and unreviewed sides keep the old model.
+   const photoAnchored=Boolean(override?.source);
+   // A photographed building may have an incomplete facade survey.
+   // Show functional provisional openings, not randomly invented ornaments.
    const cardinal=faceEdges.get(sideIndex);
    const sideLayout=cardinal?override?.facades?.[cardinal]||null:null;
    const autoEntrance=sideIndex===entrySide&&len>5&&!explicitDoor&&!sideLayout?.openings?.length;
@@ -164,9 +168,15 @@ export function makeMiloviceHeroArchitecture(THREE,{
      placement(chunk,'frame',frame.x,base+bottom+h*.5,frame.z,.054,h,.13,yaw);
      placement(chunk,'sill',sill.x,base+bottom-.055,sill.z,w+.28,.11,.32,yaw);
      // On a verified facade never invent shutter/lintel ornaments at random.
-     if(!sideLayout&&(index+i+floor)%2===0)
-      placement(chunk,'sill',frame.x,base+bottom+h+.16,frame.z,w+.22,.12,.23,yaw);
-     const useShutters=sideLayout?sideLayout.shutters===true:(floor===0&&i%3===1);
+     if(!sideLayout&&(index+i+floor)%2===0){
+      if(photoAnchored)state.suppressedUnverifiedPhotoOrnaments++;
+      else placement(chunk,'sill',frame.x,base+bottom+h+.16,frame.z,w+.22,.12,.23,yaw);
+     }
+     const randomShutters=floor===0&&i%3===1;
+     const useShutters=sideLayout?sideLayout.shutters===true:
+      !photoAnchored&&randomShutters;
+     if(photoAnchored&&!sideLayout&&randomShutters)
+      state.suppressedUnverifiedPhotoOrnaments++;
      if(useShutters){
       const off=w*.5+.26;
       for(const sign of [-1,1])
@@ -185,7 +195,10 @@ export function makeMiloviceHeroArchitecture(THREE,{
     }
     placement(chunk,'frame',xx+nx*.08,base+doorBottom+doorHeight+.055,zz+nz*.08,doorWidth+.22,.12,.27,yaw);
     placement(chunk,'base',xx+nx*.53,base+doorBottom-.025,zz+nz*.53,doorWidth+.36,.20,.82,yaw);
-    if(!sideLayout)placement(chunk,'awning',xx+nx*.37,base+doorBottom+doorHeight+.40,zz+nz*.37,doorWidth+.77,.16,.85,yaw);
+    if(!sideLayout){
+     if(photoAnchored)state.suppressedUnverifiedPhotoOrnaments++;
+     else placement(chunk,'awning',xx+nx*.37,base+doorBottom+doorHeight+.40,zz+nz*.37,doorWidth+.77,.16,.85,yaw);
+    }
    }
    placement(chunk,'base',mx+nx*.09,base+.23,mz+nz*.09,len,.46,.16,yaw);
    placement(chunk,'sill',mx+nx*.15,base+height-.12,mz+nz*.15,len,.20,.28,yaw);
