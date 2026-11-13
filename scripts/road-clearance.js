@@ -57,3 +57,26 @@ export function createRoadClearance({cellSize=80}={}){
  }
  return {addRoad,nearest,isClear,stats:()=>({indexedRoutes:known.size,segments:segments.length,cells:cells.size})};
 }
+
+// Strict 5.26.2 roadside geometry: verify the WHOLE projected rectangle,
+// not only its centre. Three.js BoxGeometry rotated about Y maps local X/Z
+// to (cos(yaw),-sin(yaw)) and (sin(yaw),cos(yaw)) respectively.
+// This check uses the existing OSM road/footway index only: it does not turn
+// a photographed but unmeasured prop into a surveyed real-world position.
+export function isRoadFreeRect(roadClearance,{x,z,length,depth,yaw=0,buffer=.10,step=.65}={}){
+ if(!roadClearance||typeof roadClearance.isClear!=='function')return false;
+ if(![x,z,length,depth,yaw,buffer,step].every(Number.isFinite)||
+   length<=0||depth<=0||length>70||depth>70||step<=0||buffer<0)return false;
+ const nx=Math.ceil(length/step),nz=Math.ceil(depth/step);
+ const dx=length/nx,dz=depth/nz;
+ // A cell is enclosed by a circle of this radius. Conservatively testing
+ // every cell therefore covers its edges and corners, including rotations.
+ const cellRadius=Math.hypot(dx,dz)*.5;
+ const ca=Math.cos(yaw),sa=Math.sin(yaw);
+ for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){
+  const u=-length*.5+(i+.5)*dx,v=-depth*.5+(j+.5)*dz;
+  const px=x+ca*u+sa*v,pz=z-sa*u+ca*v;
+  if(!roadClearance.isClear(px,pz,cellRadius,buffer))return false;
+ }
+ return true;
+}
