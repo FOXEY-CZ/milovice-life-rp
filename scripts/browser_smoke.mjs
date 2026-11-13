@@ -25,6 +25,8 @@ try{
  if(!landmarkChecks.stationParts?.center||!landmarkChecks.stationParts?.left||!landmarkChecks.stationParts?.right)throw new Error('Station wing/center massing missing');
  if(!landmarkChecks.stationSign||!landmarkChecks.stationCanopy||!landmarkChecks.stationStreetSign)
   throw new Error('4.9 station architecture missing: '+JSON.stringify(landmarkChecks));
+ if(!landmarkChecks.stationForecourt||!landmarkChecks.stationStreetEntrance)
+  throw new Error('5.1.1 station forecourt/entry missing: '+JSON.stringify(landmarkChecks));
  const diagnostics=await page.evaluate(()=>({rail:window.__miloviceRailDebug,models:window.__miloviceModelDebug,range:window.__miloviceDrawDistance}));
  console.log('5.0 models and train:',JSON.stringify(diagnostics));
  if(diagnostics.rail?.loaded!==true||diagnostics.rail?.cars!==3)throw new Error('Three-coach rail traffic missing');
@@ -48,6 +50,15 @@ try{
  await page.locator('[data-spawn="sedan"]').click();
  if(!(await page.locator('#mode').innerText()).includes('Řidič auta'))throw new Error('Car spawn did not work');
  if(await page.locator('#doors').isVisible())throw new Error('Bus-only door button visible during car free roam');
+ await page.locator('#rp-vehicles').click();
+ await page.locator('#rp-model-select').selectOption('on');
+ await page.locator('#rp-spawn-close').click();
+ await page.waitForFunction(()=>window.__miloviceGLBDebug?.state==='ready'||window.__miloviceGLBDebug?.state==='fallback',null,{timeout:45000});
+ const assetStats=await page.evaluate(()=>window.__miloviceGLBDebug);
+ console.log('5.1.1 CC0 GLB diagnostics:',JSON.stringify(assetStats));
+ if(assetStats.state!=='ready')throw new Error('Licensed high-resolution GLB failed to load: '+JSON.stringify(assetStats));
+ await page.waitForFunction(()=>window.__miloviceGLBDebug?.active===true,null,{timeout:12000});
+ await page.screenshot({path:'browser-artifacts/milovice-real-glb-vehicle.png'});
  await page.locator('#rp-jobs').click();
  await page.locator('#rp-job-start').click();
  const stopCount=await page.evaluate(()=>window.__miloviceTransitStops);
