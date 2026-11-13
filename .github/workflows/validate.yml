@@ -35,6 +35,8 @@ jobs:
         run: node scripts/station-roof-geometry.test.mjs
       - name: Validate every OSM house roof and photographed dormer angles across city
         run: node scripts/city-roof-geometry.test.mjs
+      - name: Verify no roof-to-wall gaps on irregular station footprints
+        run: node scripts/station-roof-seams.test.mjs
       - name: Verify building-by-building rebuild inventory covers all 684 core OSM structures
         run: node scripts/building-audit-queue.test.mjs
       - name: Validate historical station facade references and removal of wrong-side canopy
