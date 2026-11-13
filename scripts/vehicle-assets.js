@@ -16,6 +16,20 @@ export const LICENSED_VEHICLES={
   source:'https://quaternius.itch.io/lowpoly-cars',
   license:'CC0-1.0',author:'Quaternius',frontAxis:'AUTO',length:4.70,
   fileBytes:181608
+ },
+ cityCar:{
+  name:'Osobní vůz · Quaternius CC0',
+  uri:'https://raw.githubusercontent.com/bennibeni/garage/5c26fd4bac37080cd55f8064c59de4b14b489ddd/public/models/quaternius-car.glb',
+  source:'https://poly.pizza/m/unqqkULtRU',
+  license:'CC0-1.0',author:'Quaternius',frontAxis:'AUTO',length:4.36,
+  fileBytes:174320
+ },
+ citySport:{
+  name:'Sportovní vůz · Quaternius CC0',
+  uri:'https://raw.githubusercontent.com/bennibeni/garage/5c26fd4bac37080cd55f8064c59de4b14b489ddd/public/models/quaternius-sport.glb',
+  source:'https://poly.pizza/bundle/Cars-Bundle-FE5IWe6OMk',
+  license:'CC0-1.0',author:'Quaternius',frontAxis:'AUTO',length:4.43,
+  fileBytes:175100
  }
 };
 
@@ -25,7 +39,7 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
  let mode='auto',current=null,lastUpdate=-1,activeKey=null;
  const pc=()=>typeof window!=='undefined'&&window.matchMedia?.('(pointer:fine)').matches
    &&(typeof navigator.deviceMemory!=='number'||navigator.deviceMemory>=4);
- const enabled=()=>mode==='on'||(mode==='auto'&&pc());
+ const enabled=()=>mode==='on'||mode==='auto'; // auto: one low-memory GLB on mobile, one high-detail GLB on PC
  const publish=(message='')=>{
   if(message)status(message);
   const asset=activeKey||'spectralGT';
@@ -89,7 +103,7 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
  function configure(next){
   if(!['auto','on','off'].includes(next))return;
   mode=next;if(!enabled()){showFallback(current);current=null}
-  if(enabled()&&!states.has('spectralGT'))load('spectralGT');
+  if(enabled()&&!states.has(pc()?'spectralGT':'cityCar'))load(pc()?'spectralGT':'cityCar');
   publish(enabled()?'🚘 Skutečné GLB modely aktivní poblíž hráče.':'🚘 Úsporná procedurální auta.');
  }
  function update(cars,x,z,t,playerCar=null){
@@ -105,7 +119,11 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
     if(d<min){min=d;chosen=car}
    }
   }
-  const key=chosen&&(chosen.type===2||chosen.type===5)?'citySUV':'spectralGT';
+  // One textured GLB near the camera: small licensed models on touch devices,
+  // higher-detail sports coupe only on PCs or if manually forced.
+  const key=chosen&&(chosen.type===2||chosen.type===5)?'citySUV'
+   :mode==='on'||pc()?'spectralGT'
+   :chosen?.type===3||chosen?.type===4?'citySport':'cityCar';
   activeKey=key;
   if(chosen&&!states.has(key))load(key);
   const loaded=scenes.get(key);
