@@ -173,7 +173,8 @@ document.addEventListener('keydown',e=>{if(e.code==='Escape'&&mapPanel.classList
 import * as THREE from 'three';
 import {makeHumanRig,makeRoadCar,makePidBus,makeCityElefantStyleTrain} from './scripts/world-models.js?v=514';
 import {addLanduseFeature,forestInstancePlacements} from './scripts/landscapes.js?v=501';
-import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=534';
+import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=540';
+import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeCitySurfaceKit,makeContactShadow} from './scripts/graphics2.js?v=520';
 import {makeMiloviceHumanAssets} from './scripts/human-assets.js?v=533-forward';
 import {makeNearFieldTreeKit} from './scripts/nature-assets.js?v=531';
@@ -2377,6 +2378,14 @@ function rpAppendOSMElements(elements){
   else if(el.tags?.building)buildingWays.push(el);
   else if(el.tags?.landuse||el.tags?.leisure)landscapeWays.push(el);
  }
+ // Only mapped outdoor parking polygons qualify; mapped multi-storey garages
+ // must not be treated as open surface lots.
+ for(const el of elements){
+  if(el.tags?.amenity!=='parking'||!el.geometry?.length||el.tags.building||
+     el.tags.parking==='multi-storey'||el.tags.access==='private')continue;
+  if(!osmParkingLots.some(p=>p.id===el.id))
+   osmParkingLots.push({id:el.id,type:'surface',points:el.geometry.map(osmPoint)});
+ }
  for(const el of landscapeWays)
   addLanduseFeature(THREE,el,osmPoint,terrainAt,osmLayer,landscapeZones);
  for(const el of roadWays){
@@ -2386,7 +2395,7 @@ function rpAppendOSMElements(elements){
   if(el.id===549346217 && kind==='footway')stationMappedFootway=points;
   const width=kind==='primary'?11:kind==='secondary'?9:kind==='tertiary'?8:kind==='pedestrian'?4:kind==='footway'?1.8:kind==='path'?1.65:kind==='service'?4.5:7.8;
   if(['primary','secondary','tertiary','residential','unclassified','living_street','service'].includes(kind))
-   osmDriveRoads.push({points,width,kind,oneway:el.tags.oneway==='yes'?1:el.tags.oneway==='-1'?-1:0});
+   osmDriveRoads.push({points,width,kind,oneway:el.tags.oneway==='yes'?1:el.tags.oneway==='-1'?-1:0,osmId:el.id,access:el.tags.access||'',serviceTag:el.tags.service||''});
   for(let i=1;i<points.length;i++){
    osmRoadSegment(points[i-1],points[i],width,kind);
    osmRoadFurniture(points[i-1],points[i],width,kind);
@@ -2471,16 +2480,17 @@ async function rpLoadCityArea(id){
  }finally{loadingCityAreas.delete(id)}
 }
 function rpPopulateRegionalTraffic(area){
- if(trafficCars.length>=62)return;
+ if(trafficCars.length>=79)return;
  const center=osmPoint({lat:area.center[0],lon:area.center[1]});
  const segments=driveSegments.filter(s=>s.len>10&&s.width>=6&&Math.hypot((s.a.x+s.b.x)*.5-center.x,(s.a.y+s.b.y)*.5-center.y)<820);
- const max=Math.min(9,62-trafficCars.length);
+ const max=Math.min(7,79-trafficCars.length);
  for(let i=0;i<max&&segments.length;i++){
   const segment=segments[(i*21+3)%segments.length];
   const car=makeTrafficCar(trafficCars.length,segment);
   if(segment.oneway)car.direction=segment.oneway;
   trafficCars.push(car);
  }
+ rpSeedParkedCars(center,5);
 }
 let lastCityStreamingX=Infinity,lastCityStreamingZ=Infinity;
 function maybeStreamCityAreas(){
@@ -2683,7 +2693,7 @@ osmBtn.onclick=async()=>{
 // RP 4.4: Cars follow the drivable OSM road graph, including connected streets.
 // Pedestrians remain on sidewalks; vehicles occupy the correct half of a two-way road.
 const trafficGroup=new THREE.Group();osmLayer.add(trafficGroup);
-const trafficCars=[],trafficPeople=[],driveSegments=[],driveGraph=new Map();
+const trafficCars=[],trafficPeople=[],driveSegments=[],driveGraph=new Map(),osmParkingLots=[];
  // Upgrade 5.3.0: licensed, skinned GLB human models and full walk/idle animation clips.
  // A few near-field NPCs at a time preserve the existing mobile draw-call budget.
  const glbHumans=makeMiloviceHumanAssets(THREE,{playerRig,people:trafficPeople,maxNpc:5});
@@ -2731,7 +2741,7 @@ function rpBuildRoadGraph(){
   for(let j=1;j<road.points.length;j++){
    const a=road.points[j-1],b=road.points[j],len=a.distanceTo(b);
    if(len<2.5||len>175||road.width<4.4)continue;
-   const segment={a,b,len,width:road.width,oneway:road.oneway,kind:road.kind};
+   const segment={a,b,len,width:road.width,oneway:road.oneway,kind:road.kind,osmId:road.osmId,access:road.access,serviceTag:road.serviceTag};
    driveSegments.push(segment);
    if(road.oneway!==-1)roadGraphAdd(a,segment,1);
    if(road.oneway!==1)roadGraphAdd(b,segment,-1);
@@ -2762,12 +2772,53 @@ function makeTrafficCar(index,segment){
  // 8 different sculpted body archetypes; a regional PID-inspired bus is #7.
  const vehicle=type===7?makePidBus(THREE,'432',true):makeRoadCar(THREE,index);
  const g=vehicle.group;trafficGroup.add(g);
- return {g,seg:segment,progress:(index*.137)%1,direction:index%2?-1:1,
+ return {id:nextTrafficId++,g,seg:segment,progress:(index*.137)%1,direction:index%2?-1:1,
   speed:type===7?6:5+(index%5)*1.15,turns:0,driven:false,parked:false,
   type,wheels:vehicle.wheels||[],service:type===7?'432':null,modelName:vehicle.kind||'regionální autobus'};
 }
+// Parked cars use a separate fixed position; they are never moved by traffic AI.
+function rpSeedParkedCars(center,max=12){
+ const slots=planMiloviceParking(driveSegments,osmParkingLots,{
+  center,limit:Math.max(0,Math.min(max,86-trafficCars.length)),seed:7417,
+  occupied:trafficCars.filter(c=>c.parked).map(c=>({x:c.g.position.x,z:c.g.position.z}))
+ });
+ let count=0;
+ for(const spot of slots){
+  // A street slot always comes from a mapped drivable segment; for lot polygons,
+  // select the closest OSM service/residential road as the driving access.
+  const segment=driveSegments.find(s=>s.osmId===spot.sourceId)||
+   driveSegments.reduce((best,s)=>{
+    const d=Math.hypot((s.a.x+s.b.x)*.5-spot.x,(s.a.y+s.b.y)*.5-spot.z);
+    const bd=Math.hypot((best.a.x+best.b.x)*.5-spot.x,(best.a.y+best.b.y)*.5-spot.z);
+    return d<bd?s:best;
+   },driveSegments[0]);
+  if(!segment)continue;
+  let index=(trafficCars.length*7+count*5+13)%40;
+  if(index%9===7)index++; // No randomly parked passenger buses.
+  const car=makeTrafficCar(index,segment);
+  car.parked=true;car.parkingKind=spot.type;
+  car.g.position.set(spot.x,terrainAt(spot.x,spot.z)+.045,spot.z);
+  car.g.rotation.y=spot.yaw;car.g.visible=true;
+  trafficCars.push(car);count++;
+ }
+ window.__miloviceParkingDebug={
+  parked:trafficCars.filter(c=>c.parked).length,
+  roadside:trafficCars.filter(c=>c.parkingKind==='roadside').length,
+  serviceBays:trafficCars.filter(c=>c.parkingKind==='service-access-bay').length,
+  surfaceLotCars:trafficCars.filter(c=>c.parkingKind==='mapped-surface-parking').length,
+  mappedOutdoorLots:osmParkingLots.length,
+  distinctTypes:[...new Set(trafficCars.filter(c=>c.parked).map(c=>c.type))],
+  cars:trafficCars.filter(c=>c.parked).map(c=>({id:c.id,x:+c.g.position.x.toFixed(1),z:+c.g.position.z.toFixed(1)}))
+ };
+}
+function rpSpinWheels(car,distance){
+ if(!Number.isFinite(distance)||!distance)return;
+ for(const wheel of car.wheels||[])wheel.rotation.x-=distance/(wheel.userData.wheelRadius||.385);
+ glbVehicles.spin(car,distance);
+ car.wheelMeters=(car.wheelMeters||0)+Math.abs(distance);
+}
 function rpPopulate(){
- glbHumans.resetPeople();
+ glbHumans.resetPeople();glbVehicles.reset();
  trafficGroup.clear();trafficCars.length=0;trafficPeople.length=0;
  rpBuildRoadGraph();
  rpBuildCrosswalks();
@@ -2780,6 +2831,7 @@ function rpPopulate(){
   if(seg.oneway!==0)car.direction=seg.oneway;
   trafficCars.push(car);
  }
+ rpSeedParkedCars({x:0,z:0},12);
  for(let i=0;i<30;i++){
   const seg=segments[(i*23+7)%segments.length];
   const rig=makeHumanRig(THREE,i,npcClothes[i%npcClothes.length].color.getHex());
