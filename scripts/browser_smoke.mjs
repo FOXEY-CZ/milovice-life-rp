@@ -27,6 +27,8 @@ try{
   throw new Error('4.9 station architecture missing: '+JSON.stringify(landmarkChecks));
  if(!landmarkChecks.stationForecourt||!landmarkChecks.stationStreetEntrance)
   throw new Error('5.1.1 station forecourt/entry missing: '+JSON.stringify(landmarkChecks));
+ if(landmarkChecks.platformTactileStrips<3||landmarkChecks.platformEdgeMeters<30)
+  throw new Error('5.1.3 mapped station platform tactile edging missing: '+JSON.stringify(landmarkChecks));
  const diagnostics=await page.evaluate(()=>({rail:window.__miloviceRailDebug,models:window.__miloviceModelDebug,range:window.__miloviceDrawDistance}));
  console.log('5.0 models and train:',JSON.stringify(diagnostics));
  if(diagnostics.rail?.loaded!==true||diagnostics.rail?.cars!==3)throw new Error('Three-coach rail traffic missing');
