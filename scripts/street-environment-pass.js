@@ -207,7 +207,21 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
   timber.push(itemAt(anchor,20.0,side+Math.sign(side)*4.36,1.09,3.5,1.77,.13,Math.atan2(-anchor.uz,anchor.ux)));
   addParts(group,geometries.box,colors.stone,stone);
   addParts(group,geometries.box,colors.timber,timber);
-  featureCount+=stone.length+timber.length;
+  // Shallow capstones and masonry joints: original detail, same OSM-aligned
+  // frontage, without introducing one draw call per stone.
+  const caps=[],joints=[],slats=[];
+  const angle=Math.atan2(-anchor.uz,anchor.ux);
+  const outer=side+Math.sign(side)*4.30;
+  for(let i=0;i<4;i++){
+   const along=12+i*2.25;
+   caps.push(itemAt(anchor,along,outer,1.32,2.31,.10,.46,angle));
+   for(let j=0;j<2;j++)joints.push(itemAt(anchor,along-.75+j*1.5,outer+Math.sign(side)*.18,.72,.045,.83,.015,angle));
+  }
+  for(let i=0;i<9;i++)slats.push(itemAt(anchor,18.55+i*.34,outer+Math.sign(side)*.10,1.10,.07,1.60,.035,angle));
+  addParts(group,geometries.box,colors.curb,caps);
+  addParts(group,geometries.box,colors.mortar,joints);
+  addParts(group,geometries.box,colors.fence,slats);
+  featureCount+=stone.length+timber.length+caps.length+joints.length+slats.length;
  }
  function utility(group,anchor,side){
   // 2014 source clearly shows a timber utility pole and overhead lines;
