@@ -58,6 +58,15 @@ try{
    throw Error('Three source-reviewed public building cards were not applied to OSM ways: '+JSON.stringify(official));
  console.log('5.14 photo-grounded block: original building detail meshes + permanent 3 source-checked public cards',
    JSON.stringify({landmark,published:official.publishedVerified}));
+ const environment=await page.evaluate(()=>window.__miloviceStreetEnvironment||null);
+ if(!environment||environment.sceneCount!==1||
+    environment.sources!==1||environment.ids[0]!=='street-5-kvetna-2014'||
+    environment.featureCount<35||environment.instances<50||
+    environment.drawMeshes>24||environment.spatiallyApproximate!==true)
+   throw new Error('5.21 5. května photographed streetscape missing, unbatched or unsourced: '+JSON.stringify(environment));
+ if(!(await page.locator('#rp-area-select option[value="photo5"]').count()))
+   throw new Error('5.21 photo street scene cannot be selected as a spawn location');
+ console.log('5.21 original 5. května photo street environment:',JSON.stringify(environment));
 
  const cutoutTest=await page.evaluate(async()=>{
   const THREE=await import('three');
@@ -84,7 +93,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('performance-5200'))
+ if(!(await page.locator('#build-label').innerText()).includes('street-scene-5210'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -306,6 +315,14 @@ try{
  await page.locator('#rp-graphics-select').selectOption('balanced');
  await page.locator('#rp-spawn-close').click();
  console.log('Graphics: balanced and dynamic-shadow mode both rendered');
+ await page.locator('#rp-vehicles').click();
+ await page.locator('#rp-area-select').selectOption('photo5');
+ await page.locator('[data-spawn="walking"]').click();
+ await page.waitForTimeout(450);
+ if(!(await page.evaluate(()=>window.__miloviceStreetEnvironment?.sceneCount===1)))
+   throw new Error('5.21 photo-street walking spawn lost the source-backed environment');
+ await page.screenshot({path:'browser-artifacts/milovice-5-kvetna-photo-scene.png'});
+ console.log('5.21 photo-grounded street scene selectable spawn: OK');
  // Mobile screenshot regression: don't let the giant diagnostics box hide the city.
  await page.setViewportSize({width:390,height:820});
  await page.waitForTimeout(300);
