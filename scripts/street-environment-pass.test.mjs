@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {PHOTO_STREET_ENVIRONMENT,gpsToStreetWorld,nearestPhotoRoadSegment} from './street-environment-pass.js';
+import {PHOTO_STREET_ENVIRONMENT,gpsToStreetWorld,nearestPhotoRoadSegment} from './street-environment-reality.js';
 const ref=PHOTO_STREET_ENVIRONMENT[0];
 assert.equal(PHOTO_STREET_ENVIRONMENT.length,1);
 assert.equal(ref.photoLicense,'CC BY-SA 4.0');
@@ -25,4 +25,12 @@ assert.equal(anchor.osmRoadId,ref.osmRoadId);
 assert(Math.hypot(anchor.ux,anchor.uz)>.99);
 assert(Math.hypot(anchor.nx,anchor.nz)>.99);
 assert.equal(nearestPhotoRoadSegment(null,50.22,14.88),null);
+const runtime=readFileSync(new URL('./street-environment-reality.js',import.meta.url),'utf8');
+assert(!runtime.includes('   paving(root,anchor,side);'),
+ 'Old photo paving slab generator must not run in strict reality mode');
+assert(runtime.includes('checkedGreeneryAgainstRoads:true'),
+ 'Every actual photo-scene tree and hedge must pass road/footway clearance');
+assert(runtime.includes('photoGroundClearance(anchor,along,side,.8*size)'),
+ 'Stem positions cannot be inferred without physical OSM road-clearance test');
+
 console.log('Photo-street environment OK:',JSON.stringify({reference:ref.id,roadOSM:ref.osmRoadId,photoToRoadMeters:anchor.distance}));
