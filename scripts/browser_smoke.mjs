@@ -40,11 +40,11 @@ try{
   // DEM mesh. Foundation quads must be partitioned without losing geometry.
   const oldGround=await page.evaluate(()=>window.__miloviceTerrainTiles);
   const oldFoundation=await page.evaluate(()=>window.__miloviceFoundationChunks);
-  if(!oldGround||oldGround.tiles<20||
+  if(!oldGround||oldGround.tiles<20||oldGround.tiles>55||
      oldGround.sourceTriangles!==oldGround.drawTriangles||
      !oldFoundation||oldFoundation.quads<50||oldFoundation.meshes<2)
     throw new Error('5.19 tiled terrain or spatial foundations missing: '+JSON.stringify({oldGround,oldFoundation}));
-  console.log('5.19 original DEM triangles retained in spatial tiles:',
+  console.log('5.20 full-resolution DEM with fewer GPU submissions:',
     JSON.stringify({oldGround,oldFoundation}));
  const landmark=await page.evaluate(()=>window.__milovicePhotoStreetPass||null);
  if(!landmark||landmark.buildings!==3||landmark.dormers<3||
@@ -84,7 +84,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('performance-5190'))
+ if(!(await page.locator('#build-label').innerText()).includes('performance-5200'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -338,6 +338,12 @@ try{
  await mobile.waitForFunction(()=>window.__miloviceStarted===true,{timeout:45000});
  await mobile.waitForFunction(()=>!document.getElementById('rp-spawn').hidden,{timeout:45000});
  const budget=await mobile.evaluate(()=>window.__milovicePerformance);
+  const mobileGPUProfile=await mobile.evaluate(()=>window.__miloviceGPUProfile);
+  if(!mobileGPUProfile||!mobileGPUProfile.diffuseMobile||
+      !mobileGPUProfile.roadDiffuse||!mobileGPUProfile.sidewalkDiffuse||
+      !mobileGPUProfile.buildingDiffuse||mobileGPUProfile.farClip>700)
+    throw new Error('5.20 mobile GPU matte shaders or fog clipping not active: '+JSON.stringify(mobileGPUProfile));
+  console.log('5.20 mobile GPU optimizations:',JSON.stringify(mobileGPUProfile));
  if(!budget?.mobile||budget.drawDistance>440||budget.detailDistance>165||
     budget.renderDpr>1.25||budget.adaptive!==true)
   throw new Error('5.15 default mobile FPS budget is missing or using desktop settings: '+JSON.stringify(budget));
