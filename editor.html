@@ -51,6 +51,8 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
 #imagery-panel{border:1px solid #5c7b8e;background:#102739;border-radius:12px;padding:10px;margin:12px 0}
 #imagery-panel .row{margin:7px 0;flex-wrap:wrap}#imagery-panel .row button{flex:1}
 #imagery-summary{font-size:12px;font-weight:650;color:#a5e4d6}#imagery-status{font-size:12px;min-height:30px}
+#roof-topology-panel{border:1px solid #61777b;background:#102c35;border-radius:10px;padding:9px;margin:10px 0}
+#roof-topology-summary{font-size:13px;line-height:1.5}#roof-topology-panel small{color:#b6cdd4}
 </style></head><body>
 <header><div><h1>🏗️ Milovice RP · Stavební editor</h1><div class="muted">Ulice → dům → panorama → ověřené parametry → 3D model</div></div>
 <a href="./index.html">🎮 Do hry</a></header>
@@ -72,6 +74,11 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
  <div id="empty">Vyber dům ze seznamu nebo kliknutím přímo na mapě.</div>
  <form id="inspector" hidden>
   <strong id="selected-title"></strong><p id="selected-meta"></p>
+  <section id="roof-topology-panel" aria-live="polite">
+   <strong>🏗️ Roof System 3.0 – návrh stavebních hmot</strong>
+   <p id="roof-topology-summary" class="muted">Výpočet půdorysu…</p>
+   <small>Žluté obrysy na mapě jsou konstrukční kandidáti, ne potvrzená střecha. Typy spojů a případné průchody musí potvrdit fotografie.</small>
+  </section>
   <div class="links">
    <a id="mapy" href="#" target="_blank" rel="noopener noreferrer">🧭 Mapy.com Panorama</a>
    <a id="mapillary" href="#" target="_blank" rel="noopener noreferrer">📷 Mapillary</a>
@@ -199,6 +206,7 @@ import {normalizeFacadeLayout} from './scripts/facade-model.js?v=5110';
 import {initPhotoSurvey} from './scripts/photo-survey-ui.js?v=5110';
 import {initImageryDiscovery} from './scripts/mapillary-discovery-ui.js?v=5120';
 import {loadApprovedArchitecture,prepareReviewBatch} from './scripts/architecture-manifest.js?v=5130';
+import {planBuildingRoofTopology} from './scripts/building-roof-topology.js?v=5310';
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
@@ -210,6 +218,42 @@ const collator=new Intl.Collator('cs',{numeric:true,sensitivity:'base'});
 let regions=[],buildings=[],roads=[],currentStreet='*',chosen=null,polygons=new Map(),roadLayer=null,buildingLayer=null;
 let facadeViews=[],currentFace=null,pano=null,panoRequest=0,panoLoad=null,panoMarker=null,panoRay=null;
 let approvedArchitecture=new Map(),publishedError=null;
+let roofMassLayer=null,roofPlan=null;
+function roofToWorld([lat,lon]){
+ return {x:(lon-14.889)*111320*Math.cos(50.226*Math.PI/180),
+  z:-(lat-50.226)*111320};
+}
+function roofToGps(p){
+ return [50.226-p.z/111320,14.889+
+  p.x/(111320*Math.cos(50.226*Math.PI/180))];
+}
+function renderRoofTopology(b){
+ roofMassLayer?.clearLayers();
+ roofPlan=planBuildingRoofTopology(b.coords.map(roofToWorld));
+ const el=$('roof-topology-summary');
+ if(!roofPlan.ok){
+  el.textContent='⚠️ Půdorys nelze bezpečně rozdělit ('+
+   roofPlan.reason+'). Stávající model beze změn, nutná kontrola podkladů.';
+  return;
+ }
+ if(!roofPlan.partitionable){
+  el.textContent='📸 Nepravoúhlý nebo nestandardní půdorys ('+
+   roofPlan.reason+'). Generátor si nové hmoty nevymyslí.';
+  return;
+ }
+ const count=roofPlan.volumeCount;
+ el.textContent=(count>1?'🧩':'🏠')+' Kandidátní části: '+count+
+  ' · společné hranice: '+roofPlan.junctions.length+
+  ' · průchody bez ověření: 0'+
+  ' · skutečný typ střechy: zatím nepotvrzený.';
+ if(count<=1)return;
+ for(const v of roofPlan.volumes){
+  L.polygon(v.outline.map(roofToGps),{
+   color:'#ffcc66',weight:2,fillOpacity:.06,
+   fillColor:'#ffd166',interactive:false
+  }).addTo(roofMassLayer);
+ }
+}
 function publishedToEditor(card){
  const facades={};
  for(const [side,v] of Object.entries(card.facades||{})){
@@ -237,6 +281,7 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
  maxZoom:19,attribution:'© přispěvatelé OpenStreetMap'
 }).addTo(map);
 roadLayer=L.layerGroup().addTo(map);buildingLayer=L.layerGroup().addTo(map);
+roofMassLayer=L.layerGroup().addTo(map);
 const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pt=p=>[Number(p.lat),Number(p.lon)];
 function metric(a,b){return Math.hypot((a[1]-b[1])*111320*Math.cos(50.23*Math.PI/180),(a[0]-b[0])*111320)}
@@ -276,6 +321,7 @@ function focusStreet(street){
  imageryDiscovery.clear();
  currentStreet=street;chosen=null;facadeViews=[];currentFace=null;stopPanorama();clearFaceMarker();
  $('inspector').hidden=true;$('empty').hidden=false;
+ roofMassLayer.clearLayers();roofPlan=null;
  renderLists();renderMap();
  const visible=buildings.filter(b=>street==='*'||b.street===street);
  if(visible.length){
@@ -329,6 +375,7 @@ function selectBuilding(id){
  $('inspector').hidden=false;$('empty').hidden=true;
  $('selected-title').textContent=b.name+' · OSM '+b.id;
  $('selected-meta').textContent=b.street+' · GPS '+lat+', '+lon+' · OSM patra '+(b.levels||'nezadána');
+ renderRoofTopology(b);
  $('mapy').href='https://mapy.com/cs/zakladni?x='+lon+'&y='+lat+'&z=19';
  $('mapillary').href='https://www.mapillary.com/app/?lat='+lat+'&lng='+lon+'&z=18';
  $('osm').href='https://www.openstreetmap.org/way/'+b.id;
@@ -494,6 +541,7 @@ async function loadDistrict(id){
  const region=regions.find(r=>r.id===id);if(!region)return;
  imageryDiscovery.clear();
  currentStreet='*';chosen=null;facadeViews=[];currentFace=null;stopPanorama();clearFaceMarker();$('inspector').hidden=true;$('empty').hidden=false;
+ roofMassLayer.clearLayers();roofPlan=null;
  $('buildings').textContent='Načítám budovy…';
  const path=id==='old'?'./data/milovice-osm.json':'./data/regions/'+region.file;
  try{
@@ -597,6 +645,9 @@ window.__miloviceEditor={get loaded(){return buildings.length>0},get buildings()
  }).buildings).length},
  get facades(){return facadeViews.length},get currentFace(){return currentFace?.id||null},
  get facePlan(){return currentFace?{id:currentFace.id,cardinal:currentFace.cardinal,middle:currentFace.middle}:null},
+ get roofPlan(){return roofPlan?{ok:roofPlan.ok,partitionable:roofPlan.partitionable,
+  volumeCount:roofPlan.volumeCount,junctions:roofPlan.junctions?.length||0,
+  documentedPassages:roofPlan.documentedPassages||0}:null},
  openBuilding:selectBuilding};
 })();
 </script></body></html>
