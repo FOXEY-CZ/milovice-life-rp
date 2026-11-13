@@ -640,6 +640,11 @@ document.addEventListener('mousemove',e=>{
  updateUI();
 }
 function updateUI(){
+ // Event-synchronous state for tests, UI and mobile input. Do not depend on the
+ // slower half-second diagnostic tick when switching vehicles.
+ window.__miloviceVehicleDebug ||= {};
+ window.__miloviceVehicleDebug.activeCarId=activeCar?.id||null;
+ window.__miloviceVehicleDebug.lastExitedVehicle=lastExitedVehicle;
  const driving=!walking,working=!!busJob,busWorking=working&&driving&&!activeCar;
  document.getElementById('speed').textContent=Math.round(Math.abs(speed)*3.6);
  document.getElementById('vehicle-stats').hidden=walking;
