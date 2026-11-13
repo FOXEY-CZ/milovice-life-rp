@@ -200,6 +200,11 @@ try{
     !(landmarkChecks.stationPassageAudit.newMappedAlignedS>8)||
     !(landmarkChecks.stationPassageAudit.offset<2.5))
   throw new Error('5.26 station entrance is not aligned with mapped footway: '+JSON.stringify(landmarkChecks.stationPassageAudit));
+ const coverAudit=await page.evaluate(()=>window.__miloviceStationRoofAudit||null);
+ if(!coverAudit||coverAudit.roofOnlyWaysExcluded<1||
+    !coverAudit.osmRoofIds.includes(1550920095))
+  throw new Error('5.26 station canopy OSM roof way still extruded as a blocking building: '+JSON.stringify(coverAudit));
+ console.log('5.26 unblocked station canopy (OSM roof-only):',JSON.stringify(coverAudit));
  console.log('Landmark geometry:',JSON.stringify(landmarkChecks));
  if(landmarkChecks.stationPassageFaces!==2)throw new Error('Milovice station does not have two opposing real open passage portals: '+JSON.stringify(landmarkChecks));
  const collisionCheck=await page.evaluate(()=>{
