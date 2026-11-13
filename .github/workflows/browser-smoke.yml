@@ -25,6 +25,8 @@ on:
       - scripts/station-roof-seams.test.mjs
       - scripts/station-roof-eaves.js
       - scripts/station-roof-eaves.test.mjs
+      - scripts/skolska-roof.js
+      - scripts/skolska-roof.test.mjs
       - scripts/city-roof-geometry.js
       - scripts/city-roof-geometry.test.mjs
       - scripts/building-audit-queue.test.mjs
