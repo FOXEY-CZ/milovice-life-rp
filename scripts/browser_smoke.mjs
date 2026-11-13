@@ -33,7 +33,7 @@ try{
  // the old-town core. An instance count alone is not sufficient evidence.
  const hero=await page.evaluate(()=>window.__miloviceHeroArchitecture||null);
  if(!hero||hero.buildings<3||hero.cutoutWindows<12||hero.cutoutDoors<2||
-    hero.solidWalls<10||hero.drawMeshes<4)
+    hero.solidWalls<10||hero.drawMeshes<4||!(hero.shortWallSegmentsSealed>=1))
   throw new Error('5.7.0 genuinely cut-out old-town buildings absent: '+JSON.stringify(hero));
  console.log('5.7.0 actual wall cut-outs in Old Milovice:',JSON.stringify(hero));
   // Terrain tiles copy every triangle, position, normal and UV from the original
@@ -132,7 +132,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('seam-safe-roofs-5301'))
+ if(!(await page.locator('#build-label').innerText()).includes('complete-perimeter-5302'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
