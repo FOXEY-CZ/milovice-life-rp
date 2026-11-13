@@ -80,6 +80,10 @@ try{
  const mladaStats=await page.evaluate(()=>window.__miloviceAreaStats);
  console.log('Mladá streamed:',JSON.stringify(mladaStats));
  if(mladaStats?.landscape<5)throw new Error('Missing mapped Mladá parks/forest/grass: '+JSON.stringify(mladaStats));
+ const commerce=await page.evaluate(()=>window.__miloviceCommerceDebug);
+ console.log('5.1.2 surveyed shop storefronts:',JSON.stringify(commerce));
+ if(!commerce?.names?.some(n=>n==='Billa')||!commerce.names.includes('Tesco')||!commerce.names.includes('Penny'))
+  throw new Error('Named OSM supermarkets failed to render facades in Mladá: '+JSON.stringify(commerce));
  await page.screenshot({path:'browser-artifacts/milovice-mlada.png'});
  await page.locator('#rp-vehicles').click();
  await page.locator('#rp-area-select').selectOption('bozidar');
