@@ -1882,6 +1882,9 @@ function miloviceBusinessFront(pts,tags,base,height,cx,cz,osmId){
  businessFronts.push(name);
  window.__miloviceCommerceDebug={count:businessFronts.length,names:[...businessFronts]};
 }
+// Height estimates inferred from the current photographed massing, NOT a surveyed LiDAR height.
+// OSM explicit height values always take precedence if present.
+const photoEstimatedStoreHeights=new Map([[53865798,5.20],[38742870,6.80],[38742873,4.60]]);
 function osmBuilding(points,tags,index,osmId=null){
  if(points.length<4)return;
  const pts=points.map(osmPoint);
@@ -1903,7 +1906,8 @@ function osmBuilding(points,tags,index,osmId=null){
  const isCommerce=['commercial','retail','supermarket','hotel'].includes(type);
  const isOldResidential=type==='house'&&floors<=3;
  const explicitHeight=parseFloat(tags.height);
- const h=Math.min(isPanelBlock?54:36,Math.max(isGarage?2.35:3.0,Number.isFinite(explicitHeight)&&explicitHeight>2?explicitHeight:isBlueStar?7.15:isMirova36?6.75:isGrocer74?3.65:isStation?7.4:isGarage?2.75:isIndustrial?5.3:isChurch?11.5:floors*(isSchool?3.4:3.05)));
+ let h=Math.min(isPanelBlock?54:36,Math.max(isGarage?2.35:3.0,Number.isFinite(explicitHeight)&&explicitHeight>2?explicitHeight:isBlueStar?7.15:isMirova36?6.75:isGrocer74?3.65:isStation?7.4:isGarage?2.75:isIndustrial?5.3:isChurch?11.5:floors*(isSchool?3.4:3.05)));
+  if(!(Number.isFinite(explicitHeight)&&explicitHeight>2)&&photoEstimatedStoreHeights.has(osmId))h=photoEstimatedStoreHeights.get(osmId);
  const isHouse=!isBlueStar&&!isMirova36&&!isGrocer74&&(type==='house'||(type==='residential'&&floors<=2&&w*d<1000));
  const neighborhoodRoad=osmNearestRoadName((Math.min(...xs)+Math.max(...xs))*.5,(Math.min(...zs)+Math.max(...zs))*.5);
  const oldCenter=neighborhoodRoad==='5. května';
@@ -1963,7 +1967,7 @@ function osmBuilding(points,tags,index,osmId=null){
   ventTop.position.set(cx,baseHeight+h+.58,cz);osmLayer.add(ventTop);
  }
  // Building facade upgrade: per-building window allocation and visible architectural details.
- const visibleFloors=isGarage||isChurch?0:isBlueStar||isMirova36?2:isGrocer74?1:isIndustrial?1:isPanelBlock?Math.min(floors,16):Math.min(Math.max(1,Math.floor(h/3)),8);
+ const visibleFloors=tags.shop==='supermarket'||isGarage||isChurch?0:isBlueStar||isMirova36?2:isGrocer74?1:isIndustrial?1:isPanelBlock?Math.min(floors,16):Math.min(Math.max(1,Math.floor(h/3)),8);
  for(let i=0;i<pts.length;i++){
   const p=pts[i],q=pts[(i+1)%pts.length],dx=q.x-p.x,dz=q.y-p.y,len=Math.hypot(dx,dz);
   if(len<5||len>90)continue;
