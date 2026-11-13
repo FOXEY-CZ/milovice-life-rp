@@ -21,6 +21,39 @@ export const PHOTO_STREET_BLOCK=[
   details:['cream-painted corner house','dark pitched roof','two arched attic gables','white window frames']}
 ];
 const targetIds=new Set(PHOTO_STREET_BLOCK.map(x=>x.id));
+// Evidence decides which building has which unique architectural detail.
+// The SHARED topology engine, not this registry, decides how to join parts.
+// For other photo-anchored sites, add a documented profile rather than
+// writing another special-case roof clipping algorithm.
+export const PHOTO_ROOF_PROFILES={
+ '118487980':{
+  evidence:'https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_1.jpg',
+  dated:'2024-05-30',type:'cross-gable-pair',
+  specs:[
+   {width:3.20,depth:1.90,rise:1.55,arched:true},
+   {width:2.75,depth:1.72,rise:1.32,arched:true}
+  ],measurements:'approximate photograph proportions; not surveyed'
+ }
+};
+export function planPhotoRoofFeatures(id,pts){
+ const profile=PHOTO_ROOF_PROFILES[String(id)];
+ if(!profile||!Array.isArray(pts)||pts.length<3)return [];
+ const camera=pointFromGps(50.2290672,14.8822619);
+ const fronts=photoFacingEdges(pts,camera,{minLength:5,limit:3})
+  .filter(e=>e.len>=5.5).slice(0,profile.specs.length);
+ if(fronts.length!==profile.specs.length)return [];
+ return fronts.map((edge,i)=>{
+  const spec=profile.specs[i];
+  return {id:String(id)+'-gable-'+i,edge,profile:spec,
+   // These 3D specs are ORIGINAL wall-relative coordinates, not a second
+   // separately guessed coordinate frame for the roof hole.
+   cx:edge.mx,cz:edge.mz,nx:edge.nx,nz:edge.nz,
+   width:spec.width+.27,depth:spec.depth+.04,
+   front:.39,padding:.045,rearPadding:.07,
+   source:profile.evidence
+  };
+ });
+}
 const cos=Math.cos(50.226*Math.PI/180);
 export function pointFromGps(lat,lon){
  return {x:(lon-14.889)*111320*cos,z:-(lat-50.226)*111320};
@@ -283,17 +316,14 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
    const returnWall=edges.find(e=>e.index!==face.index&&e.len>7);
    if(returnWall)addHedge(returnWall,base,3);
   }else if(key==='118487980'){
-   // Školská 220/1: photograph shows two large streetward attic gables,
-   // black roof, cream plaster and arched dormer glazing.
-   const fronts=edges.filter(e=>e.len>=5.5).slice(0,2);
-   // One broad and one narrower arched CROSS-GABLE are recognizable
-   // in the ŠJů 2024 photo. They are NOT two identical tiny dormers.
-   // Metric widths/pitches remain approximate until a facade survey.
-   for(const [j,front] of fronts.entries())addGableDormer(front,base,height,{
-    w:j===0?3.20:2.75,depth:j===0?1.90:1.72,
-    roofRise:j===0?1.55:1.32,
-    arched:true,wall:creamWall,roof:darkRoof});
-   for(const edge of fronts){
+   // The same document-backed profile drives BOTH the dormer meshes
+   // and the cutouts from the main roof. No independently positioned
+   // roof skins, and no building-specific geometry branching here.
+   const features=planPhotoRoofFeatures(key,pts);
+   for(const {edge,profile} of features)addGableDormer(edge,base,height,{
+    w:profile.width,depth:profile.depth,roofRise:profile.rise,
+    arched:profile.arched,wall:creamWall,roof:darkRoof});
+   for(const {edge} of features){
     const g=exteriorGroup(edge,base);
     part(g,edge.len,.10,.23,grout,0,height-.10,.24);
     part(g,edge.len,.10,.17,paleTrim,0,2.7,.33);
