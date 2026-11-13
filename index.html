@@ -180,6 +180,7 @@ import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=511
 import {makePhotoStreetBlock} from './scripts/street-photo-block.js?v=5150';
 import {makePhotoStreetEnvironment} from './scripts/street-environment-pass.js?v=5231';
 import {createRoadClearance} from './scripts/road-clearance.js?v=5220';
+import {isCarriageway,isPedestrianWay,safePedestrianPieces,pedestrianPieceKey,markedCrossing,planZebraPieces,planStationPassage} from './scripts/reality-walkways.js?v=5260';
 import {makeStationForecourtScene} from './scripts/station-forecourt-pass.js?v=5241';
 import {planPhotoPlatformCanopy,installCanopyBraces} from './scripts/station-platform-reality.js?v=5250';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
@@ -1201,6 +1202,8 @@ let osmActive=false,osmReady=false,osmLoading=false,oldPosition=null,osmRoads=[]
 rpUpdateRenderBudget(); // All OSM and render-budget dependencies are initialized.
 const osmDriveRoads=[];
 const osmRoadClearance=createRoadClearance();
+const osmCarriagewayClearance=createRoadClearance();
+const renderedPedestrianPieces=new Set();
 let stationMappedFootway=null; // OSM 549346217: mapped pedestrian route from 5. května.
 const osmRailways=[];
 let cityAreaManifest=null;
@@ -1416,40 +1419,52 @@ function osmStrip(a,b,width,material,y=.15){
 // Formerly a (road width + 3 m) sidewalk rectangle was drawn UNDER every road.
 // Its DEM triangles could poke above asphalt at intersections, causing white
 // paving fragments all over Nádražní. Actual sidewalk bands now flank the road.
-const sidewalkGeometryStats={legacyUnderRoadBands:0,separatedSidewalks:0,skippedShortSegments:0};
+const sidewalkGeometryStats={legacyUnderRoadBands:0,separatedSidewalks:0,
+ skippedShortSegments:0,clippedByCarriageway:0,duplicateWaySegmentsSkipped:0,
+ mappedFootwaySegments:0,proceduralSidewalksDisabled:true,
+ removedInventedCrosswalks:true,mappedMarkedCrossings:0,
+ crossingStripeSegments:0};
+window.__miloviceStreetGeometryAudit=sidewalkGeometryStats;
 window.__miloviceSidewalkDebug=sidewalkGeometryStats;
 function osmRoadSegment(a,b,width,kind){
  const dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);
- const isRoad=['primary','secondary','tertiary','residential','unclassified','living_street'].includes(kind);
- if(isRoad && len>=4.4){
-  const ux=dx/len,uz=dz/len,nx=-uz,nz=ux,walkWidth=1.48;
-  // Ease back the pavement corners near intersections and sharp turns.
-  // This prevents one road's paving from cutting through a crossing carriageway.
-  const clip=Math.min(2.6,len*.17);
-  for(const side of [-1,1]){
-   const shift=side*(width*.5+walkWidth*.5+.06);
-   const start=new THREE.Vector2(a.x+ux*clip+nx*shift,a.y+uz*clip+nz*shift);
-   const end=new THREE.Vector2(b.x-ux*clip+nx*shift,b.y-uz*clip+nz*shift);
-   osmStrip(start,end,walkWidth,osmSidewalkMat,.125);
-   sidewalkGeometryStats.separatedSidewalks++;
+ if(isPedestrianWay(kind)){
+  // Only mapped walking ways, clipped before entering any other OSM road
+  // carriageway. Never paint pavement over asphalt to fake a zebra.
+  const safe=safePedestrianPieces(a,b,width,osmCarriagewayClearance);
+  if(safe.length!==1||Math.hypot(safe[0].b.x-safe[0].a.x,safe[0].b.z-safe[0].a.z)<len-.35)
+   sidewalkGeometryStats.clippedByCarriageway++;
+  for(const piece of safe){
+   const key=pedestrianPieceKey(piece,width);
+   if(renderedPedestrianPieces.has(key)){
+    sidewalkGeometryStats.duplicateWaySegmentsSkipped++;continue;
+   }
+   renderedPedestrianPieces.add(key);
+   osmStrip(new THREE.Vector2(piece.a.x,piece.a.z),
+    new THREE.Vector2(piece.b.x,piece.b.z),width,osmSidewalkMat,.13);
+   sidewalkGeometryStats.mappedFootwaySegments++;
   }
- }else if(isRoad){
-  sidewalkGeometryStats.skippedShortSegments++;
+  return;
  }
- // Pedestrian paths use the paving texture; carriageways use only asphalt.
- osmStrip(a,b,width,['footway','path','pedestrian'].includes(kind)?osmSidewalkMat:osmRoadMaterial,.17);
- // Fine roadside edge markings follow the real OSM road segment.
+ if(!isCarriageway(kind))return;
+ // Unverified flanking strips are DISABLED: official OSM way geometry decides
+ // where sidewalk surfaces actually belong. This avoids duplicate surfaces.
+ sidewalkGeometryStats.skippedShortSegments++;
+ osmStrip(a,b,width,osmRoadMaterial,.17);
  if(kind==='primary'||kind==='secondary'||kind==='tertiary'||kind==='residential'){
-  const dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);
-  if(len>3){const nx=-dz/len,nz=dx/len,edge=width*.5-.28;
-   for(const side of [-1,1])osmStrip(new THREE.Vector2(a.x+nx*edge*side,a.y+nz*edge*side),new THREE.Vector2(b.x+nx*edge*side,b.y+nz*edge*side),.095,osmStripeMaterial,.235);
+  if(len>3){
+   const nx=-dz/len,nz=dx/len,edge=width*.5-.28;
+   for(const side of [-1,1])
+    osmStrip(new THREE.Vector2(a.x+nx*edge*side,a.y+nz*edge*side),
+     new THREE.Vector2(b.x+nx*edge*side,b.y+nz*edge*side),.095,osmStripeMaterial,.235);
   }
- }
- if(kind==='primary'||kind==='secondary'||kind==='tertiary'||kind==='residential'){
-  const len=Math.hypot(b.x-a.x,b.y-a.y);
-  for(let d=5;d<len-2;d+=13){
-   const f=(d+2)/len,g=Math.min(1,(d+6)/len);
-   osmStrip(new THREE.Vector2(a.x+(b.x-a.x)*f,a.y+(b.y-a.y)*f),new THREE.Vector2(a.x+(b.x-a.x)*g,a.y+(b.y-a.y)*g),.17,osmStripeMaterial,.245);
+  // No extra centre dashes on residential roads without visual evidence.
+  if(kind==='primary'||kind==='secondary'||kind==='tertiary'){
+   for(let d=5;d<len-2;d+=13){
+    const f=(d+2)/len,g=Math.min(1,(d+6)/len);
+    osmStrip(new THREE.Vector2(a.x+dx*f,a.y+dz*f),
+     new THREE.Vector2(a.x+dx*g,a.y+dz*g),.17,osmStripeMaterial,.245);
+   }
   }
  }
 }
@@ -2616,6 +2631,19 @@ function rpAppendOSMElements(elements){
  }
  for(const el of landscapeWays)
   addLanduseFeature(THREE,el,osmPoint,terrainAt,osmLayer,landscapeZones);
+ // Build the COMPLETE road occupancy index BEFORE rendering sidewalks.
+ // OSM element ordering cannot decide which path cuts into which highway.
+ for(const el of roadWays){
+  const kind=el.tags.highway;
+  const width=kind==='primary'?11:kind==='secondary'?9:kind==='tertiary'?8:
+   kind==='pedestrian'?4:kind==='footway'?1.8:
+   kind==='path'||kind==='steps'?1.65:kind==='cycleway'?2:
+   kind==='service'?4.5:7.8;
+  const points=el.geometry.map(osmPoint);
+  osmRoadClearance.addRoad({id:el.id,points,width,kind});
+  if(isCarriageway(kind))
+   osmCarriagewayClearance.addRoad({id:el.id,points,width,kind});
+ }
  for(const el of roadWays){
   const points=el.geometry.map(osmPoint);osmRoads.push(points);
   let minX=Infinity,maxX=-Infinity,minZ=Infinity,maxZ=-Infinity;
@@ -2626,12 +2654,24 @@ function rpAppendOSMElements(elements){
   const kind=el.tags.highway;
   if(el.id===549346217 && kind==='footway')stationMappedFootway=points;
   const width=kind==='primary'?11:kind==='secondary'?9:kind==='tertiary'?8:kind==='pedestrian'?4:kind==='footway'?1.8:kind==='path'?1.65:kind==='service'?4.5:7.8;
-   osmRoadClearance.addRoad({id:el.id,points,width,kind});
   if(['primary','secondary','tertiary','residential','unclassified','living_street','service'].includes(kind))
    osmDriveRoads.push({points,width,kind,name:el.tags.name||'',oneway:el.tags.oneway==='yes'?1:el.tags.oneway==='-1'?-1:0,osmId:el.id,access:el.tags.access||'',serviceTag:el.tags.service||''});
   for(let i=1;i<points.length;i++){
    osmRoadSegment(points[i-1],points[i],width,kind);
    // Unsafe per-segment roadside object generator is disabled.
+  }
+ }
+ // Zebra stripes only at crossing ways explicitly marked by OSM (never
+ // from arbitrary graph junctions). Render them BEFORE road batch finalize.
+ for(const el of roadWays){
+  if(!markedCrossing(el.tags))continue;
+  const pieces=planZebraPieces(el.geometry.map(osmPoint),osmCarriagewayClearance);
+  if(!pieces.length)continue;
+  sidewalkGeometryStats.mappedMarkedCrossings++;
+  for(const piece of pieces){
+   osmStrip(new THREE.Vector2(piece.a.x,piece.a.z),
+    new THREE.Vector2(piece.b.x,piece.b.z),piece.width,osmStripeMaterial,.268);
+   sidewalkGeometryStats.crossingStripeSegments++;
   }
  }
  // Tracks must load before platforms, regardless of the export's OSM element order.
@@ -2987,24 +3027,15 @@ function rpBuildRoadGraph(){
   }
  }
 }
+// Never invent painted zebras at road intersections. OSM marked crossings
+// are rendered in rpAppendOSMElements where actual road occupancy is known.
 function rpBuildCrosswalks(){
- // Zebra crossings at actual shared OSM street nodes, not at arbitrary map positions.
- let placed=0;
- for(const entries of driveGraph.values()){
-  if(placed>=18)break;
-  const unique=new Set(entries.map(e=>e.segment));
-  if(unique.size<3)continue;
-  const edge=entries.find(e=>e.segment.width>=7.2&&e.segment.len>16);
-  if(!edge)continue;
-  const s=edge.segment,p=edge.direction===1?s.a:s.b;
-  const vx=(s.b.x-s.a.x)*edge.direction/s.len,vz=(s.b.y-s.a.y)*edge.direction/s.len;
-  const nx=-vz,nz=vx,dist=Math.min(6.0,s.len*.32);
-  for(let stripe=0;stripe<6;stripe++){
-   const cx=p.x+vx*(dist+stripe*.76),cz=p.y+vz*(dist+stripe*.76),span=s.width*.37;
-   osmStrip(new THREE.Vector2(cx-nx*span,cz-nz*span),new THREE.Vector2(cx+nx*span,cz+nz*span),.40,osmStripeMaterial,.268);
-  }
-  placed++;
- }
+ window.__miloviceCrossingAudit={
+  source:'OSM marked footway=crossing',
+  mappedMarkedCrossings:sidewalkGeometryStats.mappedMarkedCrossings,
+  paintedStripeSegments:sidewalkGeometryStats.crossingStripeSegments,
+  inventedCrossings:0,disabledRandomGraphCrosswalks:true
+ };
 }
 function makeTrafficCar(index,segment){
  const type=index%9;
