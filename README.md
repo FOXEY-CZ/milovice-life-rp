@@ -1,3 +1,9 @@
+## Milovice RP 5.28.1 — kamera už při přesunu neprolétává zemí
+
+Při kontrole **skutečných screenshotů z Chromium WebGL** jsem odhalila chybu, kterou automatické testy přehlédly: po přesunu například na 5. května se kamera mohla pomalu posouvat od minulého místa a na chvíli ukazovat černý spodek terénu. Nově se při výběru jiné oblasti **okamžitě přemístí do správné výšky za postavou**. Při obyčejné chůzi a jízdě zůstává kamera plynulá. WebGL test teď čeká na dokončené usazení kamery a kontroluje její výšku, než pořídí záběr.
+
+---
+
 ## Milovice RP 5.28.0 — fotoprůchod nádraží a ulice 5. května (13. 11. 2026)
 
 - Zúžená **zvýšená střední část milovického nádraží**: fotografie ukazuje mnohem menší jednopatrovou nástavbu než původní herní velký blok. Model teď dostal kratší čtyřstrannou taškovou střechu a dvě střídmá horní okna pouze na skutečných obvodových stěnách; nikdy na umělých hranách mezi částmi stavby.
