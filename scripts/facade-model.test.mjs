@@ -38,7 +38,7 @@ const annotated=normalizeVerifiedFacades({S:{
   {type:'window',x:.12,y:.25,w:.12,h:.20},
   {type:'window',x:.65,y:.21,w:.13,h:.22},
   {type:'door',x:.42,y:.69,w:.11,h:.31}
- ]}}
+ ]}
 }});
 assert.equal(annotated.S.openings.length,3);
 assert.equal(annotated.S.source,'');
