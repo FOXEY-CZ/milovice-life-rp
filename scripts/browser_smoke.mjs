@@ -85,7 +85,7 @@ try{
     houseRoof.backJunctionsAutoClosed!==2||
     !(houseRoof.maximumRoofBackGapCovered>=0)||
     !houseRoof.geometricFeatureOverlap||
-    !(houseRoof.gapSealedMetres>.10)||
+    !(houseRoof.gapSealedMetres>=0&&houseRoof.gapSealedMetres<.025)||
     !(houseRoof.wallInfillTriangles>3)||
     Math.abs(houseRoof.eaveOverhang-.30)>1e-7||
     !(houseRoof.eaveTiles>=10&&houseRoof.eaveSoffit>=10&&houseRoof.eaveFascia>=10)||
