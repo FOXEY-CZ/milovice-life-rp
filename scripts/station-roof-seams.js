@@ -1,8 +1,9 @@
+import {stationExteriorEdge} from './station-roof-eaves.js';
 // Milovice RP 5.28.6 — fit station roof planes exactly to irregular walls.
 // The roof itself uses a bounded minimum of affine hip/gable planes. On a
 // notched OSM perimeter its edge can float above the flat-height wall.
 // Fill only the open vertical space between wall top and actual roof height.
-export function planRoofPerimeterClosure({outline,roof,origin,wallTopY}={}){
+export function planRoofPerimeterClosure({outline,originalOutline=null,roof,origin,wallTopY}={}){
  if(!Array.isArray(outline)||outline.length<3||!roof?.bounds||
   !roof?.globalAxis||!origin||!Number.isFinite(wallTopY)||
   !Number.isFinite(roof.eaveY)||!Number.isFinite(roof.ridgeY)||roof.ridgeY<=roof.eaveY||
@@ -22,8 +23,16 @@ export function planRoofPerimeterClosure({outline,roof,origin,wallTopY}={}){
  }
  const yAt=v=>roof.eaveY+(roof.ridgeY-roof.eaveY)*Math.max(0,Math.min(1,...v));
  const faces=[];let maxGapBefore=0,edgeSections=0,perimeterDistance=0;
+ let excludedVirtualEdges=0;
  for(let i=0;i<pts.length;i++){
   const a=pts[i],b=pts[(i+1)%pts.length];
+  // Low wings physically JOIN the raised station centre at section cuts.
+  // Those cuts are not outside walls, so no fake triangular plaster
+  // panels must be erected there. The raised centre has its own upper
+  // masonry on these boundaries and intentionally keeps its closure.
+  if(originalOutline&&!stationExteriorEdge(a,b,originalOutline)){
+   excludedVirtualEdges++;continue;
+  }
   const distance=Math.hypot(b.x-a.x,b.z-a.z);
   if(distance<.0001)continue;
   const aPlanes=planes(a),bPlanes=planes(b),breaks=[0,1];
@@ -57,5 +66,5 @@ export function planRoofPerimeterClosure({outline,roof,origin,wallTopY}={}){
   }
   perimeterDistance+=distance;
  }
- return {faces,edgeSections,maxGapBefore,closedToRoof:true};
+ return {faces,edgeSections,maxGapBefore,excludedVirtualEdges,closedToRoof:true};
 }
