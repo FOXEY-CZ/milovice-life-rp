@@ -11,11 +11,11 @@ export const LICENSED_VEHICLES={
   fileBytes:4688844
  },
  citySUV:{
-  name:'SUV · původní nebrandovaný model',
-  uri:'https://files.innerscene.com/library/suv-dc972cab/fe9e6d452331cda7d3f7/suv-original.glb',
-  source:'https://www.innerscene.com/tools/library/3d-parts/suv-dc972cab',
-  license:'CC0-1.0',author:'Innerscene',frontAxis:'AUTO',length:4.90,
-  fileBytes:623000
+  name:'SUV · Quaternius Realistic Car Pack',
+  uri:'https://raw.githubusercontent.com/bennibeni/garage/5c26fd4bac37080cd55f8064c59de4b14b489ddd/public/models/quaternius-suv.glb',
+  source:'https://quaternius.itch.io/lowpoly-cars',
+  license:'CC0-1.0',author:'Quaternius',frontAxis:'AUTO',length:4.70,
+  fileBytes:181608
  }
 };
 
