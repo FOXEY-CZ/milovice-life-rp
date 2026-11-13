@@ -1896,6 +1896,7 @@ function miloviceBusinessFront(pts,tags,base,height,cx,cz,osmId){
 // Height estimates inferred from the current photographed massing, NOT a surveyed LiDAR height.
 // OSM explicit height values always take precedence if present.
 const photoEstimatedStoreHeights=new Map([[53865798,5.20],[38742870,6.80],[38742873,4.60]]);
+const osmRoofEdgeMaterial=new THREE.LineBasicMaterial({color:0x454d50});
 function osmBuilding(points,tags,index,osmId=null){
  if(points.length<4)return;
  const pts=points.map(osmPoint);
@@ -2123,7 +2124,8 @@ function osmBuilding(points,tags,index,osmId=null){
   }
  }
  // Roof edge silhouette to make flat-roof buildings more recognizable.
- const roofTrim=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts.map(p=>new THREE.Vector3(p.x,baseHeight+h+.12,p.y))),new THREE.LineBasicMaterial({color:0x454d50}));
+ // All streamed buildings share the same material; each surveyed footprint keeps its own geometry.
+ const roofTrim=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts.map(p=>new THREE.Vector3(p.x,baseHeight+h+.12,p.y))),osmRoofEdgeMaterial);
  osmLayer.add(roofTrim);
 
  osmBuildings++;
