@@ -27,6 +27,8 @@ jobs:
         run: node scripts/road-clearance.test.mjs
       - name: Verify photo-sourced station forecourt object clearances and OSM building anchors
         run: node scripts/station-forecourt-pass.test.mjs
+      - name: Validate 2025 station platform steel canopy and source-based roof form
+        run: node scripts/station-platform-reality.test.mjs
       - name: Validate permanent source-reviewed architecture and local preview overlays
         run: node scripts/architecture-manifest.test.mjs
       - name: Validate official Mapillary metadata discovery and per-street coverage
