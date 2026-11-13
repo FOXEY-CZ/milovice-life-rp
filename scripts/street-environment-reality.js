@@ -1,7 +1,8 @@
-// Milovice RP 5.26 — photo-informed STREET scene, not just individual houses.
+// Milovice RP 5.26.2 — photo-informed STREET scene, including full ground footprints.
 // Original model geometry; no photographed pixels or proprietary panorama assets.
 // The only precisely known spatial datum is the photo-camera GPS position.
 // Street-furniture positions relative to the road are approximate and tracked.
+import {isRoadFreeRect} from './road-clearance.js';
 export const PHOTO_STREET_ENVIRONMENT=[
  {
   id:'street-5-kvetna-2014',
@@ -75,6 +76,7 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
   minRoadClearance:data.length?Math.min(...data.map(v=>v.minimumRoadClearance)):null,
   chosenSides:data.map(v=>v.sideSign),
   pavementPieces,roadRejected,unverifiedPhotoPavingDisabled:true,checkedGreeneryAgainstRoads:true,
+  fullFootprintChecked:true,
   drawMeshes,instances,featureCount,ids:[...entries],spatiallyApproximate:true,
   scope:'Photo-informed street environments, not exact surveyed positions'});
  function report(){if(typeof window!=='undefined')window.__miloviceStreetEnvironment=emptyStats()}
@@ -109,45 +111,16 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
   if(!safe)roadRejected++;
   return safe;
  }
- // Old modular street paving has been DISABLED by the strict reality pass.
- // Original modular street paving. These are visual surface details, not a
- // claim that every 2014 paving slab survives today. The road clearance
- // prevents slabs from painting over ANY mapped traffic lane or footpath.
- function paving(group,anchor,side){
-  const stones=[],alternating=[],curbs=[],grates=[];
-  const angle=Math.atan2(-anchor.uz,anchor.ux),out=Math.sign(side);
-  const onSafeGround=(along,offset,radius=.5)=>{
-   const p=placeOnRoad(anchor,along,offset);
-   const safe=!roadClearance||roadClearance.isClear(p.x,p.z,radius,.14);
-   if(!safe)roadRejected++;
-   return safe;
-  };
-  // The paving strip begins outside the actual 5. května carriageway,
-  // and never replaces the mapped road surface or mapped pedestrian path.
-  for(let i=0;i<52;i++){
-   const along=-32+i*1.2;
-   for(let j=0;j<2;j++){
-    const offset=side+out*(.3+j*.84);
-    if(!onSafeGround(along,offset,.44))continue;
-    const item=itemAt(anchor,along,offset,.025,1.15,.045,.77,angle);
-    ((i+j)%4===0?alternating:stones).push(item);pavementPieces++;
-   }
-   const edge=side-out*1.28;
-   if(onSafeGround(along,edge,.2)){
-    curbs.push(itemAt(anchor,along,edge,.11,1.18,.22,.21,angle));
-    pavementPieces++;
-   }
-  }
-  for(const along of [-12,18]){
-   const offset=side+out*.25;
-   if(!onSafeGround(along,offset,.52))continue;
-   grates.push(itemAt(anchor,along,offset,.06,.78,.065,.45,angle));
-  }
-  addParts(group,geometries.box,colors.pavement,stones);
-  addParts(group,geometries.box,colors.pavementAlt,alternating);
-  addParts(group,geometries.box,colors.curb,curbs);
-  addParts(group,geometries.box,colors.drainage,grates);
-  featureCount+=pavementPieces+grates.length;
+ // The full ground footprint of a gate, wall, flowerbed or hedge must
+ // clear every mapped vehicle AND pedestrian lane, not just the model centre.
+ function photoRectClearance(anchor,along,sideDistance,length,depth){
+  const p=placeOnRoad(anchor,along,sideDistance);
+  const yaw=Math.atan2(-anchor.uz,anchor.ux);
+  const safe=!roadClearance||isRoadFreeRect(roadClearance,{
+   x:p.x,z:p.z,length,depth,yaw,buffer:.14
+  });
+  if(!safe)roadRejected++;
+  return safe;
  }
  function treeRow(group,anchor,side){
   // Y rotation aligns a local box X-axis with the real OSM street tangent.
@@ -164,7 +137,7 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
   }
   for(let i=0;i<6;i++){
    const a=-26+i*2.05,offset=side+Math.sign(side)*.76;
-   if(!photoGroundClearance(anchor,a,offset,.8))continue;
+   if(!photoRectClearance(anchor,a,offset,2.0,1.05))continue;
    const at=itemAt(anchor,a,offset,0);
    beds.push({...at,y:at.y+.015,sx:2.00,sy:.06,sz:1.05,ry:Math.atan2(-anchor.uz,anchor.ux)});
    hedges.push({...at,y:at.y+.43,sx:1.68,sy:.79,sz:.6,ry:Math.atan2(-anchor.uz,anchor.ux)});
@@ -213,29 +186,33 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
   featureCount+=4;
  }
  function wallAndGate(group,anchor,side){
-  // Property edge in 2014 photo: low stone masonry and a dark vehicle gate.
-  // Its exact footprint is not established; position is photo-relative.
-  const stone=[],timber=[];
-  for(let i=0;i<4;i++){
-   const along=12+i*2.25,offset=side+Math.sign(side)*4.30;
-   if(!photoGroundClearance(anchor,along,offset,.85))continue;
-   stone.push(itemAt(anchor,along,offset,.65,2.24,1.3,.34,Math.atan2(-anchor.uz,anchor.ux)));
-  }
-  for(const a of [11.25,21.9])stone.push(itemAt(anchor,a,side+Math.sign(side)*4.30,.97,.48,1.94,.50));
-  timber.push(itemAt(anchor,20.0,side+Math.sign(side)*4.36,1.09,3.5,1.77,.13,Math.atan2(-anchor.uz,anchor.ux)));
-  addParts(group,geometries.box,colors.stone,stone);
-  addParts(group,geometries.box,colors.timber,timber);
-  // Shallow capstones and masonry joints: original detail, same OSM-aligned
-  // frontage, without introducing one draw call per stone.
-  const caps=[],joints=[],slats=[];
-  const angle=Math.atan2(-anchor.uz,anchor.ux);
+  // The 2014 photo identifies a wall and gate, but neither its footprint nor
+  // its side-of-street is surveyed. Reject COMPLETE segments that cross OSM.
+  const stone=[],timber=[],caps=[],joints=[],slats=[];
+  const yaw=Math.atan2(-anchor.uz,anchor.ux);
   const outer=side+Math.sign(side)*4.30;
   for(let i=0;i<4;i++){
    const along=12+i*2.25;
-   caps.push(itemAt(anchor,along,outer,1.32,2.31,.10,.46,angle));
-   for(let j=0;j<2;j++)joints.push(itemAt(anchor,along-.75+j*1.5,outer+Math.sign(side)*.18,.72,.045,.83,.015,angle));
+   // Largest ground footprint is the 2.31m masonry cap, not the centre stone.
+   if(!photoRectClearance(anchor,along,outer,2.31,.52))continue;
+   stone.push(itemAt(anchor,along,outer,.65,2.24,1.3,.34,yaw));
+   caps.push(itemAt(anchor,along,outer,1.32,2.31,.10,.46,yaw));
+   for(let j=0;j<2;j++)joints.push(itemAt(anchor,along-.75+j*1.5,
+    outer+Math.sign(side)*.18,.72,.045,.83,.015,yaw));
   }
-  for(let i=0;i<9;i++)slats.push(itemAt(anchor,18.55+i*.34,outer+Math.sign(side)*.10,1.10,.07,1.60,.035,angle));
+  for(const along of [11.25,21.9]){
+   if(photoRectClearance(anchor,along,outer,.5,.5))
+    stone.push(itemAt(anchor,along,outer,.97,.48,1.94,.50));
+  }
+  const gateAlong=20,gateOffset=outer+Math.sign(side)*.06;
+  if(photoRectClearance(anchor,gateAlong,gateOffset,3.5,.35)){
+   timber.push(itemAt(anchor,gateAlong,outer+Math.sign(side)*.06,
+    1.09,3.5,1.77,.13,yaw));
+   for(let i=0;i<9;i++)slats.push(itemAt(anchor,18.55+i*.34,
+    outer+Math.sign(side)*.10,1.10,.07,1.60,.035,yaw));
+  }
+  addParts(group,geometries.box,colors.stone,stone);
+  addParts(group,geometries.box,colors.timber,timber);
   addParts(group,geometries.box,colors.curb,caps);
   addParts(group,geometries.box,colors.mortar,joints);
   addParts(group,geometries.box,colors.fence,slats);
