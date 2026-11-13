@@ -401,6 +401,7 @@ fetch('./data/regions/index.json',{cache:'no-store'}).then(r=>r.json()).then(dat
 window.__miloviceEditor={get loaded(){return buildings.length>0},get buildings(){return buildings.length},
  get streets(){return streetNames().length},get currentDistrict(){return $('district').value},
  get chosenId(){return chosen?.id||null},get cards(){return Object.keys(records).length},
+ get facades(){return facadeViews.length},get currentFace(){return currentFace?.id||null},
  openBuilding:selectBuilding};
 })();
 </script></body></html>
