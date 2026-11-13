@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {createRoadClearance} from './road-clearance.js';
+import {createRoadClearance,isRoadFreeRect} from './road-clearance.js';
 // Two connected roads and a nearby walkway must all be considered.
 const roads=createRoadClearance({cellSize:50});
 assert.equal(roads.addRoad({id:'main',width:9,kind:'secondary',
@@ -38,4 +38,19 @@ const target=raw.elements.find(el=>el.id===219273174);
 assert(target?.tags?.name==='5. května');
 const x=(14.884813-14.889)*111320*cos,z=-(50.227797-50.226)*111320;
 assert.equal(oldTown.isClear(x,z,.3,1),false,'The photo GPS anchor is ON the road; never plant at its centre');
+// 5.26.2 regression: a roadside gate or wall can have a clear centre yet its
+// ends intrude into the carriageway. Test the complete footprint, including
+// rotated rectangular frontages and narrow mapped pedestrian paths.
+const rectangular=createRoadClearance();
+rectangular.addRoad({id:'asphalt',width:8,points:[{x:-30,y:0},{x:30,y:0}]});
+assert(rectangular.isClear(0,7,.2,.1),'Centre of the wall is clear');
+assert(!isRoadFreeRect(rectangular,{x:0,z:7,length:12,depth:1,yaw:Math.PI/2}),
+ 'Long gate rotated perpendicular to the road must not cross the asphalt');
+assert(isRoadFreeRect(rectangular,{x:0,z:7,length:12,depth:1,yaw:0}),
+ 'Same gate parallel to the carriageway is not rejected by its length alone');
+rectangular.addRoad({id:'walk',kind:'footway',width:1.8,points:[{x:-20,y:10},{x:20,y:10}]});
+assert(!isRoadFreeRect(rectangular,{x:0,z:9,length:3,depth:1,yaw:0}),
+ 'Fence and flowerbed may not overlap OSM footway despite clear centre');
+assert(!isRoadFreeRect(rectangular,{x:NaN,z:7,length:2,depth:1}));
+assert(!isRoadFreeRect(rectangular,{x:0,z:7,length:0,depth:1}));
 console.log('Road clearance tests OK:',JSON.stringify(oldTown.stats()));
