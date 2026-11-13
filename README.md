@@ -1,3 +1,15 @@
+## Milovice RP 5.28.4 — GLOBÁLNÍ OPRAVA STŘECH + PLÁN PŘESTAVBY VŠECH BUDOV
+
+- **Všechny běžné sedlové a valbové střechy** prošly na nový generátor založený na skutečném OSM půdorysu. Hřeben se orientuje podle skutečných stěn, plochy nemohou přesahovat za půdorys a nesmějí vznikat náhodné invertované černé trojúhelníky. Konkrétní reálný sklon bez fotky ale stále neznáme.
+- **Vikýře na Školské 1 a Mírové 36:** opravené sklonové znaménko. Dvě střešní desky se správně zvedají k hřebeni místo trčení ven do vzduchu.
+- **Staromilovické domy:** štíty se řídí stejnou osou jako skutečná střecha, nikoli náhodným pořadím rohů. Komíny automaticky vymýšlené na každém třetím domě jsou pryč.
+- **Celé město:** odstraněny další smyšlené střešní větrací budky na každé páté budově a automatické reklamní stříšky nad neověřenými obchodními fasádami.
+- **Připravená evidence 684 OSM budov**: [data/architecture/building-audit-queue.json](data/architecture/building-audit-queue.json) a [program kompletní přestavby podle skutečných fotografií](docs/building-rebuild-program.md). 44 prioritních budov v okolí nádraží, 86 u 5. května/Mírové a dalších 554 v širším jádru. Jde o první známá mapová data, ne nutně všechny budovy ve všech rozšířených regionech.
+- V OSM chybí zaměřené výšky a tvary střech **u všech 684 budov**; proto geometrické zlepšení neznamená, že se už všechny podobají realitě. Kompletní realistické fasády, dveře, okna, stromy a chodníky se musí ověřovat postupně pro každou budovu.
+- Nové unit testy kontrolují přetočené a obráceně řazené půdorysy, konkávní domy, orientaci vikýřů a úplnost mapového soupisu. Chromium WebGL test pořizuje kontrolní snímky i dvou domů s dříve rozbitými vikýři.
+
+---
+
 ## Milovice RP 5.28.3 — opravy podle sedmi screenshotů nádraží
 
 - **Opraven modrý nápis MILOVICE:** byl zrcadlově otočený a visel nad bočním koncem u cyklověže. Přesunutý na dlouhou fasádu směrem ke kolejím, otočený správným směrem a usazený níž pod střechu. Z opačné strany už nebude vidět text pozpátku.
