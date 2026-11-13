@@ -2,7 +2,14 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const assert = require('node:assert/strict');
 const html = fs.readFileSync('index.html', 'utf8');
-const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(x => x[1]).filter(x => x.trim());
+const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)]
+ .filter(x => !/\btype\s*=\s*["'](?:importmap|application\/json)["']/i.test(x[1]))
+ .map(x => x[2]).filter(x => x.trim());
+const importMaps=[...html.matchAll(/<script\s+type=["']importmap["']\s*>([\s\S]*?)<\/script>/gi)];
+for(const entry of importMaps){
+ const map=JSON.parse(entry[1]);
+ assert(map.imports?.three && map.imports?.['three/addons/'], 'Missing consistent Three.js importmap paths');
+}
 assert(scripts.length, 'Missing inline game script');
 // Parse browser module imports without executing remote URLs in the CI runner.
 for (const [i, code] of scripts.entries()) {
