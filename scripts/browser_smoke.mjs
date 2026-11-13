@@ -230,8 +230,9 @@ try{
       !(p.eaveFasciaTriangles>=2)||
       !p.roofPlanePartitionedEaves||!(p.eaveDuplicateCapsAvoided>0)||
       !Number.isFinite(p.eaveEndCaps)||
-      !p.seamClosedToActualRoof||!(p.perimeterInfillTriangles>0)||
-      !(p.maxFormerRoofWallGap>.01)||
+      !p.seamClosedToActualRoof||!Number.isFinite(p.perimeterInfillTriangles)||
+      p.perimeterInfillTriangles<0||!Number.isFinite(p.maxFormerRoofWallGap)||
+      p.maxFormerRoofWallGap<0||
       p.areaError>1e-4||p.footprintOverhang!==0||p.outputTriangles<3||
       Math.hypot(p.axis.ax-roofVisual.globalAxis.ax,
        p.axis.az-roofVisual.globalAxis.az)>.001))
