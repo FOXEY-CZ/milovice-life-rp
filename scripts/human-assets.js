@@ -26,6 +26,7 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
    runtimeSkeletalWalk:!!(player?.boneState?.nodes?.leftLeg&&player?.boneState?.nodes?.rightLeg)&&!player?.mixer,
    heightMeters:player?.root.userData.heightMeters||0,originalGLBScale:player?.root.userData.originalGLBScale||null,
    armsDown:player?.boneState?.armsDown===true,
+   facingCorrectionRadians:player?.root.userData.forwardCorrectionRadians||0,
    clips:player?.clips||[],bones:assets.get('casualMan')?.bones?.slice(0,56)||[],license:'CC0-1.0',fallback:!player
   };
   if(typeof window!=='undefined')window.__miloviceHumans=ret;
@@ -127,6 +128,12 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
      }));
   root.userData.heightMeters=finalSize.y;
   root.userData.originalGLBScale=asset.scene.scale.toArray();
+  // Quaternius modular GLBs face model-local +Z, while Milovice pedestrian
+  // heading (atan2(-dx,-dz)) and the legacy rig use model-local -Z.
+  // Correct the imported MODEL, not the walking direction or joystick axes.
+  // A 180-degree yaw here also fixes NPCs without reversing their AI paths.
+  root.rotation.y=Math.PI;
+  root.userData.forwardCorrectionRadians=Math.PI;
   root.position.y=0;
   root.visible=false;
   root.userData.miloviceCC0=true;
@@ -242,5 +249,12 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
   }
  }
  state();
- return {load,configure,update,state,resetPeople};
+ function playerFacingXZ(){
+  if(!player)return null;
+  const front=new THREE.Vector3(0,0,1);
+  player.root.getWorldQuaternion(new THREE.Quaternion()); // ensure world matrices are fresh
+  front.applyQuaternion(player.root.getWorldQuaternion(new THREE.Quaternion())).normalize();
+  return {x:front.x,z:front.z};
+ }
+ return {load,configure,update,state,resetPeople,playerFacingXZ};
 }
