@@ -270,6 +270,7 @@ try{
     !landmarkChecks.stationSignCenter||
     !(landmarkChecks.stationSignCenter.y<landmarkChecks.stationRoofGeometry.center.base+3.7)||
     !landmarkChecks.stationInventedSemicircleRemoved||
+    !landmarkChecks.stationPassageLintelMeetsEave||
     landmarkChecks.stationPassageHeaderType!=='straight-mapped-portal')
   throw new Error('5.28.3 station plaque must be below roof on real rail facade, no fake semicircle: '+JSON.stringify(landmarkChecks));
  if(!landmarkChecks.stationSign||landmarkChecks.stationCanopy!==false||
