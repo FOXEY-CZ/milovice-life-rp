@@ -61,21 +61,26 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
   for(const [name,bone] of Object.entries(nodes))if(bone)rest[name]=bone.rotation.clone();
   return {nodes,rest,count:all.length};
  }
- function proceduralWalk(record,delta,seconds,moving){
-  record.phase+=Math.min(.06,delta)*(moving?8.3:1.2);
-  const phase=record.phase,walk=moving?Math.sin(phase):0,sway=Math.sin(phase*.5);
+ function proceduralWalk(record,delta,seconds,intensity){
+  const p=Math.max(0,Math.min(1,Number(intensity)||0));
+  const moving=p>.022,running=p>.59,cycle=moving?(3.3+5.6*p):1.2;
+  record.phase+=Math.min(.06,delta)*cycle;
+  const phase=record.phase,weight=Math.min(1,p*1.85),walk=moving?Math.sin(phase)*weight:0,sway=Math.sin(phase*.5);
   const {nodes,rest}=record.boneState;
-  const rotate=(key,amount)=>{const b=nodes[key];if(b)b.rotation.x=rest[key].x+amount};
-  rotate('leftLeg',walk*.41);rotate('rightLeg',-walk*.41);
-  rotate('leftKnee',moving?Math.max(0,walk)*.26:0);
-  rotate('rightKnee',moving?Math.max(0,-walk)*.26:0);
-  rotate('leftArm',-walk*.28);rotate('rightArm',walk*.28);
-  rotate('leftElbow',moving?Math.max(0,-walk)*.12:0);
-  rotate('rightElbow',moving?Math.max(0,walk)*.12:0);
-  rotate('spine',sway*(moving?.025:.014));
-  // Contact movement subtly flexes the pose even on non-skeletal GLB exports.
-  record.container.position.y=moving?Math.abs(Math.sin(phase))*.045:Math.sin(phase)*.004;
-  record.container.rotation.z=moving?Math.sin(phase)*.008:Math.sin(phase)*.003;
+  const rotate=(key,amount,axis='x')=>{const b=nodes[key];if(b)b.rotation[axis]=rest[key][axis]+amount};
+  const stride=running?.61:.39;
+  rotate('leftLeg',walk*stride);rotate('rightLeg',-walk*stride);
+  rotate('leftKnee',moving?Math.max(0,walk)*.34:0);
+  rotate('rightKnee',moving?Math.max(0,-walk)*.34:0);
+  // GLB export is in T-pose. Fold arms down at rest and add opposite arm swing.
+  rotate('leftArm',-.91,'z');rotate('rightArm',.91,'z');
+  rotate('leftArm',-walk*(running?.42:.27));
+  rotate('rightArm',walk*(running?.42:.27));
+  rotate('leftElbow',moving?Math.max(0,-walk)*.22:.07);
+  rotate('rightElbow',moving?Math.max(0,walk)*.22:.07);
+  rotate('spine',sway*(moving?.023:.010));
+  record.container.position.y=moving?Math.abs(Math.sin(phase))*(running?.045:.019):Math.sin(phase)*.003;
+  record.container.rotation.z=moving?Math.sin(phase)*.008:Math.sin(phase)*.002;
  }
  function takeModel(key,rig){
   const asset=assets.get(key);if(!asset)return null;
@@ -181,12 +186,13 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
   }
   state();
  }
- function update(dt,t,moving,playerX,playerZ){
+ function update(dt,t,playerIntensity,playerX,playerZ){
+  const moving=Number(playerIntensity)>.02;
   if(!allowed()){if(player)setVisible(player,false,false);return}
   if(player){
    setVisible(player,true,moving);
    if(player.mixer)player.mixer.update(Math.min(dt,.05));
-   else proceduralWalk(player,dt,t,moving);
+   else proceduralWalk(player,dt,t,playerIntensity);
   }
   if(t-lastRefresh>.45){
    lastRefresh=t;
@@ -211,7 +217,7 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
   }
   for(const [rig,record] of attached)if(rig!==playerRig&&record.container.visible){
    if(record.mixer)record.mixer.update(Math.min(dt,.05));
-   else proceduralWalk(record,dt,t,true);
+   else proceduralWalk(record,dt,t,.64);
   }
  }
  state();
