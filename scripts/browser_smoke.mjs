@@ -221,6 +221,12 @@ try{
  console.log('5.28.2 station 360 roof geometry/conservation:',
   JSON.stringify(roofVisual));
  await mkdir('browser-artifacts',{recursive:true});
+ // Camera screenshots are useless behind the startup modal; close it,
+ // photograph the station from all five directions, then reopen it for
+ // the original walking/car smoke flow below.
+ await page.locator('#rp-spawn-close').click();
+ if(!(await page.locator('#rp-spawn').isHidden()))
+  throw new Error('Roof visual audit still covered by spawn modal');
  for(const view of ['street','rail','left','right','elevated']){
   await page.evaluate(name=>{
    window.__miloviceRoofAuditView=name;
@@ -231,6 +237,9 @@ try{
   await page.screenshot({path:'browser-artifacts/station-roof-'+view+'.png'});
  }
  await page.evaluate(()=>window.__miloviceRoofAuditView=null);
+ await page.locator('#rp-vehicles').click();
+ if(!(await page.locator('#rp-spawn').isVisible()))
+  throw new Error('Spawn modal must reopen after roof screenshots');
  const coverAudit=await page.evaluate(()=>window.__miloviceStationRoofAudit||null);
  if(!coverAudit||coverAudit.roofOnlyWaysExcluded<1||
     !coverAudit.osmRoofIds.includes(1550920095))
