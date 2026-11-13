@@ -113,7 +113,8 @@ export function makeStationForecourtScene(THREE,{layer,terrainAt=()=>0,roadClear
   soil:new THREE.MeshLambertMaterial({color:0x6b614b}),
   shrub:new THREE.MeshLambertMaterial({color:0x3b683b}),
   flower:new THREE.MeshLambertMaterial({color:0xffffff}),
-  signBlue:new THREE.MeshBasicMaterial({color:0x1261a1,side:THREE.DoubleSide})
+  signBlue:new THREE.MeshBasicMaterial({color:0x1261a1,side:THREE.DoubleSide}),
+  stopRed:new THREE.MeshLambertMaterial({color:0xb32b35})
  };
  const geo={
   trunk:new THREE.CylinderGeometry(.29,.39,4.6,8),
@@ -122,7 +123,7 @@ export function makeStationForecourtScene(THREE,{layer,terrainAt=()=>0,roadClear
   flower:new THREE.IcosahedronGeometry(.09,0),
   soil:new THREE.BoxGeometry(1,1,1),
   pole:new THREE.CylinderGeometry(.085,.13,6.4,8),
-  stopPole:new THREE.CylinderGeometry(.043,.054,2.8,6),
+  stopPole:new THREE.CylinderGeometry(.043,.054,3.44,6),
   lightHead:new THREE.BoxGeometry(.62,.16,.32),
  };
  let drawMeshes=0,instances=0,features=0,sitePlan=null;
@@ -152,17 +153,44 @@ export function makeStationForecourtScene(THREE,{layer,terrainAt=()=>0,roadClear
   mesh.instanceMatrix.needsUpdate=true;if(palette)mesh.instanceColor.needsUpdate=true;
   mesh.computeBoundingSphere();parent.add(mesh);drawMeshes++;instances+=poses.length;
  }
- function signTexture(letter,routes){
-  const canvas=document.createElement('canvas');canvas.width=256;canvas.height=340;
+ // Original vector signs, never the photograph's own texture pixels.
+ // Photo ŠJů 2024-05-30: narrow red pole, yellow/blue bus pictogram above
+ // a white line timetable with a red surround — not an invented blue BUS board.
+ function headerTexture(){
+  const canvas=document.createElement('canvas');canvas.width=canvas.height=256;
   const c=canvas.getContext('2d');
-  c.fillStyle='#1261a1';c.fillRect(0,0,256,340);
-  c.fillStyle='#ffffff';c.fillRect(14,12,228,92);
-  c.fillStyle='#0b4772';c.font='bold 54px system-ui';c.textAlign='center';
-  c.fillText('BUS',128,80);
-  c.fillStyle='#ffffff';c.font='bold 115px system-ui';c.fillText(letter,128,225);
-  c.font='bold 19px system-ui';c.fillText('Milovice',128,278);
-  c.fillText('žel. st.',128,304);
-  c.font='bold 20px system-ui';c.fillText(routes.join('  '),128,330);
+  c.fillStyle='#e6d66e';c.fillRect(0,0,256,256);
+  c.fillStyle='#164d99';c.fillRect(10,10,236,236);
+  c.fillStyle='#fffdf4';c.fillRect(35,30,186,196);
+  c.strokeStyle='#182532';c.lineWidth=10;c.lineJoin='round';
+  c.strokeRect(68,97,119,80);
+  c.fillStyle='#202c37';c.fillRect(78,111,98,45);
+  c.fillStyle='#ffffff';c.fillRect(90,114,28,24);c.fillRect(130,114,29,24);
+  c.fillStyle='#1a2934';
+  c.beginPath();c.arc(94,179,12,0,Math.PI*2);c.arc(162,179,12,0,Math.PI*2);c.fill();
+  const t=new THREE.CanvasTexture(canvas);t.colorSpace=THREE.SRGBColorSpace;
+  return t;
+ }
+ function signTexture(letter,routes){
+  const canvas=document.createElement('canvas');canvas.width=256;canvas.height=430;
+  const c=canvas.getContext('2d');
+  c.fillStyle='#c23543';c.fillRect(0,0,256,430);
+  c.fillStyle='#f9f9f4';c.fillRect(12,12,232,406);
+  c.textAlign='center';c.fillStyle='#1a2832';
+  c.font='bold 23px sans-serif';c.fillText('MILOVICE',128,48);
+  c.font='bold 23px sans-serif';c.fillText('ŽEL. STANICE',128,78);
+  c.fillStyle='#c23543';c.fillRect(22,99,212,3);
+  routes.forEach((route,i)=>{
+   const y=146+i*53;
+   c.fillStyle='#222d36';c.font='bold 39px sans-serif';
+   c.textAlign='left';c.fillText(route,31,y);
+   c.fillStyle='#a4adb1';c.fillRect(31,y+9,193,2);
+  });
+  c.fillStyle='#1e6399';c.fillRect(174,339,55,61);
+  c.fillStyle='#ffffff';c.font='bold 44px sans-serif';
+  c.textAlign='center';c.fillText(letter,201,385);
+  c.fillStyle='#1c3543';c.font='bold 24px sans-serif';
+  c.fillText('PID',66,389);
   const t=new THREE.CanvasTexture(canvas);t.colorSpace=THREE.SRGBColorSpace;
   return t;
  }
@@ -222,14 +250,18 @@ export function makeStationForecourtScene(THREE,{layer,terrainAt=()=>0,roadClear
      {palette:[0xdb4234,0xe7d074,0xf7f3dc,0xd65d8e,0xcdb6e5]});
     features++;
    } else if(p.type==='stop'){
-    add(group,geo.stopPole,material.metal,p.x,y+1.4,p.z);
-    const texture=signTexture(p.letter,p.routes);
-    const board=new THREE.Mesh(new THREE.PlaneGeometry(.72,.97),
-     new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide}));
-    board.position.set(p.x,y+2.52,p.z);
-    // Plane stays readable from Nádražní and the station approach.
-    board.rotation.y=.55;
-    group.add(board);drawMeshes++;features++;
+    add(group,geo.stopPole,material.stopRed,p.x,y+1.72,p.z);
+    const yaw=Math.PI-p.heading*Math.PI/180;
+    const board=new THREE.Mesh(new THREE.PlaneGeometry(.62,1.06),
+     new THREE.MeshBasicMaterial({map:signTexture(p.letter,p.routes),side:THREE.DoubleSide}));
+    board.position.set(p.x,y+2.59,p.z);
+    board.rotation.y=yaw;
+    group.add(board);drawMeshes++;
+    const icon=new THREE.Mesh(new THREE.PlaneGeometry(.65,.65),
+     new THREE.MeshBasicMaterial({map:headerTexture(),side:THREE.DoubleSide}));
+    icon.position.set(p.x,y+3.77,p.z);
+    icon.rotation.y=yaw;
+    group.add(icon);drawMeshes++;features++;
    }
   }
   if(!features)return status();
