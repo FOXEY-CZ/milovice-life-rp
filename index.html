@@ -976,7 +976,7 @@ function updateMiloviceChunks(force=false){
    const maxDistance=object.userData.lodDetail
     ?Math.min(budget.detail,view*.70):view;
    object.visible=distance<maxDistance+(object.userData.cityBatched?115:OSM_CHUNK*.34);
-   if(object.isMesh&&object.geometry?.type==='ExtrudeGeometry')
+   if(object.isMesh&&(object.geometry?.type==='ExtrudeGeometry'||object.userData.cityBatched))
     object.castShadow=rpRealisticMode&&object.visible&&distance<140;
   }
  }
