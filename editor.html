@@ -30,6 +30,8 @@ form .row>div{flex:1}#empty{color:#a9c1cf;padding:15px;border:1px dashed #536b77
 footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--line)}
 @media(max-width:1030px){main{grid-template-columns:270px 1fr}aside:last-child{grid-column:1/-1;border-left:0;border-top:1px solid var(--line);max-height:48dvh}#map{min-height:50dvh}}
 @media(max-width:650px){header{padding:10px}h1{font-size:16px}main{display:flex;flex-direction:column;height:auto}aside{overflow:visible;padding:11px}#map{height:46dvh;min-height:310px;order:-1}#streets{max-height:180px;overflow:auto}aside:last-child{max-height:none}#buildings{max-height:330px;overflow:auto}}
+#facade-switches{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0}#facade-switches button.active{border-color:var(--hot);background:#465b6a}#facade-switches button{text-align:left}#facade-switches small{display:block;color:var(--muted)}
+#pano-host{height:300px;background:#172a3b;border:1px solid #628395;border-radius:9px;overflow:hidden}#pano-message{font-size:12px}
 </style></head><body>
 <header><div><h1>🏗️ Milovice RP · Stavební editor</h1><div class="muted">Ulice → dům → panorama → ověřené parametry → 3D model</div></div>
 <a href="./index.html">🎮 Do hry</a></header>
@@ -55,7 +57,18 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
    <a id="mapillary" href="#" target="_blank" rel="noopener noreferrer">📷 Mapillary</a>
    <a id="osm" href="#" target="_blank" rel="noopener noreferrer">🗺️ OSM budova</a>
   </div>
-  <p class="muted">Odkazy otevírají mapu v daném místě. Panorama nebo fotografie mohou chybět; nejde o automatické potvrzení snímku ani licence k jeho kopírování.</p>
+  <p class="muted">Pohledy jsou plánované podle skutečných půdorysů a mapovaných ulic, ne odhadnuté ze snímků.</p>
+  <h2>🧭 Pohledy na fasády</h2><p id="face-progress" class="muted"></p><div id="facade-switches"></div>
+  <p id="face-info" class="muted"></p>
+  <label for="face-status">Stav pohledu</label><select id="face-status">
+   <option value="unreviewed">⬜ Neprohlédnuto</option><option value="seen">📷 Prohlédnuto</option><option value="unavailable">🚫 Nedostupné</option></select>
+  <label for="face-source">Odkaz na fotografii této strany</label><input type="url" id="face-source" placeholder="https://...">
+  <label for="face-note">Co vidíme / co chybí?</label><textarea id="face-note" rows="2"></textarea>
+  <h2>🌐 Panorama přímo v editoru</h2>
+  <p class="muted">Oficiální Mapy.com API: pro vloženou 360° prohlídku potřebuješ veřejný API klíč omezený na tuto doménu. Klíč neukládáme. API může být zpoplatněné dle spotřeby; bez klíče lze použít odkazy výše.</p>
+  <div class="row"><input id="pano-key" type="password" autocomplete="off" placeholder="API klíč Mapy.com"><button id="pano-open" type="button">▶</button><button id="pano-close" type="button">✕</button></div>
+  <p id="pano-message" class="muted">Panorama dosud nenačteno.</p><div id="pano-host" hidden></div>
+  <p class="muted"><a href="https://developer.mapy.com/cs/js-panorama/" target="_blank" rel="noopener">Dokumentace Panoramy</a>. Snímky se nestahují ani neukládají do hry.</p>
   <label for="stage">Stav ověřování / modelování</label>
   <select id="stage">
    <option value="todo">⬜ Nezpracováno</option>
@@ -97,7 +110,8 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
 </aside>
 </main>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
+<script type="module">
+import {planFacadeViews,nextStreetHouse} from './scripts/facade-review.js?v=590';
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
@@ -107,6 +121,7 @@ const storeKey='milovice_rp_street_editor_v1',saved=(()=>{try{return JSON.parse(
 const records=saved&&typeof saved==='object'?saved:{};
 const collator=new Intl.Collator('cs',{numeric:true,sensitivity:'base'});
 let regions=[],buildings=[],roads=[],currentStreet='*',chosen=null,polygons=new Map(),roadLayer=null,buildingLayer=null;
+let facadeViews=[],currentFace=null,pano=null,panoRequest=0,panoLoad=null,panoMarker=null,panoRay=null;
 const center=[50.228,14.884],map=L.map('map',{preferCanvas:true}).setView(center,15);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
  maxZoom:19,attribution:'© přispěvatelé OpenStreetMap'
@@ -143,7 +158,7 @@ function streetNames(){
  return [...count].sort((a,b)=>collator.compare(a[0],b[0]));
 }
 function focusStreet(street){
- currentStreet=street;chosen=null;
+ currentStreet=street;chosen=null;facadeViews=[];currentFace=null;stopPanorama();clearFaceMarker();
  $('inspector').hidden=true;$('empty').hidden=false;
  renderLists();renderMap();
  const visible=buildings.filter(b=>street==='*'||b.street===street);
@@ -191,7 +206,8 @@ function renderMap(){
 }
 function selectBuilding(id){
  const b=buildings.find(v=>String(v.id)===String(id));if(!b)return;
- chosen=b;
+ if(chosen&&currentFace&&String(chosen.id)!==String(b.id))saveFace();
+ stopPanorama();chosen=b;currentFace=null;facadeViews=planFacadeViews(b,roads);
  const d=entry(b),coords=b.center.map(x=>x.toFixed(6)),lat=coords[0],lon=coords[1];
  $('inspector').hidden=false;$('empty').hidden=true;
  $('selected-title').textContent=b.name+' · OSM '+b.id;
@@ -205,15 +221,110 @@ function selectBuilding(id){
  renderLists();
  for(const [key,layer] of polygons){layer.setStyle(style(buildings.find(x=>String(x.id)===key)))}
  if(polygons.has(String(b.id)))polygons.get(String(b.id)).bringToFront();
+ if(facadeViews.length)chooseFace(facadeViews[0].id);
+ else{$('face-progress').textContent='Nedostatečný půdorys.';$('facade-switches').replaceChildren();clearFaceMarker()}
  map.panTo(b.center);
 }
+
+function stopPanorama(){
+ panoRequest++;try{pano?.destroy?.()}catch(_){}
+ pano=null;$('pano-host').replaceChildren();$('pano-host').hidden=true;
+}
+function clearFaceMarker(){
+ if(panoMarker){map.removeLayer(panoMarker);panoMarker=null}
+ if(panoRay){map.removeLayer(panoRay);panoRay=null}
+}
+function saveFace(){
+ if(!chosen||!currentFace)return;
+ const key=String(chosen.id),card=records[key]||{},faces={...(card.facades||{})};
+ const status=$('face-status').value,source=$('face-source').value.trim(),notes=$('face-note').value.trim();
+ if(status==='unreviewed'&&!source&&!notes)delete faces[currentFace.id];
+ else faces[currentFace.id]={status,source,notes,reviewedAt:new Date().toISOString()};
+ records[key]={...card,facades:faces};save();
+}
+function faceButtons(){
+ if(!chosen)return;
+ const review=entry(chosen).facades||{};
+ const seen=facadeViews.filter(v=>review[v.id]?.status==='seen').length;
+ const missed=facadeViews.filter(v=>review[v.id]?.status==='unavailable').length;
+ $('face-progress').textContent=seen+'/'+facadeViews.length+' prohlédnutých, '+missed+' nedostupných';
+ $('facade-switches').innerHTML=facadeViews.map(v=>
+  '<button type="button" data-facade="'+v.id+'" class="'+(currentFace?.id===v.id?'active':'')+'">'+safe(v.title)+
+  '<small>'+(review[v.id]?.status==='seen'?'📷 Prohlédnuto':review[v.id]?.status==='unavailable'?'🚫 Nedostupné':'⬜ Neznámé')+
+  ' · '+v.lengthMeters.toFixed(1)+' m</small></button>').join('');
+}
+function chooseFace(id){
+ if(!chosen)return;
+ if(currentFace&&currentFace.id!==id)saveFace();
+ stopPanorama();currentFace=facadeViews.find(v=>v.id===id)||null;
+ if(!currentFace)return;
+ faceButtons();
+ const note=entry(chosen).facades?.[currentFace.id]||{};
+ $('face-status').value=note.status||'unreviewed';$('face-source').value=note.source||'';
+ $('face-note').value=note.notes||'';
+ clearFaceMarker();
+ const f=currentFace,pos=f.viewpoint||f.middle,lat=pos[0].toFixed(6),lon=pos[1].toFixed(6);
+ $('mapy').href='https://mapy.com/cs/zakladni?x='+lon+'&y='+lat+'&z=19';
+ $('mapillary').href='https://www.mapillary.com/app/?lat='+lat+'&lng='+lon+'&z=18';
+ $('face-info').textContent=f.title+' • šířka stěny '+f.lengthMeters.toFixed(1)+' m'+
+   (f.viewpoint?' • navržená kamera: '+f.viewRoad+' ('+f.roadDistance+' m)':
+    ' • blízká mapovaná cesta chybí');
+ if(f.viewpoint){
+  panoMarker=L.circleMarker(f.viewpoint,{radius:7,color:'#ffa94e',weight:2,
+   fillColor:'#ffe0aa',fillOpacity:.95}).bindTooltip('Místo navrženého pohledu').addTo(map);
+  panoRay=L.polyline([f.viewpoint,f.middle],{color:'#ffa94e',weight:2,dashArray:'4,5'}).addTo(map);
+ }
+ $('pano-message').textContent='Poloha kamery je odhadnutá z půdorysu a mapované ulice. Pokrytí panoramatem zatím neověřeno.';
+}
+let scriptReady=null;
+async function mapyPanoReady(){
+ if(window.Panorama?.panoramaFromPosition)return;
+ if(!scriptReady)scriptReady=new Promise((resolve,reject)=>{
+  const node=document.createElement('script');node.src='https://api.mapy.cz/js/panorama/v1/panorama.js';
+  node.onload=resolve;node.onerror=()=>reject(new Error('Skript Mapy.com není dostupný'));
+  document.head.appendChild(node);
+ });
+ await scriptReady;
+ if(!window.Panorama?.panoramaFromPosition)throw Error('Knihovna Panorama není dostupná');
+}
+async function openPanorama(){
+ if(!chosen||!currentFace)return;
+ const apiKey=$('pano-key').value.trim();
+ if(!apiKey){$('pano-message').textContent='Pro integrovanou panoramu chybí API klíč. Externí odkazy fungují bez něj.';return}
+ const f=currentFace;
+ if(!f.viewpoint){$('pano-message').textContent='V tomto směru chybí přístup od mapované ulice. Použij externí mapu.';return}
+ stopPanorama();const ticket=++panoRequest;
+ $('pano-host').hidden=false;$('pano-message').textContent='Načítám 360° Panoramu…';
+ try{
+  await mapyPanoReady();if(ticket!==panoRequest)return;
+  const result=await window.Panorama.panoramaFromPosition({
+   parent:$('pano-host'),lat:f.viewpoint[0],lon:f.viewpoint[1],apiKey,
+   yaw:f.yaw,pitch:0,fov:1.12,radius:45,showNavigation:true,lang:'cs'
+  });
+  if(ticket!==panoRequest){result?.destroy?.();return}
+  if(result?.errorCode!=='NONE'){
+   $('pano-message').textContent='Panorama se nenačetla: '+(result?.error||result?.errorCode||'neznámá chyba');
+   result?.destroy?.();return;
+  }
+  pano=result;
+  $('pano-message').textContent='Panorama dostupná. Datum snímku: '+(result.info?.date||'nezjištěno')+
+    '. Lze se otáčet a přecházet mezi snímky. Fasádu potvrď ručně.';
+ }catch(error){if(ticket===panoRequest)$('pano-message').textContent='Chyba: '+error.message}
+}
+$('facade-switches').addEventListener('click',event=>{
+ const b=event.target.closest('[data-facade]');if(b)chooseFace(b.dataset.facade);
+});
+$('face-status').addEventListener('change',()=>{saveFace();faceButtons()});
+$('pano-open').addEventListener('click',openPanorama);
+$('pano-close').addEventListener('click',()=>{stopPanorama();$('pano-message').textContent='Panorama zavřena.'});
+
 function nextBuilding(){
- const pool=shown(),b=pool.find(x=>state(x)!=='verified')||pool[0];
- if(b)selectBuilding(b.id);
+ if(currentFace)saveFace();
+ const b=nextStreetHouse(shown(),records,chosen?.id,currentStreet);if(b)selectBuilding(b.id);
 }
 async function loadDistrict(id){
  const region=regions.find(r=>r.id===id);if(!region)return;
- currentStreet='*';chosen=null;$('inspector').hidden=true;$('empty').hidden=false;
+ currentStreet='*';chosen=null;facadeViews=[];currentFace=null;stopPanorama();clearFaceMarker();$('inspector').hidden=true;$('empty').hidden=false;
  $('buildings').textContent='Načítám budovy…';
  const path=id==='old'?'./data/milovice-osm.json':'./data/regions/'+region.file;
  try{
@@ -244,7 +355,8 @@ $('search').addEventListener('input',()=>{renderLists();renderMap()});
 $('district').addEventListener('change',()=>loadDistrict($('district').value));
 $('inspector').addEventListener('submit',event=>{
  event.preventDefault();if(!chosen)return;
- const d={id:chosen.id,street:chosen.street,lat:chosen.center[0],lon:chosen.center[1],
+ saveFace();
+ const d={...entry(chosen),id:chosen.id,street:chosen.street,lat:chosen.center[0],lon:chosen.center[1],
    changedAt:new Date().toISOString()};
  for(const k of ['stage','floors','height','roof','facade','windows','doors','facadeColor','roofColor','roofKind','windowsPerWall','source','notes'])
   d[k]=$(k).value.trim();

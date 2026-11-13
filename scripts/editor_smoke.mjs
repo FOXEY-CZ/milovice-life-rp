@@ -20,6 +20,26 @@ try{
  await page.evaluate(()=>window.__miloviceEditor.openBuilding(118487963));
  const selected=await page.evaluate(()=>window.__miloviceEditor.chosenId);
  assert(selected>0,'clicking a house did not open the inspector');
+ const faces=await page.evaluate(()=>({
+  count:window.__miloviceEditor.facades,selected:window.__miloviceEditor.currentFace
+ }));
+ assert(faces.count>=3&&faces.selected,'Facade inspector must offer independent wall views');
+ const firstFace=faces.selected;
+ await page.locator('#face-status').selectOption('seen');
+ await page.locator('#face-source').fill('https://commons.wikimedia.org/');
+ await page.locator('#face-note').fill('Test reference only, not a verified Milovice photo');
+ const allFaces=page.locator('#facade-switches button[data-facade]');
+ assert(await allFaces.count()>=3,'Facade switches are not usable');
+ await allFaces.nth(1).click();
+ await page.locator('#facade-switches button[data-facade="'+firstFace+'"]').click();
+ assert.equal(await page.locator('#face-status').inputValue(),'seen','Facade review was not stored on switch');
+ assert((await page.locator('#face-progress').innerText()).includes('1/'),'Review progress missing');
+ await page.locator('#pano-open').click();
+ assert((await page.locator('#pano-message').innerText()).includes('API klíč'),'No-key panorama fallback unavailable');
+ await page.locator('#next').click();
+ assert.notEqual(await page.evaluate(()=>window.__miloviceEditor.chosenId),selected,
+   'Next house re-selected the same building');
+ await page.evaluate(id=>window.__miloviceEditor.openBuilding(id),selected);
  assert((await page.locator('#mapy').getAttribute('href')).includes('mapy.com/cs/zakladni'));
  assert((await page.locator('#mapillary').getAttribute('href')).includes('mapillary.com/app/'));
  assert((await page.locator('#osm').getAttribute('href')).endsWith('/way/'+selected));
@@ -38,6 +58,7 @@ try{
  await page.waitForFunction(()=>window.__miloviceEditor?.loaded===true,null,{timeout:45000});
  await page.evaluate(id=>window.__miloviceEditor.openBuilding(id),selected);
  assert.equal(await page.locator('#stage').inputValue(),'verified','local progress not persisted');
+ assert.equal(await page.locator('#face-status').inputValue(),'seen','Per-facade review not persisted');
  assert.equal(await page.locator('#facadeColor').inputValue(),'#b2a090');
  assert.equal(await page.locator('#roofKind').inputValue(),'gable');
  const bridge=await page.evaluate(async()=>{

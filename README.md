@@ -1,3 +1,15 @@
+# Milovice RP 5.9.0 — Street Facade Survey + Panorama (13. listopadu 2026)
+
+Nový postup po celé ulici: stavební editor rozděluje dům podle OSM půdorysu na čtyři hlavní fasády (severní, jižní, východní, západní), pro každou navrhne nejbližší místo pohledu z mapované silnice a natočení kamery, vyznačí ho na mapě a poskytne odpovídající externí odkazy na Mapy.com a Mapillary.
+
+- **Pohledy na každou stranu:** samostatný stav *Neprohlédnuto / Prohlédnuto / Nedostupné* plus odkaz a poznámky. Poznámky a stavy se ukládají lokálně do stávající karty domu (pod `facades`) a exportují stejným JSON nástrojem.
+- **Plynulý postup:** tlačítko „Další dům“ konečně posouvá kurzor po seznamu a přeskakuje dokončené objekty; nepřeskakuje pořád na první nedokončený.
+- **Oficiální Mapy.com Panorama uvnitř editoru:** volitelně načte JS prohlížeč až po kliknutí uživatele se zadaným veřejným, doménou omezeným API klíčem, nastaví natočení z ulice směrem k příslušné fasádě a povolí procházení dalších sfér. API klíč není uložen do localStorage ani do GitHubu. **API provoz může být zpoplatněn**; pokud klíč chybí nebo panorama v daném místě není, fungují externí odkazy. Autentizační/API klíče nevkládejte do veřejného repozitáře.
+- **Omezení:** výběr fasád a kamer je odhad z OSM polygonů, nikoli potvrzení panoramatického pokrytí; panoramatické fotografie se nestahují, nescrapují, neukládají do hry a automaticky z nich netěžíme 3D modely. Vyžaduje ruční vizuální ověření a vhodná práva k referencím.
+- **Regrese:** automatické Node testy geometrie fasád a průběžného pořadí budov, Chromium UI test přepínání stran, lokálního uložení, odkazu na 360° API a návaznosti na 3D hru.
+
+---
+
 ## Propojení stavebního editoru se hrou (5.8.0)
 
 Editor nyní nabízí **strukturované 3D parametry**: barvu fasády a střechy v HEX, typ střechy, počet oken na každé fasádě (stále přibližný), ověřenou výšku a počet pater. Pouze karta označená **Ručně ověřeno** s URL zdroje a poznámkou může ovlivnit podporovaný obytný model. Zdrojová fotografie se do hry nestahuje ani nekopíruje. Změny se promítnou **až po obnovení/spuštění hry ve stejném prohlížeči**; data zůstávají lokální, export/import JSON funguje.

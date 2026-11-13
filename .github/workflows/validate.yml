@@ -17,6 +17,8 @@ jobs:
           node-version: '22'
       - name: Validate HTML and JavaScript
         run: node scripts/validate.cjs
+      - name: Validate georeferenced facade viewpoints and continuous street walk
+        run: node scripts/facade-review.test.mjs
       - name: Test verified street editor architecture data bridge
         run: node scripts/street-architecture-test.mjs
       - name: Test OSM world collisions and station opening
