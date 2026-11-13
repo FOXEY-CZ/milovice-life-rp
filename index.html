@@ -3035,9 +3035,10 @@ if(walking){
  const keyboardMagnitude=Math.hypot(kx,ky);
  const strafe=keyboardMagnitude?kx/keyboardMagnitude:analog.x,forwardMove=keyboardMagnitude?ky/keyboardMagnitude:analog.y;
  const desiredVelocity=keyboardMagnitude?keyboardPedestrianSpeed(keys.has('ShiftLeft')||keys.has('ShiftRight')):pedestrianSpeed(analog.magnitude);
- const acceleration=desiredVelocity>pedestrianVelocity?11:17;
- pedestrianVelocity+=Math.max(-acceleration*dt,Math.min(acceleration*dt,desiredVelocity-pedestrianVelocity));
- if(desiredVelocity===0&&pedestrianVelocity<.045)pedestrianVelocity=0;
+ // Release/neutral means immediate STOP (no creeping while FPS is recovering).
+ // Acceleration remains smoothed only while an actual direction is held.
+ if(desiredVelocity===0)pedestrianVelocity=0;
+ else pedestrianVelocity+=Math.max(-11*dt,Math.min(16*dt,desiredVelocity-pedestrianVelocity));
  pedestrianIntensity=Math.min(1,pedestrianVelocity/5.5);
  const directionLength=Math.hypot(strafe,forwardMove);
  if(directionLength>.01&&pedestrianVelocity>0){
