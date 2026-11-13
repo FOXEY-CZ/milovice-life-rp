@@ -5,6 +5,7 @@
 export function planRoofPerimeterClosure({outline,roof,origin,wallTopY}={}){
  if(!Array.isArray(outline)||outline.length<3||!roof?.bounds||
   !roof?.globalAxis||!origin||!Number.isFinite(wallTopY)||
+  !Number.isFinite(roof.eaveY)||!Number.isFinite(roof.ridgeY)||roof.ridgeY<=roof.eaveY||
   !['gable','hip'].includes(roof.kind))return null;
  const pts=outline.map(p=>({x:p.x,z:p.z??p.y}));
  if(pts.length>3&&Math.hypot(pts[0].x-pts.at(-1).x,pts[0].z-pts.at(-1).z)<.0001)pts.pop();
@@ -19,7 +20,7 @@ export function planRoofPerimeterClosure({outline,roof,origin,wallTopY}={}){
   if(roof.kind==='hip')result.push((s-minS)/roof.endInset,(maxS-s)/roof.endInset);
   return result;
  }
- const yAt=v=>roof.eaveY+roof.rise*Math.max(0,Math.min(1,...v));
+ const yAt=v=>roof.eaveY+(roof.ridgeY-roof.eaveY)*Math.max(0,Math.min(1,...v));
  const faces=[];let maxGapBefore=0,edgeSections=0,perimeterDistance=0;
  for(let i=0;i<pts.length;i++){
   const a=pts[i],b=pts[(i+1)%pts.length];
