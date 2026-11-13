@@ -17,6 +17,19 @@ export const STATION_FORECOURT_SOURCE={
   'A/B public-transport stops and station signage'],
  precision:'Station and tower footprints are OSM ways; positions of props are approximate, not surveyed',
 };
+// 5.24 Reality Pass: the STOP POLE photos, not the panorama camera, now
+// anchor bus stop positions. The GPS points are photographers' locations,
+// so an unobstructed pole location within 6m is still an estimate.
+export const STATION_STOP_PHOTOS=[
+ {id:'bus-A',letter:'A',type:'stop',lat:50.2290750,lon:14.8822053,
+  street:'Nádražní',heading:250,photoDate:'2024-05-30',
+  photo:'https://commons.wikimedia.org/wiki/File:Milovice,_%C5%BEel._st._A,_zast%C3%A1vkov%C3%BD_sloupek.jpg',
+  routes:['430','432','434'],radius:.28,buffer:.72},
+ {id:'bus-B',letter:'B',type:'stop',lat:50.2288290,lon:14.8825740,
+  street:'5. května',heading:175,photoDate:'2024-05-30',
+  photo:'https://commons.wikimedia.org/wiki/File:Milovice,_%C5%BEel._st._B,_zast%C3%A1vkov%C3%BD_sloupek.jpg',
+  routes:['430','432','434','497'],radius:.28,buffer:.72}
+];
 const LAT_COS=Math.cos(50.226*Math.PI/180);
 export function stationGpsToWorld(p){
  return {x:(p.lon-14.889)*111320*LAT_COS,z:-(p.lat-50.226)*111320};
@@ -49,31 +62,44 @@ export function planStationForecourt(elements,roadClearance){
  if(!station||!tower||!roadClearance)return null;
  const stationCentre=wayCentre(station),towerCentre=wayCentre(tower);
  if(!stationCentre||!towerCentre)return null;
- // The relative offsets were manually estimated from May 2024 forecourt photos,
- // NOT inferred as meter-accurate survey data from the camera GPS alone.
- const candidates=[
-  {id:'broadleaf',type:'tree',dx:-14.6,dz:10.4,radius:.58,buffer:1.4},
-  {id:'twin-lamp',type:'lamp',dx:7,dz:3.7,radius:.35,buffer:1.15},
-  {id:'flowerbed',type:'garden',dx:-16.6,dz:5.4,radius:1.0,buffer:1.1},
-  {id:'bus-A',type:'stop',dx:19,dz:18.7,radius:.28,buffer:1.20,letter:'A'},
-  {id:'bus-B',type:'stop',dx:13,dz:-8.3,radius:.28,buffer:1.20,letter:'B'}
- ];
+ // An observed tree, lamp or flowerbed without a measured location
+ // must not silently become a "real-world" object at guessed coordinates.
+ const deferred=['broadleaf','twin-lamp','flowerbed'];
+ const candidates=STATION_STOP_PHOTOS.map(stop=>({
+  ...stop,photoPoint:stationGpsToWorld({lat:stop.lat,lon:stop.lon})
+ }));
  const localBuildings=buildings.map(e=>({
   id:e.id,centre:wayCentre(e),points:e.geometry.map(stationGpsToWorld)
  })).filter(b=>b.centre&&Math.hypot(b.centre.x-stationCentre.x,b.centre.z-stationCentre.z)<55);
  const accepted=[],rejected=[];
  for(const c of candidates){
-  const x=stationCentre.x+c.dx,z=stationCentre.z+c.dz;
-  const near=roadClearance.nearest(x,z);
-  const roadClearanceMeters=near?.clearance??Infinity;
-  const bodyGap=Math.min(...localBuildings.map(b=>nearestBoundary(x,z,b.points)));
-  const safe=roadClearance.isClear(x,z,c.radius,c.buffer) &&
-   bodyGap>=c.radius+.75 &&
-   Math.hypot(x-towerCentre.x,z-towerCentre.z)>5.3;
-  const item={...c,x,z,roadClearance:roadClearanceMeters,buildingClearance:bodyGap};
-  (safe?accepted:rejected).push(item);
+  // Start from the 2024 geotagged camera, not from invented station offsets.
+  // Find the least displaced point that is outside ALL mapped carriageways,
+  // mapped pedestrian paths and station/tower building footprints.
+  let best=null;
+  for(const radius of [0,.75,1.5,2.25,3,3.75,4.5,5.25,6]){
+   for(let j=0;j<(radius===0?1:24);j++){
+    const angle=j*Math.PI/12;
+    const x=c.photoPoint.x+Math.cos(angle)*radius;
+    const z=c.photoPoint.z+Math.sin(angle)*radius;
+    const near=roadClearance.nearest(x,z);
+    const roadClearanceMeters=near?.clearance??Infinity;
+    const bodyGap=Math.min(...localBuildings.map(b=>nearestBoundary(x,z,b.points)));
+    if(!roadClearance.isClear(x,z,c.radius,c.buffer) ||
+       bodyGap<c.radius+.75 ||
+       Math.hypot(x-towerCentre.x,z-towerCentre.z)<=5.3)continue;
+    const item={...c,x,z,roadClearance:roadClearanceMeters,
+     buildingClearance:bodyGap,cameraDisplacement:radius,
+     placementMethod:'photo-GPS-nearest-safe-mapped-sidewalk'};
+    if(!best||item.cameraDisplacement<best.cameraDisplacement)best=item;
+   }
+   if(best)break;
+  }
+  if(best)accepted.push(best);
+  else rejected.push({id:c.id,reason:'No unblocked position within 6m of geotagged photo'});
  }
- return {stationCentre,towerCentre,accepted,rejected,reference:STATION_FORECOURT_SOURCE.id};
+ return {stationCentre,towerCentre,accepted,rejected,deferred,
+  reference:STATION_FORECOURT_SOURCE.id,strictReality:true};
 }
 export function makeStationForecourtScene(THREE,{layer,terrainAt=()=>0,roadClearance}={}){
  const roots=[],sites=new Set();
@@ -101,8 +127,11 @@ export function makeStationForecourtScene(THREE,{layer,terrainAt=()=>0,roadClear
  };
  let drawMeshes=0,instances=0,features=0,sitePlan=null;
  function status(){return {photoSources:2,sceneCount:sites.size,drawMeshes,instances,features,
+   strictReality:true,deferredWithoutSurvey:sitePlan?.deferred||[],
+   photoAnchoredStopCount:sitePlan?.accepted.filter(s=>s.type==='stop').length||0,
    ids:[...sites],placements:sitePlan?.accepted.map(s=>({
-    id:s.id,roadClearance:+s.roadClearance.toFixed(2),buildingClearance:+s.buildingClearance.toFixed(2)
+    id:s.id,roadClearance:+s.roadClearance.toFixed(2),buildingClearance:+s.buildingClearance.toFixed(2),
+    cameraDisplacement:+s.cameraDisplacement.toFixed(2),street:s.street
    }))||[],rejected:sitePlan?.rejected.map(s=>s.id)||[],modelledNotSurveyed:true,
    stationWayId:STATION_FORECOURT_SOURCE.stationId,
    bikeTowerWayId:STATION_FORECOURT_SOURCE.bikeTowerId};}
@@ -123,7 +152,7 @@ export function makeStationForecourtScene(THREE,{layer,terrainAt=()=>0,roadClear
   mesh.instanceMatrix.needsUpdate=true;if(palette)mesh.instanceColor.needsUpdate=true;
   mesh.computeBoundingSphere();parent.add(mesh);drawMeshes++;instances+=poses.length;
  }
- function signTexture(letter){
+ function signTexture(letter,routes){
   const canvas=document.createElement('canvas');canvas.width=256;canvas.height=340;
   const c=canvas.getContext('2d');
   c.fillStyle='#1261a1';c.fillRect(0,0,256,340);
@@ -133,6 +162,7 @@ export function makeStationForecourtScene(THREE,{layer,terrainAt=()=>0,roadClear
   c.fillStyle='#ffffff';c.font='bold 115px system-ui';c.fillText(letter,128,225);
   c.font='bold 19px system-ui';c.fillText('Milovice',128,278);
   c.fillText('žel. st.',128,304);
+  c.font='bold 20px system-ui';c.fillText(routes.join('  '),128,330);
   const t=new THREE.CanvasTexture(canvas);t.colorSpace=THREE.SRGBColorSpace;
   return t;
  }
@@ -193,7 +223,7 @@ export function makeStationForecourtScene(THREE,{layer,terrainAt=()=>0,roadClear
     features++;
    } else if(p.type==='stop'){
     add(group,geo.stopPole,material.metal,p.x,y+1.4,p.z);
-    const texture=signTexture(p.letter);
+    const texture=signTexture(p.letter,p.routes);
     const board=new THREE.Mesh(new THREE.PlaneGeometry(.72,.97),
      new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide}));
     board.position.set(p.x,y+2.52,p.z);
