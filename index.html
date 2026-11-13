@@ -1770,6 +1770,94 @@ function miloviceBikeTower(pts,base){
  window.__miloviceLandmarkDebug ||= {};
  window.__miloviceLandmarkDebug.bikeTower=true;
 }
+// 5.1.2 — Named OSM storefronts. Name/location come from the imported map,
+// but awning colour, shopfront glass and architectural placement are approximate.
+const businessFrontsSeen=new Set(),businessFronts=[];
+window.__miloviceCommerceDebug={count:0,names:[]};
+const groceryCladding=new THREE.MeshStandardMaterial({color:0xb9c2c4,roughness:.80,side:THREE.DoubleSide});
+function miloviceBusinessFront(pts,tags,base,height,cx,cz,osmId){
+ const name=String(tags.name||'').trim();
+ const service=['restaurant','fast_food','clinic','school','pharmacy','cafe'].includes(tags.amenity);
+ if(!name||(!tags.shop&&!service&&!['retail','supermarket','commercial'].includes(tags.building)))return;
+ if(businessFrontsSeen.has(osmId)||businessFronts.length>=85)return;
+ // Choose a real outward-facing building wall nearest a drivable mapped road.
+ let best=null;
+ for(let i=0;i<pts.length;i++){
+  const a=pts[i],b=pts[(i+1)%pts.length],dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);
+  if(len<3.8||len>110)continue;
+  const mx=(a.x+b.x)*.5,mz=(a.y+b.y)*.5;
+  let nx=-dz/len,nz=dx/len;if(nx*(mx-cx)+nz*(mz-cz)<0){nx=-nx;nz=-nz}
+  let roadDistance=120;
+  for(const r of osmDriveRoads){
+   if(r.width<4)continue;
+   const ps=r.points;
+   for(let j=1;j<ps.length;j++){
+    const p=ps[j-1],q=ps[j],vx=q.x-p.x,vz=q.y-p.y,den=vx*vx+vz*vz;
+    if(den<.05)continue;
+    const t=Math.max(0,Math.min(1,((mx-p.x)*vx+(mz-p.y)*vz)/den));
+    const rx=p.x+vx*t,rz=p.y+vz*t;
+    const d=Math.hypot(rx-mx,rz-mz);
+    if(d<roadDistance)roadDistance=d;
+   }
+  }
+  const score=roadDistance+4/Math.max(len,1);
+  if(!best||score<best.score)best={mx,mz,len,dx,dz,nx,nz,score};
+ }
+ if(!best)return;
+ const {mx,mz,len,dx,dz,nx,nz}=best,yaw=Math.atan2(nx,nz);
+ const w=Math.max(2.9,Math.min(11,len-.48));
+ const isGrocery=tags.shop==='supermarket',isClinic=tags.amenity==='clinic';
+ const normalized=name.toLocaleLowerCase('cs');
+ let bg='#315b70',fg='#ffffff',accent='#ececec';
+ if(normalized==='billa'){bg='#f6db17';fg='#bf1127';accent='#eec919'}
+ else if(normalized==='tesco'){bg='#1665a0';fg='#f4f6fc';accent='#c62638'}
+ else if(normalized==='penny'){bg='#cc2035';fg='#ffe97f';accent='#f7d556'}
+ else if(normalized.includes('šperky')){bg='#4d4460';accent='#c6a66c'}
+ else if(isClinic){bg='#ebf3f5';fg='#25658e';accent='#8fbdc9'}
+ else if(tags.amenity==='restaurant'){bg='#5f423c';fg='#fff4dd';accent='#aa6f43'}
+ else if(tags.amenity==='school'){bg='#eccd78';fg='#34425a';accent='#547d8a'}
+ // Entrances and generous floor-to-ceiling glazing, bounded to the surveyed wall.
+ const glassW=Math.max(2.5,Math.min(w*.95,len-.32));
+ archPart('panelEntry',mx+nx*.32,base+1.38,mz+nz*.32,glassW,2.48,.12,yaw);
+ archPart('stationFrames',mx+nx*.40,base+1.38,mz+nz*.40,glassW-.18,2.22,.14,yaw);
+ archPart('stationGlass',mx+nx*.50,base+1.39,mz+nz*.50,glassW-.38,2.02,.09,yaw);
+ archPart('windowBar',mx+nx*.61,base+1.36,mz+nz*.61,.10,2.08,.11,yaw);
+ if(len>=8)for(const side of [-1,1]){
+  const bx=mx+dx/len*(glassW*.23)*side+nx*.60,bz=mz+dz/len*(glassW*.23)*side+nz*.60;
+  archPart('windowBar',bx,base+1.36,bz,.06,2.06,.10,yaw);
+ }
+ archPart('stationCanopy',mx+nx*.94,base+2.91,mz+nz*.94,w,.17,1.45,yaw);
+ archPart('commercialSign',mx+nx*.48,base+3.42,mz+nz*.48,w+.24,.57,.22,yaw);
+ // Large upper fascia (BILLA roof-level signage inspired by the photographed building).
+ const signY=isGrocery&&height>3.3?base+height+.65:base+3.60;
+ const panelWidth=Math.min(isGrocery?11:8.8,w),panelHeight=isGrocery?1.45:.98;
+ const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=196;
+ const g=canvas.getContext('2d');
+ g.fillStyle=bg;g.fillRect(0,0,1024,196);
+ g.fillStyle=accent;g.fillRect(0,0,1024,13);g.fillRect(0,186,1024,10);
+ g.fillStyle=fg;g.textAlign='center';g.textBaseline='middle';
+ let font=normalized==='billa'?158:normalized==='penny'?143:118;
+ const upper=name.toLocaleUpperCase('cs');
+ do{g.font='900 '+font+'px system-ui, sans-serif';if(g.measureText(upper).width<=952)break;font-=8}while(font>34);
+ g.fillText(upper,512,101,962);
+ const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
+ const sign=new THREE.Mesh(new THREE.PlaneGeometry(panelWidth,panelHeight),new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide}));
+ sign.position.set(mx+nx*.70,signY,mz+nz*.70);sign.rotation.y=yaw;
+ sign.userData.lodDetail=true;sign.userData.lodX=mx;sign.userData.lodZ=mz;
+ osmLayer.add(sign);
+ // Large retail entrances get a simple paved waiting zone and two bicycle stands.
+ if(isGrocery&&len>=8){
+  archPart('stationPaving',mx+nx*2.7,base+.05,mz+nz*2.7,Math.min(8,w),.10,4.20,yaw);
+  const tx=mx+dx/len*(w*.42)+nx*2.1,tz=mz+dz/len*(w*.42)+nz*2.1;
+  for(let k=0;k<2;k++){
+   archPart('stationIron',tx+nx*k*.55,base+.40,tz+nz*k*.55,.055,.8,.85,yaw);
+   archPart('stationIron',tx+nx*k*.55,base+.82,tz+nz*k*.55,.055,.055,.85,yaw);
+  }
+ }
+ businessFrontsSeen.add(osmId);
+ businessFronts.push(name);
+ window.__miloviceCommerceDebug={count:businessFronts.length,names:[...businessFronts]};
+}
 function osmBuilding(points,tags,index,osmId=null){
  if(points.length<4)return;
  const pts=points.map(osmPoint);
@@ -1822,7 +1910,7 @@ function osmBuilding(points,tags,index,osmId=null){
    }
   }
  }
- const wallMat=isBlueStar?blueStarWalls:isMirova36?mirova36Walls:isGrocer74?grocerWalls:isSchool?schoolWalls:isChurch?churchWalls:isStation?stationWalls:isGarage?garageWalls:isPanelBlock?panelFacadeMaterials[braniborska?1:rakouska?3:Math.abs(osmId||index)%panelFacadeMaterials.length]:isCommerce?commerceFacadeMaterials[Math.abs(osmId||index)%commerceFacadeMaterials.length]:isIndustrial?workWalls:osmBuildingMaterial[(oldCenter?index+3:index)%osmBuildingMaterial.length];
+ const wallMat=tags.shop==='supermarket'?groceryCladding:isBlueStar?blueStarWalls:isMirova36?mirova36Walls:isGrocer74?grocerWalls:isSchool?schoolWalls:isChurch?churchWalls:isStation?stationWalls:isGarage?garageWalls:isPanelBlock?panelFacadeMaterials[braniborska?1:rakouska?3:Math.abs(osmId||index)%panelFacadeMaterials.length]:isCommerce?commerceFacadeMaterials[Math.abs(osmId||index)%commerceFacadeMaterials.length]:isIndustrial?workWalls:osmBuildingMaterial[(oldCenter?index+3:index)%osmBuildingMaterial.length];
  if(isBikeTower){miloviceBikeTower(pts,baseHeight);osmBuildings++;return}
  if(isStation){miloviceStationMassing(pts,baseHeight,centerX,centerZ);miloviceStationGroundFloor(pts,baseHeight,h,centerX,centerZ);osmBuildings++;return}
  const mesh=new THREE.Mesh(geometry,wallMat);mesh.position.y=baseHeight+stationPortalHeight;mesh.receiveShadow=true;osmLayer.add(mesh);
@@ -1841,6 +1929,7 @@ function osmBuilding(points,tags,index,osmId=null){
    if(isBlueStar)miloviceBlueStarDetail(pts,baseHeight,h,centerX,centerZ);
    if(isMirova36)miloviceMirova36Detail(pts,baseHeight,h,centerX,centerZ);
    if(isGrocer74)miloviceGrocer74Detail(pts,baseHeight,h,centerX,centerZ);
+    miloviceBusinessFront(pts,tags,baseHeight,h,centerX,centerZ,osmId);
  // Small rooftop ventilation blocks create recognisable silhouettes without expensive meshes.
  if(!isHouse&&!isGarage&&!isSchool&&!isBlueStar&&!isChurch&&!isStation&&index%5===0&&w>10&&d>9){
   const cx=(Math.min(...xs)+Math.max(...xs))*.5,cz=(Math.min(...zs)+Math.max(...zs))*.5;
