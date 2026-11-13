@@ -103,7 +103,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('ground-footprints-5262'))
+ if(!(await page.locator('#build-label').innerText()).includes('station-mapped-throughway-5270'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -199,7 +199,11 @@ try{
   JSON.stringify(landmarkChecks.stationCanopyReality));
  if(!landmarkChecks.stationPassageAudit?.matchedMappedFootway||
     !(landmarkChecks.stationPassageAudit.newMappedAlignedS>8)||
-    !(landmarkChecks.stationPassageAudit.offset<2.5))
+    !(landmarkChecks.stationPassageAudit.offset<.15)||
+    landmarkChecks.stationPassageAudit.sourceInteriorFootwayId!==1550920096||
+    !landmarkChecks.stationPassageAudit.mappedThroughBuilding||
+    landmarkChecks.stationPassageAudit.splitWallOpeningEdges<5||
+    Math.abs(landmarkChecks.stationPavingAxisS-landmarkChecks.stationPassageAudit.s)>.02)
   throw new Error('5.26 station entrance is not aligned with mapped footway: '+JSON.stringify(landmarkChecks.stationPassageAudit));
  const coverAudit=await page.evaluate(()=>window.__miloviceStationRoofAudit||null);
  if(!coverAudit||coverAudit.roofOnlyWaysExcluded<1||
@@ -227,7 +231,10 @@ try{
  if(landmarkChecks.stationFacadeWindows<8||!landmarkChecks.stationPassagePaving)
   throw new Error('5.1.4 station facade windows or passage paving missing: '+JSON.stringify(landmarkChecks));
  if(landmarkChecks.stationSidewalkConnected!==true||landmarkChecks.stationFootwayId!==549346217||
-    landmarkChecks.stationAccessConnectorSegments!==4||!(landmarkChecks.stationAccessDistance>0&&landmarkChecks.stationAccessDistance<28))
+    landmarkChecks.stationIndoorFootwayId!==1550920096||
+    landmarkChecks.stationAccessConnectorSegments!==0||
+    landmarkChecks.stationMappedAccessNoImaginarySpurs!==true||
+    !(landmarkChecks.stationAccessDistance>=0&&landmarkChecks.stationAccessDistance<.65))
   throw new Error('5.1.5 station pedestrian access must connect OSM footway 549346217 to both passage exits: '+JSON.stringify(landmarkChecks));
  if(landmarkChecks.platformTactileStrips<3||landmarkChecks.platformEdgeMeters<30)
   throw new Error('5.1.3 mapped station platform tactile edging missing: '+JSON.stringify(landmarkChecks));
