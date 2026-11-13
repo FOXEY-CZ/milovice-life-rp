@@ -2632,6 +2632,8 @@ function osmAddLandmark(el){
 // ordered by feature type; a one-pass iterator made nearby architectural styles
 // depend on arbitrary export order, especially when streaming newer districts.
 const landscapeZones=[];
+// Minimap AABBs are calculated once when OSM ways are loaded, not every HUD tick.
+const osmMiniRoadBounds=new WeakMap();
 function rpAppendOSMElements(elements){
  const roadWays=[],railWays=[],buildingWays=[],landscapeWays=[];
  for(const el of elements){
@@ -2654,6 +2656,10 @@ function rpAppendOSMElements(elements){
   addLanduseFeature(THREE,el,osmPoint,terrainAt,osmLayer,landscapeZones);
  for(const el of roadWays){
   const points=el.geometry.map(osmPoint);osmRoads.push(points);
+  let minX=Infinity,maxX=-Infinity,minZ=Infinity,maxZ=-Infinity;
+  for(const p of points){minX=Math.min(minX,p.x);maxX=Math.max(maxX,p.x);
+   minZ=Math.min(minZ,p.y);maxZ=Math.max(maxZ,p.y)}
+  osmMiniRoadBounds.set(points,{minX,maxX,minZ,maxZ});
   if(el.tags.name)osmNamedRoads.push({name:el.tags.name,points});
   const kind=el.tags.highway;
   if(el.id===549346217 && kind==='footway')stationMappedFootway=points;
@@ -3291,7 +3297,24 @@ function drawMini(){const mapX=walking?px:x,mapZ=walking?pz:z,heading=walking?or
  const w=180,h=180,scale=.30;mc.clearRect(0,0,w,h);mc.fillStyle='#203b33';mc.fillRect(0,0,w,h);
  mc.save();mc.translate(w/2,h/2);mc.rotate(-heading);
  mc.strokeStyle='#aeb6b5';mc.lineCap='round';mc.lineJoin='round';mc.lineWidth=3;
- for(const road of osmRoads){if(road.length<2)continue;mc.beginPath();let started=false;for(const p of road){const u=(p.x-mapX)*scale,v=(p.y-mapZ)*scale;if(Math.abs(u)>200||Math.abs(v)>200){started=false;continue}if(!started){mc.moveTo(u,v);started=true}else mc.lineTo(u,v)}mc.stroke()}
+ let miniRoadsConsidered=0,miniRoadsDrawn=0;
+  const miniRadius=200/scale;
+  for(const road of osmRoads){
+   if(road.length<2)continue;
+   const bounds=osmMiniRoadBounds.get(road);
+   if(bounds&&(bounds.maxX<mapX-miniRadius||bounds.minX>mapX+miniRadius||
+      bounds.maxZ<mapZ-miniRadius||bounds.minZ>mapZ+miniRadius))continue;
+   miniRoadsConsidered++;
+   mc.beginPath();let started=false,hasStroke=false;
+   for(const p of road){
+    const u=(p.x-mapX)*scale,v=(p.y-mapZ)*scale;
+    if(Math.abs(u)>200||Math.abs(v)>200){started=false;continue}
+    if(!started){mc.moveTo(u,v);started=true}else mc.lineTo(u,v)
+    hasStroke=true;
+   }
+   if(hasStroke){mc.stroke();miniRoadsDrawn++}
+  }
+  window.__miloviceMinimapCulling={roadsTotal:osmRoads.length,roadsConsidered:miniRoadsConsidered,roadsDrawn:miniRoadsDrawn};
  // During a bus job, point toward the real-road checkpoint on the minimap,
  // even when the next checkpoint is outside the 180px visible area.
  if(busJob?.stops[busJob.next]){
