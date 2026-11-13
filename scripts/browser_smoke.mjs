@@ -54,6 +54,18 @@ try{
    null,{timeout:30000});
  const nature=await page.evaluate(()=>window.__miloviceNatureGLB);
  console.log('5.3.0 real tree assets:',JSON.stringify(nature));
+ // The new phone-default GLB car is small and has an independently verifiable CC0 source.
+ const mobileCar=await page.evaluate(async()=>{
+  const {LICENSED_VEHICLES}=await import('./scripts/vehicle-assets.js?v=531');
+  const asset=LICENSED_VEHICLES.cityCar;
+  if(!asset)return null;
+  const response=await fetch(asset.uri,{mode:'cors'});
+  return {ok:response.ok,status:response.status,license:asset.license,bytes:asset.fileBytes};
+ });
+ if(!mobileCar?.ok||mobileCar.license!=='CC0-1.0'||mobileCar.bytes>300000)
+  throw new Error('5.3.0 lightweight mobile GLB car cannot be fetched: '+JSON.stringify(mobileCar));
+ console.log('5.3.0 mobile CC0 car successfully fetched:',JSON.stringify(mobileCar));
+
  if(!(await page.locator('#rp-model-select').locator('option[value="auto"]').innerText()).includes('PC i mobil'))throw new Error('New mobile vehicle quality mode absent');
  if(nature.state!=='ready'||nature.instances<3||nature.loaded.length<1)
   throw new Error('Near-station GLB tree replacement did not materialize: '+JSON.stringify(nature));
