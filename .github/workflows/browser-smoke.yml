@@ -19,6 +19,8 @@ on:
       - data/milovice-osm.json
       - data/milovice-terrain.json
       - scripts/browser_smoke.mjs
+      - scripts/station-roof-geometry.js
+      - scripts/station-roof-geometry.test.mjs
       - .github/workflows/browser-smoke.yml
   workflow_dispatch:
 permissions:
