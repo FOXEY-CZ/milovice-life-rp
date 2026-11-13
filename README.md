@@ -1,3 +1,13 @@
+## Milovice RP 5.31.1 — střešní obálka bez dvojitých ploch (Part 9)
+
+- **Opravená hlavní chyba všech běžných střech:** hra dříve po vytvoření sedlové/valbové střechy přidala také druhou rovnou desku na úroveň okapu. Výsledkem byly průniky, tmavé klíny, překryté spodní části střech a pohledově obrácené plochy. Rovná střecha se teď vytvoří **jen pokud nevznikla žádná šikmá**; dům má právě jednu hlavní střešní plochu.
+- **Společný spoj zdiva a střechy:** výpočet střešní roviny podél skutečného OSM obvodu uzavírá případné svislé mezery pod šikmou střechou, včetně členných a otočených půdorysů. Žádné výplně přes vymyšlené výřezy půdorysu.
+- **Mobilní výkon:** výplně se skládají do existujícího systému dávkovaných fasád (materiál + 120m oblast), místo aby se vytvářel nový renderovací objekt pro každý domek. Dočasné výpočetní plány střech se po použití odstraňují.
+- **Zachované výjimky:** dokumentovaná výpravní budova má svůj vlastní model a fotograficky upravená Školská 220/1 dál používá speciální sdílený výřez vikýřů/okapů.
+- **Kontrola:** nové regresní testy kontrolují jedinou střešní plochu, napojení na obvodové stěny, L-půdorysy, otočené a obrácené vrcholy. V prohlížeči je dostupný `window.__miloviceRoofEnvelopeAudit` (počet střech, uzavřených spár, přidaných trojúhelníků). **Nejde o tvrzení, že všech 684 mapovaných staveb už věrně odpovídá fotografiím.** Typy střech zůstávají orientační až do doložení skutečným pohledem.
+
+---
+
 ## Milovice RP 5.28.8 — ČISTÉ NAPOJENÍ STŘECH NÁDRAŽÍ (Part 8)
 
 - **Žádné tmavé „schůdky“ na každém uzlu:** přesahy střech vytvářejí koncová čela jen na skutečně otevřených koncích u vyvýšené středové části; spojité úseky OSM zůstávají spojité.
