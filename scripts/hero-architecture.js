@@ -3,6 +3,7 @@
 // approximation and not a surveyed record of each individual house.
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {selectFacadeEdges,planFaceOpenings} from './facade-model.js';
+import {dominantRoofAxis} from './city-roof-geometry.js';
 
 export function makeMiloviceHeroArchitecture(THREE,{
   sites=[],radius=240,maxBuildings=68,terrainAt=()=>0
@@ -11,7 +12,8 @@ export function makeMiloviceHeroArchitecture(THREE,{
  const appliedFaces=[];
  const state={buildings:0,verifiedOverrides:0,verifiedFaces:0,photoMappedFaces:0,
   photoMappedWindows:0,solidWalls:0,cutoutWindows:0,cutoutDoors:0,gables:0,
-  detailInstances:0,drawMeshes:0,chunkCount:0};
+  detailInstances:0,drawMeshes:0,chunkCount:0,
+  suppressedArbitraryChimneys:0,skippedUnverifiedGables:0};
  const box=new THREE.BoxGeometry(1,1,1),glassPlane=new THREE.PlaneGeometry(1,1);
  const mats={
   wall:new THREE.MeshStandardMaterial({vertexColors:true,roughness:.92,side:THREE.DoubleSide}),
@@ -190,21 +192,30 @@ export function makeMiloviceHeroArchitecture(THREE,{
    const geometry=wallGeometry(a,b,base,height,holes,sideLayout?.wallColor||tone);
    if(geometry){chunk.walls.push(geometry);state.solidWalls++}
   }
-  // The roof above is still anchored to the same footprint. Form actual
-  // triangular gable wall pieces under supported quadrilateral gable roofs.
-  if(pts.length===4){
-   const ab=pts[0].distanceTo(pts[1]),bc=pts[1].distanceTo(pts[2]);
-   if(ab>=4&&bc>=4&&ab<=42&&bc<=42){
-    const ends=ab>=bc?[[pts[3],pts[0]],[pts[1],pts[2]]]:[[pts[0],pts[1]],[pts[2],pts[3]]];
-    const rise=Math.min(3.2,Math.min(ab,bc)*.32);
-    for(const [a,b] of ends)chunk.walls.push(triangleGeometry(a,b,base,height,rise,tone));
+  // ONLY cap a true supported GABLE where its TWO end walls are across
+  // the verified roof ridge. Former code guessed ends from pts[0]-pts[1]
+  // and erected triangular walls in the wrong direction on reversed/rotated
+  // cadastral polygons — they were plainly visible as floating dark spikes.
+  // The new roof generator uses dominantRoofAxis on this same footprint.
+  const roofKind=override?.roofKind||'auto';
+  if(pts.length===4&&roofKind!=='hip'&&roofKind!=='flat'){
+   const axis=dominantRoofAxis(pts);
+   const segments=pts.map((a,i)=>{
+    const b=pts[(i+1)%pts.length],len=a.distanceTo(b);
+    const dx=b.x-a.x,dz=b.y-a.y;
+    return {a,b,len,across:axis?Math.abs((dx*axis.ax+dz*axis.az)/(len||1)):1};
+   });
+   const ends=segments.filter(e=>e.len>=2.2&&e.len<=65&&e.across<.15);
+   if(ends.length===2){
+    const rise=Math.min(3.2,Math.min(...segments.map(x=>x.len))*.32);
+    for(const end of ends)
+     chunk.walls.push(triangleGeometry(end.a,end.b,base,height,rise,tone));
     state.gables+=2;
-   }
+   }else state.skippedUnverifiedGables++;
   }
-  if(index%3===0){
-   placement(chunk,'wood',centroid.x+1.2,base+height+1.0,centroid.z-.65,.63,2.05,.62,0);
-   placement(chunk,'sill',centroid.x+1.2,base+height+2.07,centroid.z-.65,.82,.16,.83,0);
-  }
+  // No fake chimney every third building. Rooftop accessories must be
+  // supplied by an individual surveyed/photo-verified house model.
+  if(index%3===0)state.suppressedArbitraryChimneys++;
   state.buildings++;publish();return true;
  }
  function flush(parent){
