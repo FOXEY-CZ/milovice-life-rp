@@ -48,3 +48,19 @@ Original game models remain original created geometry; no restricted photo pixel
 ### Next passes
 
 **A**: confirm station entry and two opposite facade door opening in independent 2024–2025 camera views; adjust aperture location and windows, Nádražka waiting-room door only if visible. **B**: 5. května both sides, street by street and intersections; georeference curbs, trees, hedge, walls and poles from multiple angles. **C**: full 360 surrounding church and Hvězda, then remaining neighborhoods. Save every accepted element with `source, sourceDate, confidence, osmWayId or lat/lon, placementMethod`, and avoid invented objects.
+
+## Pass 0.2 (v5.26.2) — full-footprint ground clearance
+
+The retired 5. května photo paving renderer has been physically deleted, not just left dormant.
+A single successful centre-point clearance was insufficient for long/rotated 3D objects:
+a garden gate could have a safe centre and still protrude into the asphalt or the mapped
+footpath. Street-scene masonry wall/cap segments, corner posts, wooden gate/slats and
+hedge planting beds now pass a conservative cell-covered **rotated footprint** check
+against the already-indexed OSM vehicle and pedestrian ways. Segments are skipped when
+any part of the ground outline clashes. No additional ground decoration was guessed.
+
+This is **collision/map consistency, not photographic positional verification**.
+The 2014 photo does not prove the precise side or position of every plant, gate or post;
+those remain approximate and must be revisited from other angles. Checks run when the
+photo scene is created (not in the per-frame rendering loop), preserving the phone
+LOD/mesh batching strategy. Unit and browser smoke tests cover rotation and entry paths.
