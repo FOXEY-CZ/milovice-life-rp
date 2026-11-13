@@ -1,3 +1,11 @@
+## Milovice RP 5.27.4 — žádné náhodné obdélníky chodníků a čáry na obytných ulicích
+
+- U supermarketů Billa, Tesco, Penny a dalších zmizela automaticky generovaná **dlažba 8 × 4,2 m** a dvě náhodně umístěná stojanová kola/stojany před každým obchodem. Neznali jsme jejich skutečné pozice; někde mohly zasahovat až do cesty nebo překrývat chodník. Mapované OSM chodníky zůstávají.
+- Na obytných ulicích včetně Nádražní už hra automaticky nekreslí dva bílé krajní pruhy, když nemáme ověřenou skutečnou vodorovnou značku. Silnice a doprava zůstávají funkční.
+- Audit má regresní testy pro skutečné pěší cesty, Nádražku a nové zakázané fiktivní plochy. Dokumentace uvádí, co je pouze odhad a co je doložené.
+
+---
+
 ## Milovice RP 5.27.3 — odstraněná falešná zelená stříška ze strany nádraží
 
 Podle screenshotů hráče jsme odstranili **zelenou stříšku vedle cyklověže a na špatné straně nádraží**, její ocelové sloupy, vzpěry, žebra a s ní související domyšlený pás dláždění. Fotografie zachycovala zastřešení skutečného železničního nástupiště **na protější straně**, nikoli tuto boční konstrukci.
