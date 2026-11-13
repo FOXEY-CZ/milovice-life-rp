@@ -24,7 +24,7 @@ try{
     !gfx.surfaceMaterials||Object.values(gfx.surfaceMaterials).some(v=>v!==true))
   throw new Error('Graphics 2.0 materials did not initialize correctly: '+JSON.stringify(gfx));
  console.log('5.2.0 shared city surfaces:',JSON.stringify(gfx.surfaceMaterials));
- if(!(await page.locator('#build-label').innerText()).includes('models-530'))
+ if(!(await page.locator('#build-label').innerText()).includes('analog-532'))
   throw new Error('5.3.0 build identifier missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -43,6 +43,8 @@ try{
  await page.waitForFunction(()=>window.__miloviceHumans?.playerReady===true,
     null,{timeout:30000});
  const animated=await page.evaluate(()=>window.__miloviceHumans);
+ if(!(animated.heightMeters>=1.65&&animated.heightMeters<=2.2))throw new Error('5.3.2 the character is still giant or floating; height='+animated.heightMeters+' originalGLBScale='+JSON.stringify(animated.originalGLBScale));
+ console.log('5.3.2 normalized humanoid standing height:',animated.heightMeters,'m, source scale',animated.originalGLBScale);
  if(animated.bones?.length<35||animated.runtimeSkeletalWalk!==true)
   throw new Error('5.3.0 loaded human has no usable locomotion skeleton: '+JSON.stringify(animated));
  console.log('5.3.0 working skeletal walk from Quaternius bones:',JSON.stringify({
@@ -174,6 +176,47 @@ try{
   throw new Error('Mobile HUD could not collapse');
  console.log('5.1.4 mobile compact HUD and toggle: OK');
 
+ // Validate analog speed curve independent of screen / GPU performance.
+ const curve=await page.evaluate(async()=>{
+  const {pedestrianSpeed}=await import('./scripts/analog-controls.js?v=532a');
+  return [0,.12,.35,.6,.75,1].map(x=>[x,pedestrianSpeed(x)]);
+ });
+ if(curve[0][1]!==0||curve[1][1]!==0||!(curve[2][1]>0&&curve[2][1]<curve[3][1]&&
+      curve[3][1]<curve[4][1]&&curve[4][1]<curve[5][1]&&curve[5][1]>=5.49))
+  throw new Error('5.3.2 joystick intensity curve is not continuous monotonic walk→run: '+JSON.stringify(curve));
+ console.log('5.3.2 graded joystick curve:',JSON.stringify(curve));
+ // Genuine touch-device layout: verify stick, then physically move it through the
+ // walking and running zones. This caught the former T-pose/giant-model regression.
+ const mobileContext=await browser.newContext({viewport:{width:390,height:820},deviceScaleFactor:1,isMobile:true,hasTouch:true});
+ const mobile=await mobileContext.newPage();
+ const mobileErrors=[];mobile.on('pageerror',e=>mobileErrors.push(String(e)));
+ await mobile.goto('http://127.0.0.1:8080/',{waitUntil:'domcontentloaded',timeout:30000});
+ await mobile.waitForFunction(()=>window.__miloviceStarted===true,{timeout:45000});
+ await mobile.waitForFunction(()=>!document.getElementById('rp-spawn').hidden,{timeout:45000});
+ await mobile.locator('[data-spawn="walking"]').click();
+ await mobile.locator('#rp-joystick').waitFor({state:'visible',timeout:12000});
+ if(await mobile.locator('#controls button[data-key="KeyW"]').isVisible())
+  throw new Error('Touch D-pad should be hidden while virtual joystick is active');
+ const bounds=await mobile.locator('#rp-joystick').boundingBox();
+ const cx=bounds.x+bounds.width*.5,cy=bounds.y+bounds.height*.5,rad=Math.min(bounds.width,bounds.height)*.33;
+ await mobile.mouse.move(cx,cy);await mobile.mouse.down();
+ await mobile.mouse.move(cx,cy-rad*.44);
+ await mobile.waitForTimeout(650);
+ const slow=await mobile.evaluate(()=>window.__miloviceMovementDebug);
+ if(!(slow.speed>.1&&slow.speed<3.1&&slow.stick.magnitude>.3&&!slow.running))
+  throw new Error('Partial joystick deflection did not produce walking: '+JSON.stringify(slow));
+ await mobile.mouse.move(cx,cy-rad*.99);await mobile.waitForTimeout(800);
+ const fast=await mobile.evaluate(()=>window.__miloviceMovementDebug);
+ if(!(fast.speed>3.1&&fast.running&&fast.speed>slow.speed))
+  throw new Error('Full joystick deflection did not produce running: '+JSON.stringify({slow,fast}));
+ await mobile.mouse.up();await mobile.waitForTimeout(460);
+ const released=await mobile.evaluate(()=>window.__miloviceMovementDebug);
+ if(released.stick.magnitude!==0||released.speed>.08)
+  throw new Error('Joystick failed to stop when thumb released: '+JSON.stringify(released));
+ console.log('5.3.2 mobile analog control verified:',JSON.stringify({walk:slow.speed,run:fast.speed,released:released.speed}));
+ await mobile.screenshot({path:'browser-artifacts/milovice-analog-joystick.png'});
+ if(mobileErrors.length)throw new Error('Mobile JavaScript errors: '+mobileErrors.slice(0,3).join(' | '));
+ await mobileContext.close();
  console.log('Smoke OK: rendered 3D, terrain, walking, car, mission controls');
  if(errors.length)console.log('Nonfatal browser messages:',errors.slice(0,6));
  await context.close();
