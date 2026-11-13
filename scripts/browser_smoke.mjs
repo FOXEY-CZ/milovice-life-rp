@@ -38,6 +38,7 @@ try{
     !(await page.locator('#rp-human-select').count()))
   throw new Error('5.3.0 rigged GLB character subsystem missing: '+JSON.stringify(humans));
  console.log('5.3.0 Quaternius character assets:',JSON.stringify(humans));
+ console.log('5.3.0 GLB bone names:',JSON.stringify(humans.bones||[]));
  const landmarkChecks=await page.evaluate(()=>window.__miloviceLandmarkDebug||{});
  console.log('Landmark geometry:',JSON.stringify(landmarkChecks));
  if(landmarkChecks.stationPassageFaces!==2)throw new Error('Milovice station does not have two opposing real open passage portals: '+JSON.stringify(landmarkChecks));
