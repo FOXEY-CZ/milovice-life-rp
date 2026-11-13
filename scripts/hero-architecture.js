@@ -14,7 +14,8 @@ export function makeMiloviceHeroArchitecture(THREE,{
   photoMappedWindows:0,solidWalls:0,cutoutWindows:0,cutoutDoors:0,gables:0,
   detailInstances:0,drawMeshes:0,chunkCount:0,
   suppressedArbitraryChimneys:0,skippedUnverifiedGables:0,
-  suppressedUnverifiedPhotoOrnaments:0};
+  suppressedUnverifiedPhotoOrnaments:0,shortWallSegmentsSealed:0,
+  skippedDegenerateEdges:0};
  const box=new THREE.BoxGeometry(1,1,1),glassPlane=new THREE.PlaneGeometry(1,1);
  const mats={
   wall:new THREE.MeshStandardMaterial({vertexColors:true,roughness:.92,side:THREE.DoubleSide}),
@@ -117,7 +118,18 @@ export function makeMiloviceHeroArchitecture(THREE,{
   const levels=Math.min(6,Math.max(1,floors));
   for(let sideIndex=0;sideIndex<sides.length;sideIndex++){
    const {a,b,len}=sides[sideIndex];
-   if(len<3||len>70)continue;
+   // All perimeter edges, including 1.2m returns and short recessed
+   // walls, MUST be closed. Previous len<3 skip omitted exterior walls
+   // on concave OSM buildings, exposing the sky below the hip roof.
+   if(len<.08||len>70){state.skippedDegenerateEdges++;continue;}
+   if(len<3){
+    const shortWall=wallGeometry(a,b,base,height,[],tone);
+    if(shortWall){
+     chunk.walls.push(shortWall);state.solidWalls++;
+     state.shortWallSegmentsSealed++;
+    }
+    continue;
+   }
    const ux=(b.x-a.x)/len,uz=(b.y-a.y)/len;
    let nx=-uz,nz=ux;
    const mx=(a.x+b.x)*.5,mz=(a.y+b.y)*.5;
