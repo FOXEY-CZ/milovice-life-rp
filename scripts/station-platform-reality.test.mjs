@@ -78,7 +78,8 @@ assert(currentStationPage.includes('stationPassagePortals'));
 const pennyHTML=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert(!pennyHTML.includes('stationGabledRoof('),
  'Deleted stationGabledRoof builder referenced by a non-station supermarket');
-assert(pennyHTML.includes("tags.name==='Penny'&&tags.shop==='supermarket'?miloviceGableRoof("));
+assert(/tags\.name==='Penny'\s*&&\s*tags\.shop==='supermarket'\s*\?\s*miloviceGableRoof\(/.test(pennyHTML),
+ 'Penny must use the shared city gable builder, regardless of formatting');
 
 // v5.28.3 — user photo shows reversed blue "Milovice" hanging at the bike
 // tower end. Real railway-side photo shows the plaque on the LONG facade.
