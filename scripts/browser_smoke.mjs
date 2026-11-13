@@ -102,7 +102,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('reality-station-5241'))
+ if(!(await page.locator('#build-label').innerText()).includes('station-canopy-5250'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -168,6 +168,18 @@ try{
     !landmarkChecks.unverifiedCafeFurnitureRemoved||
     !landmarkChecks.unverifiedShopLabelRemoved)
   throw new Error('5.24 unverified station furniture/signs not removed: '+JSON.stringify(landmarkChecks));
+ if(!landmarkChecks.stationCanopyReality?.greenSteel||
+     landmarkChecks.stationCanopyReality.timber!==false||
+     landmarkChecks.stationCanopyReality.roofRibs<12||
+     landmarkChecks.stationCanopyReality.steelPosts<4||
+     landmarkChecks.stationCanopyReality.forkBraces<8||
+     !landmarkChecks.stationCanopyReality.photoObservedShape||
+     landmarkChecks.stationCanopyReality.spacingSurveyed!==false)
+  throw new Error('5.25 platform roof is not real green steel or lacks photo-backed ribs/forks: '+JSON.stringify(landmarkChecks.stationCanopyReality));
+ if(!landmarkChecks.stationCafeWaitingRoom||!landmarkChecks.unverifiedExteriorCafeRemoved)
+  throw new Error('5.25 invented external Nádražka cafe still exists or indoor location not documented: '+JSON.stringify(landmarkChecks));
+ console.log('5.25 station green steel roof and real Nádražka waiting-room entrance:',
+  JSON.stringify(landmarkChecks.stationCanopyReality));
  console.log('Landmark geometry:',JSON.stringify(landmarkChecks));
  if(landmarkChecks.stationPassageFaces!==2)throw new Error('Milovice station does not have two opposing real open passage portals: '+JSON.stringify(landmarkChecks));
  const collisionCheck=await page.evaluate(()=>{
