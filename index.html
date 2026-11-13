@@ -1154,9 +1154,8 @@ const loadedCityAreas=new Set(['old']),loadingCityAreas=new Set(),seenCityOSMWay
 // Source-checked published geometry is permanent for all visitors.
 // Editor localStorage is an explicitly temporary personal preview overlay.
 const localArchitecture=loadLocalArchitectureCards(localStorage);
-const reviewedFetch=await loadApprovedArchitecture();
-const architectureCards=mergeApprovedWithLocal(reviewedFetch.cards,localArchitecture);
-if(reviewedFetch.error)console.warn('Shared Milovice architecture unavailable, falling back safely:',reviewedFetch.error);
+let reviewedFetch={cards:new Map(),error:null};
+let architectureCards=mergeApprovedWithLocal(reviewedFetch.cards,localArchitecture);
 const localPaintMaterials=new Map(),appliedArchitectureIds=new Set();
 function localArchitectureMaterial(base,hex){
  if(!hex)return base;
@@ -1182,6 +1181,12 @@ function architectureStatus(){
  };
 }
 architectureStatus();
+const approvedArchitectureReady=loadApprovedArchitecture().then(result=>{
+ reviewedFetch=result;
+ architectureCards=mergeApprovedWithLocal(result.cards,localArchitecture);
+ if(result.error)console.warn('Shared Milovice architecture unavailable, falling back safely:',result.error);
+ architectureStatus();
+});
 const osmBtn=document.createElement('button');
 osmBtn.id='osm3d';osmBtn.type='button';osmBtn.textContent='⏳ Načítám Milovice…';
 osmBtn.style.cssText='position:fixed;right:12px;top:132px;z-index:46;background:#193d58;border:1px solid #93b4c7;min-height:39px;font-size:12px;padding:8px';
@@ -2542,6 +2547,7 @@ function cityAreaDistance(x,z,bbox){
  return Math.hypot(Math.max(left-x,0,x-right),Math.max(top-z,0,z-bottom));
 }
 async function rpLoadCityArea(id){
+ await approvedArchitectureReady;
  await loadCityAreaManifest();
  if(loadedCityAreas.has(id))return true;
  const area=cityAreaManifest.find(r=>r.id===id);
@@ -2606,6 +2612,7 @@ function maybeStreamCityAreas(){
  if(candidate)rpLoadCityArea(candidate.r.id);
 }
 async function fetchMiloviceOSM(){
+ await approvedArchitectureReady;
  // Avoid stale GitHub Pages/browser caches after the automated OSM export.
  let lastError=null;
  for(let attempt=0;attempt<2;attempt++){
