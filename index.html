@@ -3445,7 +3445,7 @@ grass.map=groundTexture;grass.color.setHex(0xffffff);grass.needsUpdate=true;
 const streetTexture=citySurfaceKit.asphalt;
 streetTexture.repeat.set(1,8);
 // Hardware-friendly Graphics 2.0 diagnostics are read by browser CI after 3D startup.
-window.__miloviceGraphics2.surfaceMaterials={road:osmRoadMaterial.map===citySurfaceKit.asphalt,sidewalk:osmSidewalkMat.map===citySurfaceKit.paving,station:stationWalls.map===citySurfaceKit.stucco,roof:stationRoofMaterial.map===citySurfaceKit.standingSeam,rail:railBallast.map===citySurfaceKit.ballast,platform:railPlatformMat.map===citySurfaceKit.platform,glass:architectureMaterials.stationGlass.map===citySurfaceKit.glass,terrain:groundTexture===citySurfaceKit.grass};
+window.__miloviceGraphics2.surfaceMaterials={road:osmRoadMaterial.map===citySurfaceKit.asphalt,sidewalk:osmSidewalkMat.map===citySurfaceKit.paving,station:stationWalls.map===citySurfaceKit.stucco,roof:stationRoofMaterial.map===roofTileMap,rail:railBallast.map===citySurfaceKit.ballast,platform:railPlatformMat.map===citySurfaceKit.platform,glass:architectureMaterials.stationGlass.map===citySurfaceKit.glass,terrain:groundTexture===citySurfaceKit.grass};
 osmRoadMaterial.map=streetTexture;osmRoadMaterial.color.setHex(0xffffff);osmRoadMaterial.needsUpdate=true;
 road.map=streetTexture;road.color.setHex(0xffffff);road.needsUpdate=true;
 asphalt.map=streetTexture;asphalt.color.setHex(0xffffff);asphalt.needsUpdate=true;
