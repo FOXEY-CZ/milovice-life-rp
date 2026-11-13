@@ -45,7 +45,8 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
  const enabled=()=>mode!=='off';
  const budget=()=>pc()?5:3;
  const modelFor=(car)=>{
-  if(car.type===2||car.type===5||car.type===6)return 'citySUV';
+  if(car.type===6||car.type===8)return null; // distinct custom van / emergency silhouette stays procedural
+  if(car.type===2||car.type===5)return 'citySUV';
   if(car.type===3||car.type===4)return 'citySport';
   return (pc()||mode==='on')?'spectralGT':'cityCar';
  };
@@ -58,7 +59,7 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
    loaded:[...scenes.keys()],source:LICENSED_VEHICLES[asset]?.source,
    models:Object.fromEntries(states),
    assignments:[...active].map(([car,inst])=>({id:car.id,type:car.type,key:inst.key,
-    wheels:inst.wheels.length,parked:car.parked,driven:car.driven})),
+    wheels:inst.wheels.length,overlay:!!car.g.userData.wheelOverlay?.visible,parked:car.parked,driven:car.driven})),
    orientation:Object.fromEntries([...scenes].map(([key,model])=>[key,{
     frontAxis:model.userData.miloviceFrontAxis,correctionRadians:model.userData.miloviceFrontCorrection
    }]))
@@ -111,6 +112,7 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
   car.g.remove(instance.group);
   const fallback=car.g.userData.proceduralLOD;
   if(fallback)fallback.visible=true;
+  if(car.g.userData.wheelOverlay)car.g.userData.wheelOverlay.visible=true;
   car.g.userData.licensedGLB=null;active.delete(car);
  }
  function detachAll(){for(const car of [...active.keys()])detach(car)}
@@ -137,6 +139,15 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
   car.g.add(model);
   car.g.userData.licensedGLB=model;
   car.g.userData.proceduralLOD.visible=false;
+  // Some CC0 mobile GLBs merge all wheel geometry into the body mesh. Retain the
+  // original animated wheels as a minimal overlay in that case, rather than
+  // leaving the visible car with permanently static wheels.
+  if(wheels.length<4&&car.wheels?.length>=4&&!car.g.userData.wheelOverlay){
+   const overlay=new THREE.Group();overlay.name='AnimatedWheelFallback';
+   for(const wheel of car.wheels)overlay.add(wheel);
+   car.g.add(overlay);car.g.userData.wheelOverlay=overlay;
+  }
+  if(car.g.userData.wheelOverlay)car.g.userData.wheelOverlay.visible=wheels.length<4;
   active.set(car,{group:model,key,wheels});
   return true;
  }
@@ -152,6 +163,7 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
   lastUpdate=t;
   if(!enabled()){detachAll();publish();return}
   const nearby=cars.filter(c=>!c.service&&c.type!==7&&c.g.visible!==false)
+   .filter(c=>modelFor(c)!==null)
    .map(c=>({car:c,dist:Math.hypot(c.g.position.x-x,c.g.position.z-z)}))
    .filter(item=>item.dist<100||item.car===playerCar)
    .sort((a,b)=>(a.car===playerCar?-10000:a.dist)-(b.car===playerCar?-10000:b.dist))
