@@ -352,14 +352,28 @@ try{
  await mobile.locator('#rp-joystick').waitFor({state:'visible',timeout:12000});
  if(await mobile.locator('#controls button[data-key="KeyW"]').isVisible())
   throw new Error('Touch D-pad should be hidden while virtual joystick is active');
- const bounds=await mobile.locator('#rp-joystick').boundingBox();
- const cx=bounds.x+bounds.width*.5,cy=bounds.y+bounds.height*.5,rad=Math.min(bounds.width,bounds.height)*.33;
- await mobile.mouse.move(cx,cy);await mobile.mouse.down();
- await mobile.mouse.move(cx,cy-rad*.44);
- await mobile.waitForTimeout(650);
- const slow=await mobile.evaluate(()=>window.__miloviceMovementDebug);
- if(!(slow.speed>.1&&slow.speed<3.1&&slow.stick.magnitude>.3&&!slow.running&&slow.facingDot>.93))
-  throw new Error('Partial joystick deflection did not produce walking: '+JSON.stringify(slow));
+ // Mobile layout can reflow after spawn while model downloads complete.
+ // Retry real pointer input using CURRENT joystick bounds (no game-code bypass).
+ let slow=null,cx=0,cy=0,rad=0;
+ for(let attempt=0;attempt<3;attempt++){
+  if(attempt)await mobile.mouse.up();
+  const bounds=await mobile.locator('#rp-joystick').boundingBox();
+  cx=bounds.x+bounds.width*.5;cy=bounds.y+bounds.height*.5;
+  rad=Math.min(bounds.width,bounds.height)*.33;
+  await mobile.mouse.move(cx,cy);await mobile.mouse.down();
+  await mobile.waitForTimeout(160);
+  const updated=await mobile.locator('#rp-joystick').boundingBox();
+  cx=updated.x+updated.width*.5;cy=updated.y+updated.height*.5;
+  rad=Math.min(updated.width,updated.height)*.33;
+  await mobile.mouse.move(cx,cy-rad*.44);
+  await mobile.waitForTimeout(650);
+  slow=await mobile.evaluate(()=>window.__miloviceMovementDebug);
+  if(slow.speed>.1&&slow.speed<3.1&&slow.stick.magnitude>.3&&
+     slow.stick.magnitude<.68&&!slow.running&&slow.facingDot>.93)break;
+ }
+ if(!(slow.speed>.1&&slow.speed<3.1&&slow.stick.magnitude>.3&&
+      slow.stick.magnitude<.68&&!slow.running&&slow.facingDot>.93))
+  throw new Error('Partial joystick deflection failed after pointer reflow retries: '+JSON.stringify(slow));
  await mobile.mouse.move(cx,cy-rad*.99);await mobile.waitForTimeout(800);
  const fast=await mobile.evaluate(()=>window.__miloviceMovementDebug);
  if(!(fast.speed>3.1&&fast.running&&fast.speed>slow.speed&&fast.facingDot>.93))
