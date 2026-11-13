@@ -59,6 +59,30 @@ export function planDormerRoofSlopes(width,roofRise=.94){
   ridgeY:1.43+roofRise
  }));
 }
+// Exact, continuous semi-circular head instead of a rectangle with a
+// floating sphere. Sizes remain modelled estimates; the photograph supports
+// the ARCHED silhouette, not millimetre window survey.
+export function planArchedDormerWindow({width=1.05,bottom=.35,shoulder=1.16,
+ border=.085,segments=16}={}){
+ if(![width,bottom,shoulder,border].every(Number.isFinite)||
+   width<.55||width>2.2||bottom<0||shoulder<bottom+.45||
+   border<.035||border>.16||width<=border*4||
+   !Number.isInteger(segments)||segments<8||segments>32)return null;
+ function path(radius,y0,yShoulder){
+  const result=[{x:-radius,y:y0},{x:radius,y:y0},{x:radius,y:yShoulder}];
+  for(let i=1;i<=segments;i++){
+   const angle=Math.PI*i/segments;
+   result.push({x:radius*Math.cos(angle),
+    y:yShoulder+radius*Math.sin(angle)});
+  }
+  return result;
+ }
+ const outer=path(width*.5,bottom,shoulder),inner=path(width*.5-border,
+  bottom+border,shoulder-.025);
+ return {outer,inner,width,bottom,shoulder,border,
+  archTop:shoulder+width*.5,
+  glassTop:shoulder-.025+width*.5-border};
+}
 export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  const roofMaterial=new THREE.MeshStandardMaterial({color:0x583b38,roughness:.88});
  const darkRoof=new THREE.MeshStandardMaterial({color:0x404348,roughness:.90});
@@ -70,6 +94,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  const hedge=new THREE.MeshStandardMaterial({color:0x385732,roughness:1});
  const grout=new THREE.MeshStandardMaterial({color:0xc8b99d,roughness:.94});
  let buildings=0,dormers=0,rooflights=0,hedgeGroups=0,detailMeshes=0;
+ let actualArchedWindowMeshes=0,rectangularFakeArchRemoved=0;
  let detailDrawMeshes=0,meshesSavedByBatching=0;
  const ids=new Set(),ownedGroups=new Set();
  // Each photo-referenced facade is statically batched by material. A dozen
@@ -132,14 +157,41 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   part(p,w,1.48,depth,wall,0,.74,.0);
   part(p,w+.14,.14,.16,trim,0,.12,depth*.5+.09);
   const front=depth*.5+.12;
-  const winW=w*.43,winH=arched?1.06:.93;
-  part(p,winW+.17,winH+.17,.095,trim,0,.87,front);
-  part(p,winW,winH,.10,glazing,0,.87,front+.066);
-  part(p,.065,winH,.12,trim,0,.87,front+.138);
+  const winW=w*.43,winH=.93;
   if(arched){
-   const arch=new THREE.Mesh(new THREE.SphereGeometry(winW*.5,12,8,0,Math.PI,0,Math.PI*.5),glazing);
-   arch.scale.y=.33;arch.position.set(0,1.46,front+.095);p.add(arch);detailMeshes++;
-   part(p,winW+.14,.055,.14,trim,0,1.51,front+.146);
+   const profile=planArchedDormerWindow({width:winW});
+   const makePath=(points)=>{
+    const pth=new THREE.Path();
+    pth.moveTo(points[0].x,points[0].y);
+    for(let i=1;i<points.length;i++)pth.lineTo(points[i].x,points[i].y);
+    pth.closePath();return pth;
+   };
+   // The glass is a genuine arched profile, topped by a shaped plaster
+   // frame. There is no rectangular dark window behind the semicircle.
+   const panePath=new THREE.Shape();
+   panePath.moveTo(profile.inner[0].x,profile.inner[0].y);
+   for(let i=1;i<profile.inner.length;i++)
+    panePath.lineTo(profile.inner[i].x,profile.inner[i].y);
+   panePath.closePath();
+   addMesh(p,new THREE.ShapeGeometry(panePath),glazing,0,0,front+.112);
+   const frameShape=new THREE.Shape();
+   frameShape.moveTo(profile.outer[0].x,profile.outer[0].y);
+   for(let i=1;i<profile.outer.length;i++)
+    frameShape.lineTo(profile.outer[i].x,profile.outer[i].y);
+   frameShape.closePath();
+   frameShape.holes.push(makePath(profile.inner));
+   addMesh(p,new THREE.ShapeGeometry(frameShape),trim,0,0,front+.152);
+   // A slim true mullion and transom, fitted below the semicircular head.
+   part(p,.058,profile.shoulder-profile.bottom-.09,.065,trim,
+    0,(profile.bottom+profile.shoulder)*.5,front+.182);
+   part(p,winW-profile.border*2,.048,.062,trim,
+    0,profile.shoulder-.13,front+.184);
+   part(p,winW+.17,.105,.15,trim,0,profile.bottom-.06,front+.14);
+   actualArchedWindowMeshes+=2;rectangularFakeArchRemoved++;
+  }else{
+   part(p,winW+.17,winH+.17,.095,trim,0,.87,front);
+   part(p,winW,winH,.10,glazing,0,.87,front+.066);
+   part(p,.065,winH,.12,trim,0,.87,front+.138);
   }
   // A real triangular gable plus two inclined roof planes; no flat-topped box.
   const shape=new THREE.Shape();
@@ -230,6 +282,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  }
  function getStatus(){return {buildings,dormers,rooflights,hedgeGroups,detailMeshes,
   detailDrawMeshes,meshesSavedByBatching,
+  actualArchedWindowMeshes,rectangularFakeArchRemoved,
   landmarkIds:[...ids],photoReferenceCount:PHOTO_STREET_BLOCK.length,
   scope:'Mírová–5. května–Školská; photographed geometry approximation'};}
  function publish(){if(typeof window!=='undefined')window.__milovicePhotoStreetPass=getStatus()}
@@ -239,7 +292,9 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
    root.traverse(o=>{if(o.isMesh||o.isInstancedMesh)o.geometry?.dispose()});
   }
   ownedGroups.clear();buildings=dormers=rooflights=hedgeGroups=detailMeshes=0;
-  detailDrawMeshes=meshesSavedByBatching=0;ids.clear();publish()
+  detailDrawMeshes=meshesSavedByBatching=0;
+  actualArchedWindowMeshes=rectangularFakeArchRemoved=0;
+  ids.clear();publish()
  }
  publish();
  return {add,reset,getStatus};
