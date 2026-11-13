@@ -29,6 +29,9 @@ try{
   throw new Error('5.1.1 station forecourt/entry missing: '+JSON.stringify(landmarkChecks));
  if(landmarkChecks.stationFacadeWindows<8||!landmarkChecks.stationPassagePaving)
   throw new Error('5.1.4 station facade windows or passage paving missing: '+JSON.stringify(landmarkChecks));
+ if(landmarkChecks.stationSidewalkConnected!==true||landmarkChecks.stationFootwayId!==549346217||
+    landmarkChecks.stationAccessConnectorSegments!==4||!(landmarkChecks.stationAccessDistance>0&&landmarkChecks.stationAccessDistance<28))
+  throw new Error('5.1.5 station pedestrian access must connect OSM footway 549346217 to both passage exits: '+JSON.stringify(landmarkChecks));
  if(landmarkChecks.platformTactileStrips<3||landmarkChecks.platformEdgeMeters<30)
   throw new Error('5.1.3 mapped station platform tactile edging missing: '+JSON.stringify(landmarkChecks));
  const diagnostics=await page.evaluate(()=>({rail:window.__miloviceRailDebug,models:window.__miloviceModelDebug,range:window.__miloviceDrawDistance}));
