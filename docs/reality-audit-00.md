@@ -89,3 +89,28 @@ uncollided gameplay walk-through. **Not proven:** exact architectural arch width
 (3.5m assumed), doorframe ornaments, wall heights, or the 2026 photographed
 entry geometry. Those still need a licensed multi-view survey. No photos are
 copied into game textures. This change reduces speculative geometry and draw calls.
+
+## Pass 0.5 — v5.27.4: no speculative shop forecourts or residential edge lines
+
+The retrospective geometry audit found two further generators that ignored the
+real mapped pedestrian network:
+
+1. `miloviceBusinessFront` inserted an 8 m × 4.2 m hard-coded tiled forecourt
+   at *every* named supermarket with a sufficiently long facade, plus two
+   fabricated bike stands, facing whichever OSM street was nearest. These pads
+   were neither mapped nor photographically placed and could overlap roads,
+   mapped pedestrian ways or another sidewalk. **Removed completely.** Named
+   supermarkets keep their original facades and identifiers; the genuine OSM
+   sidewalks, bike tower and cycling infrastructure stay intact.
+2. `osmRoadSegment` painted two continuous white **road-edge** stripes on all
+   `highway=residential` streets, including station-area Nádražní. That OSM
+   type tells us nothing about actual white markings. These speculative edges
+   are now disabled on residential streets; real road asphalt remains fully
+   driveable, existing mapped crossings remain, primary/secondary/tertiary
+   painting is unchanged pending street-specific photo verification.
+
+This is NOT a claim that real supermarkets have no paved aprons or that no
+residential road has lines; individual examples may later be recreated from
+licensed, geotagged views and mapped geometries. Counts exposed via
+`window.__miloviceCommerceReality` and the existing sidewalk geometry audit;
+static and browser checks prevent regression. No new meshes or materials.
