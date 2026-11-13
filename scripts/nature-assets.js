@@ -73,7 +73,9 @@ export function makeNearFieldTreeKit(THREE){
    holders.push({holder,kind,height});
   });
   populate();
-  if(!pending)load();
+  // No unverified roadside tree positions after the 5.22 road-safety pass.
+  // Don't download unused GLB trees on phones unless there are actual holders.
+  if(!pending&&holders.length)load();
  }
  function update(x,z){
   for(const o of holders){
