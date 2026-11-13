@@ -15,6 +15,7 @@ const published=JSON.parse(readFileSync(new URL('../data/architecture/verified-b
 const houseCard=published.buildings[String(SKOLSKA_WAY_ID)];
 assert.equal(houseCard.height,'3.75',
  '2024 photograph shows one full exterior wall storey, NOT two stacked rows of windows');
+assert.equal(houseCard.roofKind,'hip','Main hip is combined with two separately grounded cross-gables');
 assert.equal(houseCard.floors,'2',
  'The mapped second level is the usable attic under the photographed roof');
 assert(houseCard.notes.includes('NOT surveyed'));
