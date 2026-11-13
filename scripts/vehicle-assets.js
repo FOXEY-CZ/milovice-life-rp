@@ -14,21 +14,21 @@ export const LICENSED_VEHICLES={
   name:'SUV · Quaternius Realistic Car Pack',
   uri:'https://raw.githubusercontent.com/bennibeni/garage/5c26fd4bac37080cd55f8064c59de4b14b489ddd/public/models/quaternius-suv.glb',
   source:'https://quaternius.itch.io/lowpoly-cars',
-  license:'CC0-1.0',author:'Quaternius',frontAxis:'AUTO',length:4.70,
+  license:'CC0-1.0',author:'Quaternius',frontAxis:'+Z',length:4.70,
   fileBytes:181608
  },
  cityCar:{
   name:'Osobní vůz · Quaternius CC0',
   uri:'https://raw.githubusercontent.com/bennibeni/garage/5c26fd4bac37080cd55f8064c59de4b14b489ddd/public/models/quaternius-car.glb',
   source:'https://poly.pizza/m/unqqkULtRU',
-  license:'CC0-1.0',author:'Quaternius',frontAxis:'AUTO',length:4.36,
+  license:'CC0-1.0',author:'Quaternius',frontAxis:'+Z',length:4.36,
   fileBytes:174320
  },
  citySport:{
   name:'Sportovní vůz · Quaternius CC0',
   uri:'https://raw.githubusercontent.com/bennibeni/garage/5c26fd4bac37080cd55f8064c59de4b14b489ddd/public/models/quaternius-sport.glb',
   source:'https://poly.pizza/bundle/Cars-Bundle-FE5IWe6OMk',
-  license:'CC0-1.0',author:'Quaternius',frontAxis:'AUTO',length:4.43,
+  license:'CC0-1.0',author:'Quaternius',frontAxis:'+Z',length:4.43,
   fileBytes:175100
  }
 };
@@ -46,7 +46,12 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
   if(typeof window!=='undefined')window.__miloviceGLBDebug={
    state:states.get(asset)||'idle',mode,ready:scenes.has(asset),active:!!current,
    activeModel:asset,loaded:[...scenes.keys()],source:LICENSED_VEHICLES[asset].source,
-   models:Object.fromEntries(states)
+   models:Object.fromEntries(states),
+   orientation:Object.fromEntries([...scenes].map(([key,model])=>[key,{
+    frontAxis:model.userData.miloviceFrontAxis,
+    correctionRadians:model.userData.miloviceFrontCorrection,
+    expectedForward:'-Z'
+   }]))
   };
  };
  function normalize(scene,spec){
@@ -54,11 +59,17 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
   const bbox=new THREE.Box3().setFromObject(scene),initial=bbox.getSize(new THREE.Vector3());
   if(Math.min(initial.x,initial.y,initial.z)<.002||Math.max(initial.x,initial.y,initial.z)>500)
    throw Error('Unexpected GLB bounds for '+spec.name);
-  // +X comes from the Blender GT author; the generic SUV has no guaranteed front.
-  if(spec.frontAxis==='+X'||spec.frontAxis==='AUTO'&&initial.x>initial.z)
-   scene.rotation.y=Math.PI*.5;
-  else if(spec.frontAxis==='+Z')scene.rotation.y=Math.PI;
-  else if(spec.frontAxis==='-X')scene.rotation.y=-Math.PI*.5;
+  // All driving and camera code uses -Z as forward. glTF authored vehicle
+  // front is +Z, so Quaternius cars need a 180-degree visual correction.
+  // Spectral GT is explicitly authored +X and retains its 90-degree correction.
+  // Rotate the imported mesh only; NEVER reverse steering, road AI or the camera.
+  const rotations={'+X':Math.PI*.5,'+Z':Math.PI,'-X':-Math.PI*.5,'-Z':0};
+  const axis=spec.frontAxis==='AUTO'?(initial.x>initial.z?'+X':'-Z'):spec.frontAxis;
+  if(!(axis in rotations))throw Error('Unknown model front axis: '+axis);
+  const modelYawCorrection=rotations[axis];
+  if(modelYawCorrection)scene.rotateY(modelYawCorrection); // preserve authored transform
+  scene.userData.miloviceFrontAxis=axis;
+  scene.userData.miloviceFrontCorrection=modelYawCorrection;
   scene.updateMatrixWorld(true);
   const rotatedBox=new THREE.Box3().setFromObject(scene),length=rotatedBox.getSize(new THREE.Vector3()).z;
   if(!Number.isFinite(length)||length<.15)throw Error('No GLB road length');
