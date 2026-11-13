@@ -2766,7 +2766,9 @@ function osmBuilding(points,tags,index,osmId=null){
  if(pitchedSurface){
   roofEnvelopeAudit.pitchedRoofs++;
   const roofPlan=pitchedSurface.userData.roofRuntimePlan;
-  if(roofPlan&&!isSkolskaRoof){
+  // Hero facades already create their own exact gable-end masonry.
+  // Never overlap that material with a second coplanar closure.
+  if(roofPlan&&!isSkolskaRoof&&!(heroFacade&&pitched)){
    const closure=planRoofPerimeterClosure({
     outline:pts,roof:roofPlan,origin:roofPlan.origin,
     wallTopY:baseHeight+h
