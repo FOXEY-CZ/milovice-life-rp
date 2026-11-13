@@ -74,7 +74,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('performance-5160'))
+ if(!(await page.locator('#build-label').innerText()).includes('performance-5170'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -251,6 +251,11 @@ try{
      cityWalls.drawMeshes>=cityWalls.rawWalls||cityWalls.meshesSaved<1)
    throw new Error('5.16 ordinary wall batches did not reduce draw objects: '+JSON.stringify(cityWalls));
   console.log('5.16 wall batching:',JSON.stringify(cityWalls));
+  const roadBatch=await page.evaluate(()=>window.__miloviceRoadBatch);
+  if(!roadBatch||roadBatch.inputStrips<100||roadBatch.meshesSaved<50||
+     roadBatch.drawMeshes>=roadBatch.inputStrips)
+   throw new Error('5.17 OSM roadway geometry was not batch-rendered: '+JSON.stringify(roadBatch));
+  console.log('5.17 road batching:',JSON.stringify(roadBatch));
  const regionalParking=await page.evaluate(()=>window.__miloviceParkingDebug);
  if(!regionalParking||regionalParking.parked<=parking.parked)
   throw new Error('Newly loaded Mladá region did not add parked cars: '+JSON.stringify(regionalParking));
