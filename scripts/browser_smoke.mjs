@@ -24,8 +24,8 @@ try{
     !gfx.surfaceMaterials||Object.values(gfx.surfaceMaterials).some(v=>v!==true))
   throw new Error('Graphics 2.0 materials did not initialize correctly: '+JSON.stringify(gfx));
  console.log('5.2.0 shared city surfaces:',JSON.stringify(gfx.surfaceMaterials));
- if(!(await page.locator('#build-label').innerText()).includes('traffic-540'))
-  throw new Error('5.4.0 vehicle update build identifier missing');
+ if(!(await page.locator('#build-label').innerText()).includes('traffic-541'))
+  throw new Error('5.4.1 vehicle wheel update build identifier missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
     !(sidewalkCheck.separatedSidewalks>15))
@@ -149,7 +149,8 @@ try{
  const assetStats=await page.evaluate(()=>window.__miloviceGLBDebug);
  console.log('5.1.1 CC0 GLB diagnostics:',JSON.stringify(assetStats));
  if(assetStats.state!=='ready')throw new Error('Licensed high-resolution GLB failed to load: '+JSON.stringify(assetStats));
- await page.waitForFunction(()=>window.__miloviceGLBDebug?.active===true,null,{timeout:12000});
+ await page.waitForFunction(()=>window.__miloviceGLBDebug?.active===true&&
+  window.__miloviceGLBDebug?.assignments?.some(a=>a.key==='spectralGT'&&a.driven),null,{timeout:30000});
  await page.screenshot({path:'browser-artifacts/milovice-real-glb-vehicle.png'});
  await page.locator('#rp-vehicles').click();
  await page.locator('[data-spawn="suv"]').click();
@@ -157,7 +158,13 @@ try{
  const suvState=await page.evaluate(()=>window.__miloviceGLBDebug);
  console.log('5.1.1 second CC0 GLB SUV:',JSON.stringify(suvState));
  if(suvState.models.citySUV!=='ready')throw new Error('Licensed SUV GLB unavailable: '+JSON.stringify(suvState));
- await page.waitForFunction(()=>window.__miloviceGLBDebug?.activeModel==='citySUV'&&window.__miloviceGLBDebug?.active===true,null,{timeout:12000});
+ await page.waitForFunction(()=>window.__miloviceGLBDebug?.assignments?.some(a=>a.key==='citySUV'&&a.driven),
+  null,{timeout:45000});
+ const suvInstalled=await page.evaluate(()=>window.__miloviceGLBDebug);
+ const drivenSUV=suvInstalled.assignments.find(a=>a.key==='citySUV'&&a.driven);
+ if(!(drivenSUV.wheels>0||drivenSUV.overlay))
+  throw new Error('5.4.1 imported SUV has permanently static wheels: '+JSON.stringify(suvInstalled));
+ console.log('5.4.1 installed SUV with animated wheel rig:',JSON.stringify(drivenSUV));
  await page.screenshot({path:'browser-artifacts/milovice-cc0-suv.png'});
  await page.locator('#rp-jobs').click();
  await page.locator('#rp-job-start').click();
@@ -171,6 +178,10 @@ try{
  await page.waitForFunction(()=>window.__miloviceAreasLoaded?.includes('mlada'),null,{timeout:105000});
  const mladaStats=await page.evaluate(()=>window.__miloviceAreaStats);
  console.log('Mladá streamed:',JSON.stringify(mladaStats));
+ const regionalParking=await page.evaluate(()=>window.__miloviceParkingDebug);
+ if(!regionalParking||regionalParking.parked<=parking.parked)
+  throw new Error('Newly loaded Mladá region did not add parked cars: '+JSON.stringify(regionalParking));
+ console.log('5.4.1 Mladá parked traffic:',JSON.stringify(regionalParking));
  if(mladaStats?.landscape<5)throw new Error('Missing mapped Mladá parks/forest/grass: '+JSON.stringify(mladaStats));
  const commerce=await page.evaluate(()=>window.__miloviceCommerceDebug);
  console.log('5.1.2 surveyed shop storefronts:',JSON.stringify(commerce));
