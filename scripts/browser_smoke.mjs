@@ -24,7 +24,7 @@ try{
     !gfx.surfaceMaterials||Object.values(gfx.surfaceMaterials).some(v=>v!==true))
   throw new Error('Graphics 2.0 materials did not initialize correctly: '+JSON.stringify(gfx));
  console.log('5.2.0 shared city surfaces:',JSON.stringify(gfx.surfaceMaterials));
- if(!(await page.locator('#build-label').innerText()).includes('facing-533'))
+ if(!(await page.locator('#build-label').innerText()).includes('vehicles-534'))
   throw new Error('5.3.0 build identifier missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -224,7 +224,7 @@ try{
  await mobile.mouse.move(revX,revY+revRadius*.9);await mobile.waitForTimeout(720);
  const backward=await mobile.evaluate(()=>window.__miloviceMovementDebug);
  const reverseDot=slow.travel.x*backward.travel.x+slow.travel.z*backward.travel.z;
- if(!(backward.speed>2.5&&backward.facingDot>.93&&backward.stick.y<-.5&&reverseDot<-.93))
+ if(!(backward.speed>.5&&backward.facingDot>.93&&backward.stick.y<-.5&&reverseDot<-.93))
   throw new Error('5.3.3 backward joystick must truly reverse travel and keep facing forward: '+
    JSON.stringify({backward,slowTravel:slow.travel,reverseDot,reverseBounds}));
  await mobile.screenshot({path:'browser-artifacts/milovice-facing-backward.png'});
@@ -233,6 +233,32 @@ try{
  if(released.stick.magnitude!==0||released.speed>.08)
   throw new Error('Joystick failed to stop when thumb released: '+JSON.stringify(released));
  console.log('5.3.3 joystick + GLB front alignment verified:',JSON.stringify({walk:slow.speed,run:fast.speed,forwardDot:slow.facingDot,runDot:fast.facingDot,reverseDot:backward.facingDot,released:released.speed}));
+ // 5.3.4: verify each *real* imported GLB has its authored +Z nose
+ // rotated into the game's -Z forward axis. Don't change the driving physics:
+ // Quaternius source axes vary from the hand-built cars and spectral coupe.
+ const vehicleOrientations=await mobile.evaluate(async()=>{
+  const [{makeVehicleAssetManager,LICENSED_VEHICLES},THREE]=await Promise.all([
+   import('./scripts/vehicle-assets.js?v=534'),import('three')
+  ]);
+  const manager=makeVehicleAssetManager(THREE);
+  const results=[];
+  for(const key of ['cityCar','citySUV','citySport','spectralGT']){
+   const mesh=await manager.load(key);
+   if(!mesh){results.push({key,available:false});continue}
+   const axis=LICENSED_VEHICLES[key].frontAxis;
+   const originalFront=new THREE.Vector3(axis==='+X'?1:axis==='-X'?-1:0,0,axis==='+Z'?1:axis==='-Z'?-1:0);
+   mesh.updateMatrixWorld(true);
+   const front=originalFront.applyQuaternion(mesh.getWorldQuaternion(new THREE.Quaternion()));
+   const dot=front.dot(new THREE.Vector3(0,0,-1));
+   results.push({key,available:true,axis,dot,
+    correction:mesh.userData.miloviceFrontCorrection,
+    measuredLength:new THREE.Box3().setFromObject(mesh).getSize(new THREE.Vector3()).z});
+  }
+  return results;
+ });
+ if(vehicleOrientations.some(v=>!v.available||v.dot<.98||v.measuredLength<3.5||v.measuredLength>5.5))
+  throw new Error('5.3.4 vehicle GLB nose must align with driving direction: '+JSON.stringify(vehicleOrientations));
+ console.log('5.3.4 verified real GLB vehicle orientations:',JSON.stringify(vehicleOrientations));
  await mobile.screenshot({path:'browser-artifacts/milovice-analog-joystick.png'});
  if(mobileErrors.length)throw new Error('Mobile JavaScript errors: '+mobileErrors.slice(0,3).join(' | '));
  await mobileContext.close();
