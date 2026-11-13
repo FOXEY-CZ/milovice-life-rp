@@ -214,11 +214,19 @@ try{
   throw new Error('Full joystick deflection did not produce running: '+JSON.stringify({slow,fast}));
  // Moving the thumb behind the center must make the character turn around,
  // not play forward locomotion while the face points backwards.
- await mobile.mouse.move(cx,cy+rad*.82);await mobile.waitForTimeout(720);
+ // The on-screen control layout changes as the touch D-pad collapses.
+ // Re-read the CURRENT thumbstick bounds instead of reusing stale coordinates.
+ const reverseBounds=await mobile.locator('#rp-joystick').boundingBox();
+ const revX=reverseBounds.x+reverseBounds.width*.5;
+ const revY=reverseBounds.y+reverseBounds.height*.5;
+ const revRadius=Math.min(reverseBounds.width,reverseBounds.height)*.33;
+ await mobile.mouse.move(revX,revY);await mobile.waitForTimeout(90);
+ await mobile.mouse.move(revX,revY+revRadius*.9);await mobile.waitForTimeout(720);
  const backward=await mobile.evaluate(()=>window.__miloviceMovementDebug);
- if(!(backward.speed>2.5&&backward.facingDot>.93&&
-      slow.travel.x*backward.travel.x+slow.travel.z*backward.travel.z<-.93))
-  throw new Error('5.3.3 backward joystick rotates the model to actual travel direction: '+JSON.stringify(backward));
+ const reverseDot=slow.travel.x*backward.travel.x+slow.travel.z*backward.travel.z;
+ if(!(backward.speed>2.5&&backward.facingDot>.93&&backward.stick.y<-.5&&reverseDot<-.93))
+  throw new Error('5.3.3 backward joystick must truly reverse travel and keep facing forward: '+
+   JSON.stringify({backward,slowTravel:slow.travel,reverseDot,reverseBounds}));
  await mobile.screenshot({path:'browser-artifacts/milovice-facing-backward.png'});
  await mobile.mouse.up();await mobile.waitForTimeout(460);
  const released=await mobile.evaluate(()=>window.__miloviceMovementDebug);
