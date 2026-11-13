@@ -489,14 +489,14 @@ async function rpSelectSpawn(kind){
  const kinds={sedan:0,suv:2,van:6,police:8};
  if(!['walking','bus',...Object.keys(kinds)].includes(kind))return;
  const areaId=document.getElementById('rp-area-select')?.value||'old';
- if(areaId!=='old'&&!loadedCityAreas.has(areaId)){
+ if(areaId!=='old'&&areaId!=='photo5'&&!loadedCityAreas.has(areaId)){
   const ok=await rpLoadCityArea(areaId);
   if(!ok)return;
  }
  // Spawn on a real drivable road in the chosen district.
- const area=cityAreaManifest?.find(r=>r.id===areaId);
+ const area=cityAreaManifest?.find(r=>r.id===(areaId==='photo5'?'old':areaId));
  if(area){
-  const gps=area.id==='old'?{lat:50.2281408,lon:14.8833112}:{lat:area.center[0],lon:area.center[1]};
+  const gps=areaId==='photo5'?{lat:50.227797,lon:14.884813}:area.id==='old'?{lat:50.2281408,lon:14.8833112}:{lat:area.center[0],lon:area.center[1]};
   const target=osmPoint(gps);
   let chosen=null,best=Infinity;
   for(const seg of driveSegments){
@@ -2747,6 +2747,9 @@ async function loadCityAreaManifest(){
   for(const area of cityAreaManifest){
    const opt=document.createElement('option');opt.value=area.id;opt.textContent=area.name;select.appendChild(opt);
   }
+  const photoStop=document.createElement('option');
+  photoStop.value='photo5';photoStop.textContent='📸 5. května – fotoblok (2014)';
+  select.appendChild(photoStop);
  }
  return cityAreaManifest;
 }
