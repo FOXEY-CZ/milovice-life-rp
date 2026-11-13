@@ -251,7 +251,7 @@ export function makeStationForecourtScene(THREE,{layer,terrainAt=()=>0,roadClear
     features++;
    } else if(p.type==='stop'){
     add(group,geo.stopPole,material.stopRed,p.x,y+1.72,p.z);
-    const yaw=Math.PI-p.heading*Math.PI/180;
+    const yaw=-p.heading*Math.PI/180;
     const board=new THREE.Mesh(new THREE.PlaneGeometry(.62,1.06),
      new THREE.MeshBasicMaterial({map:signTexture(p.letter,p.routes),side:THREE.DoubleSide}));
     board.position.set(p.x,y+2.59,p.z);
