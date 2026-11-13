@@ -24,6 +24,7 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
    mode,loaded:[...assets.keys()],status:Object.fromEntries(status),
    playerReady:!!player,activeNpc:[...attached.values()].filter(v=>v.container.visible).length,
    runtimeSkeletalWalk:!!(player?.boneState?.nodes?.leftLeg&&player?.boneState?.nodes?.rightLeg)&&!player?.mixer,
+   heightMeters:player?.root.userData.heightMeters||0,originalGLBScale:player?.root.userData.originalGLBScale||null,
    clips:player?.clips||[],bones:assets.get('casualMan')?.bones?.slice(0,56)||[],license:'CC0-1.0',fallback:!player
   };
   if(typeof window!=='undefined')window.__miloviceHumans=ret;
@@ -81,13 +82,27 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
   // SkeletonUtils is essential: a raw scene.clone breaks skinned joint bindings.
   const imported=cloneSkeleton(asset.scene),root=new THREE.Group();
   root.name='MiloviceCC0_'+key;
+  // CRITICAL: preserve glTF's authored scene scale/rotation/translation!
+  // The model can be authored in centimetres with a parent scale of .01.
+  // Previously .scale.setScalar(1.95/height) REPLACED that intrinsic scale,
+  // multiplying the character to a giant after load. Normalise a WRAPPER.
   imported.updateMatrixWorld(true);
-  const bounds=new THREE.Box3().setFromObject(imported),size=bounds.getSize(new THREE.Vector3());
-  if(size.y<.25||size.y>200)throw Error('Invalid humanoid bounding box '+key);
-  const scalar=1.95/size.y;
-  imported.scale.setScalar(scalar);
-  imported.position.set(-(bounds.min.x+bounds.max.x)*scalar*.5,-bounds.min.y*scalar,-(bounds.min.z+bounds.max.z)*scalar*.5);
-  root.add(imported);
+  const bounds=new THREE.Box3().setFromObject(imported,true),size=bounds.getSize(new THREE.Vector3());
+  if(!Number.isFinite(size.y)||size.y<.01||size.y>2000)throw Error('Invalid original humanoid bounds '+key);
+  const scalar=1.94/size.y;
+  const scaled=new THREE.Group();
+  scaled.name='MiloviceNormalisedHuman';
+  scaled.scale.setScalar(scalar);
+  scaled.position.set(-(bounds.min.x+bounds.max.x)*scalar*.5,-bounds.min.y*scalar,-(bounds.min.z+bounds.max.z)*scalar*.5);
+  scaled.add(imported);root.add(scaled);
+  root.updateMatrixWorld(true);
+  const finalBox=new THREE.Box3().setFromObject(root,true),finalSize=finalBox.getSize(new THREE.Vector3());
+  if(!Number.isFinite(finalSize.y)||finalSize.y<1.65||finalSize.y>2.20||
+     finalBox.min.y<-.22||finalBox.min.y>.22)throw Error('Bad humanoid world height after normalization '+key+': '+JSON.stringify({
+       originalHeight:size.y,glbScale:asset.scene.scale.toArray(),finalHeight:finalSize.y,feet:finalBox.min.y
+     }));
+  root.userData.heightMeters=finalSize.y;
+  root.userData.originalGLBScale=asset.scene.scale.toArray();
   root.position.y=0;
   root.visible=false;
   root.userData.miloviceCC0=true;
