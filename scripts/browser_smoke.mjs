@@ -38,7 +38,25 @@ try{
     !(await page.locator('#rp-human-select').count()))
   throw new Error('5.3.0 rigged GLB character subsystem missing: '+JSON.stringify(humans));
  console.log('5.3.0 Quaternius character assets:',JSON.stringify(humans));
- console.log('5.3.0 GLB bone names:',JSON.stringify(humans.bones||[]));
+ console.log('5.3.0 GLB bone names:',JSON.stringify(humans.bones||[])); 
+ // Require genuine external meshes, a valid humanoid skeleton, and moving bones.
+ await page.waitForFunction(()=>window.__miloviceHumans?.playerReady===true,
+    null,{timeout:30000});
+ const animated=await page.evaluate(()=>window.__miloviceHumans);
+ if(animated.bones?.length<35||animated.runtimeSkeletalWalk!==true)
+  throw new Error('5.3.0 loaded human has no usable locomotion skeleton: '+JSON.stringify(animated));
+ console.log('5.3.0 working skeletal walk from Quaternius bones:',JSON.stringify({
+  bones:animated.bones.length,runtimeSkeletalWalk:animated.runtimeSkeletalWalk
+ }));
+ // Existing roadside vegetation must actually be replaced with imported GLB,
+ // not just be a hidden loader or another spherical procedurally generated tree.
+ await page.waitForFunction(()=>['ready','fallback'].includes(window.__miloviceNatureGLB?.state),
+   null,{timeout:30000});
+ const nature=await page.evaluate(()=>window.__miloviceNatureGLB);
+ console.log('5.3.0 real tree assets:',JSON.stringify(nature));
+ if(nature.state!=='ready'||nature.instances<3||nature.loaded.length<1)
+  throw new Error('Near-station GLB tree replacement did not materialize: '+JSON.stringify(nature));
+
  const landmarkChecks=await page.evaluate(()=>window.__miloviceLandmarkDebug||{});
  console.log('Landmark geometry:',JSON.stringify(landmarkChecks));
  if(landmarkChecks.stationPassageFaces!==2)throw new Error('Milovice station does not have two opposing real open passage portals: '+JSON.stringify(landmarkChecks));
