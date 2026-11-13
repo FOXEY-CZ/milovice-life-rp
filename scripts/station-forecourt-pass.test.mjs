@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createRoadClearance} from './road-clearance.js';
-import {STATION_FORECOURT_SOURCE,stationGpsToWorld,wayCentre,planStationForecourt} from './station-forecourt-pass.js';
+import {STATION_FORECOURT_SOURCE,STATION_STOP_PHOTOS,stationGpsToWorld,wayCentre,planStationForecourt} from './station-forecourt-pass.js';
 const osm=JSON.parse(readFileSync(new URL('../data/milovice-osm.json',import.meta.url),'utf8'));
 const way=osm.elements.find(e=>e.id===53865956);
 const bike=osm.elements.find(e=>e.id===1011197691);
@@ -30,12 +30,25 @@ for(const el of osm.elements){
 }
 const plan=planStationForecourt(osm.elements,clearance);
 assert(plan,'Station and bike tower geometry must anchor the public forecourt scene');
-assert(plan.accepted.length>=4,JSON.stringify(plan));
+assert.equal(plan.strictReality,true);
+assert.equal(plan.accepted.length,2,JSON.stringify(plan));
+assert.deepEqual(plan.accepted.map(p=>p.id),['bus-A','bus-B'],
+ 'Only separately geotagged 2024 stops may be added in strict mode');
+assert.deepEqual(plan.deferred,['broadleaf','twin-lamp','flowerbed'],
+ 'Do not build foliage/lamps from invented station-centre offsets');
 const names=plan.accepted.map(p=>p.id);
-assert(names.includes('broadleaf'),'Photo-verified mature station tree must avoid walls and traffic');
-assert(names.includes('twin-lamp'),'Photo-verified double-arm streetlamp must avoid walls and traffic');
-assert(names.includes('flowerbed'),'Station flowers must be placed off all roads');
-assert(names.some(x=>x==='bus-A'||x==='bus-B'),'Keep at least one source-backed stop marker');
+assert.equal(STATION_STOP_PHOTOS.length,2);
+const A=plan.accepted.find(p=>p.id==='bus-A'),B=plan.accepted.find(p=>p.id==='bus-B');
+assert.equal(A.street,'Nádražní');
+assert.equal(B.street,'5. května');
+assert.equal(STATION_STOP_PHOTOS[0].lat,50.2290750);
+assert.equal(STATION_STOP_PHOTOS[1].lat,50.2288290);
+assert(A.cameraDisplacement<=6&&B.cameraDisplacement<=6,
+ 'A/B pole positions cannot be inferred farther than 6m from photograph GPS');
+assert(B.x>A.x+18&&B.z>A.z+12,
+ 'PID interchange map: B is southeast of A, on 5. května');
+assert(Math.hypot(B.x-A.x,B.z-A.z)>25,
+ 'The two distinct bus stop stands cannot share the same station forecourt');
 for(const p of plan.accepted){
  assert(clearance.isClear(p.x,p.z,p.radius,p.buffer),
   'Station furniture '+p.id+' crosses mapped carriageway or footway');
@@ -47,5 +60,6 @@ for(const p of plan.accepted){
 assert.equal(planStationForecourt([],clearance),null);
 console.log('5.23 photo-anchored station forecourt:',JSON.stringify({
  station:st,tower,accepted:names,rejected:plan.rejected.map(p=>p.id),
- minRoadClearance:Math.min(...plan.accepted.map(p=>p.roadClearance)).toFixed(2)
+ minRoadClearance:Math.min(...plan.accepted.map(p=>p.roadClearance)).toFixed(2),
+ stopCameraDisplacements:plan.accepted.map(p=>[p.id,p.cameraDisplacement])
 }));
