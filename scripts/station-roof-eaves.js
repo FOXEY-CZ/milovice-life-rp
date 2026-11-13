@@ -98,8 +98,73 @@ function addTriangle(dest,a,b,c){
  if(cross>1e-7)dest.push([a,b,c]);
 }
 const quad=(dest,a,b,c,d)=>{addTriangle(dest,a,b,c);addTriangle(dest,a,c,d)};
+// Shared, lightweight eave mesh for any perimeter-constrained roof.
+// One continuous top/soffit/fascia strip on actual exterior OSM edges.
+// The height is affine for each strip, eliminating black non-planar flaps.
+export function planPerimeterRoofEaves({outline,originalOutline,roof,
+ width=.32,thickness=.10}={}){
+ const section=ring(outline),original=ring(originalOutline);
+ if(!section||!original||roof?.roofModel!=='perimeter-constrained'||
+  !Number.isFinite(roof.eaveY)||width<.10||width>.65||
+  thickness<.04||thickness>.20)return null;
+ const edges=section.map((a,i)=>stationExteriorEdge(a,
+  section[(i+1)%section.length],original));
+ const corners=section.map((_,i)=>miter(
+  edges[(i+section.length-1)%section.length],edges[i],width));
+ const tiles=[],soffit=[],fascia=[];
+ let exteriorEdges=0,excludedInteriorEdges=0,maxActualOverhang=0;
+ let closedEndCaps=0,unnecessaryCapsAvoided=0;
+ const inner=(p,y)=>({x:p.x,y,z:p.z,u:p.x*.23,v:p.z*.23});
+ const bottom=p=>({...p,y:p.y-thickness});
+ for(let i=0;i<section.length;i++){
+  const normal=edges[i];
+  if(!normal){excludedInteriorEdges++;continue}
+  const a=section[i],b=section[(i+1)%section.length];
+  if(Math.hypot(b.x-a.x,b.z-a.z)<.05)continue;
+  exteriorEdges++;
+  const first=corners[i],last=corners[(i+1)%section.length];
+  const c={x:b.x+last.x,z:b.z+last.z};
+  const d={x:a.x+first.x,z:a.z+first.z};
+  maxActualOverhang=Math.max(maxActualOverhang,
+   Math.hypot(first.x,first.z),Math.hypot(last.x,last.z));
+  // The eave is a single planar slope in the outward-normal direction.
+  const y=p=>roof.eaveY-.055*((p.x-a.x)*normal.nx+
+   (p.z-a.z)*normal.nz)/width;
+  const a0=inner(a,roof.eaveY),b0=inner(b,roof.eaveY);
+  const c0=inner(c,y(c)),d0=inner(d,y(d));
+  const cross2=(p,q,r)=>(q.x-p.x)*(r.z-p.z)-
+   (q.z-p.z)*(r.x-p.x);
+  // A self-crossing overhang is worse than no overhang. Fall back to the
+  // bounded roof surface (not a giant black inverted roof triangle).
+  const k1=cross2(a0,b0,c0),k2=cross2(a0,c0,d0);
+  if(Math.abs(k1)<1e-7||Math.abs(k2)<1e-7||
+   Math.sign(k1)!==Math.sign(k2))return null;
+  quad(tiles,a0,b0,c0,d0);
+  quad(soffit,bottom(d0),bottom(c0),bottom(b0),bottom(a0));
+  quad(fascia,d0,c0,bottom(c0),bottom(d0));
+  const close=(inside,outside,reverse)=>{
+   const p0=inner(inside,roof.eaveY);
+   const p1=inner(outside,y(outside));
+   if(reverse)quad(fascia,p1,p0,bottom(p0),bottom(p1));
+   else quad(fascia,p0,p1,bottom(p1),bottom(p0));
+   closedEndCaps++;
+  };
+  if(!edges[(i+section.length-1)%section.length])close(a,d,false);
+  else unnecessaryCapsAvoided++;
+  if(!edges[(i+1)%section.length])close(b,c,true);
+  else unnecessaryCapsAvoided++;
+ }
+ if(!exteriorEdges||!tiles.length)return null;
+ return {tiles,soffit,fascia,exteriorEdges,excludedInteriorEdges,width,
+  thickness,maxActualOverhang,closedUnderside:true,
+  onlyMappedExterior:true,faceRegions:exteriorEdges,
+  closedEndCaps,unnecessaryCapsAvoided,exactPlanePartitions:true,
+  perimeterSafe:true};
+}
 export function planStationRoofEaves({outline,originalOutline,roof,origin,
  width=.32,thickness=.10}={}){
+ if(roof?.roofModel==='perimeter-constrained')
+  return planPerimeterRoofEaves({outline,originalOutline,roof,width,thickness});
  const section=ring(outline),original=ring(originalOutline);
  if(!section||!original||!roof?.bounds||!roof?.globalAxis||!origin||
   !Number.isFinite(origin.x)||!Number.isFinite(origin.z)||
