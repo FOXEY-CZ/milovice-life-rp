@@ -58,7 +58,15 @@
  #perf{padding:4px 6px!important;font-size:11px!important;min-width:80px}
  #perf small{font-size:9px}
 }
-</style></head><body><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.3.1 · build <strong id="build-label">20261113-humans-531</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
+</style><style id="rp-532-analog">
+#rp-joystick{display:none;position:fixed;left:12px;bottom:calc(var(--rp-controls-height,170px) + 23px);width:124px;height:124px;box-sizing:border-box;z-index:48;border:2px solid #bee5f6b8;border-radius:50%;background:radial-gradient(circle at 42% 38%,#386b879c,#0d253acc 67%);box-shadow:0 7px 23px #05162999,inset 0 2px 15px #b6ecff1f;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+#rp-joystick::before{content:'';position:absolute;inset:31%;border-radius:50%;border:1px dashed #c6eaf677;pointer-events:none}
+#rp-joystick::after{content:attr(data-intensity);position:absolute;left:0;right:0;bottom:-17px;font-size:10px;text-align:center;letter-spacing:.7px;text-transform:uppercase;color:#d9edf8;text-shadow:0 1px 3px #000;pointer-events:none}
+#rp-joystick-knob{position:absolute;width:45px;height:45px;top:calc(50% - 22.5px);left:calc(50% - 22.5px);border-radius:50%;border:2px solid #aee3fc;background:linear-gradient(150deg,#5b9cbe,#18476c);box-sizing:border-box;box-shadow:0 3px 13px #0009,inset 0 1px 8px #e6f8fa50;pointer-events:none;will-change:transform}
+#rp-joystick[data-intensity="běh"]{border-color:#ffd36e}#rp-joystick[data-intensity="běh"] #rp-joystick-knob{background:linear-gradient(145deg,#e3a84c,#8e5720);border-color:#fff0ae}
+@media(max-width:850px){html.rp-analog-controls #rp-joystick{display:block}html.rp-analog-controls #controls button[data-key]{display:none!important}}
+@media(max-width:400px){#rp-joystick{width:113px;height:113px;left:8px}}
+</style></head><body><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.3.1 · build <strong id="build-label">20261113-humans-531</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
 <section class="rp-overlay" id="rp-spawn" aria-label="Výběr vozidla" hidden>
  <div class="rp-modal">
   <div class="rp-modal-head"><div><h2>🚘 Jak chceš začít?</h2><p>Vyber si vozidlo nebo vyraz pěšky. Vozidla slouží pro volnou jízdu.</p></div><button id="rp-spawn-close" type="button">✕</button></div>
@@ -169,6 +177,7 @@ import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=531';
 import {makeCitySurfaceKit,makeContactShadow} from './scripts/graphics2.js?v=520';
 import {makeMiloviceHumanAssets} from './scripts/human-assets.js?v=531-hotfix';
 import {makeNearFieldTreeKit} from './scripts/nature-assets.js?v=531';
+import {makeWalkJoystick,pedestrianSpeed,keyboardPedestrianSpeed} from './scripts/analog-controls.js?v=532';
 const citySurfaceKit=makeCitySurfaceKit(THREE);
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
 const BUILD_ID='20261113-humans-531';
@@ -582,6 +591,27 @@ function toggleVehicle(){
  keys.clear();updateUI();
 }
 const keys=new Set();
+ const isAnalogPhone=matchMedia('(pointer:coarse) and (max-width:850px)').matches;
+ const stick=makeWalkJoystick(document.getElementById('rp-joystick'),document.getElementById('rp-joystick-knob'),
+  ()=>walking&&isAnalogPhone&&document.getElementById('rp-spawn').hidden&&
+   document.getElementById('rp-job-panel').hidden&&!document.getElementById('realmap').classList.contains('open'));
+ function updateStickUI(){
+  const show=isAnalogPhone&&walking&&document.getElementById('rp-spawn').hidden&&
+   document.getElementById('rp-job-panel').hidden&&!document.getElementById('realmap').classList.contains('open');
+  document.documentElement.classList.toggle('rp-analog-controls',show);
+  if(!show)stick.reset();
+ }
+ let pedestrianIntensity=0,pedestrianVelocity=0;
+ window.__miloviceMovementDebug={stick:{x:0,y:0,magnitude:0},speed:0,running:false,active:false};
+ const stickElement=document.getElementById('rp-joystick');
+ stickElement.addEventListener('keydown',e=>{
+  const code={ArrowUp:'KeyW',ArrowDown:'KeyS',ArrowLeft:'KeyA',ArrowRight:'KeyD'}[e.code];
+  if(!code)return;e.preventDefault();keys.add(code);
+ });
+ stickElement.addEventListener('keyup',e=>{
+  const code={ArrowUp:'KeyW',ArrowDown:'KeyS',ArrowLeft:'KeyA',ArrowRight:'KeyD'}[e.code];
+  if(code)keys.delete(code);
+ });
 // Camera orbit: drag the 3D world with mouse or a finger (not the UI buttons).
 let orbitPointer=null,orbitX=0,orbitY=0;
 renderer.domElement.addEventListener('pointerdown',e=>{if(!walking)return;orbitPointer=e.pointerId;orbitX=e.clientX;orbitY=e.clientY;try{renderer.domElement.setPointerCapture(e.pointerId)}catch(_){}});
@@ -595,7 +625,7 @@ document.addEventListener('mousemove',e=>{
  orbitYaw-=e.movementX*.0028;
  orbitPitch=Math.max(-.35,Math.min(.95,orbitPitch+e.movementY*.0028));
 });addEventListener('blur',()=>keys.clear());document.addEventListener('visibilitychange',()=>{if(document.hidden)keys.clear()});function reset(){
- keys.clear();speed=0;pass=0;next=0;open=false;cam=0;elapsed=0;rating=100;paid=false;busJob=null;walkCam=0;
+ keys.clear();stick.reset();pedestrianIntensity=0;pedestrianVelocity=0;speed=0;pass=0;next=0;open=false;cam=0;elapsed=0;rating=100;paid=false;busJob=null;walkCam=0;
  if(activeCar){activeCar.driven=false;activeCar.parked=true;activeCar=null}
  if(playerSpawnCar){
   const index=trafficCars.indexOf(playerSpawnCar);
@@ -633,6 +663,7 @@ function updateUI(){
  document.getElementById('money').textContent=money;
  document.getElementById('enter').textContent=walking?'🚗 Nastoupit':'🚶 Vystoupit';
  document.getElementById('camera').textContent=walking?(walkCam===1?'📷 3. osoba':'📷 1. osoba'):'📷 Kamera';
+  updateStickUI();
  document.querySelector('[data-key="KeyW"]').textContent=walking?'▲ Jít':'▲ Plyn';
  document.querySelector('[data-key="KeyS"]').textContent=walking?'▼ Zpět':'▼ Brzda / R';
 }
@@ -2986,7 +3017,7 @@ sun.intensity=2.24;
 scene.fog.near=Math.max(180,OSM_VIEW*.54);scene.fog.far=OSM_VIEW+145;
 let last=performance.now(),lastHud=0,lastMap=0,perfFrames=0,perfSince=performance.now();const perfEl=document.getElementById('perf');function animate(t){requestAnimationFrame(animate);const dt=Math.min(Math.max((t-last)/1000,0),.05);last=t;
 elapsed+=dt;rpAnimateTraffic(dt);animateBoarding(dt);rpUpdateRailTraffic(dt);
- glbHumans.update(dt,elapsed,(keys.has('KeyW')||keys.has('KeyS')||keys.has('KeyA')||keys.has('KeyD'))&&walking,walking?px:x,walking?pz:z);
+ glbHumans.update(dt,elapsed,walking?pedestrianIntensity:0,walking?px:x,walking?pz:z);
  if(Math.floor(elapsed)!==Math.floor(elapsed-dt))nearFieldTrees.update(walking?px:x,walking?pz:z);
  if(Math.floor(elapsed/2)!==Math.floor((elapsed-dt)/2))rpHumanStatus();
 if(osmActive)glbVehicles.update(trafficCars,walking?px:x,walking?pz:z,elapsed,activeCar);if(Math.floor(elapsed/3)!==Math.floor((elapsed-dt)/3))maybeStreamCityAreas();
@@ -2999,11 +3030,26 @@ if(rpRealisticMode){
 avatarContactShadow.visible=walking&&walkCam!==1;
 if(walking){
  avatar.visible=walkCam!==1;
- let strafe=(keys.has('KeyD')?1:0)-(keys.has('KeyA')?1:0);
- let forwardMove=(keys.has('KeyW')?1:0)-(keys.has('KeyS')?1:0);
- const len=Math.hypot(strafe,forwardMove);
- if(len>0){strafe/=len;forwardMove/=len;const dx=strafe*Math.cos(orbitYaw)-forwardMove*Math.sin(orbitYaw),dz=-strafe*Math.sin(orbitYaw)-forwardMove*Math.cos(orbitYaw);px+=dx*4.2*dt;pz+=dz*4.2*dt;walkYaw=Math.atan2(-dx,-dz)}
-  const swing=len>0?Math.sin(elapsed*8.1)*.47:0;playerLegs[0].rotation.x=swing;playerLegs[1].rotation.x=-swing;playerArms[0].rotation.x=-swing*.7;playerArms[1].rotation.x=swing*.7;
+ const analog=stick.get();
+ const kx=(keys.has('KeyD')?1:0)-(keys.has('KeyA')?1:0),ky=(keys.has('KeyW')?1:0)-(keys.has('KeyS')?1:0);
+ const keyboardMagnitude=Math.hypot(kx,ky);
+ const strafe=keyboardMagnitude?kx/keyboardMagnitude:analog.x,forwardMove=keyboardMagnitude?ky/keyboardMagnitude:analog.y;
+ const desiredVelocity=keyboardMagnitude?keyboardPedestrianSpeed(keys.has('ShiftLeft')||keys.has('ShiftRight')):pedestrianSpeed(analog.magnitude);
+ const acceleration=desiredVelocity>pedestrianVelocity?11:17;
+ pedestrianVelocity+=Math.max(-acceleration*dt,Math.min(acceleration*dt,desiredVelocity-pedestrianVelocity));
+ if(desiredVelocity===0&&pedestrianVelocity<.045)pedestrianVelocity=0;
+ pedestrianIntensity=Math.min(1,pedestrianVelocity/5.5);
+ const directionLength=Math.hypot(strafe,forwardMove);
+ if(directionLength>.01&&pedestrianVelocity>0){
+  const nx=strafe/directionLength,ny=forwardMove/directionLength;
+  const dx=nx*Math.cos(orbitYaw)-ny*Math.sin(orbitYaw),dz=-nx*Math.sin(orbitYaw)-ny*Math.cos(orbitYaw);
+  px+=dx*pedestrianVelocity*dt;pz+=dz*pedestrianVelocity*dt;walkYaw=Math.atan2(-dx,-dz);
+ }
+ const swing=pedestrianVelocity>.1?Math.sin(elapsed*(pedestrianVelocity>3.05?10.3:5.6))*Math.min(.56,pedestrianVelocity*.105):0;
+ playerLegs[0].rotation.x=swing;playerLegs[1].rotation.x=-swing;
+ playerArms[0].rotation.x=-swing*.7;playerArms[1].rotation.x=swing*.7;
+ window.__miloviceMovementDebug={stick:analog,speed:Math.round(pedestrianVelocity*100)/100,
+  running:pedestrianVelocity>3.05,active:pedestrianVelocity>.1,keyboard:!!keyboardMagnitude};
  avatar.position.set(px,terrainAt(px,pz),pz);avatar.rotation.y=walkYaw;
  avatarContactShadow.position.set(px,terrainAt(px,pz)+.045,pz);
 }
