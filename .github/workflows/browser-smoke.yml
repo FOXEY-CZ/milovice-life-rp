@@ -21,6 +21,11 @@ on:
       - scripts/browser_smoke.mjs
       - scripts/station-roof-geometry.js
       - scripts/station-roof-geometry.test.mjs
+      - scripts/city-roof-geometry.js
+      - scripts/city-roof-geometry.test.mjs
+      - scripts/building-audit-queue.test.mjs
+      - scripts/hero-architecture.js
+      - data/architecture/building-audit-queue.json
       - .github/workflows/browser-smoke.yml
   workflow_dispatch:
 permissions:
