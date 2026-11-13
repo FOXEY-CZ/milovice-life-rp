@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {dominantRoofAxis,planCityBuildingRoof,analyzeGableFootprint} from './city-roof-geometry.js';
 import {planDormerRoofSlopes} from './street-photo-block.js';
+import {planRoofPerimeterClosure} from './station-roof-seams.js';
 
 const p=(x,z)=>({x,z});
 function rectangle(w,d){
@@ -82,6 +83,30 @@ for(const width of [2.12,2.35,2.65]){
  assert(Math.abs(yAt(left,-width/2)-left.eaveY)<1e-7);
  assert(Math.abs(yAt(right,width/2)-right.eaveY)<1e-7);
 }
+// Shared perimeter infill uses the ORIGINAL footprint and affine roof planes.
+// Regression: it cannot span the hole in an L or float past a reversed edge.
+for(const input of [rect,reverse,diagonal,concave]){
+ for(const kind of ['gable','hip']){
+  const roof=check(input,kind);
+  const closure=planRoofPerimeterClosure({
+   outline:input.outline,roof,origin:roof.origin,wallTopY:7.188
+  });
+  assert(closure?.closedToRoof);
+  assert(closure.maxGapBefore>=.012-1e-5);
+  assert(closure.faces.length<Math.max(50,input.outline.length*20),
+   'Prevent dozens of individual draw triangles on normal houses');
+  for(const face of closure.faces)for(const v of face){
+   assert([v.x,v.y,v.z,v.u,v.v].every(Number.isFinite));
+   assert(v.y>=7.188-1e-5&&v.y<=9.3+1e-5);
+   assert(input.outline.some((a,i)=>{
+    const b=input.outline[(i+1)%input.outline.length];
+    const cross=Math.abs((b.x-a.x)*(v.z-a.z)-(b.z-a.z)*(v.x-a.x));
+    const dot=(v.x-a.x)*(v.x-b.x)+(v.z-a.z)*(v.z-b.z);
+    return cross<.0001&&dot<.0001;
+   }),'Infill must touch a real OSM facade edge');
+  }
+ }
+}
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert(html.includes("import {planCityBuildingRoof,analyzeGableFootprint} from './scripts/city-roof-geometry.js"));
 assert(html.includes('return miloviceRoofOfKind(pts,base,h,material,rise,\'hip\')'));
@@ -91,4 +116,11 @@ assert(html.includes("const fallbackFromGable=roofPreference==='gable'&&!pitched
 assert(!html.includes('vertices.push(a.x,base+h+.07,a.y,b.x,base+h+.07,b.y,cx,base+h+rise,cz)'));
 const blocks=readFileSync(new URL('./street-photo-block.js',import.meta.url),'utf8');
 assert(!blocks.includes('sign*w*.25,1.90,0,0,0,sign*.63'));
+// v5.31.1: no double roofs (the biggest source of dark/inverted roof faces).
+assert(html.includes('const pitchedSurface=pitched||hip;'));
+assert(html.includes('else if(!pitchedSurface){'));
+assert(html.includes('delete pitchedSurface.userData.roofRuntimePlan;'));
+assert(html.includes('queueCityWall(geo,wallSeam,centerX,0,centerZ)'));
+assert(!html.includes('if(pitched||hip)osmLayer.add(pitched||hip);'),
+ 'The old branch overlaid a flat roof on every pitched house');
 console.log('City roof regression: rectangle, reverse, rotated, concave, dormer slopes PASS');
