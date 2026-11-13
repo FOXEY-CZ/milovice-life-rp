@@ -50,13 +50,20 @@ try{
  if(!landmark||landmark.buildings!==3||landmark.dormers<3||
     landmark.rooflights<2||landmark.hedgeGroups<1||
     !(landmark.meshesSavedByBatching>0&&landmark.detailDrawMeshes<landmark.detailMeshes)||
-    !['202367194','202367254','118487980'].every(id=>landmark.landmarkIds.includes(id)))
+    !['202367194','202367254','118487980'].every(id=>landmark.landmarkIds.includes(id))||
+    landmark.actualArchedWindowMeshes!==4||landmark.rectangularFakeArchRemoved!==2)
    throw Error('5.14 photographed street block geometry missing: '+JSON.stringify(landmark));
+ const photoBuildingPass=await page.evaluate(()=>window.__milovicePhotoBuildingPass||null);
+ if(!photoBuildingPass||
+    photoBuildingPass.representativeHouse!=='Školská 220/1'||
+    !(photoBuildingPass.unverifiedRoofOutlinesSuppressed>40))
+  throw new Error('5.29 house roofs still carry floating generic outlines: '+JSON.stringify(photoBuildingPass));
+ console.log('5.29 roof outline suppression and photo-building audit:',photoBuildingPass);
  const official=await page.evaluate(()=>window.__miloviceArchitectureBridge);
  if(!official||official.publishedVerified!==3||
     !['202367194','202367254','118487980'].every(id=>official.appliedIds.includes(id)))
    throw Error('Three source-reviewed public building cards were not applied to OSM ways: '+JSON.stringify(official));
- console.log('5.14 photo-grounded block: original building detail meshes + permanent 3 source-checked public cards',
+ console.log('5.29 photo-grounded block: Školská 220/1 actual curved attic windows + documented buildings',
    JSON.stringify({landmark,published:official.publishedVerified}));
  const environment=await page.evaluate(()=>window.__miloviceStreetEnvironment||null);
  if(!environment||environment.sceneCount!==1||
@@ -103,7 +110,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('clean-station-eaves-5288'))
+ if(!(await page.locator('#build-label').innerText()).includes('skolska-photo-pass-5290'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
