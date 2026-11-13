@@ -1792,7 +1792,20 @@ function miloviceBusinessFront(pts,tags,base,height,cx,cz,osmId){
  const service=['restaurant','fast_food','clinic','school','pharmacy','cafe'].includes(tags.amenity);
  if(!name||(!tags.shop&&!service&&!['retail','supermarket','commercial'].includes(tags.building)))return;
  if(businessFrontsSeen.has(osmId)||businessFronts.length>=85)return;
- // Choose a real outward-facing building wall nearest a drivable mapped road.
+ // Nearby road segments only: avoid scanning every streamed city road for each shop wall.
+ // Keep all segments within the original 120 m search radius (plus the building extent).
+ const roadCandidates=[];
+ for(const r of osmDriveRoads){
+  if(r.width<4)continue;
+  const ps=r.points;
+  for(let j=1;j<ps.length;j++){
+   const p=ps[j-1],q=ps[j],vx=q.x-p.x,vz=q.y-p.y,den=vx*vx+vz*vz;
+   if(den<.05)continue;
+   if(Math.max(p.x,q.x)<cx-230||Math.min(p.x,q.x)>cx+230||
+      Math.max(p.y,q.y)<cz-230||Math.min(p.y,q.y)>cz+230)continue;
+   roadCandidates.push({p,vx,vz,den});
+  }
+ }
  let best=null;
  for(let i=0;i<pts.length;i++){
   const a=pts[i],b=pts[(i+1)%pts.length],dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);
@@ -1800,17 +1813,10 @@ function miloviceBusinessFront(pts,tags,base,height,cx,cz,osmId){
   const mx=(a.x+b.x)*.5,mz=(a.y+b.y)*.5;
   let nx=-dz/len,nz=dx/len;if(nx*(mx-cx)+nz*(mz-cz)<0){nx=-nx;nz=-nz}
   let roadDistance=120;
-  for(const r of osmDriveRoads){
-   if(r.width<4)continue;
-   const ps=r.points;
-   for(let j=1;j<ps.length;j++){
-    const p=ps[j-1],q=ps[j],vx=q.x-p.x,vz=q.y-p.y,den=vx*vx+vz*vz;
-    if(den<.05)continue;
-    const t=Math.max(0,Math.min(1,((mx-p.x)*vx+(mz-p.y)*vz)/den));
-    const rx=p.x+vx*t,rz=p.y+vz*t;
-    const d=Math.hypot(rx-mx,rz-mz);
-    if(d<roadDistance)roadDistance=d;
-   }
+  for(const {p,vx,vz,den} of roadCandidates){
+   const t=Math.max(0,Math.min(1,((mx-p.x)*vx+(mz-p.y)*vz)/den));
+   const d=Math.hypot(p.x+vx*t-mx,p.y+vz*t-mz);
+   if(d<roadDistance)roadDistance=d;
   }
   const score=roadDistance+4/Math.max(len,1);
   if(!best||score<best.score)best={mx,mz,len,dx,dz,nx,nz,score};
