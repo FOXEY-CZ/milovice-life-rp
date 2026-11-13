@@ -218,11 +218,32 @@ export function planBuildingRoofTopology(footprint,{passages=[],
  const partition=orthogonalPartition(poly,{tolerance,maxCells});
  const sourceValid=roofProfile?.approved===true&&
   /^https:\/\//.test(roofProfile.source||'');
- const tagged=sourceValid&&Array.isArray(roofProfile.parts)&&
-  roofProfile.parts.length===partition.volumes?.length&&
-  roofProfile.parts.every(p=>['gable','hip','flat','shed'].includes(p.kind));
+ const partsReady=sourceValid&&partition.ok&&
+  Array.isArray(roofProfile.parts)&&
+  roofProfile.parts.length===partition.volumes.length&&
+  roofProfile.parts.every((p,i)=>p?.id===partition.volumes[i].id&&
+   ['gable','hip','flat','shed'].includes(p.kind)&&
+   Number.isFinite(p.rise)&&
+   (p.kind==='flat'?p.rise===0:p.rise>=.1&&p.rise<=12));
+ // A roof union must NEVER be called finished if its junction type is
+ // missing. Distinct adjoining masses need a documented valley, ridge,
+ // continuous slope or raised-wall meeting; any other guess is prohibited.
+ const key=(a,b)=>[a,b].sort().join('|');
+ const documentedJoins=Array.isArray(roofProfile?.joins)?roofProfile.joins:[];
+ const junctionTypes=new Map();
+ let joinsValid=partsReady&&documentedJoins.length===partition.junctions.length;
+ if(joinsValid)for(const j of documentedJoins){
+  const k=key(j.from,j.to);
+  if(!['valley','ridge','continuous','step-wall'].includes(j.kind)||
+   junctionTypes.has(k)){joinsValid=false;break}
+  junctionTypes.set(k,j.kind);
+ }
+ if(joinsValid)for(const j of partition.junctions)
+  if(!junctionTypes.has(key(j.from,j.to)))joinsValid=false;
+ const confirmed=partsReady&&joinsValid;
  const volumes=partition.ok?partition.volumes.map((v,i)=>({
-  ...v,proposedRoofKind:tagged?roofProfile.parts[i].kind:null
+  ...v,proposedRoofKind:confirmed?roofProfile.parts[i].kind:null,
+  proposedRise:confirmed?roofProfile.parts[i].rise:null
  })):null;
  return {ok:true,footprintVertices:poly.length,
   originalArea:Math.abs(signedArea(poly)),concaveCorners:edges.filter(e=>e.concaveAdjacent).length,
@@ -230,12 +251,19 @@ export function planBuildingRoofTopology(footprint,{passages=[],
   reason:partition.ok?null:partition.reason,
   axis:partition.ok?partition.axis:null,
   volumes,volumeCount:volumes?.length||0,
-  junctions:partition.ok?partition.junctions:[],
+  junctions:partition.ok?partition.junctions.map(j=>({
+   ...j,approvedConnection:confirmed?junctionTypes.get(key(j.from,j.to)):null
+  })):[],
+  missingJunctionPlans:partition.ok&&partition.junctions.length&&!confirmed?
+   partition.junctions.length:0,
   relativeAreaError:partition.ok?
    Math.abs(partition.tiledArea-partition.originalArea)/partition.originalArea:null,
   maxSnapError:partition.maxSnapError??null,
   documentedPassages:edges.filter(e=>e.policy==='documented-passage').length,
-  geometryOnly:!tagged,
-  topologyApproved:!!tagged,
-  roofAppearanceSource:tagged?roofProfile.source:null};
+  geometryOnly:!confirmed,
+  topologyApproved:!!confirmed,
+  // Source-approved assembly schedule, not an assertion that geometry is
+  // already rendered or visually accurate to a 360-degree photo survey.
+  needsMeshAssembly:!!confirmed,
+  roofAppearanceSource:confirmed?roofProfile.source:null};
 }
