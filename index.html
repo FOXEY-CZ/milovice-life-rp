@@ -2639,7 +2639,18 @@ function rpAppendOSMElements(elements){
   seenCityOSMWays.add(el.id);
   if(el.tags?.highway)roadWays.push(el);
   else if(el.tags?.railway)railWays.push(el);
-  else if(el.tags?.building)buildingWays.push(el);
+  else if(el.tags?.building){
+   if(el.tags.building==='roof'){
+    // OSM building=roof is a COVER over public space, not a solid building.
+    // Especially way 1550920095 (layer=1) overlaps the photographed
+    // station canopy and was secretly blocking the train-platform doorway.
+    // The station's actual green steel roof is already rendered by the
+    // photo-sourced model, so NEVER extrude this OSM canopy as a solid wall.
+    window.__miloviceStationRoofAudit||={roofOnlyWaysExcluded:0,osmRoofIds:[]};
+    window.__miloviceStationRoofAudit.roofOnlyWaysExcluded++;
+    window.__miloviceStationRoofAudit.osmRoofIds.push(el.id);
+   }else buildingWays.push(el);
+  }
   else if(el.tags?.landuse||el.tags?.leisure)landscapeWays.push(el);
  }
  // Only mapped outdoor parking polygons qualify; mapped multi-storey garages
