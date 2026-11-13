@@ -39,6 +39,7 @@ try{
  const landmark=await page.evaluate(()=>window.__milovicePhotoStreetPass||null);
  if(!landmark||landmark.buildings!==3||landmark.dormers<3||
     landmark.rooflights<2||landmark.hedgeGroups<1||
+    !(landmark.meshesSavedByBatching>0&&landmark.detailDrawMeshes<landmark.detailMeshes)||
     !['202367194','202367254','118487980'].every(id=>landmark.landmarkIds.includes(id)))
    throw Error('5.14 photographed street block geometry missing: '+JSON.stringify(landmark));
  const official=await page.evaluate(()=>window.__miloviceArchitectureBridge);
@@ -73,7 +74,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('street-block-5140'))
+ if(!(await page.locator('#build-label').innerText()).includes('performance-5150'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -303,6 +304,11 @@ try{
  await mobile.goto('http://127.0.0.1:8080/',{waitUntil:'domcontentloaded',timeout:30000});
  await mobile.waitForFunction(()=>window.__miloviceStarted===true,{timeout:45000});
  await mobile.waitForFunction(()=>!document.getElementById('rp-spawn').hidden,{timeout:45000});
+ const budget=await mobile.evaluate(()=>window.__milovicePerformance);
+ if(!budget?.mobile||budget.drawDistance>440||budget.detailDistance>165||
+    budget.renderDpr>1.25||budget.adaptive!==true)
+  throw new Error('5.15 default mobile FPS budget is missing or using desktop settings: '+JSON.stringify(budget));
+ console.log('5.15 mobile adaptive GPU budget:',JSON.stringify(budget));
  await mobile.locator('[data-spawn="walking"]').click();
  await mobile.locator('#rp-joystick').waitFor({state:'visible',timeout:12000});
  if(await mobile.locator('#controls button[data-key="KeyW"]').isVisible())

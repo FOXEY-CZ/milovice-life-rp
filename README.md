@@ -1,3 +1,18 @@
+## Milovice RP 5.15 — mobilní výkon / optimalizace 27 FPS (13. 11. 2026)
+
+Po hlášení **27 FPS na telefonu** byla priorita přesunuta od přidávání výzdoby k obnově plynulosti. Oprava je zaměřena na reálné náklady GPU, nikoli na prázdné tvrzení o 60 FPS. Číslo z konkrétního mobilního zařízení nelze garantovat bez měření na tomto zařízení.
+
+- **Mobilní detekce:** samostatná kontrola dotykového GPU; předchozí pravidlo `(pointer:coarse) and (max-width:850px)` nezahrnovalo některé telefony otočené na šířku (např. 853 CSS px). Dotykový joystick se kvůli kompatibilitě nemění.
+- **Automatická kvalita:** v základním vyváženém režimu měří FPS po 1,2 s, při 2 po sobě jdoucích hodnotách pod 36 FPS postupně sníží vykreslované DPR až na 0,72, dohlednost detailů a aktivní oblast města. Po 6 stabilních vzorcích nad 52 FPS zase kvalitu po krocích obnovuje. Nenastává zběsilé přepínání ani zásah do rychlosti postavy či fyziky.
+- **Vzdálené objekty:** mapové budovy dál existují v plné geometrii, ale na telefonu se město vykresluje z přibližně 300–440 m místo celých 620–1000 m, jakmile adaptivní profil vyhodnotí pomalý běh. Vzdálená okna, balkony, střešní doplňky a vegetace mizí dříve než budovy, které jsou na očích. Mlha skrývá přechod. Desktop zachovává dosavadní dohlednost.
+- **První fotografický blok:** originální štíty, rooflighty a jiné díly jsou nyní sloučeny do společné geometrie podle materiálu, aby 48 samostatných meshů znamenalo výrazně méně samostatných GPU draw calls. Photo-detail skupiny nově podléhají stejnému chunk cullingu jako okolní budovy. Reset oblasti odebere vlastní skupiny a zamezí kumulaci kopií při opětovném načítání.
+- **Manuální „Vysoká kvalita“:** vědomá volba hráče stále dovolí dražší stíny a větší dohlednost. Automatické snižování je určené jen pro vyváženou kvalitu.
+- **Ověření:** Node test profilového hysteretického přepínání, mobilní Chromium smoke s WebGL a kontrolou výchozího dohledového budgetu, základní jízdní testy a zachování dříve přidané geometrie i ověřených karet.
+
+**Důležité:** výsledek na opravdovém telefonu se musí změřit. Pokud FPS zůstanou u 27, diagnostika v levém rohu ukazuje FPS, draw calls, počet trojúhelníků a aktuální render rozlišení. Tento údaj pomůže rozhodnout, zda další brzdou je GPU, CPU, provoz GLB modelů nebo doprava.
+
+---
+
 ## Milovice RP 5.14 – reálná přestavba první skupiny budov (13. 11. 2026)
 
 Konečně nejde o nové menu: v okolí **Mírová × 5. května × Školská** jsou přímo ve 3D městě přestavěné tři existující budovy se specifickými **foto-doloženými** vnějšími prvky (Školská 220/1, Modrá hvězda a Mírová 243/36). Do společné databáze přibyly **3 zdrojově ověřené karty**. Vedle starších částí dostaly nové modelované štíty, střešní okna, římsy a nízké živé ploty. Podrobnosti, zdrojové fotografie a meze přesnosti: [První uliční blok](docs/street-pass-01.md).

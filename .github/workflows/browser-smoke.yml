@@ -13,6 +13,8 @@ on:
       - scripts/street-architecture.js
       - scripts/street-photo-block.js
       - scripts/street-photo-block.test.mjs
+      - scripts/performance-governor.js
+      - scripts/performance-governor.test.mjs
       - data/architecture/verified-buildings.json
       - data/milovice-osm.json
       - data/milovice-terrain.json

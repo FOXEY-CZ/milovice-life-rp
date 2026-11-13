@@ -2,6 +2,7 @@
 // Each entry has an OSM way ID and a dated, attributed CC BY 4.0 photograph.
 // Exterior dimensions that cannot be measured from the photos remain approximate.
 // Models are ORIGINAL geometry: source photograph pixels are never copied to game.
+import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 export const PHOTO_STREET_BLOCK=[
  {id:'202367194',name:'Mírová 134/11 · Modrá hvězda',street:'Mírová / 5. května',
   source:'https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_11,_hotel_Modr%C3%A1_hv%C4%9Bzda.jpg',
@@ -53,7 +54,44 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint}={}){
  const hedge=new THREE.MeshStandardMaterial({color:0x385732,roughness:1});
  const grout=new THREE.MeshStandardMaterial({color:0xc8b99d,roughness:.94});
  let buildings=0,dormers=0,rooflights=0,hedgeGroups=0,detailMeshes=0;
- const ids=new Set();
+ let detailDrawMeshes=0,meshesSavedByBatching=0;
+ const ids=new Set(),ownedGroups=new Set();
+ // Each photo-referenced facade is statically batched by material. A dozen
+ // window bars no longer turn into a dozen GPU draw calls at 27 FPS.
+ function batchStaticGroup(root){
+  root.updateMatrixWorld(true);
+  const inv=root.matrixWorld.clone().invert(),groups=new Map();
+  root.traverse(mesh=>{
+   if(!mesh.isMesh||mesh.isInstancedMesh||!mesh.geometry||Array.isArray(mesh.material))return;
+   if(!groups.has(mesh.material))groups.set(mesh.material,[]);
+   groups.get(mesh.material).push(mesh);
+  });
+  for(const [material,meshes] of groups){
+   if(meshes.length<2)continue;
+   const geos=meshes.map(mesh=>{
+    const clone=mesh.geometry.clone();
+    const flat=clone.index?clone.toNonIndexed():clone;
+    if(flat!==clone)clone.dispose();
+    const relative=inv.clone().multiply(mesh.matrixWorld);
+    flat.applyMatrix4(relative);
+    return flat;
+   });
+   const merged=mergeGeometries(geos,false);
+   geos.forEach(g=>g.dispose());
+   if(!merged)continue; // leave the original meshes untouched
+   const staticMesh=new THREE.Mesh(merged,material);
+   staticMesh.receiveShadow=true;
+   for(const mesh of meshes){mesh.parent.remove(mesh);mesh.geometry.dispose();}
+   root.add(staticMesh);
+   meshesSavedByBatching+=meshes.length-1;
+  }
+ }
+ function optimizeOwnedGroups(start){
+  for(const group of [...ownedGroups].slice(start))batchStaticGroup(group);
+  detailDrawMeshes=0;
+  for(const group of ownedGroups)
+   group.traverse(o=>{if(o.isMesh||o.isInstancedMesh)detailDrawMeshes++});
+ }
  function addMesh(parent,geometry,material,x,y,z,rx=0,ry=0,rz=0){
   const mesh=new THREE.Mesh(geometry,material);
   mesh.position.set(x,y,z);mesh.rotation.set(rx,ry,rz);
@@ -64,7 +102,10 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint}={}){
  }
  function exteriorGroup(edge,base){
   const g=new THREE.Group();g.position.set(edge.mx,base,edge.mz);g.rotation.y=edge.yaw;
-  layer.add(g);return g;
+  // Parent group is now a 160m chunk-managed detail object. No new geometry
+  // is created at a distance; the same original model reappears up close.
+  g.userData.lodX=edge.mx;g.userData.lodZ=edge.mz;g.userData.lodDetail=true;
+  layer.add(g);ownedGroups.add(g);return g;
  }
  function addGableDormer(edge,base,h,{x=0,w=2.35,depth=1.2,light=true,arched=false,
    wall=creamWall,roof=roofMaterial,trim=paleTrim}={}){
@@ -130,6 +171,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint}={}){
   const key=String(id);
   if(!targetIds.has(key)||ids.has(key)||!points?.length||!Number.isFinite(base))return false;
   const pts=points.map(p=>({x:p.x,z:p.y??p.z}));
+  const batchStart=ownedGroups.size;
   const camera=key==='118487980'?pointFromGps(50.2290672,14.8822619):
    pointFromGps(50.2280572,14.8840981);
   const edges=photoFacingEdges(pts,camera,{minLength:5,limit:3});
@@ -165,13 +207,22 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint}={}){
     part(g,edge.len+.35,.08,.16,paleTrim,0,3.39,.30);
    }
   }
+  optimizeOwnedGroups(batchStart);
   ids.add(key);buildings++;publish();return true;
  }
  function getStatus(){return {buildings,dormers,rooflights,hedgeGroups,detailMeshes,
+  detailDrawMeshes,meshesSavedByBatching,
   landmarkIds:[...ids],photoReferenceCount:PHOTO_STREET_BLOCK.length,
   scope:'Mírová–5. května–Školská; photographed geometry approximation'};}
  function publish(){if(typeof window!=='undefined')window.__milovicePhotoStreetPass=getStatus()}
- function reset(){buildings=dormers=rooflights=hedgeGroups=detailMeshes=0;ids.clear();publish()}
+ function reset(){
+  for(const root of ownedGroups){
+   layer.remove(root);
+   root.traverse(o=>{if(o.isMesh||o.isInstancedMesh)o.geometry?.dispose()});
+  }
+  ownedGroups.clear();buildings=dormers=rooflights=hedgeGroups=detailMeshes=0;
+  detailDrawMeshes=meshesSavedByBatching=0;ids.clear();publish()
+ }
  publish();
  return {add,reset,getStatus};
 }
