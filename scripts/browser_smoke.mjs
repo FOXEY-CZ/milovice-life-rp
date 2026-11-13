@@ -24,13 +24,20 @@ try{
     !gfx.surfaceMaterials||Object.values(gfx.surfaceMaterials).some(v=>v!==true))
   throw new Error('Graphics 2.0 materials did not initialize correctly: '+JSON.stringify(gfx));
  console.log('5.2.0 shared city surfaces:',JSON.stringify(gfx.surfaceMaterials));
- if(!(await page.locator('#build-label').innerText()).includes('sidewalk-521'))
-  throw new Error('5.2.1 build identifier missing');
+ if(!(await page.locator('#build-label').innerText()).includes('humans-530'))
+  throw new Error('5.3.0 build identifier missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
     !(sidewalkCheck.separatedSidewalks>15))
   throw new Error('5.2.1 sidewalk bands must flank roadway, never cover it: '+JSON.stringify(sidewalkCheck));
  console.log('5.2.1 sidewalk road-edge diagnostics:',JSON.stringify(sidewalkCheck));
+ // The imported character library starts asynchronously and may fall back safely
+ // when a third-party CDN fails; verify the status and UI without blocking game startup.
+ const humans=await page.evaluate(()=>window.__miloviceHumans||null);
+ if(!humans||!['auto','on','off'].includes(humans.mode)||
+    !(await page.locator('#rp-human-select').count()))
+  throw new Error('5.3.0 rigged GLB character subsystem missing: '+JSON.stringify(humans));
+ console.log('5.3.0 Quaternius character assets:',JSON.stringify(humans));
  const landmarkChecks=await page.evaluate(()=>window.__miloviceLandmarkDebug||{});
  console.log('Landmark geometry:',JSON.stringify(landmarkChecks));
  if(landmarkChecks.stationPassageFaces!==2)throw new Error('Milovice station does not have two opposing real open passage portals: '+JSON.stringify(landmarkChecks));
