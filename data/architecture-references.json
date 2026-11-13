@@ -101,8 +101,8 @@
       "address": "Nádražní 469/13",
       "source": "https://zeleznicar.cd.cz/assets/zeleznicar/zeleznicar_08_2022.pdf",
       "additionalSource": "https://www.nadrazky.eu/hospoda.php?hospodaID=100273",
-      "architecture": "Small cafe linked to station waiting hall, seasonal outdoor serving window and courtyard seating",
-      "precision": "Business & building geolocation confirmed, cafe exact wall position approximated"
+      "architecture": "Cafe within station waiting-room area; historical front garden and serving window, but neither exact exterior opening nor current 2026 layout is surveyed. Do not make a side annex or side cafe frontage.",
+      "precision": "Station building footprint verified by OSM; cafe is an indoor amenity only. No standalone cafe geometry or side-wall placement verified."
     },
     {
       "osmWayId": 53865956,
