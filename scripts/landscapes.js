@@ -46,7 +46,7 @@ function inArea(x,z,poly){
  }
  return hit;
 }
-export function forestInstancePlacements(zones,trunks,crowns,crowns2,rnd){
+export function forestInstancePlacements(zones,trunks,crowns,crowns2,rnd,allow=()=>true){
  let max=620;
  for(const zone of zones){
   if(max<=0)break;
@@ -60,7 +60,7 @@ export function forestInstancePlacements(zones,trunks,crowns,crowns2,rnd){
   for(let k=0;k<target*6&&planted<target;k++){
    const xx=bounds.minX+rnd()*(bounds.maxX-bounds.minX);
    const zz=bounds.minZ+rnd()*(bounds.maxZ-bounds.minZ);
-   if(!inArea(xx,zz,zone.points))continue;
+   if(!inArea(xx,zz,zone.points)||!allow(xx,zz))continue;
    const height=3.2+rnd()*2.6,spread=2+rnd()*1.4;
    trunks.push([xx,height*.43,zz,.29,height*.86,.29,0]);
    crowns.push([xx,height*.96,zz,spread,spread*1.12,spread,rnd()*6]);
