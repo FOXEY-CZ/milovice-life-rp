@@ -86,3 +86,16 @@ REAL platform, but no longer use it to justify the wrong-side standalone roof.
 Quality gates: unit asserts no constructor call is reachable in index.html;
 Chromium smoke checks zero canopy pieces, posts, braces, and the false-side
 paving removed. This is an evidence-based DELETE, not a relocated guess.
+
+## 5.28.0 — Station elevated tower photo pass (still an approximation)
+
+**Evidence examined:** A station building photograph hosted by [Stellwerke.info](https://stellwerke.info/stw/stw.php?id=22402) shows the compact raised bay with a single upper-floor sash window on the railway side, white-mullioned arched windows below, a matte red-tiled hipped roof and a modest blue *Milovice* name plaque. This is different from the former game silhouette: an approx. 17–19m-wide two-storey flat-ended central extension with many upper windows. Further 2024 Commons views [Nádražní + bike tower](https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_autobusov%C3%A1_zast%C3%A1vka_a_cyklov%C4%9B%C5%BE.jpg) are photo reference, not geodetic elevation surveys.
+
+**Changed geometry:**
+- Raised station central mass is now ~9–11m wide (2×4.15–5.5m half-span), instead of the old ~17–19m. This is photographic proportion estimation only, not centimetre accuracy.
+- The central red roof is a compact four-faced **hip**, not a long gable; long station wings keep their existing roof and the 3.7m mapped public passage stays unobstructed.
+- First-floor sash window details are emitted **only on the original OSM exterior perimeter**, one per each long facade. The previous program accidentally decorated cut boundaries generated internally by clipping the building into three roof parts — invisible fake windows on non-existent walls. These are now zero.
+- Arched ground-floor windows gain instanced white mullion and horizontal sash details, replacing the unbroken blue-glass appearance. The railway-facing *Milovice* plaque is scaled down from a 5.3m billboard to a modest 2.65m face; position remains approximate.
+- All these details reuse existing instanced batches and texture materials; no photo bytes or external assets are copied.
+
+**Unknown:** exact central half-span and elevation, street facade window count, plaque location, roof geometry and any 2026 renovation. The photo does not establish precision. The railway photo and 2024 views have separate dates; don't claim a complete 360° survey.
