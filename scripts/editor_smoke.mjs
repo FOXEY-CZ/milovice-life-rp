@@ -25,6 +25,43 @@ try{
  }));
  assert(faces.count>=3&&faces.selected,'Facade inspector must offer independent wall views');
  const firstFace=faces.selected;
+ // Mapillary API mock: no developer account or real provider imagery required
+ // for a reproducible test of the official API metadata flow.
+ await page.locator('#imagery-scan-house').click();
+ assert((await page.locator('#imagery-status').innerText()).includes('Mapillary CLIENT token'),
+  'No-token fallback should be explicit');
+ const facePlan=await page.evaluate(()=>window.__miloviceEditor.facePlan);
+ assert(facePlan?.middle,'The selected facade has no geolocation');
+ const a=facePlan.cardinal*Math.PI/180,lat=facePlan.middle[0],lon=facePlan.middle[1];
+ const syntheticLat=lat+Math.cos(a)*20/111320;
+ const syntheticLon=lon+Math.sin(a)*20/(111320*Math.cos(lat*Math.PI/180));
+ const syntheticHeading=(facePlan.cardinal+180)%360;
+ let fakeCalls=0;
+ await page.route('https://graph.mapillary.com/images?**',async route=>{
+  fakeCalls++;
+  const request=route.request();
+  assert.equal(request.headers()['authorization'],'OAuth TEST_CLIENT_PUBLIC_TOKEN');
+  assert(!request.url().includes('TEST_CLIENT_PUBLIC_TOKEN'),'Never put API token in URL');
+  await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({
+   data:[{id:'991123456788',computed_geometry:{coordinates:[syntheticLon,syntheticLat]},
+    computed_compass_angle:syntheticHeading,camera_type:'perspective',
+    creator:{username:'Test Photographer'},captured_at:1750000000000}],
+   paging:{}
+  })});
+ });
+ await page.locator('#mapillary-client-token').fill('TEST_CLIENT_PUBLIC_TOKEN');
+ await page.locator('#imagery-scan-house').click();
+ await page.waitForFunction(()=>window.__miloviceEditor.imageryCount>0,null,{timeout:20000});
+ assert(fakeCalls>=1,'Official Graph API was not requested');
+ assert((await page.locator('#imagery-summary').innerText()).includes('1/1 domů'),
+  'Candidate source coverage not calculated');
+ assert.equal(await page.locator('#face-status').inputValue(),'unreviewed',
+  'A matching GPS+compass candidate must NEVER automatically mark a facade as seen');
+ await page.locator('#imagery-gallery button').first().click();
+ assert((await page.locator('#face-source').inputValue()).includes('pKey=991123456788'),
+  'Candidate image URL cannot be assigned to the building record');
+ assert.equal(await page.locator('#face-status').inputValue(),'unreviewed');
+ assert.equal(await page.evaluate(()=>window.__miloviceImageryDiscovery.noStoredToken),true);
  await page.locator('#face-status').selectOption('seen');
  await page.locator('#face-rows').fill('2,3');
  await page.locator('#face-window-width').fill('1.15');

@@ -5,6 +5,9 @@ on:
       - index.html
       - editor.html
       - scripts/editor_smoke.mjs
+      - scripts/mapillary-discovery.js
+      - scripts/mapillary-discovery-ui.js
+      - scripts/mapillary-discovery.test.mjs
       - data/milovice-osm.json
       - data/milovice-terrain.json
       - scripts/browser_smoke.mjs

@@ -17,6 +17,8 @@ jobs:
           node-version: '22'
       - name: Validate HTML and JavaScript
         run: node scripts/validate.cjs
+      - name: Validate official Mapillary metadata discovery and per-street coverage
+        run: node scripts/mapillary-discovery.test.mjs
       - name: Validate georeferenced facade viewpoints and continuous street walk
         run: node scripts/facade-review.test.mjs
       - name: Test local owned photo rectification and candidate detections

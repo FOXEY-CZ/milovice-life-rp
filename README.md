@@ -1,3 +1,16 @@
+## Milovice RP 5.12 – Automatická obhlídka ulic a fasád (13. listopadu 2026)
+
+Stavební editor nyní podporuje prohlídku **celé vybrané ulice**, nikoliv jen jednoho ručně vybraného domu. V sekci „Automatická obhlídka ulice“ lze s použitím veřejného **Mapillary klientského tokenu** spustit kontrolu snímků pro aktuální dům nebo všechny domy na jeho ulici. Pro každý dům se používají existující mapované OSM půdorysy a směr jeho jednotlivých fasád. Procházení města je implementováno přes oficiální `https://graph.mapillary.com/images` API s malými ohraničujícími oblastmi (maximálně 24 dotazů na uličku na jedno ruční spuštění).
+
+- Mapillary poskytuje GPS, směr pohledu, typ kamery, datum, autora a případnou miniaturu snímku. Náš výběr seřadí kandidáty podle vzdálenosti a vhodného směru ke konkrétní fasádě, přičemž u 360° snímků respektuje možnost otočení.
+- Editor zobrazí možná pokrytí domů a fasád a výběr dostupných náhledů. **Shoda metadat NENÍ vizuální ověření domu!** Před použitím je nutné konkrétní záběr prohlédnout. U obrázků je odkaz na původní snímek, jméno autora a odkaz na licenci Mapillary CC BY-SA 4.0. Cizí pixely se neukládají do hry ani do lokálních karet.
+- Projít ulici: domy v jedné ulici (OSM `addr:street` nebo heuristicky nejbližší pojmenovaná cesta) se dotazují v malých geografických buňkách. Sken vypíše budovy, které nemají ani orientačně vhodný snímek, a nabídne jejich otevření pro jiný zdroj. Dotazy se dají zrušit. Při překročení bezpečného maxima dlaždic editor nespustí neúplnou rozsáhlou operaci.
+- **API token se neukládá** do JSON, GitHubu, dat hráčských účtů ani localStorage; v běžné aplikaci se používá výhradně v hlavičce `Authorization: OAuth` vůči Mapillary. Používej klientský token určený pro veřejné použití v prohlížeči, nikoliv přihlašovací či soukromý access token. Bez tokenu zůstávají externí odkazy Mapy.com / Mapillary funkční.
+- Ani tato verze hromadně netahá snímky poskytovatelů do vlastního foto-3D nástroje. Import fotografie pro přesné měření vyžaduje ověřit příslušné oprávnění. Geometrie domů se mění **až podle explicitně ověřených anotací** jako ve verzi 5.11.
+- Testy: Node ověřuje směry kamer, velikost API výřezů, práci s tokenem v hlavičce, filtrování pohledů a souhrn pokrytí. Chromium simuluje oficiální API bez potřeby skutečného tokenu, prověří nalezení kandidáta, zkopírování odkazu a že kandidát automaticky nepovýší stav fasády na „Prohlédnuto“.
+
+---
+
 ## Milovice RP 5.11.0 – Foto-zaměřování fasád (13. listopadu 2026)
 
 **Nový praktický fotografický pracovní postup** ve Street Editoru. Uživatel může importovat *vlastní nebo oprávněně použitelnou* fotografii celé fasády (JPG, PNG nebo WebP, max. 12 MB). Obrázek se zpracovává **jen lokálně** a NEPOSÍLÁ se do cloudu, NEUKLÁDÁ do JSON ani do herních souborů. V exportované kartě zůstávají pouze souřadnice anotací, druh (okno/dveře), SHA-256 otisk zdrojového souboru a potvrzení práv.

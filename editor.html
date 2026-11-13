@@ -41,6 +41,16 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
 #photo-rights{width:auto;margin-right:6px}
 #photo-status{min-height:32px;font-size:12px;color:#d4eaf5}
 [hidden]{display:none!important}
+#imagery-gallery{display:flex;flex-direction:column;gap:9px;padding:6px 0}
+.imagery-candidate{display:flex;align-items:center;gap:10px;padding:8px;border:1px solid #456178;border-radius:10px;background:#1b3446}
+.imagery-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:5px 0}
+.imagery-actions button{font-size:12px;padding:5px 8px}
+.imagery-credit{font-size:11px;color:var(--muted);overflow-wrap:anywhere}
+#imagery-missing{display:flex;flex-wrap:wrap;gap:5px;padding-top:6px}
+#imagery-missing button{font-size:11px;padding:5px 8px}
+#imagery-panel{border:1px solid #5c7b8e;background:#102739;border-radius:12px;padding:10px;margin:12px 0}
+#imagery-panel .row{margin:7px 0;flex-wrap:wrap}#imagery-panel .row button{flex:1}
+#imagery-summary{font-size:12px;font-weight:650;color:#a5e4d6}#imagery-status{font-size:12px;min-height:30px}
 </style></head><body>
 <header><div><h1>🏗️ Milovice RP · Stavební editor</h1><div class="muted">Ulice → dům → panorama → ověřené parametry → 3D model</div></div>
 <a href="./index.html">🎮 Do hry</a></header>
@@ -69,6 +79,22 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
   <p class="muted">Pohledy jsou plánované podle skutečných půdorysů a mapovaných ulic, ne odhadnuté ze snímků.</p>
   <h2>🧭 Pohledy na fasády</h2><p id="face-progress" class="muted"></p><div id="facade-switches"></div>
   <p id="face-info" class="muted"></p>
+  <section id="imagery-panel">
+   <h2>🔎 Automatická obhlídka ulice</h2>
+   <p class="muted">Prohledávej Mapillary po jednotlivých domech nebo celou vybranou ulici. Systém porovnává GPS pozice a natočení kamer s fasádami. <strong>Nalezený snímek je pouze kandidát, nikoli ověřená fotografie domu.</strong></p>
+   <label for="mapillary-client-token">Mapillary klientský API token (ne přihlašovací heslo)</label>
+   <input id="mapillary-client-token" type="password" autocomplete="off" spellcheck="false" placeholder="Client token z Mapillary developer dashboard">
+   <p class="muted">Token se používá pouze během této relace a posílá se oficiálnímu API v autorizační hlavičce. Neukládá se do účtu, exportu ani na GitHub. <a href="https://www.mapillary.com/dashboard/developers" target="_blank" rel="noopener">Získat klientský token Mapillary</a></p>
+   <div class="row">
+    <button id="imagery-scan-house" type="button">📷 Najít snímky domu</button>
+    <button id="imagery-scan-street" type="button" class="primary">🏘️ Projít celou ulici</button>
+    <button id="imagery-cancel" type="button">✕</button>
+   </div>
+   <p id="imagery-status" role="status" class="muted">Nejprve vyber dům. Bez API tokenu můžeš dál používat odkazy Mapy.com a Mapillary.</p>
+   <p id="imagery-summary"></p><div id="imagery-missing"></div><div id="imagery-gallery"></div>
+   <p class="muted">Snímky Mapillary: © příslušní autoři, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. Fotografie prohlížíme s uvedením autora; automaticky nestahujeme ani nepřidáváme jejich pixely do hry. V editoru lze uložit jen odkaz na zdroj.</p>
+  </section>
+
   <label for="face-status">Stav pohledu</label><select id="face-status">
    <option value="unreviewed">⬜ Neprohlédnuto</option><option value="seen">📷 Prohlédnuto</option><option value="unavailable">🚫 Nedostupné</option></select>
   <label for="face-source">Odkaz na fotografii této strany</label><input type="url" id="face-source" placeholder="https://...">
@@ -166,6 +192,7 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
 import {planFacadeViews,nextStreetHouse} from './scripts/facade-review.js?v=590';
 import {normalizeFacadeLayout} from './scripts/facade-model.js?v=5110';
 import {initPhotoSurvey} from './scripts/photo-survey-ui.js?v=5110';
+import {initImageryDiscovery} from './scripts/mapillary-discovery-ui.js?v=5120';
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
@@ -212,6 +239,7 @@ function streetNames(){
  return [...count].sort((a,b)=>collator.compare(a[0],b[0]));
 }
 function focusStreet(street){
+ imageryDiscovery.clear();
  currentStreet=street;chosen=null;facadeViews=[];currentFace=null;stopPanorama();clearFaceMarker();
  $('inspector').hidden=true;$('empty').hidden=false;
  renderLists();renderMap();
@@ -329,6 +357,7 @@ function chooseFace(id){
   $(field).value=layout[key]??'';
  }
  photoSurvey.showSaved(note);
+ imageryDiscovery.refresh();
  const accepted=normalizeFacadeLayout(note);
  $('face-model-state').textContent=accepted?
   '✅ Tato fasáda má ověřený zdroj a 3D parametry. Změna se promítne po ověření celé karty a novém spuštění hry.':
@@ -407,6 +436,20 @@ const photoSurvey=initPhotoSurvey({
  }
 });
 window.__milovicePhotoSurvey=photoSurvey;
+// Mapillary metadata NEVER automatically verifies building geometry.
+const imageryDiscovery=initImageryDiscovery({
+ getBuildings:()=>buildings,getRoads:()=>roads,
+ getChosen:()=>chosen,getFace:()=>currentFace,getFacades:()=>facadeViews,
+ getStreet:()=>currentStreet,planFacadeViews,selectBuilding,
+ onUseReference:ref=>{
+  if(!chosen||!currentFace)return;
+  $('face-source').value=ref.url;
+  saveFace(); // saves a candidate URL; the selected facade still needs review
+  $('face-model-state').textContent='📷 Kandidátní odkaz uložen (autor '+ref.creator+
+   '). Otevři snímek, ověř skutečný dům a až potom potvrď stav fasády.';
+ }
+});
+window.__miloviceImageryDiscovery=imageryDiscovery;
 
 function nextBuilding(){
  if(currentFace)saveFace();
@@ -414,6 +457,7 @@ function nextBuilding(){
 }
 async function loadDistrict(id){
  const region=regions.find(r=>r.id===id);if(!region)return;
+ imageryDiscovery.clear();
  currentStreet='*';chosen=null;facadeViews=[];currentFace=null;stopPanorama();clearFaceMarker();$('inspector').hidden=true;$('empty').hidden=false;
  $('buildings').textContent='Načítám budovy…';
  const path=id==='old'?'./data/milovice-osm.json':'./data/regions/'+region.file;
@@ -495,7 +539,9 @@ fetch('./data/regions/index.json',{cache:'no-store'}).then(r=>r.json()).then(dat
 window.__miloviceEditor={get loaded(){return buildings.length>0},get buildings(){return buildings.length},
  get streets(){return streetNames().length},get currentDistrict(){return $('district').value},
  get chosenId(){return chosen?.id||null},get cards(){return Object.keys(records).length},
+ get imageryCount(){return imageryDiscovery.count},get imageryCoverage(){return imageryDiscovery.coveredHouses},
  get facades(){return facadeViews.length},get currentFace(){return currentFace?.id||null},
+ get facePlan(){return currentFace?{id:currentFace.id,cardinal:currentFace.cardinal,middle:currentFace.middle}:null},
  openBuilding:selectBuilding};
 })();
 </script></body></html>
