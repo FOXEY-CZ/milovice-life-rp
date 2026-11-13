@@ -44,6 +44,21 @@ export function photoFacingEdges(points,camera,{minLength=4,limit=2}={}){
  }
  return edges.sort((a,b)=>a.score-b.score).slice(0,limit);
 }
+// v5.28.4: Pure geometric contract for BOTH sloping dormer roof planes.
+// Former "sign*.63" was inverted: its left roof descended toward the
+// ridge and its right roof ascended away, making giant black flying flaps.
+export function planDormerRoofSlopes(width,roofRise=.94){
+ if(!Number.isFinite(width)||width<=.7||!Number.isFinite(roofRise)||roofRise<=0)return null;
+ const run=width*.5,angle=Math.atan2(roofRise,run);
+ return [-1,1].map(side=>({
+  side,x:side*width*.25,
+  y:1.43+roofRise*.5,
+  rotationZ:-side*angle,
+  panelLength:Math.hypot(run,roofRise)+.11,
+  eaveY:1.43,
+  ridgeY:1.43+roofRise
+ }));
+}
 export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  const roofMaterial=new THREE.MeshStandardMaterial({color:0x583b38,roughness:.88});
  const darkRoof=new THREE.MeshStandardMaterial({color:0x404348,roughness:.90});
@@ -131,10 +146,12 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   shape.moveTo(-w*.5,1.43);shape.lineTo(w*.5,1.43);shape.lineTo(0,2.37);shape.closePath();
   const geom=new THREE.ShapeGeometry(shape);
   addMesh(p,geom,wall,0,0,front+.01);
-  const slopeLength=Math.hypot(w*.5,.96);
-  for(const sign of [-1,1]){
-   part(p,slopeLength+.16,.095,depth+.28,roof,
-    sign*w*.25,1.90,0,0,0,sign*.63);
+  const slopes=planDormerRoofSlopes(w,.94);
+  for(const slope of slopes){
+   // Exactly meet the masonry ridge; the left slope must rise to the
+   // RIGHT and the right slope must rise to the LEFT.
+   part(p,slope.panelLength,.095,depth+.28,roof,
+    slope.x,slope.y,0,0,0,slope.rotationZ);
   }
   part(p,w+.27,.095,.16,roof,0,1.43,front+.18);
   dormers++;
