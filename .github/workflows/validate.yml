@@ -35,6 +35,8 @@ jobs:
         run: node scripts/station-roof-geometry.test.mjs
       - name: Validate every OSM house roof and photographed dormer angles across city
         run: node scripts/city-roof-geometry.test.mjs
+      - name: Prevent elevated eaves and roof flaps on all new irregular buildings
+        run: node scripts/perimeter-roof-envelope.test.mjs
       - name: Verify photo-specific Školská 220/1 roof and closed dormer gables
         run: node scripts/skolska-roof.test.mjs
       - name: Test universal roof cutouts around photographed gables in every orientation
