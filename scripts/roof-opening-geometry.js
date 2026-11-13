@@ -19,8 +19,8 @@ function clipHalfspace(vertices,signed,keepInside){
  const out=[];
  let a=vertices[vertices.length-1],da=signed(a);
  for(const b of vertices){
-  const db=signed(b),ai=keepInside?da<=EPS:da>=-EPS,
-   bi=keepInside?db<=EPS:db>=-EPS;
+  const db=signed(b),ai=keepInside?da<=EPS:da>EPS,
+   bi=keepInside?db<=EPS:db>EPS;
   if(ai!==bi){
    const d=da-db;
    if(Math.abs(d)>EPS)out.push(mix(a,b,da/d));
