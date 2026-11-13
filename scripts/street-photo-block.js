@@ -163,11 +163,15 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   layer.add(g);ownedGroups.add(g);return g;
  }
  function addGableDormer(edge,base,h,{x=0,w=2.35,depth=1.2,light=true,arched=false,
-   wall=creamWall,roof=roofMaterial,trim=paleTrim}={}){
+   roofRise=.94,wall=creamWall,roof=roofMaterial,trim=paleTrim}={}){
   // Local +Z points outside. This small structure straddles the eave/roof;
   // actual surveyed ridge/eaves heights are still unknown.
   const g=exteriorGroup(edge,base+h-.28);
-  const p=new THREE.Group();p.position.x=x;p.position.z=-.65;g.add(p);
+  const p=new THREE.Group();p.position.x=x;
+  // The photographed gable stands on the outside masonry face,
+  // while its rear intersects the main hip. No facade floating past a
+  // narrow ground-floor edge when the roof-bay depth changes.
+  p.position.z=arched?(-depth*.5+.04):-.65;g.add(p);
   part(p,w,1.48,depth,wall,0,.74,.0);
   part(p,w+.14,.14,.16,trim,0,.12,depth*.5+.09);
   const front=depth*.5+.12;
@@ -209,11 +213,12 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   }
   // A real triangular gable plus two inclined roof planes; no flat-topped box.
   const shape=new THREE.Shape();
-  shape.moveTo(-w*.5,1.43);shape.lineTo(w*.5,1.43);shape.lineTo(0,2.37);shape.closePath();
+  shape.moveTo(-w*.5,1.43);shape.lineTo(w*.5,1.43);
+  shape.lineTo(0,1.43+roofRise);shape.closePath();
   const geom=new THREE.ShapeGeometry(shape);
   addMesh(p,geom,wall,0,0,front+.01);
   if(arched){
-   const joined=planSkolskaDormerRoof({width:w,depth,rise:.94,wallEaveY:1.43});
+   const joined=planSkolskaDormerRoof({width:w,depth,rise:roofRise,wallEaveY:1.43});
    if(!joined?.closed)throw Error('Školská roof gable did not close');
    // Two ONE-PIECE planar roof slopes and connected underside/end faces.
    // No rotated detached plates, no floating dark roof polygons.
@@ -281,8 +286,13 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
    // Školská 220/1: photograph shows two large streetward attic gables,
    // black roof, cream plaster and arched dormer glazing.
    const fronts=edges.filter(e=>e.len>=5.5).slice(0,2);
-   for(const front of fronts)addGableDormer(front,base,height,{
-    w:2.12,depth:1.38,arched:true,wall:creamWall,roof:darkRoof});
+   // One broad and one narrower arched CROSS-GABLE are recognizable
+   // in the ŠJů 2024 photo. They are NOT two identical tiny dormers.
+   // Metric widths/pitches remain approximate until a facade survey.
+   for(const [j,front] of fronts.entries())addGableDormer(front,base,height,{
+    w:j===0?3.20:2.75,depth:j===0?1.90:1.72,
+    roofRise:j===0?1.55:1.32,
+    arched:true,wall:creamWall,roof:darkRoof});
    for(const edge of fronts){
     const g=exteriorGroup(edge,base);
     part(g,edge.len,.10,.23,grout,0,height-.10,.24);
