@@ -1,3 +1,11 @@
+## Milovice RP 5.27.3 — odstraněná falešná zelená stříška ze strany nádraží
+
+Podle screenshotů hráče jsme odstranili **zelenou stříšku vedle cyklověže a na špatné straně nádraží**, její ocelové sloupy, vzpěry, žebra a s ní související domyšlený pás dláždění. Fotografie zachycovala zastřešení skutečného železničního nástupiště **na protější straně**, nikoli tuto boční konstrukci.
+
+Nádraží, průchod, původní střecha budovy, nádražní název, autobusové zastávky, cyklověž a mapované chodníky zůstávají. Zastřešení vrátíme až po dokladovaném ověření místa, ne pouhým odhadem. Kontroly: WebGL smoke + testy v GitHub Actions.
+
+---
+
 ## Milovice RP 5.27.2 — Nádražka není vedle nádraží
 
 - Opravený poslední přehlédnutý zbytek: automatický generátor dával na boční koncové stěny nádraží neověřená okna, takže prostředí působilo jako vymyšlená boční kavárna. Tyto dekorace se nyní na koncové fasády nevkládají ani v přízemí, ani ve vyšším patře.
