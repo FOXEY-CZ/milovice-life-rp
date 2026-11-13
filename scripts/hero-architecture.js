@@ -4,6 +4,7 @@
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {selectFacadeEdges,planFaceOpenings} from './facade-model.js';
 import {analyzeGableFootprint} from './city-roof-geometry.js';
+import {classifyFacadeEdgeLength} from './facade-perimeter.js';
 
 export function makeMiloviceHeroArchitecture(THREE,{
   sites=[],radius=240,maxBuildings=68,terrainAt=()=>0
@@ -121,8 +122,9 @@ export function makeMiloviceHeroArchitecture(THREE,{
    // All perimeter edges, including 1.2m returns and short recessed
    // walls, MUST be closed. Previous len<3 skip omitted exterior walls
    // on concave OSM buildings, exposing the sky below the hip roof.
-   if(len<.08||len>70){state.skippedDegenerateEdges++;continue;}
-   if(len<3){
+   const wallKind=classifyFacadeEdgeLength(len);
+   if(wallKind==='degenerate'){state.skippedDegenerateEdges++;continue;}
+   if(wallKind==='solid-return'){
     const shortWall=wallGeometry(a,b,base,height,[],tone);
     if(shortWall){
      chunk.walls.push(shortWall);state.solidWalls++;
