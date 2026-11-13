@@ -112,7 +112,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint}={}){
  function addHedge(edge,base,sections=6){
   // Clipped, continuous, low green hedge visible on Mírová 36 streetfront.
   // It is decoration only: leaves the crossing/entrance area open.
-  if(edge.len<7)return;
+  if(edge.len<5.5)return; // Mírová 36 street-side OSM frontage ~6.45m
   const g=exteriorGroup(edge,base);
   const pieces=Math.min(sections,Math.max(2,Math.floor(edge.len/2.0)));
   const mesh=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),hedge,pieces);
