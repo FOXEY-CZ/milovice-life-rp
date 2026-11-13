@@ -94,7 +94,7 @@ assert.equal(planSkolskaDormerRoof({width:8}),null);
 const index=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const photo=readFileSync(new URL('./street-photo-block.js',import.meta.url),'utf8');
 assert(index.includes('const isSkolskaRoof=osmId===SKOLSKA_WAY_ID;'));
-assert(index.includes("miloviceRoofOfKind(pts,baseHeight,h,roofMat,2.30,'hip',true)"));
+assert(index.includes("miloviceRoofOfKind(pts,baseHeight,h,roofMat,2.30,'hip',true,photoRoofFeatures)"));
 assert(index.includes('const fixed=source&&planSkolskaRoofJoins({'));
 assert(index.includes("wallTopY:baseHeight+h,eaveWidth:.30"));
 assert(index.includes('Milovice_skolska_220_wall_to_roof'));
