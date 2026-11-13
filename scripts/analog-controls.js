@@ -17,6 +17,7 @@ export function makeWalkJoystick(base,knob,enabled){
   knob.style.transform='translate('+Math.round(x*maxRadius)+'px,'+Math.round(-y*maxRadius)+'px)';
   base.dataset.intensity=force>=.69?'běh':force>.12?'chůze':'stojí';
   base.setAttribute('aria-valuetext',force>=.69?'Běh':force>.12?'Chůze':'Stojí');
+  base.setAttribute('aria-valuenow',String(Math.round(force*100)));
  }
  function move(e){
   if(id!==e.pointerId)return;
