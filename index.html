@@ -1,4 +1,4 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.6.0 Big Visual Update 1 · build 20261113-bigvisual-560</title><meta name="milovice-build" content="20261113-bigvisual-560"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
+<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.7.0 Architecture Geometry Update · build 20261113-architecture-570</title><meta name="milovice-build" content="20261113-architecture-570"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
 #realmap{position:fixed;inset:0;z-index:100;background:#101e2c;display:none;flex-direction:column;color:#fff;font-family:system-ui}#realmap.open{display:flex}#maphead{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#142c3e}#maphead button{flex:0 0 auto;min-height:40px}#osmmap{flex:1;min-height:0;touch-action:pan-x pan-y}#mapfoot{padding:8px 12px;background:#142c3e;font-size:12px;line-height:1.4}#maplaunch{position:fixed;right:12px;top:75px;z-index:45;background:#193d58;border:1px solid #93b4c7;box-shadow:0 2px 8px #0006}#realmap .leaflet-container{background:#d7e5da}#realmap a{color:#aedbff} @media(max-width:700px){#maplaunch{top:72px;right:8px;padding:7px 10px;font-size:12px;min-height:36px}#maphead{font-size:13px}}
 </style><style>#perf{position:fixed;top:10px;right:10px;z-index:42;background:#102437e8;border:1px solid #77a7b6;border-radius:10px;padding:7px 10px;color:#c8f6d4;font:600 12px system-ui;pointer-events:none;min-width:100px;text-align:center}#perf small{display:block;color:#c9d5dd;font-size:10px;font-weight:400}@media(max-width:700px){#perf{top:8px;right:8px;padding:5px 7px;font-size:11px}#maplaunch{top:100px!important}}</style><style id="milovice-modern-ui">
 #hud{background:linear-gradient(145deg,rgba(9,24,39,.88),rgba(20,44,61,.82));backdrop-filter:blur(12px);border:1px solid rgba(176,214,235,.3);box-shadow:0 10px 30px #061b2b33;border-radius:18px}
@@ -66,7 +66,7 @@
 #rp-joystick[data-intensity="běh"]{border-color:#ffd36e}#rp-joystick[data-intensity="běh"] #rp-joystick-knob{background:linear-gradient(145deg,#e3a84c,#8e5720);border-color:#fff0ae}
 @media(max-width:850px){html.rp-analog-controls #rp-joystick{display:block}html.rp-analog-controls #controls button[data-key]{display:none!important}}
 @media(max-width:400px){#rp-joystick{width:113px;height:113px;left:8px}}
-</style></head><body><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.6.0 · build <strong id="build-label">20261113-bigvisual-560</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
+</style></head><body><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.7.0 · build <strong id="build-label">20261113-architecture-570</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
 <section class="rp-overlay" id="rp-spawn" aria-label="Výběr vozidla" hidden>
  <div class="rp-modal">
   <div class="rp-modal-head"><div><h2>🚘 Jak chceš začít?</h2><p>Vyber si vozidlo nebo vyraz pěšky. Vozidla slouží pro volnou jízdu.</p></div><button id="rp-spawn-close" type="button">✕</button></div>
@@ -176,6 +176,7 @@ import {addLanduseFeature,forestInstancePlacements} from './scripts/landscapes.j
 import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
+import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=570';
 import {makeCitySurfaceKit,makeContactShadow} from './scripts/graphics2.js?v=520';
 import {makeMiloviceVisualKit,planMiloviceStreetProps,makeVehicleContactShadows} from './scripts/visual-overhaul.js?v=560';
 import {makeMiloviceHumanAssets} from './scripts/human-assets.js?v=533-forward';
@@ -186,7 +187,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261113-bigvisual-560';
+const BUILD_ID='20261113-architecture-570';
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x9bc8ec);scene.fog=new THREE.Fog(0x9bc8ec,280,850);const camera=new THREE.PerspectiveCamera(67,innerWidth/innerHeight,.1,1400);const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.25));renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x65725a,1.6));const sun=new THREE.DirectionalLight(0xffefcc,1.7);sun.position.set(50,100,30);scene.add(sun);
 
 // Visual pipeline 3.8: cinematic tonemapping, improved sky and material response.
@@ -1155,6 +1156,14 @@ const osmNotice=document.createElement('div');osmNotice.style.cssText='display:n
 function osmMessage(message){osmNotice.style.display='block';osmNotice.textContent=message}
 document.body.appendChild(osmBtn);
 function osmPoint(p){const lat0=50.226,lon0=14.889;return new THREE.Vector2((p.lon-lon0)*111320*Math.cos(lat0*Math.PI/180),-(p.lat-lat0)*111320)}
+// Geographically limited architectural prototype: old-town houses around the
+// church and station. Generic window/door geometry is NOT an exact photo survey.
+const heroBuildings=makeMiloviceHeroArchitecture(THREE,{
+ sites:[
+  {x:osmPoint({lat:50.22805,lon:14.88403}).x,z:osmPoint({lat:50.22805,lon:14.88403}).y},
+  {x:osmPoint({lat:50.22910,lon:14.88210}).x,z:osmPoint({lat:50.22910,lon:14.88210}).y}
+ ],radius:240,maxBuildings:68,terrainAt
+});
 function milovicePavingTexture(){
  const canvas=document.createElement('canvas');canvas.width=canvas.height=256;
  const ctx=canvas.getContext('2d');ctx.fillStyle='#b7b3a9';ctx.fillRect(0,0,256,256);
@@ -2205,8 +2214,19 @@ function osmBuilding(points,tags,index,osmId=null){
  if(!isStation)collisionWorld.addPolygon(pts.map(p=>({x:p.x,z:p.y})),{id:osmId});
  if(isBikeTower){miloviceBikeTower(pts,baseHeight);osmBuildings++;return}
  if(isStation){miloviceStationMassing(pts,baseHeight,centerX,centerZ);miloviceStationGroundFloor(pts,baseHeight,h,centerX,centerZ);osmBuildings++;return}
- const mesh=new THREE.Mesh(geometry,wallMat);mesh.position.y=baseHeight+stationPortalHeight;mesh.receiveShadow=true;osmLayer.add(mesh);
- if(isStation)miloviceStationGroundFloor(pts,baseHeight,h,centerX,centerZ);
+ // Unlike the old monolithic extrusion, hero houses have actual transparent
+ // openings in the wall mesh (not opaque wall behind a window decal).
+ const heroFacade=heroBuildings.addBuilding({
+  points:pts,base:baseHeight,height:h,floors,type,index,id:osmId,
+  excluded:!isHouse||isBlueStar||isMirova36||isGrocer74||isGarage||isIndustrial||isSchool||isChurch||isCommerce||isBikeTower
+ });
+ if(!heroFacade){
+  const mesh=new THREE.Mesh(geometry,wallMat);
+  mesh.position.y=baseHeight+stationPortalHeight;mesh.receiveShadow=true;osmLayer.add(mesh);
+ }else{
+  // Avoid wasting GPU buffers on an unused block-shaped facade.
+  geometry.dispose();
+ }
  const roofShape=new THREE.Shape();roofShape.moveTo(pts[0].x,-pts[0].y);
  for(let i=1;i<pts.length;i++)roofShape.lineTo(pts[i].x,-pts[i].y);
  roofShape.closePath();
@@ -2231,6 +2251,8 @@ function osmBuilding(points,tags,index,osmId=null){
   ventTop.position.set(cx,baseHeight+h+.58,cz);osmLayer.add(ventTop);
  }
  // Building facade upgrade: per-building window allocation and visible architectural details.
+ // Existing flat windows remain only on non-hero buildings.
+ if(!heroFacade){
  const visibleFloors=tags.shop==='supermarket'||isGarage||isChurch?0:isBlueStar||isMirova36?2:isGrocer74?1:isIndustrial?1:isPanelBlock?Math.min(floors,16):Math.min(Math.max(1,Math.floor(h/3)),8);
  for(let i=0;i<pts.length;i++){
   const p=pts[i],q=pts[(i+1)%pts.length],dx=q.x-p.x,dz=q.y-p.y,len=Math.hypot(dx,dz);
@@ -2351,8 +2373,9 @@ function osmBuilding(points,tags,index,osmId=null){
    }
   }
  }
+ }
  // Roof chimneys and proper garage shutter doors in the 5. května residential area.
- if(isHouse&&index%3===0&&w>6&&d>5){
+ if(isHouse&&!heroFacade&&index%3===0&&w>6&&d>5){
   const rise=Math.min(2.3,Math.min(w,d)*.25);
   archPart('chimney',centerX+w*.10,baseHeight+h+rise*.70,centerZ-d*.08,.52,2.25,.52);
   archPart('roofGutter',centerX+w*.10,baseHeight+h+rise*1.25,centerZ-d*.08,.66,.1,.66);
@@ -2496,7 +2519,7 @@ async function rpLoadCityArea(id){
   cityRegionGrids.push(dem);
   osmFurnitureCount=0;
   rpAppendOSMElements(osm.elements);
-  finalizeFoundations();finalizeFacades();finalizeArchitecture();
+  finalizeFoundations();finalizeFacades();finalizeArchitecture();heroBuildings.flush(osmLayer);
   chunkMilovice();rpBuildRoadGraph();rpPopulateRegionalTraffic(area);improveMiloviceVisuals();rpInitRailTraffic();
   loadedCityAreas.add(id);
   window.__miloviceAreasLoaded=[...loadedCityAreas];
@@ -2722,14 +2745,14 @@ osmBtn.onclick=async()=>{
  if(osmLoading)return;
  osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';osmMessage('Načítám místní soubor mapy ze stejného GitHub Pages webu…');
  try{
- const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();collisionWorld.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;osmFurnitureCount=0;landscapeZones.length=0;
+ const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();collisionWorld.reset();heroBuildings.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;osmFurnitureCount=0;landscapeZones.length=0;
   if(trafficGroup.parent!==osmLayer)osmLayer.add(trafficGroup);
   if(visualDetails.parent!==osmLayer)osmLayer.add(visualDetails);for(const batch of facadeBatches)batch.clear();
  if(terrainGrid)rpTerrainMesh();else cube(2200,.16,2200,osmParkMaterial,0,-.18,0,osmLayer);
  rpAppendOSMElements(elements);
- if(!osmRoads.length)throw Error('Žádné silnice v odpovědi');finalizeFoundations();finalizeFacades();finalizeArchitecture();osmStreetLabels();chunkMilovice();improveMiloviceVisuals();rpPopulate();rpInitRailTraffic();
+ if(!osmRoads.length)throw Error('Žádné silnice v odpovědi');finalizeFoundations();finalizeFacades();finalizeArchitecture();heroBuildings.flush(osmLayer);osmStreetLabels();chunkMilovice();improveMiloviceVisuals();rpPopulate();rpInitRailTraffic();
  osmReady=true;window.__miloviceAreasLoaded=[...loadedCityAreas];osmNotice.style.display='none';osmSetActive(true);document.getElementById('status').textContent='Prozkoumávej skutečné Milovice. Na mapě najdeš pojmenované ulice a budovy.';
- }catch(e){osmLayer.clear();for(const batch of facadeBatches)batch.clear();osmReady=false;osmBtn.textContent='🔄 Zkusit načíst Milovice';notify('Skutečná mapa se nenačetla. Zkus znovu tlačítko vpravo.');osmNotice.style.display='block';osmNotice.textContent='3D mapa se nenačetla: '+e.message+'. Zkus znovu načíst mapu.';loadingScreen.textContent='⚠️ Skutečnou mapu Milovic se nepodařilo načíst. Klepni na Zkusit načíst Milovice.'}
+ }catch(e){osmLayer.clear();heroBuildings.reset();for(const batch of facadeBatches)batch.clear();osmReady=false;osmBtn.textContent='🔄 Zkusit načíst Milovice';notify('Skutečná mapa se nenačetla. Zkus znovu tlačítko vpravo.');osmNotice.style.display='block';osmNotice.textContent='3D mapa se nenačetla: '+e.message+'. Zkus znovu načíst mapu.';loadingScreen.textContent='⚠️ Skutečnou mapu Milovic se nepodařilo načíst. Klepni na Zkusit načíst Milovice.'}
  finally{osmLoading=false}
 };
 

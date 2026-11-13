@@ -29,8 +29,40 @@ try{
     visual.safeWheelRig!==true||visual.mobileDetailRadius>200)
   throw new Error('5.6.0 streetscape texture and performance pass not initialized: '+JSON.stringify(visual));
  console.log('5.6.0 detailed surface materials, instanced decorations and LOD:',JSON.stringify(visual));
+ // The upgrade must replace solid house blocks with actual facade holes in
+ // the old-town core. An instance count alone is not sufficient evidence.
+ const hero=await page.evaluate(()=>window.__miloviceHeroArchitecture||null);
+ if(!hero||hero.buildings<3||hero.cutoutWindows<12||hero.cutoutDoors<2||
+    hero.solidWalls<10||hero.drawMeshes<4)
+  throw new Error('5.7.0 genuinely cut-out old-town buildings absent: '+JSON.stringify(hero));
+ console.log('5.7.0 actual wall cut-outs in Old Milovice:',JSON.stringify(hero));
 
- if(!(await page.locator('#build-label').innerText()).includes('bigvisual-560'))
+ const cutoutTest=await page.evaluate(async()=>{
+  const THREE=await import('three');
+  const {makeMiloviceHeroArchitecture}=await import('./scripts/hero-architecture.js?v=570');
+  const kit=makeMiloviceHeroArchitecture(THREE,{sites:[{x:6,z:5}],radius:40,maxBuildings:2});
+  const scene=new THREE.Group();
+  const built=kit.addBuilding({points:[
+   new THREE.Vector2(0,0),new THREE.Vector2(12,0),
+   new THREE.Vector2(12,10),new THREE.Vector2(0,10)
+  ],base:0,height:6.1,floors:2,type:'house',index:1,id:999001});
+  kit.flush(scene);scene.updateMatrixWorld(true);
+  const walls=scene.children.filter(o=>o.isMesh&&o.material.vertexColors);
+  const ray=new THREE.Raycaster();
+  const hit=(x,y)=>{
+   ray.set(new THREE.Vector3(x,y,-4),new THREE.Vector3(0,0,1));
+   return ray.intersectObjects(walls,false)[0]?.distance??Infinity;
+  };
+  return {built,door:hit(6,1.25),solid:hit(.5,1.25),
+    stats:kit.stats()};
+ });
+ if(!cutoutTest.built||cutoutTest.door<5||cutoutTest.solid>4.1||
+    cutoutTest.stats.cutoutDoors!==1)
+  throw new Error('5.7.0 facade geometries still contain solid wall behind doors: '+JSON.stringify(cutoutTest));
+ console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
+
+
+ if(!(await page.locator('#build-label').innerText()).includes('architecture-570'))
   throw new Error('5.6.0 big visual update build identifier missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
