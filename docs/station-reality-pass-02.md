@@ -41,3 +41,27 @@ The v5.27.1 material now reuses the game's own original red-clay tile texture
 and a matte nonmetallic surface, with zero new GPU texture allocations. The
 pattern is an interpretation, not a measured roof plan. The rail platform
 canopy's green metal roof remains a separate material and unchanged model.
+
+## 5.27.2 — user-confirmed correction: Nádražka is NOT a side annex
+
+The old game had a misleading inference: merely hiding the external Nádražka
+sign and calling it 'waiting room' did not eliminate generic auto-windows from
+the station's narrow end faces, and the minimap/landmark selected an imprecise
+station-centre point. This did not constitute a genuine 360° verification.
+
+At the user's request, no unverified 'Nádražka' exterior/side building or
+entrance is modeled. Ground- and first-floor procedural window inserts are now
+suppressed on the station's end-cap walls (orientation relative to the true
+longitudinal station footprint). The existing OSM building shell, walls, roof,
+colliders, front passage, and green railway platform canopy are preserved.
+The Nádražka remains *one map-only indoor amenity*, shown a little inside the
+mapped pedestrian street entrance, explicitly marked approximate. The main
+navigation waypoint is now only 'Nádraží Milovice' and no longer conflates the
+cafe with a secondary outside station point.
+
+Source cross-check: [Nádražky.eu](https://www.nadrazky.eu/hospoda.php?hospodaID=100273)
+locates the service behind a waiting-room door; ČD's 2022 Železničář article
+describes historical outdoor seating directly IN FRONT OF the station building,
+not an independent side café. Exact current facade/window positions must still
+be checked against lawful dated views; the absence of evidence is not a verified
+claim that all physical windows on the real side walls are absent.
