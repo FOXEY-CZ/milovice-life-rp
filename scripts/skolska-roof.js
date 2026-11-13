@@ -12,7 +12,8 @@ const quad=(a,b,c,d)=>[triangle(a,b,c),triangle(a,c,d)];
 
 export function planSkolskaRoofJoins({outline,roof,origin,wallTopY,
  eaveWidth=.30}={}){
- if(!Array.isArray(outline)||outline.length<4||!roof?.bounds||!origin||
+ if(!Array.isArray(outline)||outline.length<4||
+  !(roof?.bounds||roof?.roofModel==='perimeter-constrained')||!origin||
    !Number.isFinite(wallTopY))return null;
  const pts=outline.map(p=>({x:p.x,z:p.z??p.y}));
  const join=planRoofPerimeterClosure({
