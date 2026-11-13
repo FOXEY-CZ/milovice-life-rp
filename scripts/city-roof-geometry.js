@@ -4,6 +4,7 @@
 // a particular way. Both could turn roof planes inside-out on rotated sites.
 // Build real bounded planar gable/hip facets instead, clipped to OSM triangles.
 import {planFootprintPitchedRoof} from './station-roof-geometry.js';
+import {planPerimeterConstrainedRoof,roofBoundaryGap} from './perimeter-roof-envelope.js';
 
 function coord(p){return {x:p.x,z:p.z??p.y}}
 function safeUnit(x,z){
@@ -95,5 +96,22 @@ export function planCityBuildingRoof({footprint,triangles,baseY,rise,
  });
  if(!model||model.relativeAreaError>1e-4||!model.faces.length||
   model.faces.some(face=>face.some(p=>!Number.isFinite(p.y))))return null;
- return {...model,origin,kind,globalAxis:axis};
+ // Boundary-height QUALITY GATE for every future building:
+ // a basic bounding-box hip is not valid on many skewed, L or
+ // cut-corner footprints. Its apparent eave can end >1m above the wall,
+ // producing huge exposed triangular panels and dark roof flaps.
+ const gap=roofBoundaryGap({...model,origin},pts);
+ if(!Number.isFinite(gap))return null;
+ if(kind==='hip'&&gap>.10){
+  const corrected=planPerimeterConstrainedRoof({
+   footprint:pts,triangles,baseY,rise,axis,kind
+  });
+  // Fail closed: never render the known-bad pitched geometry when the
+  // safe envelope cannot be created. Caller uses a flat fallback.
+  if(!corrected||corrected.maxEaveError>.025)return null;
+  return {...corrected,kind,roofBoundaryGapBefore:gap,
+   correctedBoundaryGap:corrected.maxEaveError,
+   sourceProfileRequired:true};
+ }
+ return {...model,origin,kind,globalAxis:axis,roofBoundaryGapBefore:gap};
 }
