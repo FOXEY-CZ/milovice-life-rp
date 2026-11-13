@@ -11,6 +11,13 @@ const original=coords.slice(0,-1).map(p=>({
  z:-(p.lat-50.226)*111320
 }));
 assert.equal(original.length,7);
+const published=JSON.parse(readFileSync(new URL('../data/architecture/verified-buildings.json',import.meta.url),'utf8'));
+const houseCard=published.buildings[String(SKOLSKA_WAY_ID)];
+assert.equal(houseCard.height,'3.75',
+ '2024 photograph shows one full exterior wall storey, NOT two stacked rows of windows');
+assert.equal(houseCard.floors,'2',
+ 'The mapped second level is the usable attic under the photographed roof');
+assert(houseCard.notes.includes('NOT surveyed'));
 function cross(a,b,c){return (b.x-a.x)*(c.z-a.z)-(b.z-a.z)*(c.x-a.x)}
 function inTri(p,a,b,c){
  const s=cross(a,b,c)>=0?1:-1;
