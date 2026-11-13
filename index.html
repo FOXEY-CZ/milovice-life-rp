@@ -856,6 +856,62 @@ const loadingScreen=document.createElement('div');loadingScreen.id='milovice-loa
 const railSteel=new THREE.MeshStandardMaterial({color:0xa7acb0,roughness:.36,metalness:.72,side:THREE.DoubleSide});
 const railBallast=new THREE.MeshStandardMaterial({color:0x74716d,roughness:1,side:THREE.DoubleSide});
 const railPlatformMat=new THREE.MeshStandardMaterial({color:0xb1aaa0,roughness:.96,side:THREE.DoubleSide});
+// 5.1.3 — Tactile platform edging based on OSM polygon and existing railway lines.
+// Photo-inspired original art; exact platform tile dimensions are not surveyed.
+const railPlatformCurbMat=new THREE.MeshStandardMaterial({color:0xd8d1c5,roughness:.96,side:THREE.DoubleSide});
+const railPlatformTactileMat=(()=>{
+ const canvas=document.createElement('canvas');canvas.width=canvas.height=128;
+ const g=canvas.getContext('2d');g.fillStyle='#d8ba43';g.fillRect(0,0,128,128);
+ for(let y=0;y<128;y+=16)for(let x=0;x<128;x+=16){
+  g.fillStyle='#b99b31';g.fillRect(x,y,16,1);
+  g.fillStyle='#f1d66a';g.beginPath();g.arc(x+8,y+8,3.1,0,Math.PI*2);g.fill();
+  g.fillStyle='rgba(98,76,22,.22)';g.fillRect(x+5,y+11,7,1);
+ }
+ const map=new THREE.CanvasTexture(canvas);map.colorSpace=THREE.SRGBColorSpace;
+ map.wrapS=map.wrapT=THREE.RepeatWrapping;map.anisotropy=4;
+ return new THREE.MeshStandardMaterial({map,roughness:.95,side:THREE.DoubleSide});
+})();
+function milovicePlatformEdgeDetails(points){
+ const outline=points[0].distanceTo(points[points.length-1])<.15?points.slice(0,-1):points;
+ if(outline.length<3)return;
+ const inside=(x,z)=>{
+  let found=false;
+  for(let i=0,j=outline.length-1;i<outline.length;j=i++){
+   const a=outline[i],b=outline[j];
+   if((a.y>z)!==(b.y>z)&&x<(b.x-a.x)*(z-a.y)/(b.y-a.y)+a.x)found=!found;
+  }
+  return found;
+ };
+ let count=0,meters=0;
+ for(let i=0;i<outline.length;i++){
+  const a=outline[i],b=outline[(i+1)%outline.length],dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);
+  if(len<2||len>110)continue;
+  const mx=(a.x+b.x)*.5,mz=(a.y+b.y)*.5;
+  let nearest=Infinity;
+  for(const rail of osmRailways){
+   if(rail.tags?.railway!=='rail')continue;
+   const line=rail.geometry||[];
+   for(let j=1;j<line.length;j++){
+    const p=osmPoint(line[j-1]),q=osmPoint(line[j]),vx=q.x-p.x,vz=q.y-p.y,den=vx*vx+vz*vz;
+    if(den<.01)continue;
+    const t=Math.max(0,Math.min(1,((mx-p.x)*vx+(mz-p.y)*vz)/den));
+    nearest=Math.min(nearest,Math.hypot(mx-p.x-t*vx,mz-p.y-t*vz));
+   }
+  }
+  if(nearest>5.8)continue;
+  let nx=-dz/len,nz=dx/len;
+  if(!inside(mx+nx*.6,mz+nz*.6)){nx=-nx;nz=-nz}
+  if(!inside(mx+nx*.6,mz+nz*.6))continue;
+  osmStrip(a,b,.20,railPlatformCurbMat,.319);
+  const insetA=new THREE.Vector2(a.x+nx*.57,a.y+nz*.57);
+  const insetB=new THREE.Vector2(b.x+nx*.57,b.y+nz*.57);
+  osmStrip(insetA,insetB,.49,railPlatformTactileMat,.332);
+  count++;meters+=len;
+ }
+ window.__miloviceLandmarkDebug ||= {};
+ window.__miloviceLandmarkDebug.platformTactileStrips=count;
+ window.__miloviceLandmarkDebug.platformEdgeMeters=Math.round(meters);
+}
 function miloviceRailTrack(points,tags){
  if(points.length<2)return;
  if(tags.railway==='platform'){
@@ -866,6 +922,7 @@ function miloviceRailTrack(points,tags){
   const p=geom.attributes.position;
   for(let i=0;i<p.count;i++)p.setY(i,terrainAt(p.getX(i),p.getZ(i))+.29);
   p.needsUpdate=true;geom.computeVertexNormals();osmLayer.add(new THREE.Mesh(geom,railPlatformMat));
+   milovicePlatformEdgeDetails(points);
   return;
  }
  if(tags.railway!=='rail')return; // Disused tracks should not look actively maintained.
@@ -2180,7 +2237,13 @@ function rpAppendOSMElements(elements){
    osmRoadFurniture(points[i-1],points[i],width,kind);
   }
  }
- for(const el of railWays){osmRailways.push(el);miloviceRailTrack(el.geometry.map(osmPoint),el.tags)}
+ // Tracks must load before platforms, regardless of the export's OSM element order.
+ for(const el of railWays.filter(e=>e.tags.railway!=='platform')){
+  osmRailways.push(el);miloviceRailTrack(el.geometry.map(osmPoint),el.tags);
+ }
+ for(const el of railWays.filter(e=>e.tags.railway==='platform')){
+  osmRailways.push(el);miloviceRailTrack(el.geometry.map(osmPoint),el.tags);
+ }
  for(const el of buildingWays){osmBuilding(el.geometry,el.tags,osmBuildings,el.id);osmAddLandmark(el)}
 }
 // 4.8: Incremental geographic streaming; only the current area is meshed on phone.
