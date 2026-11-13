@@ -1,0 +1,28 @@
+// Fast deterministic collision regression tests, no browser dependency.
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const code=readFileSync(new URL('./world-collisions.js',import.meta.url),'utf8');
+const {makeMiloviceCollisionWorld}=await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
+const w=makeMiloviceCollisionWorld({cellSize:8});
+assert(w.addPolygon([{x:0,z:0},{x:10,z:0},{x:10,z:10},{x:0,z:10}]));
+assert.equal(w.collides(5,5,.35),true,'building interior');
+assert.equal(w.collides(-.3,5,.35),true,'building outer wall');
+assert.equal(w.collides(-1,5,.35),false,'walkable sidewalk');
+assert.equal(w.collides(-1,11,.35),false,'walkable corner');
+let p=w.move(-2,5,4,0,.35);
+assert(p.x<-.34&&p.x> -1&&p.blocked,'cannot tunnel through building');
+p=w.move(-2,5,4,4,.35);
+assert(p.x<-.34&&p.z>5,'slides along building instead of freezing');
+w.addWall({x:20,z:0},{x:20,z:8},.3);
+assert.equal(w.collides(20,3,.35),true,'station wall solid');
+assert.equal(w.collides(20.4,3,.35),true,'capsule touches station wall');
+assert.equal(w.collides(20.6,3,.35),false,'outside station wall');
+assert.equal(w.collides(20,10,.35),false,'station opening unblocked');
+p=w.move(17,6,6,0,.35);
+assert(p.x<20,'cannot cross a solid station wall');
+p=w.move(17,10,6,0,.35);
+assert(p.x>22.9&&!p.blocked,'can pass through portal beyond wall end');
+w.reset();
+assert.equal(w.collides(5,5,.35),false,'reset clears streamed city');
+assert.equal(w.stats().polygons,0);
+console.log('OK: OSM collision boundaries, swept movement, wall openings, sliding and reset');

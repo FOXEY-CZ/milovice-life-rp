@@ -24,8 +24,8 @@ try{
     !gfx.surfaceMaterials||Object.values(gfx.surfaceMaterials).some(v=>v!==true))
   throw new Error('Graphics 2.0 materials did not initialize correctly: '+JSON.stringify(gfx));
  console.log('5.2.0 shared city surfaces:',JSON.stringify(gfx.surfaceMaterials));
- if(!(await page.locator('#build-label').innerText()).includes('traffic-541'))
-  throw new Error('5.4.1 vehicle wheel update build identifier missing');
+ if(!(await page.locator('#build-label').innerText()).includes('collision-550'))
+  throw new Error('5.5.0 world collision build identifier missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
     !(sidewalkCheck.separatedSidewalks>15))
@@ -88,6 +88,16 @@ try{
  const landmarkChecks=await page.evaluate(()=>window.__miloviceLandmarkDebug||{});
  console.log('Landmark geometry:',JSON.stringify(landmarkChecks));
  if(landmarkChecks.stationPassageFaces!==2)throw new Error('Milovice station does not have two opposing real open passage portals: '+JSON.stringify(landmarkChecks));
+ const collisionCheck=await page.evaluate(()=>{
+  const s=window.__miloviceCollisionDebug;
+  const portals=window.__miloviceLandmarkDebug?.stationPassagePortals||[];
+  return {s,portals,open:portals.map(p=>window.__miloviceCollisionProbe?.(p.x,p.z,.32))};
+ });
+ if(!collisionCheck.s||collisionCheck.s.polygons<50||collisionCheck.s.walls<4||
+    collisionCheck.portals.length!==2||collisionCheck.open.some(Boolean))
+  throw new Error('5.5.0 OSM building collisions or walk-through station portals broken: '+JSON.stringify(collisionCheck));
+ console.log('5.5.0 spatial world collisions + both station portals:',JSON.stringify(collisionCheck));
+
  if(!landmarkChecks.stationParts?.center||!landmarkChecks.stationParts?.left||!landmarkChecks.stationParts?.right)throw new Error('Station wing/center massing missing');
  if(!landmarkChecks.stationSign||!landmarkChecks.stationCanopy||!landmarkChecks.stationStreetSign)
   throw new Error('4.9 station architecture missing: '+JSON.stringify(landmarkChecks));

@@ -1,4 +1,4 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.4.1 Traffic & Parking · build 20261113-traffic-541</title><meta name="milovice-build" content="20261113-traffic-541"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
+<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.5.0 World Collisions · build 20261113-collision-550</title><meta name="milovice-build" content="20261113-collision-550"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
 #realmap{position:fixed;inset:0;z-index:100;background:#101e2c;display:none;flex-direction:column;color:#fff;font-family:system-ui}#realmap.open{display:flex}#maphead{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#142c3e}#maphead button{flex:0 0 auto;min-height:40px}#osmmap{flex:1;min-height:0;touch-action:pan-x pan-y}#mapfoot{padding:8px 12px;background:#142c3e;font-size:12px;line-height:1.4}#maplaunch{position:fixed;right:12px;top:75px;z-index:45;background:#193d58;border:1px solid #93b4c7;box-shadow:0 2px 8px #0006}#realmap .leaflet-container{background:#d7e5da}#realmap a{color:#aedbff} @media(max-width:700px){#maplaunch{top:72px;right:8px;padding:7px 10px;font-size:12px;min-height:36px}#maphead{font-size:13px}}
 </style><style>#perf{position:fixed;top:10px;right:10px;z-index:42;background:#102437e8;border:1px solid #77a7b6;border-radius:10px;padding:7px 10px;color:#c8f6d4;font:600 12px system-ui;pointer-events:none;min-width:100px;text-align:center}#perf small{display:block;color:#c9d5dd;font-size:10px;font-weight:400}@media(max-width:700px){#perf{top:8px;right:8px;padding:5px 7px;font-size:11px}#maplaunch{top:100px!important}}</style><style id="milovice-modern-ui">
 #hud{background:linear-gradient(145deg,rgba(9,24,39,.88),rgba(20,44,61,.82));backdrop-filter:blur(12px);border:1px solid rgba(176,214,235,.3);box-shadow:0 10px 30px #061b2b33;border-radius:18px}
@@ -66,7 +66,7 @@
 #rp-joystick[data-intensity="běh"]{border-color:#ffd36e}#rp-joystick[data-intensity="běh"] #rp-joystick-knob{background:linear-gradient(145deg,#e3a84c,#8e5720);border-color:#fff0ae}
 @media(max-width:850px){html.rp-analog-controls #rp-joystick{display:block}html.rp-analog-controls #controls button[data-key]{display:none!important}}
 @media(max-width:400px){#rp-joystick{width:113px;height:113px;left:8px}}
-</style></head><body><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.4.1 · build <strong id="build-label">20261113-traffic-541</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
+</style></head><body><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.4.1 · build <strong id="build-label">20261113-collision-550</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
 <section class="rp-overlay" id="rp-spawn" aria-label="Výběr vozidla" hidden>
  <div class="rp-modal">
   <div class="rp-modal-head"><div><h2>🚘 Jak chceš začít?</h2><p>Vyber si vozidlo nebo vyraz pěšky. Vozidla slouží pro volnou jízdu.</p></div><button id="rp-spawn-close" type="button">✕</button></div>
@@ -175,13 +175,14 @@ import {makeHumanRig,makeRoadCar,makePidBus,makeCityElefantStyleTrain} from './s
 import {addLanduseFeature,forestInstancePlacements} from './scripts/landscapes.js?v=501';
 import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=541';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
+import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
 import {makeCitySurfaceKit,makeContactShadow} from './scripts/graphics2.js?v=520';
 import {makeMiloviceHumanAssets} from './scripts/human-assets.js?v=533-forward';
 import {makeNearFieldTreeKit} from './scripts/nature-assets.js?v=531';
 import {makeWalkJoystick,pedestrianSpeed,keyboardPedestrianSpeed} from './scripts/analog-controls.js?v=532a';
 const citySurfaceKit=makeCitySurfaceKit(THREE);
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261113-traffic-541';
+const BUILD_ID='20261113-collision-550';
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x9bc8ec);scene.fog=new THREE.Fog(0x9bc8ec,280,850);const camera=new THREE.PerspectiveCamera(67,innerWidth/innerHeight,.1,1400);const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.25));renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x65725a,1.6));const sun=new THREE.DirectionalLight(0xffefcc,1.7);sun.position.set(50,100,30);scene.add(sun);
 
 // Visual pipeline 3.8: cinematic tonemapping, improved sky and material response.
@@ -427,6 +428,8 @@ let orbitYaw=0,orbitPitch=.25,orbitDistance=7;
 let walkCam=0; // 0 = third-person orbit, 1 = first-person look
 let activeCar=null,busPark={x,z,angle}; // Independent bus parking position remains separate from player car position.
 let lastExitedVehicle=null,nextTrafficId=1;
+const collisionWorld=makeMiloviceCollisionWorld();
+window.__miloviceCollisionProbe=(xx,zz,r=.35)=>collisionWorld.collides(xx,zz,r);
 let busJob=null,playerSpawnCar=null; // Missions never start merely by entering a bus.
 let money=0;try{money=Math.max(0,Number(localStorage.getItem('milovice_rp_money')||0)||0)}catch(e){}
 // 5.0 sculpted player with face, hairstyle, separate arms and legs.
@@ -569,7 +572,7 @@ function rpEndBusJob(){
 function toggleVehicle(){
  if(!walking){
   if(Math.abs(speed)>.45){notify('Nejdřív zastav vozidlo!');return}
-  walking=true;px=x-2.3*Math.cos(angle);pz=z+2.3*Math.sin(angle);walkYaw=angle;orbitYaw=angle;
+  walking=true;const exitOffset=activeCar?2.5:3.5;px=x-exitOffset*Math.cos(angle);pz=z+exitOffset*Math.sin(angle);walkYaw=angle;orbitYaw=angle;
   if(activeCar){
    activeCar.driven=false;activeCar.parked=true;activeCar.g.position.set(x,terrainAt(x,z)+.045,z);
    activeCar.g.rotation.y=angle;lastExitedVehicle={id:activeCar.id,type:activeCar.type,modelName:activeCar.modelName,x,z};activeCar=null;
@@ -1585,6 +1588,8 @@ function stationBoard(text,x,y,z,yaw,bg='#174f84',width=5.3,height=.94){
 }
 function stationWall(a,b,base,height,cx,cz){
  const dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);if(len<.05)return;
+ // Only solid ground-floor station walls: both real arches remain passable.
+ collisionWorld.addWall({x:a.x,z:a.y},{x:b.x,z:b.y},.32,{id:'Milovice-station'});
  const x=(a.x+b.x)*.5,z=(a.y+b.y)*.5,yaw=Math.atan2(-dz,dx);
  let nx=-dz/len,nz=dx/len;
  // Window details face the exterior on both sides of the real OSM footprint.
@@ -1790,6 +1795,7 @@ function miloviceStationGroundFloor(pts,base,h,cx,cz){
  // A pair of opposing open entrance faces yields a walk-through passage.
  window.__miloviceLandmarkDebug ||= {};
  window.__miloviceLandmarkDebug.stationPassageFaces=openings;
+ window.__miloviceLandmarkDebug.stationPassagePortals=passagePortals.map(p=>({x:p.x,z:p.y}));
  // 5.1.5: Centre the paving on the two true arch openings, not the centre
  // of the irregular OSM station outline. This eliminates the grass at the exit.
  const acrossX=-az,acrossZ=ax;
@@ -2180,6 +2186,9 @@ function osmBuilding(points,tags,index,osmId=null){
   }
  }
  const wallMat=tags.shop==='supermarket'?(tags.name==='Tesco'?tescoCorrugation:tags.name==='Penny'?pennyFacade:groceryCladding):isBlueStar?blueStarWalls:isMirova36?mirova36Walls:isGrocer74?grocerWalls:isSchool?schoolWalls:isChurch?churchWalls:isStation?stationWalls:isGarage?garageWalls:isPanelBlock?panelFacadeMaterials[braniborska?1:rakouska?3:Math.abs(osmId||index)%panelFacadeMaterials.length]:isCommerce?commerceFacadeMaterials[Math.abs(osmId||index)%commerceFacadeMaterials.length]:isIndustrial?workWalls:osmBuildingMaterial[(oldCenter?index+3:index)%osmBuildingMaterial.length];
+ // Ordinary buildings are solid on the ground floor; the open station is handled
+ // as separate wall segments so the real public passage never becomes blocked.
+ if(!isStation)collisionWorld.addPolygon(pts.map(p=>({x:p.x,z:p.y})),{id:osmId});
  if(isBikeTower){miloviceBikeTower(pts,baseHeight);osmBuildings++;return}
  if(isStation){miloviceStationMassing(pts,baseHeight,centerX,centerZ);miloviceStationGroundFloor(pts,baseHeight,h,centerX,centerZ);osmBuildings++;return}
  const mesh=new THREE.Mesh(geometry,wallMat);mesh.position.y=baseHeight+stationPortalHeight;mesh.receiveShadow=true;osmLayer.add(mesh);
@@ -2687,7 +2696,7 @@ osmBtn.onclick=async()=>{
  if(osmLoading)return;
  osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';osmMessage('Načítám místní soubor mapy ze stejného GitHub Pages webu…');
  try{
- const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;osmFurnitureCount=0;landscapeZones.length=0;
+ const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();collisionWorld.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;osmFurnitureCount=0;landscapeZones.length=0;
   if(trafficGroup.parent!==osmLayer)osmLayer.add(trafficGroup);
   if(visualDetails.parent!==osmLayer)osmLayer.add(visualDetails);for(const batch of facadeBatches)batch.clear();
  if(terrainGrid)rpTerrainMesh();else cube(2200,.16,2200,osmParkMaterial,0,-.18,0,osmLayer);
@@ -3079,6 +3088,26 @@ for(const o of originalRoads){
 renderer.toneMappingExposure=1.18;
 sun.intensity=2.24;
 scene.fog.near=Math.max(180,OSM_VIEW*.54);scene.fog.far=OSM_VIEW+145;
+// Dynamic obstacles are evaluated only near the player; city building queries are
+// spatially hashed, so streamed districts do not cause a full-world scan per frame.
+function rpDynamicBlocked(tx,tz,radius){
+ if(walking||activeCar){
+  if(Math.hypot(tx-busPark.x,tz-busPark.z)<radius+2.15)return true;
+ }
+ for(const car of trafficCars){
+  if(car===activeCar||car.driven||!car.g.visible)continue;
+  const cr=car.type===7?2.45:1.68;
+  if(Math.hypot(tx-car.g.position.x,tz-car.g.position.z)<radius+cr)return true;
+ }
+ for(const person of trafficPeople){
+  if(person.g.visible&&Math.hypot(tx-person.g.position.x,tz-person.g.position.z)<radius+.35)return true;
+ }
+ return false;
+}
+function rpResolvePlayerStep(fromX,fromZ,dx,dz,radius){
+ if(!osmActive)return {x:fromX+dx,z:fromZ+dz,blocked:false};
+ return collisionWorld.move(fromX,fromZ,dx,dz,radius,rpDynamicBlocked);
+}
 let last=performance.now(),lastHud=0,lastMap=0,perfFrames=0,perfSince=performance.now();const perfEl=document.getElementById('perf');function animate(t){requestAnimationFrame(animate);const dt=Math.min(Math.max((t-last)/1000,0),.05);last=t;
 elapsed+=dt;rpAnimateTraffic(dt);animateBoarding(dt);rpUpdateRailTraffic(dt);
  glbHumans.update(dt,elapsed,walking?pedestrianIntensity:0,walking?px:x,walking?pz:z);
@@ -3109,10 +3138,15 @@ if(walking){
  if(directionLength>.01&&pedestrianVelocity>0){
   const nx=strafe/directionLength,ny=forwardMove/directionLength;
   const dx=nx*Math.cos(orbitYaw)-ny*Math.sin(orbitYaw),dz=-nx*Math.sin(orbitYaw)-ny*Math.cos(orbitYaw);
-  walkingDx=dx;walkingDz=dz;
-  px+=dx*pedestrianVelocity*dt;pz+=dz*pedestrianVelocity*dt;walkYaw=Math.atan2(-dx,-dz);
+  const oldX=px,oldZ=pz;
+  const step=rpResolvePlayerStep(px,pz,dx*pedestrianVelocity*dt,dz*pedestrianVelocity*dt,.36);
+  px=step.x;pz=step.z;
+  const moved=Math.hypot(px-oldX,pz-oldZ);
+  if(moved>.0001){walkingDx=(px-oldX)/moved;walkingDz=(pz-oldZ)/moved;walkYaw=Math.atan2(-walkingDx,-walkingDz)}
  }
- const swing=pedestrianVelocity>.1?Math.sin(elapsed*(pedestrianVelocity>3.05?10.3:5.6))*Math.min(.56,pedestrianVelocity*.105):0;
+ const moveSpeed=Math.hypot(walkingDx,walkingDz)>.01?pedestrianVelocity:0;
+ pedestrianIntensity=Math.min(1,moveSpeed/5.5);
+ const swing=moveSpeed>.1?Math.sin(elapsed*(moveSpeed>3.05?10.3:5.6))*Math.min(.56,moveSpeed*.105):0;
  playerLegs[0].rotation.x=swing;playerLegs[1].rotation.x=-swing;
  playerArms[0].rotation.x=-swing*.7;playerArms[1].rotation.x=swing*.7;
  avatar.position.set(px,terrainAt(px,pz),pz);avatar.rotation.y=walkYaw;
@@ -3121,8 +3155,8 @@ if(walking){
  // -1 means a future GLB import broke orientation and is moonwalking again.
  const facingDot=visualHeading&&directionLength>.01&&pedestrianVelocity>.1
   ?walkingDx*visualHeading.x+walkingDz*visualHeading.z:null;
- window.__miloviceMovementDebug={stick:analog,speed:Math.round(pedestrianVelocity*100)/100,
-  running:pedestrianVelocity>3.05,active:pedestrianVelocity>.1,keyboard:!!keyboardMagnitude,
+ window.__miloviceMovementDebug={stick:analog,speed:Math.round(moveSpeed*100)/100,
+  running:moveSpeed>3.05,active:moveSpeed>.1,keyboard:!!keyboardMagnitude,
   travel:{x:walkingDx,z:walkingDz},visualHeading,facingDot};
  avatarContactShadow.position.set(px,terrainAt(px,pz)+.045,pz);
 }
@@ -3138,8 +3172,12 @@ if(!walking&&Math.abs(speed)>.02){
  // Positive yaw rotates the bus toward screen-left in this coordinate convention.
  // Negate to make right button turn right while driving forward.
  angle-=steer*(speed/(activeCar?22:13))*(activeCar?1.35:.95)*dt;
- x-=Math.sin(angle)*speed*dt;z-=Math.cos(angle)*speed*dt;
- if(activeCar)rpSpinWheels(activeCar,speed*dt);
+ const dx=-Math.sin(angle)*speed*dt,dz=-Math.cos(angle)*speed*dt,oldX=x,oldZ=z;
+ const step=rpResolvePlayerStep(x,z,dx,dz,activeCar?1.35:1.95);
+ x=step.x;z=step.z;
+ const moved=Math.hypot(x-oldX,z-oldZ);
+ if(activeCar)rpSpinWheels(activeCar,Math.sign(speed)*moved);
+ if(step.blocked&&moved<Math.hypot(dx,dz)*.55)speed=0;
 }
 if(!activeCar&&Math.abs(speed)*3.6>46&&rating>40)rating=Math.max(40,rating-Math.ceil(dt*2));if(osmActive){x=Math.max(-4900,Math.min(3550,x));z=Math.max(-3600,Math.min(2500,z))}else{x=Math.max(-1700,Math.min(1700,x));z=Math.max(-1500,Math.min(1500,z))}if(activeCar){
  activeCar.g.position.set(x,terrainAt(x,z)+.045,z);activeCar.g.rotation.y=angle;
@@ -3151,6 +3189,9 @@ if(!activeCar&&Math.abs(speed)*3.6>46&&rating>40)rating=Math.max(40,rating-Math.
  if(!walking)busPark={x,z,angle};
 }if(osmActive)updateMiloviceChunks();
 if(Math.floor(elapsed*2)!==Math.floor((elapsed-dt)*2)){
+ window.__miloviceCollisionDebug={...collisionWorld.stats(),
+  stationPortals:window.__miloviceLandmarkDebug?.stationPassagePortals||[],
+  cars:trafficCars.length,people:trafficPeople.length};
  window.__miloviceVehicleDebug={
   activeCarId:activeCar?.id||null,lastExitedVehicle,
   bus:{x:+bus.position.x.toFixed(2),z:+bus.position.z.toFixed(2)},
