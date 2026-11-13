@@ -1,3 +1,4 @@
+import {samplePerimeterRoofHeight} from './perimeter-roof-envelope.js';
 // Milovice RP Roof System 2.0 — shared, deterministic dormer intersections.
 // This is NOT a generic visual style: a building-specific, photo-sourced
 // specification supplies each dormer; the shared solver cuts its footprint
@@ -112,6 +113,11 @@ export function clipRoofFacesForFeatures(faces,featureSpecs){
  * No independent guessed "support height" that could open a side gap.
  */
 export function roofHeightAtPoint(roof,point,origin=roof?.origin){
+ // New perimeter-safe roof uses its own already triangulated surface.
+ // Sample the ACTUAL rendered triangle so a dormer cannot get a floating
+ // rear wall from the old bounding-box plane assumption.
+ if(roof?.roofModel==='perimeter-constrained')
+  return samplePerimeterRoofHeight(roof,point);
  if(!roof?.bounds||!roof?.globalAxis||!origin||
   !Number.isFinite(point?.x)||!Number.isFinite(point?.z))return null;
  const {ax,az}=roof.globalAxis,{minS,maxS,minT,maxT}=roof.bounds;
