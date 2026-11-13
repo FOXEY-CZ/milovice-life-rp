@@ -63,7 +63,7 @@ try{
     environment.sources!==1||environment.ids[0]!=='street-5-kvetna-2014'||
     environment.featureCount<30||environment.instances<40||
     environment.pavementPieces!==0||!environment.unverifiedPhotoPavingDisabled||
-     !environment.checkedGreeneryAgainstRoads||environment.roadRejected<0||
+     !environment.checkedGreeneryAgainstRoads||!environment.fullFootprintChecked||environment.roadRejected<0||
     environment.drawMeshes>24||environment.spatiallyApproximate!==true||
      !(environment.minRoadClearance>=1.9))
    throw new Error('5.21 5. května photographed streetscape missing, unbatched or unsourced: '+JSON.stringify(environment));
@@ -103,7 +103,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('360-reality-audit-5261'))
+ if(!(await page.locator('#build-label').innerText()).includes('ground-footprints-5262'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
