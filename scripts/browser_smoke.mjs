@@ -36,6 +36,16 @@ try{
     hero.solidWalls<10||hero.drawMeshes<4)
   throw new Error('5.7.0 genuinely cut-out old-town buildings absent: '+JSON.stringify(hero));
  console.log('5.7.0 actual wall cut-outs in Old Milovice:',JSON.stringify(hero));
+  // Terrain tiles copy every triangle, position, normal and UV from the original
+  // DEM mesh. Foundation quads must be partitioned without losing geometry.
+  const oldGround=await page.evaluate(()=>window.__miloviceTerrainTiles);
+  const oldFoundation=await page.evaluate(()=>window.__miloviceFoundationChunks);
+  if(!oldGround||oldGround.tiles<20||
+     oldGround.sourceTriangles!==oldGround.drawTriangles||
+     !oldFoundation||oldFoundation.quads<50||oldFoundation.meshes<2)
+    throw new Error('5.19 tiled terrain or spatial foundations missing: '+JSON.stringify({oldGround,oldFoundation}));
+  console.log('5.19 original DEM triangles retained in spatial tiles:',
+    JSON.stringify({oldGround,oldFoundation}));
  const landmark=await page.evaluate(()=>window.__milovicePhotoStreetPass||null);
  if(!landmark||landmark.buildings!==3||landmark.dormers<3||
     landmark.rooflights<2||landmark.hedgeGroups<1||
@@ -74,7 +84,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('performance-5180'))
+ if(!(await page.locator('#build-label').innerText()).includes('performance-5190'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -246,6 +256,11 @@ try{
  await page.waitForFunction(()=>window.__miloviceAreasLoaded?.includes('mlada'),null,{timeout:105000});
  const mladaStats=await page.evaluate(()=>window.__miloviceAreaStats);
  console.log('Mladá streamed:',JSON.stringify(mladaStats));
+  const tiledGround=await page.evaluate(()=>window.__miloviceTerrainTiles);
+  if(tiledGround.tiles<=oldGround.tiles||
+     tiledGround.sourceTriangles!==tiledGround.drawTriangles)
+    throw new Error('5.19 streamed region terrain lost triangles: '+JSON.stringify(tiledGround));
+  console.log('5.19 streamed regional DEM tiles:',JSON.stringify(tiledGround));
   const cityWalls=await page.evaluate(()=>window.__miloviceCityWallBatch);
   if(!cityWalls||cityWalls.rawWalls<20||
      cityWalls.drawMeshes>=cityWalls.rawWalls||cityWalls.meshesSaved<1)
