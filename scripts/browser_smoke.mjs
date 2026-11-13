@@ -61,6 +61,9 @@ try{
     !houseRoof.atticUnderPitchedRoof||houseRoof.upperFullStoreysModelled!==1||
     Math.abs(houseRoof.modelledEaveWallHeight-3.75)>.001||
     !houseRoof.noUnconnectedRoofParts||
+    !houseRoof.automaticRoofClipping||!houseRoof.shellFacesClipped||
+    !houseRoof.openingProfileFromPhoto||houseRoof.sharedRoofFeatureCount!==2||
+    !(houseRoof.mainRoofOpeningArea>1.0)||
     !(houseRoof.gapSealedMetres>.10)||
     !(houseRoof.wallInfillTriangles>3)||
     Math.abs(houseRoof.eaveOverhang-.30)>1e-7||
@@ -68,7 +71,7 @@ try{
     houseRoof.roofFootprintError>1e-5)
    throw new Error('5.29.1 Školská detached hip or dormer roof survived: '+
     JSON.stringify({houseRoof,landmark}));
- console.log('5.29.1 photo house roof rebuilt and sealed:',JSON.stringify(houseRoof));
+ console.log('5.30 Roof System 2.0 photo-driven intersections and closed shell:',JSON.stringify(houseRoof));
  const photoBuildingPass=await page.evaluate(()=>window.__milovicePhotoBuildingPass||null);
  if(!photoBuildingPass||
     photoBuildingPass.representativeHouse!=='Školská 220/1'||
@@ -126,7 +129,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('skolska-roof-rebuild-5291'))
+ if(!(await page.locator('#build-label').innerText()).includes('roof-system-2-5300'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
