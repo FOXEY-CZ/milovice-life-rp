@@ -103,7 +103,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('solid-station-eaves-5287'))
+ if(!(await page.locator('#build-label').innerText()).includes('clean-station-eaves-5288'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -228,14 +228,19 @@ try{
       !p.eaveSoffitClosed||!(p.actualEaveOverhang>=.30)||
       !(p.eaveExteriorEdges>=1)||!(p.eaveTileTriangles>=2)||
       !(p.eaveFasciaTriangles>=2)||
+      !p.roofPlanePartitionedEaves||!(p.eaveDuplicateCapsAvoided>0)||
+      !Number.isFinite(p.eaveEndCaps)||
       !p.seamClosedToActualRoof||!(p.perimeterInfillTriangles>0)||
       !(p.maxFormerRoofWallGap>.01)||
       p.areaError>1e-4||p.footprintOverhang!==0||p.outputTriangles<3||
       Math.hypot(p.axis.ax-roofVisual.globalAxis.ax,
        p.axis.az-roofVisual.globalAxis.az)>.001))
-  throw new Error('5.28.2 station roof must have 3 OSM-clipped shapes on ONE global axis: '+
+  throw new Error('5.28.8 station roof must preserve clean eave and wall junctions: '+
     JSON.stringify(roofVisual));
- console.log('5.28.2 station 360 roof geometry/conservation:',
+ if(roofVisual.sections.slice(0,2).some(p=>p.falseWallSeamCutsExcluded<1)||
+    roofVisual.sections[2].falseWallSeamCutsExcluded!==0)
+  throw new Error('5.28.8 false stucco walls across wing joins: '+JSON.stringify(roofVisual));
+ console.log('5.28.8 station roof geometry and clean joins:',
   JSON.stringify(roofVisual));
  await mkdir('browser-artifacts',{recursive:true});
  // Camera screenshots are useless behind the startup modal; close it,
