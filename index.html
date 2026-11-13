@@ -199,6 +199,7 @@ window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShado
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
 const BUILD_ID='20261113-station-roof-footprint-5282';
+const rpStationRoofAuditCamera=new URLSearchParams(location.search).has('roofAudit');
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x9bc8ec);scene.fog=new THREE.Fog(0x9bc8ec,280,850);const camera=new THREE.PerspectiveCamera(67,innerWidth/innerHeight,.1,1400);const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,matchMedia('(pointer:coarse)').matches?1.6:1.25));renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x65725a,1.6));const sun=new THREE.DirectionalLight(0xffefcc,1.7);sun.position.set(50,100,30);scene.add(sun);
 
 // Visual pipeline 3.8: cinematic tonemapping, improved sky and material response.
@@ -1982,7 +1983,8 @@ function miloviceStationMassing(pts,base,cx,cz){
  // clipped polygon. All three sections share this ONE original OSM axis.
  const stationFrame={cx,cz,ax,az};
  window.__miloviceStationRoofGeometry={sections:[],
-  mode:'footprint-constrained',axisShared:true,source:'OSM 53865956'};
+  mode:'footprint-constrained',axisShared:true,source:'OSM 53865956',
+  center:{x:cx,z:cz,base},globalAxis:{ax,az}};
  const left=stationClip(pts,cx,cz,ax,az,-middle,false);
  const center=stationClip(stationClip(pts,cx,cz,ax,az,-middle,true),cx,cz,ax,az,middle,false);
  const right=stationClip(pts,cx,cz,ax,az,middle,true);
@@ -3669,18 +3671,42 @@ if(Math.floor(elapsed*2)!==Math.floor((elapsed-dt)*2)){
   glbModels:window.__miloviceGLBDebug?.assignments||[]
  };
 }
-const forward=new THREE.Vector3(-Math.sin(angle),0,-Math.cos(angle));const elevation=terrainAt(walking?px:x,walking?pz:z);let desired,target;if(walking){if(walkCam===1){desired=new THREE.Vector3(px,1.90,pz);target=new THREE.Vector3(px-Math.sin(orbitYaw)*22,1.90-Math.sin(orbitPitch)*16,pz-Math.cos(orbitYaw)*22)}else{target=new THREE.Vector3(px,1.5,pz);desired=new THREE.Vector3(px+Math.sin(orbitYaw)*orbitDistance*Math.cos(orbitPitch),1.5+2.1+Math.sin(orbitPitch)*orbitDistance,pz+Math.cos(orbitYaw)*orbitDistance*Math.cos(orbitPitch))}}else if(cam===0){desired=new THREE.Vector3(x,5.4,z).addScaledVector(forward,-12);target=new THREE.Vector3(x,1.7,z).addScaledVector(forward,9)}else if(cam===1){desired=new THREE.Vector3(x,2.42,z).addScaledVector(forward,2.7);target=new THREE.Vector3(x,2.1,z).addScaledVector(forward,32)}else{desired=new THREE.Vector3(x+16,17,z+16);target=new THREE.Vector3(x,1,z)}desired.y+=elevation;target.y+=elevation;if(activeCar&&cam===0){desired.set(x,3.4+elevation,z).addScaledVector(forward,-8.6);target.set(x,1.45+elevation,z).addScaledVector(forward,6)}else if(activeCar&&cam===1){desired.set(x,1.55+elevation,z).addScaledVector(forward,.95);target.set(x,1.5+elevation,z).addScaledVector(forward,25)}if(cameraSnapPending){
- const displacement=camera.position.distanceTo(desired);
- camera.position.copy(desired);
- cameraSnapPending=false;
- window.__miloviceCameraSpawnAudit={
-  snapped:true,previousCameraDistance:Math.round(displacement*100)/100,
-  cameraAltitudeAbovePlayer:Math.round((desired.y-elevation)*100)/100,
-  cameraX:Math.round(desired.x*10)/10,
-  cameraZ:Math.round(desired.z*10)/10
+const forward=new THREE.Vector3(-Math.sin(angle),0,-Math.cos(angle));const elevation=terrainAt(walking?px:x,walking?pz:z);let desired,target;if(walking){if(walkCam===1){desired=new THREE.Vector3(px,1.90,pz);target=new THREE.Vector3(px-Math.sin(orbitYaw)*22,1.90-Math.sin(orbitPitch)*16,pz-Math.cos(orbitYaw)*22)}else{target=new THREE.Vector3(px,1.5,pz);desired=new THREE.Vector3(px+Math.sin(orbitYaw)*orbitDistance*Math.cos(orbitPitch),1.5+2.1+Math.sin(orbitPitch)*orbitDistance,pz+Math.cos(orbitYaw)*orbitDistance*Math.cos(orbitPitch))}}else if(cam===0){desired=new THREE.Vector3(x,5.4,z).addScaledVector(forward,-12);target=new THREE.Vector3(x,1.7,z).addScaledVector(forward,9)}else if(cam===1){desired=new THREE.Vector3(x,2.42,z).addScaledVector(forward,2.7);target=new THREE.Vector3(x,2.1,z).addScaledVector(forward,32)}else{desired=new THREE.Vector3(x+16,17,z+16);target=new THREE.Vector3(x,1,z)}desired.y+=elevation;target.y+=elevation;if(activeCar&&cam===0){desired.set(x,3.4+elevation,z).addScaledVector(forward,-8.6);target.set(x,1.45+elevation,z).addScaledVector(forward,6)}else if(activeCar&&cam===1){desired.set(x,1.55+elevation,z).addScaledVector(forward,.95);target.set(x,1.5+elevation,z).addScaledVector(forward,25)}// Diagnostic camera only in the CI screenshot URL (?roofAudit=1).
+// Render all 360° faces of the station and catch visual roof regressions,
+// not just unit-test triangles. Normal game controls never see this branch.
+const inspect=rpStationRoofAuditCamera?window.__miloviceRoofAuditView:null;
+const roofInfo=window.__miloviceStationRoofGeometry;
+if(inspect&&roofInfo?.center&&roofInfo?.globalAxis){
+ const {x:rx,z:rz,base:rb}=roofInfo.center;
+ const {ax:ra,az:rzAxis}=roofInfo.globalAxis;
+ const normalX=-rzAxis,normalZ=ra;
+ const views={
+  street:[normalX*32+ra*4,normalZ*32+rzAxis*4,11],
+  rail:[-normalX*32-ra*4,-normalZ*32-rzAxis*4,11],
+  left:[-ra*27+normalX*4,-rzAxis*27+normalZ*4,9],
+  right:[ra*27+normalX*4,rzAxis*27+normalZ*4,9],
+  elevated:[normalX*18+ra*19,normalZ*18+rzAxis*19,20]
  };
-}else camera.position.lerp(desired,Math.min(1,dt*8));
-camera.lookAt(target);if(t-lastHud>180){updateUI();lastHud=t}if(t-lastMap>350){drawMini();lastMap=t}const renderStart=performance.now();renderer.render(scene,camera);const frameRenderEnd=performance.now();perfCpuMs+=renderStart-frameCpuStart;perfWebGLMs+=frameRenderEnd-renderStart;window.__miloviceStarted=true;perfFrames++;if(t-perfSince>=1200){
+ const position=views[inspect];
+ if(position){
+  camera.position.set(rx+position[0],rb+position[2],rz+position[1]);
+  camera.lookAt(rx,rb+4.2,rz);
+  window.__miloviceRoofAuditRendered=inspect;
+ }
+}else{
+ if(cameraSnapPending){
+  const displacement=camera.position.distanceTo(desired);
+  camera.position.copy(desired);
+  cameraSnapPending=false;
+  window.__miloviceCameraSpawnAudit={
+   snapped:true,previousCameraDistance:Math.round(displacement*100)/100,
+   cameraAltitudeAbovePlayer:Math.round((desired.y-elevation)*100)/100,
+   cameraX:Math.round(desired.x*10)/10,
+   cameraZ:Math.round(desired.z*10)/10
+  };
+ }else camera.position.lerp(desired,Math.min(1,dt*8));
+ camera.lookAt(target);
+}if(t-lastHud>180){updateUI();lastHud=t}if(t-lastMap>350){drawMini();lastMap=t}const renderStart=performance.now();renderer.render(scene,camera);const frameRenderEnd=performance.now();perfCpuMs+=renderStart-frameCpuStart;perfWebGLMs+=frameRenderEnd-renderStart;window.__miloviceStarted=true;perfFrames++;if(t-perfSince>=1200){
  const fps=Math.round(perfFrames*1000/(t-perfSince));
  const result=performanceGovernor.observe(fps);
  if(result.changed)rpUpdateRenderBudget(result);
