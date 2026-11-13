@@ -207,16 +207,16 @@ try{
     Math.abs(landmarkChecks.stationPavingAxisS-landmarkChecks.stationPassageAudit.s)>.02)
   throw new Error('5.26 station entrance is not aligned with mapped footway: '+JSON.stringify(landmarkChecks.stationPassageAudit));
  const cityRoof=await page.evaluate(()=>window.__miloviceCityRoofAudit||null);
- if(!cityRoof||cityRoof.version!=='5.28.4'||cityRoof.buildings<8||
+ if(!cityRoof||cityRoof.version!=='5.28.5'||cityRoof.buildings<8||
     cityRoof.inverseFanRemoved!==true||
     cityRoof.maxFootprintOvershoot!==0||cityRoof.areaErrors>1e-4||
     cityRoof.hip+cityRoof.gable!==cityRoof.buildings)
-  throw new Error('5.28.4 citywide roof polygons still have inverted/floating faces: '+JSON.stringify(cityRoof));
+  throw new Error('5.28.5 citywide roof polygons still have inverted/floating faces: '+JSON.stringify(cityRoof));
  const houseDetails=await page.evaluate(()=>window.__miloviceHeroArchitecture||null);
  if(!houseDetails||!Number.isFinite(houseDetails.suppressedArbitraryChimneys)||
     !Number.isFinite(houseDetails.skippedUnverifiedGables))
   throw new Error('Hero houses still generate imaginary index-based chimneys or misaligned gables: '+JSON.stringify(houseDetails));
- console.log('5.28.4 roof generation across all city houses:',JSON.stringify({cityRoof,
+ console.log('5.28.5 roof generation across all city houses:',JSON.stringify({cityRoof,
   suppressedArbitraryChimneys:houseDetails.suppressedArbitraryChimneys}));
  const roofVisual=await page.evaluate(()=>window.__miloviceStationRoofGeometry||null);
  if(roofVisual?.sections?.length!==3||roofVisual.mode!=='footprint-constrained'||
