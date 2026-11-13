@@ -110,6 +110,7 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
  function setVisible(record,visible,moving){
   if(!record)return;
   record.container.visible=visible;
+  record.rig.group.userData.cc0Active=visible;
   record.rig.high.visible=!visible;
   record.rig.low.visible=false;
   if(!visible)return;
