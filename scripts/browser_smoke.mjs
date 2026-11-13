@@ -103,7 +103,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('station-tower-photo-5280'))
+ if(!(await page.locator('#build-label').innerText()).includes('instant-camera-snap-5281'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -404,8 +404,16 @@ try{
  console.log('Graphics: balanced and dynamic-shadow mode both rendered');
  await page.locator('#rp-vehicles').click();
  await page.locator('#rp-area-select').selectOption('photo5');
+ await page.evaluate(()=>window.__miloviceCameraSpawnAudit=null);
  await page.locator('[data-spawn="walking"]').click();
- await page.waitForTimeout(450);
+ // On weak GPUs the old 0.45s delay took only 1-2 frames: the camera could
+ // still be mid-teleport UNDER the ground in the saved screenshot.
+ await page.waitForFunction(()=>window.__miloviceCameraSpawnAudit?.snapped===true,
+  null,{timeout:12000});
+ const cameraJump=await page.evaluate(()=>window.__miloviceCameraSpawnAudit);
+ if(!(cameraJump.cameraAltitudeAbovePlayer>1.5&&cameraJump.cameraAltitudeAbovePlayer<12)||
+    !(cameraJump.previousCameraDistance>10))
+  throw new Error('5.28.1 photo5 district camera did not snap above the terrain: '+JSON.stringify(cameraJump));
  if(!(await page.evaluate(()=>window.__miloviceStreetEnvironment?.sceneCount===1)))
    throw new Error('5.21 photo-street walking spawn lost the source-backed environment');
  await page.screenshot({path:'browser-artifacts/milovice-5-kvetna-photo-scene.png'});
