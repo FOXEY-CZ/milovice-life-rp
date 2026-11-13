@@ -142,7 +142,9 @@ export function makeMiloviceHumanAssets(THREE,{playerRig,people,maxNpc=5}){
    idle=by(/(?:^|[^a-z])idle(?:[^a-z]|$)|stand|breath/i)||asset.clips[0];
    walk=by(/walk|locomotion|run|jog/i)||idle;
   }
-  const record={root,mixer,clips:asset.clips.map(c=>c.name),idle,walk,action:null,phase:0,rig,key,container:root,boneState:findBones(imported)};
+  const boneState=findBones(imported);
+  if(!boneState.armsDown)throw Error('Human mesh shoulders remained in T-pose '+key);
+  const record={root,mixer,clips:asset.clips.map(c=>c.name),idle,walk,action:null,phase:0,rig,key,container:root,boneState};
   attached.set(rig,record);
   return record;
  }
