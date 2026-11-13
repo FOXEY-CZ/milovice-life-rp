@@ -2625,7 +2625,7 @@ function osmBuilding(points,tags,index,osmId=null){
   const baseRoofMat=isSchool?osmRoofPalette[4]:oldCenter?osmRoofPalette[0]:osmRoofPalette[index%osmRoofPalette.length];
   const roofMat=modelCard?.roofColor?localArchitectureMaterial(baseRoofMat,modelCard.roofColor):baseRoofMat;
   const roofPreference=modelCard?.roofKind||'auto';
-  const pitched=tags.name==='Penny'&&tags.shop==='supermarket'?miloviceGableRoof(pts,baseHeight,h,pennyRoof):isHouse&&roofPreference!=='flat'&&roofPreference!=='hip'?miloviceGableRoof(pts,baseHeight,h,roofMat):null;
+  const pitched=tags.name==='Penny'&&tags.shop==='supermarket'?miloviceGableRoof(pts,baseHeight,h,pennyRoof):isHouse&&pts.length===4&&roofPreference!=='flat'&&roofPreference!=='hip'?miloviceGableRoof(pts,baseHeight,h,roofMat):null;
   const hip=roofPreference!=='flat'&&!pitched&&(roofPreference==='hip'||roofPreference==='auto')&&(isHouse||isSchool||isChurch||isStation||isBlueStar||isMirova36)?
    miloviceHipRoof(pts,baseHeight,h,isChurch?osmRoofPalette[4]:isStation?osmRoofPalette[0]:(isMirova36||isBlueStar)&&!modelCard?.roofColor?
    (isMirova36?mirova36Roof:osmRoofPalette[1]):roofMat,
@@ -2637,14 +2637,15 @@ function osmBuilding(points,tags,index,osmId=null){
    if(isGrocer74)miloviceGrocer74Detail(pts,baseHeight,h,centerX,centerZ);
    photoStreetBlock.add({id:osmId,points:pts,base:baseHeight,height:h});
     miloviceBusinessFront(pts,tags,baseHeight,h,centerX,centerZ,osmId);
- // Small rooftop ventilation blocks create recognisable silhouettes without expensive meshes.
- if(auditedCore&&(!isHouse&&!isGarage&&!isSchool&&!isBlueStar&&!isChurch&&!isStation&&index%5===0&&w>10&&d>9))legacyRealityAudit.suppressed('suppressedVents');
-  if(!auditedCore&&(!isHouse&&!isGarage&&!isSchool&&!isBlueStar&&!isChurch&&!isStation&&index%5===0&&w>10&&d>9)){
-  const cx=(Math.min(...xs)+Math.max(...xs))*.5,cz=(Math.min(...zs)+Math.max(...zs))*.5;
-  const vent=new THREE.Mesh(new THREE.BoxGeometry(Math.min(w*.23,4),.48,Math.min(d*.22,3)),roofDetailMat);
-  vent.position.set(cx,baseHeight+h+.28,cz);osmLayer.add(vent);
-  const ventTop=new THREE.Mesh(new THREE.BoxGeometry(Math.min(w*.24,4.1),.12,Math.min(d*.23,3.1)),roofVentMat);
-  ventTop.position.set(cx,baseHeight+h+.58,cz);osmLayer.add(ventTop);
+ // Every fifth unreviewed building used to receive a giant 4×3m invented
+ // rooftop box. Nothing in OSM or photos supports those. Remove across the
+ // ENTIRE city, not only the previously audited old-town core.
+ if(!isHouse&&!isGarage&&!isSchool&&!isBlueStar&&!isChurch&&!isStation&&index%5===0&&w>10&&d>9){
+  const audit=window.__miloviceCityUnverifiedFeatures ||= {
+   removedRandomRoofVents:0,removedRandomCommerceAwnings:0,
+   inferredRoofShapePolicy:'quadrilateral-gable-else-hip-or-flat'};
+  audit.removedRandomRoofVents++;
+  if(auditedCore)legacyRealityAudit.suppressed('suppressedVents');
  }
  // Building facade upgrade: per-building window allocation and visible architectural details.
  // Existing flat windows remain only on non-hero buildings.
@@ -2674,9 +2675,15 @@ function osmBuilding(points,tags,index,osmId=null){
      }
     }
   }else if(isCommerce&&!isBlueStar&&!auditedCore){
-   archPart('commercialSign',mx+nx*.30,baseHeight+3.08,mz+nz*.30,len,.34,.18,rotation);
-   archPart('stationGlass',mx+nx*.31,baseHeight+1.52,mz+nz*.31,Math.max(1.0,len-.55),2.15,.13,rotation);
-   archPart('stationCanopy',mx+nx*.88,baseHeight+2.89,mz+nz*.88,Math.max(1.0,len-.15),.13,1.13,rotation);
+   // Only mapped commercial frontage: leave simple glazing until a photo
+   // survey establishes its real doors/windows. Earlier every wall received
+   // an invented billboard and 1.13m deep awning on that entire wall.
+   archPart('stationGlass',mx+nx*.31,baseHeight+1.52,mz+nz*.31,
+    Math.max(1.0,len-.55),2.15,.13,rotation);
+   const audit=window.__miloviceCityUnverifiedFeatures ||= {
+    removedRandomRoofVents:0,removedRandomCommerceAwnings:0,
+    inferredRoofShapePolicy:'quadrilateral-gable-else-hip-or-flat'};
+   audit.removedRandomCommerceAwnings++;
   }else if(isIndustrial&&len>=7){
    const bays=Math.max(1,Math.floor(len/6));
    for(let j=0;j<bays;j++){
