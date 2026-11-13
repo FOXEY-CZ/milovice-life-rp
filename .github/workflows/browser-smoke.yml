@@ -3,6 +3,8 @@ on:
   push:
     paths:
       - index.html
+      - editor.html
+      - scripts/editor_smoke.mjs
       - data/milovice-osm.json
       - data/milovice-terrain.json
       - scripts/browser_smoke.mjs
@@ -27,6 +29,7 @@ jobs:
         run: |
           python3 -m http.server 8080 --bind 127.0.0.1 > /tmp/milovice-http.log 2>&1 &
           node scripts/browser_smoke.mjs
+          node scripts/editor_smoke.mjs
       - name: Attach browser screenshot if available
         if: always()
         uses: actions/upload-artifact@v4
