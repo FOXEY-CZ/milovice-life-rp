@@ -29,11 +29,26 @@ for(const way of e.filter(el=>el.tags?.highway&&isCarriageway(el.tags.highway)))
 const station=byId(53865956),foot=byId(549346217);
 assert(station&&foot&&station.tags.name==='Milovice');
 const originalStation=station.geometry.map(point),originalFootway=foot.geometry.map(point);
-const plan=planStationPassage({footprint:originalStation,footway:originalFootway,halfOpening:1.75});
+const mappedInterior=byId(1550920096);
+assert(mappedInterior?.tags.highway==='footway'&&mappedInterior.geometry.length===2);
+const plan=planStationPassage({footprint:originalStation,footway:originalFootway,
+ indoorFootway:mappedInterior.geometry.map(point),halfOpening:1.75});
 assert(plan,'Must align passage with documented OSM pedestrian way');
 assert(plan.alignedFromMappedFootway&&plan.sourceFootwayId===549346217);
 assert(plan.s>8&&plan.s<14,'Passage must move toward the mapped station entrance footway, including its east wing: '+JSON.stringify(plan));
-assert(plan.offset<2.5,'Passage should be within 2.5m along the station wall from the OSM path endpoint');
+assert(plan.offset<.15,'OSM indoor path must align both entrance faces without a 2m offset');
+assert(plan.mappedThroughBuilding&&plan.sourceInteriorFootwayId===1550920096);
+assert(plan.wallCuts.length>=5,'A corner-spanning portal must split several collinear facade edges');
+assert(plan.coverage.street>3.2&&plan.coverage.rail>3.2,'Both openings must have walkable ground-level width');
+assert.equal(plan.passagePortalCenters.length,2);
+const expectedPortal=mappedInterior.geometry.map(point);
+for(const mapped of expectedPortal)assert(plan.passagePortalCenters.some(p=>
+ Math.hypot(p.x-mapped.x,p.z-mapped.y)<.05),
+ 'Opening must coincide with an OSM through-building endpoint, not a guessed facade centre');
+// Retain a safe fallback only if the map does not contain an interior path.
+const fallback=planStationPassage({footprint:originalStation,footway:originalFootway,halfOpening:1.75});
+assert(fallback&&!fallback.mappedThroughBuilding&&fallback.s>plan.s+.9);
+
 assert(Math.abs(plan.s-plan.footS)<Math.abs(plan.footS),
  'New station axis nearer than old s=0');
 assert(plan.footwayEndpoint&&Number.isFinite(plan.footwayEndpoint.x));
