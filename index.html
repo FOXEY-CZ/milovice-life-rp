@@ -1074,6 +1074,7 @@ const workWalls=new THREE.MeshStandardMaterial({color:0xb9b9b0,roughness:.92});
 const osmParkMaterial=mat(0x769b65),osmStripeMaterial=mat(0xf5e8c8);
 let osmActive=false,osmReady=false,osmLoading=false,oldPosition=null,osmRoads=[],osmBuildings=0,osmNamedRoads=[],osmLandmarks=[];
 const osmDriveRoads=[];
+let stationMappedFootway=null; // OSM 549346217: mapped pedestrian route from 5. května.
 const osmRailways=[];
 let cityAreaManifest=null;
 const loadedCityAreas=new Set(['old']),loadingCityAreas=new Set(),seenCityOSMWays=new Set();
@@ -1194,7 +1195,8 @@ function osmRoadSegment(a,b,width,kind){
  if(!['pedestrian','service','footway','path'].includes(kind)){
   osmStrip(a,b,width+3,osmSidewalkMat,.065);
  }
- osmStrip(a,b,width,osmRoadMaterial,.17);
+ // Real mapped pedestrian routes use paving rather than asphalt for vehicle roads.
+ osmStrip(a,b,width,['footway','path','pedestrian'].includes(kind)?osmSidewalkMat:osmRoadMaterial,.17);
  // Fine roadside edge markings follow the real OSM road segment.
  if(kind==='primary'||kind==='secondary'||kind==='tertiary'||kind==='residential'){
   const dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);
@@ -1678,6 +1680,7 @@ function miloviceStationGroundFloor(pts,base,h,cx,cz){
  const theta=.5*Math.atan2(2*xz,xx-zz),ax=Math.cos(theta),az=Math.sin(theta);
  const levelHeight=3.70,halfOpening=1.75;
  let openings=0,platformChoice=null,bestPlatformScore=-Infinity;
+ const passagePortals=[]; // Coordinates of both physical arch openings.
  const railProbe=osmPoint({lat:50.22940,lon:14.88188});
  for(let i=0;i<pts.length;i++){
   const a=pts[i],b=pts[(i+1)%pts.length],dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);
@@ -1700,21 +1703,57 @@ function miloviceStationGroundFloor(pts,base,h,cx,cz){
    const cutA=new THREE.Vector2(a.x+dx*low,a.y+dz*low);
    const cutB=new THREE.Vector2(a.x+dx*high,a.y+dz*high);
    stationWall(a,cutA,base,levelHeight,cx,cz);stationWall(cutB,b,base,levelHeight,cx,cz);
-   stationArch((cutA.x+cutB.x)/2,(cutA.y+cutB.y)/2,dx,dz,base,cutA.distanceTo(cutB));
+   const portal=new THREE.Vector2((cutA.x+cutB.x)/2,(cutA.y+cutB.y)/2);
+   stationArch(portal.x,portal.y,dx,dz,base,cutA.distanceTo(cutB));
+   passagePortals.push(portal);
    openings++;
   }else stationWall(a,b,base,levelHeight,cx,cz);
  }
  // A pair of opposing open entrance faces yields a walk-through passage.
  window.__miloviceLandmarkDebug ||= {};
  window.__miloviceLandmarkDebug.stationPassageFaces=openings;
- // True-through passage: original textured pavement where the game previously showed grass.
- // Depth comes from the actual OSM building polygon across its shorter axis.
+ // 5.1.5: Centre the paving on the two true arch openings, not the centre
+ // of the irregular OSM station outline. This eliminates the grass at the exit.
  const acrossX=-az,acrossZ=ax;
  const transverse=pts.map(p=>(p.x-cx)*acrossX+(p.y-cz)*acrossZ);
- const passageDepth=Math.min(16,Math.max(4,Math.max(...transverse)-Math.min(...transverse)+1.4));
- const passageYaw=Math.atan2(-az,ax);
- archPart('stationPaving',cx,base+.058,cz,3.47,.115,passageDepth,passageYaw);
+ const portalOffsets=passagePortals.map(p=>(p.x-cx)*acrossX+(p.y-cz)*acrossZ);
+ const tMin=portalOffsets.length===2?Math.min(...portalOffsets):Math.min(...transverse);
+ const tMax=portalOffsets.length===2?Math.max(...portalOffsets):Math.max(...transverse);
+ const passageDepth=Math.min(18,Math.max(4,tMax-tMin+2.6));
+ const shift=(tMin+tMax)*.5,passageYaw=Math.atan2(-az,ax);
+ archPart('stationPaving',cx+acrossX*shift,base+.058,cz+acrossZ*shift,3.47,.115,passageDepth,passageYaw);
  window.__miloviceLandmarkDebug.stationPassagePaving=true;
+ // Use the REAL map footway to connect the existing arch to the sidewalk on
+ // 5. května. The curved frontage means the footway currently ends near, but
+ // not directly at, the arch. Short exterior strips close that gap safely.
+ if(passagePortals.length===2 && stationMappedFootway?.length>=2){
+  const stationCenter=new THREE.Vector2(cx,cz);
+  const waypoint=stationMappedFootway.reduce((best,p)=>
+   p.distanceTo(stationCenter)<best.distanceTo(stationCenter)?p:best);
+  const streetPortal=passagePortals.reduce((best,p)=>
+   p.distanceTo(waypoint)<best.distanceTo(waypoint)?p:best);
+  const railPortal=passagePortals.find(p=>p!==streetPortal);
+  const gap=streetPortal.distanceTo(waypoint);
+  if(gap<28){
+   const outX=streetPortal.x-cx,outZ=streetPortal.y-cz,outLength=Math.hypot(outX,outZ)||1;
+   const nx=outX/outLength,nz=outZ/outLength;
+   const outside=new THREE.Vector2(streetPortal.x+nx*1.65,streetPortal.y+nz*1.65);
+   const nearWay=new THREE.Vector2(waypoint.x+nx*1.65,waypoint.y+nz*1.65);
+   // Three terrain-conforming patches form one route and avoid drawing
+   // the connection straight through a solid station wall.
+   osmStrip(streetPortal,outside,3.24,osmSidewalkMat,.205);
+   osmStrip(outside,nearWay,2.55,osmSidewalkMat,.205);
+   osmStrip(nearWay,waypoint,2.0,osmSidewalkMat,.205);
+   // Opposite exit: continue onto the already mapped railway platform area.
+   const rx=railPortal.x-cx,rz=railPortal.y-cz,rl=Math.hypot(rx,rz)||1;
+   const railExit=new THREE.Vector2(railPortal.x+rx/rl*3.3,railPortal.y+rz/rl*3.3);
+   osmStrip(railPortal,railExit,3.24,osmSidewalkMat,.205);
+   window.__miloviceLandmarkDebug.stationSidewalkConnected=true;
+   window.__miloviceLandmarkDebug.stationFootwayId=549346217;
+   window.__miloviceLandmarkDebug.stationAccessDistance=Math.round(gap*10)/10;
+   window.__miloviceLandmarkDebug.stationAccessConnectorSegments=4;
+  }
+ }
  const r=platformChoice;
  if(r){
   let nx=-r.dz/r.len,nz=r.dx/r.len;
@@ -2276,6 +2315,7 @@ function rpAppendOSMElements(elements){
   const points=el.geometry.map(osmPoint);osmRoads.push(points);
   if(el.tags.name)osmNamedRoads.push({name:el.tags.name,points});
   const kind=el.tags.highway;
+  if(el.id===549346217 && kind==='footway')stationMappedFootway=points;
   const width=kind==='primary'?11:kind==='secondary'?9:kind==='tertiary'?8:kind==='pedestrian'?4:kind==='footway'?1.8:kind==='path'?1.65:kind==='service'?4.5:7.8;
   if(['primary','secondary','tertiary','residential','unclassified','living_street','service'].includes(kind))
    osmDriveRoads.push({points,width,kind,oneway:el.tags.oneway==='yes'?1:el.tags.oneway==='-1'?-1:0});
