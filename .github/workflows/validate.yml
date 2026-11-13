@@ -31,7 +31,9 @@ jobs:
         run: node scripts/legacy-reality-audit.test.mjs
       - name: Verify photo-sourced station forecourt object clearances and OSM building anchors
         run: node scripts/station-forecourt-pass.test.mjs
-      - name: Validate 2025 station platform steel canopy and source-based roof form
+      - name: Verify OSM station roof facets do not overhang and preserve the real footprint
+        run: node scripts/station-roof-geometry.test.mjs
+      - name: Validate historical station facade references and removal of wrong-side canopy
         run: node scripts/station-platform-reality.test.mjs
       - name: Validate permanent source-reviewed architecture and local preview overlays
         run: node scripts/architecture-manifest.test.mjs
