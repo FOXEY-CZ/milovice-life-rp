@@ -94,4 +94,54 @@ for(const [name,p] of Object.entries({rectangle,L,T,U,skew,skolska:original})){
 assert(results.skolska.fallback,'Školská photo geometry MUST demonstrate safe fallback');
 assert(results.skolska.gapBefore>.5,'Detect the actual formerly huge wall/hip mismatch');
 assert(results.rectangle.fallback===false,'Keep fast original roofs where safe');
+// CI must exercise the ACTUAL buildings, not just the one screenshot.
+// Every new imported OSM structure will automatically join this sweep.
+const core={mapped:0,checked:0,perimeterSafe:0,unsupported:0,
+ formerlyHighEaves:0,maxCurrentEaveError:0,maxFormerGap:0};
+for(const b of osm.elements.filter(e=>e.tags?.building&&e.geometry?.length>=3)){
+ core.mapped++;
+ const p=b.geometry.map(q=>pt(
+  (q.lon-14.889)*111320*Math.cos(50.226*Math.PI/180),
+  -(q.lat-50.226)*111320));
+ if(p.length>3&&Math.hypot(p[0].x-p.at(-1).x,p[0].z-p.at(-1).z)<.05)p.pop();
+ const xs=p.map(q=>q.x),zs=p.map(q=>q.z);
+ if(p.length>100||Math.max(...xs)-Math.min(...xs)<2||
+    Math.max(...zs)-Math.min(...zs)<2||
+    Math.max(...xs)-Math.min(...xs)>140||
+    Math.max(...zs)-Math.min(...zs)>140){
+  core.unsupported++;continue;
+ }
+ const triangles=triangulate(p);
+ if(!triangles){core.unsupported++;continue}
+ const roof=planCityBuildingRoof({footprint:p,triangles,baseY:7.012,
+  rise:Math.min(2.3,(Math.min(Math.max(...xs)-Math.min(...xs),
+   Math.max(...zs)-Math.min(...zs)))*.25),kind:'hip'});
+ if(!roof){core.unsupported++;continue}
+ core.checked++;
+ const oldGap=roof.roofBoundaryGapBefore||0;
+ core.maxFormerGap=Math.max(core.maxFormerGap,oldGap);
+ if(oldGap>.10)core.formerlyHighEaves++;
+ if(roof.roofModel==='perimeter-constrained'){
+  core.perimeterSafe++;
+  assert(roof.maxEaveError<=.025,'OSM '+b.id+' has airborne roof eaves');
+  core.maxCurrentEaveError=Math.max(core.maxCurrentEaveError,roof.maxEaveError);
+  assert(roof.faces.length<=triangles.length*25,
+   'OSM '+b.id+' exceeds adaptive facet budget');
+  // Every shared triangle-edge sample must have identical roof height.
+  // A discontinuity would produce a sky slit even with zero wall gap.
+  const heights=new Map();
+  for(const face of roof.faces)for(const v of face){
+   const key=v.x.toFixed(6)+','+v.z.toFixed(6);
+   if(heights.has(key))
+    assert(Math.abs(heights.get(key)-v.y)<.002,
+     'OSM '+b.id+' has an interior roof seam');
+   else heights.set(key,v.y);
+  }
+ }else assert(oldGap<=.101,'OSM '+b.id+' should have used safe hip');
+ assert(roof.relativeAreaError<1e-4,'OSM '+b.id+' roof area mismatch');
+}
+assert.equal(core.mapped,684);
+assert(core.checked>=580,'Too many buildings bypassed the citywide safety gate');
+assert(core.perimeterSafe>30,'The city audit must cover multiple unsafe hips');
+results.citywide=core;
 console.log('Roof System 3.1 perimeter QA PASS',JSON.stringify(results));
