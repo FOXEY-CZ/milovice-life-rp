@@ -62,7 +62,8 @@ try{
  if(!environment||environment.sceneCount!==1||
     environment.sources!==1||environment.ids[0]!=='street-5-kvetna-2014'||
     environment.featureCount<35||environment.instances<50||
-    environment.drawMeshes>24||environment.spatiallyApproximate!==true)
+    environment.drawMeshes>24||environment.spatiallyApproximate!==true||
+     !(environment.minRoadClearance>=1.9))
    throw new Error('5.21 5. května photographed streetscape missing, unbatched or unsourced: '+JSON.stringify(environment));
  if(!(await page.locator('#rp-area-select option[value="photo5"]').count()))
    throw new Error('5.21 photo street scene cannot be selected as a spawn location');
@@ -93,7 +94,7 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('street-scene-5210'))
+ if(!(await page.locator('#build-label').innerText()).includes('roadside-safety-5220'))
   throw new Error('5.14.0 real photographed street block missing');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
@@ -281,14 +282,15 @@ try{
    throw new Error('5.17 OSM roadway geometry was not batch-rendered: '+JSON.stringify(roadBatch));
   console.log('5.17 road batching:',JSON.stringify(roadBatch));
   const streetFurniture=await page.evaluate(()=>window.__miloviceFurnitureBatch);
-  if(!streetFurniture||streetFurniture.objects<120||
-     streetFurniture.instances!==streetFurniture.objects||
-     streetFurniture.drawMeshes>=streetFurniture.objects*.7||
-     streetFurniture.meshesSaved!==streetFurniture.objects-streetFurniture.drawMeshes||
-     streetFurniture.queued!==0)
-   throw new Error('5.18 spatial streetlight and tree instances failed or lost objects: '+JSON.stringify(streetFurniture));
-  console.log('5.18 street furniture batching:',JSON.stringify(streetFurniture));
- const regionalParking=await page.evaluate(()=>window.__miloviceParkingDebug);
+  const safety=await page.evaluate(()=>window.__miloviceRoadsideSafety);
+  if(!streetFurniture?.disabled||streetFurniture.objects!==0||
+     streetFurniture.instances!==0||streetFurniture.drawMeshes!==0||
+     !safety||safety.indexedRoutes<100||safety.segments<200||
+     safety.randomRoadTrees!==0||safety.randomRoadLamps!==0||
+     !(safety.mappedGreenTrees>=0)||!(safety.rejectedGreenTrees>=0))
+   throw new Error('5.22 unsafe global street plants or lamps remain: '+JSON.stringify({streetFurniture,safety}));
+  console.log('5.22 road-crossing and greenery safety:',JSON.stringify({streetFurniture,safety}));
+  const regionalParking=await page.evaluate(()=>window.__miloviceParkingDebug);
  if(!regionalParking||regionalParking.parked<=parking.parked)
   throw new Error('Newly loaded Mladá region did not add parked cars: '+JSON.stringify(regionalParking));
  console.log('5.4.1 Mladá parked traffic:',JSON.stringify(regionalParking));
