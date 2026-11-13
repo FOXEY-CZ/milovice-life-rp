@@ -6,7 +6,7 @@
     "118487980": {
       "stage": "verified",
       "source": "https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_1.jpg",
-      "notes": "Photo 2024-05-30: cream corner house at Skolska 220/1, 5. kvetna, dark pitched roof with two prominent street-oriented gables and arched attic glazing. Two occupied levels corroborated by OSM/RUIAN. Exact dormer dimensions not measured.",
+      "notes": "Photo 2024-05-30 Školská 220/1: cream single full masonry wall storey with dark pitched roof and two prominent roof-integrated arched front gables; usable attic is the second mapped OSM level, NOT a second full-height facade. Indicative eave-wall height 3.75 m is modelled from photograph, NOT surveyed. Actual roof geometry and opening coordinates require multi-view validation.",
       "floors": "2",
       "facadeColor": "#e2d0b4",
       "roofColor": "#404348",
@@ -14,15 +14,16 @@
       "review": {
         "approved": true,
         "reviewer": "Milovice RP — manual Commons visual comparison",
-        "summary": "Verified photo and OSM ID 118487980: cream corner two-level house, dark pitched roof, arched attic dormers. Real ridge heights and per-face window locations are not surveyed.",
+        "summary": "The 2024 Commons view identifies Školská 220/1: cream eave-height walls with only ground-floor rectangular windows, dark steep main roof, two prominent arched gable bays integrated with the main roof. 3.75m eave-wall height is a photo-informed approximate modelling estimate, not measured; exact doors and rear face remain unverified.",
         "reviewedAt": "2026-11-13T13:00:00Z"
       },
       "provenance": {
         "photoAuthor": "ŠJů",
         "photoLicense": "CC BY 4.0",
         "photoDate": "2024-05-30",
-        "precision": "visual approximation only"
-      }
+        "precision": "One full masonry floor plus roof attic per photo, 3.75m eave estimate unmeasured; OSM two levels include attic"
+      },
+      "height": "3.75"
     },
     "202367194": {
       "stage": "verified",
