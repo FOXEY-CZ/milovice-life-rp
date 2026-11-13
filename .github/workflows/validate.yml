@@ -27,6 +27,8 @@ jobs:
         run: node scripts/road-clearance.test.mjs
       - name: Verify 360 reality audit OSM footway, station portals and actual crossings
         run: node scripts/reality-walkways.test.mjs
+      - name: Reject legacy invented landmarks and unreviewed vegetation in old core
+        run: node scripts/legacy-reality-audit.test.mjs
       - name: Verify photo-sourced station forecourt object clearances and OSM building anchors
         run: node scripts/station-forecourt-pass.test.mjs
       - name: Validate 2025 station platform steel canopy and source-based roof form
