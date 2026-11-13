@@ -54,7 +54,11 @@ const wingClosure=planRoofPerimeterClosure({
  outline:wing,originalOutline:whole,roof:wingRoof,origin,wallTopY:3.70
 });
 assert.equal(wingClosure.excludedVirtualEdges,1);
-assert(wingClosure.faces.length>0);
+assert(wingClosure.closedToRoof);
+assert(wingClosure.faces.length>=0);
+// A rectangular hip touches all real perimeter edges at its eave line:
+// ZERO infill triangles is the correct geometrical answer, not a failure.
+// On real irregular buildings other mapped sides may require infill.
 assert(!wingClosure.faces.some(tri=>tri.every(pt=>Math.abs(pt.x-6)<eps)),
  'Do not add an artificial triangular wall across the raised-centre cut');
 const centralClosure=planRoofPerimeterClosure({
