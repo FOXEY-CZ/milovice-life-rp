@@ -1,3 +1,12 @@
+## Milovice RP 5.27.2 — Nádražka není vedle nádraží
+
+- Opravený poslední přehlédnutý zbytek: automatický generátor dával na boční koncové stěny nádraží neověřená okna, takže prostředí působilo jako vymyšlená boční kavárna. Tyto dekorace se nyní na koncové fasády nevkládají ani v přízemí, ani ve vyšším patře.
+- Nádražka **není samostatný 3D objekt ani boční přístavek**. Pouze v mapě zůstává označení uvnitř čekárny poblíž správného mapovaného přístupu; jde o orientační bod, ne tvrzení o poloze konkrétních dveří.
+- Hlavní orientační bod v plné mapě se jmenuje **Nádraží Milovice** bez spojeného označení Nádražky. Obrys stanice, podloubí, chodníky, střecha a zelený přístřešek nástupiště se zachovávají.
+- Historické zdroje: [Nádražky.eu](https://www.nadrazky.eu/hospoda.php?hospodaID=100273), [Železničář 08/2022](https://zeleznicar.cd.cz/assets/zeleznicar/zeleznicar_08_2022.pdf).
+
+---
+
 ## Milovice RP 5.27.1 — fotorealističtější střecha nádraží
 
 - Střecha **nádražní budovy** má nyní červenou taškovou texturu a matný materiál, nikoli plechové pásy. Barevný a materiálový podklad: [fotografie výpravní budovy ŠJů](https://stellwerke.info/stw/stw.php?id=22402).
