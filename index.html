@@ -1195,12 +1195,6 @@ const workWalls=new THREE.MeshStandardMaterial({color:0xb9b9b0,roughness:.92});
 const osmParkMaterial=mat(0x769b65),osmStripeMaterial=mat(0xf5e8c8);
 let osmActive=false,osmReady=false,osmLoading=false,oldPosition=null,osmRoads=[],osmBuildings=0,osmNamedRoads=[],osmLandmarks=[];
 rpUpdateRenderBudget(); // All OSM and render-budget dependencies are initialized.
- window.__miloviceGPUProfile={
-  diffuseMobile:isMobileGPU,roadDiffuse:osmRoadMaterial.isMeshLambertMaterial,
-  sidewalkDiffuse:osmSidewalkMat.isMeshLambertMaterial,
-  buildingDiffuse:osmBuildingMaterial.every(m=>m.isMeshLambertMaterial),
-  farClip:camera.far,sharpDpr:renderer.getPixelRatio()
- };
 const osmDriveRoads=[];
 let stationMappedFootway=null; // OSM 549346217: mapped pedestrian route from 5. května.
 const osmRailways=[];
@@ -1281,6 +1275,13 @@ function milovicePavingTexture(){
  return tex;
 }
 const osmSidewalkMat=cityMatte(0xffffff,citySurfaceKit.paving,.91),osmRoofMat=mat(0x666a68),osmWindowMat=mat(0x4b7683);
+window.__miloviceGPUProfile={
+ diffuseMobile:isMobileGPU,
+ roadDiffuse:osmRoadMaterial.isMeshLambertMaterial,
+ sidewalkDiffuse:osmSidewalkMat.isMeshLambertMaterial,
+ buildingDiffuse:osmBuildingMaterial.every(m=>m.isMeshLambertMaterial),
+ farClip:camera.far,sharpDpr:renderer.getPixelRatio()
+};
 function miloviceRoofTiles(){
  const cv=document.createElement('canvas');cv.width=cv.height=256;const ctx=cv.getContext('2d');
  ctx.fillStyle='#b57558';ctx.fillRect(0,0,256,256);
