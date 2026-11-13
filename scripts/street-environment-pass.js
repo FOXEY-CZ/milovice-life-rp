@@ -74,7 +74,7 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
  const emptyStats=()=>({sources:PHOTO_STREET_ENVIRONMENT.length,sceneCount:entries.size,
   minRoadClearance:data.length?Math.min(...data.map(v=>v.minimumRoadClearance)):null,
   chosenSides:data.map(v=>v.sideSign),
-  pavementPieces,roadRejected,
+  pavementPieces,roadRejected,unverifiedPhotoPavingDisabled:true,
   drawMeshes,instances,featureCount,ids:[...entries],spatiallyApproximate:true,
   scope:'Photo-informed street environments, not exact surveyed positions'});
  function report(){if(typeof window!=='undefined')window.__miloviceStreetEnvironment=emptyStats()}
@@ -277,7 +277,9 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
    root.userData.lodDetail=true;
    root.userData.photoEnvironment=true;
    root.userData.photoReference=ref.id;
-   paving(root,anchor,side);
+   // 5.26: the former 156 picture-inspired slabs/curbs/drains were not
+   // placed on a surveyed sidewalk and intersected duplicate OSM paving.
+   // Keep only OSM footway geometry and photographed non-paving objects.
    treeRow(root,anchor,side);
    signs(root,anchor,side);
    wallAndGate(root,anchor,side);
