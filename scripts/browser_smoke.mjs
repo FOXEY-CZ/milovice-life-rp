@@ -62,7 +62,8 @@ try{
  if(!environment||environment.sceneCount!==1||
     environment.sources!==1||environment.ids[0]!=='street-5-kvetna-2014'||
     environment.featureCount<30||environment.instances<40||
-    environment.pavementPieces!==0||!environment.unverifiedPhotoPavingDisabled||environment.roadRejected<0||
+    environment.pavementPieces!==0||!environment.unverifiedPhotoPavingDisabled||
+     !environment.checkedGreeneryAgainstRoads||environment.roadRejected<0||
     environment.drawMeshes>24||environment.spatiallyApproximate!==true||
      !(environment.minRoadClearance>=1.9))
    throw new Error('5.21 5. května photographed streetscape missing, unbatched or unsourced: '+JSON.stringify(environment));
@@ -218,9 +219,10 @@ try{
  console.log('5.5.0 spatial world collisions + both station portals:',JSON.stringify(collisionCheck));
 
  if(!landmarkChecks.stationParts?.center||!landmarkChecks.stationParts?.left||!landmarkChecks.stationParts?.right)throw new Error('Station wing/center massing missing');
- if(!landmarkChecks.stationSign||!landmarkChecks.stationCanopy||!landmarkChecks.stationStreetSign)
+ if(!landmarkChecks.stationSign||!landmarkChecks.stationCanopy||
+    !landmarkChecks.unverifiedStreetDoorRemoved||landmarkChecks.stationStreetSign!==false)
   throw new Error('4.9 station architecture missing: '+JSON.stringify(landmarkChecks));
- if(!landmarkChecks.stationForecourt||!landmarkChecks.stationStreetEntrance)
+ if(!landmarkChecks.stationForecourt||!landmarkChecks.actualEntranceIsStationPassage||landmarkChecks.stationStreetEntrance!==false)
   throw new Error('5.1.1 station forecourt/entry missing: '+JSON.stringify(landmarkChecks));
  if(landmarkChecks.stationFacadeWindows<8||!landmarkChecks.stationPassagePaving)
   throw new Error('5.1.4 station facade windows or passage paving missing: '+JSON.stringify(landmarkChecks));
