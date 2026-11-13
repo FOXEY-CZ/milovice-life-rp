@@ -168,6 +168,7 @@ import {addLanduseFeature,forestInstancePlacements} from './scripts/landscapes.j
 import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=512';
 import {makeCitySurfaceKit,makeContactShadow} from './scripts/graphics2.js?v=520';
 import {makeMiloviceHumanAssets} from './scripts/human-assets.js?v=530';
+import {makeNearFieldTreeKit} from './scripts/nature-assets.js?v=530';
 const citySurfaceKit=makeCitySurfaceKit(THREE);
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
 const BUILD_ID='20261113-humans-530';
@@ -2550,6 +2551,7 @@ const visualMaterials={
  roof:new THREE.MeshStandardMaterial({color:0x777c7b,roughness:.8})
 };
 const visualDetails=new THREE.Group();osmLayer.add(visualDetails);
+const nearFieldTrees=makeNearFieldTreeKit(THREE);
 const visualTemp=new THREE.Object3D();
 const lampGlowMaterial=new THREE.MeshBasicMaterial({color:0xffe4a4});
 function visualBatch(geo,material,items){
@@ -2577,7 +2579,7 @@ function visualBatch(geo,material,items){
 function improveMiloviceVisuals(){
  for(const mesh of visualLodMeshes)if(mesh.geometry)mesh.geometry.dispose();
  visualLodMeshes.length=0;visualDetails.clear();
- const curbs=[],lines=[],trunks=[],crowns=[],crowns2=[],poles=[],lamps=[];
+ const curbs=[],lines=[],trunks=[],crowns=[],crowns2=[],poles=[],lamps=[],heroTrees=[];
  let state=12637;const rnd=()=>((state=(state*16807)%2147483647)/2147483647);
  // A few street features per long road, rather than per tiny OSM segment.
  let count=0;
@@ -2596,10 +2598,16 @@ function improveMiloviceVisuals(){
      const offset=9+rnd()*3,tx=xx+nx*offset*side,tz=zz+nz*offset*side;
      // Avoid random tree placement right against the station and church facades.
       const stationCenter=osmPoint({lat:50.22910,lon:14.88210}),churchCenter=osmPoint({lat:50.22805,lon:14.88403});
-      if(Math.hypot(tx-stationCenter.x,tz-stationCenter.y)<34||Math.hypot(tx-churchCenter.x,tz-churchCenter.y)<24)continue;
-      trunks.push([tx,1.7,tz,.35,3.4,.35,0]);
-     crowns.push([tx,4.7,tz,2.6+rnd(),2.7+rnd(),2.6+rnd(),rnd()*6]);
-     crowns2.push([tx+.55,5.1,tz-.45,1.8,2,1.8,rnd()*6]);
+      const distStation=Math.hypot(tx-stationCenter.x,tz-stationCenter.y);
+      if(distStation<34||Math.hypot(tx-churchCenter.x,tz-churchCenter.y)<24)continue;
+      // Replace only some EXISTING procedural roadside trees near the station.
+      if(distStation<155&&heroTrees.length<12){
+       heroTrees.push({x:tx,z:tz,height:5.7+rnd()*2.4});
+      }else{
+       trunks.push([tx,1.7,tz,.35,3.4,.35,0]);
+       crowns.push([tx,4.7,tz,2.6+rnd(),2.7+rnd(),2.6+rnd(),rnd()*6]);
+       crowns2.push([tx+.55,5.1,tz-.45,1.8,2,1.8,rnd()*6]);
+      }
     }else if(rnd()<.25){
      const offset=8.5,tx=xx+nx*offset*side,tz=zz+nz*offset*side;
      poles.push([tx,3.1,tz,.11,6.2,.11,0]);
@@ -2614,6 +2622,7 @@ function improveMiloviceVisuals(){
  visualBatch(new THREE.IcosahedronGeometry(1,2),visualMaterials.foliage2,crowns2);
  visualBatch(new THREE.CylinderGeometry(.5,.5,1,6),visualMaterials.roof,poles);
  visualBatch(new THREE.SphereGeometry(1,8,6),lampGlowMaterial,lamps);
+ nearFieldTrees.decorate(heroTrees,visualDetails,terrainAt);
  updateMiloviceChunks(true);
 }
 
@@ -2974,6 +2983,7 @@ scene.fog.near=Math.max(180,OSM_VIEW*.54);scene.fog.far=OSM_VIEW+145;
 let last=performance.now(),lastHud=0,lastMap=0,perfFrames=0,perfSince=performance.now();const perfEl=document.getElementById('perf');function animate(t){requestAnimationFrame(animate);const dt=Math.min(Math.max((t-last)/1000,0),.05);last=t;
 elapsed+=dt;rpAnimateTraffic(dt);animateBoarding(dt);rpUpdateRailTraffic(dt);
  glbHumans.update(dt,elapsed,(keys.has('KeyW')||keys.has('KeyS')||keys.has('KeyA')||keys.has('KeyD'))&&walking,walking?px:x,walking?pz:z);
+ if(Math.floor(elapsed)!==Math.floor(elapsed-dt))nearFieldTrees.update(walking?px:x,walking?pz:z);
  if(Math.floor(elapsed/2)!==Math.floor((elapsed-dt)/2))rpHumanStatus();
 if(osmActive)glbVehicles.update(trafficCars,walking?px:x,walking?pz:z,elapsed,activeCar);if(Math.floor(elapsed/3)!==Math.floor((elapsed-dt)/3))maybeStreamCityAreas();
 if(rpRealisticMode){
