@@ -4,6 +4,39 @@ import {stationExteriorEdge} from './station-roof-eaves.js';
 // notched OSM perimeter its edge can float above the flat-height wall.
 // Fill only the open vertical space between wall top and actual roof height.
 export function planRoofPerimeterClosure({outline,originalOutline=null,roof,origin,wallTopY}={}){
+ if(roof?.roofModel==='perimeter-constrained'){
+  // A perimeter-safe roof has precisely level eaves on EVERY real facade
+  // edge. The only closure is the 12mm construction clearance; do not
+  // create the enormous invented triangular plaster panels of an
+  // axis-aligned hip on a skew/concave building.
+  if(!Array.isArray(outline)||outline.length<3||
+   !Number.isFinite(wallTopY)||!Number.isFinite(roof.eaveY))return null;
+  const gap=roof.eaveY-wallTopY;
+  if(gap<-.005||gap>.10)return null;
+  const pts=outline.map(p=>({x:p.x,z:p.z??p.y}));
+  if(pts.some(p=>!Number.isFinite(p.x)||!Number.isFinite(p.z)))return null;
+  if(pts.length>3&&Math.hypot(pts[0].x-pts.at(-1).x,
+   pts[0].z-pts.at(-1).z)<.02)pts.pop();
+  const faces=[];let distance=0,sections=0,excludedVirtualEdges=0;
+  for(let i=0;i<pts.length;i++){
+   const a=pts[i],b=pts[(i+1)%pts.length];
+   const len=Math.hypot(a.x-b.x,a.z-b.z);
+   if(len<.05)return null;
+   if(originalOutline&&!stationExteriorEdge(a,b,originalOutline)){
+    excludedVirtualEdges++;continue;
+   }
+   if(gap>.001){
+    const v=(p,y,u)=>({x:p.x,y,z:p.z,u,v:(y-wallTopY)*.18});
+    const a0=v(a,wallTopY,distance*.18),b0=v(b,wallTopY,(distance+len)*.18);
+    const a1=v(a,roof.eaveY,distance*.18),b1=v(b,roof.eaveY,(distance+len)*.18);
+    faces.push([a0,b0,b1],[a0,b1,a1]);
+    sections++;
+   }
+   distance+=len;
+  }
+  return {faces,edgeSections:sections,maxGapBefore:Math.max(0,gap),
+   excludedVirtualEdges,closedToRoof:true,perimeterSafe:true};
+ }
  if(!Array.isArray(outline)||outline.length<3||!roof?.bounds||
   !roof?.globalAxis||!origin||!Number.isFinite(wallTopY)||
   !Number.isFinite(roof.eaveY)||!Number.isFinite(roof.ridgeY)||roof.ridgeY<=roof.eaveY||
