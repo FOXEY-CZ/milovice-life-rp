@@ -154,6 +154,14 @@ try{
  assert.equal(await page.locator('#stage').inputValue(),'verified','local progress not persisted');
  assert.equal(await page.locator('#face-status').inputValue(),'seen','Per-facade review not persisted');
  assert.equal(await page.locator('#face-rows').inputValue(),'2,3','Per-floor geometry not persisted');
+ await page.waitForFunction(()=>window.__miloviceEditor?.publishedCount===0,null,{timeout:12000});
+ assert.equal(await page.evaluate(()=>window.__miloviceEditor.reviewCandidateCount),1,
+  'A locally verified house should be eligible for a human-reviewed batch');
+ const exportWait=page.waitForEvent('download');
+ await page.locator('#review-export').click();
+ const downloaded=await exportWait;
+ assert.equal(downloaded.suggestedFilename(),'milovice-architecture-for-review.json',
+  'The review batch must be an explicit downloadable JSON');
  assert((await page.locator('#photo-status').innerText()).includes('3 potvrzených otvorů'),
   'Local photograph annotations were not preserved after reload');
  assert.equal(await page.locator('#facadeColor').inputValue(),'#b2a090');
@@ -179,6 +187,9 @@ try{
  const applied=await page.evaluate(()=>({
   bridge:window.__miloviceArchitectureBridge,hero:window.__miloviceHeroArchitecture
  }));
+ assert(applied.bridge?.publishedVerified===0&&applied.bridge?.previewVerified===1&&
+   applied.bridge?.sourceMap?.['118487963']==='local',
+  'Personal editor draft must not be mislabelled as a publicly published house');
  if(!(applied.bridge.loadedVerified>=1&&applied.bridge.loadedFacadeLayouts>=1&&
       applied.bridge.applied>=1&&applied.hero?.verifiedOverrides>=1&&applied.hero?.verifiedFaces>=1&&
       applied.hero.photoMappedFaces>=1&&applied.hero.photoMappedWindows>=2&&
@@ -186,6 +197,39 @@ try{
        f.wallColor==='#d3b39c'&&f.photoMapped&&f.windows===2&&f.windowPositions.length===2)))
   throw Error('Verified individual facade geometry was not applied to the correct 3D house wall: '+
    JSON.stringify({applied,firstFace}));
+ // Simulate publishing a manually reviewed house: mock the checked-in JSON on
+ // a clean browser (no localStorage), not a fake review in the public repo.
+ await page.evaluate(()=>localStorage.clear());
+ const publishedRecord={
+  stage:'verified',source:'https://commons.wikimedia.org/wiki/File:Licensed_test_reference.jpg',
+  notes:'Human-reviewed building geometry from the original permitted reference',
+  floors:'2',height:'7.2',facadeColor:'#d0bfa8',
+  facades:{S:{status:'seen',source:'https://commons.wikimedia.org/wiki/File:Licensed_test_reference.jpg',
+   notes:'Source checked against the correct OSM building and facade orientation',
+   layout:{rows:'2,3',doorAt:'left',windowWidth:'1.1',wallColor:'#d0bfa8'}}},
+  review:{approved:true,reviewer:'Smoke test reviewer',
+   summary:'Checked referenced OSM way, facade side and licensed photograph',
+   reviewedAt:'2026-11-13T12:00:00Z'}
+ };
+ await page.route('**/data/architecture/verified-buildings.json?*',route=>route.fulfill({
+  status:200,contentType:'application/json',
+  body:JSON.stringify({schema:'milovice-rp-approved-buildings-v1',
+   buildings:{'118487963':publishedRecord}})
+ }));
+ await page.reload({waitUntil:'domcontentloaded',timeout:40000});
+ await page.waitForFunction(()=>window.__miloviceArchitectureBridge?.appliedIds.includes('118487963')&&
+  window.__miloviceArchitectureBridge.publishedVerified===1,null,{timeout:60000});
+ const published=await page.evaluate(()=>({
+  bridge:window.__miloviceArchitectureBridge,hero:window.__miloviceHeroArchitecture
+ }));
+ assert(published.bridge.previewVerified===0&&published.bridge.localOnly===0&&
+  published.bridge.sourceMap['118487963']==='published'&&
+  published.hero.verifiedFaces>=1&&published.hero.verifiedOverrides>=1,
+  'Source-reviewed public architecture failed to load and render in a fresh browser: '+
+   JSON.stringify(published));
  if(errors.length)throw Error(errors.slice(0,5).join('\n'));
- console.log('Street editor OK: OSM streets, reference URLs, persistence, Mladá + verified-card 3D model bridge.',JSON.stringify({stats,applied}));
+ console.log('Street editor and public architecture OK:',JSON.stringify({
+  local:applied.bridge,published:published.bridge,
+  publicFacade:published.hero.faceAudits.find(f=>f.id==='118487963')}));
+
 }finally{await browser.close()}

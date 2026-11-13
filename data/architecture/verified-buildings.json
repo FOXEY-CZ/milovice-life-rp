@@ -1,0 +1,6 @@
+{
+  "schema": "milovice-rp-approved-buildings-v1",
+  "updatedAt": "2026-11-13T00:00:00Z",
+  "description": "Only source-checked, manually approved real buildings appear here. Initial release intentionally contains no unverified entries.",
+  "buildings": {}
+}

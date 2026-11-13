@@ -8,6 +8,10 @@ on:
       - scripts/mapillary-discovery.js
       - scripts/mapillary-discovery-ui.js
       - scripts/mapillary-discovery.test.mjs
+      - scripts/architecture-manifest.js
+      - scripts/architecture-manifest.test.mjs
+      - scripts/street-architecture.js
+      - data/architecture/verified-buildings.json
       - data/milovice-osm.json
       - data/milovice-terrain.json
       - scripts/browser_smoke.mjs

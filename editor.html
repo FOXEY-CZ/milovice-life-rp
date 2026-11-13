@@ -58,7 +58,8 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
 <aside>
  <h2>1. Postup ulicemi</h2>
  <label for="district">Oblast Milovic</label><select id="district"></select>
- <div id="summary" class="stats"></div><div class="progress"><div id="bar"></div></div>
+ <div id="summary" class="stats"></div>
+ <div id="published-status" class="muted">🌐 Načítám společnou databázi domů…</div><div class="progress"><div id="bar"></div></div>
  <label for="search">Najít ulici nebo dům</label><input id="search" type="search" placeholder="Např. Mírová, Nádražní, 118487991">
  <label>Ulice podle nejbližšího mapovaného úseku</label>
  <div id="streets" aria-label="Seznam ulic"></div>
@@ -183,6 +184,10 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
  <h2>3. Evidence projektu</h2>
  <p>Editor ukládá rozepsané karty <strong>lokálně v tomto prohlížeči</strong>. Hra na stejném webu při novém spuštění načte údaje označené jako „Ručně ověřeno“ a použije jejich číselné/barvové hodnoty pro podporované obytné budovy. Mezi zařízeními se data nesynchronizují; k tomu slouží export/import JSON. Není to automatická rekonstrukce podle fotografií.</p>
  <div class="row"><button id="export" type="button" style="flex:1">⬇ Export JSON</button><button id="import" type="button" style="flex:1">⬆ Import JSON</button></div>
+ <h2 style="margin-top:16px">4. Společná databáze města</h2>
+ <p id="publish-info" class="muted">Globální modely jsou oddělené od pracovních návrhů v tomto prohlížeči.</p>
+ <button id="review-export" class="primary" type="button" style="width:100%">📦 Připravit schválení domů (JSON)</button>
+ <p class="muted">Dávka obsahuje jen lokálně ověřené domy. <strong>Stažení souboru nic automaticky nezveřejní.</strong> Každý model musí projít nezávislou kontrolou fotografických zdrojů a souřadnic.</p>
  <input id="file" type="file" accept=".json,application/json" hidden>
  <footer>Základní půdorysy a cesty: © přispěvatelé OpenStreetMap (ODbL). Foto reference zobrazuje výhradně externí poskytovatel; respektuj jejich podmínky. Při nedostupnosti panoramatu nevymýšlej detaily.</footer>
 </aside>
@@ -193,6 +198,7 @@ import {planFacadeViews,nextStreetHouse} from './scripts/facade-review.js?v=590'
 import {normalizeFacadeLayout} from './scripts/facade-model.js?v=5110';
 import {initPhotoSurvey} from './scripts/photo-survey-ui.js?v=5110';
 import {initImageryDiscovery} from './scripts/mapillary-discovery-ui.js?v=5120';
+import {loadApprovedArchitecture,prepareReviewBatch} from './scripts/architecture-manifest.js?v=5130';
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
@@ -203,6 +209,29 @@ const records=saved&&typeof saved==='object'?saved:{};
 const collator=new Intl.Collator('cs',{numeric:true,sensitivity:'base'});
 let regions=[],buildings=[],roads=[],currentStreet='*',chosen=null,polygons=new Map(),roadLayer=null,buildingLayer=null;
 let facadeViews=[],currentFace=null,pano=null,panoRequest=0,panoLoad=null,panoMarker=null,panoRay=null;
+let approvedArchitecture=new Map(),publishedError=null;
+function publishedToEditor(card){
+ const facades={};
+ for(const [side,v] of Object.entries(card.facades||{})){
+  facades[side]={status:'seen',source:v.source||'',notes:v.notes||'',
+   photoEvidence:v.photoEvidence,
+   layout:{rows:Array.isArray(v.rows)?v.rows.join(','):'',windowWidth:v.windowWidth??'',
+    windowHeight:v.windowHeight??'',doorAt:v.doorAt||'',doorWidth:v.doorWidth??'',
+    wallColor:v.wallColor||'',shutters:v.shutters===true?'yes':v.shutters===false?'no':'',
+    photoConfirmed:!!v.openings?.length,openings:v.openings||[]}};
+ }
+ const result={stage:'verified',source:card.source||'',notes:card.notes||'',facades};
+ for(const key of ['floors','height','facadeColor','roofColor','roofKind','windowsPerWall'])
+  result[key]=card[key]??'';
+ return result;
+}
+function publicationSummary(){
+ const n=approvedArchitecture.size;
+ $('published-status').textContent=n+' schválených budov ve společné hře'+
+  (publishedError?' · ⚠ Chyba načítání: '+publishedError:'');
+ $('publish-info').textContent='🌐 '+n+' trvale zveřejněných budov. '+
+  'Lokální změny se v téže hře zobrazí jako soukromý náhled; automatické zveřejnění je vypnuté.';
+}
 const center=[50.228,14.884],map=L.map('map',{preferCanvas:true}).setView(center,15);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
  maxZoom:19,attribution:'© přispěvatelé OpenStreetMap'
@@ -226,7 +255,12 @@ function nearestRoad(p){
  return best<=100?name:'Ulice neurčena';
 }
 const values=()=>Object.values(stages);
-const entry=b=>records[String(b.id)]||{};
+const entry=b=>{
+ const id=String(b.id),local=records[id]||{},shared=approvedArchitecture.get(id);
+ if(!shared)return local;
+ const base=publishedToEditor(shared);
+ return {...base,...local,facades:{...base.facades,...(local.facades||{})}};
+};
 const state=b=>stages[entry(b).stage]?entry(b).stage:'todo';
 function save(){try{localStorage.setItem(storeKey,JSON.stringify(records))}catch(e){$('message').textContent='⚠ Úložiště prohlížeče je zaplněné.'}}
 function style(b){const selected=chosen&&chosen.id===b.id;
@@ -259,7 +293,7 @@ function shown(){
 }
 function renderLists(){
  const count=buildings.length,complete=buildings.filter(b=>state(b)==='verified').length;
- $('summary').textContent=count+' domů · '+complete+' ručně ověřených';
+ $('summary').textContent=count+' domů · '+complete+' ověřených / zveřejněných';
  $('bar').style.width=(count?complete/count*100:0).toFixed(1)+'%';
  const choices=streetNames(),all=[['*',count],...choices];
  $('streets').innerHTML=all.map(([s,n])=>{
@@ -272,7 +306,8 @@ function renderLists(){
  $('buildings').innerHTML=list.slice(0,500).map(b=>
   '<button class="building '+(chosen?.id===b.id?'active':'')+'" data-building="'+b.id+'">'+
   '<span>'+safe(b.name)+'<div class="muted">OSM '+b.id+'</div></span>'+
-  '<span class="tag" style="color:'+colors[state(b)]+'">'+safe(stages[state(b)])+'</span></button>'
+  '<span class="tag" style="color:'+colors[state(b)]+'">'+safe(stages[state(b)])+
+  (approvedArchitecture.has(String(b.id))?' 🌐':'')+'</span></button>'
  ).join('')||(buildings.length?'<p>Žádné domy neodpovídají filtru.</p>':'<p>Načítám mapová data…</p>');
 }
 function renderMap(){
@@ -509,6 +544,18 @@ $('inspector').addEventListener('submit',event=>{
  $('message').textContent='✅ Karta uložena lokálně · '+verifiedFaces.length+
   ' ověřených fasád s 3D parametry. Načti znovu hru na stejném zařízení; pro přenos exportuj JSON.';
 });
+$('review-export').addEventListener('click',()=>{
+ try{
+  const reviewed=prepareReviewBatch({schema:'milovice-rp-street-architecture-v1',buildings:records});
+  const count=Object.keys(reviewed.buildings).length;
+  if(!count){$('message').textContent='⚠ Zatím nejsou žádné lokální ověřené domy k revizi.';return}
+  const blob=new Blob([JSON.stringify(reviewed,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob),link=document.createElement('a');
+  link.href=url;link.download='milovice-architecture-for-review.json';link.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+  $('message').textContent='📦 Připraveno '+count+' návrhů domů k nezávislé kontrole. Nic se automaticky nezveřejnilo.';
+ }catch(error){$('message').textContent='⚠ Export pro kontrolu selhal: '+error.message}
+});
 $('export').addEventListener('click',()=>{
  const data={schema:'milovice-rp-street-architecture-v1',exportedAt:new Date().toISOString(),
   origin:'local-editor-not-yet-github-synced',buildings:records};
@@ -532,6 +579,10 @@ $('file').addEventListener('change',async()=>{
  }catch(e){$('message').textContent='⚠ Import se nepodařil: '+e.message}
  $('file').value='';
 });
+void loadApprovedArchitecture().then(result=>{
+ approvedArchitecture=result.cards;publishedError=result.error;
+ publicationSummary();renderLists();renderMap();
+});
 fetch('./data/regions/index.json',{cache:'no-store'}).then(r=>r.json()).then(data=>{
  regions=data.regions||[];$('district').innerHTML=regions.map(r=>'<option value="'+safe(r.id)+'">'+safe(r.name)+'</option>').join('');
  return loadDistrict('old');
@@ -540,6 +591,10 @@ window.__miloviceEditor={get loaded(){return buildings.length>0},get buildings()
  get streets(){return streetNames().length},get currentDistrict(){return $('district').value},
  get chosenId(){return chosen?.id||null},get cards(){return Object.keys(records).length},
  get imageryCount(){return imageryDiscovery.count},get imageryCoverage(){return imageryDiscovery.coveredHouses},
+ get publishedCount(){return approvedArchitecture.size},
+ get reviewCandidateCount(){return Object.keys(prepareReviewBatch({
+  schema:'milovice-rp-street-architecture-v1',buildings:records
+ }).buildings).length},
  get facades(){return facadeViews.length},get currentFace(){return currentFace?.id||null},
  get facePlan(){return currentFace?{id:currentFace.id,cardinal:currentFace.cardinal,middle:currentFace.middle}:null},
  openBuilding:selectBuilding};

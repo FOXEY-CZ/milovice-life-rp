@@ -1,3 +1,16 @@
+## Milovice RP 5.13 — Shared Street Architecture: natrvalo vydané domy
+
+Stavební editor doposud používal výhradně místní `localStorage`; změny byly vidět jen ve stejném prohlížeči. Nově hra automaticky načte společný verzovaný manifest `data/architecture/verified-buildings.json` a smíchá schválené údaje s lokálními náhledy.
+
+- **Publikované budovy:** manifest je součástí GitHub repozitáře a po nasazení ho při otevření hry čtou všichni. V současné výchozí verzi je záměrně **PRÁZDNÝ**: žádná budova nebyla publikována bez nezávislého ověření skutečných zdrojů. Údaje z automatických testů o smyšlené fasádě nejsou zaneseny do skutečné městské databáze.
+- **Kontrola zdrojů:** každá veřejně schválená budova musí mít validní OSM ID, ověřený zdroj pro svoje geometrické údaje, stav `verified` a ruční revizi (`review.approved`, autor revize, datum a shrnutí kontroly). Nesprávný nebo chybně strukturovaný manifest nesmí rozbít spuštění hry. Všechny schválené záznamy jsou pod verzovacím systémem Git.
+- **Lokální náhled:** změny uložené v editoru stále fungují okamžitě po restartu hry na témže zařízení. Kde lokální záznam obsahuje jen jednu změněnou fasádu, nepřepíše výšku, barvy a další ověřené strany z veřejné databáze.
+- **Přenos do města:** editor umožní stáhnout dávku ověřených domů pro nezávislou revizi a následné začlenění do společného manifestu. Export není oprávnění k automatickému publikování. Schválené dávky lze po revizi zapsat do manifestu a jednorázově vydat celou ulici.
+
+**Omezení:** první vydání 5.13 vytváří trvalou infrastrukturu, ale nijak automaticky nepotvrdí správnost fotografií. Zdrojová kontrola musí probíhat pro každou budovu; geometrie z fotek je stále přibližná podle přesnosti půdorysu/výšky. Přenesené informace mohou mít licenční a atribučně podmíněný původ.
+
+---
+
 ## Milovice RP 5.12 – Automatická obhlídka ulic a fasád (13. listopadu 2026)
 
 Stavební editor nyní podporuje prohlídku **celé vybrané ulice**, nikoliv jen jednoho ručně vybraného domu. V sekci „Automatická obhlídka ulice“ lze s použitím veřejného **Mapillary klientského tokenu** spustit kontrolu snímků pro aktuální dům nebo všechny domy na jeho ulici. Pro každý dům se používají existující mapované OSM půdorysy a směr jeho jednotlivých fasád. Procházení města je implementováno přes oficiální `https://graph.mapillary.com/images` API s malými ohraničujícími oblastmi (maximálně 24 dotazů na uličku na jedno ruční spuštění).
