@@ -3327,7 +3327,7 @@ function rpResolvePlayerStep(fromX,fromZ,dx,dz,radius){
  if(!osmActive)return {x:fromX+dx,z:fromZ+dz,blocked:false};
  return collisionWorld.move(fromX,fromZ,dx,dz,radius,rpDynamicBlocked);
 }
-let last=performance.now(),lastHud=0,lastMap=0,perfFrames=0,perfSince=performance.now();const perfEl=document.getElementById('perf');function animate(t){requestAnimationFrame(animate);const dt=Math.min(Math.max((t-last)/1000,0),.05);last=t;
+let last=performance.now(),lastHud=0,lastMap=0,perfFrames=0,perfSince=performance.now(),perfCpuMs=0,perfWebGLMs=0;const perfEl=document.getElementById('perf');function animate(t){const frameCpuStart=performance.now();requestAnimationFrame(animate);const dt=Math.min(Math.max((t-last)/1000,0),.05);last=t;
 elapsed+=dt;rpAnimateTraffic(dt);animateBoarding(dt);rpUpdateRailTraffic(dt);
 window.__miloviceBigUpdate.activeShadows=
  rpVehicleShadows.update(trafficCars,walking?px:x,walking?pz:z,terrainAt);
@@ -3424,16 +3424,16 @@ if(Math.floor(elapsed*2)!==Math.floor((elapsed-dt)*2)){
   glbModels:window.__miloviceGLBDebug?.assignments||[]
  };
 }
-const forward=new THREE.Vector3(-Math.sin(angle),0,-Math.cos(angle));const elevation=terrainAt(walking?px:x,walking?pz:z);let desired,target;if(walking){if(walkCam===1){desired=new THREE.Vector3(px,1.90,pz);target=new THREE.Vector3(px-Math.sin(orbitYaw)*22,1.90-Math.sin(orbitPitch)*16,pz-Math.cos(orbitYaw)*22)}else{target=new THREE.Vector3(px,1.5,pz);desired=new THREE.Vector3(px+Math.sin(orbitYaw)*orbitDistance*Math.cos(orbitPitch),1.5+2.1+Math.sin(orbitPitch)*orbitDistance,pz+Math.cos(orbitYaw)*orbitDistance*Math.cos(orbitPitch))}}else if(cam===0){desired=new THREE.Vector3(x,5.4,z).addScaledVector(forward,-12);target=new THREE.Vector3(x,1.7,z).addScaledVector(forward,9)}else if(cam===1){desired=new THREE.Vector3(x,2.42,z).addScaledVector(forward,2.7);target=new THREE.Vector3(x,2.1,z).addScaledVector(forward,32)}else{desired=new THREE.Vector3(x+16,17,z+16);target=new THREE.Vector3(x,1,z)}desired.y+=elevation;target.y+=elevation;if(activeCar&&cam===0){desired.set(x,3.4+elevation,z).addScaledVector(forward,-8.6);target.set(x,1.45+elevation,z).addScaledVector(forward,6)}else if(activeCar&&cam===1){desired.set(x,1.55+elevation,z).addScaledVector(forward,.95);target.set(x,1.5+elevation,z).addScaledVector(forward,25)}camera.position.lerp(desired,Math.min(1,dt*8));camera.lookAt(target);if(t-lastHud>180){updateUI();lastHud=t}if(t-lastMap>350){drawMini();lastMap=t}renderer.render(scene,camera);window.__miloviceStarted=true;perfFrames++;if(t-perfSince>=1200){
+const forward=new THREE.Vector3(-Math.sin(angle),0,-Math.cos(angle));const elevation=terrainAt(walking?px:x,walking?pz:z);let desired,target;if(walking){if(walkCam===1){desired=new THREE.Vector3(px,1.90,pz);target=new THREE.Vector3(px-Math.sin(orbitYaw)*22,1.90-Math.sin(orbitPitch)*16,pz-Math.cos(orbitYaw)*22)}else{target=new THREE.Vector3(px,1.5,pz);desired=new THREE.Vector3(px+Math.sin(orbitYaw)*orbitDistance*Math.cos(orbitPitch),1.5+2.1+Math.sin(orbitPitch)*orbitDistance,pz+Math.cos(orbitYaw)*orbitDistance*Math.cos(orbitPitch))}}else if(cam===0){desired=new THREE.Vector3(x,5.4,z).addScaledVector(forward,-12);target=new THREE.Vector3(x,1.7,z).addScaledVector(forward,9)}else if(cam===1){desired=new THREE.Vector3(x,2.42,z).addScaledVector(forward,2.7);target=new THREE.Vector3(x,2.1,z).addScaledVector(forward,32)}else{desired=new THREE.Vector3(x+16,17,z+16);target=new THREE.Vector3(x,1,z)}desired.y+=elevation;target.y+=elevation;if(activeCar&&cam===0){desired.set(x,3.4+elevation,z).addScaledVector(forward,-8.6);target.set(x,1.45+elevation,z).addScaledVector(forward,6)}else if(activeCar&&cam===1){desired.set(x,1.55+elevation,z).addScaledVector(forward,.95);target.set(x,1.5+elevation,z).addScaledVector(forward,25)}camera.position.lerp(desired,Math.min(1,dt*8));camera.lookAt(target);if(t-lastHud>180){updateUI();lastHud=t}if(t-lastMap>350){drawMini();lastMap=t}const renderStart=performance.now();renderer.render(scene,camera);const frameRenderEnd=performance.now();perfCpuMs+=renderStart-frameCpuStart;perfWebGLMs+=frameRenderEnd-renderStart;window.__miloviceStarted=true;perfFrames++;if(t-perfSince>=1200){
  const fps=Math.round(perfFrames*1000/(t-perfSince));
  const result=performanceGovernor.observe(fps);
  if(result.changed)rpUpdateRenderBudget(result);
- if(window.__milovicePerformance)window.__milovicePerformance.lastFps=fps;
+ if(window.__milovicePerformance){Object.assign(window.__milovicePerformance,{lastFps:fps,jsMs:+(perfCpuMs/perfFrames).toFixed(1),webglSubmitMs:+(perfWebGLMs/perfFrames).toFixed(1)});}
  const info=renderer.info.render;
  perfEl.innerHTML='FPS: '+fps+'<small>Draw calls: '+info.calls+
   ' · Trojúhelníky: '+Math.round(info.triangles/1000)+'k'+
-  (isMobileGPU?' · '+Math.round(renderer.getPixelRatio()*100)+'% render':'')+'</small>';
+  (isMobileGPU?' · DPR '+renderer.getPixelRatio().toFixed(2):'')+' · JS '+(perfCpuMs/perfFrames).toFixed(1)+' ms · WebGL '+(perfWebGLMs/perfFrames).toFixed(1)+' ms</small>';
  perfEl.style.color=fps>=45?'#a6f3b9':fps>=25?'#ffe39b':'#ff9e9e';
- perfFrames=0;perfSince=t
+ perfFrames=0;perfCpuMs=0;perfWebGLMs=0;perfSince=t
 }}requestAnimationFrame(animate);setTimeout(()=>osmBtn.click(),300);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 </script></body></html>
