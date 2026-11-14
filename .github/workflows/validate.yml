@@ -21,6 +21,8 @@ jobs:
         run: node scripts/rebuild2-street-inventory.test.mjs
       - name: Verify first Nádražní all-object photo survey and junction context
         run: node scripts/rebuild2-survey.test.mjs
+      - name: Validate physical railway-side platform canopy and zero floating supports
+        run: node scripts/station-platform-canopy.test.mjs
       - name: Validate adaptive mobile frame-rate and detail budgets
         run: node scripts/performance-governor.test.mjs
       - name: Validate ground-level thresholds at ALL building entrances
