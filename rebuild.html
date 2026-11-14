@@ -5,7 +5,7 @@
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px}details{padding:14px;background:#1a2b38;border:1px solid #375265;border-radius:12px}summary{cursor:pointer;font-weight:700;font-size:17px}.row{display:flex;justify-content:space-between;border-bottom:1px solid #344a59;padding:4px 0}.muted{font-size:12px;color:#acc3ca}.pill{display:inline-block;background:#314d5d;border-radius:99px;padding:3px 10px;margin:8px 3px 0 0;font-size:12px}
 </style></head><body><main><div class="hero"><small>FOXEY Games · Milovice RP</small><h1>🏘️ REBUILD 2.0</h1>
 <p>Celé ulice, obě strany, všechny objekty. Dosavadní práce je zachovaná, ale žádná ulice ještě není kompletně schválená.</p>
-<a href="./">🎮 Spustit hru</a> · <a href="./editor.html">🏗️ Editor</a> · <a href="./docs/REBUILD-2.md">📋 Pravidla projektu</a></div>
+<a href="./">🎮 Spustit hru</a> · <a href="./editor.html">🏗️ Editor</a> · <a href="./survey.html?id=old%3AN%C3%A1dra%C5%BEn%C3%AD">🧭 Nádražní 360°</a> · <a href="./docs/REBUILD-2.md">📋 Pravidla projektu</a></div>
 <div class="stats" id="stats"></div><p>Čísla jsou mapované OSM prvky; lampy, značky, stromy a další drobnosti bude nutné fotograficky doplnit a ověřit.</p>
 <h2>Pracovní úseky</h2><div class="controls"><input type="search" id="search" placeholder="Hledat ulici nebo OSM ID"><select id="region"><option value="">Všechny oblasti</option></select></div>
 <p id="summary"></p><div id="cards" class="cards"></div>
@@ -49,7 +49,7 @@
     panel.append(note)}
    const need=document.createElement('p');need.className='muted';
    need.textContent='Povinně zkontrolovat všech '+data.mandatoryAudit.length+' oblastí včetně malých objektů, terénu, napojení a mobilních FPS.';
-   panel.append(need);cards.append(panel)}
+   panel.append(need);const inspect=document.createElement('a');inspect.href='./survey.html?id='+encodeURIComponent(s.id);inspect.textContent='🧭 Otevřít mapu a kontrolu celé ulice';inspect.style.cssText='display:inline-block;margin-top:10px;color:#84d6fc;font-weight:700';panel.append(inspect);cards.append(panel)}
  }
  search.addEventListener('input',draw);region.addEventListener('change',draw);draw();
 })().catch(e=>{document.getElementById('summary').textContent='Chyba při načítání inventáře: '+e.message});
