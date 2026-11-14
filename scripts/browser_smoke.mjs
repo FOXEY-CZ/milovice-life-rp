@@ -363,6 +363,8 @@ try{
     stationParking.outerSidewalkPatches<100||
     stationParking.outerSidewalkCurbs<70||
     stationParking.centralParkingTiles+stationParking.outerSidewalkPatches!==stationParking.pavingCells||
+    !Number.isInteger(stationParking.isolatedOuterSpursRemoved)||
+    stationParking.isolatedOuterSpursRemoved<0||
     stationParking.roadSurfaceUnmodified!==true||
     stationParking.sharedCitySidewalkTexture!==true||
     stationParking.maxOuterFootwayOsmDistance>4.5||
@@ -380,7 +382,7 @@ try{
     stationParking.rightCornerFootwayId!==1282187911||
     stationParking.drawMeshes>7||
     stationParking.collisionSafe!==true||stationParking.noSyntheticCars!==true)
-   throw new Error('5.73 carved outer sidewalk must be INSIDE the island, away from asphalt: '+JSON.stringify(stationParking));
+   throw new Error('5.74 smoothed paver exterior must remain INSIDE the island, away from asphalt: '+JSON.stringify(stationParking));
  const outerFootwayAudit=await page.evaluate(()=>({
   forcedFootwaySegments:window.__miloviceStreetGeometryAudit?.photoOuterFootwaySegments||0,
   cityPavingTexture:window.__miloviceGraphics2?.surfaceMaterials?.sidewalk===true
@@ -388,7 +390,7 @@ try{
  if(outerFootwayAudit.forcedFootwaySegments!==0||
     !outerFootwayAudit.cityPavingTexture)
   throw new Error('5.73 must NOT force OSM footway over asphalt; carved patch shares city paving: '+JSON.stringify(outerFootwayAudit));
- console.log('5.73 paved sidewalk CARVED from parking island, never painted on asphalt:',JSON.stringify({stationParking,outerFootwayAudit}));
+ console.log('5.74 contiguous island paving, photo-grounded outer footway, unmodified asphalt:',JSON.stringify({stationParking,outerFootwayAudit}));
 
  const cutoutTest=await page.evaluate(async()=>{
   const THREE=await import('three');
