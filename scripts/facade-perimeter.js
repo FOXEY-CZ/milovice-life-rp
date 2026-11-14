@@ -1,3 +1,4 @@
+import {flushBoxOffset} from './facade-anchors.js';
 // Every actual non-degenerate OSM polygon edge has a physical wall.
 // Short returns/chamfers must be SEALED, but get no invented windows,
 // door slots or decorative facade rows.
@@ -46,4 +47,23 @@ export function planFacadePerimeterTrims(a,b,centroid,{
  return {length:len,ux,uz,nx,nz,mx,mz,yaw,
   base:band('base',.085,base+.23,.46,.16),
   upper:band('sill',.148,base+height-.12,.20,.28)};
+}
+
+/**
+ * Photo-referenced Školská 220/1 cornice at the EAVE, not a second
+ * full-length floating midwall bar. Only one renderer should add it.
+ * Backside of trim overlaps host wall by 12mm on every rotated OSM edge.
+ * It replaces the common upper band; this is not an extra overlay.
+ */
+export function planPhotographedEaveCornice(frame,{base=0,height=3.75,
+ depth=.18,overlap=.055}={}){
+ if(!frame||![frame.len,frame.mx,frame.mz,frame.nx,frame.nz,
+  frame.yaw,base,height,depth,overlap].every(Number.isFinite)||
+  frame.len<.08||frame.len>140||height<2.3||depth<=.02||depth>.45||
+  overlap<0||overlap>.1)return null;
+ const offset=flushBoxOffset(depth,-.012);
+ return {kind:'frame',width:frame.len+2*Math.min(overlap,frame.len*.02),
+  x:frame.mx+frame.nx*offset,z:frame.mz+frame.nz*offset,
+  y:base+height-.13,height:.14,depth,yaw:frame.yaw,
+  source:'photo-Skolska-220-1-2024',attachedToHost:true};
 }
