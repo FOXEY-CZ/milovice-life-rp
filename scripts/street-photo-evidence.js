@@ -91,3 +91,16 @@ export function streetPhotoCoverage(buildings,{
   evidenceRecords:photos.length,
   allFacadesVerified:false,rows};
 }
+
+// Wikimedia's public low-resolution redirect is a preview only.
+// Never bundle, persist, annotate or reuse the bitmap without confirming
+// its per-file license; the clickable canonical File page remains primary.
+export function previewForCommonsPhoto(source){
+ try{
+  const url=new URL(source?.url||'');
+  if(url.hostname!=='commons.wikimedia.org'||
+   !url.pathname.startsWith('/wiki/File:'))return null;
+  const pathname=url.pathname.replace('/wiki/File:','/wiki/Special:FilePath/');
+  return url.origin+pathname+'?width=320';
+ }catch{return null}
+}
