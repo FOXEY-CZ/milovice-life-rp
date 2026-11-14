@@ -1,3 +1,17 @@
+## Milovice RP 5.33.0 — Photo-first streets: první dávková rekonstrukce bez vymyšlených detailů
+
+**Problém:** hra měla na mnoha nezmapovaných fasádách náhodně rozeseté okenice, markýzy a balkony. Z pouhého čísla parcely, počtu podlaží nebo pořadí domu ve výčtu OSM se ale existence těchto detailů nedá zjistit.
+
+- `scripts/hero-architecture.js`: generované okenice jsou možné **pouze pokud individuálně potvrzená fasáda má `shutters===true`**. Vymyšlené markýzy nad každými nedokumentovanými dveřmi jsou vypnuté. Schválená okna, dveře, barvy a geometrie z `verified-buildings.json` fungují dál.
+- `index.html`: pro ostatní, nedetailní budovy je globálně vypnuté rozmísťování okenic a balkonů podle `index%4`, `j%2` či `j%3`. U panelových domů se opakující se balkon nevytváří jen podle toho, že existuje nadzemní okno. Vlastní doložené vizuální detaily hotelu, Školské a dalších jednotlivě řešených budov zůstávají.
+- Výkon: rušíme nepotřebné renderovací instance, místo abychom přidávali další objekty. Zachovány fasádní otvory, střechy 5.32, sokly a navigace.
+- Diagnostika `window.__miloviceCityUnverifiedFeatures` sleduje `suppressedRandomShutters` a `suppressedRandomBalconies`; `window.__miloviceHeroArchitecture` sleduje `suppressedUnverifiedPhotoOrnaments`.
+- `scripts/street-photo-block.test.mjs` a WebGL smoke test hlídají, že se plošná náhodná výzdoba nevrátí.
+
+**Poctivý stav:** odstranění nesprávně vymyšlených dekorací a nová fotografická knihovna neznamenají, že 684 domů má nyní realistické všechny fasády. Okna a dveře na nedoložených stavbách zůstávají provizorní. Pro 1:1 modely se musí doložit konkrétní snímek a úhel pohledu.
+
+---
+
 ## Milovice RP — uliční fotografický audit 5.33 (Part 9)
 
 Dlouhodobý plán: **přestavovat po ulicích**, ne trávit deset kol ručním záplatováním jedné střechy. Na mapové části `/editor.html` byl přidán **předvýběr archivních fotografií zdarma, bez Mapillary tokenu**, s důsledným oddělením dostupnosti fotografie od ověření fasády.
