@@ -138,3 +138,17 @@ Uživatel zjistil, že objekty z původních screenshotů pravděpodobně nebyly
 Technicky má všech 17 dotčených OSM ID nyní ve `scripts/photo-verification-policy.js` odpověď `render:true`, `photographicApproval:false`, `status:'legacy-restored-awaiting-photo'`. Stará 5.59 spekulativní verze vylepšování vrat zůstává odstraněná. Hra eviduje obnovené starší modely ve `window.__milovicePhotoVerificationAudit.restoredLegacy3D` a testuje 17/17 v CI. `survey.html` zachovává výstrahu, ale nehlásí „3D model pozastaven“: uvádí „původní model obnoven, typ neověřen“.
 
 **Důležité:** Modely z screenshotů uživatele (šedé nízké budovy s tmavými velkými vraty a okny, viditelný nedaleký kostel) nelze přiřadit k některému OSM ID pouze vizuálním dojmem. Před další úpravou je potřeba přesné souřadnice objektu ve hře a fotografické zdroje. Žádné další masové skrývání objektů ani automatické převzetí OSM účelu budovy jako vizuálního faktu.
+
+
+## PART 12 — 5.62: IDENTIFIKACE OBJEKTŮ PŘÍMO VE HŘE (BEZ HÁDÁNÍ)
+
+Po předchozí chybě se 17 nesprávně skrytými garážemi bylo nutné zavést důkazně bezpečný způsob, jak z mobilního screenshotu získat **přesné OSM ID z konkrétního 3D modelu**. `scripts/osm-building-inspector.js` procházejí registrované modelové půdorysy: ray z hráčské kamery + skutečné hrany polygonu + výškový rozsah objektu, vybere první správný průsečík se stěnou. Při pohledu shora může použít střešní průsečík, ale nevymýšlí identitu na základě blízkosti nebo neurčité barvy. Ke každému zasaženému modelu jsou údaje OSM way ID a world-to-GPS souřadnice přibližné podle herního mapového modelu.
+
+V `index.html` hráč aktivuje **🔎 Objekt**, klepne přímo na model a uvidí ID, mapový údaj o typu stavby s **výslovným varováním o chybějící fotografické validaci**, plus otevření daného OSM way a zkopírování identifikačního řádku. Při spuštění s `?inspect=1` je režim automaticky zapnutý. Kamera a hra jsou jinak zachovány. Zpracování geometrie běží **jen při klepnutí**; nedochází k per-frame průchodům OSM.
+
+Rozlišujeme tři skutečně mapované skupiny:
+- **17 severních OSM garáží** mezi Nádražní a V zahrádkách okolo 50.230396,14.883489, 17 OSM ID 194679587…194679763.
+- **7 v oblasti Dukelská** okolo 50.229744,14.886733, ID 539003452…539003458.
+- **8 na východě** okolo 50.226192,14.890987, ID 202389162…202389187.
+
+Podobný herní vzhled těchto skupin **neprokazuje shodu** se screenshotem, jedině klikací identifikace odpoví, co je reálně v konkrétním záběru hry. Vnější fotografický průzkum dosud nepřiřadil jednoznačný detailní snímek k těmto garážovým průčelím; žádné jejich fasády se nově nevymýšlely a žádný objekt se bez schválení neskrýval. CI: `scripts/osm-building-inspector.test.mjs`.
