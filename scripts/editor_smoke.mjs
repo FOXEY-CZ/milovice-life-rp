@@ -49,8 +49,8 @@ try{
  assert((await page.locator('#street-photo-summary').innerText()).includes('domů'),
   'Whole-street photographic coverage overview missing');
  assert((await page.evaluate(()=>window.__miloviceEditor.streetPhotoEvidence))
-  .withIdentifiedBuildingPhotos===3,
-  'Photo index must keep 3 directly sourced old-town building identities');
+  .withIdentifiedBuildingPhotos===4,
+  'Photo index must keep four directly sourced building identities including school');
  await page.locator('button[data-evidence-id="skolska-1-2024"]').click();
  assert((await page.locator('#face-source').inputValue()).includes('%C5%A0kolsk%C3%A1_1.jpg'),
   'Commons evidence link was not assigned to selected facade as a candidate');
