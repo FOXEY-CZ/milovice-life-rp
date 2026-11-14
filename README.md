@@ -1,3 +1,18 @@
+## Milovice RP 5.34 — první viditelná přestavba fotografického bloku (Part 9)
+
+Tato etapa dělá změny **v samotné hře**; rozšíření editoru z 5.33 je již hotovo. Základem jsou tři půdorysy OSM propojené s fotografiemi ŠJů z 30. května 2024, dostupnými pod CC BY 4.0 na Wikimedia Commons. Rozměry z fotografií jsou **odhadnuté**, nikoli měřené.
+
+1. **Mírová 243/36 (OSM 202367254):** hlavní obvodové zdi byly v předchozím modelu příliš vysoké (6,75 m, jako plnohodnotné druhé podlaží). Nynější **odhad výšky okapu 4,15 m** odlišuje jedinou plnou úroveň od podkrovního štítu; celkový hřeben je cca 6,7 m včetně valby. Štítové okno se rozšířilo na tři vertikální tabule, střešní okna se modelují v **počtu tří**, nikoli dvou, a nesmějí přesáhnout skutečné OSM stěny. Přibyly dva nízké živé ploty na viditelných návratech. Původní plošná výloha a neověřená hluboká markýza byly nahrazeny třemi skleněnými sekcemi s bílými rámy a úzkou římsou. Přesné umístění prosklení je stále **vizuální aproximace**, nikoli odměřený stavební výkres.
+2. **Modrá hvězda (OSM 202367194):** zachovala oranžovou dvoupodlažní hmotu a nárožní balkon. Oproti starému modelu má **obloukový rám v horní části nárožního vstupu** inspirovaný původní fotografií; odstraněna byla velká smyšlená tabule „MODRÁ HVĚZDA“ nad vstupem, kterou na referenční fotografii nevidíme.
+3. **Školská 220/1 (OSM 118487980):** zůstává poslední vyzkoušená celistvá střecha se dvěma arched front gables; nová systémová vylepšení se nedotýkají jejích fotografických výřezů.
+4. **Společné materiály 68 detailních domů starého jádra:** `scripts/facade-surface-kit.js` generuje **3 sdílené, deterministické 128px textury**: jemnou fasádní omítku, mikrovzorek tmavého soklu a světelné pruhy na oknech. Původní schválená barva i OSM geometrie jsou zachovány. Materiály jsou sdílené mezi instancemi a chunkovanými zdmi, ne 68 dalších draw callů; žádné stažené fotografické pixely ani náhodná nová okna.
+
+**Technické kontroly:** `scripts/street-photo-block.test.mjs`, `scripts/facade-surface-kit.test.mjs`, GitHub Actions a Chromium WebGL smoke ověřují základní mapované půdorysy, střešní okna, minimální rozpočty textur, stav fasád a odstraněné smyšlené detaily. Nový přístup je použitelný pro další fotograficky schválené budovy: nejdřív doložit zdroj, teprve pak přidat konkrétní členění.
+
+**Nedokončeno:** přesné okno-za-oknem fasády, skutečné výšky ze zaměření, většina ostatních z 684 budov a návaznost na skutečné chodníky. Fotografie mají roku 2024, neprokazují stav v listopadu 2026. Vizuální kontrola na telefonu po publikaci je nezbytná.
+
+---
+
 ## Milovice RP 5.33.0 — Photo-first streets: první dávková rekonstrukce bez vymyšlených detailů
 
 **Problém:** hra měla na mnoha nezmapovaných fasádách náhodně rozeseté okenice, markýzy a balkony. Z pouhého čísla parcely, počtu podlaží nebo pořadí domu ve výčtu OSM se ale existence těchto detailů nedá zjistit.
