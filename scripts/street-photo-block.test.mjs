@@ -61,11 +61,11 @@ assert(mirova,'The documented Mírová 36 OSM footprint was deleted');
 const outline=mirova.geometry.slice(0,-1).map(p=>pointFromGps(p.lat,p.lon));
 const visible=photoFacingEdges(outline,pointFromGps(50.2280572,14.8840981),
  {minLength:3.3,limit:6});
-const front=visible.find(e=>e.len>5.5);
-const side=visible.find(e=>e.index!==front.index&&e.len>=4.3);
-assert(front&&side,'Both photographed Mírová 36 streetfront edge groups must exist');
-assert(front.len>6&&front.len<7,'Use the real 6.45m face, not a 20m bbox');
-for(const [edge,offsets] of [[front,[-.82]],[side,[-.78,.78]]])
+const mirovaFront=visible.find(e=>e.len>5.5);
+const mirovaSide=visible.find(e=>e.index!==mirovaFront.index&&e.len>=4.3);
+assert(mirovaFront&&mirovaSide,'Both photographed Mírová 36 streetfront edge groups must exist');
+assert(mirovaFront.len>6&&mirovaFront.len<7,'Use the real 6.45m face, not a 20m bbox');
+for(const [edge,offsets] of [[mirovaFront,[-.82]],[mirovaSide,[-.78,.78]]])
  for(const offset of offsets)
   assert(Math.abs(offset)<=edge.len*.5-.68,
    'Photo rooflight cannot extend beyond its source OSM facade');
