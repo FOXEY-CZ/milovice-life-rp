@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {PHOTO_GARAGE_COURT,isPhotoGarageWay,planPhotographedGarageCourt}
  from './nadrazni-photo-garage-court.js';
+import {planGroundedEntrance} from './entrance-grade.js';
+import {exteriorFacadeFrame} from './facade-anchors.js';
 const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
 const ways=JSON.parse(read('data/milovice-osm.json')).elements;
 const xy=p=>({x:(p.lon-14.889)*111320*Math.cos(50.226*Math.PI/180),
@@ -55,6 +57,47 @@ for(const front of plan.fronts){
  assert(rev,'Reversed way missing same garage');
  assert(Math.hypot(front.center.x-rev.center.x,front.center.z-rev.center.z)<.05,
   'Reversal must not move a garage shutter to the back side');
+}
+// 5.63.1: the photographed fronts MUST be terrain-safe for all 17 real OSM
+// garages. Testing only the first one masked a map-wide runtime crash before.
+// Use the exact original 10 m DMR 4G interpolation and perimeter grading
+// from the renderer; fail CI if ANY front cannot become a grounded entrance.
+const dem=JSON.parse(read('data/milovice-terrain.json'));
+assert.equal(dem.n*dem.n,dem.values.length);
+function sampleDem(x,z){
+ const nx=dem.n,nz=dem.n;
+ const fx=Math.max(0,Math.min(nx-1.00001,(x-dem.min)/dem.step));
+ const fz=Math.max(0,Math.min(nz-1.00001,(z-dem.min)/dem.step));
+ const ix=Math.floor(fx),iz=Math.floor(fz),tx=fx-ix,tz=fz-iz;
+ const i=iz*nx+ix,v=dem.values;
+ return (tx+tz<=1?
+  v[i]+tx*(v[i+1]-v[i])+tz*(v[i+nx]-v[i]):
+  v[i+nx+1]+(1-tx)*(v[i+nx]-v[i+nx+1])+(1-tz)*(v[i+1]-v[i+nx+1]))*.1;
+}
+for(const front of plan.fronts){
+ const mapped=garageWays.find(w=>w.id===front.id);
+ assert(mapped);
+ const points=mapped.points.slice();
+ if(Math.hypot(points[0].x-points.at(-1).x,
+  points[0].z-points.at(-1).z)<.1)points.pop();
+ let base=-Infinity;
+ for(let i=0;i<points.length;i++){
+  const a=points[i],b=points[(i+1)%points.length];
+  const steps=Math.max(1,Math.ceil(Math.hypot(b.x-a.x,b.z-a.z)/3));
+  for(let j=0;j<=steps;j++){
+   const t=j/steps;
+   base=Math.max(base,sampleDem(a.x+(b.x-a.x)*t,a.z+(b.z-a.z)*t));
+  }
+ }
+ base+=.10;
+ const facade=exteriorFacadeFrame(points,front.edge);
+ const threshold=planGroundedEntrance(facade,{terrainAt:sampleDem,
+  baseHeight:base,topY:base+2.49-.18});
+ assert(threshold,'Photographed garage door must have valid terrain grade '+front.id);
+ assert(threshold.doorHeight>=1.65,
+  'Sufficient door height required on real DMR 4G terrain for '+front.id);
+ assert(Math.abs(threshold.centerY-threshold.doorHeight*.5-
+  threshold.floorY)<.001,'Never float the door on '+front.id);
 }
 const html=read('index.html');
 for(const k of [
