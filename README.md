@@ -1,3 +1,20 @@
+# Milovice RP 5.58 — opravená stříška PŘÍMO nad průchodem nádraží
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/  
+**Mapa Nádražní:** https://foxey-cz.github.io/milovice-life-rp/survey.html?id=old%3AN%C3%A1dra%C5%BEn%C3%AD
+
+Na základě upřesnění, že má být krytí **v části nad průchodem**, byla opravena předchozí 5.57, která chybně upřednostnila nejdelší vzdálenou železniční fasádu (cca 15 m). Nová 5.58 kotevní bod vypočítává **přímo z mapované pěší trasy procházející nádražím**, OSM 1550920096. Vyústění ke kolejišti leží na zalomení železniční fasády budovy OSM 53865956, sousedí s OSM nástupištěm 549346219. Kryt nyní zabírá dvě souvislé stěnové části, každou cca 3,2 m, celkem **6,4 m nad vyústěním**, ne vzdálených 15 m podél kolejí.
+
+- Stříška zůstává na **nástupištní straně**; chybná boční stříška od silnice/cyklověže se nevrací.
+- Sdílený 3D podklad budovy, konzolové držáky bez sloupů na zemi; **tři renderovací skupiny**.
+- Napojení obou částí má výpočet sjednocené vnější normály a automatický test proti **škvírám**.
+- Je to modelově/fotograficky odvozená konstrukce. Přesnou délku, materiál a tvar je potřeba potvrdit kontrolou aktuálních fotografií a ve hře z úrovně kolejí.
+- Při chybějícím OSM průchodu se stříška vůbec negeneruje, místo aby si hra vybrala jinou náhodnou fasádu.
+
+**Původní záznam verze 5.57 níže je již překonaný.**
+
+---
+
 # Milovice RP 5.57 — PART 12: první fyzický REBUILD Nádražní
 
 **Spustit hru:** https://foxey-cz.github.io/milovice-life-rp/  
