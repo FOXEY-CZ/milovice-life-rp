@@ -1,3 +1,17 @@
+## Milovice RP 5.35.0 — kontrola fotoreality po 9 uživatelských snímcích (Part 9)
+
+**Východisko:** majitel projektu poslal 9 pohledů ze hry v telefonu, GPU hlásila **70–99 FPS**. Je důležité neodvozovat z těchto hodnot garantovaný výkon. Místo dalšího přidávání náhodných detailů se porovnávaly modely s konkrétními historickými fotografiemi ŠJů z 30. května 2024: [Modrá hvězda, Mírová 11](https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_11,_hotel_Modr%C3%A1_hv%C4%9Bzda.jpg), [Mírová 36](https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_36.jpg). **Fotografie zachycují rok 2024, neaktuální stav roku 2026 není zaručen.**
+
+- **Modrá hvězda**: původní černá obdélníková deska zábradlí (2.96 × .99m) byla nahrazena jedenácti rozestupy svislých kovových tyčí a tenkým horním madlem. Horní balkonové dveře již nejsou zakryté plnou bílou deskou; mají skleněnou plochu a samostatné lišty. Vedlejší průčelí mělo druhou nezávisle odhadnutou mřížku pozic oken (`len/4.7`) přes primární řadu oken (`len/3.6`), z čehož vznikaly plné červeno-bílé falešné vchody. Druhá neprůhledná vrstva byla **odstraněna**. Nárožní vstup už nemá velký umělý červeno-bílý obdélník. Tmavý sokl odpovídá charakteru doložené fotografie lépe než křiklavě červený pás.
+- **Mírová 243/36**: pravidelný štít už nedrží dvě volně rotované desky s nesprávnou pevnou výškou `.94m`, ale používá **tentýž uzavřený geometrický plán** jako dvojice štítů na Školské. Tři doložené obdélníkové vikýřové/skylight prvky jsou **tenké 3D povrchové plochy s výškou vypočtenou z reálně vykreslovaných střešních trojúhelníků**; nemažou obloukové zasklení Školské ani nejsou natočené podle náhodného úhlu. Tvarové podklady a pozice zůstávají odhadnuté. Nízký stříhaný plot se snížil z 1.12 na .76 m.
+- **Oba domy**: generické vnější okapové tyče/podélné komíny vytvořené na základě čísla hrany (každá druhá stěna) se nevykreslují pro fotografické modely, které mají vlastní okraj střechy. Pozor na drobné další štítové/okapové nepravidelnosti, které vyžadují ruční 360° srovnání.
+- **Celé město**: původní `osmStreetLabels()` generoval až 18 nepodložených **osmimetrových modrých billboardů** s názvy ulic uprostřed silnice, včetně předchozího screenshotu „5. května“. Odstraněny **všechny**, protože OSM obsahuje název ulice, nikoliv přítomnost takové cedule. Názvy ulic zůstávají v HUD/mapě; budoucí značky musí mít georeferenci a fotografii.
+- **Testy**: `scripts/street-photo-block.test.mjs` nově zkouší výšku každého vrcholu střešního okna proti průběhu skutečné střechy, absenci falešných dveří, průhledné balkonové zábradlí, nízký živý plot a nulové 8m billboardy. Browser smoke přímo ověřuje 3 reálné sklonově dosazené střešní prosklení a souvislý štít, chybějící billboardy a nový vstup.
+
+**Žádný nový plošný detail na všech 684 domech nebyl vymyšlen.** Na nedoložených domcích zůstávají provizorní okna i barvy a bude třeba získat jejich správné fasádní zdroje.
+
+---
+
 ## Milovice RP 5.34 — první viditelná přestavba fotografického bloku (Part 9)
 
 Tato etapa dělá změny **v samotné hře**; rozšíření editoru z 5.33 je již hotovo. Základem jsou tři půdorysy OSM propojené s fotografiemi ŠJů z 30. května 2024, dostupnými pod CC BY 4.0 na Wikimedia Commons. Rozměry z fotografií jsou **odhadnuté**, nikoli měřené.
