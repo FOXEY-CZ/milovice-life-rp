@@ -1,14 +1,15 @@
-// Milovice RP 5.66 — photo-grounded parking strips, NOT an invented OSM parking polygon.
-// Two ŠJů photographs (2024-05-30) show grass-grid slabs on both sides of the
-// real station service access. The exact number and extent of bays is estimated;
-// physical positions are derived from one specific OSM service way and
-// photograph camera coordinates. No stationary 2024 cars are baked into 3D.
+// Milovice RP 5.67 — repairs the unpaved green wedge in the photographed
+// Milovice railway-station forecourt. OSM defines the TWO bounding driveways;
+// the user's 2022 Mapy.com screenshot independently confirms a broad pale
+// paver island between asphalt lanes, with a rounded end. NO copyrighted
+// screenshot pixels are imported or used as textures. Exact curb/stone outlines
+// are NOT surveyed. Original 5.66 isolated narrow strips are removed.
 import {isRoadFreeRect} from './road-clearance.js';
 import {stationGpsToWorld} from './station-forecourt-pass.js';
 
 export const STATION_PARKING_REFERENCE=Object.freeze({
- osmWayId:675778842,
- kind:'photo-informed-parking-surface',
+ westAccessWayId:675778842,eastStreetWayId:128308366,
+ kind:'photo-and-OSM-anchored-forecourt-paver-island',
  photos:Object.freeze([
   {url:'https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_parkovi%C5%A1t%C4%9B.jpg',
    lat:50.2297692,lon:14.8823936,heading:200,date:'2024-05-30'},
@@ -16,121 +17,162 @@ export const STATION_PARKING_REFERENCE=Object.freeze({
    lat:50.2296525,lon:14.8823131,heading:200,date:'2024-05-30'}
  ]),
  author:'ŠJů',license:'CC BY 4.0',
- observed:['asphalt service aisle','two-sided grass-grid parking bays',
-  'low grey concrete curb along parking','rail-side ballast'],
- excluded:['unlocated tree island','unlocated tall lamp','imaginary stalls on train platform',
-  'photographed parked cars reproduced as fixed objects'],
- accuracy:'Approximate bay count and individual outlines; camera GPS and service road are georeferenced, not a surveyed parking polygon.'
+ userReference:'user-shared 2022-05-17 Mapy.com comparison, observation only, no image retained',
+ observed:['two dark asphalt routes bound a large pale paved parking island',
+  'wide pale concrete-block paving rather than narrow detached strips',
+  'rounded island tip and a low kerb','bike tower and rail-side vegetation'],
+ excluded:['unlocated trees and traffic signs','imaginary parked cars','invented new asphalt roads'],
+ accuracy:'Photo-informed broad surface and tip. Only OSM road centerlines are georeferenced. Edges, counts and paving pattern are approximations.'
 });
 const d2=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
-function segmentDistance(p,a,b){
- const dx=b.x-a.x,dz=b.z-a.z,len2=dx*dx+dz*dz;
- const t=len2?Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.z-a.z)*dz)/len2)):0;
- return {distance:Math.hypot(p.x-a.x-t*dx,p.z-a.z-t*dz),t};
+function closestPointToPolyline(p,poly){
+ let best=null;
+ for(let i=1;i<poly.length;i++){
+  const a=poly[i-1],b=poly[i],dx=b.x-a.x,dz=b.z-a.z;
+  const n=dx*dx+dz*dz;
+  if(n<.0001)continue;
+  const t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.z-a.z)*dz)/n));
+  const x=a.x+dx*t,z=a.z+dz*t;
+  const distance=d2(p,{x,z});
+  if(!best||distance<best.distance)best={x,z,distance,i,t};
+ }
+ return best;
 }
-function signedPolygonGap(p,polygon){
+function signedPolygonGap(p,poly){
  let inside=false,min=Infinity;
- for(let i=0,j=polygon.length-1;i<polygon.length;j=i++){
-  const a=polygon[j],b=polygon[i];
-  min=Math.min(min,segmentDistance(p,a,b).distance);
+ for(let i=0,j=poly.length-1;i<poly.length;j=i++){
+  const a=poly[j],b=poly[i],dx=b.x-a.x,dz=b.z-a.z,n=dx*dx+dz*dz;
+  const t=n?Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.z-a.z)*dz)/n)):0;
+  min=Math.min(min,Math.hypot(p.x-a.x-t*dx,p.z-a.z-t*dz));
   if((a.z>p.z)!==(b.z>p.z)&&p.x<(b.x-a.x)*(p.z-a.z)/(b.z-a.z)+a.x)
    inside=!inside;
  }
  return inside?-min:min;
 }
-function nearestRailGap(p,railLines){
- let best=Infinity;
- for(const line of railLines)
-  for(let i=1;i<line.length;i++)
-   best=Math.min(best,segmentDistance(p,line[i-1],line[i]).distance);
- return best;
-}
-function roadFrame(a,b){
+function frame(a,b){
  const length=d2(a,b);
- if(length<.01)return null;
+ if(length<55||length>95)return null;
  const ux=(b.x-a.x)/length,uz=(b.z-a.z)/length;
  return {a,b,length,ux,uz,nx:-uz,nz:ux,yaw:Math.atan2(-uz,ux)};
 }
-function at(frame,along,offset){
- return {x:frame.a.x+frame.ux*along+frame.nx*offset,
-  z:frame.a.z+frame.uz*along+frame.nz*offset};
+function at(f,along,offset){
+ return {x:f.a.x+f.ux*along+f.nx*offset,z:f.a.z+f.uz*along+f.nz*offset};
 }
 export function planStationPhotoParking(elements,roadClearance){
  if(!Array.isArray(elements)||!roadClearance?.isClear)return null;
- const way=elements.find(e=>e.id===STATION_PARKING_REFERENCE.osmWayId);
- if(way?.tags?.highway!=='service'||way.tags.oneway!=='yes'||way.geometry?.length<2)
-  return null;
- const f=roadFrame(stationGpsToWorld(way.geometry[0]),stationGpsToWorld(way.geometry[1]));
- if(!f||f.length<55||f.length>95)return null;
- // Both camera locations actually project onto this very OSM access aisle.
- // Fail safely rather than attaching the photograph to an unrelated driveway.
+ const west=elements.find(e=>Number(e.id)===STATION_PARKING_REFERENCE.westAccessWayId);
+ const east=elements.find(e=>Number(e.id)===STATION_PARKING_REFERENCE.eastStreetWayId);
+ if(west?.tags?.highway!=='service'||west.tags.oneway!=='yes'||
+    west.geometry?.length<2||east?.tags?.highway!=='residential'||
+    east.geometry?.length<4)return null;
+ const f=frame(stationGpsToWorld(west.geometry[0]),stationGpsToWorld(west.geometry[1]));
+ if(!f)return null;
+ const other=east.geometry.map(stationGpsToWorld);
+ // 2024 geotagged photography shows the lane, not surveyed stone outlines.
  const cameras=STATION_PARKING_REFERENCE.photos.map(photo=>{
-  const p=stationGpsToWorld(photo),q=segmentDistance(p,f.a,f.b);
-  return {...q,along:q.t*f.length};
+  const p=stationGpsToWorld(photo),q=closestPointToPolyline(p,
+   west.geometry.map(stationGpsToWorld));
+  return {...q,along:(p.x-f.a.x)*f.ux+(p.z-f.a.z)*f.uz};
  });
- if(cameras.some(c=>c.distance>3||c.t<.3||c.t>.9))return null;
- const maxAlong=Math.min(f.length*.70,Math.max(...cameras.map(p=>p.along))+4);
- const localBuildings=elements.filter(e=>e.tags?.building&&e.geometry?.length>=4)
+ if(cameras.some(c=>!c||c.distance>3||c.along<15||c.along>f.length))return null;
+ const buildings=elements.filter(e=>e.tags?.building&&e.geometry?.length>=4)
   .map(e=>e.geometry.map(stationGpsToWorld))
-  .filter(poly=>poly.some(p=>d2(p,f.a)<100));
- const railLines=elements.filter(e=>e.tags?.railway==='rail'&&e.geometry?.length>=2)
+  .filter(poly=>poly.some(p=>d2(p,f.a)<110));
+ const rails=elements.filter(e=>e.tags?.railway==='rail'&&e.geometry?.length>=2)
   .map(e=>e.geometry.map(stationGpsToWorld))
   .filter(line=>line.some(p=>d2(p,f.a)<130));
- const bays=[],rejected=[];
- const bayAlong=2.52,bayDepth=3.67,offset=4.85;
- for(let along=12;along+bayAlong*.5<=maxAlong;along+=2.85){
-  for(const side of [-1,1]){
-   const center=at(f,along,side*offset),issues=[];
-   // Full rectangle, not just the centre; no OSM road or mapped sidewalk
-   // can be hidden by grass-grid pavement.
+ const cells=[],curbs=[],rejected=[];
+ // Exact right-side offset is recalculated against the SECOND mapped road
+ // every row. We never paint rectangles between arbitrary parallel vectors.
+ const length=.74,depth=.72,alongStep=.76,acrossStep=.74;
+ const rowStats=[];
+ for(let along=3.6;along<f.length-3.6;along+=alongStep){
+  const middle=at(f,along,0),near=closestPointToPolyline(middle,other);
+  if(!near)continue;
+  const gap=(near.x-middle.x)*f.nx+(near.z-middle.z)*f.nz;
+  const longitudinal=(near.x-middle.x)*f.ux+(near.z-middle.z)*f.uz;
+  if(gap<7||gap>20||Math.abs(longitudinal)>3.5)continue;
+  // Modelled 4.5m western service and 7.8m eastern residential ways.
+  // Do not turn OSM centreline buffers into a fictitious new vehicle road.
+  let left=2.35,right=gap-3.98;
+  if(right-left<1.3)continue;
+  const center=(left+right)*.5;
+  let half=(right-left)*.5;
+  // The south tip is rounded instead of a sharp rectangular start.
+  // Radius is an approximation informed by the supplied 2022 comparison.
+  const nose=Math.max(0,Math.min(1,(along-2.5)/6,(f.length-2.5-along)/5));
+  half*=Math.sqrt(Math.max(.01,1-(1-nose)**2));
+  left=center-half;right=center+half;
+  let acceptedRow=0;
+  for(let offset=2.52;offset<gap-3.96;offset+=acrossStep){
+   if(offset<left+depth*.47||offset>right-depth*.47)continue;
+   const p=at(f,along,offset);
+   // Whole tile's footprint (not just its centre) clears ALL OSM roads and
+   // footpaths. False-painted asphalt and clipped sidewalks are forbidden.
    if(!isRoadFreeRect(roadClearance,{
-    ...center,length:bayAlong,depth:bayDepth,yaw:f.yaw,buffer:.08,step:.52
-   }))issues.push('mapped-road-or-footway');
-   // Also protect true rails and building footprints (not in road index).
-   for(let i=-3;i<=3&&!issues.length;i++)for(let j=-4;j<=4;j++){
-    const p=at(f,along+i*bayAlong/6,side*offset+j*bayDepth/8);
-    if(nearestRailGap(p,railLines)<1.8){
-     issues.push('railway-clearance');break;
-    }
-    if(localBuildings.some(poly=>signedPolygonGap(p,poly)<.38)){
-     issues.push('building-footprint');break;
-    }
+    ...p,length,depth,yaw:f.yaw,buffer:.025,step:.33
+   })){rejected.push({along,offset,reason:'road-or-footway'});continue}
+   const safetyPoints=[
+    p,at(f,along-length*.5,offset-depth*.5),
+    at(f,along+length*.5,offset+depth*.5),
+    at(f,along-length*.5,offset+depth*.5),
+    at(f,along+length*.5,offset-depth*.5)
+   ];
+   if(safetyPoints.some(pt=>buildings.some(poly=>signedPolygonGap(pt,poly)<.22))){
+    rejected.push({along,offset,reason:'building'});continue;
    }
-   if(issues.length)rejected.push({along,side,reason:issues[0]});
-   else bays.push({id:'parking-'+Math.round(along*100)+'-'+side,
-    x:center.x,z:center.z,along,side,yaw:f.yaw,
-    length:bayAlong,depth:bayDepth,osmWayId:way.id});
+   if(safetyPoints.some(pt=>rails.some(line=>
+    (closestPointToPolyline(pt,line)?.distance??Infinity)<1.65))){
+    rejected.push({along,offset,reason:'railway'});continue;
+   }
+   cells.push({...p,along,offset,length,depth,yaw:f.yaw});
+   acceptedRow++;
+  }
+  rowStats.push({along,betweenRoadsMetres:gap,accepted:acceptedRow});
+  if(acceptedRow){
+   // Curbs border the PHOTO-APPROXIMATE island, not the carriageway.
+   // Their tiny sections are each checked against mapped road surfaces.
+   for(const edge of [2.52,gap-4.16]){
+    const p=at(f,along,edge);
+    if(!isRoadFreeRect(roadClearance,{
+     ...p,length:.71,depth:.11,yaw:f.yaw,buffer:.03,step:.26
+    }))continue;
+    if(buildings.some(poly=>signedPolygonGap(p,poly)<.20))continue;
+    curbs.push({...p,yaw:f.yaw});
+   }
   }
  }
- return {bays,rejected,cameras,frame:f,sourceId:way.id,
-  sourcePhotos:STATION_PARKING_REFERENCE.photos.length,
-  exactParkingOutlineMeasured:false,photoInformed:true,
-  protectedRoadsAndPaths:true,protectedBuildings:true,protectedRailways:true};
+ if(!cells.length)return null;
+ return {cells,curbs,rejected,rowStats,frame:f,cameras,
+  sourceIds:[west.id,east.id],sourcePhotos:STATION_PARKING_REFERENCE.photos.length,
+  groundType:'concrete-paving-island',exactParkingOutlineMeasured:false,
+  photoInformed:true,modelledRoundedNose:true,legacyDetachedStripsRemoved:true,
+  protectedRoadsAndPaths:true,protectedBuildings:true,protectedRailways:true,
+  originalCarriagewaysUntouched:true};
 }
 export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadClearance}={}){
- const roots=[];
- const geo=new THREE.BoxGeometry(1,1,1);
- const mat={
-  turf:new THREE.MeshLambertMaterial({color:0x65744d}),
-  pavers:new THREE.MeshLambertMaterial({color:0xc5c3b5}),
-  curb:new THREE.MeshLambertMaterial({color:0x999c95})
+ const roots=[],geo=new THREE.BoxGeometry(1,1,1);
+ const material={
+  grout:new THREE.MeshLambertMaterial({color:0x92928a}),
+  paver:new THREE.MeshLambertMaterial({color:0xc7c6bd}),
+  curb:new THREE.MeshLambertMaterial({color:0xb9b9b3})
  };
  let planned=null,drawMeshes=0,instances=0;
  const stats=()=>({
-  active:roots.length>0,osmWayId:STATION_PARKING_REFERENCE.osmWayId,
+  active:roots.length>0,sourceIds:planned?.sourceIds||[],
   photos:STATION_PARKING_REFERENCE.photos.length,
-  parkingBays:planned?.bays.length||0,
-  parkingSides:planned?.bays.length?
-   [...new Set(planned.bays.map(b=>b.side))].sort((a,b)=>a-b):[],
-  rejectedBays:planned?.rejected.length||0,
-  grassGridTiles:planned?.bays.length*28||0,
-  drawMeshes,instances,collisionSafe:true,estimatedLayout:true,
-  noSyntheticCars:true,sourceAnchored:true
+  pavingCells:planned?.cells.length||0,curbSegments:planned?.curbs.length||0,
+  rejectedCells:planned?.rejected.length||0,
+  coveredRows:planned?.rowStats.filter(r=>r.accepted>0).length||0,
+  surface:'continuous-photo-informed-paved-median',
+  oldDetachedPaverStripsRemoved:true,
+  roundedTip:true,drawMeshes,instances,
+  collisionSafe:true,estimatedLayout:true,noSyntheticCars:true,sourceAnchored:true
  });
  const publish=()=>{if(typeof window!=='undefined')window.__miloviceStationParking=stats()};
- function instanced(group,material,items,colors=null){
+ function batch(group,mat,items,colors=null){
   if(!items.length)return;
-  const mesh=new THREE.InstancedMesh(geo,material,items.length);
+  const mesh=new THREE.InstancedMesh(geo,mat,items.length);
   const dummy=new THREE.Object3D(),tint=new THREE.Color();
   for(let i=0;i<items.length;i++){
    const p=items[i];dummy.position.set(p.x,p.y,p.z);
@@ -145,37 +187,30 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
  function create(elements){
   if(roots.length)return stats();
   planned=planStationPhotoParking(elements,roadClearance);
-  if(!planned?.bays.length){publish();return stats();}
-  const group=new THREE.Group();group.name='PhotoStationParking_2024';
-  group.userData.photoSourceId='milovice-station-parking-2024';
+  if(!planned){publish();return stats()}
+  const group=new THREE.Group();group.name='PhotoStationForecourtPavedIsland_2022_2024';
   group.userData.photoInformedLayout=true;
   group.userData.estimatedParkingPolygon=true;
-  group.userData.lodX=planned.frame.a.x+planned.frame.ux*32;
-  group.userData.lodZ=planned.frame.a.z+planned.frame.uz*32;
+  group.userData.sourceWayIds=planned.sourceIds;
+  group.userData.needsVisualReview=true;
+  group.userData.lodX=planned.frame.a.x+planned.frame.ux*31;
+  group.userData.lodZ=planned.frame.a.z+planned.frame.uz*31;
   group.userData.lodDetail=true;
-  const grass=[],stones=[],curbs=[];
-  for(const bay of planned.bays){
-   const f=planned.frame,centre=bay;
-   const point=(al,dep)=>at(f,al,dep);
-   // Only emit original material/mesh geometry. Never paste photo textures.
-   grass.push({x:centre.x,y:terrainAt(centre.x,centre.z)+.018,z:centre.z,
-    yaw:centre.yaw,sx:bay.length,sy:.032,sz:bay.depth});
-   for(let i=0;i<4;i++)for(let j=0;j<7;j++){
-    const p=point(bay.along+(i-1.5)*.60,bay.side*4.85+(j-3)*.50);
-    stones.push({x:p.x,y:terrainAt(p.x,p.z)+.052,z:p.z,yaw:centre.yaw,
-     sx:.49,sy:.035,sz:.37});
-   }
-   const curbPoint=point(bay.along,bay.side*2.69);
-   curbs.push({x:curbPoint.x,y:terrainAt(curbPoint.x,curbPoint.z)+.095,z:curbPoint.z,
-    yaw:centre.yaw,sx:bay.length-.06,sy:.17,sz:.14});
+  const grout=[],stones=[],curb=[];
+  for(const p of planned.cells){
+   const y=terrainAt(p.x,p.z);
+   grout.push({...p,y:y+.110,sx:p.length,sy:.036,sz:p.depth});
+   stones.push({...p,y:y+.133,sx:p.length-.028,sy:.028,sz:p.depth-.028});
   }
-  instanced(group,mat.turf,grass);
-  instanced(group,mat.pavers,stones,[0xbfc0b4,0xc8c8bf,0xaeb2a9,0xd3d1c6]);
-  instanced(group,mat.curb,curbs);
+  for(const p of planned.curbs)
+   curb.push({...p,y:terrainAt(p.x,p.z)+.161,sx:.71,sy:.095,sz:.11});
+  batch(group,material.grout,grout);
+  batch(group,material.paver,stones,[0xcac9c0,0xd4d1c8,0xc4c3bb,0xbdbeb6]);
+  batch(group,material.curb,curb);
   layer.add(group);roots.push(group);publish();return stats();
  }
  function reset(){
-  for(const group of roots)group.parent?.remove(group);
+  for(const root of roots)root.parent?.remove(root);
   roots.length=0;planned=null;drawMeshes=instances=0;publish();
  }
  publish();
