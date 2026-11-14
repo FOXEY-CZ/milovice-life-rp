@@ -113,3 +113,19 @@ Nový `scripts/nadrazni-garage-court.js` před vytvořením 3D detailů zkontrol
 Systém neumisťuje žádné parkovací čáry, pojezdové plochy, cestu mezi řadami, strom nebo dopravní značku bez odpovídajícího podkladu. Test `scripts/nadrazni-garage-court.test.mjs` zakotvuje 17 reálných OSM ID, délky vybraných hran, výhled do dvou protilehlých řad, invariantnost při převrácení pořadí OSM vrcholů a bezpečné vypnutí při neúplném mapování. Napojen na GitHub CI. Další etapa Nádražní zůstává otevřená a zahrnuje okolní domy, chodníky, nádražní parkování, vybavení a zeleň.
 
 **Poznámka k postupu:** Přijetí stříšky nádraží 5.58 je dočasné a neznamená, že je její vizuální podoba bezvadná.
+
+
+## PART 12 — 5.60: POVINNÁ FOTOGRAFICKÁ DOKUMENTACE A STAŽENÍ NEOVĚŘENÝCH GARÁŽÍ
+
+**Uživatelské rozhodnutí, závazné pro celý projekt:** Každá ulice, budova a viditelný objekt se smí vydávat za rekonstrukci reality pouze na základě dostupných **skutečných fotografických podkladů** konkrétního místa. OSM je pomocný geodetický podklad, ne vizuální důkaz. Nestačí mapový tag `building=garage`, samotný půdorys, počet podlaží, algoritmická podobnost či fotografický snímek jiného místa. Skutečné fotografie je nutné datovat a prostorově přiřadit; pokud nelze identitu potvrdit, model čeká na průzkum.
+
+**Zpětná oprava 5.59:** 17 OSM objektů 194679587…194679763 v severní Nádražní bylo dříve vykresleno jako šedé garáže s odhadnutými vraty. Identita, současný skutečný druh objektů, střecha, fasády ani vratová orientace **nebyly fotograficky ověřeny** a byly oprávněně zpochybněny. Po kontrole veřejných snímků se nepodařilo jednoznačně spojit dostupné fotografie s těmito konkrétními OSM ID. Status **NEOVĚŘENO**; 5.59 bylo předčasné a není platným dokončeným vizuálním milníkem.
+
+**Úpravy aktivní hry 5.60:**
+- Všech **17 sporných OSM ID je explicitně pozastaveno ve 3D** před vytvořením zdi, střechy, vchodu i kolize. V mapovém datasetu zůstávají, takže je lze dál najít a vyfotit.
+- Opuštěn a ze zdrojů aktivní hry odstraněn spekulativní algoritmus založený na protilehlých řadách; soubory plánovače a starého testu odstraněny, jejich historie zůstává v Git.
+- V `survey.html` jsou sporné objekty v seznamu i mapě upozorněním označené jako **neověřený typ stavby**, se samostatným počtem a možností zdokumentovat chybějící fotografie.
+- `scripts/photo-verification-policy.js`: evidence-first schvalování konkrétní OSM identity, fotografie a vizuálního porovnání. Dokud nejsou doložené zdroje, těchto 17 nelze zobrazit. Zvlášť je uvedeno, že ostatní staré modely mají jen **legacy** status a neprošly automaticky validací.
+- `scripts/photo-verification-policy.test.mjs` ověřuje fail-closed 17 ID, odmítnutí fotografií z jiné lokality a budov bez vizuálního přiřazení, zachování OSM mapových dat, nepropojení se starým 5.59 generátorem a zachování zbytku herní scény.
+
+**Další příprava:** Každý nový fotorealistický stavební průchod se musí opírat o dostupné aktuální snímky celé oblasti; pokud fotka chybí, neupravovat objekty odhadem. Historické modely, včetně kostela a nádraží, čeká postupný 360° re-audit. Uživatelsky přijaté provizorní řešení stříšky 5.58 zůstává zatím nezměněné.
