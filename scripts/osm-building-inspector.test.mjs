@@ -80,13 +80,15 @@ for(const snippet of [
  'maxDistance:180',
  'osmInspectCopied=',
  'navigator.clipboard.writeText(osmInspectCopied)',
- "const BUILD_ID='20261114-3d-object-inspector-5620'"
+ 'const BUILD_ID='
 ])assert(index.includes(snippet),'Missing exact-object inspector implementation '+snippet);
 assert(index.indexOf('osmInspectionBuildings.push({id:osmId,')>
  index.indexOf('baseHeight+=.10;'),
  'Only create inspector entries once the building was actually laid out');
 assert(index.includes('photoRenderingDecision(osmId)'),
  'Never bypass photo audit while adding read-only building inspector');
+assert(/^20\d{6}-[a-z0-9-]+$/.test(index.match(/const BUILD_ID='([^']+)'/)?.[1]||''),
+ 'Inspector test must accept future game builds, not pin its birth version');
 console.log('5.62 mapped 3D OSM inspector PASS',JSON.stringify({
  exactWorldHit:true,missesStayNull:true,realOsmId:realWay.id,
  mapLink:info.osmUrl,photographicGuess:false
