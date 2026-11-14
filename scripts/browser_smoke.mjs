@@ -355,11 +355,16 @@ try{
     JSON.stringify(stationParking.sourceIds)!=='[675778842,128308366]'||
     stationParking.photos!==2||stationParking.pavingCells<340||
     stationParking.coveredRows<55||stationParking.oldDetachedPaverStripsRemoved!==true||
-    stationParking.roundedTip!==true||stationParking.drawMeshes>3||
+    stationParking.roundedTip!==true||stationParking.drawMeshes>6||
     stationParking.instances<stationParking.pavingCells*2||
+    stationParking.parkingBanks?.length!==2||
+    stationParking.oppositeParkingBays<18||
+    stationParking.reservedSidewalkTiles<60||
+    stationParking.sidewalkWidth<1.5||stationParking.sidewalkBuffer<.45||
+    stationParking.mappedFootwayIdPreserved!==1165594426||
     stationParking.collisionSafe!==true||stationParking.noSyntheticCars!==true)
-   throw new Error('5.67 photographed station paved island / mobile budget broken: '+JSON.stringify(stationParking));
- console.log('5.67 full-width photo-informed station paved island:',JSON.stringify(stationParking));
+   throw new Error('5.68 both parked halves, reserved walkway or render budget broken: '+JSON.stringify(stationParking));
+ console.log('5.68 full island, opposite parking and protected pedestrian strip:',JSON.stringify(stationParking));
 
  const cutoutTest=await page.evaluate(async()=>{
   const THREE=await import('three');
