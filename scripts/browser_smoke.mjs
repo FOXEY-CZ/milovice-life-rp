@@ -26,10 +26,24 @@ try{
   throw new Error('Milovice startup failed: '+JSON.stringify(pageState)+
    '; JS errors: '+JSON.stringify(errors.slice(-12))+'; '+String(error));
  }
- await page.waitForFunction(()=>{
-  const el=document.getElementById('rp-spawn');
-  return el&&!el.hidden;
- },{timeout:45000});
+ try{
+  await page.waitForFunction(()=>{
+   const el=document.getElementById('rp-spawn');
+   return el&&!el.hidden;
+  },null,{timeout:60000});
+ }catch(error){
+  const pageState=await page.evaluate(()=>({
+   started:window.__miloviceStarted,
+   status:document.getElementById('status')?.textContent,
+   osmLoaded:window.__miloviceAreasLoaded,
+   spawnHidden:document.getElementById('rp-spawn')?.hidden,
+   mapNotice:document.getElementById('osm-notice')?.textContent,
+   screen:document.body.textContent.slice(-400)
+  }));
+  throw new Error('Milovice 3D loaded but OSM/spawn was not ready: '+
+   JSON.stringify(pageState)+'; JS errors: '+
+   JSON.stringify(errors.slice(-15))+'; '+String(error));
+ }
  const gfx=await page.evaluate(()=>window.__miloviceGraphics2||null);
  if(!gfx?.active||gfx.albedoTiles!==8||gfx.contactShadow!==true||
     !gfx.surfaceMaterials||Object.values(gfx.surfaceMaterials).some(v=>v!==true))
