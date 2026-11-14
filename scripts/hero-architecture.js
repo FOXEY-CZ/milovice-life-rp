@@ -286,7 +286,16 @@ export function makeMiloviceHeroArchitecture(THREE,{
   }
   state.chunkCount+=batches;publish();
  }
- function reset(){chunks.clear();selected.clear();appliedFaces.length=0;for(const key of Object.keys(state))state[key]=0;publish()}
+ function reset(){
+  chunks.clear();selected.clear();appliedFaces.length=0;
+  for(const key of Object.keys(state))state[key]=0;
+  // Geometry counters reset between district loads, but the shared
+  // GPU material kit is permanent. Do not misreport it as discarded.
+  state.sharedSurfaceTextures=3;
+  state.surfaceResolution=128;
+  state.extraMaterialDrawCalls=0;
+  publish();
+ }
  publish();
  return {addBuilding,flush,reset,stats:()=>({...state})};
 }
