@@ -177,7 +177,7 @@ import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
 import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5450';
-import {planSchoolStreetFrontage,schoolFacadeFixture,planSchoolPhotographedRoof,SCHOOL_PHOTO_WAY_ID} from './scripts/school-street-pass.js?v=5460';
+import {planSchoolStreetFrontage,schoolFacadeFixture,planSchoolPhotographedRoof,schoolPhotoCameraWorld,SCHOOL_PHOTO_WAY_ID} from './scripts/school-street-pass.js?v=5460';
 import {planGroundedEntrance} from './scripts/entrance-grade.js?v=5450';
 import {exteriorFacadeFrame,selectExteriorFacadeToward,splitFacadeStripForOpening,facadePoint,flushBoxOffset,FACE_PLANE,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './scripts/facade-anchors.js?v=5400';
 import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5410';
@@ -189,7 +189,7 @@ import {makeStationForecourtScene} from './scripts/station-forecourt-pass.js?v=5
 import {buildPhotographedEaveCorniceGeometry,PHOTO_EAVE_PROFILE_COLOR} from './scripts/facade-perimeter.js?v=5430';
 import {planFootprintPitchedRoof} from './scripts/station-roof-geometry.js?v=5282';
 import {planRoofPerimeterClosure} from './scripts/station-roof-seams.js?v=5320';
-import {planStationRoofEaves} from './scripts/station-roof-eaves.js?v=5320';
+import {planStationRoofEaves,planPerimeterRoofEaves} from './scripts/station-roof-eaves.js?v=5470';
 import {planSkolskaRoofJoins,SKOLSKA_WAY_ID} from './scripts/skolska-roof.js?v=5320';
 import {planCityBuildingRoof,analyzeGableFootprint} from './scripts/city-roof-geometry.js?v=5460';
 import {planBuildingRoofTopology} from './scripts/building-roof-topology.js?v=5310';
@@ -1216,6 +1216,8 @@ const grocerWalls=new THREE.MeshStandardMaterial({color:0xd2cdc1,map:facadeTextu
 const mirova36Roof=new THREE.MeshStandardMaterial({color:0x853f46,roughness:.86,side:THREE.DoubleSide});
 const schoolWalls=new THREE.MeshStandardMaterial({color:0xe3b42f,map:facadeTexture(37),roughness:.9});
 const schoolRoofMetal=new THREE.MeshStandardMaterial({color:0x89979d,roughness:.81,metalness:.12,side:THREE.DoubleSide});
+const schoolRoofFascia=new THREE.MeshStandardMaterial({color:0x7d8a8e,roughness:.81,side:THREE.DoubleSide});
+const schoolRoofSoffit=new THREE.MeshStandardMaterial({color:0xb6bcc0,roughness:.89,side:THREE.DoubleSide});
 const schoolPlinth=new THREE.MeshStandardMaterial({color:0xb34a31,roughness:.86,side:THREE.DoubleSide});
 const garageWalls=new THREE.MeshStandardMaterial({color:0xb1afa4,roughness:.92});
 const workWalls=new THREE.MeshStandardMaterial({color:0xb9b9b0,roughness:.92});
@@ -2975,6 +2977,19 @@ function osmBuilding(points,tags,index,osmId=null){
   const surface=pitchedSurface?.userData.roofRuntimePlan||null;
   const ys=surface?.faces?.flatMap(face=>face.map(v=>v.y))||[];
   const span=ys.length?Math.max(...ys)-Math.min(...ys):0;
+  // A shallow roof behind a 10-metre facade is often invisible at human
+  // eye level. Its photographed sheet-metal edge must have a physical
+  // overhang, closed fascia and soffit (not an infinitely thin cap).
+  // Use actual polygon perimeter, never an axis-aligned bounding rectangle.
+  const eaves=surface?.roofModel==='perimeter-constrained'?
+   planPerimeterRoofEaves({
+    outline:pts,originalOutline:pts,roof:surface,
+    width:.26,thickness:.13}):null;
+  if(eaves){
+   stationEaveMesh(eaves.tiles,schoolRoofMetal,'Milovice_school_photo_eave_tiles');
+   stationEaveMesh(eaves.soffit,schoolRoofSoffit,'Milovice_school_photo_eave_soffit');
+   stationEaveMesh(eaves.fascia,schoolRoofFascia,'Milovice_school_photo_eave_fascia');
+  }
   window.__miloviceSchoolRoofAudit={
    version:'5.46',osmId:SCHOOL_PHOTO_WAY_ID,
    pitchedRendered:Boolean(pitchedSurface&&surface&&span>.4),
@@ -2987,7 +3002,15 @@ function osmBuilding(points,tags,index,osmId=null){
    safePerimeter:surface?.roofModel==='perimeter-constrained'||
     (surface?.roofBoundaryGapBefore??0)<=.10,
    source:schoolRoofPhoto?.reference||null,
-   preciseRidgeSurveyed:false,rooflightLocationsVerified:false
+   preciseRidgeSurveyed:false,rooflightLocationsVerified:false,
+   photoEaveWidth:eaves?.width||0,
+   photoEaveThickness:eaves?.thickness||0,
+   photoEaveExteriorEdges:eaves?.exteriorEdges||0,
+   photoEaveFasciaTriangles:eaves?.fascia.length||0,
+   photoEaveSoffitClosed:eaves?.closedUnderside===true,
+   overhangGeometrySafe:eaves?.onlyMappedExterior===true,
+   maxEaveOverhang:eaves?.maxActualOverhang||0,
+   center:{x:+centerX.toFixed(4),z:+centerZ.toFixed(4),eaveY:+(baseHeight+h).toFixed(4)}
   };
  }
  // Keep the actual host roof surface for photo-fitted objects. Only
@@ -4447,7 +4470,17 @@ const selectedPhotoHouse={
  'house-mirova36':{
   eye:{lat:50.2280572,lon:14.8840981},target:{lat:50.2281280,lon:14.8843914}}
 }[inspect];
-if(selectedPhotoHouse){
+const schoolRoofScene=window.__miloviceSchoolRoofAudit;
+if((inspect==='school-street'||inspect==='school-elevated')&&schoolRoofScene?.center){
+ // Photograph the corrected school both from a realistic pedestrian eye
+ // and from above its real light-grey roof. This CI-only camera avoids
+ // calling a flat-looking street silhouette proof of successful roof 3D.
+ const p=schoolPhotoCameraWorld(),c=schoolRoofScene.center;
+ const elevated=inspect==='school-elevated';
+ camera.position.set(p.x,terrainAt(p.x,p.z)+(elevated?29:1.70),p.z);
+ camera.lookAt(c.x,c.eaveY+(elevated ? 0.7 : -1.4),c.z);
+ window.__miloviceRoofAuditRendered=inspect;
+}else if(selectedPhotoHouse){
  const eye=osmPoint(selectedPhotoHouse.eye),target=osmPoint(selectedPhotoHouse.target);
  camera.position.set(eye.x,terrainAt(eye.x,eye.y)+3.7,eye.y);
  camera.lookAt(target.x,terrainAt(target.x,target.y)+8.1,target.y);

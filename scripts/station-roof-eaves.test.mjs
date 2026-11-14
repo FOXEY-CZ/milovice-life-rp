@@ -76,7 +76,8 @@ assert(eave.tiles.length<180&&eave.fascia.length<250,
 assert.equal(planStationRoofEaves({outline:[],originalOutline:L,roof:lr,origin}),null);
 assert.equal(planStationRoofEaves({outline:L,originalOutline:L,roof:lr,origin,width:3}),null);
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(game.includes("import {planStationRoofEaves} from './scripts/station-roof-eaves.js"));
+assert(game.includes("import {planStationRoofEaves,planPerimeterRoofEaves} from './scripts/station-roof-eaves.js"),
+ 'School and station must reuse the same exterior-safe roof overhang geometry');
 assert(game.includes("const eaves=planStationRoofEaves({"));
 assert(game.includes('Milovice_station_eave_soffit'));
 assert(game.includes('Milovice_station_eave_fascia'));
