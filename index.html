@@ -177,7 +177,7 @@ import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
 import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5450';
-import {planSchoolStreetFrontage,schoolFacadeFixture,planSchoolPhotographedRoof,SCHOOL_PHOTO_WAY_ID} from './scripts/school-street-pass.js?v=5460';
+import {planSchoolStreetFrontage,schoolFacadeFixture,planSchoolPhotographedRoof,schoolPhotoCameraWorld,SCHOOL_PHOTO_WAY_ID} from './scripts/school-street-pass.js?v=5460';
 import {planGroundedEntrance} from './scripts/entrance-grade.js?v=5450';
 import {exteriorFacadeFrame,selectExteriorFacadeToward,splitFacadeStripForOpening,facadePoint,flushBoxOffset,FACE_PLANE,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './scripts/facade-anchors.js?v=5400';
 import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5410';
@@ -3009,7 +3009,8 @@ function osmBuilding(points,tags,index,osmId=null){
    photoEaveFasciaTriangles:eaves?.fascia.length||0,
    photoEaveSoffitClosed:eaves?.closedUnderside===true,
    overhangGeometrySafe:eaves?.onlyMappedExterior===true,
-   maxEaveOverhang:eaves?.maxActualOverhang||0
+   maxEaveOverhang:eaves?.maxActualOverhang||0,
+   center:{x:+centerX.toFixed(4),z:+centerZ.toFixed(4),eaveY:+(baseHeight+h).toFixed(4)}
   };
  }
  // Keep the actual host roof surface for photo-fitted objects. Only
@@ -4469,7 +4470,17 @@ const selectedPhotoHouse={
  'house-mirova36':{
   eye:{lat:50.2280572,lon:14.8840981},target:{lat:50.2281280,lon:14.8843914}}
 }[inspect];
-if(selectedPhotoHouse){
+const schoolRoofScene=window.__miloviceSchoolRoofAudit;
+if((inspect==='school-street'||inspect==='school-elevated')&&schoolRoofScene?.center){
+ // Photograph the corrected school both from a realistic pedestrian eye
+ // and from above its real light-grey roof. This CI-only camera avoids
+ // calling a flat-looking street silhouette proof of successful roof 3D.
+ const p=schoolPhotoCameraWorld(),c=schoolRoofScene.center;
+ const elevated=inspect==='school-elevated';
+ camera.position.set(p.x,terrainAt(p.x,p.z)+(elevated?29:1.70),p.z);
+ camera.lookAt(c.x,c.eaveY+(elevated?.7:-1.4),c.z);
+ window.__miloviceRoofAuditRendered=inspect;
+}else if(selectedPhotoHouse){
  const eye=osmPoint(selectedPhotoHouse.eye),target=osmPoint(selectedPhotoHouse.target);
  camera.position.set(eye.x,terrainAt(eye.x,eye.y)+3.7,eye.y);
  camera.lookAt(target.x,terrainAt(target.x,target.y)+8.1,target.y);
