@@ -359,12 +359,16 @@ try{
     stationParking.instances<stationParking.pavingCells*2||
     stationParking.parkingBanks?.length!==2||
     stationParking.oppositeParkingBays<18||
-    stationParking.reservedSidewalkTiles<60||
-    stationParking.sidewalkWidth<1.5||stationParking.sidewalkBuffer<.45||
+    stationParking.centralSidewalkTiles<120||
+    stationParking.rightCornerPavingTiles<8||
+    stationParking.wrongRailSidewalkTiles!==0||
+    stationParking.wrongRailSidewalkRemoved!==true||
+    stationParking.sidewalkWidth<1.4||
     stationParking.mappedFootwayIdPreserved!==1165594426||
+    stationParking.rightCornerFootwayId!==1282187911||
     stationParking.collisionSafe!==true||stationParking.noSyntheticCars!==true)
-   throw new Error('5.68 both parked halves, reserved walkway or render budget broken: '+JSON.stringify(stationParking));
- console.log('5.68 full island, opposite parking and protected pedestrian strip:',JSON.stringify(stationParking));
+   throw new Error('5.69 corrected central/right pedestrian paths or GPU budget broken: '+JSON.stringify(stationParking));
+ console.log('5.69 photo-marked sidewalk locations (no false rail-side strip):',JSON.stringify(stationParking));
 
  const cutoutTest=await page.evaluate(async()=>{
   const THREE=await import('three');
