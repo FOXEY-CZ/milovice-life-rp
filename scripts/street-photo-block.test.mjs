@@ -121,6 +121,21 @@ assert(game.includes('blueStarGhostDoorsRemoved=true')&&
  game.includes('const railX=entranceX+dirX*1.38')&&
  !game.includes("archPart('windowBar',entranceX+dirX*.26"),
  'No solid fake doors or full-height black balcony rail slabs');
+assert(!game.includes("archPart('railing',entranceX+dirX*1.62"),
+ 'Hotel balcony must use individual metal balusters');
+assert(!game.includes("archPart('blueStarRed',px+nx*.53"),
+ 'No duplicate fully opaque fake doors should cover hotel windows');
+assert(!game.includes("archPart('blueStarRed',mx+nx*.18"),
+ 'Hotel ground floor plinth must be dark grey, not a full red ribbon');
+assert(game.includes('inventedWorldBillboards:0,inventedRoadPoles:0')&&
+ game.includes('roadNamesRetainedInMap:true,requiresPhotoEvidence:true'),
+ 'Large fake street-name billboards over real OSM roads must be removed');
+assert(!game.includes("const label=new THREE.Mesh(new THREE.PlaneGeometry(8,1.5)"),
+ 'No world-positioned 8m blue road labels');
+assert(photoPass.includes('sourceFootprint:true,flushToHostRoof:true'),
+ 'Photo rooflight faces should always sit on 3D host roof');
+assert(photoPass.includes('dummy.scale.set(edge.len/pieces*.84,.76,.60)'),
+ 'Real clipped shrub must not cover first-floor window glass');
 assert(game.includes('!isBlueStar&&!isMirova36){'),
  'No separate photo-house generic gutter rods can remain');
 console.log('5.29.0 Školská 220/1 actual arched attic windows, no invented shutters or floating roof outlines PASS');
