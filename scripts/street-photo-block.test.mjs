@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
-import {PHOTO_STREET_BLOCK,photoFacingEdges,pointFromGps,planDormerRoofSlopes,planArchedDormerWindow} from './street-photo-block.js';
+import {PHOTO_STREET_BLOCK,photoFacingEdges,pointFromGps,planDormerRoofSlopes,planArchedDormerWindow,
+ planPhotographedRooflight} from './street-photo-block.js';
+import {planCityBuildingRoof} from './city-roof-geometry.js';
+import {roofHeightAtPoint} from './roof-opening-geometry.js';
 assert.equal(PHOTO_STREET_BLOCK.length,3);
 assert.deepEqual(PHOTO_STREET_BLOCK.map(x=>x.id),['202367194','202367254','118487980']);
 assert(PHOTO_STREET_BLOCK.every(x=>x.photoDate==='2024-05-30'&&x.license==='CC BY 4.0'&&
@@ -75,8 +78,8 @@ const sourceIdx=photoPass.indexOf("if(key==='202367254')");
 assert(sourceIdx>0);
 const sourceCode=photoPass.slice(sourceIdx,sourceIdx+1000);
 assert(sourceCode.includes('roofRise:1.65')&&
- sourceCode.includes('addRooflights(face,base,height,[-.82])')&&
- sourceCode.includes('addRooflights(returnWall,base,height,[-.78,.78])'));
+ sourceCode.includes('addRooflights(face,base,height,[-.82],roofPlan)')&&
+ sourceCode.includes('addRooflights(returnWall,base,height,[-.78,.78],roofPlan)'));
 assert(photoPass.includes('const winW=w*(arched?.43:.72)'),
  'Mírová upper three-lite casement must be wider than an arched gable pane');
 const game=html;
@@ -87,4 +90,37 @@ assert(game.includes('mirova36SourceStorefrontBays=bays')&&
  game.includes('blueStarInventedBillboardRemoved=true'));
 assert(!game.includes(' blueStarFacadeSign(entranceX+dirX*.55'),
  'A floating hotel billboard unsupported by the May 2024 photo must remain absent');
+// 5.35: rooflights MUST follow the height of the modelled host roof,
+// not stand as red/black plates hovering over a guessed -.43 rotation.
+// Check 3 layers on every corner of a rotated/standard roof strip.
+const rec=[{x:0,z:0},{x:14,z:0},{x:14,z:10},{x:0,z:10}];
+const plan=planCityBuildingRoof({
+ footprint:rec,triangles:[[rec[0],rec[1],rec[2]],[rec[0],rec[2],rec[3]]],
+ baseY:12,rise:2.3,kind:'hip'
+});
+assert(plan,'Smoke roof material planner');
+const edge={mx:7,mz:0,nx:0,nz:-1,ux:1,uz:0,len:14};
+for(const offset of [-2,0,2]){
+ const skylight=planPhotographedRooflight(plan,edge,offset);
+ assert(skylight?.flushToHostRoof&&skylight.triangles===6);
+ for(const [key,lift] of [['frame',.028],['glass',.037],['mullion',.045]])
+  for(const tri of skylight[key])for(const v of tri){
+   const y=roofHeightAtPoint(plan,v);
+   assert(Math.abs(v.y-y-lift)<.0001,
+    'Rooflight corner must be exactly on the host slope plus a paint-thin gap');
+   assert(v.y>12);
+  }
+}
+assert.equal(planPhotographedRooflight(plan,edge,8),null);
+assert.equal(planPhotographedRooflight(null,edge,0),null);
+assert(photoPass.includes('const joined=planSkolskaDormerRoof({')&&
+ photoPass.includes('joinedOrdinaryDormerRoofs++')&&
+ !photoPass.includes('part(p,slope.panelLength,.095,depth+.28,roof,'),
+ 'ALL photo gables must use one continuous roof rather than floating rotated plates');
+assert(game.includes('blueStarGhostDoorsRemoved=true')&&
+ game.includes('const railX=entranceX+dirX*1.38')&&
+ !game.includes("archPart('windowBar',entranceX+dirX*.26"),
+ 'No solid fake doors or full-height black balcony rail slabs');
+assert(game.includes('!isBlueStar&&!isMirova36){'),
+ 'No separate photo-house generic gutter rods can remain');
 console.log('5.29.0 Školská 220/1 actual arched attic windows, no invented shutters or floating roof outlines PASS');
