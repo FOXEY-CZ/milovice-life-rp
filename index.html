@@ -189,7 +189,7 @@ import {makeStationForecourtScene} from './scripts/station-forecourt-pass.js?v=5
 import {buildPhotographedEaveCorniceGeometry,PHOTO_EAVE_PROFILE_COLOR} from './scripts/facade-perimeter.js?v=5430';
 import {planFootprintPitchedRoof} from './scripts/station-roof-geometry.js?v=5282';
 import {planRoofPerimeterClosure} from './scripts/station-roof-seams.js?v=5320';
-import {planStationRoofEaves} from './scripts/station-roof-eaves.js?v=5320';
+import {planStationRoofEaves,planPerimeterRoofEaves} from './scripts/station-roof-eaves.js?v=5470';
 import {planSkolskaRoofJoins,SKOLSKA_WAY_ID} from './scripts/skolska-roof.js?v=5320';
 import {planCityBuildingRoof,analyzeGableFootprint} from './scripts/city-roof-geometry.js?v=5460';
 import {planBuildingRoofTopology} from './scripts/building-roof-topology.js?v=5310';
@@ -1216,6 +1216,8 @@ const grocerWalls=new THREE.MeshStandardMaterial({color:0xd2cdc1,map:facadeTextu
 const mirova36Roof=new THREE.MeshStandardMaterial({color:0x853f46,roughness:.86,side:THREE.DoubleSide});
 const schoolWalls=new THREE.MeshStandardMaterial({color:0xe3b42f,map:facadeTexture(37),roughness:.9});
 const schoolRoofMetal=new THREE.MeshStandardMaterial({color:0x89979d,roughness:.81,metalness:.12,side:THREE.DoubleSide});
+const schoolRoofFascia=new THREE.MeshStandardMaterial({color:0x7d8a8e,roughness:.81,side:THREE.DoubleSide});
+const schoolRoofSoffit=new THREE.MeshStandardMaterial({color:0xb6bcc0,roughness:.89,side:THREE.DoubleSide});
 const schoolPlinth=new THREE.MeshStandardMaterial({color:0xb34a31,roughness:.86,side:THREE.DoubleSide});
 const garageWalls=new THREE.MeshStandardMaterial({color:0xb1afa4,roughness:.92});
 const workWalls=new THREE.MeshStandardMaterial({color:0xb9b9b0,roughness:.92});
@@ -2975,6 +2977,19 @@ function osmBuilding(points,tags,index,osmId=null){
   const surface=pitchedSurface?.userData.roofRuntimePlan||null;
   const ys=surface?.faces?.flatMap(face=>face.map(v=>v.y))||[];
   const span=ys.length?Math.max(...ys)-Math.min(...ys):0;
+  // A shallow roof behind a 10-metre facade is often invisible at human
+  // eye level. Its photographed sheet-metal edge must have a physical
+  // overhang, closed fascia and soffit (not an infinitely thin cap).
+  // Use actual polygon perimeter, never an axis-aligned bounding rectangle.
+  const eaves=surface?.roofModel==='perimeter-constrained'?
+   planPerimeterRoofEaves({
+    outline:pts,originalOutline:pts,roof:surface,
+    width:.26,thickness:.13}):null;
+  if(eaves){
+   stationEaveMesh(eaves.tiles,schoolRoofMetal,'Milovice_school_photo_eave_tiles');
+   stationEaveMesh(eaves.soffit,schoolRoofSoffit,'Milovice_school_photo_eave_soffit');
+   stationEaveMesh(eaves.fascia,schoolRoofFascia,'Milovice_school_photo_eave_fascia');
+  }
   window.__miloviceSchoolRoofAudit={
    version:'5.46',osmId:SCHOOL_PHOTO_WAY_ID,
    pitchedRendered:Boolean(pitchedSurface&&surface&&span>.4),
@@ -2987,7 +3002,14 @@ function osmBuilding(points,tags,index,osmId=null){
    safePerimeter:surface?.roofModel==='perimeter-constrained'||
     (surface?.roofBoundaryGapBefore??0)<=.10,
    source:schoolRoofPhoto?.reference||null,
-   preciseRidgeSurveyed:false,rooflightLocationsVerified:false
+   preciseRidgeSurveyed:false,rooflightLocationsVerified:false,
+   photoEaveWidth:eaves?.width||0,
+   photoEaveThickness:eaves?.thickness||0,
+   photoEaveExteriorEdges:eaves?.exteriorEdges||0,
+   photoEaveFasciaTriangles:eaves?.fascia.length||0,
+   photoEaveSoffitClosed:eaves?.closedUnderside===true,
+   overhangGeometrySafe:eaves?.onlyMappedExterior===true,
+   maxEaveOverhang:eaves?.maxActualOverhang||0
   };
  }
  // Keep the actual host roof surface for photo-fitted objects. Only
