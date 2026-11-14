@@ -33,6 +33,23 @@ try{
  }));
  assert(faces.count>=3&&faces.selected,'Facade inspector must offer independent wall views');
  const firstFace=faces.selected;
+ // New batch workflow: archival street images are candidates only.
+ // Selecting a photographed building must not approve any roof or wall.
+ await page.evaluate(()=>window.__miloviceEditor.openBuilding(118487980));
+ assert((await page.locator('#street-evidence-summary').innerText()).includes('1 přímo'),
+  'Verified Commons building photo not prioritized for Školská');
+ assert((await page.locator('#street-photo-summary').innerText()).includes('domů'),
+  'Whole-street photographic coverage overview missing');
+ assert((await page.evaluate(()=>window.__miloviceEditor.streetPhotoEvidence))
+  .withIdentifiedBuildingPhotos===3,
+  'Photo index must keep 3 directly sourced old-town building identities');
+ await page.locator('button[data-evidence-id="skolska-1-2024"]').click();
+ assert((await page.locator('#face-source').inputValue()).includes('%C5%A0kolsk%C3%A1_1.jpg'),
+  'Commons evidence link was not assigned to selected facade as a candidate');
+ assert.equal(await page.locator('#face-status').inputValue(),'unreviewed',
+  'A photo near or named for this building does not validate its current facade');
+ await page.evaluate(()=>window.__miloviceEditor.openBuilding(118487963));
+ assert.equal(await page.evaluate(()=>window.__miloviceEditor.chosenId),selected);
  // Mapillary API mock: no developer account or real provider imagery required
  // for a reproducible test of the official API metadata flow.
  await page.locator('#imagery-scan-house').click();
