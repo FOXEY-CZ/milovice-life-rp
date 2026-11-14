@@ -176,6 +176,16 @@ try{
    JSON.stringify(schoolRoof));
  console.log('5.46 school photo-informed pitched roof PASS:',
   JSON.stringify(schoolRoof));
+ const roofDetails=await page.evaluate(()=>window.__miloviceSchoolRoofDetails||null);
+ if(!roofDetails||roofDetails.version!=='5.50'||
+    roofDetails.osmId!==118487979||roofDetails.rooflights!==14||
+    roofDetails.masts!==3||roofDetails.floatingRooflights!==0||
+    roofDetails.batchedDrawCalls>5||roofDetails.batchedDrawCalls<4||
+    roofDetails.imagePixelsCopied!==false||
+    roofDetails.estimatedPlacements!==true)
+  throw Error('5.50 roof photo equipment missing/floating/unbatched: '+
+   JSON.stringify(roofDetails));
+ console.log('5.50 source-observed school roof fixtures:',roofDetails);
  const roofTopology=await page.evaluate(()=>window.__miloviceRoofTopologyAudit||null);
  if(!roofTopology||roofTopology.version!=='3.0'||
     roofTopology.processed<300||roofTopology.partitionable<100||

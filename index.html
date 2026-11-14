@@ -177,7 +177,8 @@ import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
 import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5450';
-import {planSchoolStreetFrontage,schoolFacadeFixture,planSchoolPhotographedRoof,schoolPhotoCameraWorld,SCHOOL_PHOTO_WAY_ID} from './scripts/school-street-pass.js?v=5490';
+import {planSchoolStreetFrontage,schoolFacadeFixture,planSchoolPhotographedRoof,schoolPhotoCameraWorld,SCHOOL_PHOTO_WAY_ID,SCHOOL_ROOF_DETAIL_PROFILE} from './scripts/school-street-pass.js?v=5500';
+import {planSourceAnchoredRoofFixtures} from './scripts/roof-source-details.js?v=5500';
 import {planGroundedEntrance} from './scripts/entrance-grade.js?v=5450';
 import {exteriorFacadeFrame,selectExteriorFacadeToward,splitFacadeStripForOpening,facadePoint,flushBoxOffset,FACE_PLANE,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './scripts/facade-anchors.js?v=5400';
 import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5410';
@@ -1215,10 +1216,14 @@ const blueStarWalls=new THREE.MeshStandardMaterial({color:0xd48a35,map:facadeTex
 const mirova36Walls=new THREE.MeshStandardMaterial({color:0xdac6a0,map:facadeTexture(26),roughness:.92});
 const grocerWalls=new THREE.MeshStandardMaterial({color:0xd2cdc1,map:facadeTexture(8),roughness:.9});
 const mirova36Roof=new THREE.MeshStandardMaterial({color:0x853f46,roughness:.86,side:THREE.DoubleSide});
-const schoolWalls=new THREE.MeshStandardMaterial({color:0xe3b42f,map:facadeTexture(37),roughness:.9});
+const schoolWalls=new THREE.MeshStandardMaterial({color:0xe5bd57,map:facadeTexture(37),roughness:.9});
 const schoolRoofMetal=new THREE.MeshStandardMaterial({color:0x89979d,roughness:.81,metalness:.12,side:THREE.DoubleSide});
 const schoolRoofFascia=new THREE.MeshStandardMaterial({color:0x7d8a8e,roughness:.81,side:THREE.DoubleSide});
 const schoolRoofSoffit=new THREE.MeshStandardMaterial({color:0xb6bcc0,roughness:.89,side:THREE.DoubleSide});
+const schoolRooflightRim=new THREE.MeshStandardMaterial({color:0x68757a,roughness:.79,side:THREE.DoubleSide});
+const schoolRooflightGlass=new THREE.MeshStandardMaterial({color:0x254558,roughness:.30,metalness:.18,side:THREE.DoubleSide});
+const schoolRooflightMullion=new THREE.MeshStandardMaterial({color:0xc2ccd0,roughness:.82,side:THREE.DoubleSide});
+const schoolAerialSteel=new THREE.MeshStandardMaterial({color:0x879399,metalness:.26,roughness:.69});
 const schoolPlinth=new THREE.MeshStandardMaterial({color:0xb34a31,roughness:.86,side:THREE.DoubleSide});
 const garageWalls=new THREE.MeshStandardMaterial({color:0xb1afa4,roughness:.92});
 const workWalls=new THREE.MeshStandardMaterial({color:0xb9b9b0,roughness:.92});
@@ -1601,7 +1606,7 @@ function recordEntranceGrade(grounded,type,osmId){
  });
 }
 
-function addFacadePart(kind,x,y,z,rotation,baseHeight=terrainAt(x,z)){facadePosition.set(x,y+baseHeight,z);facadeRotation.setFromAxisAngle(new THREE.Vector3(0,1,0),rotation);facadeMatrix.compose(facadePosition,facadeRotation,facadeScale);{const key=Math.floor(x/120)+','+Math.floor(z/120);if(!facadeBatches[kind].has(key))facadeBatches[kind].set(key,[]);facadeBatches[kind].get(key).push(facadeMatrix.clone())}}
+function addFacadePart(kind,x,y,z,rotation,baseHeight=terrainAt(x,z),sizeX=1,sizeY=1){facadePosition.set(x,y+baseHeight,z);facadeRotation.setFromAxisAngle(new THREE.Vector3(0,1,0),rotation);facadeScale.set(sizeX,sizeY,1);facadeMatrix.compose(facadePosition,facadeRotation,facadeScale);{const key=Math.floor(x/120)+','+Math.floor(z/120);if(!facadeBatches[kind].has(key))facadeBatches[kind].set(key,[]);facadeBatches[kind].get(key).push(facadeMatrix.clone())}}
 function finalizeFacades(){
  for(let i=0;i<4;i++){
   for(const [key,batch] of facadeBatches[i]){
@@ -1697,7 +1702,7 @@ function finalizeFoundations(){
 }
 // Photo-referenced detail pass: repeated meshes are batched as instanced geometry.
 // Facades are modelled from mapped footprints, not copied from proprietary photos.
-const architectureColors={panelSeam:0x838e94,panelAccent:0x72a0c3,panelEntry:0x356a87,commercialSign:0x435b66,panelPlinth:0x7e8587,industrialDoor:0x68717a,stationPlaster:0xe6e4d9,stationWindowSill:0xa36d66,stationCanopyGreen:0x23533f,stationCanopyUnder:0x203d31,stationCanopyBeam:0x244838,stationCanopySteel:0x295c45,stationCanopyRib:0x3b604f,stationGlass:0x4a7480,stationFrames:0xf2f0e7,stationIron:0x3a3e40,stationCanopy:0x903f35,blueStarPlaster:0xd68c34,blueStarRed:0xb7352c,starWhite:0xf0eae0,starBalcony:0xcfc6b5,railSleeper:0x685643,railPole:0x777d7f,gothicGlass:0x263c48,stoneTrim:0xe8d9b7,whiteTrim:0xe3e6de,photoEaveCornice:PHOTO_EAVE_PROFILE_COLOR,windowBar:0xd6e2e4,darkWood:0x514339,garageMetal:0x727f7b,bronze:0x8b6a48,glassAwning:0x7e9e9f,schoolRed:0xa3442e,roofGutter:0x687173,chimney:0xad6749,balcony:0xc9c1b7,railing:0x394447,shutter:0x8b705e,foundationBand:0x8e7f72,stationTimber:0x554338,stationPaving:0xaba6a1,panelTint:0xb1c5cc};
+const architectureColors={panelSeam:0x838e94,panelAccent:0x72a0c3,panelEntry:0x356a87,commercialSign:0x435b66,panelPlinth:0x7e8587,industrialDoor:0x68717a,stationPlaster:0xe6e4d9,stationWindowSill:0xa36d66,stationCanopyGreen:0x23533f,stationCanopyUnder:0x203d31,stationCanopyBeam:0x244838,stationCanopySteel:0x295c45,stationCanopyRib:0x3b604f,stationGlass:0x4a7480,stationFrames:0xf2f0e7,stationIron:0x3a3e40,stationCanopy:0x903f35,blueStarPlaster:0xd68c34,blueStarRed:0xb7352c,starWhite:0xf0eae0,starBalcony:0xcfc6b5,railSleeper:0x685643,railPole:0x777d7f,gothicGlass:0x263c48,stoneTrim:0xe8d9b7,whiteTrim:0xe3e6de,photoEaveCornice:PHOTO_EAVE_PROFILE_COLOR,windowBar:0xd6e2e4,darkWood:0x514339,garageMetal:0x727f7b,bronze:0x8b6a48,glassAwning:0x7e9e9f,schoolRed:0xc16c57,roofGutter:0x687173,chimney:0xad6749,balcony:0xc9c1b7,railing:0x394447,shutter:0x8b705e,foundationBand:0x8e7f72,stationTimber:0x554338,stationPaving:0xaba6a1,panelTint:0xb1c5cc};
 const architectureQueues=Object.fromEntries(Object.keys(architectureColors).map(k=>[k,[]]));
 const architectureMaterials=Object.fromEntries(Object.entries(architectureColors).map(([k,v])=>[k,new THREE.MeshStandardMaterial({color:v,roughness:k==='glassAwning'?.3:.8,metalness:k==='roofGutter'||k==='railing'?.4:.04})]));
  // Shared atlas-style surface response for every station architectural instance.
@@ -2995,6 +3000,55 @@ function osmBuilding(points,tags,index,osmId=null){
    stationEaveMesh(eaves.soffit,schoolRoofSoffit,'Milovice_school_photo_eave_soffit');
    stationEaveMesh(eaves.fascia,schoolRoofFascia,'Milovice_school_photo_eave_fascia');
   }
+  // 5.50: no rooftop objects are invented for unreviewed buildings.
+  // Only user-observed 2022 school details get anchored to actual OSM roof
+  // triangles. The same source-gated planner is reusable on future houses.
+  const details=surface?planSourceAnchoredRoofFixtures({
+   outline:pts,roof:surface,profile:SCHOOL_ROOF_DETAIL_PROFILE}):null;
+  let detailDrawCalls=0;
+  if(details){
+   const layers=[
+    {faces:details.rooflights.flatMap(light=>light.frame),material:schoolRooflightRim,name:'Milovice_school_photo_skylight_frames'},
+    {faces:details.rooflights.flatMap(light=>light.glass),material:schoolRooflightGlass,name:'Milovice_school_photo_skylight_glass'},
+    {faces:details.rooflights.flatMap(light=>light.mullion),material:schoolRooflightMullion,name:'Milovice_school_photo_skylight_mullions'}
+   ];
+   for(const layer of layers)if(stationEaveMesh(layer.faces,layer.material,layer.name))detailDrawCalls++;
+   if(details.masts.length){
+    // Instancing keeps 3 rooftop antennas to two draws, even on phones.
+    const cylinder=new THREE.CylinderGeometry(.035,.035,1,6);
+    const pole=new THREE.InstancedMesh(cylinder,schoolAerialSteel,details.masts.length);
+    const panels=new THREE.InstancedMesh(new THREE.BoxGeometry(.13,.85,.085),
+     schoolAerialSteel,details.masts.length*2);
+    const t=new THREE.Object3D();
+    details.masts.forEach((mast,i)=>{
+     t.position.set(mast.x,mast.y+mast.height*.5,mast.z);
+     t.rotation.set(0,0,0);t.scale.set(1,mast.height,1);t.updateMatrix();
+     pole.setMatrixAt(i,t.matrix);
+     for(let j=0;j<2;j++){
+      t.position.set(mast.x+(j?-.17:.17),mast.y+mast.height-.53,mast.z);
+      t.rotation.set(0,0,0);t.scale.set(1,1,1);t.updateMatrix();
+      panels.setMatrixAt(i*2+j,t.matrix);
+     }
+    });
+    pole.instanceMatrix.needsUpdate=true;panels.instanceMatrix.needsUpdate=true;
+    const x=details.masts.reduce((sum,m)=>sum+m.x,0)/details.masts.length;
+    const z=details.masts.reduce((sum,m)=>sum+m.z,0)/details.masts.length;
+    for(const inst of [pole,panels]){
+     inst.userData.lodX=x;inst.userData.lodZ=z;
+     inst.userData.lodDetail=true;
+     osmLayer.add(inst);detailDrawCalls++;
+    }
+   }
+  }
+  window.__miloviceSchoolRoofDetails={
+   osmId:SCHOOL_PHOTO_WAY_ID,version:'5.50',
+   rooflights:details?.rooflights.length||0,
+   masts:details?.masts.length||0,
+   floatingRooflights:details?.invalidPositions||0,
+   batchedDrawCalls:detailDrawCalls,
+   imagePixelsCopied:false,
+   estimatedPlacements:true
+  };
   window.__miloviceSchoolRoofAudit={
    version:'5.49',osmId:SCHOOL_PHOTO_WAY_ID,
    realRise:visualRoof?.actualRise||0,
@@ -3344,13 +3398,25 @@ function osmBuilding(points,tags,index,osmId=null){
     if(isSchool&&floor===0&&schoolPhotoPlan?.entrance.index===i&&
      Math.abs((t-.5)*len)<schoolPhotoPlan.doorwayWidth*.5+.45)continue;
     const wx=px+nx*FACE_PLANE,wz=pz+nz*FACE_PLANE;
-    addFacadePart(0,wx,y,wz,rotation,baseHeight);
-    addFacadePart(1,px+nx*(FACE_PLANE+.007),y,
-     pz+nz*(FACE_PLANE+.007),rotation,baseHeight);
-    addFacadePart(2,px+nx*flushBoxOffset(.065),y,
-     pz+nz*flushBoxOffset(.065),rotation,baseHeight);
-    addFacadePart(3,px+nx*flushBoxOffset(WINDOW_SILL_DEPTH),y-.85,
-     pz+nz*flushBoxOffset(WINDOW_SILL_DEPTH),rotation,baseHeight);
+    if(isSchool){
+     // Photograph: the school's tall portrait windows are NOT generic
+     // square OSM storefront panes. Scale only this source-backed site.
+     addFacadePart(0,wx,y,wz,rotation,baseHeight,.70,1.23);
+     addFacadePart(1,px+nx*(FACE_PLANE+.007),y,
+      pz+nz*(FACE_PLANE+.007),rotation,baseHeight,.70,1.23);
+     addFacadePart(2,px+nx*flushBoxOffset(.065),y,
+      pz+nz*flushBoxOffset(.065),rotation,baseHeight,.70,1.23);
+     addFacadePart(3,px+nx*flushBoxOffset(WINDOW_SILL_DEPTH),y-1.00,
+      pz+nz*flushBoxOffset(WINDOW_SILL_DEPTH),rotation,baseHeight,.70,1);
+    }else{
+     addFacadePart(0,wx,y,wz,rotation,baseHeight);
+     addFacadePart(1,px+nx*(FACE_PLANE+.007),y,
+      pz+nz*(FACE_PLANE+.007),rotation,baseHeight);
+     addFacadePart(2,px+nx*flushBoxOffset(.065),y,
+      pz+nz*flushBoxOffset(.065),rotation,baseHeight);
+     addFacadePart(3,px+nx*flushBoxOffset(WINDOW_SILL_DEPTH),y-.85,
+      pz+nz*flushBoxOffset(WINDOW_SILL_DEPTH),rotation,baseHeight);
+    }
     attachmentAudit.legacyWindows++;
     attachmentAudit.maxLegacyFaceGap=Math.max(
      attachmentAudit.maxLegacyFaceGap,facadeGap(facade,{x:wx,z:wz},0),
@@ -3360,8 +3426,10 @@ function osmBuilding(points,tags,index,osmId=null){
     if(isBlueStar||isHouse||isSchool||isPanelBlock||j%2===0){
      const bx=px+nx*flushBoxOffset(WINDOW_FRAME_DEPTH),
       bz=pz+nz*flushBoxOffset(WINDOW_FRAME_DEPTH);
-     archPart('windowBar',bx,baseHeight+y,bz,.065,1.31,WINDOW_FRAME_DEPTH,rotation);
-     archPart('windowBar',bx,baseHeight+y+.07,bz,1.40,.045,WINDOW_FRAME_DEPTH,rotation);
+     archPart('windowBar',bx,baseHeight+y,bz,isSchool?.047:.065,
+      isSchool?1.64:1.31,WINDOW_FRAME_DEPTH,rotation);
+     archPart('windowBar',bx,baseHeight+y+.07,bz,isSchool?1.01:1.40,
+      .045,WINDOW_FRAME_DEPTH,rotation);
     }
     if(isPanelBlock&&j%3===0){
      archPart('panelSeam',px+nx*flushBoxOffset(.11)+ux*1.45,baseHeight+h*.5,

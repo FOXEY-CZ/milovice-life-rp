@@ -97,3 +97,27 @@ export function planSchoolPhotographedRoof(points){
   forceSafePerimeter:true
  };
 }
+
+// 5.50: Observational attributes from user-supplied Mapy.com 17 May 2022
+// panorama screenshots. NO panorama pixels are copied into this game.
+// Window and antenna presence is visible; exact positions are estimated.
+// This site-specific data MUST NOT propagate to other OSM buildings.
+export const SCHOOL_ROOF_DETAIL_PROFILE=Object.freeze({
+ osmId:SCHOOL_PHOTO_WAY_ID,
+ evidence:'Player supplied 2022-05-17 panorama views of school roof',
+ positionsSurveyed:false,
+ observedElements:['multiple rectangular rooflights','small antenna masts'],
+ rooflights:[
+  {edge:10,offsets:[0]},
+  {edge:12,offsets:[-5,-1.7,1.7,5]},
+  {edge:14,offsets:[-2.2,2.2]},
+  {edge:15,offsets:[0]},
+  {edge:17,offsets:[-5,-1.7,1.7,5]},
+  {edge:19,offsets:[-1.65,1.65]}
+ ],
+ masts:[
+  {edge:12,along:3.5,depth:6.2,height:2.1},
+  {edge:17,along:-5.5,depth:6,height:2.3},
+  {edge:19,along:.4,depth:5.2,height:1.8}
+ ]
+});

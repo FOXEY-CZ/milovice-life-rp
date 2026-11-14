@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {planCityBuildingRoof} from './city-roof-geometry.js';
-import {planSchoolPhotographedRoof,schoolPhotoCameraWorld,SCHOOL_PHOTO_WAY_ID} from './school-street-pass.js';
+import {planSchoolPhotographedRoof,schoolPhotoCameraWorld,SCHOOL_PHOTO_WAY_ID,
+ SCHOOL_ROOF_DETAIL_PROFILE} from './school-street-pass.js';
+import {planSourceAnchoredRoofFixtures} from './roof-source-details.js';
 import {planPerimeterConstrainedRoof} from './perimeter-roof-envelope.js';
 import {auditRoofStreetVisibility} from './roof-street-visibility.js';
 const osm=JSON.parse(readFileSync(new URL('../data/milovice-osm.json',import.meta.url),'utf8'));
@@ -70,6 +72,19 @@ const validate=(shape,tag)=>{
  return model;
 };
 const primary=validate(outline,'normal');
+const details=planSourceAnchoredRoofFixtures({outline,roof:primary,
+ profile:SCHOOL_ROOF_DETAIL_PROFILE});
+assert(details,'School photograph-specific roof fixtures must map onto the actual roof');
+assert.equal(details.rooflights.length,14,'Photo rooflights must remain visible on 14 roof locations');
+assert.equal(details.masts.length,3,'Documented antennas are missing');
+assert.equal(details.invalidPositions,0,'Photo roof fixtures floated outside the host surface');
+assert.equal(details.positionsSurveyed,false,'No false centimetre-exact claims');
+assert.equal(planSourceAnchoredRoofFixtures({outline,roof:primary,profile:null}),null,
+ 'Unreviewed houses must never get fictional skylights');
+for(const light of details.rooflights)
+ for(const layer of [light.frame,light.glass,light.mullion])
+  for(const tri of layer)for(const v of tri)
+   assert([v.x,v.y,v.z].every(Number.isFinite));
 const reversed=validate(outline.slice().reverse(),'reverse winding');
 assert.equal(reversed.faces.length,primary.faces.length);
 const photoCamera=schoolPhotoCameraWorld();
@@ -91,6 +106,7 @@ assert(html.includes('isSchool?schoolRoofPhoto.rise:'));
 assert(html.includes('const schoolRoofMetal=new THREE.MeshStandardMaterial'));
 assert(html.includes('window.__miloviceSchoolRoofAudit='));
 assert(html.includes("version:'5.49'"));
+assert(html.includes("window.__miloviceSchoolRoofDetails="));
 assert(html.includes('pitchedRendered:Boolean(pitchedSurface&&surface&&span>.4)'));
 const roofSource=readFileSync(new URL('./city-roof-geometry.js',import.meta.url),'utf8');
 assert(roofSource.includes("return safeHip('invalid-affine-plan')"));
