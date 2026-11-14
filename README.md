@@ -1,3 +1,27 @@
+# Milovice RP 5.63 — fotograficky podložené řadové garáže Nádražní
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5630  
+**Identifikace budov:** https://foxey-cz.github.io/milovice-life-rp/?inspect=1&v=5630  
+**Mapa bloku:** https://www.openstreetmap.org/#map=19/50.230396/14.883489
+
+## Nová důkazní fáze
+
+Uživatel dodal **10 vlastních screenshotů z panoramat Mapy.com ze 17. května 2022**, které přímo ukazují **dvě protilehlé řady 17 číslovaných garáží**, hnědá svisle profilovaná vrata, světlé betonové sloupky, nízké tmavé vodorovné střešní zakončení a mezi řadami rozlehlý **štěrkový dvůr**. Orientační prvky v pozadí (věž kostela a vysoký cihlový komín se svislým nápisem AUTOSERVIS) odpovídají situaci severně od kostela. Tato skupinová fotografická dokumentace **silně podporuje přiřazení** k 17 OSM objektům v severní Nádražní; přesné číslo vrat **není zatím spárováno s konkrétním OSM way ID**.
+
+### Co je skutečně změněné ve 3D
+
+- **17 půdorysů OSM** bylo společně porovnáno: **7 v jedné řadě, 10 v protilehlé**. Dveře se nyní modelují jen na doložených **krátkých cca 3m stranách** obrácených do společného dvora, nikdy do souběžné dlouhé společné zdi.
+- Doložený vzhled: **hnědé kovové dveřní panely s úzkými svislými žebry**, **světlé dělicí sloupky**, nízké **hnědé ploché zastřešení**, drobný zámek. Nejsou vymyšlena žádná okna mezi vraty.
+- **Štěrková/zemitá plocha** místo rovnoměrného trávníku, jen uvnitř plochy mezi OSM průčelími. Jeden optimalizovaný DEM-přiléhající mesh, přibližný rozsah **14,2 × 20,5 m**.
+- Žádná čísla vrat přidělená odhadem, žádné náhodné ploty, stromy nebo zaparkovaná auta; je potvrzená jejich existence na fotografiích, nikoliv přesné lokální pozice.
+- Vlastní proceduralní barvy, textura štěrku a instancované detaily. **Fotografie Mapy.com nejsou rehostovány ani použity jako textura.** Titulky na dodaných snímcích: © Seznam.cz, a.s. / Cyclomedia Technology B.V.
+
+Fotografie jsou datované **17. 5. 2022**, takže tento vzhled **není automaticky potvrzen pro rok 2026**. Aktuální stav, číslování jednotlivých OSM ID, zadní strany, umístění plotů a zeleně stále čekají na ověření. Zachován nástroj **🔎 Objekt** z verze 5.62. Ostatní šedé budovy z předchozích screenshotů nebyly pozměněny.
+
+**Technika:** `scripts/nadrazni-photo-garage-court.js` je čistý OSM+foto plánovač, `scripts/nadrazni-photo-garage-court.test.mjs` hlídá 17/17 prvků, 7+10 řad, přesnou orientaci, souvislý dvůr, pořadí OSM polygonů a nepřiřazování neověřených čísel vrat. Test je zapojen do GitHub Actions. Více v [REBUILD 2.0](docs/REBUILD-2.md).
+
+---
+
 # Milovice RP 5.62 — zjisti OSM ID přímo klepnutím na budovu
 
 **Otevřít hru s aktivním identifikátorem:** https://foxey-cz.github.io/milovice-life-rp/?inspect=1&v=5620  
