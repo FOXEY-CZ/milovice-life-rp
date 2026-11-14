@@ -158,6 +158,14 @@ export function planPhotographedRooflight(roof,edge,offset,{
  return {frame,glass,mullion,sourceFootprint:true,flushToHostRoof:true,
   interpolation:'actual triangulated host',triangles:6};
 }
+// Unified wall-relative setback of ALL photographed gable dormers.
+// The front masonry face must overlap the real OSM exterior facade by only
+// a few centimetres, never be floated 40+ cm out by a guessed hardcode.
+export function dormerFacadeCenter(depth,projection=.04){
+ if(!Number.isFinite(depth)||depth<.6||depth>4||
+  !Number.isFinite(projection)||projection<0||projection>.2)return null;
+ return projection-depth*.5;
+}
 export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  const roofMaterial=new THREE.MeshStandardMaterial({color:0x583b38,roughness:.88});
  const darkRoof=new THREE.MeshStandardMaterial({color:0x404348,roughness:.90});
@@ -246,7 +254,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   // The photographed gable stands on the outside masonry face,
   // while its rear intersects the main hip. No facade floating past a
   // narrow ground-floor edge when the roof-bay depth changes.
-  p.position.z=arched?(-depth*.5+.04):-.65;g.add(p);
+  p.position.z=dormerFacadeCenter(depth);g.add(p);
   part(p,w,1.48,depth,wall,0,.74,.0);
   part(p,w+.14,.14,.16,trim,0,.12,depth*.5+.09);
   const front=depth*.5+.12;

@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import {PHOTO_STREET_BLOCK,photoFacingEdges,pointFromGps,planDormerRoofSlopes,planArchedDormerWindow,
- planPhotographedRooflight} from './street-photo-block.js';
+ planPhotographedRooflight,dormerFacadeCenter} from './street-photo-block.js';
 import {planCityBuildingRoof} from './city-roof-geometry.js';
 import {roofHeightAtPoint} from './roof-opening-geometry.js';
-import {exteriorFacadeFrame,facadePoint,facadeGap} from './facade-anchors.js';
+import {exteriorFacadeFrame,selectExteriorFacadeToward,flushBoxOffset,facadePoint,facadeGap} from './facade-anchors.js';
 assert.equal(PHOTO_STREET_BLOCK.length,3);
 assert.deepEqual(PHOTO_STREET_BLOCK.map(x=>x.id),['202367194','202367254','118487980']);
 assert(PHOTO_STREET_BLOCK.every(x=>x.photoDate==='2024-05-30'&&x.license==='CC BY 4.0'&&
@@ -33,6 +33,14 @@ for(const outline of [notch,[...notch].reverse(),
   assert(Math.abs(facadeGap(frame,facadePoint(chosen,0,.024))-.024)<1e-8);
  }
 }
+for(const depth of [1.2,1.72,1.9,2.25,2.9]){
+ const center=dormerFacadeCenter(depth);
+ assert(Math.abs(center+depth*.5-.04)<1e-10,
+  'Dormer front wall must follow host OSM wall at a shared 4cm projection');
+ assert(Math.abs(center+depth*.5)<.1,
+  'No photographed gable may float 40-50cm away from its wall');
+}
+assert.equal(dormerFacadeCenter(0),null);
 const p=pointFromGps(50.226,14.889);
 assert(Math.abs(p.x)<1e-3&&Math.abs(p.z)<1e-3);
 console.log('Photo street block OK: 3 independently georeferenced Commons landmarks, exterior wall selection and no fake dimensions');
@@ -102,6 +110,28 @@ assert(checkedPhotoBuildings>500&&checkedPhotoEdges>1300,
  'The entire mapped city must share one facade attachment contract');
 console.log('5.37 photo facade attachment PASS',
  {buildings:checkedPhotoBuildings,edges:checkedPhotoEdges});
+const blueStar=city.elements.find(b=>b.id===202367194);
+assert(blueStar,'The blue-star documented building footprint was removed');
+const hotelOutline=blueStar.geometry.slice(0,-1).map(p=>pointFromGps(p.lat,p.lon));
+const photoCamera=pointFromGps(50.2280572,14.8840981);
+const hotelFace=selectExteriorFacadeToward(hotelOutline,photoCamera,
+ {minLength:2.8,maxLength:7.2});
+assert(hotelFace&&hotelFace.len>3.3&&hotelFace.len<4.1,
+ 'Modra hvezda has a specific physical short chamfer entrance, not an imaginary diagonal');
+assert(hotelFace.cameraVisibility>.1);
+const reversedHotel=selectExteriorFacadeToward([...hotelOutline].reverse(),photoCamera,
+ {minLength:2.8,maxLength:7.2});
+assert(reversedHotel&&Math.hypot(reversedHotel.mx-hotelFace.mx,
+ reversedHotel.mz-hotelFace.mz)<1e-8);
+assert(Math.abs(reversedHotel.nx-hotelFace.nx)<1e-8&&
+ Math.abs(reversedHotel.nz-hotelFace.nz)<1e-8,
+ 'Photo frontage must not move on reversed OSM winding');
+for(const depth of [.09,.12,.14,.96]){
+ const fixture=facadePoint(hotelFace,0,flushBoxOffset(depth,-.012));
+ assert(Math.abs(facadeGap(hotelFace,fixture,depth)+.012)<1e-8,
+  'Blue Star fixture must intersect its real wall by 12mm');
+}
+assert.equal(selectExteriorFacadeToward(hotelOutline,{x:NaN,z:0}),null);
 const mirova=city.elements.find(b=>b.id===202367254);
 assert(mirova,'The documented Mírová 36 OSM footprint was deleted');
 const outline=mirova.geometry.slice(0,-1).map(p=>pointFromGps(p.lat,p.lon));
@@ -156,12 +186,17 @@ for(const offset of [-2,0,2]){
 }
 assert.equal(planPhotographedRooflight(plan,edge,8),null);
 assert.equal(planPhotographedRooflight(null,edge,0),null);
+assert(photoPass.includes('p.position.z=dormerFacadeCenter(depth)')&&
+ !photoPass.includes('arched?(-depth*.5+.04):-.65'),
+ 'Every photographed dormer must share the same host-facade setback');
 assert(photoPass.includes('const joined=planSkolskaDormerRoof({')&&
  photoPass.includes('joinedOrdinaryDormerRoofs++')&&
  !photoPass.includes('part(p,slope.panelLength,.095,depth+.28,roof,'),
  'ALL photo gables must use one continuous roof rather than floating rotated plates');
 assert(game.includes('blueStarGhostDoorsRemoved=true')&&
- game.includes('const railX=entranceX+dirX*1.38')&&
+ game.includes('const railX=entranceX+dirX*.86')&&
+ game.includes('blueStarVirtualCornerRemoved=true')&&
+ game.includes('selectExteriorFacadeToward(pts,photo')&&
  !game.includes("archPart('windowBar',entranceX+dirX*.26"),
  'No solid fake doors or full-height black balcony rail slabs');
 assert(!game.includes("archPart('railing',entranceX+dirX*1.62"),
