@@ -161,6 +161,22 @@ try{
   throw Error('5.42 photographed cornice still hidden under roof soffit: '+
    JSON.stringify({bands:hero.photoEaveBands,
     exposed:hero.photoEaveVisibleBands}));
+ // One profiled mesh, one warm plaster material, all OSM corners
+ // miter-connected. If the window/dormer rendering is changed, this
+ // remains independently testable without changing those elements.
+ if(hero.photoEaveProfileSteps!==3||
+    hero.photoEaveJoinedCorners<6||
+    hero.photoEaveJoinedCorners!==hero.photoEaveBands||
+    hero.photoEaveProfileMeshes!==1)
+  throw Error('5.43 photo cornice rendered as separate square bars, not a joint ring: '+
+   JSON.stringify({sections:hero.photoEaveBands,
+    tiers:hero.photoEaveProfileSteps,
+    joinedCorners:hero.photoEaveJoinedCorners,
+    meshCount:hero.photoEaveProfileMeshes}));
+ console.log('5.43 photographed miter cornice PASS:',
+  JSON.stringify({sections:hero.photoEaveBands,
+   tiers:hero.photoEaveProfileSteps,sharedCorners:hero.photoEaveJoinedCorners,
+   meshes:hero.photoEaveProfileMeshes}));
  console.log('5.42 all Školská cornice edges exposed BELOW roof fascia:',
   JSON.stringify({bands:hero.photoEaveBands,visible:hero.photoEaveVisibleBands}));
  console.log('5.41 attached eave cornice and flush dormer panes:',
