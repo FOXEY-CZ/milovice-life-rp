@@ -220,8 +220,8 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('reality-scene-5350'))
-  throw new Error('5.35.0 browser loaded a stale HTML build');
+ if(!(await page.locator('#build-label').innerText()).includes('facade-plane-5360'))
+  throw new Error('5.36.0 browser loaded a stale HTML build');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
     sidewalkCheck.separatedSidewalks!==0||
@@ -306,6 +306,14 @@ try{
     JSON.stringify(citySigns));
  if(landmarkChecks.blueStarGhostDoorsRemoved!==true)
    throw Error('5.35: hotel still has full-size fake opaque window doors');
+ if(landmarkChecks.mirova36FacadeAnchored!==true)
+   throw Error('5.36: photographed Mírová 36 glazing is detached from OSM wall');
+ const shops=await page.evaluate(()=>window.__miloviceBusinessFacadeAudit||null);
+ if(!shops||shops.anchoredShopfronts<1)
+   throw Error('5.36: named retail doors and shopfronts not attached to OSM');
+ console.log('5.36 landmark/storefront facade attachment:',
+  JSON.stringify({mirova36:landmarkChecks.mirova36FacadeAnchored,
+   shops:shops.anchoredShopfronts}));
  console.log('5.35 photographed city models: '+JSON.stringify({
   openHotelBalcony:true,ghostHotelDoors:0,
   flushMirovaRooflights:landmark.flushRooflights,
