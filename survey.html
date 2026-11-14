@@ -47,7 +47,6 @@ footer{text-align:center;color:var(--muted);padding:20px}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script type="module">
 import {STREET_PHOTO_EVIDENCE,previewForCommonsPhoto} from './scripts/street-photo-evidence.js';
-import {STATION_STOP_PHOTOS} from './scripts/station-forecourt-pass.js';
 const $=id=>document.getElementById(id);
 const url=new URL(location.href),wanted=url.searchParams.get('id')||'old:Nádražní';
 const label={buildings:'Budovy',roads:'Silnice',walkways:'Chodníky a cesty',railway:'Koleje a nástupiště',landscape:'Zeleň',publicObjects:'Veřejné objekty',utilities:'Infrastruktura',other:'Ostatní'};
@@ -124,8 +123,8 @@ function rows(){
  }
 }
 $('category').addEventListener('change',rows);$('fit').addEventListener('click',()=>{if(map&&group.getLayers().length)map.fitBounds(group.getBounds().pad(.12))});rows();
-const extraStops=STATION_STOP_PHOTOS.map(p=>({id:p.id,title:'Autobusové stanoviště '+p.letter+' · '+p.street,url:p.photo,author:'ŠJů',license:'CC BY 4.0',taken:p.photoDate,street:p.street,camera:[p.lat,p.lon],heading:p.heading,scope:'bus-stop-camera'}));
-const photos=[...STREET_PHOTO_EVIDENCE,...(street.id==='old:Nádražní'?extraStops:[])].filter(p=>p.street===street.street||(street.id==='old:Nádražní'&&p.id==='bus-B'));
+const photos=STREET_PHOTO_EVIDENCE.filter(p=>p.street===street.street||
+ (street.id==='old:Nádražní'&&p.id==='nadrazi-bus-B-2024'));
 if(street.id==='old:Nádražní')photos.push({id:'pid-2024',title:'Oficiální schéma přestupního uzlu A/B (platné od 15. 12. 2024)',url:'https://pid.cz/wp-content/uploads/mapy/uzly-region/Milovice.pdf',author:'ROPID',license:'odkaz na oficiální dokument',taken:'2024-12-15',scope:'official-schematic'});
 if(!photos.length)$('sources').append(node('p','U této ulice zatím chybí konkrétní přiřazená fotografie. Před 3D schválením získat zdroje.'));
 for(const p of photos){
