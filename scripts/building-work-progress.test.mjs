@@ -24,6 +24,5 @@ assert.equal(nextUnworkedStreetBuilding(osm,later),null);
 assert.equal(photoCandidateBearing({viewpoint:{lat:NaN,lon:0,headingDeg:0}},
  osm.elements.find(e=>e.id===202298939)),null);
 console.log('5.53 no-repeat progress tracker: next OSM',next.osmId,
- 'distance',next.bearing.distanceMetres.toFixed(1),
- 'bearing error',next.bearing.deviationDegrees.toFixed(1),
+ 'bearing evidence',next.bearing?.evidenceStatus||'unavailable',
  'photo identity pending, no invented geometry');
