@@ -1,9 +1,10 @@
-// Milovice RP 5.69 — PHOTO-CORRECTED PEDESTRIAN GEOMETRY.
-// The user's 2022 Mapy.com comparison marks TWO sidewalks: the long inner
-// paved strip on the CENTRAL island between driveways, and a separate curved
-// right-hand corner at the SOUTH entrance. Version 5.68 wrongly put a long
-// new sidewalk behind the railway-side bays. REMOVE that false sidewalk;
-// retain both parking banks and preserve the two real OSM footways.
+// Milovice RP 5.70 — correct the swapped parking/sidewalk surface classes.
+// The user's 2022 Mapy.com comparison identifies a BROAD concrete-grid
+// PARKING surface on the central island, with a NARROW footpath running along
+// its western edge, already represented by OSM footway 1165594426. Version
+// 5.69 mislabeled 249 parking grid tiles as a broad pedestrian surface.
+// This fixes the semantic swap and preserves the real mapped pedestrian way,
+// the opposite parking bank and the separate right-hand entrance corner.
 // Screenshots are VISUAL EVIDENCE only: no proprietary image is stored.
 // Geometry is source-constrained, approximate, and drawn from our own shapes.
 // NO Mapy.com screenshot pixels, panoramas, or textures are redistributed.
@@ -25,7 +26,7 @@ export const STATION_PARKING_REFERENCE=Object.freeze({
  observed:['two dark asphalt routes bound a large pale paved parking island',
   'wide pale concrete-block paving rather than narrow detached strips',
   'second grass-grid parking row across the western access road',
-  'inner island pedestrian strip alongside the service lane',
+  'broad central island parking surface immediately beside a separate narrow OSM footway',
   'separate paved right corner at the road entrance, connected to mapped footway 1282187911',
   'rounded island tip and a low kerb','bike tower and rail-side vegetation'],
  excluded:['unlocated trees and traffic signs','imaginary parked cars','invented new asphalt roads'],
@@ -91,9 +92,9 @@ export function planStationPhotoParking(elements,roadClearance){
  const cells=[],curbs=[],rejected=[];
  // Exact right-side offset is recalculated against the SECOND mapped road
  // every row. We never paint rectangles between arbitrary parallel vectors.
- const length=.74,depth=.72,alongStep=.76,acrossStep=.74;
+ const length=.75,depth=.73,alongStep=.76,acrossStep=.74;
  const rowStats=[];
- for(let along=3.6;along<f.length-3.6;along+=alongStep){
+ for(let along=-1.2;along<f.length-3.6;along+=alongStep){
   const middle=at(f,along,0),near=closestPointToPolyline(middle,other);
   if(!near)continue;
   const gap=(near.x-middle.x)*f.nx+(near.z-middle.z)*f.nz;
@@ -107,7 +108,7 @@ export function planStationPhotoParking(elements,roadClearance){
   let half=(right-left)*.5;
   // The south tip is rounded instead of a sharp rectangular start.
   // Radius is an approximation informed by the supplied 2022 comparison.
-  const nose=Math.max(0,Math.min(1,(along-2.5)/6,(f.length-2.5-along)/5));
+  const nose=Math.max(0,Math.min(1,(along+1.4)/6,(f.length-2.5-along)/5));
   half*=Math.sqrt(Math.max(.01,1-(1-nose)**2));
   left=center-half;right=center+half;
   let acceptedRow=0;
@@ -175,19 +176,11 @@ export function planStationPhotoParking(elements,roadClearance){
   else railSideParking.push({...p,along,offset:railParkingOffset,yaw:f.yaw,
    length:2.46,depth:railParkingDepth});
  }
- // 5.69: The long pedestrian surface belongs INSIDE the central paved
- // island, not beyond the opposite parking row. Partition existing stone
- // cells by the western island edge: NO duplicated triangles, no new land.
- // The visible 1.48m band is photo-informed; mapped footway 1165594426
- // remains separately rendered by the base city and is not overwritten.
- const centralWalkingCells=[];
- const minByRow=new Map();
- for(const cell of cells)
-  minByRow.set(cell.along,Math.min(minByRow.get(cell.along)??Infinity,cell.offset));
- for(const cell of cells){
-  const first=minByRow.get(cell.along);
-  if(cell.offset<=first+1.48)centralWalkingCells.push(cell);
- }
+ // 5.70 correction: all island pavers outside the mapped footway are
+ // PARKING, not pedestrian pavement. The original real-world path runs
+ // along its Nádražní edge and is rendered by the core OSM footway layer.
+ // No second fake sidewalk or pale duplicate band can be added here.
+ const centralParkingCells=cells;
  const centralFootway=elements.find(e=>
   Number(e.id)===STATION_PARKING_REFERENCE.centralFootwayId);
  const cornerWay=elements.find(e=>
@@ -248,11 +241,14 @@ export function planStationPhotoParking(elements,roadClearance){
  }
  return {cells,curbs,rejected,rowStats,frame:f,cameras,
   railSideParking,railRejected,
-  centralWalkingCells,cornerPaving,cornerCurbs,cornerRejected,
+  centralParkingCells,cornerPaving,cornerCurbs,cornerRejected,
   rightCornerFootwayId:cornerWay.id,centralFootwayId:centralFootway.id,
   incorrectlyPlacedRailSidewalkRemoved:true,
   parkingBanks:['central-between-roads','opposite-rail-side'],
-  pedestrianCorridorWidth:1.48,pedestrianSeparation:null,
+  pedestrianCorridorWidth:1.8,pedestrianSeparation:null,
+  centralPedestrianSurface:'OSM-footway-only-no-duplicate-parking',
+  centralParkingSurface:'all-validated-concrete-grid-cells',
+  mistakenParkingAsSidewalkRemoved:true,
   mappedFootwayIdPreserved:centralFootway.id,
   sourceIds:[west.id,east.id],sourcePhotos:STATION_PARKING_REFERENCE.photos.length,
   groundType:'concrete-paving-island',exactParkingOutlineMeasured:false,
@@ -279,7 +275,10 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   coveredRows:planned?.rowStats.filter(r=>r.accepted>0).length||0,
   parkingBanks:planned?.parkingBanks||[],
   oppositeParkingBays:planned?.railSideParking.length||0,
-  centralSidewalkTiles:planned?.centralWalkingCells.length||0,
+  centralParkingTiles:planned?.centralParkingCells.length||0,
+  centralMistakenSidewalkTiles:0,
+  centralWalkwaySource:planned?.centralPedestrianSurface||null,
+  parkingSidewalkSwapFixed:planned?.mistakenParkingAsSidewalkRemoved||false,
   rightCornerPavingTiles:planned?.cornerPaving.length||0,
   rightCornerCurbs:planned?.cornerCurbs.length||0,
   wrongRailSidewalkTiles:0,
@@ -287,7 +286,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   sidewalkWidth:planned?.pedestrianCorridorWidth||0,
   mappedFootwayIdPreserved:planned?.mappedFootwayIdPreserved||null,
   rightCornerFootwayId:planned?.rightCornerFootwayId||null,
-  surface:'photo-corrected-central-island-and-right-corner-sidewalk',
+  surface:'central-grid-parking-mapped-edge-footway-and-right-corner',
   oldDetachedPaverStripsRemoved:true,
   roundedTip:true,drawMeshes,instances,
   collisionSafe:true,estimatedLayout:true,noSyntheticCars:true,sourceAnchored:true
@@ -321,28 +320,30 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   group.userData.lodDetail=true;
   const grout=[],stones=[],curb=[];
   const oppositeGrass=[],oppositePavers=[],sidewalkPavers=[];
-  const centralWalkSet=new Set(planned.centralWalkingCells);
-  for(const p of planned.cells){
+  for(const p of planned.centralParkingCells){
    const y=terrainAt(p.x,p.z);
-   grout.push({...p,y:y+.110,sx:p.length,sy:.036,sz:p.depth});
-   const item={...p,y:y+.133,sx:p.length-.028,sy:.028,sz:p.depth-.028};
-   // Reuse precisely the same existing footprint, but shade walkway stones
-   // as the PHOTO-MARKED inner pedestrian band. Nothing is painted twice.
-   if(centralWalkSet.has(p))sidewalkPavers.push(item);
-   else stones.push(item);
+   // Nearly seamless backing slabs eliminate the old green pinstripes.
+   // Each cell's 2x2 smaller concrete blocks share the same instanced
+   // geometry/material, rather than one overbright sidewalk-sized panel.
+   grout.push({...p,y:y+.156,sx:p.length,sy:.030,sz:p.depth});
+   for(let i=-1;i<=1;i+=2)for(let j=-1;j<=1;j+=2){
+    const q=at(planned.frame,p.along+i*.185,p.offset+j*.181);
+    stones.push({...q,y:terrainAt(q.x,q.z)+.178,yaw:p.yaw,
+     sx:.346,sy:.027,sz:.337});
+   }
   }
   for(const p of planned.curbs)
-   curb.push({...p,y:terrainAt(p.x,p.z)+.161,sx:.71,sy:.095,sz:.11});
+   curb.push({...p,y:terrainAt(p.x,p.z)+.209,sx:.71,sy:.103,sz:.11});
   // 5.69: keep the real opposite parking bank without a false footpath behind it.
   // green-grid surface, NOT a duplicate of the broad central pale island.
   for(const bay of planned.railSideParking){
    const y=terrainAt(bay.x,bay.z);
-   oppositeGrass.push({...bay,y:y+.120,sx:bay.length,sy:.042,sz:bay.depth});
+   oppositeGrass.push({...bay,y:y+.159,sx:bay.length,sy:.024,sz:bay.depth});
    for(let i=0;i<4;i++)for(let j=0;j<7;j++){
     const p=at(planned.frame,bay.along+(i-1.5)*.58,
      bay.offset+(j-3)*.53);
-    oppositePavers.push({...p,y:terrainAt(p.x,p.z)+.151,
-     yaw:bay.yaw,sx:.49,sy:.028,sz:.40});
+    oppositePavers.push({...p,y:terrainAt(p.x,p.z)+.181,
+     yaw:bay.yaw,sx:.49,sy:.026,sz:.40});
    }
   }
   // The previously invented rail-side sidewalk is gone. Instead widen the
