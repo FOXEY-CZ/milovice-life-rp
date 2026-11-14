@@ -18,6 +18,8 @@ nav{display:flex;flex-wrap:wrap;gap:14px}main{max-width:1250px;margin:auto;paddi
 .object.active{border-color:#fbd27f;background:#3a4d58}.object small{font-size:11px}.tools{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}button,select,textarea{font:inherit;background:#254257;color:var(--text);border:1px solid #729bb2;border-radius:8px;padding:8px;cursor:pointer}
 select{max-width:100%}button:hover{background:#31617b}textarea{width:100%;min-height:70px;resize:vertical}
 #focus{padding:8px;background:#263e4c;border-radius:8px;margin-top:8px;word-break:break-word}
+#focus label{display:block;margin:9px 0 3px;font-size:12px;color:#c9e0e8}#focus select,#focus textarea{width:100%}#object-progress{font-weight:600}
+.object small{white-space:nowrap}.object.needs{border-color:#f7bb78}.object.repair{border-color:#f57878}.object.local{border-color:#74c9a9}
 .source{border-top:1px solid var(--line);padding:9px 0}.source p{margin:5px 0;font-size:12px}.source a{font-weight:700}
 .source img{width:110px;height:79px;object-fit:cover;border-radius:6px;float:right;margin:0 0 5px 8px}
 .audit{display:flex;gap:7px;flex-direction:column;margin:10px 0}.audit>label{border-bottom:1px solid #334f61;padding-bottom:7px}
@@ -35,7 +37,7 @@ footer{text-align:center;color:var(--muted);padding:20px}
 <div class="layout">
 <section>
  <div class="panel"><h2>🗺️ Celá ulice a přilehlá napojení</h2><p class="muted">Klepni na objekt v mapě nebo na jeho řádek. Přilehlé komunikace se zobrazují přerušovaně a nejsou započítané jako hotové objekty vybrané ulice.</p><div id="map"></div><p id="map-info" class="muted"></p><div id="focus">Vyber objekt pro podrobnosti a odkaz na OpenStreetMap.</div></div>
- <div class="panel"><h2>📐 Soupis objektů</h2><div class="tools"><select id="category" aria-label="Filtrovat typ objektu"><option value="">Všechny typy</option></select><button id="fit">Zobrazit celý úsek</button></div><div id="osm-list"></div><p id="missing" class="muted"></p></div>
+ <div class="panel"><h2>📐 Soupis objektů</h2><div class="tools"><select id="category" aria-label="Filtrovat typ objektu"><option value="">Všechny typy</option></select><button id="fit">Zobrazit celý úsek</button><button id="unfinished" aria-pressed="false">Pouze neprohlédnuté</button></div><p id="object-progress" class="muted"></p><div id="osm-list"></div><p id="missing" class="muted"></p></div>
  <div class="panel"><h2>🔀 Křižovatky a hranice</h2><p class="muted">Mapa je rozdělená podle OSM evidence. Geometrie křižovatky a chodníků se při sestavování celé ulice musí zkontrolovat i na sousedních ulicích.</p><ul id="context-list"></ul></div>
 </section>
 <aside>
@@ -62,6 +64,19 @@ if(!source)throw Error('Chybí OSM zdroj pro oblast '+street.region);
 const osm=await getJson(source.path),ways=new Map((osm.elements||[]).map(e=>[e.type+':'+e.id,e]));
 const keys=inventory.classes,objects=keys.flatMap(kind=>street.mapped[kind].map(id=>({id,kind,entry:ways.get(id)})));
 const misses=objects.filter(o=>!o.entry);
+const storageKey='milovice.rebuild2.survey.'+street.id;
+let saved={};try{saved=JSON.parse(localStorage.getItem(storageKey)||'{}')||{}}catch{saved={}}
+const validIds=new Set(objects.map(o=>o.id));
+const allowedStatuses=new Set(['unknown','needs','repair','local']);
+const objectChecks=Object.fromEntries(Object.entries(saved.objects||{})
+ .filter(([id,r])=>validIds.has(id)&&r&&allowedStatuses.has(r.status)));
+let onlyUnfinished=false;
+function objectStatus(id){return objectChecks[id]?.status||'unknown'}
+function objectProgress(){
+ const counts={unknown:0,needs:0,repair:0,local:0};
+ for(const o of objects)counts[objectStatus(o.id)]++;
+ $('object-progress').textContent='Osobní kontrola: '+counts.local+' prohlédnuto · '+counts.repair+' k opravě · '+counts.needs+' chybí podklady · '+counts.unknown+' neprohlédnuto. Žádný objekt není tímto schválen pro 3D.';
+}
 $('heading').textContent='🧭 '+(street.street||'Nepřiřazené objekty')+' — REBUILD 2.0';
 $('intro').textContent=street.regionName+' · etapa '+street.phase+' · '+street.status+' · žádná část není tímto průzkumem automaticky schválená';
 const summary=[['Mapových objektů',street.total],...keys.filter(k=>street.counts[k]>0).map(k=>[label[k]||k,street.counts[k]])];
@@ -109,20 +124,38 @@ function focus(o){
  box.append(node('strong',(label[o.kind]||o.kind)+' · '+o.id));
  box.append(node('p',e?.tags?.name||e?.tags?.building||e?.tags?.highway||e?.tags?.railway||'Mapový prvek, bez podrobného popisu'));
  if(e){const a=node('a','🔗 Otevřít původní OSM objekt');a.target='_blank';a.rel='noopener noreferrer';const [type,id]=o.id.split(':');a.href='https://www.openstreetmap.org/'+type+'/'+id;box.append(a)}
+ const statusLabel=node('label','Osobní stav objektu (nepublikuje změny ve hře)');
+ const statusSelect=node('select');
+ for(const [v,t] of [['unknown','Neprohlédnuto'],['needs','Chybí fotografické podklady'],['repair','Opravit ve 3D modelu'],['local','Lokálně porovnáno, čeká na schválení']]){const option=node('option',t);option.value=v;statusSelect.append(option)}
+ statusSelect.value=objectStatus(o.id);statusLabel.append(statusSelect);box.append(statusLabel);
+ const noteLabel=node('label','Poznámka k tomuto objektu / každé straně fasády');
+ const note=node('textarea');note.rows=3;note.placeholder='Např. přední střecha nesedí; zadní stěna bez fotografie…';
+ note.value=objectChecks[o.id]?.note||'';noteLabel.append(note);box.append(noteLabel);
+ function updateObject(){const record={status:statusSelect.value,note:note.value.slice(0,6000)};
+  if(record.status==='unknown'&&!record.note.trim())delete objectChecks[o.id];
+  else objectChecks[o.id]=record;
+  const graphic=features.get(o.id);
+  if(graphic)graphic.setStyle({color:record.status==='repair'?'#f57878':record.status==='needs'?'#f7bb78':colors[o.kind]});
+  save();objectProgress();rows();}
+ statusSelect.addEventListener('change',updateObject);note.addEventListener('change',updateObject);
  if(map&&features.has(o.id)){const b=features.get(o.id).getBounds();if(b.isValid())map.fitBounds(b.pad(.4),{maxZoom:19})}
 }
 function rows(){
  $('osm-list').replaceChildren();
  const kind=$('category').value;
- for(const o of objects.filter(o=>!kind||kind===o.kind)){
+ for(const o of objects.filter(o=>(!kind||kind===o.kind)&&(!onlyUnfinished||objectStatus(o.id)==='unknown'))){
   const button=node('button',null,'object');button.type='button';button.dataset.id=o.id;
+  const status=objectStatus(o.id);if(status!=='unknown')button.classList.add(status);
   button.append(node('span',o.entry?.tags?.name||o.entry?.tags?.building||o.entry?.tags?.highway||o.entry?.tags?.railway||label[o.kind]||o.kind));
-  button.append(node('small',o.id));button.addEventListener('click',()=>focus(o));
+  button.append(node('small',(status==='repair'?'🔧 ':status==='needs'?'📸 ':status==='local'?'✓ ':'')+o.id));button.addEventListener('click',()=>focus(o));
   if(o.id===selectedId)button.classList.add('active');
   $('osm-list').append(button);
  }
 }
-$('category').addEventListener('change',rows);$('fit').addEventListener('click',()=>{if(map&&group.getLayers().length)map.fitBounds(group.getBounds().pad(.12))});rows();
+$('category').addEventListener('change',rows);$('fit').addEventListener('click',()=>{if(map&&group.getLayers().length)map.fitBounds(group.getBounds().pad(.12))});
+$('unfinished').addEventListener('click',()=>{onlyUnfinished=!onlyUnfinished;$('unfinished').setAttribute('aria-pressed',String(onlyUnfinished));$('unfinished').textContent=onlyUnfinished?'Zobrazit všechny':'Pouze neprohlédnuté';rows()});
+objectProgress();rows();
+for(const o of objects){const st=objectStatus(o.id);if(['repair','needs'].includes(st)&&features.has(o.id))features.get(o.id).setStyle({color:st==='repair'?'#f57878':'#f7bb78'});}
 const photos=STREET_PHOTO_EVIDENCE.filter(p=>p.street===street.street||
  (street.id==='old:Nádražní'&&p.id==='nadrazi-bus-B-2024'));
 if(street.id==='old:Nádražní')photos.push({id:'pid-2024',title:'Oficiální schéma přestupního uzlu A/B (platné od 15. 12. 2024)',url:'https://pid.cz/wp-content/uploads/mapy/uzly-region/Milovice.pdf',author:'ROPID',license:'odkaz na oficiální dokument',taken:'2024-12-15',scope:'official-schematic'});
@@ -139,8 +172,6 @@ for(const p of photos){
   marker.bindTooltip(p.title+' – poloha fotoaparátu');
  }
 }
-const storageKey='milovice.rebuild2.survey.'+street.id;
-let saved={};try{saved=JSON.parse(localStorage.getItem(storageKey)||'{}')}catch{saved={}}
 for(let i=0;i<inventory.mandatoryAudit.length;i++){
  const labelEl=node('label');labelEl.append(node('strong',(i+1)+'. '+inventory.mandatoryAudit[i]));
  const select=node('select');select.dataset.auditIndex=String(i);
@@ -153,12 +184,12 @@ for(let i=0;i<inventory.mandatoryAudit.length;i++){
 $('notes').value=saved.notes||'';
 function save(){
  const statuses=[...$('audit').querySelectorAll('select')].map(s=>s.value);
- try{localStorage.setItem(storageKey,JSON.stringify({statuses,notes:$('notes').value,updated:new Date().toISOString()}));
+ try{localStorage.setItem(storageKey,JSON.stringify({statuses,notes:$('notes').value,objects:objectChecks,updated:new Date().toISOString()}));
  $('saved').textContent='Uloženo jen v tomto prohlížeči. Veřejný inventář ani 3D hra se tím nemění.'}
  catch(e){$('saved').textContent='Nepodařilo se uložit místní poznámky: '+e.message}
 }
 $('save').addEventListener('click',save);
 $('reset').addEventListener('click',()=>{if(!confirm('Vymazat pouze místní poznámky pro '+street.street+'?'))return;
- localStorage.removeItem(storageKey);$('audit').querySelectorAll('select').forEach(s=>s.value='unknown');$('notes').value='';$('saved').textContent='Místní poznámky vymazány.'});
+ localStorage.removeItem(storageKey);for(const id of Object.keys(objectChecks))delete objectChecks[id];$('audit').querySelectorAll('select').forEach(s=>s.value='unknown');$('notes').value='';objectProgress();rows();if(selectedId){const chosen=objects.find(o=>o.id===selectedId);if(chosen)focus(chosen)}$('saved').textContent='Místní poznámky vymazány.'});
 }catch(e){$('intro').textContent='Chyba při načítání: '+e.message;console.error(e);$('map').textContent='Mapový průzkum se nenačetl.'}
 </script></body></html>
