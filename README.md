@@ -1,3 +1,17 @@
+## Milovice RP 5.32.2 — souvislé sokly a lišty i na opravovaných zdech
+
+Závada z uživatelských 360° snímků Školské: krátký zaplněný roh fasády měl béžovou zeď, ale spodní tmavá lišta/sokl končila před ním. Nešlo o chybu hlavního střešního algoritmu, ale o další předčasný návrat ve vykreslovači detailních fasád.
+
+- V `scripts/hero-architecture.js` se sokl a horní vodorovná lišta nyní generují jednotným `planFacadePerimeterTrims` pro **každou nedegenerovanou vnější hranu půdorysu**, včetně krátkých návratů pod 3 metry. Jeden úsek dostane jednu sadu lišt, nikoli dvě.
+- Na úsecích kratších než metr se teď vytváří i fyzická stěna; starý limit 1 m ji mohl vynechat.
+- Lemování používá stávající instancované materiály `base` a `sill`; nové úseky tudíž nezakládají nový typ draw callu na budovu. Mírné přesazení v rozích kryje pohledové škvíry.
+- Pro ostatní, nedetailní budovy pokračují již existující lišty `foundationBand`, `panelPlinth`, `blueStarRed` a `schoolRed` i na krátkých hranách bez vymyšlených dveří a oken.
+- Jednotkové kontroly `scripts/facade-perimeter.test.mjs` projdou všechny evidované OSM obvody, otočené směry a skutečný 1,2m návrat Školské. WebGL smoke test kontroluje soulad počtu uzavřených zdí a lemovaných úseků přímo ve vykreslované scéně.
+
+Odpovídá to **spojitosti** již použitých detailů, nikoli fotogrammetricky ověřené podobě každé budovy. Individuální vzhled fasád a střech podle skutečných fotografií zůstává samostatný krok.
+
+---
+
 ## Milovice RP 5.32.0 — AUTOMATICKÁ OCHRANA VŠECH DALŠÍCH STŘECH (Part 9)
 
 Podnět: pět hráčských screenshotů ukázalo, že Školská 220/1 stále měla výrazné černé střešní klíny a svislé mezery. Oprava jednoho konkrétního domu by neřešila další budovy.
