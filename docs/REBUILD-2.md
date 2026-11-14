@@ -129,3 +129,12 @@ Systém neumisťuje žádné parkovací čáry, pojezdové plochy, cestu mezi ř
 - `scripts/photo-verification-policy.test.mjs` ověřuje fail-closed 17 ID, odmítnutí fotografií z jiné lokality a budov bez vizuálního přiřazení, zachování OSM mapových dat, nepropojení se starým 5.59 generátorem a zachování zbytku herní scény.
 
 **Další příprava:** Každý nový fotorealistický stavební průchod se musí opírat o dostupné aktuální snímky celé oblasti; pokud fotka chybí, neupravovat objekty odhadem. Historické modely, včetně kostela a nádraží, čeká postupný 360° re-audit. Uživatelsky přijaté provizorní řešení stříšky 5.58 zůstává zatím nezměněné.
+
+
+## PART 12 — 5.61: VRÁCENÍ 17 OMÝLEM SKRYTÝCH BUDOV
+
+Uživatel zjistil, že objekty z původních screenshotů pravděpodobně nebyly 17 garáží na severním okraji Nádražní. Proto bylo **nesprávné** zablokovat právě tyto jiné objekty ve 5.60. Verze 5.61 je vrací do výchozího staršího, fotograficky **neschváleného** zobrazení a především zachovává jejich původní pozice, 3D meshe i kolizní záznamy. Stále není doloženo, jak tyto konkrétní budovy dnes vypadají, ale chybné odstranění se nesmí stát formou náhrady za fotografický audit.
+
+Technicky má všech 17 dotčených OSM ID nyní ve `scripts/photo-verification-policy.js` odpověď `render:true`, `photographicApproval:false`, `status:'legacy-restored-awaiting-photo'`. Stará 5.59 spekulativní verze vylepšování vrat zůstává odstraněná. Hra eviduje obnovené starší modely ve `window.__milovicePhotoVerificationAudit.restoredLegacy3D` a testuje 17/17 v CI. `survey.html` zachovává výstrahu, ale nehlásí „3D model pozastaven“: uvádí „původní model obnoven, typ neověřen“.
+
+**Důležité:** Modely z screenshotů uživatele (šedé nízké budovy s tmavými velkými vraty a okny, viditelný nedaleký kostel) nelze přiřadit k některému OSM ID pouze vizuálním dojmem. Před další úpravou je potřeba přesné souřadnice objektu ve hře a fotografické zdroje. Žádné další masové skrývání objektů ani automatické převzetí OSM účelu budovy jako vizuálního faktu.
