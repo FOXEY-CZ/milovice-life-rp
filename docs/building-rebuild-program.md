@@ -52,3 +52,29 @@ Group by connected street networks (not arbitrary geographic boxes), complete bo
 - https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_11,_hotel_Modr%C3%A1_hv%C4%9Bzda.jpg
 
 These references substantiate certain exterior details, not whole-building surveys. The 2025 station reference and multiple player screenshots are also recorded in `docs/station-reality-pass-02.md`.
+
+## v5.53 — no-repeat street progression (2026-11-14)
+
+`data/architecture/building-work-progress.json` is the durable working log.
+It records known already-touched OSM IDs separately from the full 684-way
+audit inventory. Distinguish user-accepted **partial** school progress from
+reviewed-but-not-approved buildings. The previous v5.52 correction on
+Školská 220/1 (OSM 118487980) is NOT a new building and must never be
+announced as one again. A test rejects any proposed new candidate matching
+an earlier accepted/previously worked OSM ID.
+
+Next genuine candidate is OSM **202298939**, roughly 37 m southeast from
+the source camera at 50.2290628, 14.8823614 with heading 115 degrees.
+Two ŠJů 2024-05-30 CC BY 4.0 photographs show the street fork:
+* https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_a_5._kv%C4%9Btna_(01).jpg
+* https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_a_5._kv%C4%9Btna.jpg
+
+**Important limitation:** the grey pitched-gable building at the fork
+might include/abut the adjacent commercial OSM building **202775905**.
+A camera bearing alone cannot prove which portion belongs to which OSM
+footprint. Candidate state is `photo-camera-aligned-candidate`, NOT
+`photo-backed-partial`. Next modelling step requires checking the wall
+identity and roof ownership from another view, then testing street/wall,
+roof/eave/entrance geometry. No false roof profile, guessed windows,
+or invented entrance was added in v5.53. Progression past a worked
+candidate automatically excludes it and selects the next unworked one.

@@ -71,6 +71,8 @@ jobs:
         run: node scripts/station-roof-seams.test.mjs
       - name: Verify solid station eaves overhang only exterior mapped walls
         run: node scripts/station-roof-eaves.test.mjs
+      - name: Reject repeat building selections and unsupported photo-to-building matches
+        run: node scripts/building-work-progress.test.mjs
       - name: Verify building-by-building rebuild inventory covers all 684 core OSM structures
         run: node scripts/building-audit-queue.test.mjs
       - name: Validate historical station facade references and removal of wrong-side canopy
