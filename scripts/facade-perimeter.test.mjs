@@ -81,6 +81,10 @@ assert(hero.includes("wallKind==='solid-return'"));
 assert(hero.includes('const trim=planFacadePerimeterTrims(a,b,centroid,{base,height});'));
 assert(hero.includes('addBand(trim.base);')&&hero.includes('addBand(trim.upper);'));
 assert(hero.includes('state.trimmedShortReturns++'));
+assert(hero.includes('if(len<.08)return null;'),
+ 'Sub-metre valid short returns need solid walls as well as both trim bands');
+assert(!hero.includes('if(len<1)return null;'),
+ 'The old 1m limit left roof-to-wall gaps on micro-returns');
 assert(hero.indexOf('addBand(trim.base);')<hero.indexOf("if(wallKind==='solid-return'){"),
  'Repair trims must be emitted BEFORE the early-return short-wall branch');
 assert.equal(hero.split('addBand(trim.base);').length,2,'Avoid duplicate base bands');
