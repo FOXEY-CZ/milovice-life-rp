@@ -41,8 +41,9 @@ code{font-size:.92em;overflow-wrap:anywhere}
  <div class="actions">
   <button id="find" type="button">🔎 Vyhledat fotografie</button>
   <button id="cancel" type="button" class="secondary" disabled>✕ Zrušit</button>
-  <a href="https://api.panoramax.xyz/?focus=map&map=18/50.22949/14.88242" target="_blank" rel="noopener noreferrer">Otevřít Panoramax</a>
+  <a href="https://panoramax.openstreetmap.fr/?focus=map&map=18/50.22949/14.88242" target="_blank" rel="noopener noreferrer">Otevřít Panoramax</a>
   <a href="https://mapy.com/cs/zakladni?x=14.88242&y=50.22949&z=18" target="_blank" rel="noopener noreferrer">Mapy.com (ruční prohlížení)</a>
+  <a href="https://www.mapillary.com/app/?lat=50.22949&lng=14.88242&z=18" target="_blank" rel="noopener noreferrer">Mapillary (ruční prohlížení)</a>
  </div>
  <p id="status" role="status" aria-live="polite">Připraveno. Žádný externí požadavek zatím neproběhl.</p>
 </div>
@@ -122,7 +123,7 @@ function drawList(){
  summary.textContent=photos.length+' různých pozic kamer ve vybraném okruhu. Všechny jsou zatím NEOVĚŘENÉ kandidáty.';
  if(!photos.length){
   const p=document.createElement('p');p.className='muted';
-  p.textContent='V této oblasti nebyly v odpovědi nalezeny žádné snímky. Neznamená to, že zde žádná jiná fotodokumentace neexistuje.';
+  p.textContent='Panoramax pro tuto oblast nevrátil žádný snímek. Služba odpověděla správně; neznamená to ale, že fotografie Milovic neexistují jinde. Vyzkoušej Mapillary nebo Mapy.com ručně.';
   $('photos').append(p);draw();return;
  }
  for(const [i,ph] of photos.entries()){
@@ -168,7 +169,7 @@ $('find').addEventListener('click',async()=>{
    getWays()
   ]);
   photos=result.photos;selected=null;drawList();
-  $('status').textContent='Hotovo: '+photos.length+' nalezených kandidátů.'+
+  $('status').textContent=(photos.length?'Hotovo: '+photos.length+' nalezených kandidátů.':'Dotaz proběhl správně: Panoramax v tomto okolí zatím nemá žádné nalezené fotografie.')+
    (result.morePages?' Výsledků může být víc; pilot další stránky nestahuje.':'')+
    ' Neproběhly žádné změny hry a žádné fotografie nebyly uloženy.';
  }catch(e){
