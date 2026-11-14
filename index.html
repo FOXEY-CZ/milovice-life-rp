@@ -176,7 +176,7 @@ import {addLanduseFeature,forestInstancePlacements} from './scripts/landscapes.j
 import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
-import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5420';
+import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5430';
 import {exteriorFacadeFrame,selectExteriorFacadeToward,splitFacadeStripForOpening,facadePoint,flushBoxOffset,FACE_PLANE,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './scripts/facade-anchors.js?v=5400';
 import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5410';
 import {clipRoofFacesForFeatures,planRoofFeatureBackClosures} from './scripts/roof-opening-geometry.js?v=5320';
@@ -184,7 +184,7 @@ import {makePhotoStreetEnvironment} from './scripts/street-environment-reality.j
 import {createRoadClearance} from './scripts/road-clearance.js?v=5262';
 import {isCarriageway,isPedestrianWay,safePedestrianPieces,pedestrianPieceKey,markedCrossing,planZebraPieces,planStationPassage} from './scripts/reality-walkways.js?v=5270';
 import {makeStationForecourtScene} from './scripts/station-forecourt-pass.js?v=5241';
-import {planPhotographedEaveCornice} from './scripts/facade-perimeter.js?v=5420';
+import {buildPhotographedEaveCorniceGeometry,PHOTO_EAVE_PROFILE_COLOR} from './scripts/facade-perimeter.js?v=5430';
 import {planFootprintPitchedRoof} from './scripts/station-roof-geometry.js?v=5282';
 import {planRoofPerimeterClosure} from './scripts/station-roof-seams.js?v=5320';
 import {planStationRoofEaves} from './scripts/station-roof-eaves.js?v=5320';
@@ -1661,7 +1661,7 @@ function finalizeFoundations(){
 }
 // Photo-referenced detail pass: repeated meshes are batched as instanced geometry.
 // Facades are modelled from mapped footprints, not copied from proprietary photos.
-const architectureColors={panelSeam:0x838e94,panelAccent:0x72a0c3,panelEntry:0x356a87,commercialSign:0x435b66,panelPlinth:0x7e8587,industrialDoor:0x68717a,stationPlaster:0xe6e4d9,stationWindowSill:0xa36d66,stationCanopyGreen:0x23533f,stationCanopyUnder:0x203d31,stationCanopyBeam:0x244838,stationCanopySteel:0x295c45,stationCanopyRib:0x3b604f,stationGlass:0x4a7480,stationFrames:0xf2f0e7,stationIron:0x3a3e40,stationCanopy:0x903f35,blueStarPlaster:0xd68c34,blueStarRed:0xb7352c,starWhite:0xf0eae0,starBalcony:0xcfc6b5,railSleeper:0x685643,railPole:0x777d7f,gothicGlass:0x263c48,stoneTrim:0xe8d9b7,whiteTrim:0xe3e6de,windowBar:0xd6e2e4,darkWood:0x514339,garageMetal:0x727f7b,bronze:0x8b6a48,glassAwning:0x7e9e9f,schoolRed:0xa3442e,roofGutter:0x687173,chimney:0xad6749,balcony:0xc9c1b7,railing:0x394447,shutter:0x8b705e,foundationBand:0x8e7f72,stationTimber:0x554338,stationPaving:0xaba6a1,panelTint:0xb1c5cc};
+const architectureColors={panelSeam:0x838e94,panelAccent:0x72a0c3,panelEntry:0x356a87,commercialSign:0x435b66,panelPlinth:0x7e8587,industrialDoor:0x68717a,stationPlaster:0xe6e4d9,stationWindowSill:0xa36d66,stationCanopyGreen:0x23533f,stationCanopyUnder:0x203d31,stationCanopyBeam:0x244838,stationCanopySteel:0x295c45,stationCanopyRib:0x3b604f,stationGlass:0x4a7480,stationFrames:0xf2f0e7,stationIron:0x3a3e40,stationCanopy:0x903f35,blueStarPlaster:0xd68c34,blueStarRed:0xb7352c,starWhite:0xf0eae0,starBalcony:0xcfc6b5,railSleeper:0x685643,railPole:0x777d7f,gothicGlass:0x263c48,stoneTrim:0xe8d9b7,whiteTrim:0xe3e6de,photoEaveCornice:PHOTO_EAVE_PROFILE_COLOR,windowBar:0xd6e2e4,darkWood:0x514339,garageMetal:0x727f7b,bronze:0x8b6a48,glassAwning:0x7e9e9f,schoolRed:0xa3442e,roofGutter:0x687173,chimney:0xad6749,balcony:0xc9c1b7,railing:0x394447,shutter:0x8b705e,foundationBand:0x8e7f72,stationTimber:0x554338,stationPaving:0xaba6a1,panelTint:0xb1c5cc};
 const architectureQueues=Object.fromEntries(Object.keys(architectureColors).map(k=>[k,[]]));
 const architectureMaterials=Object.fromEntries(Object.entries(architectureColors).map(([k,v])=>[k,new THREE.MeshStandardMaterial({color:v,roughness:k==='glassAwning'?.3:.8,metalness:k==='roofGutter'||k==='railing'?.4:.04})]));
  // Shared atlas-style surface response for every station architectural instance.
@@ -3121,6 +3121,27 @@ function osmBuilding(points,tags,index,osmId=null){
  }
  // Windows/doors remain explicitly provisional until a photo is reviewed;
  // undocumented decorative extras must not become false local landmarks.
+ // Cornice is a documented architectural detail. In the fallback
+ // renderer it is ONE contiguous 3-step ring, not an assortment of
+ // white boxes on individual edges with dark gaps at the corners.
+ if(isSkolskaRoof&&!heroFacade){
+  const geo=buildPhotographedEaveCorniceGeometry(THREE,pts,{
+   base:baseHeight,height:h
+  });
+  if(geo){
+   const mesh=new THREE.Mesh(geo,architectureMaterials.photoEaveCornice);
+   mesh.userData.lodDetail=true;
+   mesh.userData.lodX=oldCenter?.x??pts[0].x;
+   mesh.userData.lodZ=oldCenter?.y??pts[0].y;
+   osmLayer.add(mesh);
+   window.__milovicePhotoEaveCornice={
+    bands:geo.userData.segments,
+    profileSteps:geo.userData.profileSteps,
+    joinedCorners:geo.userData.corners,
+    continuousRing:true
+   };
+  }
+ }
  const visibleFloors=tags.shop==='supermarket'||isGarage||isChurch?0:isBlueStar||isMirova36?2:isGrocer74?1:isIndustrial?1:isPanelBlock?Math.min(floors,16):Math.min(Math.max(1,Math.floor(h/3)),8);
  for(let i=0;i<pts.length;i++){
   const p=pts[i],q=pts[(i+1)%pts.length],dx=q.x-p.x,dz=q.y-p.y,len=Math.hypot(dx,dz);
@@ -3132,19 +3153,6 @@ function osmBuilding(points,tags,index,osmId=null){
   if(!facade)continue;
   const {nx,nz,mx,mz,ux,uz,yaw:rotation}=facade;
   attachmentAudit.legacyEdges++;
-  if(isSkolskaRoof){
-   // One photographed light cornice immediately beneath the roof:
-   // same real OSM wall plane, no independent floating overlay.
-   // Hero buildings substitute this profile for their existing upper band.
-   const cornice=planPhotographedEaveCornice(facade,{
-    base:baseHeight,height:h});
-   if(cornice){
-    archPart('whiteTrim',cornice.x,cornice.y,cornice.z,
-     cornice.width,cornice.height,cornice.depth,cornice.yaw);
-    const audit=window.__milovicePhotoEaveCornice ||= {bands:0};
-    audit.bands++;
-   }
-  }
   if(len<5){
    // Legacy non-hero buildings have their own material-specific trim kit.
    // Mirror ONLY the already-existing bands on short exterior returns;
