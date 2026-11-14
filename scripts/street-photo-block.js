@@ -14,7 +14,7 @@ export const PHOTO_STREET_BLOCK=[
  {id:'202367254',name:'Mírová 243/36',street:'Mírová / 5. května',
   source:'https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_36.jpg',
   author:'ŠJů',license:'CC BY 4.0',photoDate:'2024-05-30',
-  details:['deep red hipped roof','central projecting gable dormer','two rooflights','street-side clipped hedge']},
+  details:['deep red hipped roof','central projecting gable dormer','three rooflights','street-side clipped hedge']},
  {id:'118487980',name:'Školská 220/1',street:'Školská / 5. května',
   source:'https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_1.jpg',
   author:'ŠJů',license:'CC BY 4.0',photoDate:'2024-05-30',
