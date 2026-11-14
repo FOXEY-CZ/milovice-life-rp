@@ -1,14 +1,15 @@
 /**
- * Milovice RP 5.60 — evidence-first world building.
+ * Milovice RP 5.61 — restore mistakenly hidden legacy buildings without claiming photo validation.
  *
  * OpenStreetMap is a useful source for approximate position, feature IDs,
  * road geometry and tagged building footprints. An OSM building tag is NOT
  * photographic proof of the building's appearance, use, entrances or current
  * existence. Never promote geometry-based guesses to photo-verified assets.
  *
- * After user review, 17 OSM-tagged 'garage' ways in northern Nádražní are
- * suspended from 3D rendering. Their map data are untouched. Existing
- * legacy city blocks require a separate retrospective photographic review.
+ * The previously hidden 17 OSM-tagged 'garage' ways in northern Nádražní
+ * were DIFFERENT from the buildings in the user's screenshots. Reinstate
+ * their already existing legacy model; do not approve or re-create the
+ * speculative gate-orientation algorithm from 5.59. Mark as unverified.
  */
 export const NADRAZNI_PHOTO_PENDING_OSM_IDS=Object.freeze([
   194679587,194679590,194679596,194679600,194679625,194679639,
@@ -16,8 +17,8 @@ export const NADRAZNI_PHOTO_PENDING_OSM_IDS=Object.freeze([
   194679719,194679741,194679745,194679758,194679763
 ]);
 
-// Explicitly EMPTY until a real image of THIS site confirms which buildings
-// exist, which walls are visible and their actual facade/roof appearance.
+// Explicitly EMPTY: none of the restored legacy buildings has an approved
+// photograph of its exact identity or visible architectural details.
 // Do not populate from nearby street photos, map tags or generated images.
 export const PHOTO_VERIFIED_ARCHITECTURE=Object.freeze([]);
 
@@ -40,8 +41,10 @@ export function hasReviewedPhotoEvidence(osmId,{records=PHOTO_VERIFIED_ARCHITECT
   records.some(e=>validSource(e)&&e.osmIds.some(x=>Number(x)===id));
 }
 /**
- * Preserve OSM ways in the external survey map but keep disputed 3D shapes
- * out of the game until photo evidence directly supports their identity.
+ * Roll back the mistaken 5.60 hide operation: all 17 existing models may
+ * render again as LEGACY placeholders. This is explicitly NOT a claim that
+ * their OSM building=garage tag, shutters or facade designs are accurate.
+ * Their photographs must still be checked before further improvements.
  */
 export function photoRenderingDecision(osmId,{records=PHOTO_VERIFIED_ARCHITECTURE}={}){
  const id=Number(osmId);
@@ -50,10 +53,10 @@ export function photoRenderingDecision(osmId,{records=PHOTO_VERIFIED_ARCHITECTUR
    photographicApproval:false,osmId:id
  };
  const approved=hasReviewedPhotoEvidence(id,{records});
- return {render:approved,status:approved?'photo-reviewed':'suspended-no-matched-photo',
+ return {render:true,status:approved?'photo-reviewed':'legacy-restored-awaiting-photo',
   photographicApproval:approved,osmId:id,
   reason:approved?'photo-match-reviewed':
-   'OSM building=garage tag does not establish real-world type or visual appearance'};
+   'Reinstated pre-5.59 legacy 3D placeholder after wrong-location hide; OSM type and visual appearance still unverified'};
 }
 /**
  * A dedicated gate for ALL NEW 3D feature proposals. Do not use OSM type,
