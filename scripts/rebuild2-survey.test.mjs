@@ -33,7 +33,7 @@ assert.equal(STATION_STOP_PHOTOS[0].street,'Nádražní');
 assert.equal(STATION_STOP_PHOTOS[1].street,'5. května');
 const photos=STREET_PHOTO_EVIDENCE.filter(p=>p.street==='Nádražní'||
  p.id==='nadrazi-bus-B-2024');
-for(const id of ['nadrazi-bus-2024','nadrazi-bus-alt-2024','nadrazi-bus-A-2024','nadrazi-bus-B-2024']){
+for(const id of ['nadrazi-bus-2024','nadrazi-bus-alt-2024','nadrazi-stops-wide-2024','nadrazi-bike-tower-2024','nadrazi-bus-A-2024','nadrazi-bus-A-side-2024','nadrazi-bus-B-2024']){
  assert(photos.some(p=>p.id===id),'Missing credited interchange photo '+id);
 }
 assert(photos.every(p=>p.taken==='2024-05-30'&&p.author==='ŠJů'&&
@@ -43,15 +43,15 @@ assert.equal(new Set(photos.map(p=>p.url)).size,photos.length,
  'Each street photo must appear only once');
 const html=read('survey.html');
 for(const marker of ['rebuild2-street-inventory.json','STREET_PHOTO_EVIDENCE',
- 'STATION_FORECOURT','data/rebuild2-street-inventory.json','getJson(source.path)',
+ 'data/rebuild2-street-inventory.json','getJson(source.path)',
  "street.id==='old:Nádražní'",'context-list','mandatoryAudit',
  "localStorage.setItem(storageKey",'notes','camera','source','OpenStreetMap',
  "map.fitBounds",'Chybí ověření / podklady','Lokálně prohlédnuto (není schváleno)']){
- // Some marker strings are display copy, and STATION_FORECOURT is not used by the survey.
- if(marker==='STATION_FORECOURT')continue;
- assert(html.includes(marker),'Whole-street survey missing '+marker);
+  assert(html.includes(marker),'Whole-street survey missing '+marker);
 }
 assert(!html.includes("STATION_STOP_PHOTOS.map("),'Duplicate bus photos would mask source integrity');
+for(const marker of ['objectChecks','objectProgress()','onlyUnfinished','objects:objectChecks','saved.objects','objectStatus(o.id)'])
+ assert(html.includes(marker),'Per-OSM-object QA must persist and support remaining-work filter: '+marker);
 const dashboard=read('rebuild.html'),game=read('index.html');
 assert(dashboard.includes("survey.html?id="),'All-street dashboard must deep-link inspection');
 assert(game.includes('survey.html?id=old%3AN%C3%A1dra%C5%BEn%C3%AD'),
