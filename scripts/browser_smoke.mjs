@@ -34,12 +34,12 @@ try{
  const hero=await page.evaluate(()=>window.__miloviceHeroArchitecture||null);
  if(!hero||hero.buildings<3||hero.cutoutWindows<12||hero.cutoutDoors<2||
     hero.solidWalls<10||hero.drawMeshes<4||!(hero.shortWallSegmentsSealed>=1)||
-    hero.trimmedWallEdges<hero.solidWalls||
-    hero.trimmedShortReturns<hero.shortWallSegmentsSealed||
+    hero.trimmedWallEdges!==hero.solidWalls||
+    hero.trimmedShortReturns!==hero.shortWallSegmentsSealed||
     hero.trimmedPerimeterMetres<150)
   throw new Error('5.7.0 genuinely cut-out old-town buildings absent: '+JSON.stringify(hero));
  console.log('5.7.0 actual wall cut-outs in Old Milovice:',JSON.stringify(hero));
- console.log('5.32.1 perimeter trim continuity:',JSON.stringify({
+ console.log('5.32.2 perimeter trim + wall continuity:',JSON.stringify({
   trimmedWallEdges:hero.trimmedWallEdges,
   trimmedShortReturns:hero.trimmedShortReturns,
   trimmedPerimeterMetres:hero.trimmedPerimeterMetres
@@ -161,8 +161,8 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('facade-bands-5321'))
-  throw new Error('5.32.1 browser loaded a stale HTML build');
+ if(!(await page.locator('#build-label').innerText()).includes('facade-walls-5322'))
+  throw new Error('5.32.2 browser loaded a stale HTML build');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
     sidewalkCheck.separatedSidewalks!==0||
