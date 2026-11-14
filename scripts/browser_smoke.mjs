@@ -306,6 +306,18 @@ try{
     JSON.stringify(citySigns));
  if(landmarkChecks.blueStarGhostDoorsRemoved!==true)
    throw Error('5.35: hotel still has full-size fake opaque window doors');
+ if(landmarkChecks.blueStarEntryRaisedSillRemoved!==true||
+    landmarkChecks.blueStarPlinthOpeningCount!==1||
+    !Number.isFinite(landmarkChecks.blueStarEntranceFloorY)||
+    !Number.isFinite(landmarkChecks.blueStarEntranceApproachY)||
+    landmarkChecks.blueStarEntranceFloorY-
+     landmarkChecks.blueStarEntranceApproachY>.03)
+  throw Error('5.39: Modra Hvezda door still starts above pavement or its grey plinth hides the threshold: '+
+   JSON.stringify(landmarkChecks));
+ console.log('5.39 corner entry at local grade, stone plinth split:',
+  JSON.stringify({floor:landmarkChecks.blueStarEntranceFloorY,
+   ground:landmarkChecks.blueStarEntranceApproachY,
+   openings:landmarkChecks.blueStarPlinthOpeningCount}));
  if(landmarkChecks.mirova36FacadeAnchored!==true)
    throw Error('5.36: photographed Mírová 36 glazing is detached from OSM wall');
  const shops=await page.evaluate(()=>window.__miloviceBusinessFacadeAudit||null);
