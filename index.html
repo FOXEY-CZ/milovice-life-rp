@@ -1946,17 +1946,30 @@ function stationWall(a,b,base,height,cx,cz,axis){
  const bays=Math.min(8,Math.max(1,Math.floor(len/3.15)));
  for(let j=0;j<bays;j++){
   const t=(j+.5)/bays,px=a.x+dx*t,pz=a.y+dz*t,fw=Math.min(1.50,len/bays*.72);
-  archPart('stationFrames',px+nx*.21,base+1.52,pz+nz*.21,fw,1.82,.15,yaw);
-  archPart('stationGlass',px+nx*.32,base+1.52,pz+nz*.32,fw-.21,1.53,.13,yaw);
-  // White multi-pane sash structure seen on the railway-side photograph.
-  // Painted as instanced bars; photo does not establish every exact pane size.
+  // Station wall has a 32cm-thick masonry box centred on this line.
+  // Its exterior skin is at +.16m, not the 0 of ordinary OSM facades.
+  // Glazing lies immediately outside that skin. Real THIN frame strips
+  // replace the full opaque floating white slab behind the old panes.
+  const skin=.16,frame=skin+flushBoxOffset(.09);
+  archPart('stationGlass',px+nx*(skin+FACE_PLANE),base+1.52,
+   pz+nz*(skin+FACE_PLANE),fw-.21,1.53,.026,yaw);
+  for(const side of [-1,1])
+   archPart('stationFrames',px+dx/len*side*fw*.49+nx*frame,base+1.52,
+    pz+dz/len*side*fw*.49+nz*frame,.082,1.85,.09,yaw);
+  archPart('stationFrames',px+nx*frame,base+2.44,pz+nz*frame,
+   fw+.08,.09,.09,yaw);
+  archPart('stationFrames',px+nx*frame,base+.59,pz+nz*frame,
+   fw+.08,.09,.09,yaw);
+  // Photo-informed multi-pane sash bars, all attached to this wall skin.
   for(const offset of [-.25,.25])
-   archPart('windowBar',px+dx/len*fw*offset+nx*.39,base+1.52,
-    pz+dz/len*fw*offset+nz*.39,.045,1.42,.08,yaw);
-  archPart('windowBar',px+nx*.40,base+1.37,pz+nz*.40,Math.max(.22,fw-.17),.050,.08,yaw);
-  archPart('stationWindowSill',px+nx*.32,base+.58,pz+nz*.32,fw+.24,.10,.34,yaw);
+   archPart('windowBar',px+dx/len*fw*offset+nx*frame,base+1.52,
+    pz+dz/len*fw*offset+nz*frame,.045,1.42,.09,yaw);
+  archPart('windowBar',px+nx*frame,base+1.37,pz+nz*frame,
+   Math.max(.22,fw-.17),.050,.09,yaw);
+  archPart('stationWindowSill',px+nx*(skin+flushBoxOffset(.34)),
+   base+.58,pz+nz*(skin+flushBoxOffset(.34)),fw+.24,.10,.34,yaw);
   const arch=new THREE.Mesh(new THREE.TorusGeometry(Math.min(.69,fw*.45),.065,5,14,Math.PI),stationArchMaterial);
-  arch.position.set(px+nx*.37,base+2.24,pz+nz*.37);
+  arch.position.set(px+nx*(skin+.075),base+2.24,pz+nz*(skin+.075));
   arch.rotation.y=Math.atan2(nx,nz);
   arch.userData.lodDetail=true;arch.userData.lodX=px;arch.userData.lodZ=pz;
   osmLayer.add(arch);
