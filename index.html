@@ -3390,21 +3390,17 @@ async function fetchMiloviceOSM(){
  }
  throw new Error(lastError?.message||'Mapový soubor nelze načíst');
 }
+// Public OSM contains ROAD NAMES, not 8-metre overhead billboard signs.
+// The former renderer fabricated up to 18 floating blue plaques and poles
+// in the middle of real streets, including 5. května (photo screenshot).
+// Keep road names on the minimap/HUD; draw no street furniture without
+// actual georeferenced sign inventory and photo verification.
 function osmStreetLabels(){
- const seen=new Set();let count=0;
- for(const road of osmNamedRoads){
-  if(seen.has(road.name)||road.points.length<2||count>=18)continue;
-  seen.add(road.name);count++;
-  const p=road.points[Math.floor(road.points.length/2)];
-  const canvas=document.createElement('canvas');canvas.width=512;canvas.height=96;
-  const ctx=canvas.getContext('2d');ctx.fillStyle='#225778';ctx.fillRect(0,0,512,96);
-  ctx.strokeStyle='#e7edf0';ctx.lineWidth=5;ctx.strokeRect(4,4,504,88);
-  ctx.fillStyle='white';ctx.font='bold 36px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(road.name,256,48,480);
-  const texture=new THREE.CanvasTexture(canvas);
-  const label=new THREE.Mesh(new THREE.PlaneGeometry(8,1.5),new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide,transparent:true}));
-  label.position.set(p.x,4.4+terrainAt(p.x,p.y),p.y);label.rotation.y=Math.PI/4;osmLayer.add(label);
-  const pole=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,3.6,6),mat(0x777f82));pole.position.set(p.x,2+terrainAt(p.x,p.y),p.y);osmLayer.add(pole);
- }
+ window.__miloviceStreetSignReality={
+  namedRoads:osmNamedRoads.length,
+  inventedWorldBillboards:0,inventedRoadPoles:0,
+  roadNamesRetainedInMap:true,requiresPhotoEvidence:true
+ };
 }
 function osmSetActive(active){
  osmActive=active;osmLayer.visible=active;
