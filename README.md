@@ -1,3 +1,21 @@
+# Milovice RP 5.61 — vráceno 17 omylem skrytých budov
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5610  
+**Mapa dotčené oblasti:** https://www.openstreetmap.org/#map=19/50.23040/14.88345  
+**Foto-kontrola Nádražní:** https://foxey-cz.github.io/milovice-life-rp/survey.html?id=old%3AN%C3%A1dra%C5%BEn%C3%AD
+
+**Oprava chyby předchozí verze 5.60:** Omylem jsme vyřadili **17 OSM objektů** ze severní části Nádražní (dvě řady okolo 50.2304, 14.88345), přestože uživatel upozorňoval na **jiné šedé stavby na screenshotu**. Tyto objekty už opět mohou vstupovat do 3D světa v jejich staré **legacy, nefotograficky ověřené podobě**. Nejde o vizuální schválení nebo nové modelování; historický algoritmus vymyšlených „vylepšených vrat“ 5.59 se **nevrací**.
+
+- **17/17 OSM objektů znovu vykreslováno**, se zachováním půdorysů, původních renderovacích dat a kolizí.
+- Žádné jiné objekty neodstraněny ani nově nehádány, především ne budovy z uživatelových screenshotů.
+- Veřejný QA přehled je stále označuje jako **fotograficky neověřené**. Pozastavené zdroje 5.60 se převedly do režimu `legacy-restored-awaiting-photo`.
+- Test `scripts/photo-verification-policy.test.mjs` zabraňuje opětovnému omylu se skrýváním, ověřuje výběr všech 17 ID a zajišťuje, že výhledové fotografické schvalování bez reálné fotografie neprojde.
+- Celý zbytek města zůstává pod fotografickým pravidlem REBUILD 2.0: **OSM není důkaz o fasádě, oknech, účelu ani aktuálním stavu**.
+
+**Neuzavřený problém:** Šedé budovy s velkými tmavými dveřmi na původních screenshotech nebyly dosud ztotožněny s konkrétními OSM ID; nelze je odstraňovat naslepo.
+
+---
+
 # Milovice RP 5.60 — fotografické důkazy jsou povinné
 
 **Spustit hru:** https://foxey-cz.github.io/milovice-life-rp/  
