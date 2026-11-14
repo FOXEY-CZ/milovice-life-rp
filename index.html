@@ -3074,25 +3074,37 @@ function osmBuilding(points,tags,index,osmId=null){
    if(y+.78>=h)continue; // Allow ground-floor windows on genuine one-storey houses.
    for(let j=0;j<windows;j++){
     const t=(j+1)/(windows+1),px=p.x+dx*t,pz=p.y+dz*t;
-    addFacadePart(0,px+nx*.38,y,pz+nz*.38,rotation,baseHeight);
-    addFacadePart(1,px+nx*.405,y,pz+nz*.405,rotation,baseHeight);
-    addFacadePart(2,px+nx*.43,y,pz+nz*.43,rotation,baseHeight);
-    addFacadePart(3,px+nx*.49,y-.85,pz+nz*.49,rotation,baseHeight);
+    const wx=px+nx*FACE_PLANE,wz=pz+nz*FACE_PLANE;
+    addFacadePart(0,wx,y,wz,rotation,baseHeight);
+    addFacadePart(1,px+nx*(FACE_PLANE+.007),y,
+     pz+nz*(FACE_PLANE+.007),rotation,baseHeight);
+    addFacadePart(2,px+nx*flushBoxOffset(.065),y,
+     pz+nz*flushBoxOffset(.065),rotation,baseHeight);
+    addFacadePart(3,px+nx*flushBoxOffset(.30),y-.85,
+     pz+nz*flushBoxOffset(.30),rotation,baseHeight);
+    attachmentAudit.legacyWindows++;
+    attachmentAudit.maxLegacyFaceGap=Math.max(
+     attachmentAudit.maxLegacyFaceGap,facadeGap(facade,{x:wx,z:wz},0),
+     facadeGap(facade,{x:px+nx*flushBoxOffset(.30),
+      z:pz+nz*flushBoxOffset(.30)},.30));
     // Photo-referenced white mullions: panes stop looking like flat blue rectangles.
     if(isBlueStar||isHouse||isSchool||isPanelBlock||j%2===0){
-     const wx=px+nx*.515,wz=pz+nz*.515;
-     archPart('windowBar',wx,baseHeight+y,wz,.065,1.31,.09,rotation);
-     archPart('windowBar',wx,baseHeight+y+.07,wz,1.40,.045,.09,rotation);
+     const bx=px+nx*flushBoxOffset(.09),
+      bz=pz+nz*flushBoxOffset(.09);
+     archPart('windowBar',bx,baseHeight+y,bz,.065,1.31,.09,rotation);
+     archPart('windowBar',bx,baseHeight+y+.07,bz,1.40,.045,.09,rotation);
     }
     if(isPanelBlock&&j%3===0){
-     archPart('panelSeam',px+nx*.35+ux*1.45,baseHeight+h*.5,pz+nz*.35+uz*1.45,.09,h-.32,.11,rotation);
+     archPart('panelSeam',px+nx*flushBoxOffset(.11)+ux*1.45,baseHeight+h*.5,
+      pz+nz*flushBoxOffset(.11)+uz*1.45,.09,h-.32,.11,rotation);
      if(floor>0){
       // A regular panel-grid window is not evidence of a balcony.
       facadeSourceAudit.suppressedRandomBalconies++;
      }
     }
     if(isHouse){
-     archPart('whiteTrim',px+nx*.55,baseHeight+y-.77,pz+nz*.55,1.53,.13,.32,rotation);
+     archPart('whiteTrim',px+nx*flushBoxOffset(.32),baseHeight+y-.77,
+      pz+nz*flushBoxOffset(.32),1.53,.13,.32,rotation);
      if((index+j+floor)%4===0){
       facadeSourceAudit.suppressedRandomShutters++;
       if(auditedCore)legacyRealityAudit.suppressed('suppressedShutters');
