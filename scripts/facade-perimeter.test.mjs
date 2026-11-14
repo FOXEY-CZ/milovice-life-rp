@@ -90,4 +90,13 @@ assert(hero.includes('state.shortWallSegmentsSealed++'));
 assert(!hero.includes('if(len<3||len>70)continue'));
 console.log(JSON.stringify({audited:buildings.length,shortReturns,shortBuildings,detailed,degenerate,
  skolskaShortReturnMetres:segments.find(l=>l>1&&l<1.5)},null,2));
+// Legacy (non-hero) fallback: formerly len<5 skipped every band.
+const world=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+assert(!world.includes('if(len<5||len>90)continue'),
+ 'No short mapped facade edge may be dropped before its trim is considered');
+assert(world.includes('if(len<5){')&&
+ world.includes("archPart('foundationBand',mx+nx*.22,baseHeight+.52"),
+ 'Existing non-hero foundation band must continue on short returns');
+assert(world.includes('window.__miloviceLegacyFacadeBandAudit'),
+ 'Instrument the fallback renderer for missing short-edge trim');
 console.log('Roof-wall facade closure across Milovice: short return and continuous base/cornice bands PASS',JSON.stringify({plannedBands,plannedShortBands,totalTrimMetres:Math.round(totalTrimMetres)}));
