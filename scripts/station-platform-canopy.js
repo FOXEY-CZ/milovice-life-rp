@@ -69,7 +69,13 @@ export function planStationPlatformCanopy({station,platform,tracks=[],stationId=
     return {segments:[],reason:'invalid-footprints'};
   if(!Number.isFinite(spanWidth)||spanWidth<1||spanWidth>3||minRailDistance<2.8)
     return {segments:[],reason:'unsafe-parameters'};
-  const direction=Math.sign(area(wall)),trackLines=(tracks||[]).map(pts).filter(a=>a.length>=3);
+  const direction=Math.sign(area(wall));
+  // Tracks are linear OSM ways, sometimes only TWO vertices. Polygon
+  // validation would silently drop them and miss a rail clearance hazard.
+  const trackLines=(tracks||[]).map(line=>Array.isArray(line)?line.map(p=>({
+    x:Number(p?.x),z:Number(p?.z??p?.y)
+  })).filter(p=>Number.isFinite(p.x)&&Number.isFinite(p.z)):[])
+   .filter(line=>line.length>=2);
   const segments=[],rejected=[];
   for(let i=0;i<wall.length;i++){
     const a=wall[i],b=wall[(i+1)%wall.length],dx=b.x-a.x,dz=b.z-a.z;
