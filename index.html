@@ -2756,17 +2756,22 @@ function miloviceBusinessFront(pts,tags,base,height,cx,cz,osmId){
  }
  // Entrances and generous floor-to-ceiling glazing, bounded to the surveyed wall.
  const glassW=Math.max(2.5,Math.min(w*.95,len-.32));
+ const commerceGrade=planGroundedEntrance(face,{
+  terrainAt,baseHeight:base,topY:base+2.4});
+ if(!commerceGrade)throw Error('Mapped business frontage has no local grade '+osmId);
+ recordEntranceGrade(commerceGrade,'commerce',osmId);
  // Glass lies on mapped wall, with narrow actual jambs and mullions.
  // No large opaque panels or 0.6m floating white frames across the shop.
- archPart('stationGlass',mx+nx*FACE_PLANE,base+1.39,
-  mz+nz*FACE_PLANE,glassW-.35,2.02,.026,yaw);
+ archPart('stationGlass',mx+nx*FACE_PLANE,commerceGrade.centerY,
+  mz+nz*FACE_PLANE,glassW-.35,commerceGrade.doorHeight,.026,yaw);
  const frameOffset=flushBoxOffset(.08),jamb=glassW*.49;
  for(const side of [-1,0,1]){
   archPart('stationFrames',mx+dx/len*jamb*side+nx*frameOffset,
-   base+1.38,mz+dz/len*jamb*side+nz*frameOffset,
-   .095,2.26,.08,yaw);
+   (commerceGrade.floorY+base+2.51)*.5,
+   mz+dz/len*jamb*side+nz*frameOffset,
+   .095,base+2.51-commerceGrade.floorY,.08,yaw);
  }
- for(const dy of [base+.26,base+2.51])
+ for(const dy of [commerceGrade.floorY+.045,base+2.51])
   archPart('stationFrames',mx+nx*frameOffset,dy,
    mz+nz*frameOffset,glassW,.085,.08,yaw);
  archPart(normalized==='billa'?'billaBlack':normalized==='penny'?'pennyRed':normalized==='tesco'?'tescoWhite':'stationCanopy',
@@ -3249,7 +3254,14 @@ function osmBuilding(points,tags,index,osmId=null){
    const bays=Math.max(1,Math.floor(len/6));
    for(let j=0;j<bays;j++){
     const t=(j+.5)/bays;
-    archPart('industrialDoor',p.x+dx*t+nx*flushBoxOffset(.21),baseHeight+1.9,p.y+dz*t+nz*flushBoxOffset(.21),Math.min(3.9,len/bays-.4),3.62,.21,rotation);
+    const industrialGrade=planGroundedEntrance(facade,{
+     terrainAt,baseHeight,topY:baseHeight+3.71,
+     along:(t-.5)*len});
+    if(!industrialGrade)throw Error('Industrial entrance has no grade '+osmId);
+    recordEntranceGrade(industrialGrade,'industrial',osmId);
+    archPart('industrialDoor',p.x+dx*t+nx*flushBoxOffset(.21),
+     industrialGrade.centerY,p.y+dz*t+nz*flushBoxOffset(.21),
+     Math.min(3.9,len/bays-.4),industrialGrade.doorHeight,.21,rotation);
    }
   }
   if(isBlueStar){
@@ -3444,10 +3456,15 @@ function osmBuilding(points,tags,index,osmId=null){
    const {len}=front,facade=exteriorFacadeFrame(pts,front.i);
    if(!facade)throw Error('Invalid garage facade edge');
    const {nx,nz,mx,mz,yaw}=facade,doorWidth=Math.min(2.7,len-.42);
-   archPart('garageMetal',mx+nx*flushBoxOffset(.13),baseHeight+1.25,
-    mz+nz*flushBoxOffset(.13),doorWidth,2.12,.13,yaw);
+   const garageGrade=planGroundedEntrance(facade,{
+    terrainAt,baseHeight,topY:baseHeight+2.31});
+   if(!garageGrade)throw Error('Garage entrance has no local grade '+osmId);
+   recordEntranceGrade(garageGrade,'garage',osmId);
+   archPart('garageMetal',mx+nx*flushBoxOffset(.13),garageGrade.centerY,
+    mz+nz*flushBoxOffset(.13),doorWidth,garageGrade.doorHeight,.13,yaw);
    for(let j=0;j<5;j++)archPart('windowBar',mx+nx*flushBoxOffset(.07),
-    baseHeight+.46+j*.38,mz+nz*flushBoxOffset(.07),doorWidth,.025,.07,yaw);
+    garageGrade.floorY+.32+j*(garageGrade.doorHeight-.60)/4,
+    mz+nz*flushBoxOffset(.07),doorWidth,.025,.07,yaw);
   }
  }
  // The old one-size-fits-all horizontal roof LineLoop sat at y=h+.12
