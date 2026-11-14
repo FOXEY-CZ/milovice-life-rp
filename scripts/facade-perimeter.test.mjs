@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {classifyFacadeEdgeLength,planFacadePerimeterTrims} from './facade-perimeter.js';
+import {classifyFacadeEdgeLength,planFacadePerimeterTrims,planPhotographedEaveCornice} from './facade-perimeter.js';
+import {exteriorFacadeFrame,facadeGap} from './facade-anchors.js';
 const osm=JSON.parse(readFileSync(new URL('../data/milovice-osm.json',import.meta.url),'utf8'));
 const buildings=osm.elements.filter(el=>el.tags?.building&&el.geometry?.length>=3);
 assert.equal(buildings.length,684);
@@ -76,6 +77,29 @@ assert.equal(classifyFacadeEdgeLength(0),'degenerate');
 assert.equal(classifyFacadeEdgeLength(71),'degenerate');
 assert(shortReturns>20&&shortBuildings>15,
  'Several mapped Milovice buildings have short wall segments, never leave them open');
+// 5.41: the pale photo cornice MUST remain, with its backside touching
+// each of the genuine OSM wall segments at Školská 220/1. Never replace
+// it with an unverified free-floating second overlay or delete it outright.
+const schoolOutline=skolska.geometry.slice(0,-1).map(p=>({
+ x:(p.lon-14.889)*111320*cos,
+ z:-(p.lat-50.226)*111320
+}));
+let photoEaveEdges=0;
+for(const outline of [schoolOutline,[...schoolOutline].reverse()]){
+ for(let i=0;i<outline.length;i++){
+  const wall=exteriorFacadeFrame(outline,i);
+  if(!wall)continue;
+  const band=planPhotographedEaveCornice(wall,{base:11,height:3.75});
+  assert(band&&band.kind==='frame'&&band.source.startsWith('photo-Skolska'));
+  assert(Math.abs(facadeGap(wall,band,band.depth)+.012)<1e-7,
+   'Photographed eave fascia must penetrate its real OSM wall by 12mm');
+  assert(Math.abs(band.y-(11+3.75-.13))<1e-9);
+  assert(band.width>=wall.len&&band.width<=wall.len+.12);
+  photoEaveEdges++;
+ }
+}
+assert(photoEaveEdges>=12);
+assert.equal(planPhotographedEaveCornice(null),null);
 const hero=readFileSync(new URL('./hero-architecture.js',import.meta.url),'utf8');
 assert(hero.includes("wallKind==='solid-return'"));
 assert(hero.includes('const edgeFrame=exteriorFacadeFrame(pts,sideIndex);'));
@@ -83,6 +107,9 @@ assert(hero.includes('const trim=planFacadePerimeterTrims(a,b,centroid,{base,hei
 assert(hero.includes('RECESSED_GLAZING'));
 assert(hero.includes('flushBoxOffset(.32)'));
 assert(hero.includes('addBand(trim.base);')&&hero.includes('addBand(trim.upper);'));
+assert(hero.includes('trim.upper=photoCornice;')&&
+ hero.includes("String(identity)==='118487980'"),
+ 'Photographed pale eave replaces the generic hero cornice, not an extra detached row');
 assert(hero.includes('state.trimmedShortReturns++'));
 assert(hero.includes('if(len<.08)return null;'),
  'Sub-metre valid short returns need solid walls as well as both trim bands');
@@ -104,6 +131,10 @@ assert(!world.includes('if(len<5||len>90)continue'),
 assert(world.includes('if(len<5){')&&
  world.includes("archPart('foundationBand',mx+nx*flushBoxOffset(.10),baseHeight+.52"),
  'Existing non-hero foundation band must continue on short returns');
+assert(world.includes('planPhotographedEaveCornice(facade,')&&
+ world.includes("archPart('whiteTrim',cornice.x,cornice.y,cornice.z")&&
+ world.includes('window.__milovicePhotoEaveCornice'),
+ 'Fallback Školská must retain exactly one genuine attached eave cornice');
 assert(world.includes('window.__miloviceLegacyFacadeBandAudit'),
  'Instrument the fallback renderer for missing short-edge trim');
 console.log('Roof-wall facade closure across Milovice: short return and continuous base/cornice bands PASS',JSON.stringify({plannedBands,plannedShortBands,totalTrimMetres:Math.round(totalTrimMetres)}));
