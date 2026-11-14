@@ -37,7 +37,9 @@ try{
     hero.trimmedWallEdges!==hero.solidWalls||
     hero.trimmedShortReturns!==hero.shortWallSegmentsSealed||
     hero.trimmedPerimeterMetres<150||
-    hero.suppressedUnverifiedPhotoOrnaments<20)
+    hero.suppressedUnverifiedPhotoOrnaments<20||
+    hero.sharedSurfaceTextures!==3||hero.surfaceResolution!==128||
+    hero.extraMaterialDrawCalls!==0)
   throw new Error('5.7.0 genuinely cut-out old-town buildings absent: '+JSON.stringify(hero));
  console.log('5.7.0 actual wall cut-outs in Old Milovice:',JSON.stringify(hero));
  console.log('5.32.2 perimeter trim + wall continuity:',JSON.stringify({
@@ -86,7 +88,7 @@ try{
    JSON.stringify(roofEnvelope));
  const landmark=await page.evaluate(()=>window.__milovicePhotoStreetPass||null);
  if(!landmark||landmark.buildings!==3||landmark.dormers<3||
-    landmark.rooflights<2||landmark.hedgeGroups<1||
+    landmark.rooflights!==3||landmark.hedgeGroups<2||
     !(landmark.meshesSavedByBatching>0&&landmark.detailDrawMeshes<landmark.detailMeshes)||
     !['202367194','202367254','118487980'].every(id=>landmark.landmarkIds.includes(id))||
     landmark.actualArchedWindowMeshes!==4||landmark.rectangularFakeArchRemoved!==2||
@@ -173,8 +175,8 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('photo-streets-5330'))
-  throw new Error('5.33.0 browser loaded a stale HTML build');
+ if(!(await page.locator('#build-label').innerText()).includes('photo-block-5340'))
+  throw new Error('5.34.0 browser loaded a stale HTML build');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
     sidewalkCheck.separatedSidewalks!==0||
@@ -251,6 +253,22 @@ try{
  const wheels=await page.evaluate(()=>window.__miloviceVehicleDebug);
  console.log('5.4.0 moving car and bus wheel rotation:',JSON.stringify(wheels));
  const landmarkChecks=await page.evaluate(()=>window.__miloviceLandmarkDebug||{});
+ if(landmarkChecks.blueStarSourceEntranceArch!==true||
+    landmarkChecks.blueStarInventedBillboardRemoved!==true||
+    landmarkChecks.mirova36SourceStorefrontBays!==3||
+    landmarkChecks.mirova36FakeCanopyRemoved!==true||
+    !(landmarkChecks.mirova36EaveWallHeight>=3.7&&
+      landmarkChecks.mirova36EaveWallHeight<4.5))
+  throw new Error('5.34.0 source-backed block geometry was not rebuilt: '+
+   JSON.stringify(landmarkChecks));
+ console.log('5.34.0 photo-corrected three buildings: '+JSON.stringify({
+  mirova36Eave:landmarkChecks.mirova36EaveWallHeight,
+  mirova36Storefront:landmarkChecks.mirova36SourceStorefrontBays,
+  modraHvezdaArchedEntry:landmarkChecks.blueStarSourceEntranceArch,
+  atticRooflights:landmark.rooflights,
+  texturedHeroFacades:hero.buildings,
+  sharedTextures:hero.sharedSurfaceTextures
+ }));
  if(!landmarkChecks.unverifiedPlatformPropsRemoved||
     !landmarkChecks.unverifiedCafeFurnitureRemoved||
     !landmarkChecks.unverifiedShopLabelRemoved)
