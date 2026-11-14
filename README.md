@@ -1,3 +1,25 @@
+# Milovice RP 5.75 — souvislý chodník jako silnice, žádné minecraftové čtverce
+
+**Spustit verzi 5.75:** https://foxey-cz.github.io/milovice-life-rp/?v=5750  
+**Záloha před úpravou:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/574-before-continuous-sidewalk
+
+## Důležitá uživatelská připomínka (15. 11. 2026)
+
+Uživatel na posledním screenshotu 5.74 viděl stále **schodovité čtverce na vnějším chodníku**. Výslovně navrhl řešit chodník jako **jeden dlouhý pruh podobně jako samotnou silnici**, nikoli jako jednotlivé čtvercové modely. Předchozí 5.74 oprava upravila jen 10 rohů, což problém nezmizelo.
+
+## Geometrie v5.75
+
+- Středová část nádražního parkování zůstává na stejném místě: **chodník stále zabírá vnější OSM-safe parkovací řady u Nádražní, parkování je uvnitř ostrova, žádné nové kusy chodníku přes asfalt**.
+- Místo původních **170 samostatných čtvercových dlažebních plošek** se buduje geometrie jako **jeden spojený podélný pás (procedurální THREE.BufferGeometry)**. V každé příčné řadě se určí bezpečné krajní hrany, na půlcestě k sousední řadě se obě hranice **průnikem bezpečných intervalů** propojí, takže rohy přecházejí diagonálně a nepřidávají žádnou dlažbu mimo dříve kontrolovanou plochu. Pokud průnik neexistuje, pás se bezpečně rozdělí místo překrytí silnice.
+- Povrch používá **původní `osmSidewalkMat` s dlažební texturou** jako ostatní chodníky a souvislé UV souřadnice. Každé navázané místo sdílí stejné vertexy, tudíž nejsou v modelu švy mezi čtverci. Příslušné geometrie mají nulový počet jednotlivých chodníkových panelů.
+- **Obrubník vnější hrany** je nově rovněž **jedna úzká návazná pásová geometrie**, nikoli 80+ samostatně instancovaných obdélníkových kvádrů.
+- **Žádné přesuny nebo změny asfaltu.** Protilehlá zatravňovací řada parkování, centrální griddovaná dlažba, pravý přední roh, nádraží, cyklověž a celá další část hry jsou beze změn. Grafický rozpočet má maximálně **8 draw callů** pro celý tento doplněk (dvě souvislé pásové geometrie namísto jednoho pásu a řady instancovaných obrub).
+- Podoba a šířky okrajů jsou stále **fotograficky podloženou aproximací** podle screenshots uživatele z Mapy.com Panorama **17. 5. 2022**, navázanou na mapované vozovky OSM **675778842** a **128308366**; 3D ani fotografická přesnost není geodeticky potvrzená a fotografie se nekopírují do textur.
+
+**QA:** `scripts/station-photo-parking.test.mjs` kontroluje spojitý podélný ribbon, monotónnost segmentů, bezpečné průniky předem zkontrolovaných buněk, žádné samostatné panely a stále dvě části parkování. `scripts/browser_smoke.mjs` hlídá vykreslení, sdílenou dlažbu, rozpočet 8 draw callů, kontinuitu pěšího pásu a nepřítomnost vynucené pěší trasy přes silnici. Celý skutečný dojem bude teprve uživatelem vizuálně kontrolován ve hře.
+
+---
+
 # Milovice RP 5.74 — vyčištěné okraje chodníku a dlažby u nádraží
 
 **Spustit:** https://foxey-cz.github.io/milovice-life-rp/?v=5740  
