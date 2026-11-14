@@ -90,3 +90,15 @@ Zdroj: https://www.kdykde.cz/rejstrik/kostel-sv-kateriny-alexandrijske/ (Mírov�
 - Přidána automatická kontrola scripts/station-platform-canopy.test.mjs v GitHub Actions, včetně obráceného pořadí vrcholů polygonu, nulové stříšky bez podkladu, vlakové vůle, společné výšky a omezeného renderovacího rozpočtu. **Bez fotografického schválení z telefonu se Nádražní nepovažuje za dokončenou.**
 
 **Další opravy celého bloku:** obě strany silnice, skutečná pozice parkování, pěší přístup a schody, stanoviště A/B, budovy a fasády po jednotlivých OSM ID, návaznost na Školskou a 5. května, následně kostelní blok. Nezaměňovat dílčí model zastřešení za hotovou ulici.
+
+
+## PART 12 — 5.58: zásadní oprava polohy stříšky podle průchodu
+
+Uživatel opravil zadání: krytí patří **nad částí průchodu / jeho železniční vyústění**, nikoli nad libovolně dlouhou stěnu u nástupiště. Předešlá verze 5.57 (15m kryt na nejdelší stěně) byla proto chybně umístěná a je **nahrazena**.
+
+- Vazba je nyní na OSM 1550920096 (pěší průchod budovou). Podle druhého koncového bodu je vybráno vyústění na **železniční straně** OSM 53865956; druhá strana budovy se nesmí stát chybným kotvicím bodem.
+- Stříška pokrývá jen část zdi nejblíže tomuto vyústění. Aktuální výpočet dává **dva přímo sousedící úseky cca 3,2 m, dohromady 6,4 m**, kolem skutečného železničního koncového bodu trasy, na styku fasádních hran 4 a 5.
+- Dvě střešní plochy sdílejí přesně stejný spojovací bod i vnější orientaci; automatický test kontroluje nulovou mezeru na stěně i na okraji střechy.
+- Kontrolují se také skutečný OSM polygon nástupiště, bezpečný odstup od kolejí, stejná výška základny jako u nádraží a výkonnostní strop **3 draw cally**.
+- Pokud OSM pěší průchod chybí, je od mapy nebo nesedí na nástupištní fasádu, konstrukce se **nevygeneruje**; žádná náhodná náhradní stříška.
+- Vizuální podobu a velikost oproti skutečné současné stavbě je nadále třeba porovnat z fotek včetně pohledu od podchodu. Tato oprava zajišťuje správnou **část nádraží**, nikoli kompletní dokončení ulice.
