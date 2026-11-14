@@ -170,7 +170,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  const grout=new THREE.MeshStandardMaterial({color:0xc8b99d,roughness:.94});
  let buildings=0,dormers=0,rooflights=0,hedgeGroups=0,detailMeshes=0;
  let actualArchedWindowMeshes=0,rectangularFakeArchRemoved=0;
- let anchoredDormerRoofs=0,removedDetachedRoofBoxPanels=0;
+ let anchoredDormerRoofs=0,removedDetachedRoofBoxPanels=0,joinedOrdinaryDormerRoofs=0;
  let detailDrawMeshes=0,meshesSavedByBatching=0,flushRooflights=0;
  const ids=new Set(),ownedGroups=new Set();
  // Each photo-referenced facade is statically batched by material. A dozen
@@ -294,22 +294,20 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   shape.lineTo(0,1.43+roofRise);shape.closePath();
   const geom=new THREE.ShapeGeometry(shape);
   addMesh(p,geom,wall,0,0,front+.01);
+  // Both arched and ordinary cross-gables share ONE geometry constructor.
+  // Old ordinary gable used two independent rotated black boxes with
+  // hardcoded 0.94m rise, even when the house requested 1.65m, creating
+  // a giant inverted triangle through the host roof.
+  const joined=planSkolskaDormerRoof({
+   width:w,depth,rise:roofRise,wallEaveY:1.43
+  });
+  if(!joined?.closed)throw Error('Documented dormer roof did not close');
+  joinedRoofFaces(p,joined.roofFaces,roof);
+  joinedRoofFaces(p,joined.soffitFaces,roof);
+  joinedRoofFaces(p,joined.fasciaFaces,roof);
   if(arched){
-   const joined=planSkolskaDormerRoof({width:w,depth,rise:roofRise,wallEaveY:1.43});
-   if(!joined?.closed)throw Error('Školská roof gable did not close');
-   // Two ONE-PIECE planar roof slopes and connected underside/end faces.
-   // No rotated detached plates, no floating dark roof polygons.
-   joinedRoofFaces(p,joined.roofFaces,roof);
-   joinedRoofFaces(p,joined.soffitFaces,roof);
-   joinedRoofFaces(p,joined.fasciaFaces,roof);
    anchoredDormerRoofs++;removedDetachedRoofBoxPanels+=2;
-  }else{
-   const slopes=planDormerRoofSlopes(w,.94);
-   for(const slope of slopes)
-    part(p,slope.panelLength,.095,depth+.28,roof,
-     slope.x,slope.y,0,0,0,slope.rotationZ);
-   part(p,w+.27,.095,.16,roof,0,1.43,front+.18);
-  }
+  }else joinedOrdinaryDormerRoofs++;
   dormers++;
   return g;
  }
@@ -317,7 +315,12 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   // A sampled surface built in world space can be directly submitted to
   // the material batch. No detached rooflight boxes or guessed rotations.
   if(!roofPlan)return;
-  const g=exteriorGroup(edge,0);
+  // The rooflight vertices are already in absolute world coordinates.
+  // Never parent them below a rotated facade group (double translation).
+  const g=new THREE.Group();
+  g.userData.lodX=edge.mx;g.userData.lodZ=edge.mz;
+  g.userData.lodDetail=true;
+  layer.add(g);ownedGroups.add(g);
   for(const offset of offsets){
    const plan=planPhotographedRooflight(roofPlan,edge,offset);
    if(!plan)continue;
@@ -338,8 +341,10 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   const dummy=new THREE.Object3D();
   for(let i=0;i<pieces;i++){
    const t=(i+.5)/pieces,along=(t-.5)*edge.len;
-   dummy.position.set(along,.56,1.20);
-   dummy.scale.set(edge.len/pieces*.90,1.12,.74);
+   // Street photo shows a LOW trimmed hedge, not a 1.12m solid green
+   // wall obscuring the first-floor and ground-floor windows.
+   dummy.position.set(along,.38,1.38);
+   dummy.scale.set(edge.len/pieces*.84,.76,.60);
    dummy.rotation.set(0,0,0);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);
   }
   mesh.instanceMatrix.needsUpdate=true;mesh.receiveShadow=true;
@@ -397,7 +402,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  function getStatus(){return {buildings,dormers,rooflights,hedgeGroups,detailMeshes,
   detailDrawMeshes,meshesSavedByBatching,
   actualArchedWindowMeshes,rectangularFakeArchRemoved,
-  anchoredDormerRoofs,removedDetachedRoofBoxPanels,flushRooflights,
+  anchoredDormerRoofs,removedDetachedRoofBoxPanels,joinedOrdinaryDormerRoofs,flushRooflights,
   landmarkIds:[...ids],photoReferenceCount:PHOTO_STREET_BLOCK.length,
   scope:'Mírová–5. května–Školská; photographed geometry approximation'};}
  function publish(){if(typeof window!=='undefined')window.__milovicePhotoStreetPass=getStatus()}
@@ -409,7 +414,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   ownedGroups.clear();buildings=dormers=rooflights=hedgeGroups=detailMeshes=0;
   detailDrawMeshes=meshesSavedByBatching=flushRooflights=0;
   actualArchedWindowMeshes=rectangularFakeArchRemoved=0;
-  anchoredDormerRoofs=removedDetachedRoofBoxPanels=0;
+  anchoredDormerRoofs=removedDetachedRoofBoxPanels=joinedOrdinaryDormerRoofs=0;
   ids.clear();publish()
  }
  publish();
