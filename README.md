@@ -1,3 +1,23 @@
+# Milovice RP 5.69 — chodníky podle červeného označení uživatele
+
+**Nová hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5690  
+**Návrat k předchozí 5.68:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/568-before-sidewalk-relocation
+
+## Oprava konkrétní chyby
+
+Uživatel poslal 14. 11. 2026 soubor panoramat ze dne **17. 5. 2022** a dva **červeně označené screenshoty** hry a Mapy.com. Označil dvě části, které ve hře neodpovídaly realitě: **(1) dlouhý pěší pruh uvnitř světlého středového ostrova mezi dvěma vozovkami; (2) zakřivený světlý chodník na pravém předním rohu u vjezdu.** Dlouhá uměle přidaná pěší linie u kolejí za druhou řadou parkování v 5.68 byla chybně umístěná.
+
+- **Zcela odstraněno 77 dlažebních segmentů chybného železničního chodníku** a jeho nesprávné obruby. **20 parkovacích míst na protější železniční straně zůstává.**
+- **Střední ostrov:** původních cca 492 dlažebních polí zachováno. **249 z nich je nově odděleno do světlé pěší vrstvy** podél vnitřního okraje ostrova (bez dvojité geometrie). Originální mapovaný OSM chodník **1165594426** zůstává průchozí, bez přemístění.
+- **Pravý přední roh:** krátké rozšíření světlé nárožní pěší plochy odvozené z reálné OSM pěší linie **1282187911** a bezpečné strany jejího sousedství (testovaného proti všem ulicím včetně Školské). Přidáno **10 malých dlažebních polí a 5 dílů obruby**. Půdorys je fotograficky inspirovaný odhad, nikoliv přesně zaměřený chodník.
+- **Žádná nová silnice a žádné kopírování Mapy.com fotografií do textur.** Počet vozovek, budov, cyklověž, nádraží, střechy, autobusové zastávky i ostatní části města zůstávají beze změn. Původní druhé parkoviště a pěší trasy chrání automatické regresní testy.
+
+**Omezení:** konkrétní geometrie nárožního obrubníku není geodeticky vyměřena; test pouze potvrzuje vazbu na OSM, mimoúrovňové nekřížení vozovek a shodu s vyznačenou stranou. Žádná fotografie ze soukromého zdroje nebyla do repozitáře stažena.
+
+**QA:** `scripts/station-photo-parking.test.mjs` (správná strana, původní mapované chodníky, žádný kus špatně umístěné pěší cesty, oba parkovací břehy, celoplošná kolizní kontrola) + `scripts/browser_smoke.mjs` (Chromium WebGL, rozpočet maximálně 6 instancovaných vrstev).
+
+---
+
 # Milovice RP 5.68 — obě části parkoviště a prostor pro chodník
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5680  
