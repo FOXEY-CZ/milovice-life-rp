@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {exteriorFacadeFrame,facadePoint,facadeGap,
- flushBoxOffset,FACE_PLANE,RECESSED_GLAZING} from './facade-anchors.js';
+import {exteriorFacadeFrame,selectExteriorFacadeToward,splitFacadeStripForOpening,
+ facadePoint,facadeGap,flushBoxOffset,FACE_PLANE,RECESSED_GLAZING} from './facade-anchors.js';
 import {planFacadePerimeterTrims} from './facade-perimeter.js';
 const near=(a,b,eps=1e-8)=>Math.abs(a-b)<eps;
 const p=(x,z)=>({x,z});
@@ -93,6 +93,45 @@ for(const b of buildings){
 assert.equal(buildings.length,684);
 assert(valid>=680&&edges>2000&&processedShort>20,
  'Citywide geometry regression must cover every wall orientation');
+// Regression 5.39: the photo-based main entrance of the Blue Star may
+// never be occluded by the continuous 50 cm stone foundation band.
+// Short chamfer edges (3.7 m) need a split band, not a missing whole plinth.
+const star=osm.elements.find(b=>b.id===202367194);
+assert(star,'Known photo-referenced corner hotel missing from source map');
+const starOutline=star.geometry.slice(0,-1).map(q=>p(
+ (q.lon-14.889)*111320*Math.cos(50.226*Math.PI/180),
+ -(q.lat-50.226)*111320));
+const camera=p((14.8840981-14.889)*111320*Math.cos(50.226*Math.PI/180),
+ -(50.2280572-50.226)*111320);
+const entrance=selectExteriorFacadeToward(starOutline,camera,{
+ minLength:2.8,maxLength:7.2});
+assert(entrance&&entrance.len>3.5&&entrance.len<4,
+ 'Corner entry must be attached to real short chamfer');
+const pieces=splitFacadeStripForOpening(entrance,{
+ along:0,width:1.48,padding:.045});
+assert.equal(pieces.length,2,'A 50cm plinth must remain on either side of the entrance');
+const clearWidth=1.48+2*.045,outer=entrance.len/2;
+assert(near(pieces.reduce((sum,x)=>sum+x.width,0),
+ entrance.len-clearWidth,1e-6));
+for(const part of pieces){
+ assert(part.width>.8&&part.width<1.3);
+ const lo=part.along-part.width*.5,hi=part.along+part.width*.5;
+ assert(hi<=-clearWidth*.5+1e-8||lo>=clearWidth*.5-1e-8,
+  'Stone plinth still crosses the actual opening, hiding lower door');
+ const pos=facadePoint(entrance,part.along,flushBoxOffset(.17));
+ assert(near(facadeGap(entrance,pos,.17),.008));
+ assert(lo>=-outer-1e-8&&hi<=outer+1e-8);
+}
+assert.deepEqual(splitFacadeStripForOpening(entrance,{
+ along:0,width:20}),[],
+ 'A full-width doorway should not leave ghost plinth segments');
+const flipped=selectExteriorFacadeToward([...starOutline].reverse(),camera,
+ {minLength:2.8,maxLength:7.2});
+assert(flipped&&Math.hypot(flipped.mx-entrance.mx,flipped.mz-entrance.mz)<1e-8);
+const flippedBands=splitFacadeStripForOpening(flipped,{width:1.48,padding:.045});
+assert(near(flippedBands.reduce((sum,x)=>sum+x.width,0),
+ pieces.reduce((sum,x)=>sum+x.width,0)),
+ 'Reversed footprint must leave the same real doorway open');
 const hero=readFileSync(new URL('./hero-architecture.js',import.meta.url),'utf8');
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert(hero.includes('exteriorFacadeFrame(pts,sideIndex)'));
@@ -106,6 +145,16 @@ assert(html.includes('exteriorFacadeFrame(pts,front.i)'));
 assert(html.includes('addFacadePart(0,wx,y,wz,rotation,baseHeight)'));
 assert(!html.includes('addFacadePart(0,px+nx*.38'));
 assert(!html.includes('const doorx=mx+nx*.60'));
+assert(html.includes('blueStarPlinth(facade);')&&
+ html.includes('splitFacadeStripForOpening(face,{along:0,width:1.48,padding:.045})')&&
+ html.includes('Math.min(base+.035,approachY+.025)')&&
+ html.includes('doorTop-floorY')&&
+ html.includes('jambTop-floorY')&&
+ html.includes('blueStarEntryRaisedSillRemoved=true')&&
+ html.includes('blueStarPlinthOpeningCount++'),
+ 'The physical entrance must start at local ground and the stone plinth must be split');
+assert(!html.includes("archPart('foundationBand',mx+nx*flushBoxOffset(.17),baseHeight+.25"),
+ 'No remaining full-length Blue Star stone band may cover the door');
 console.log('Facade attachment 5.36 PASS',JSON.stringify({
  buildings:valid,edges,shortEdges:processedShort,
  maxExteriorFloatingGapMetres:largestGap,framePlane:'OSM winding',
