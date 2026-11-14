@@ -78,7 +78,10 @@ assert(shortReturns>20&&shortBuildings>15,
  'Several mapped Milovice buildings have short wall segments, never leave them open');
 const hero=readFileSync(new URL('./hero-architecture.js',import.meta.url),'utf8');
 assert(hero.includes("wallKind==='solid-return'"));
-assert(hero.includes('const trim=planFacadePerimeterTrims(a,b,centroid,{base,height});'));
+assert(hero.includes('const edgeFrame=exteriorFacadeFrame(pts,sideIndex);'));
+assert(hero.includes('const trim=planFacadePerimeterTrims(a,b,centroid,{base,height,frame:edgeFrame});'));
+assert(hero.includes('RECESSED_GLAZING'));
+assert(hero.includes('flushBoxOffset(.32)'));
 assert(hero.includes('addBand(trim.base);')&&hero.includes('addBand(trim.upper);'));
 assert(hero.includes('state.trimmedShortReturns++'));
 assert(hero.includes('if(len<.08)return null;'),
