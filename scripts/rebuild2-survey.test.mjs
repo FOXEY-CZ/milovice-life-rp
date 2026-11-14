@@ -36,8 +36,14 @@ const photos=STREET_PHOTO_EVIDENCE.filter(p=>p.street==='Nádražní'||
 for(const id of ['nadrazi-bus-2024','nadrazi-bus-alt-2024','nadrazi-stops-wide-2024','nadrazi-bike-tower-2024','nadrazi-bus-A-2024','nadrazi-bus-A-side-2024','nadrazi-bus-B-2024']){
  assert(photos.some(p=>p.id===id),'Missing credited interchange photo '+id);
 }
-assert(photos.every(p=>p.taken==='2024-05-30'&&p.author==='ŠJů'&&
+const dated2024=photos.filter(p=>p.id!=='nadrazi-rail-platform-2013');
+assert(dated2024.every(p=>p.taken==='2024-05-30'&&p.author==='ŠJů'&&
  p.license==='CC BY 4.0'&&p.camera?.length===2));
+const historic=photos.find(p=>p.id==='nadrazi-rail-platform-2013');
+assert(historic?.taken==='2013-05-25'&&historic.author==='Palickap'&&
+ historic.license==='CC BY-SA 3.0'&&historic.camera===null&&
+ historic.scope==='historical-rail-platform',
+ 'Historic platform photograph is not a GPS-mapped 2024 facade survey');
 assert(photos.every(p=>p.buildingIds.length===0),'A forecourt photo is not a verified building facade');
 assert.equal(new Set(photos.map(p=>p.url)).size,photos.length,
  'Each street photo must appear only once');
