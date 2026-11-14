@@ -359,19 +359,24 @@ try{
     stationParking.instances<stationParking.pavingCells*2||
     stationParking.parkingBanks?.length!==2||
     stationParking.oppositeParkingBays<18||
-    stationParking.centralParkingTiles<400||
+    stationParking.centralParkingTiles<180||
     stationParking.centralMistakenSidewalkTiles!==0||
     stationParking.parkingSidewalkSwapFixed!==true||
-    stationParking.centralWalkwaySource!=='OSM-footway-only-no-duplicate-parking'||
+    stationParking.visibleWestSidewalkTiles<60||
+    stationParking.visibleWestSidewalkCurbs<40||
+    stationParking.visibleSidewalkWidth<1.3||
+    stationParking.sidewalkParkingGap<=0||
+    stationParking.visibleSidewalkSide!=='west-of-parking-facing-service-675778842'||
+    stationParking.centralWalkwaySource!=='distinct-photo-grounded-west-edge-strip'||
     stationParking.rightCornerPavingTiles<8||
     stationParking.wrongRailSidewalkTiles!==0||
     stationParking.wrongRailSidewalkRemoved!==true||
-    stationParking.sidewalkWidth<1.4||
     stationParking.mappedFootwayIdPreserved!==1165594426||
     stationParking.rightCornerFootwayId!==1282187911||
+    stationParking.drawMeshes>6||
     stationParking.collisionSafe!==true||stationParking.noSyntheticCars!==true)
-   throw new Error('5.70 parking vs sidewalk surface classification and GPU budget broken: '+JSON.stringify(stationParking));
- console.log('5.70 central parking surface restored; only mapped OSM footway remains:',JSON.stringify(stationParking));
+   throw new Error('5.71 visible west-edge walking strip, adjacent parking, or GPU budget broken: '+JSON.stringify(stationParking));
+ console.log('5.71 visible, walkable west-side strip separate from island parking:',JSON.stringify(stationParking));
 
  const cutoutTest=await page.evaluate(async()=>{
   const THREE=await import('three');
