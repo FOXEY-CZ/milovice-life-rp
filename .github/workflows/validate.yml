@@ -19,6 +19,8 @@ jobs:
         run: node scripts/validate.cjs
       - name: Validate adaptive mobile frame-rate and detail budgets
         run: node scripts/performance-governor.test.mjs
+      - name: Validate ground-level thresholds at ALL building entrances
+        run: node scripts/entrance-grade.test.mjs
       - name: Validate next photographed Školská school street frontage
         run: node scripts/school-street-pass.test.mjs
       - name: Validate photographed street block and mapped building IDs
