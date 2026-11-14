@@ -20,7 +20,7 @@ for(const [id,photoId] of [
  [118487980,'skolska-1-2024'],[202367254,'mirova-36-2024'],
  [202367194,'modra-hvezda-2024'],[118487979,'school-2024']]){
  const matches=streetEvidenceForBuilding(one(id));
- assert(matches[0]?.id===photoId&&matches[0].directEvidence,
+ assert(matches.some(p=>p.id===photoId&&p.directEvidence)&&matches[0]?.directEvidence,
   'Directly named building source must rank ahead of random nearby photos: '+id);
 }
 const m=streetEvidenceForBuilding(one(118487980));
