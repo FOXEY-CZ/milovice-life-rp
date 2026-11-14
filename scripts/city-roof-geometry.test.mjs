@@ -121,8 +121,10 @@ assert(html.includes('const pitchedSurface=pitched||hip;'));
 assert(html.includes('else if(!pitchedSurface){'));
 assert(html.includes('delete pitchedSurface.userData.roofRuntimePlan;'));
 assert(html.includes('queueCityWall(geo,wallSeam,centerX,0,centerZ)'));
-assert(html.includes('roofPlan&&!isSkolskaRoof&&!(heroFacade&&pitched)'),
- 'Never double-cap photographed, batched hero gables');
+assert(html.includes('roofPlan&&!isSkolskaRoof&&(!(heroFacade&&pitched)||isForkPhotoGable)'),
+ 'Do not double-cap generic hero gables; source-backed irregular fork gable needs physical end-wall infill');
+assert(html.includes("miloviceRoofOfKind(pts,baseHeight,h,roofMat,2.20,'gable')"),
+ 'Only independently photographed nonrectangular gables may bypass the generic rectangle-only gate');
 assert(!html.includes('if(pitched||hip)osmLayer.add(pitched||hip);'),
  'The old branch overlaid a flat roof on every pitched house');
 console.log('City roof regression: rectangle, reverse, rotated, concave, dormer slopes PASS');
