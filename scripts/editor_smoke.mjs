@@ -33,6 +33,14 @@ try{
  }));
  assert(faces.count>=3&&faces.selected,'Facade inspector must offer independent wall views');
  const firstFace=faces.selected;
+ // One-click navigation across a whole street must find source candidates
+ // without ever changing the building's reviewed/approved status.
+ await page.locator('#next-photo').click();
+ assert(await page.evaluate(()=>window.__miloviceEditor.photoCandidateCount)>0,
+  'Jump to next photographed street position did not work');
+ assert((await page.locator('#street-photo-summary').innerText()).includes('neznamená')||
+  (await page.locator('#street-photo-summary').innerText()).includes('Neznamená'));
+ await page.evaluate(()=>window.__miloviceEditor.openBuilding(118487963));
  // New batch workflow: archival street images are candidates only.
  // Selecting a photographed building must not approve any roof or wall.
  await page.evaluate(()=>window.__miloviceEditor.openBuilding(118487980));
