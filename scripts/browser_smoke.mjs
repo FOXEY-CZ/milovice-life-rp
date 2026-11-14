@@ -153,6 +153,13 @@ try{
     schoolRoof.flatFallbackUsed||schoolRoof.faceCount<20||
     schoolRoof.actualRise<.4||schoolRoof.targetRise<1.5||
     !schoolRoof.safePerimeter||schoolRoof.maxEaveError>.025||
+    schoolRoof.photoEaveWidth<.25||schoolRoof.photoEaveWidth>.3||
+    schoolRoof.photoEaveThickness<.12||
+    schoolRoof.photoEaveExteriorEdges!==22||
+    schoolRoof.photoEaveFasciaTriangles<44||
+    schoolRoof.photoEaveSoffitClosed!==true||
+    schoolRoof.overhangGeometrySafe!==true||
+    schoolRoof.maxEaveOverhang>.50||
     !schoolRoof.source?.includes('zsmilovice.cz'))
   throw Error('5.46 school roof still missing, flat or geometrically unsafe: '+
    JSON.stringify(schoolRoof));
