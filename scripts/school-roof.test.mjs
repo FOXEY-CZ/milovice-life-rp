@@ -44,7 +44,7 @@ const polyArea=Math.abs(outline.reduce((sum,p,i)=>{
  const q=outline[(i+1)%outline.length];return sum+p.x*q.z-p.z*q.x;
 },0))/2;
 const photo=planSchoolPhotographedRoof(outline);
-assert(photo&&photo.rise>=2.5&&photo.kind==='hip');
+assert(photo&&photo.rise>=3.2&&photo.kind==='hip');
 assert(photo.photographicPitch&&!photo.preciseRoofRidgeSurveyed);
 assert(photo.reference.includes('zsmilovice.cz'));
 const validate=(shape,tag)=>{

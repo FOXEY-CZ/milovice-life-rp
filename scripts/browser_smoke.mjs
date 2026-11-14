@@ -144,15 +144,24 @@ try{
     commerce:grade.commerceDoors,hero:hero.groundedDoors},
    splitHeroPlinths:hero.doorPlinthOpenings,
    maxStep:grade.maxGroundStep}));
- // 5.46: inspect ACTUAL generated roof faces of the 22-edge school.
+ // Archive a genuine pedestrian camera image on success or failure.
+ await page.evaluate(()=>{
+  window.__miloviceRoofAuditView='school-street';
+  window.__miloviceRoofAuditRendered=null;
+ });
+ await page.waitForFunction(()=>window.__miloviceRoofAuditRendered==='school-street',null,
+  {timeout:12000});
+ await mkdir('browser-artifacts',{recursive:true});
+ await page.screenshot({path:'browser-artifacts/school-street-before-acceptance.png'});
+ // 5.49: inspect ACTUAL generated roof faces of the 22-edge school.
  // The old code silently returned a flat fallback that looked like none.
  const schoolRoof=await page.evaluate(()=>
   window.__miloviceSchoolRoofAudit||null);
  if(!schoolRoof||schoolRoof.version!=='5.49'||
     schoolRoof.osmId!==118487979||!schoolRoof.pitchedRendered||
     schoolRoof.flatFallbackUsed||schoolRoof.faceCount<20||
-    schoolRoof.actualRise<2.5||schoolRoof.targetRise<2.5||
-    schoolRoof.realRise<2.5||schoolRoof.streetVisible!==true||
+    schoolRoof.actualRise<3.2||schoolRoof.targetRise<3.2||
+    schoolRoof.realRise<3.2||schoolRoof.streetVisible!==true||
     schoolRoof.streetFraction<.06||schoolRoof.streetSamples<20||
     !schoolRoof.safePerimeter||schoolRoof.maxEaveError>.025||
     schoolRoof.photoEaveWidth<.25||schoolRoof.photoEaveWidth>.3||

@@ -87,7 +87,7 @@ export function planSchoolPhotographedRoof(points){
  return {
   osmId:SCHOOL_PHOTO_WAY_ID,
   kind:'hip',
-  rise:2.60, // photo-based approximation, NOT a surveyed ridge height
+  rise:3.30, // street-photo silhouette approximation, not a surveyed height
   color:0x89979d,
   material:'light-grey-metal',
   reference:SCHOOL_ROOF_REFERENCE,
