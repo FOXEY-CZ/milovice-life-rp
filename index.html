@@ -3644,7 +3644,7 @@ osmBtn.onclick=async()=>{
  rpAppendOSMElements(elements);
  if(!osmRoads.length)throw Error('Žádné silnice v odpovědi');finalizeRoadStrips();finalizeCityWalls();finalizeFoundations();finalizeFacades();finalizeArchitecture();heroBuildings.flush(osmLayer);osmStreetLabels();chunkMilovice();improveMiloviceVisuals();publishLegacyRealityAudit();rpPopulate();rpInitRailTraffic();
  osmReady=true;window.__miloviceAreasLoaded=[...loadedCityAreas];osmNotice.style.display='none';osmSetActive(true);document.getElementById('status').textContent='Prozkoumávej skutečné Milovice. Na mapě najdeš pojmenované ulice a budovy.';
- }catch(e){osmLayer.clear();heroBuildings.reset();for(const batch of facadeBatches)batch.clear();osmReady=false;osmBtn.textContent='🔄 Zkusit načíst Milovice';notify('Skutečná mapa se nenačetla. Zkus znovu tlačítko vpravo.');osmNotice.style.display='block';osmNotice.textContent='3D mapa se nenačetla: '+e.message+'. Zkus znovu načíst mapu.';loadingScreen.textContent='⚠️ Skutečnou mapu Milovic se nepodařilo načíst. Klepni na Zkusit načíst Milovice.'}
+ }catch(e){console.error('Milovice OSM construction failed:',e?.stack||String(e));osmLayer.clear();heroBuildings.reset();for(const batch of facadeBatches)batch.clear();osmReady=false;osmBtn.textContent='🔄 Zkusit načíst Milovice';notify('Skutečná mapa se nenačetla. Zkus znovu tlačítko vpravo.');osmNotice.style.display='block';osmNotice.textContent='3D mapa se nenačetla: '+e.message+'. Zkus znovu načíst mapu.';loadingScreen.textContent='⚠️ Skutečnou mapu Milovic se nepodařilo načíst. Klepni na Zkusit načíst Milovice.'}
  finally{osmLoading=false}
 };
 
