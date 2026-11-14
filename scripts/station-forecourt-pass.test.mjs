@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createRoadClearance} from './road-clearance.js';
-import {STATION_FORECOURT_SOURCE,STATION_STOP_PHOTOS,stationGpsToWorld,wayCentre,planStationForecourt} from './station-forecourt-pass.js';
+import {STATION_FORECOURT_SOURCE,STATION_STOP_PHOTOS,STATION_STOP_ROUTE_GUIDE,stationStopPanelRows,stationGpsToWorld,wayCentre,planStationForecourt} from './station-forecourt-pass.js';
 const osm=JSON.parse(readFileSync(new URL('../data/milovice-osm.json',import.meta.url),'utf8'));
 const way=osm.elements.find(e=>e.id===53865956);
 const bike=osm.elements.find(e=>e.id===1011197691);
@@ -38,6 +38,18 @@ assert.deepEqual(plan.deferred,['broadleaf','twin-lamp','flowerbed'],
  'Do not build foliage/lamps from invented station-centre offsets');
 const names=plan.accepted.map(p=>p.id);
 assert.equal(STATION_STOP_PHOTOS.length,2);
+assert.equal(STATION_STOP_ROUTE_GUIDE.source,'https://pid.cz/wp-content/uploads/mapy/uzly-region/Milovice.pdf');
+assert.equal(STATION_STOP_ROUTE_GUIDE.validFrom,'2024-12-15');
+assert.deepEqual(STATION_STOP_PHOTOS.map(s=>[s.letter,...stationStopPanelRows(s).map(p=>p.route)]),[
+ ['A','430','432','434'],['B','430','432','434','497']
+], 'Separate verified A/B bus routes cannot be mixed');
+assert.equal(stationStopPanelRows(STATION_STOP_PHOTOS[0])[0].destination,'Park Mirakulum / Lysá nad Labem');
+assert.equal(stationStopPanelRows(STATION_STOP_PHOTOS[1])[3].destination,'Kostomlaty nad Labem / Nymburk');
+assert.deepEqual(stationStopPanelRows({letter:'C',routes:['999']}),[],
+ 'Unknown stand must not invent services');
+assert.deepEqual(stationStopPanelRows({letter:'A',routes:['497','430']}).map(p=>p.route),['430'],
+ 'The B-only 497 must never appear on stand A');
+
 const A=plan.accepted.find(p=>p.id==='bus-A'),B=plan.accepted.find(p=>p.id==='bus-B');
 assert.equal(A.street,'Nádražní');
 assert.equal(B.street,'5. května');
