@@ -30,6 +30,31 @@ export const STATION_STOP_PHOTOS=[
   photo:'https://commons.wikimedia.org/wiki/File:Milovice,_%C5%BEel._st._B,_zast%C3%A1vkov%C3%BD_sloupek.jpg',
   routes:['430','432','434','497'],radius:.28,buffer:.72}
 ];
+// Directional service board is backed by ROPID's dated interchange plan.
+// A camera coordinate is not the precise bus-stop pole position; existing
+// placement and all mapped road/footway exclusion buffers remain unchanged.
+// This source is valid from 2024-12-15; do not assert 2026 schedules.
+export const STATION_STOP_ROUTE_GUIDE=Object.freeze({
+ source:'https://pid.cz/wp-content/uploads/mapy/uzly-region/Milovice.pdf',
+ validFrom:'2024-12-15',
+ A:Object.freeze([
+  {route:'430',destination:'Park Mirakulum / Lysá nad Labem'},
+  {route:'432',destination:'Lysá nad Labem'},
+  {route:'434',destination:'Park Mirakulum / Benátky nad Jizerou'}
+ ]),
+ B:Object.freeze([
+  {route:'430',destination:'Balonka / Lipník'},
+  {route:'432',destination:'Balonka / Mladá Boleslav'},
+  {route:'434',destination:'Balonka / Straky / Nymburk'},
+  {route:'497',destination:'Kostomlaty nad Labem / Nymburk'}
+ ])
+});
+export function stationStopPanelRows(stop){
+ const guide=STATION_STOP_ROUTE_GUIDE[stop?.letter];
+ if(!Array.isArray(guide)||!Array.isArray(stop?.routes))return [];
+ // Only source-matched route numbers are displayed; no fabricated arrivals.
+ return stop.routes.map(route=>guide.find(row=>row.route===route)).filter(Boolean);
+}
 const LAT_COS=Math.cos(50.226*Math.PI/180);
 export function stationGpsToWorld(p){
  return {x:(p.lon-14.889)*111320*LAT_COS,z:-(p.lat-50.226)*111320};
@@ -130,6 +155,11 @@ export function makeStationForecourtScene(THREE,{layer,terrainAt=()=>0,roadClear
  function status(){return {photoSources:2,sceneCount:sites.size,drawMeshes,instances,features,
    strictReality:true,deferredWithoutSurvey:sitePlan?.deferred||[],
    photoAnchoredStopCount:sitePlan?.accepted.filter(s=>s.type==='stop').length||0,
+   busRouteEvidence:STATION_STOP_ROUTE_GUIDE.source,
+   busRouteEvidenceValidFrom:STATION_STOP_ROUTE_GUIDE.validFrom,
+   busRoutesByStand:Object.fromEntries(STATION_STOP_PHOTOS.map(stop=>[
+    stop.letter,stationStopPanelRows(stop).map(row=>row.route)
+   ])),
    ids:[...sites],placements:sitePlan?.accepted.map(s=>({
     id:s.id,roadClearance:+s.roadClearance.toFixed(2),buildingClearance:+s.buildingClearance.toFixed(2),
     cameraDisplacement:+s.cameraDisplacement.toFixed(2),street:s.street
@@ -172,25 +202,43 @@ export function makeStationForecourtScene(THREE,{layer,terrainAt=()=>0,roadClear
   return t;
  }
  function signTexture(letter,routes){
-  const canvas=document.createElement('canvas');canvas.width=256;canvas.height=430;
+  // Original drawn vector panel. No pixels from the Commons photographs
+  // or the copyrighted ROPID diagram are included in the game.
+  const rows=stationStopPanelRows({letter,routes});
+  const canvas=document.createElement('canvas');canvas.width=512;canvas.height=768;
   const c=canvas.getContext('2d');
-  c.fillStyle='#c23543';c.fillRect(0,0,256,430);
-  c.fillStyle='#f9f9f4';c.fillRect(12,12,232,406);
-  c.textAlign='center';c.fillStyle='#1a2832';
-  c.font='bold 23px sans-serif';c.fillText('MILOVICE',128,48);
-  c.font='bold 23px sans-serif';c.fillText('ŽEL. STANICE',128,78);
-  c.fillStyle='#c23543';c.fillRect(22,99,212,3);
-  routes.forEach((route,i)=>{
-   const y=146+i*53;
-   c.fillStyle='#222d36';c.font='bold 39px sans-serif';
-   c.textAlign='left';c.fillText(route,31,y);
-   c.fillStyle='#a4adb1';c.fillRect(31,y+9,193,2);
+  c.fillStyle='#b82e3d';c.fillRect(0,0,512,768);
+  c.fillStyle='#fbfbf5';c.fillRect(15,15,482,738);
+  c.textAlign='center';c.fillStyle='#1b2d3c';
+  c.font='bold 42px sans-serif';c.fillText('MILOVICE',256,73);
+  c.font='bold 30px sans-serif';c.fillText('ŽEL. ST.',256,113);
+  c.fillStyle='#b82e3d';c.fillRect(28,137,456,5);
+  c.fillStyle='#164e7f';c.fillRect(28,151,456,45);
+  c.fillStyle='#ffffff';c.font='bold 27px sans-serif';
+  c.fillText('STANOVIŠTĚ '+letter,256,183);
+  const rowHeight=letter==='B'?118:141;
+  rows.forEach((row,i)=>{
+   const top=210+i*rowHeight;
+   c.fillStyle='#263541';c.textAlign='left';
+   c.font='bold 57px sans-serif';c.fillText(row.route,39,top+48);
+   c.fillStyle='#c7cbd0';c.fillRect(37,top+rowHeight-7,435,2);
+   const parts=row.destination.split(' / ');
+   c.fillStyle='#263541';c.textAlign='left';
+   for(let j=0;j<parts.length&&j<3;j++){
+    let size=27;
+    while(size>17){
+     c.font='600 '+size+'px sans-serif';
+     if(c.measureText(parts[j]).width<=309)break;
+     size--;
+    }
+    c.fillText(parts[j],174,top+27+j*31);
+   }
   });
-  c.fillStyle='#1e6399';c.fillRect(174,339,55,61);
-  c.fillStyle='#ffffff';c.font='bold 44px sans-serif';
-  c.textAlign='center';c.fillText(letter,201,385);
-  c.fillStyle='#1c3543';c.font='bold 24px sans-serif';
-  c.fillText('PID',66,389);
+  c.fillStyle='#184e7a';c.fillRect(352,695,132,45);
+  c.fillStyle='#ffffff';c.textAlign='center';c.font='bold 32px sans-serif';
+  c.fillText(letter,418,728);
+  c.fillStyle='#183448';c.font='bold 28px sans-serif';
+  c.fillText('PID',75,727);
   const t=new THREE.CanvasTexture(canvas);t.colorSpace=THREE.SRGBColorSpace;
   return t;
  }
@@ -252,7 +300,7 @@ export function makeStationForecourtScene(THREE,{layer,terrainAt=()=>0,roadClear
    } else if(p.type==='stop'){
     add(group,geo.stopPole,material.stopRed,p.x,y+1.72,p.z);
     const yaw=-p.heading*Math.PI/180;
-    const board=new THREE.Mesh(new THREE.PlaneGeometry(.62,1.06),
+    const board=new THREE.Mesh(new THREE.PlaneGeometry(.76,1.22),
      new THREE.MeshBasicMaterial({map:signTexture(p.letter,p.routes),side:THREE.DoubleSide}));
     board.position.set(p.x,y+2.59,p.z);
     board.rotation.y=yaw;
