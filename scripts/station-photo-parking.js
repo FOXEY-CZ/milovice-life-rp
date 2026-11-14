@@ -271,22 +271,25 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   // green-grid surface, NOT a duplicate of the broad central pale island.
   for(const bay of planned.railSideParking){
    const y=terrainAt(bay.x,bay.z);
-   oppositeGrass.push({...bay,y:y+.027,sx:bay.length,sy:.038,sz:bay.depth});
+   oppositeGrass.push({...bay,y:y+.120,sx:bay.length,sy:.042,sz:bay.depth});
    for(let i=0;i<4;i++)for(let j=0;j<7;j++){
     const p=at(planned.frame,bay.along+(i-1.5)*.58,
      bay.offset+(j-3)*.53);
-    oppositePavers.push({...p,y:terrainAt(p.x,p.z)+.066,
-     yaw:bay.yaw,sx:.49,sy:.045,sz:.40});
+    oppositePavers.push({...p,y:terrainAt(p.x,p.z)+.151,
+     yaw:bay.yaw,sx:.49,sy:.028,sz:.40});
    }
   }
+  // Relative ground levels: asphalt is approximately terrain+.15; parking
+  // pavers sit at +.165; the raised pedestrian path at +.216 and its
+  // curb at +.223. Avoid the old recessed-under-road appearance.
   // The outer pedestrian band has its own placement/safety check. We do not
   // paint a sidewalk THROUGH the parking bays or over existing OSM footways.
   for(const p of planned.railSidewalk)
-   sidewalkPavers.push({...p,y:terrainAt(p.x,p.z)+.054,
-    sx:p.length,sy:.056,sz:p.depth});
+   sidewalkPavers.push({...p,y:terrainAt(p.x,p.z)+.186,
+    sx:p.length,sy:.060,sz:p.depth});
   for(const p of planned.railSideCurbs)
-   curb.push({...p,y:terrainAt(p.x,p.z)+.106,
-    sx:.68,sy:.16,sz:.12});
+   curb.push({...p,y:terrainAt(p.x,p.z)+.155,
+    sx:.68,sy:.135,sz:.12});
   batch(group,material.grout,grout);
   batch(group,material.paver,stones,[0xcac9c0,0xd4d1c8,0xc4c3bb,0xbdbeb6]);
   batch(group,material.railGrid,oppositeGrass);
