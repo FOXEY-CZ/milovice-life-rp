@@ -46,8 +46,14 @@ export function normalizedPanoramaxFeature(raw,bbox=searchBox()){
   source:'Panoramax STAC',reviewStatus:'candidate-unreviewed'};
 }
 export function parsePanoramaxResponse(json,location=PILOT_LOCATION){
- if(json?.type!=='FeatureCollection'||!Array.isArray(json.features))
-  throw new Error('Panoramax nevrátil očekávaný seznam metadat.');
+ // Federated api.panoramax.xyz meta-catalogue uses {features,links} with
+ // no top-level "type"; individual Panoramax STAC instances return full
+ // {type:"FeatureCollection",features,links}. Both are valid read responses.
+ // Reject mismatched/unknown non-empty types, and never infer photos from
+ // an absent "features" array.
+ if(!json||!Array.isArray(json.features)||
+    (json.type!==undefined&&json.type!=='FeatureCollection'))
+  throw new Error('Panoramax vrátil neočekávaný formát metadat.');
  const bbox=searchBox(location),uniq=new Map();
  for(const raw of json.features.slice(0,30)){
   const item=normalizedPanoramaxFeature(raw,bbox);
@@ -55,6 +61,7 @@ export function parsePanoramaxResponse(json,location=PILOT_LOCATION){
  }
  const more=Array.isArray(json.links)&&json.links.some(l=>l.rel==='next');
  return {photos:[...uniq.values()],morePages:more,rawCount:json.features.length,
+  catalogueFormat:json.type==='FeatureCollection'?'stac-feature-collection':'federated-feature-list',
   source:'https://api.panoramax.xyz/api/search',
   warning:'Kandidátní fotografie nebyly vizuálně ověřeny. GPS neprokazuje viditelnost objektu.'};
 }
