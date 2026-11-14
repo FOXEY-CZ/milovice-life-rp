@@ -41,6 +41,8 @@ jobs:
         run: node scripts/station-forecourt-pass.test.mjs
       - name: Verify OSM station roof facets do not overhang and preserve the real footprint
         run: node scripts/station-roof-geometry.test.mjs
+      - name: Validate real school footprint pitched roof against photographed source
+        run: node scripts/school-roof.test.mjs
       - name: Validate every OSM house roof and photographed dormer angles across city
         run: node scripts/city-roof-geometry.test.mjs
       - name: Prevent elevated eaves and roof flaps on all new irregular buildings
