@@ -3300,22 +3300,63 @@ function osmBuilding(points,tags,index,osmId=null){
   if(auditedCore&&inventedEntrance)legacyRealityAudit.suppressed('suppressedDoors');
   if(!auditedCore&&inventedEntrance){
   let longest=null;
-  for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length],len=a.distanceTo(b);if(len>5&&(!longest||len>longest.len))longest={a,b,len,i}}
+  if(isSchool&&schoolPhotoPlan){
+   // Photo-visible side: longest edge of the OSM footprint is at BACK.
+   const f=schoolPhotoPlan.entrance;
+   longest={a:pts[f.index],b:pts[(f.index+1)%pts.length],len:f.len,i:f.index};
+  }else if(!isSchool)for(let i=0;i<pts.length;i++){
+   const a=pts[i],b=pts[(i+1)%pts.length],len=a.distanceTo(b);
+   if(len>5&&(!longest||len>longest.len))longest={a,b,len,i};
+  }
   if(longest){
    const a=longest.a,b=longest.b,dx=b.x-a.x,dz=b.y-a.y,len=longest.len;
    const entrance=exteriorFacadeFrame(pts,longest.i);
    if(!entrance)throw Error('Mapped exterior entrance edge is degenerate');
    const {nx,nz,mx,mz,ux,uz,yaw}=entrance;
    const doorx=mx+nx*flushBoxOffset(.12),doorz=mz+nz*flushBoxOffset(.12);
-   archPart('darkWood',doorx,baseHeight+1.16,doorz,1.28,2.22,.12,yaw);
-   archPart('bronze',doorx+ux*.48+nx*.12,baseHeight+1.23,
-    doorz+uz*.48+nz*.12,.06,.14,.16,yaw);
+   if(isSchool){
+    // Photo-supported pair of glazed entry leaves with white jambs.
+    const glass=schoolFacadeFixture(entrance,0,.04);
+    archPart('stationGlass',glass.x,baseHeight+1.17,glass.z,
+     schoolPhotoPlan.doorwayWidth,2.30,.04,yaw);
+    for(const side of [-1,0,1]){
+     const jamb=schoolFacadeFixture(entrance,
+      side*schoolPhotoPlan.doorwayWidth*.5,.085);
+     archPart('stationFrames',jamb.x,baseHeight+1.17,jamb.z,.09,2.39,.085,yaw);
+    }
+    for(const level of [baseHeight+.035,baseHeight+2.38]){
+     const rail=schoolFacadeFixture(entrance,0,.085);
+     archPart('stationFrames',rail.x,level,rail.z,
+      schoolPhotoPlan.doorwayWidth+.10,.095,.085,yaw);
+    }
+   }else{
+    archPart('darkWood',doorx,baseHeight+1.16,doorz,1.28,2.22,.12,yaw);
+    archPart('bronze',doorx+ux*.48+nx*.12,baseHeight+1.23,
+     doorz+uz*.48+nz*.12,.06,.14,.16,yaw);
+   }
    attachmentAudit.legacyDoors++;
    attachmentAudit.maxLegacyFaceGap=Math.max(attachmentAudit.maxLegacyFaceGap,
     facadeGap(entrance,{x:doorx,z:doorz},.12));
    if(isSchool){
-    archPart('glassAwning',mx+nx*flushBoxOffset(2.45),baseHeight+2.58,mz+nz*flushBoxOffset(2.45),4.2,.13,2.45,yaw);
-    schoolFacadeSign('ZŠ T. G. MASARYKA',mx+nx*flushBoxOffset(.16),baseHeight+4.34,mz+nz*flushBoxOffset(.16),yaw);
+    // Pale shallow canopy and white support posts in the 2024 photograph.
+    const canopy=schoolFacadeFixture(entrance,0,schoolPhotoPlan.canopyDepth);
+    archPart('stationFrames',canopy.x,baseHeight+2.66,canopy.z,
+     4.10,.14,schoolPhotoPlan.canopyDepth,yaw);
+    for(const side of [-1,1]){
+     const p=facadePoint(entrance,side*1.94,.85);
+     archPart('stationFrames',p.x,baseHeight+1.34,p.z,.075,2.55,.075,yaw);
+    }
+    const label=facadePoint(entrance,0,.024);
+    schoolFacadeSign('ZŠ T. G. MASARYKA',
+     label.x,baseHeight+3.18,label.z,yaw,3.7,.55);
+    window.__miloviceSchoolPhotoAudit={
+     ...(window.__miloviceSchoolPhotoAudit||{}),
+     osmId:SCHOOL_PHOTO_WAY_ID,entranceEdge:entrance.index,
+     photoEntrances:1,doorwayWidth:schoolPhotoPlan.doorwayWidth,
+     canopyDepth:schoolPhotoPlan.canopyDepth,
+     source:schoolPhotoPlan.source,sourceDate:schoolPhotoPlan.sourceDate,
+     rearStillProvisional:true
+    };
    }else if(isStation){
     archPart('glassAwning',mx+nx*flushBoxOffset(2.9),baseHeight+2.9,mz+nz*flushBoxOffset(2.9),Math.min(11,len*.72),.24,2.9,yaw);
     stationFacadeSign('Milovice',mx+nx*flushBoxOffset(.16),baseHeight+4.45,mz+nz*flushBoxOffset(.16),yaw);
