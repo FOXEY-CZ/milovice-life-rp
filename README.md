@@ -1,3 +1,32 @@
+# Milovice RP 5.60 — fotografické důkazy jsou povinné
+
+**Spustit hru:** https://foxey-cz.github.io/milovice-life-rp/  
+**Průzkum celé Nádražní:** https://foxey-cz.github.io/milovice-life-rp/survey.html?id=old%3AN%C3%A1dra%C5%BEn%C3%AD
+
+## Oprava původní chyby
+
+Verze 5.59 odhadovala podobu a umístění vrat 17 domnělých garáží v severní části Nádražní podle OSM tagu `building=garage` a rozměrů půdorysů, nikoli fotografií. Uživatel správně zpochybnil i samotný typ objektů. **Žádný ze 17 objektů nebyl jednoznačně identifikován na fotografii.** Verze 5.59 proto **není platným vizuálním výsledkem rekonstrukce**.
+
+Verze **5.60**:
+- Stáhla všech **17 neověřených 3D modelů z aktivní scény** – včetně fasád, oken, vrat, střech a kolizí. OSM mapové záznamy i jejich geometrie jsou zachované pro pozdější kontrolu; netvrdíme, že tam nemůže nic stát.
+- Neověřené OSM záznamy jsou v [mapovém průzkumu Nádražní](survey.html?id=old%3AN%C3%A1dra%C5%BEn%C3%AD) označeny jako **„typ stavby neověřen“**, nikoli jako fotograficky potvrzené garáže.
+- Odstranila 5.59 **geometricky hádaný plánovač vrat** a jeho testovací očekávání. Nahradila je modulem `scripts/photo-verification-policy.js` a automatickými testy `scripts/photo-verification-policy.test.mjs`.
+- Žádnou fotografii garáže na **jiné adrese v Milovicích** nesmíme použít jako fotografický důkaz těchto 17 konkrétních objektů.
+
+## Závazný postup pro všechny další ulice a objekty
+
+1. Nejdřív konkrétní místo (fotografie, ideálně panoramatické prohlížení, více směrů a podklady s datem), ověřit jednoznačnou identitu proti OSM a okolním orientačním bodům.
+2. Až po fotografickém ověření modelovat **celý objekt a každou jeho doloženou viditelnou část**: objem, materiály, fasády, střechy, okna, vchody, ploty, vybavení, povrchy, chodníky, zeleň, značky – nikoli náhodné generické detaily.
+3. OSM smí být použito na **polohu a přibližný půdorys**, ale samotný OSM tag **neprokazuje skutečný typ, podobu ani aktuální existenci** budovy.
+4. **Bez průkazné fotografie = neověřeno, neprohlašovat za dokončené a nevymýšlet vzhled.** Sporné modely lze dočasně vynechat z 3D a evidovat v kontrolní mapě.
+5. Zobrazení z více stran (360°), datování fotografie a kontrola proti herní kameře. Opravené modely testovat na kolize, výšku vchodů, návaznosti střech, cesty, objekty celé ulice a FPS.
+
+**Rozpracovaná předchozí zástavba města je LEGACY a čeká na retroaktivní fotografický audit.** Tato verze nevypíná bez rozmyslu celé staré město ani zachované herní funkce; cíleně blokuje právě 17 zpochybněných staveb. Konkrétní starší model není fotograficky schválen jen proto, že už ve hře existuje.
+
+Pracovní dokumentace: [REBUILD 2.0](docs/REBUILD-2.md).
+
+---
+
 # Milovice RP 5.59 — severní Nádražní: 17 garáží v řadách
 
 **Spustit hru:** https://foxey-cz.github.io/milovice-life-rp/  
