@@ -11,13 +11,14 @@ Každou ulici projít **od jednoho konce k druhému**, po obou stranách a všem
 1. **Nádražní + nádraží:** budovy nádraží, průchod a nádražka, Bike Tower, nástupiště, koleje, autobusové zastávky, celá přednádražní plocha, silnice, chodníky, parkování, lampy, značky, zeleň a okolní domy.
 2. **Školská:** škola a její zahrada, Školská 220/1, další domy, ploty, vjezdy, přechody, silnice, chodníky, parkování a všechny drobnosti.
 3. **5. května:** **kostel znovu podle reality**, okolní prostranství, domy, obchodní objekty, křižovatky, případné přechody, dopravní vybavení a zeleň.
-4. **Mírová:** Modrá hvězda, Mírová 36, další domy a podniky, kompletní uliční prostor.
-5. **Ostatní Staré Milovice:** propojené ulice dům po domu, ale s celým okolím.
-6. **Mladá:** všechny ulice a jejich objekty.
-7. **Západní propojení:** silnice, chodníky, stavby, příroda a dopravní návaznosti.
-8. **Benátecká Vrutice:** všechny dostupné ulice i okolí.
-9. **Střední propojení:** propojené ulice, pěší trasy, doprava a okolní objekty.
-10. **Boží Dar:** celé dostupné ulice, budovy, příroda a přístupové trasy.
+4. **Poštovní – kostelní blok:** celý úsek Poštovní včetně kostela sv. Kateřiny a návaznosti na Mírovou a 5. května; **nejde jen o samostatnou opravu kostela**. V mapové evidenci je kostel OSM 118487991 orientačně přiřazen k Poštovní, zatímco veřejně uváděná adresa je Mírová.
+5. **Mírová:** Modrá hvězda, Mírová 36, další domy a podniky, kompletní uliční prostor.
+6. **Ostatní Staré Milovice:** propojené ulice dům po domu, ale s celým okolím.
+7. **Mladá:** všechny ulice a jejich objekty.
+8. **Západní propojení:** silnice, chodníky, stavby, příroda a dopravní návaznosti.
+9. **Benátecká Vrutice:** všechny dostupné ulice i okolí.
+10. **Střední propojení:** propojené ulice, pěší trasy, doprava a okolní objekty.
+11. **Boží Dar:** celé dostupné ulice, budovy, příroda a přístupové trasy.
 
 ## Povinné oblasti pro KAŽDOU ulici
 
@@ -59,3 +60,6 @@ Až když budou všechny její objekty identifikované a porovnané s legálně 
 **Inventář všech objektů → zdrojová fotografie / prohlídka → budovy i uliční prostor → napojení na terén → 360° vizuální kontrola → fyzické kolize + mobilní výkon → uživatel schválí → uložit stav → sousední ulice.**
 
 Nezasekávat se na jednotlivých detailech bez konce: používat společný systém střech, oken, vchodů a chodníků, úpravy provádět po smysluplných úsecích a brát nově získané zkušenosti i na starší práci.
+
+### Kostelní uzel – identita ulice
+Zdroj: https://www.kdykde.cz/rejstrik/kostel-sv-kateriny-alexandrijske/ (Mírová, poblíž 5. května a Poštovní). OSM sousední ulice má jen orientační spád do skupiny Poštovní; před skutečnou přestavbou ověřit pěší napojení a rozsah křižovatky. Poštovní se musí projít **celá**, nejen kostel.

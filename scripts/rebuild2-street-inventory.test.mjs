@@ -20,8 +20,10 @@ assert.equal(new Set(listed).size,listed.length,'Overlapping regions must not do
 assert(listed.every(id=>uniq.has(id)),'Invented OSM feature found');
 assert.equal(plan.streets.length,78);
 assert.equal(plan.streets.filter(s=>s.street===null).length,6);
-assert.deepEqual(plan.streets.slice(0,4).map(s=>s.street),
- ['Nádražní','Školská','5. května','Mírová']);
+assert.deepEqual(plan.streets.slice(0,5).map(s=>s.street),
+ ['Nádražní','Školská','5. května','Poštovní','Mírová']);
+assert.equal(plan.landmarkCrossStreetReview.osmId,118487991);
+assert.equal(plan.landmarkCrossStreetReview.inventoryStreet,'old:Poštovní');
 assert.equal(plan.summary.categories.buildings,2120);
 assert.equal(plan.summary.categories.roads+plan.summary.categories.walkways,1434);
 assert.equal(plan.summary.categories.railway,16);
