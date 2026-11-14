@@ -1,3 +1,19 @@
+# Milovice RP 5.57 — PART 12: první fyzický REBUILD Nádražní
+
+**Spustit hru:** https://foxey-cz.github.io/milovice-life-rp/  
+**Průzkum celé Nádražní:** https://foxey-cz.github.io/milovice-life-rp/survey.html?id=old%3AN%C3%A1dra%C5%BEn%C3%AD  
+**Přehled rekonstrukce všech ulic:** https://foxey-cz.github.io/milovice-life-rp/rebuild.html
+
+- Nová **3D stříška přímo nad železničním nástupištěm**, ne na straně Nádražní/cyklověže. Půdorys je ukotvený na skutečné OSM budově 53865956 a nástupišti 549346219 (shelter=yes). Pro aktuální mapu vychází jeden souvislý úsek cca **15 m**, přibližný přesah 2,2 m.
+- Lehká horní plocha, podhled a instancované kovové konzoly (celkem **3 draw cally**), žádné blokující sloupy uprostřed průchodu. Sdílí skutečnou modelovou základní výšku nádraží a hlídá bezpečnou vzdálenost od kolejí. Chybná boční stříška zůstává odstraněná.
+- Podklad: [historická fotografie nástupiště z roku 2013](https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_n%C3%A1stupi%C5%A1t%C4%9B.jpg) od Palickap (CC BY-SA 3.0) + OSM. Přesný vzhled i současný stav stále vyžadují 360° kontrolu, nejde o geodeticky přesnou rekonstrukci.
+- Testy: `scripts/station-platform-canopy.test.mjs` a `scripts/rebuild2-survey.test.mjs`, zapojené do GitHub Actions. Zkouší orientaci, chybějící podklady, výškové napojení, kolizní rezervu a přítomnost stříšky **výhradně u nástupiště**.
+- Nádražní **je stále rozpracovaná jako celá ulice**: další fáze jsou komunikace, oba chodníky, nástupní stanoviště, přilehlé domy a drobné předměty. Předešlé modely ani hráčský postup se nemažou.
+
+Podrobný průběh: [REBUILD 2.0](docs/REBUILD-2.md).
+
+---
+
 ## Milovice RP 5.36.0 — společná rovina fasád pro celé město
 
 Po hráčské 360° kontrole se ukázalo, že dveře, okna, sklo, lišty a výlohy na mnoha domech **viditelně levitují**. Starší generátor posouval například vrstvy běžného okna **0,38 / 0,405 / 0,43 / 0,49 m** před půdorysovou zeď; domovní dveře **0,60 m**; některé obchodní výlohy 0,4–0,8 m.
