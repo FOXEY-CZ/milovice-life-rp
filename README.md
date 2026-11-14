@@ -1,3 +1,19 @@
+## Milovice RP — uliční fotografický audit 5.33 (Part 9)
+
+Dlouhodobý plán: **přestavovat po ulicích**, ne trávit deset kol ručním záplatováním jedné střechy. Na mapové části `/editor.html` byl přidán **předvýběr archivních fotografií zdarma, bez Mapillary tokenu**, s důsledným oddělením dostupnosti fotografie od ověření fasády.
+
+- `scripts/street-photo-evidence.js` obsahuje 8 datovaných veřejných zdrojů (Wikimedia Commons 2024 a jeden historický z roku 2014), licenci, autora a doložené GPS umístění kamery tam, kde je zdroj známý. Přesné spojení se záznamem budovy lze doložit jen u **3 pojmenovaných domů**: Školská 220/1 (OSM 118487980), Mírová 243/36 (202367254) a Modrá hvězda (202367194). U ostatních snímků je záměrně jen informace **fotografie v okolí, obsah neověřen**.
+- Ulice mají přehled kandidátních snímků; **📸 Další s podkladem** přejde na další dům s fotografií v okolí. U každého domu je v pravém panelu seznam zdrojů se souřadnicově doloženou přibližnou vzdáleností, datem, autorem a licencí, plus odkaz na originál.
+- Tlačítko **Použít jako kandidáta zdroje** přidá pouze URL pro zvolený směr fasády. Stav zůstane **Neprohlédnuto**: žádné okno, dveře, štít ani barva se automaticky nevytvoří z pouhé blízkosti snímku.
+- Aktuální audit katalogu ukázal, že z **684 budov** základní mapy má **104** do 135 metrů od centroidu alespoň jeden z těchto archivních snímků (pozor: **ne 104 fotograficky ověřených budov**). Kompletní fotografický / 360° průzkum těchto domů stále chybí. Knihovna se má rozšiřovat po uličních blocích, teprve potom schvalovat skutečné geometrické úpravy.
+- Katalog, výběr, příprava zdrojového odkazu, absence tichého 3D schválení a celé OSM pokrytí jsou kontrolovány v `scripts/street-photo-evidence.test.mjs`, GitHub Actions a testu skutečného editoru.
+
+Zdroje pocházejí z veřejných stran Wikimedia Commons a jsou pouze odkazy; soubory fotografií se nekopírují do herního repozitáře. Autoři ŠJů (CC BY 4.0) a Tiia Monto (CC BY-SA 4.0). [Ukázková kategorie snímků 5. května](https://commons.wikimedia.org/wiki/Category:5._kv%C4%9Btna_(Milovice)).
+
+**Následující rekonstrukční krok:** pro každý z 3 doložených domů přiřadit konkrétní čelní a boční fotografie správným fasádám a získat dostatečně přesné otvory; sousední domy bez identifikované fotografie ponechat jako viditelně provizorní modely. Nepřidávat nové vymyšlené „reálné“ objekty.
+
+---
+
 ## Milovice RP 5.32.2 — souvislé sokly a lišty i na opravovaných zdech
 
 Závada z uživatelských 360° snímků Školské: krátký zaplněný roh fasády měl béžovou zeď, ale spodní tmavá lišta/sokl končila před ním. Nešlo o chybu hlavního střešního algoritmu, ale o další předčasný návrat ve vykreslovači detailních fasád.
