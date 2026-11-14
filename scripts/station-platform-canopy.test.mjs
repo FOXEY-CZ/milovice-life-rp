@@ -127,6 +127,20 @@ assert.equal(drawn.passageWayId,1550920096);
 assert.equal(drawn.stationBaseY,192.3);
 assert.equal(layer.children.length,3);
 assert(layer.children[0].geometry.position.values.every(Number.isFinite));
+const vertices=layer.children[0].geometry.position.values;
+const xyDist=(i,j)=>Math.hypot(
+ vertices[i*3]-vertices[j*3],
+ vertices[i*3+1]-vertices[j*3+1],
+ vertices[i*3+2]-vertices[j*3+2]);
+assert.equal(plan.segments.length,2);
+assert(xyDist(1,6)<.002,
+ 'Rail-side roof must join seamlessly at the shared station passage wall vertex');
+assert(xyDist(2,11)<.002,
+ 'Roof outer edge at OSM passage cannot have a notch or floating gap');
+assert(Math.hypot(plan.segments[0].b.x-plan.railPortal.x,
+ plan.segments[0].b.z-plan.railPortal.z)<.01);
+assert(Math.hypot(plan.segments[1].a.x-plan.railPortal.x,
+ plan.segments[1].a.z-plan.railPortal.z)<.01);
 const ys=layer.children[0].geometry.position.values.filter((v,i)=>i%3===1);
 assert(ys.every(y=>y>195.2&&y<195.8),'Roof height tied to station base, not varying terrain');
 assert(layer.children[2].count>=3,'Cantilever should have visible structural brackets');
