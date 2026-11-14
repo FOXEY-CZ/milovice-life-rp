@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Milovice RP — REBUILD 2.0, kontrola celé ulice</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{color-scheme:dark;--bg:#101b24;--panel:#1d303f;--line:#406070;--text:#edf6fa;--muted:#b3c8d2;--accent:#8fddf7}
+*{box-sizing:border-box}body{background:var(--bg);color:var(--text);font:14px/1.45 system-ui;margin:0}
+header{padding:18px max(14px,calc((100vw - 1250px)/2));background:#183145;border-bottom:1px solid var(--line)}
+h1{font-size:clamp(20px,3vw,31px);margin:5px 0}h2{font-size:18px;margin:10px 0}h3{font-size:15px}
+a{color:var(--accent)}a:hover{text-decoration:underline}small,.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:14px}main{max-width:1250px;margin:auto;padding:16px}
+.notice{border-left:3px solid #f3b662;background:#2f343e;padding:10px;margin:12px 0}
+.summary{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.summary span{border:1px solid var(--line);border-radius:9px;padding:9px;background:#263e4c}
+.layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(270px,.9fr);gap:16px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px;margin-bottom:14px;min-width:0}
+#map{height:min(68vh,620px);min-height:360px;background:#d0dfcf;border-radius:10px;overflow:hidden}
+#osm-list{max-height:380px;overflow:auto;display:grid;gap:5px}.object{display:flex;justify-content:space-between;gap:8px;text-align:left;background:#284253;color:var(--text);border:1px solid #547186;border-radius:7px;padding:7px 9px;cursor:pointer;min-height:38px}
+.object.active{border-color:#fbd27f;background:#3a4d58}.object small{font-size:11px}.tools{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}button,select,textarea{font:inherit;background:#254257;color:var(--text);border:1px solid #729bb2;border-radius:8px;padding:8px;cursor:pointer}
+select{max-width:100%}button:hover{background:#31617b}textarea{width:100%;min-height:70px;resize:vertical}
+#focus{padding:8px;background:#263e4c;border-radius:8px;margin-top:8px;word-break:break-word}
+.source{border-top:1px solid var(--line);padding:9px 0}.source p{margin:5px 0;font-size:12px}.source a{font-weight:700}
+.source img{width:110px;height:79px;object-fit:cover;border-radius:6px;float:right;margin:0 0 5px 8px}
+.audit{display:flex;gap:7px;flex-direction:column;margin:10px 0}.audit>label{border-bottom:1px solid #334f61;padding-bottom:7px}
+.audit select{display:block;width:100%;margin-top:5px}.audit strong{font-size:12px}
+#context-list{padding-left:16px}#context-list li{margin:5px 0}
+footer{text-align:center;color:var(--muted);padding:20px}
+@media(max-width:850px){.layout{grid-template-columns:1fr}#map{height:48vh;min-height:330px}.source img{width:94px;height:70px}}
+</style>
+</head><body>
+<header><nav><a href="./">🎮 Hra</a><a href="./editor.html">🏗️ Editor budov</a><a href="./rebuild.html">📋 Všechny ulice</a></nav>
+<h1 id="heading">🧭 REBUILD 2.0 — kontrola celé ulice</h1>
+<p id="intro">Načítám skutečný OSM inventář a fotografické zdroje…</p></header>
+<main><div class="notice"><strong>Nejde o potvrzení hotové ulice.</strong> Barevné čáry zobrazují mapované OSM objekty, nikoli přesnost všech fasád ani všechen městský mobiliář. Fotografie mohou být starší. Stav kontroly se ukládá jen do tvého prohlížeče; změny ve 3D hře nepublikuje.</div>
+<div id="counts" class="summary"></div>
+<div class="layout">
+<section>
+ <div class="panel"><h2>🗺️ Celá ulice a přilehlá napojení</h2><p class="muted">Klepni na objekt v mapě nebo na jeho řádek. Přilehlé komunikace se zobrazují přerušovaně a nejsou započítané jako hotové objekty vybrané ulice.</p><div id="map"></div><p id="map-info" class="muted"></p><div id="focus">Vyber objekt pro podrobnosti a odkaz na OpenStreetMap.</div></div>
+ <div class="panel"><h2>📐 Soupis objektů</h2><div class="tools"><select id="category" aria-label="Filtrovat typ objektu"><option value="">Všechny typy</option></select><button id="fit">Zobrazit celý úsek</button></div><div id="osm-list"></div><p id="missing" class="muted"></p></div>
+ <div class="panel"><h2>🔀 Křižovatky a hranice</h2><p class="muted">Mapa je rozdělená podle OSM evidence. Geometrie křižovatky a chodníků se při sestavování celé ulice musí zkontrolovat i na sousedních ulicích.</p><ul id="context-list"></ul></div>
+</section>
+<aside>
+ <div class="panel"><h2>📸 Fotky a oficiální podklady</h2><div id="sources"></div><p class="muted">GPS fotografie označuje místo kamery, nikoli automaticky polohu vyfotografované lampy, lavičky, vchodu nebo značky. Z blízké fotky se nikdy bez kontroly nestane ověřená fasáda.</p></div>
+ <div class="panel"><h2>✅ Kontrola všech 15 oblastí</h2><p class="muted">Pracovní osobní poznámky, nikoli schválení modelu. Bez podkladů vyber „Chybí ověření“.</p><div id="audit" class="audit"></div><label for="notes">Poznámky k celé ulici</label><textarea id="notes" placeholder="Např. kde nesedí chodník, dům, střecha nebo vstup…"></textarea><div class="tools"><button id="save">Uložit poznámky v prohlížeči</button><button id="reset">Vymazat místní kontrolu</button></div><p id="saved" class="muted" role="status"></p></div>
+</aside>
+</div>
+</main><footer>© OpenStreetMap contributors, ODbL · Originální snímky: autoři a licence uvedené u každého odkazu · Milovice RP REBUILD 2.0</footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="module">
+import {STREET_PHOTO_EVIDENCE,previewForCommonsPhoto} from './scripts/street-photo-evidence.js';
+import {STATION_STOP_PHOTOS} from './scripts/station-forecourt-pass.js';
+const $=id=>document.getElementById(id);
+const url=new URL(location.href),wanted=url.searchParams.get('id')||'old:Nádražní';
+const label={buildings:'Budovy',roads:'Silnice',walkways:'Chodníky a cesty',railway:'Koleje a nástupiště',landscape:'Zeleň',publicObjects:'Veřejné objekty',utilities:'Infrastruktura',other:'Ostatní'};
+const colors={buildings:'#d79c5f',roads:'#e3e8ef',walkways:'#38bfc2',railway:'#c76b8a',landscape:'#6aa66c',publicObjects:'#e4c050',utilities:'#a888e6',other:'#8d9fa8'};
+function node(tag,txt,cls){const el=document.createElement(tag);if(txt!=null)el.textContent=txt;if(cls)el.className=cls;return el}
+async function getJson(path){const response=await fetch('./'+path,{cache:'no-store'});if(!response.ok)throw Error(path+': HTTP '+response.status);return response.json()}
+try{
+const inventory=await getJson('data/rebuild2-street-inventory.json');
+const street=inventory.streets.find(s=>s.id===wanted);
+if(!street)throw Error('Ulice '+wanted+' není v inventáři; vrať se na seznam všech ulic.');
+const source=inventory.sources.find(s=>s.region===street.region);
+if(!source)throw Error('Chybí OSM zdroj pro oblast '+street.region);
+const osm=await getJson(source.path),ways=new Map((osm.elements||[]).map(e=>[e.type+':'+e.id,e]));
+const keys=inventory.classes,objects=keys.flatMap(kind=>street.mapped[kind].map(id=>({id,kind,entry:ways.get(id)})));
+const misses=objects.filter(o=>!o.entry);
+$('heading').textContent='🧭 '+(street.street||'Nepřiřazené objekty')+' — REBUILD 2.0';
+$('intro').textContent=street.regionName+' · etapa '+street.phase+' · '+street.status+' · žádná část není tímto průzkumem automaticky schválená';
+const summary=[['Mapových objektů',street.total],...keys.filter(k=>street.counts[k]>0).map(k=>[label[k]||k,street.counts[k]])];
+for(const [name,count] of summary){const s=node('span');s.append(node('strong',String(count)),node('span','  '+name));$('counts').append(s)}
+for(const kind of keys){if(!street.counts[kind])continue;const option=node('option',label[kind]||kind);option.value=kind;$('category').append(option)}
+const map=window.L?L.map('map',{preferCanvas:true,zoomControl:true}):null;
+if(map)L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map);
+else $('map').textContent='Mapové podklady vyžadují připojení k Leaflet; seznam OSM objektů funguje i bez mapy.';
+const group=map?L.featureGroup().addTo(map):null,features=new Map(),painted=new Set();
+function locate(o){
+ const geo=o?.entry?.geometry;
+ return Array.isArray(geo)?geo.filter(p=>Number.isFinite(p.lat)&&Number.isFinite(p.lon)).map(p=>[p.lat,p.lon]):[];
+}
+function draw(o,{context=false}={}){
+ if(!map||!o.entry||painted.has(o.id))return;
+ const coords=locate(o);if(coords.length<2)return;
+ painted.add(o.id);
+ const polygon=o.kind==='buildings'||(o.kind==='railway'&&o.entry.tags?.railway==='platform')||o.entry.tags?.area==='yes';
+ const opts={color:context?'#8094a0':colors[o.kind],weight:context?2:Math.max(2,o.kind==='roads'?5:3),dashArray:context?'5 6':null,opacity:context?.55:.98,fillOpacity:polygon?(context?.02:.18):0};
+ const graphic=polygon&&coords.length>=3?L.polygon(coords,opts):L.polyline(coords,opts);
+ graphic.addTo(context?map:group);
+ if(!context){features.set(o.id,graphic);graphic.on('click',()=>focus(o));}
+}
+for(const o of objects)draw(o);
+const nearbyIds=street.id==='old:Nádražní'?
+ ['way:22880478','way:22880480','way:1282187908','way:1282187911']:
+ [];
+for(const id of nearbyIds){
+ const entry=ways.get(id);
+ if(!entry)continue;
+ const kind=entry.tags?.highway==='footway'?'walkways':'roads';
+ draw({id,kind,entry},{context:true});
+ const li=node('li',id+' · '+(entry.tags?.name||entry.tags?.footway||entry.tags?.highway||'souvislost'));
+ $('context-list').append(li);
+}
+if(!nearbyIds.length)$('context-list').append(node('li','Zkontroluj napojení na nejbližší sousední ulice i cesty, které spadají do jiné OSM pracovní skupiny.'));
+if(map&&group.getLayers().length)map.fitBounds(group.getBounds().pad(.1),{maxZoom:17});
+$('map-info').textContent=group?'Zakresleno '+group.getLayers().length+' z '+objects.length+' prvků v OSM zdroji '+source.path+'.':'';
+$('missing').textContent=misses.length?'Pozor: '+misses.length+' OSM ID nejsou v podkladovém souboru této oblasti. Přesah do sousední mapové oblasti vyžaduje doplnění.':'Všechny přiřazené OSM identifikátory jsou dostupné v mapovém zdroji. To ještě není fotografické schválení.';
+let selectedId='';
+function focus(o){
+ selectedId=o.id;
+ document.querySelectorAll('.object').forEach(b=>b.classList.toggle('active',b.dataset.id===o.id));
+ const e=o.entry,box=$('focus');box.replaceChildren();
+ box.append(node('strong',(label[o.kind]||o.kind)+' · '+o.id));
+ box.append(node('p',e?.tags?.name||e?.tags?.building||e?.tags?.highway||e?.tags?.railway||'Mapový prvek, bez podrobného popisu'));
+ if(e){const a=node('a','🔗 Otevřít původní OSM objekt');a.target='_blank';a.rel='noopener noreferrer';const [type,id]=o.id.split(':');a.href='https://www.openstreetmap.org/'+type+'/'+id;box.append(a)}
+ if(map&&features.has(o.id)){const b=features.get(o.id).getBounds();if(b.isValid())map.fitBounds(b.pad(.4),{maxZoom:19})}
+}
+function rows(){
+ $('osm-list').replaceChildren();
+ const kind=$('category').value;
+ for(const o of objects.filter(o=>!kind||kind===o.kind)){
+  const button=node('button',null,'object');button.type='button';button.dataset.id=o.id;
+  button.append(node('span',o.entry?.tags?.name||o.entry?.tags?.building||o.entry?.tags?.highway||o.entry?.tags?.railway||label[o.kind]||o.kind));
+  button.append(node('small',o.id));button.addEventListener('click',()=>focus(o));
+  if(o.id===selectedId)button.classList.add('active');
+  $('osm-list').append(button);
+ }
+}
+$('category').addEventListener('change',rows);$('fit').addEventListener('click',()=>{if(map&&group.getLayers().length)map.fitBounds(group.getBounds().pad(.12))});rows();
+const extraStops=STATION_STOP_PHOTOS.map(p=>({id:p.id,title:'Autobusové stanoviště '+p.letter+' · '+p.street,url:p.photo,author:'ŠJů',license:'CC BY 4.0',taken:p.photoDate,street:p.street,camera:[p.lat,p.lon],heading:p.heading,scope:'bus-stop-camera'}));
+const photos=[...STREET_PHOTO_EVIDENCE,...(street.id==='old:Nádražní'?extraStops:[])].filter(p=>p.street===street.street||(street.id==='old:Nádražní'&&p.id==='bus-B'));
+if(street.id==='old:Nádražní')photos.push({id:'pid-2024',title:'Oficiální schéma přestupního uzlu A/B (platné od 15. 12. 2024)',url:'https://pid.cz/wp-content/uploads/mapy/uzly-region/Milovice.pdf',author:'ROPID',license:'odkaz na oficiální dokument',taken:'2024-12-15',scope:'official-schematic'});
+if(!photos.length)$('sources').append(node('p','U této ulice zatím chybí konkrétní přiřazená fotografie. Před 3D schválením získat zdroje.'));
+for(const p of photos){
+ const article=node('article',null,'source');
+ if(p.url.includes('commons.wikimedia.org')){const img=node('img');img.loading='lazy';img.alt='Fotografický podklad '+p.title;img.src=previewForCommonsPhoto(p);article.append(img)}
+ const a=node('a',p.title);a.href=p.url;a.target='_blank';a.rel='noopener noreferrer';article.append(a);
+ article.append(node('p',(p.taken||'Neznámé datum')+' · '+p.author+' · '+p.license+' · '+p.scope));
+ article.append(node('p',p.camera?'GPS kamery: '+p.camera.map(x=>x.toFixed(6)).join(', ')+(p.heading?' · azimut '+p.heading+'°':''):'Poloha kamery není doložená'));
+ $('sources').append(article);
+ if(map&&p.camera){
+  const marker=L.circleMarker(p.camera,{color:'#edbb69',radius:6,fillOpacity:.9,weight:2}).addTo(map);
+  marker.bindTooltip(p.title+' – poloha fotoaparátu');
+ }
+}
+const storageKey='milovice.rebuild2.survey.'+street.id;
+let saved={};try{saved=JSON.parse(localStorage.getItem(storageKey)||'{}')}catch{saved={}}
+for(let i=0;i<inventory.mandatoryAudit.length;i++){
+ const labelEl=node('label');labelEl.append(node('strong',(i+1)+'. '+inventory.mandatoryAudit[i]));
+ const select=node('select');select.dataset.auditIndex=String(i);
+ for(const [value,text] of [['unknown','Neprohlédnuto'],['needs','Chybí ověření / podklady'],['repair','Nalezen problém k opravě'],['local','Lokálně prohlédnuto (není schváleno)']]){
+  const option=node('option',text);option.value=value;select.append(option);
+ }
+ select.value=saved.statuses?.[i]||'unknown';
+ labelEl.append(select);$('audit').append(labelEl);
+}
+$('notes').value=saved.notes||'';
+function save(){
+ const statuses=[...$('audit').querySelectorAll('select')].map(s=>s.value);
+ try{localStorage.setItem(storageKey,JSON.stringify({statuses,notes:$('notes').value,updated:new Date().toISOString()}));
+ $('saved').textContent='Uloženo jen v tomto prohlížeči. Veřejný inventář ani 3D hra se tím nemění.'}
+ catch(e){$('saved').textContent='Nepodařilo se uložit místní poznámky: '+e.message}
+}
+$('save').addEventListener('click',save);
+$('reset').addEventListener('click',()=>{if(!confirm('Vymazat pouze místní poznámky pro '+street.street+'?'))return;
+ localStorage.removeItem(storageKey);$('audit').querySelectorAll('select').forEach(s=>s.value='unknown');$('notes').value='';$('saved').textContent='Místní poznámky vymazány.'});
+}catch(e){$('intro').textContent='Chyba při načítání: '+e.message;console.error(e);$('map').textContent='Mapový průzkum se nenačetl.'}
+</script></body></html>
