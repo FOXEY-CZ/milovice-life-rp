@@ -5,6 +5,7 @@
 // BufferGeometryUtils is injected from the main Three.js browser entrypoint,
  // keeping this module importable in standalone Node geometry tests.
 import {planSkolskaDormerRoof} from './skolska-roof.js';
+import {roofHeightAtPoint} from './roof-opening-geometry.js';
 
 export const PHOTO_STREET_BLOCK=[
  {id:'202367194',name:'Mírová 134/11 · Modrá hvězda',street:'Mírová / 5. května',
@@ -123,6 +124,40 @@ export function planArchedDormerWindow({width=1.05,bottom=.35,shoulder=1.16,
   archTop:shoulder+width*.5,
   glassTop:shoulder-.025+width*.5-border};
 }
+// World-space roof-safe position planner. A flush rooflight is an inset
+// following the ACTUAL rendered roof triangles, never a free-floating box
+// rotated by a guessed constant 0.43 radians.
+// The same edge coordinates work on ANY rotated/concave OSM building.
+export function planPhotographedRooflight(roof,edge,offset,{
+ halfWidth=.52,near=1.16,far=2.58,frameLift=.028
+}={}){
+ if(!roof||!edge||![offset,halfWidth,near,far,frameLift,edge.mx,
+  edge.mz,edge.ux,edge.uz,edge.nx,edge.nz].every(Number.isFinite)||
+  !Number.isFinite(edge.len)||far<=near||near<.2||
+  halfWidth<=.15||halfWidth>.8||Math.abs(offset)+halfWidth+.12>edge.len/2)
+  return null;
+ const vertex=(u,depth,lift)=>{
+  const x=edge.mx+edge.ux*u-edge.nx*depth;
+  const z=edge.mz+edge.uz*u-edge.nz*depth;
+  const height=roofHeightAtPoint(roof,{x,z});
+  if(!Number.isFinite(height))return null;
+  return {x,z,y:height+lift,u:x*.23,v:z*.23};
+ };
+ const layer=(w,d1,d2,lift)=>{
+  const v=[
+   vertex(offset-w,d1,lift),vertex(offset+w,d1,lift),
+   vertex(offset+w,d2,lift),vertex(offset-w,d2,lift)
+  ];
+  if(v.some(p=>!p))return null;
+  return [[v[0],v[1],v[2]],[v[0],v[2],v[3]]];
+ };
+ const frame=layer(halfWidth,near,far,frameLift);
+ const glass=layer(halfWidth-.085,near+.11,far-.11,frameLift+.009);
+ const mullion=layer(.026,near+.12,far-.12,frameLift+.017);
+ if(!frame||!glass||!mullion)return null;
+ return {frame,glass,mullion,sourceFootprint:true,flushToHostRoof:true,
+  interpolation:'actual triangulated host',triangles:6};
+}
 export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  const roofMaterial=new THREE.MeshStandardMaterial({color:0x583b38,roughness:.88});
  const darkRoof=new THREE.MeshStandardMaterial({color:0x404348,roughness:.90});
@@ -136,7 +171,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  let buildings=0,dormers=0,rooflights=0,hedgeGroups=0,detailMeshes=0;
  let actualArchedWindowMeshes=0,rectangularFakeArchRemoved=0;
  let anchoredDormerRoofs=0,removedDetachedRoofBoxPanels=0;
- let detailDrawMeshes=0,meshesSavedByBatching=0;
+ let detailDrawMeshes=0,meshesSavedByBatching=0,flushRooflights=0;
  const ids=new Set(),ownedGroups=new Set();
  // Each photo-referenced facade is statically batched by material. A dozen
  // window bars no longer turn into a dozen GPU draw calls at 27 FPS.
@@ -278,18 +313,19 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   dormers++;
   return g;
  }
- function addRooflights(edge,base,h,offsets){
-  const g=exteriorGroup(edge,base+h);
+ function addRooflights(edge,base,h,offsets,roofPlan){
+  // A sampled surface built in world space can be directly submitted to
+  // the material batch. No detached rooflight boxes or guessed rotations.
+  if(!roofPlan)return;
+  const g=exteriorGroup(edge,0);
   for(const offset of offsets){
-   // Bounds of actual OSM edge; previous +/-3.4m skylights could hang
-   // outside Mírová's photographed 6.45m wing.
-   if(Math.abs(offset)>edge.len*.5-.68)continue;
-   // Photographed skylights on a roof slope, not vertical facade windows.
-   // Approximate placement because the roof pitch is not in OSM.
-   part(g,1.20,.10,1.47,rooflightFrame,offset,1.03,-1.95,-.43);
-   part(g,1.02,.105,1.26,glazing,offset,1.11,-1.94,-.43);
-   part(g,.055,.10,1.30,paleTrim,offset,1.15,-1.94,-.43);
+   const plan=planPhotographedRooflight(roofPlan,edge,offset);
+   if(!plan)continue;
+   joinedRoofFaces(g,plan.frame,rooflightFrame);
+   joinedRoofFaces(g,plan.glass,glazing);
+   joinedRoofFaces(g,plan.mullion,paleTrim);
    rooflights++;
+   flushRooflights++;
   }
  }
  function addHedge(edge,base,sections=6){
@@ -309,7 +345,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   mesh.instanceMatrix.needsUpdate=true;mesh.receiveShadow=true;
   g.add(mesh);detailMeshes++;hedgeGroups++;
  }
- function add({id,points,base,height}){
+ function add({id,points,base,height,roofPlan=null}){
   const key=String(id);
   if(!targetIds.has(key)||ids.has(key)||!points?.length||!Number.isFinite(base))return false;
   const pts=points.map(p=>({x:p.x,z:p.y??p.z}));
@@ -326,9 +362,9 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
    const face=edges.find(e=>e.len>5.5)||edges[0];
    addGableDormer(face,base,height,{w:2.85,depth:2.25,
     roofRise:1.65,arched:false,wall:warmWall,roof:roofMaterial});
-   addRooflights(face,base,height,[-.82]);
+   addRooflights(face,base,height,[-.82],roofPlan);
    const returnWall=edges.find(e=>e.index!==face.index&&e.len>=4.3);
-   if(returnWall)addRooflights(returnWall,base,height,[-.78,.78]);
+   if(returnWall)addRooflights(returnWall,base,height,[-.78,.78],roofPlan);
    addHedge(face,base,5);
    if(returnWall)addHedge(returnWall,base,3);
   }else if(key==='118487980'){
@@ -361,7 +397,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  function getStatus(){return {buildings,dormers,rooflights,hedgeGroups,detailMeshes,
   detailDrawMeshes,meshesSavedByBatching,
   actualArchedWindowMeshes,rectangularFakeArchRemoved,
-  anchoredDormerRoofs,removedDetachedRoofBoxPanels,
+  anchoredDormerRoofs,removedDetachedRoofBoxPanels,flushRooflights,
   landmarkIds:[...ids],photoReferenceCount:PHOTO_STREET_BLOCK.length,
   scope:'Mírová–5. května–Školská; photographed geometry approximation'};}
  function publish(){if(typeof window!=='undefined')window.__milovicePhotoStreetPass=getStatus()}
@@ -371,7 +407,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
    root.traverse(o=>{if(o.isMesh||o.isInstancedMesh)o.geometry?.dispose()});
   }
   ownedGroups.clear();buildings=dormers=rooflights=hedgeGroups=detailMeshes=0;
-  detailDrawMeshes=meshesSavedByBatching=0;
+  detailDrawMeshes=meshesSavedByBatching=flushRooflights=0;
   actualArchedWindowMeshes=rectangularFakeArchRemoved=0;
   anchoredDormerRoofs=removedDetachedRoofBoxPanels=0;
   ids.clear();publish()
