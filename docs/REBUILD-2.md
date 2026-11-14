@@ -1,0 +1,61 @@
+# Milovice RP — oficiální plán REBUILD 2.0
+
+## Jednotka práce = CELÁ ULICE, ne jeden dům
+
+Nový průchod znamená znovu postavit, opravit a porovnat **každou již řešenou budovu včetně kostela, nádraží, školy, hotelu Modrá hvězda i všech ostatních**. Současné modely a uložené předchozí práce se **neodstraňují**; slouží jako počáteční základ, nikoli důkaz dokončené stavby.
+
+Každou ulici projít **od jednoho konce k druhému**, po obou stranách a všemi pohledy 360°, včetně budov, zahrad, veřejného prostoru, dopravy, krajiny a veškerých malých předmětů. Uliční skupiny mohou mít více úseků či křižovatek; hranice se ručně zpřesní před označením ulice za dokončenou.
+
+## Oficiální pořadí
+
+1. **Nádražní + nádraží:** budovy nádraží, průchod a nádražka, Bike Tower, nástupiště, koleje, autobusové zastávky, celá přednádražní plocha, silnice, chodníky, parkování, lampy, značky, zeleň a okolní domy.
+2. **Školská:** škola a její zahrada, Školská 220/1, další domy, ploty, vjezdy, přechody, silnice, chodníky, parkování a všechny drobnosti.
+3. **5. května:** **kostel znovu podle reality**, okolní prostranství, domy, obchodní objekty, křižovatky, případné přechody, dopravní vybavení a zeleň.
+4. **Mírová:** Modrá hvězda, Mírová 36, další domy a podniky, kompletní uliční prostor.
+5. **Ostatní Staré Milovice:** propojené ulice dům po domu, ale s celým okolím.
+6. **Mladá:** všechny ulice a jejich objekty.
+7. **Západní propojení:** silnice, chodníky, stavby, příroda a dopravní návaznosti.
+8. **Benátecká Vrutice:** všechny dostupné ulice i okolí.
+9. **Střední propojení:** propojené ulice, pěší trasy, doprava a okolní objekty.
+10. **Boží Dar:** celé dostupné ulice, budovy, příroda a přístupové trasy.
+
+## Povinné oblasti pro KAŽDOU ulici
+
+1. **Budovy:** skutečná poloha a rozměry, tvar, střecha, výška, materiály, fasády, okna, dveře, římsy, balkony, vchody, garáže, přístavby.
+2. **Silnice:** geometrie, počty pruhů, šířky, povrchy, napojení.
+3. **Chodníky:** obě strany, chodníkové ostrůvky, obrubníky, rampy, pěší spojky.
+4. **Přechody a značení:** pouze doložené, bez náhodných přechodů přes vozovku.
+5. **Dopravní značky:** skutečné pozice, orientace, správné tabule.
+6. **Osvětlení:** lampy, semafory, sloupy, technická vedení.
+7. **Parkování:** reálná stání, parkoviště, vjezdy, bezpečné průjezdy.
+8. **Ploty a drobné stavby:** brány, schody, podezdívky, zídky, přístřešky.
+9. **Mobiliář:** zastávky, lavičky, koše, stojany, informační tabule.
+10. **Zeleň a terén:** stromy, keře, tráva, záhony, úpravy terénu.
+11. **Železnice a doprava:** koleje, nástupiště a další dopravní objekty, pokud na ulici existují.
+12. **Technická infrastruktura:** trafostanice, hydranty, kabelové skříně a další objekty.
+13. **Funkčnost:** vchody na výšce terénu, průchozí chodníky, žádné blokované vjezdy.
+14. **360° fotografická kontrola:** oba směry podél ulice, všechny strany domů, pohled shora, přesná provenience.
+15. **3D a výkon:** kolize, napojení všech objektů, střechy bez děr, okna přilepená k fasádě, mobilní FPS a LOD.
+
+## Kdy je ulice HOTOVÁ?
+
+Až když budou všechny její objekty identifikované a porovnané s legálně použitelnými podklady, bude u každé z 15 oblastí zaznamenaný výsledek, zásadní geometrické a kolizní chyby budou opravené a uživatel odsouhlasí **celou ulici**. Dosud odsouhlasená škola znamená úspěšný dílčí model, **nikoli hotovou Školskou v Rebuild 2.0**.
+
+**Neověřená zadní fasáda nebo chybějící údaj o lampě se neprohlásí za hotové.** Pokud nemáme obrázek či jiný legální podklad, ponecháme provizorní jednoduchý model a položku „vyžaduje ověření“. Bez důkazů nevymýšlet objekty. Snímky z různých let nemusejí odpovídat roku 2026.
+
+## Technická evidence
+
+- [Strojový inventář ulic a OSM ID](../data/rebuild2-street-inventory.json), [veřejný přehled](../rebuild.html).
+- Spojeno **6 překrývajících se geografických zdrojů**: 6 867 záznamů → **3 712 unikátních OSM prvků** v **78 pracovních skupinách** (z toho 6 výslovných backlogů pro nepřiřazené objekty).
+- Klasifikace: **2 120 budov, 803 silničních komunikací, 631 pěších/cyklistických cest, 16 železničních prvků, 128 krajinných prvků, 3 další veřejné objekty, 11 inženýrských objektů**.
+- Přiřazení uliční skupiny podle `addr:street` či nejbližší pojmenované OSM cesty do 40–65 m je **orientační**, nikoli skutečná hranice ulice. Nepřiřazené objekty se musí ručně zařadit.
+- Lampy, koše, značky, jednotlivé stromy, ploty, lavičky a vodorovné dopravní značení nejsou v OSM automaticky kompletně zaznamenané. Každá ulice dostává povinný fotografický soupis těchto prvků.
+- Pracovní stav všech skupin je **čeká na Rebuild 2.0** nebo **nutno přiřadit ulici**. Žádná se automaticky nepovažuje za dokončenou.
+- Nechat zachovanou existující hru, účetní a herní postup, kolize a FPS optimalizace; nezaplňovat scénu tisíci jednotlivých draw calls.
+- Fotky používat pouze v souladu s licencí. OSM: © OpenStreetMap contributors, ODbL. Z chráněných panoramat bez oprávnění nekopírovat pixely ani automaticky netěžit modely.
+
+## Cyklus práce po ulicích
+
+**Inventář všech objektů → zdrojová fotografie / prohlídka → budovy i uliční prostor → napojení na terén → 360° vizuální kontrola → fyzické kolize + mobilní výkon → uživatel schválí → uložit stav → sousední ulice.**
+
+Nezasekávat se na jednotlivých detailech bez konce: používat společný systém střech, oken, vchodů a chodníků, úpravy provádět po smysluplných úsecích a brát nově získané zkušenosti i na starší práci.

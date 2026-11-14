@@ -1,0 +1,56 @@
+<!DOCTYPE html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – REBUILD 2.0</title>
+<style>body{margin:0;background:#101820;color:#f0f5f7;font:15px/1.5 system-ui}main{max-width:1100px;margin:auto;padding:24px 15px 60px}h1{font-size:clamp(24px,4vw,39px)}p,small{color:#aec4cc}a{color:#84d6fc}
+.hero{background:#19303c;padding:24px;border-radius:16px;border:1px solid #3f6974}.stats{display:flex;gap:12px;flex-wrap:wrap;margin:20px 0}.stat{flex:1;min-width:130px;background:#203340;border-radius:12px;padding:12px}.stat strong{display:block;font-size:24px}.stat small{font-size:12px}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}input,select{padding:10px;background:#223745;color:#fff;border:1px solid #517287;border-radius:9px;font:inherit;flex:1;min-width:180px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px}details{padding:14px;background:#1a2b38;border:1px solid #375265;border-radius:12px}summary{cursor:pointer;font-weight:700;font-size:17px}.row{display:flex;justify-content:space-between;border-bottom:1px solid #344a59;padding:4px 0}.muted{font-size:12px;color:#acc3ca}.pill{display:inline-block;background:#314d5d;border-radius:99px;padding:3px 10px;margin:8px 3px 0 0;font-size:12px}
+</style></head><body><main><div class="hero"><small>FOXEY Games · Milovice RP</small><h1>🏘️ REBUILD 2.0</h1>
+<p>Celé ulice, obě strany, všechny objekty. Dosavadní práce je zachovaná, ale žádná ulice ještě není kompletně schválená.</p>
+<a href="./">🎮 Spustit hru</a> · <a href="./editor.html">🏗️ Editor</a> · <a href="./docs/REBUILD-2.md">📋 Pravidla projektu</a></div>
+<div class="stats" id="stats"></div><p>Čísla jsou mapované OSM prvky; lampy, značky, stromy a další drobnosti bude nutné fotograficky doplnit a ověřit.</p>
+<h2>Pracovní úseky</h2><div class="controls"><input type="search" id="search" placeholder="Hledat ulici nebo OSM ID"><select id="region"><option value="">Všechny oblasti</option></select></div>
+<p id="summary"></p><div id="cards" class="cards"></div>
+<p><a href="./data/rebuild2-street-inventory.json">Kompletní OSM inventář v JSON</a> · © OpenStreetMap contributors (ODbL)</p>
+</main><script>
+(async()=>{
+ const data=await (await fetch('./data/rebuild2-street-inventory.json',{cache:'no-store'})).json();
+ const regions=new Map(data.streets.map(s=>[s.region,s.regionName]));
+ const region=document.getElementById('region'),search=document.getElementById('search');
+ const cards=document.getElementById('cards'),stats=document.getElementById('stats');
+ for(const [key,name] of regions){const opt=document.createElement('option');opt.value=key;opt.textContent=name;region.append(opt)}
+ for(const [title,num] of [['Unikátních objektů',data.summary.uniqueMappedWays],['Budov',data.summary.categories.buildings],
+  ['Silnic a chodníků',data.summary.categories.roads+data.summary.categories.walkways],
+  ['Pracovních skupin',data.summary.streetGroups]]){
+  const div=document.createElement('div');div.className='stat';
+  const strong=document.createElement('strong');strong.textContent=Number(num).toLocaleString('cs-CZ');
+  const small=document.createElement('small');small.textContent=title;
+  div.append(strong,small);stats.append(div)}
+ const labels={buildings:'Budovy',roads:'Silnice',walkways:'Chodníky a cesty',
+ railway:'Železnice',landscape:'Zeleň / krajina',publicObjects:'Veřejné objekty',utilities:'Infrastruktura',other:'Ostatní'};
+ function draw(){
+  cards.replaceChildren();const query=search.value.toLocaleLowerCase('cs').trim();
+  const listed=data.streets.filter(s=>(!region.value||s.region===region.value)&&
+   (!query||(s.street||'bez přiřazení').toLocaleLowerCase('cs').includes(query)||
+    s.regionName.toLocaleLowerCase('cs').includes(query)||
+    Object.values(s.mapped).some(ids=>ids.some(id=>id.includes(query)))));
+  document.getElementById('summary').textContent='Zobrazeno '+listed.length+' z '+data.streets.length+' skupin · dokončeno 0 podle nového standardu';
+  for(const s of listed){
+   const panel=document.createElement('details'),title=document.createElement('summary');
+   title.textContent=(s.street||'⚠ Nepřiřazené objekty')+' · '+s.regionName;
+   panel.append(title);
+   for(const label of ['Etapa '+s.phase,s.total+' OSM prvků',s.status]){
+    const chip=document.createElement('span');chip.className='pill';chip.textContent=label;panel.append(chip)}
+   for(const key of data.classes){if(!s.counts[key])continue;
+    const row=document.createElement('div');row.className='row';
+    const label=document.createElement('span');label.textContent=labels[key]||key;
+    const val=document.createElement('strong');val.textContent=s.counts[key];
+    row.append(label,val);panel.append(row)}
+   if(s.legacyWork.length){const note=document.createElement('p');note.className='muted';
+    note.textContent='Dříve rozpracovaná OSM ID: '+s.legacyWork.map(x=>x.osmId).join(', ')+'. I ta projdou znovu 360° kontrolou.';
+    panel.append(note)}
+   const need=document.createElement('p');need.className='muted';
+   need.textContent='Povinně zkontrolovat všech '+data.mandatoryAudit.length+' oblastí včetně malých objektů, terénu, napojení a mobilních FPS.';
+   panel.append(need);cards.append(panel)}
+ }
+ search.addEventListener('input',draw);region.addEventListener('change',draw);draw();
+})().catch(e=>{document.getElementById('summary').textContent='Chyba při načítání inventáře: '+e.message});
+</script></body></html>
