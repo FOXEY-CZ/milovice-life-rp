@@ -1,3 +1,20 @@
+# Milovice RP 5.65 — fotografické přednádraží, směrové tabule autobusových stanovišť A/B
+
+**Spustit hru:** https://foxey-cz.github.io/milovice-life-rp/?v=5650  
+**Zkontrolovat zastávky:** https://foxey-cz.github.io/milovice-life-rp/?inspect=1&v=5650
+
+Po verzi 5.64 (vnitřní ocel cyklověže) je další ověřenou částí přednádraží dvojice skutečných zastávkových sloupků **A na Nádražní** a **B na 5. května**. Jejich přibližná GPS poloha už v projektu pochází z **fotografií sloupků ŠJů z 30. 5. 2024** a zůstala beze změny. Nově jsou na obou **původních** sloupcích jiné, čitelnější, vlastnoručně kreslené směrové jízdní tabule s řádky přestupu podle oficiálního [schématu PID Milovice, žel. st.](https://pid.cz/wp-content/uploads/mapy/uzly-region/Milovice.pdf), **platného od 15. 12. 2024**.
+
+- **A:** 430 Park Mirakulum / Lysá nad Labem; 432 Lysá nad Labem; 434 Park Mirakulum / Benátky nad Jizerou.
+- **B:** 430 Balonka / Lipník; 432 Balonka / Mladá Boleslav; 434 Balonka / Straky / Nymburk; 497 Kostomlaty nad Labem / Nymburk.
+- Tabulky jsou původní vykreslená grafika; **fotky ani PDF PID nejsou vložené jako textury**. Fyzický rozměr a vzhled zůstávají aproximací, přesné rozměry panelů nebyly zaměřeny. **Linkové směry jsou doložené schématem z roku 2024, nejde o potvrzení aktuálního jízdního řádu v listopadu 2026.**
+- Původní 3D poloha sloupků zůstala, stejně jako kontroly výluky z OSM silnic a chodníků. Nepřidala se neověřená lavička, lampa, schodiště, parkoviště, keř nebo jiný nový objekt. **Cyklověž 5.64, garáže 5.63, nádražní stříška, domy i ostatní ulice zůstaly bez zásahů.**
+- Test station-forecourt-pass.test.mjs hlídá konkrétní A/B linky a směry, neexistující zastávky a dosavadní kolizní pravidla.
+
+**Stav:** další ověřený krok při stavbě celé Nádražní. Fyzická přesnost tabulí a vizuální porovnání hry s reálným přednádražím ještě vyžadují 360° kontrolu; změny jiné než zastávkové tabule tato verze netvrdí.
+
+---
+
 # Milovice RP 5.64 — fotopodložené detaily cyklověže u nádraží
 
 **Spustit hru:** https://foxey-cz.github.io/milovice-life-rp/?v=5640  
