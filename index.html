@@ -3032,12 +3032,14 @@ function osmBuilding(points,tags,index,osmId=null){
  }
  // Building facade upgrade: per-building window allocation and visible architectural details.
  // Existing flat windows remain only on non-hero buildings.
- if(!heroFacade){
+ // Runtime audit lives in THIS building's scope: doors are constructed
+ // after the window-loop branch and must share the same anchor contract.
  const attachmentAudit=window.__miloviceFacadeAttachmentAudit ||= {
   version:'5.36.0',legacyWindows:0,legacyDoors:0,legacyEdges:0,
   maxLegacyFaceGap:0,geometryPlane:'real OSM polygon',
   largeFloatingFacadeOffsetsEliminated:true
  };
+ if(!heroFacade){
  const facadeSourceAudit=window.__miloviceCityUnverifiedFeatures ||= {
   removedRandomRoofVents:0,removedRandomCommerceAwnings:0,
   inferredRoofShapePolicy:'quadrilateral-gable-else-hip-or-flat'
@@ -3191,7 +3193,10 @@ function osmBuilding(points,tags,index,osmId=null){
   }
  }
  // Ground-floor entrance: a lightweight facade panel, placed on the longest building wall.
- const inventedEntrance=!isGarage&&!isChurch&&!isBlueStar&&!isStation&&!isMirova36&&!isGrocer74;
+ // Hero buildings already have actual wall-cutout doors: don't paint
+ // a second fake freestanding doorway on top of their real entrance.
+ const inventedEntrance=!heroFacade&&!isGarage&&!isChurch&&!isBlueStar&&
+  !isStation&&!isMirova36&&!isGrocer74;
   if(auditedCore&&inventedEntrance)legacyRealityAudit.suppressed('suppressedDoors');
   if(!auditedCore&&inventedEntrance){
   let longest=null;
