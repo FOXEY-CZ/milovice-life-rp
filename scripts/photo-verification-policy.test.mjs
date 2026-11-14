@@ -1,4 +1,4 @@
-// Milovice RP 5.60: never re-create unverified garage models from OSM tags.
+// Milovice RP 5.61: restore mistakenly hidden northern buildings as unverified legacy objects.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {
@@ -11,7 +11,7 @@ const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
 const all=JSON.parse(read('data/milovice-osm.json')).elements;
 const ids=NADRAZNI_PHOTO_PENDING_OSM_IDS;
 assert.equal(ids.length,17);
-assert.equal(new Set(ids).size,17,'Every quarantined OSM feature must be distinct');
+assert.equal(new Set(ids).size,17,'Every reinstated OSM feature must be distinct');
 assert.equal(PHOTO_VERIFIED_ARCHITECTURE.length,0,
  'No exact-site photo was reviewed for these 17 claimed garages');
 for(const id of ids){
@@ -21,9 +21,9 @@ for(const id of ids){
  assert(!STREET_PHOTO_EVIDENCE.some(e=>e.buildingIds?.includes(String(id))),
   'Catalog would need explicit photo identity review before using it');
  const gate=photoRenderingDecision(id);
- assert.equal(gate.render,false,'Unverified OSM tag cannot spawn 3D for '+id);
+ assert.equal(gate.render,true,'Legacy building incorrectly hidden in 5.60 must be restored '+id);
  assert.equal(gate.photographicApproval,false);
- assert.equal(gate.status,'suspended-no-matched-photo');
+ assert.equal(gate.status,'legacy-restored-awaiting-photo');
  assert.equal(approveNew3DFeature({osmId:id,feature:'garage door'}),false);
 }
 const nearbyPhoto={
@@ -57,12 +57,15 @@ assert.equal(legacy.photographicApproval,false,
 
 const index=read('index.html');
 for(const marker of [
- "from './scripts/photo-verification-policy.js?v=5600'",
+ "from './scripts/photo-verification-policy.js?v=5610'",
  'const photoDecision=photoRenderingDecision(osmId);',
  'if(!photoDecision.render){',
- 'audit.omittedFrom3D.push(osmId);',
- 'audit.blockedByMissingPhotographs++;',
+ 'photoAudit.omittedFrom3D.push(osmId);',
+ 'photoAudit.blockedByMissingPhotographs++;',
  'legacyCityAuditPending:true',
+ 'photoAudit.restoredLegacy3D.push(osmId);',
+ 'photoAudit.restoredCount++;',
+ "photoDecision.status==='legacy-restored-awaiting-photo'", 
  'const BUILD_ID=',
 ])assert(index.includes(marker),'Missing photo-first scene safety gate: '+marker);
 assert(index.indexOf('const photoDecision=photoRenderingDecision(osmId);')<
@@ -74,7 +77,15 @@ assert(!index.includes('nadrazni-garage-court.js'),
  'Previously unverified garage planner must not be imported');
 assert(index.includes('station-platform-canopy.js?v=5580'),
  'Keep the independently developed provisional station canopy in place');
-console.log('5.60 exact-photo verification gate PASS',JSON.stringify({
- suspended3D:ids.length,photoApproved:PHOTO_VERIFIED_ARCHITECTURE.length,
+
+const survey=read('survey.html');
+assert(survey.includes("status==='legacy-restored-awaiting-photo'"),
+ 'Survey must still show these reinstated models as pending real photos');
+assert(survey.includes('Původní model obnoven'),
+ 'User-facing inventory must not call restored models approved');
+const activeBuild=index.match(/const BUILD_ID='([^']+)'/)?.[1];
+assert.equal(activeBuild,'20261114-restore-legacy-5610');
+console.log('5.61 legacy restitution and photo-verification policy PASS',JSON.stringify({
+ restoredLegacy3D:ids.length,photoApproved:PHOTO_VERIFIED_ARCHITECTURE.length,
  remainInOSM:true,legacyCityUntouched:true
 }));
