@@ -2915,11 +2915,44 @@ function osmBuilding(points,tags,index,osmId=null){
  const visibleFloors=tags.shop==='supermarket'||isGarage||isChurch?0:isBlueStar||isMirova36?2:isGrocer74?1:isIndustrial?1:isPanelBlock?Math.min(floors,16):Math.min(Math.max(1,Math.floor(h/3)),8);
  for(let i=0;i<pts.length;i++){
   const p=pts[i],q=pts[(i+1)%pts.length],dx=q.x-p.x,dz=q.y-p.y,len=Math.hypot(dx,dz);
-  if(len<5||len>90)continue;
+  // Ignore only degenerate edges. Short returns have no invented
+  // doors/windows, but MUST retain the same real fascia/socle bands
+  // as the long walls beside them.
+  if(len<.08||len>90)continue;
   let nx=-dz/len,nz=dx/len;
   const mx=(p.x+q.x)/2,mz=(p.y+q.y)/2;
   if(nx*(mx-centerX)+nz*(mz-centerZ)<0){nx=-nx;nz=-nz}
   const rotation=Math.atan2(nx,nz),ux=dx/len,uz=dz/len;
+  if(len<5){
+   // Legacy non-hero buildings have their own material-specific trim kit.
+   // Mirror ONLY the already-existing bands on short exterior returns;
+   // never spawn windows, doors, billboards or undocumented ornaments.
+   const audit=window.__miloviceLegacyFacadeBandAudit ||= {
+    shortEdges:0,trimmedShortEdges:0,bands:0
+   };
+   audit.shortEdges++;
+   let bands=0;
+   if(isPanelBlock){
+    archPart('panelPlinth',mx+nx*.23,baseHeight+.66,mz+nz*.23,len,1.30,.15,rotation);
+    archPart('panelSeam',mx+nx*.25,baseHeight+h*.52,mz+nz*.25,len,.045,.13,rotation);
+    archPart('panelSeam',mx+nx*.28,baseHeight+h-.38,mz+nz*.28,len,.10,.14,rotation);
+    bands+=3;
+   }else if(isBlueStar){
+    archPart('blueStarRed',mx+nx*.18,baseHeight+.36,mz+nz*.18,len,.72,.17,rotation);
+    archPart('starWhite',mx+nx*.15,baseHeight+3.48,mz+nz*.15,len,.12,.16,rotation);
+    archPart('starWhite',mx+nx*.24,baseHeight+h-.27,mz+nz*.24,len,.23,.26,rotation);
+    bands+=3;
+   }else if(isSchool){
+    archPart('schoolRed',mx+nx*.14,baseHeight+1.28,mz+nz*.14,len,2.52,.15,rotation);
+    archPart('schoolRed',mx+nx*.20,baseHeight+3.48,mz+nz*.20,len,.20,.10,rotation);
+    bands+=2;
+   }else if(isHouse&&oldCenter){
+    archPart('foundationBand',mx+nx*.22,baseHeight+.52,mz+nz*.22,len,1.02,.1,rotation);
+    bands++;
+   }
+   if(bands){audit.trimmedShortEdges++;audit.bands+=bands;}
+   continue;
+  }
   if(!photoRoofFeatures.length&&(isHouse||isSchool||isStation||isBlueStar||isMirova36)){
    // Legacy approximated gutters only for unresolved roofs. A sourced
    // full physical fascia/soffit already provides eave closure; layering
