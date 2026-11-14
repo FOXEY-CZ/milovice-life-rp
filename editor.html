@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Milovice RP · Stavební editor ulic</title>
+<title>Milovice RP · Stavební editor 5.33</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
 :root{color-scheme:dark;--bg:#0c1621;--card:#152637;--line:#355063;--muted:#a9c1cf;--hot:#f8ca71;--yes:#68d6af}
@@ -33,7 +33,9 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
 #facade-switches{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0}#facade-switches button.active{border-color:var(--hot);background:#465b6a}#facade-switches button{text-align:left}#facade-switches small{display:block;color:var(--muted)}
 #pano-host{height:300px;background:#172a3b;border:1px solid #628395;border-radius:9px;overflow:hidden}#pano-message{font-size:12px}
 #street-evidence-panel{border:1px solid #476a80;border-radius:10px;padding:10px;margin:12px 0;background:#122536}
-#street-evidence-panel .evidence-card{padding:9px 0;border-bottom:1px solid #36546b}
+#street-evidence-panel .evidence-card{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid #36546b}
+#street-evidence-panel .evidence-preview{width:104px;height:85px;object-fit:cover;background:#192e3b;border-radius:7px;border:1px solid #476a80;flex-shrink:0}
+#street-evidence-panel .evidence-body{min-width:0;flex:1}
 #street-evidence-panel .evidence-card:last-child{border-bottom:0}
 #street-evidence-panel .evidence-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px;align-items:center}
 #street-evidence-panel .evidence-actions button{font-size:12px}
@@ -62,7 +64,7 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
 #roof-topology-panel{border:1px solid #61777b;background:#102c35;border-radius:10px;padding:9px;margin:10px 0}
 #roof-topology-summary{font-size:13px;line-height:1.5}#roof-topology-panel small{color:#b6cdd4}
 </style></head><body>
-<header><div><h1>🏗️ Milovice RP · Stavební editor</h1><div class="muted">Ulice → dům → panorama → ověřené parametry → 3D model</div></div>
+<header><div><h1>🏗️ Milovice RP · Stavební editor</h1><div class="muted">Ulice → fotografie z okolí → ověření fasád → dávková stavba → 3D model</div></div>
 <a href="./index.html">🎮 Do hry</a></header>
 <main>
 <aside>
@@ -217,7 +219,7 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script type="module">
 import {planFacadeViews,nextStreetHouse} from './scripts/facade-review.js?v=590';
-import {streetEvidenceForBuilding,streetPhotoCoverage,STREET_PHOTO_EVIDENCE} from './scripts/street-photo-evidence.js?v=5330';
+import {streetEvidenceForBuilding,streetPhotoCoverage,STREET_PHOTO_EVIDENCE,previewForCommonsPhoto} from './scripts/street-photo-evidence.js?v=5331';
 import {normalizeFacadeLayout} from './scripts/facade-model.js?v=5110';
 import {initPhotoSurvey} from './scripts/photo-survey-ui.js?v=5110';
 import {initImageryDiscovery} from './scripts/mapillary-discovery-ui.js?v=5120';
@@ -409,14 +411,17 @@ function renderPhotoEvidence(b){
    const dist=p.distanceM===null?'GPS snímku neověřeno':
     'kamera cca '+p.distanceM+' m od středu půdorysu';
    const oldPhoto=p.taken<'2020'?' ⚠ historický stav, ne dnešní vzhled':'';
+   const preview=previewForCommonsPhoto(p);
    return '<article class="evidence-card">'+
-    '<strong>'+safe(p.title)+'</strong>'+
+    (preview?'<img class="evidence-preview" src="'+safe(preview)+
+     '" alt="Náhled archivního snímku; nemusí zobrazovat tento dům" loading="lazy">':'')+
+    '<div class="evidence-body"><strong>'+safe(p.title)+'</strong>'+
     '<div class="evidence-meta">'+safe(badge+' · '+p.taken+' · '+p.author+
      ' · '+p.license+' · '+dist+oldPhoto)+'</div>'+
     '<div class="evidence-actions"><a href="'+safe(p.url)+
     '" target="_blank" rel="noopener noreferrer">🔗 Zobrazit originál</a> '+
     '<button type="button" data-evidence-id="'+safe(p.id)+
-    '">Použít jako kandidáta zdroje</button></div></article>';
+    '">Použít jako kandidáta zdroje</button></div></div></article>';
   }).join(''):'<p class="muted">V katalogu zatím není žádný geotagovaný snímek poblíž. Otevři Mapillary nebo Mapy.com.</p>';
 }
 function selectBuilding(id){
