@@ -1,3 +1,25 @@
+# Milovice RP 5.74 — vyčištěné okraje chodníku a dlažby u nádraží
+
+**Spustit:** https://foxey-cz.github.io/milovice-life-rp/?v=5740  
+**Návrat na ověřenou 5.73:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/573-before-island-edge-cleanup
+
+## Kontrola uživatelských snímků 15. 11. 2026
+
+Na dvou nových mobilních screenshotech z **5.73** je dlouhý chodník už správně na **vnější straně parkovacího ostrova směrem k Nádražní** a nepřekrývá silnici. Zůstávají ale malé výčnělky na kraji, prosvítající zelené štěrbiny v dláždění a nepravidelné zakončení blízko vstupu. Podle současných podkladů nelze poctivě tvrdit geodetickou přesnost oblého konce; silnici proto NEPOSOUVÁME.
+
+## Bezpečná lokální oprava
+
+- Nový průchod kontroluje jednotlivé krajní řady dlaždic. **Izolovaný 0,74m výčnělek bez pokračování v sousedních řadách** se odstraní z celého modelu (nevznikne ani parkovací místo, ani chodník mimo bezpečný půdorys). Stejně odstraní osamocenou krajní dlaždici za mezerou širší než jeden dlažební modul. Všechny odstraněné položky mají auditovatelný důvod `isolated-outer-island-spur` a počítadlo `isolatedOuterSpursRemoved`.
+- Podkladový čtverec parkovací dlažby se nepatrně rozšíří o **6 mm na každou stranu**. Stejná minimální úprava se použije na síť vnějšího chodníku. Díky tomu se uzavřou původní 1cm štěrbiny, kterými prosvítala zelená zem. Toto zvětšení zůstává **uvnitř původního 25mm bezpečnostního odsazení od mapovaných komunikací**.
+- Řada nízkých obrubníků má méně viditelné mezery; vykreslení chodníku nadále sdílí standardní texturovaný materiál `osmSidewalkMat` s ostatními chodníky.
+- **Beze změny**: geometrie vozovek, rozdělení středový chodník/středové parkování, protilehlá řada parkovacích stání, pravý nárožní chodník, cyklověž, nádraží, garáže a jiné objekty města. **Nepoužita žádná proprietární fotografie jako herní textura.**
+
+**Omezení a další krok:** Dlážděná plocha a zejména **zelený klín na jižním konci ostrova** stále nemusejí přesně odpovídat skutečnému oblému konci a červenému pásu viditelnému na uživatelově panoramatu Mapy.com (17. 5. 2022). Nová verze proto NENÍ potvrzeným finálním geometrickým řešením celého parkoviště. Nejdřív je potřeba vizuálně porovnat již nasměrovanou 3D scénu, než bude bezpečné změnit koncové obrubníky nebo okolní asfalt.
+
+**Regrese:** `scripts/station-photo-parking.test.mjs` hlídá souvislost vnějších dlaždic, neporušený půdorys vozovek a to, že uzavřené spáry nepřekročí bezpečné odsazení. `scripts/browser_smoke.mjs` navíc hlídá skutečnou WebGL vrstvu a výkonnostní rozpočet; zůstává maximálně 7 nových draw callů.
+
+---
+
 # Milovice RP 5.73 — chodník vzniká odebráním vnějšího pásu PARKOVIŠTĚ, nikoli na silnici
 
 **Aktuální hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5730  
