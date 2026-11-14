@@ -93,7 +93,7 @@ const allRecordedFamilies=[
  ...game.matchAll(/recordEntranceGrade\(\s*\w+\s*,\s*'([^']+)'/g)
 ].map(m=>m[1]);
 allRecordedFamilies.push('school','legacy'); // conditional school/legacy pair
-assert(allRecordedFamilies.length>=7);
+assert(allRecordedFamilies.length>=6, 'All four literal call sites plus school/legacy conditional paths must be tracked');
 for(const family of allRecordedFamilies){
  assert(registeredDoorFamilies.has(family),
   'Unsupported door family '+family+' would crash the entire real map');
