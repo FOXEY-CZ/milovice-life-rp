@@ -12,7 +12,16 @@ function verify(name,outline){
   z:o.z+v.z/outline.length}),{x:0,z:0});
  let length=0,shortEdges=0;
  for(let i=0;i<outline.length;i++){
+  const a=outline[i],b=outline[(i+1)%outline.length];
+  const segmentLength=Math.hypot(a.x-b.x,a.z-b.z);
   const f=exteriorFacadeFrame(outline,i);
+  if(segmentLength<.08||segmentLength>140){
+   // An imported CUZK cadastral polygon contains a real 7.9cm micro-edge.
+   // Its wall is intentionally not modelled (sub-8cm geometry threshold),
+   // so it must not be misreported as a 40cm floating window.
+   assert.equal(f,null,name+' invalid micro-edge should be rejected');
+   continue;
+  }
   assert(f,name+' exterior wall edge '+i);
   length+=f.len;
   assert(near(Math.hypot(f.nx,f.nz),1));
