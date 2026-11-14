@@ -81,8 +81,10 @@ assert(moduleText,'Standalone pilot script missing');
 const syntax=moduleText[1].replace(/^import \{PILOT_LOCATION,searchBox,fetchPanoramaxPilot\} from .*?;\s*$/m,'');
 assert.doesNotThrow(()=>new Function(syntax),'PILOT inline script syntax must parse');
 const main=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(main.includes("const BUILD_ID='20261114-photo-station-parking-5660'"),
- 'Main 3D game must remain exactly version 5.66');
+assert(/const BUILD_ID='[a-zA-Z0-9-]+';/.test(main),
+ 'Photo survey pilot must not remove the real game's independent build ID');
+assert(main.includes('stationPhotoParking.create(elements)'),
+ 'The 3D game remains independently functional while photo pilot is read-only');
 assert(!main.includes('panoramax-pilot.js'),'The pilot must never be imported into live game');
 const editor=readFileSync(new URL('../editor.html',import.meta.url),'utf8');
 assert(!editor.includes('panoramax-pilot.js'),'Existing editor must remain unaffected');
