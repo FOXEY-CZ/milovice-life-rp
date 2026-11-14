@@ -187,7 +187,7 @@ try{
  assert.equal(await page.locator('#stage').inputValue(),'verified','local progress not persisted');
  assert.equal(await page.locator('#face-status').inputValue(),'seen','Per-facade review not persisted');
  assert.equal(await page.locator('#face-rows').inputValue(),'2,3','Per-floor geometry not persisted');
- await page.waitForFunction(()=>window.__miloviceEditor?.publishedCount===3,null,{timeout:12000});
+ await page.waitForFunction(()=>window.__miloviceEditor?.publishedCount===4,null,{timeout:12000});
  assert.equal(await page.evaluate(()=>window.__miloviceEditor.reviewCandidateCount),1,
   'A locally verified house should be eligible for a human-reviewed batch');
  const exportWait=page.waitForEvent('download');
@@ -220,7 +220,7 @@ try{
  const applied=await page.evaluate(()=>({
   bridge:window.__miloviceArchitectureBridge,hero:window.__miloviceHeroArchitecture
  }));
- assert(applied.bridge?.publishedVerified===3&&applied.bridge?.previewVerified===1&&
+ assert(applied.bridge?.publishedVerified===4&&applied.bridge?.previewVerified===1&&
    applied.bridge?.sourceMap?.['118487963']==='local',
   'Personal editor draft must not be mislabelled as a publicly published house');
  if(!(applied.bridge.loadedVerified>=1&&applied.bridge.loadedFacadeLayouts>=1&&
