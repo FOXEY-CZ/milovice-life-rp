@@ -178,7 +178,7 @@ import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
 import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5360';
 import {exteriorFacadeFrame,flushBoxOffset,FACE_PLANE,facadeGap} from './scripts/facade-anchors.js?v=5360';
-import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5350';
+import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5370';
 import {clipRoofFacesForFeatures,planRoofFeatureBackClosures} from './scripts/roof-opening-geometry.js?v=5320';
 import {makePhotoStreetEnvironment} from './scripts/street-environment-reality.js?v=5262';
 import {createRoadClearance} from './scripts/road-clearance.js?v=5262';
@@ -3095,7 +3095,7 @@ function osmBuilding(points,tags,index,osmId=null){
    // full physical fascia/soffit already provides eave closure; layering
    // generic horizontal rods onto it adds floating seams and draw calls.
    archPart('roofGutter',mx+nx*flushBoxOffset(.15),baseHeight+h+.11,mz+nz*flushBoxOffset(.15),len,.075,.12,rotation);
-   if(len>6&&i%2===0)archPart('roofGutter',p.x+nx*.21,baseHeight+h*.53,p.y+nz*.21,.10,h*.98,.12,rotation);
+   // No invented full-height downpipes at alternating facade corners.
   }
   if(isPanelBlock){
    archPart('panelPlinth',mx+nx*flushBoxOffset(.15),baseHeight+.66,mz+nz*flushBoxOffset(.15),len,1.30,.15,rotation);
@@ -3229,11 +3229,13 @@ function osmBuilding(points,tags,index,osmId=null){
  }
  }
  // Roof chimneys and proper garage shutter doors in the 5. května residential area.
- if(auditedCore&&isHouse&&!heroFacade&&index%3===0&&w>6&&d>5)legacyRealityAudit.suppressed('suppressedChimneys');
-  if(!auditedCore&&isHouse&&!heroFacade&&index%3===0&&w>6&&d>5){
-  const rise=Math.min(2.3,Math.min(w,d)*.25);
-  archPart('chimney',centerX+w*.10,baseHeight+h+rise*.70,centerZ-d*.08,.52,2.25,.52);
-  archPart('roofGutter',centerX+w*.10,baseHeight+h+rise*1.25,centerZ-d*.08,.66,.1,.66);
+ // The modulo-index chimney and gutter caps have no surveyed position
+ // on their host roofs. A hip roof could leave them suspended in mid-air.
+ // Do not fabricate them in ANY district (also outside the audited core).
+ if(isHouse&&!heroFacade&&index%3===0&&w>6&&d>5){
+  legacyRealityAudit.suppressed('suppressedChimneys');
+  const cityAudit=window.__miloviceCityUnverifiedFeatures ||= {};
+  cityAudit.suppressedInventedChimneys=(cityAudit.suppressedInventedChimneys||0)+1;
  }
  if(auditedCore&&isGarage)legacyRealityAudit.suppressed('suppressedGarageDoors');
  if(isGarage&&!auditedCore){
