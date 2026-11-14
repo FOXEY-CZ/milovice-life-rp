@@ -2607,7 +2607,9 @@ function miloviceBusinessFront(pts,tags,base,height,cx,cz,osmId){
   const a=pts[i],b=pts[(i+1)%pts.length],dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);
   if(len<3.8||len>110)continue;
   const mx=(a.x+b.x)*.5,mz=(a.y+b.y)*.5;
-  let nx=-dz/len,nz=dx/len;if(nx*(mx-cx)+nz*(mz-cz)<0){nx=-nx;nz=-nz}
+  const facade=exteriorFacadeFrame(pts,i);
+  if(!facade)continue;
+  const {nx,nz}=facade;
   let roadDistance=120;
   for(const {p,vx,vz,den} of roadCandidates){
    const t=Math.max(0,Math.min(1,((mx-p.x)*vx+(mz-p.y)*vz)/den));
@@ -2615,10 +2617,13 @@ function miloviceBusinessFront(pts,tags,base,height,cx,cz,osmId){
    if(d<roadDistance)roadDistance=d;
   }
   const score=roadDistance+4/Math.max(len,1);
-  if(!best||score<best.score)best={mx,mz,len,dx,dz,nx,nz,score};
+  if(!best||score<best.score)best={mx,mz,len,dx,dz,nx,nz,score,i};
  }
  if(!best)return;
- const {mx,mz,len,dx,dz,nx,nz}=best,yaw=Math.atan2(nx,nz);
+ const {mx,mz,len,dx,dz,nx,nz}=best,
+  face=exteriorFacadeFrame(pts,best.i);
+ if(!face)return;
+ const yaw=face.yaw;
  const w=Math.max(2.9,Math.min(11,len-.48));
  const isGrocery=tags.shop==='supermarket',isClinic=tags.amenity==='clinic';
  const normalized=name.toLocaleLowerCase('cs');
@@ -2634,31 +2639,38 @@ function miloviceBusinessFront(pts,tags,base,height,cx,cz,osmId){
  // Tesco has white vertical metal ribbing, Penny a grey gable and long red trim.
  if(normalized==='billa'){
   archPart('billaBlack',mx+nx*.72,base+2.85,mz+nz*.72,Math.min(21,len-.25),.63,2.05,yaw);
-  archPart('billaBlack',mx+nx*.53,base+.48,mz+nz*.53,Math.min(12,len-.25),.72,.25,yaw);
+  archPart('billaBlack',mx+nx*flushBoxOffset(.25),base+.48,mz+nz*flushBoxOffset(.25),Math.min(12,len-.25),.72,.25,yaw);
  }else if(normalized==='penny'){
-  archPart('pennyRed',mx+nx*.55,base+2.98,mz+nz*.55,Math.min(29,len-.32),.34,.20,yaw);
-  archPart('pennyRed',mx+nx*.54,base+1.47,mz+nz*.54,Math.min(8.9,len-.32),2.7,.14,yaw);
+  archPart('pennyRed',mx+nx*flushBoxOffset(.20),base+2.98,mz+nz*flushBoxOffset(.20),Math.min(29,len-.32),.34,.20,yaw);
+  archPart('pennyRed',mx+nx*flushBoxOffset(.14),base+1.47,mz+nz*flushBoxOffset(.14),Math.min(8.9,len-.32),2.7,.14,yaw);
  }else if(normalized==='tesco'){
-  archPart('tescoWhite',mx+nx*.36,base+height*.49,mz+nz*.36,Math.min(25,len-.3),Math.max(2.9,height-.4),.13,yaw);
+  archPart('tescoWhite',mx+nx*flushBoxOffset(.13),base+height*.49,mz+nz*flushBoxOffset(.13),Math.min(25,len-.3),Math.max(2.9,height-.4),.13,yaw);
   for(let i=0;i<Math.min(35,Math.floor(len/.64));i++){
    const t=(i+.5)/Math.min(35,Math.floor(len/.64));
-   const px=mx+dx*(t-.5)*.92+nx*.45,pz=mz+dz*(t-.5)*.92+nz*.45;
+   const px=mx+dx*(t-.5)*.92+nx*flushBoxOffset(.08),pz=mz+dz*(t-.5)*.92+nz*flushBoxOffset(.08);
    archPart('tescoShadow',px,base+height*.50,pz,.035,Math.max(2.6,height-.4),.08,yaw);
   }
  }
  // Entrances and generous floor-to-ceiling glazing, bounded to the surveyed wall.
  const glassW=Math.max(2.5,Math.min(w*.95,len-.32));
- archPart('panelEntry',mx+nx*.32,base+1.38,mz+nz*.32,glassW,2.48,.12,yaw);
- archPart('stationFrames',mx+nx*.40,base+1.38,mz+nz*.40,glassW-.18,2.22,.14,yaw);
- archPart('stationGlass',mx+nx*.50,base+1.39,mz+nz*.50,glassW-.38,2.02,.09,yaw);
- archPart('windowBar',mx+nx*.61,base+1.36,mz+nz*.61,.10,2.08,.11,yaw);
- if(len>=8)for(const side of [-1,1]){
-  const bx=mx+dx/len*(glassW*.23)*side+nx*.60,bz=mz+dz/len*(glassW*.23)*side+nz*.60;
-  archPart('windowBar',bx,base+1.36,bz,.06,2.06,.10,yaw);
+ // Glass lies on mapped wall, with narrow actual jambs and mullions.
+ // No large opaque panels or 0.6m floating white frames across the shop.
+ archPart('stationGlass',mx+nx*FACE_PLANE,base+1.39,
+  mz+nz*FACE_PLANE,glassW-.35,2.02,.026,yaw);
+ const frameOffset=flushBoxOffset(.08),jamb=glassW*.49;
+ for(const side of [-1,0,1]){
+  archPart('stationFrames',mx+dx/len*jamb*side+nx*frameOffset,
+   base+1.38,mz+dz/len*jamb*side+nz*frameOffset,
+   .095,2.26,.08,yaw);
  }
+ for(const dy of [base+.26,base+2.51])
+  archPart('stationFrames',mx+nx*frameOffset,dy,
+   mz+nz*frameOffset,glassW,.085,.08,yaw);
  archPart(normalized==='billa'?'billaBlack':normalized==='penny'?'pennyRed':normalized==='tesco'?'tescoWhite':'stationCanopy',
-  mx+nx*.94,base+2.91,mz+nz*.94,w,.17,1.45,yaw);
- archPart('commercialSign',mx+nx*.48,base+3.42,mz+nz*.48,w+.24,.57,.22,yaw);
+  mx+nx*flushBoxOffset(1.45),base+2.91,
+  mz+nz*flushBoxOffset(1.45),w,.17,1.45,yaw);
+ archPart('commercialSign',mx+nx*flushBoxOffset(.22),base+3.42,
+  mz+nz*flushBoxOffset(.22),w+.24,.57,.22,yaw);
  // Large upper fascia (BILLA roof-level signage inspired by the photographed building).
  const signY=normalized==='penny'?base+height+1.70:normalized==='tesco'?base+height-.83:isGrocery&&height>3.3?base+height+.65:base+3.60;
  const panelWidth=Math.min(isGrocery?11:8.8,w),panelHeight=isGrocery?1.45:.98;
@@ -2674,7 +2686,8 @@ function miloviceBusinessFront(pts,tags,base,height,cx,cz,osmId){
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
  const sign=new THREE.Mesh(businessSignGeometry,new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide}));
   sign.scale.set(panelWidth,panelHeight,1);
- sign.position.set(mx+nx*.70,signY,mz+nz*.70);sign.rotation.y=yaw;
+ sign.position.set(mx+nx*FACE_PLANE,signY,mz+nz*FACE_PLANE);
+ sign.rotation.y=yaw;
  sign.userData.lodDetail=true;sign.userData.lodX=mx;sign.userData.lodZ=mz;
  osmLayer.add(sign);
  // Previously all named supermarkets were given a hard-coded 8×4.2m
@@ -2685,6 +2698,8 @@ function miloviceBusinessFront(pts,tags,base,height,cx,cz,osmId){
  window.__miloviceCommerceReality ||= {inventedRetailPadsRemoved:true,
   inventedRetailBikeStandsRemoved:true,actualPavingPadsSpawned:0,
   speculativeBikeStandsSpawned:0};
+ window.__miloviceBusinessFacadeAudit ||= {anchoredShopfronts:0};
+ window.__miloviceBusinessFacadeAudit.anchoredShopfronts++;
  businessFrontsSeen.add(osmId);
  businessFronts.push(name);
  window.__miloviceCommerceDebug={count:businessFronts.length,names:[...businessFronts]};
