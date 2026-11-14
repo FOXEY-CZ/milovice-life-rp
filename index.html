@@ -2941,7 +2941,15 @@ function osmBuilding(points,tags,index,osmId=null){
  // as separate wall segments so the real public passage never becomes blocked.
  if(!isStation)collisionWorld.addPolygon(pts.map(p=>({x:p.x,z:p.y})),{id:osmId});
  if(isBikeTower){miloviceBikeTower(pts,baseHeight);osmBuildings++;return}
- if(isStation){miloviceStationMassing(pts,baseHeight,centerX,centerZ);miloviceStationGroundFloor(pts,baseHeight,h,centerX,centerZ);osmBuildings++;return}
+ if(isStation){
+  // Shared foundation height is the EXACT anchor for any exterior rail
+  // canopy. Never derive an independent terrain height for roof attachments.
+  window.__miloviceLandmarkDebug ||= {};
+  window.__miloviceLandmarkDebug.stationGroundBase=baseHeight;
+  miloviceStationMassing(pts,baseHeight,centerX,centerZ);
+  miloviceStationGroundFloor(pts,baseHeight,h,centerX,centerZ);
+  osmBuildings++;return
+ }
  // Unlike the old monolithic extrusion, hero houses have actual transparent
  // openings in the wall mesh (not opaque wall behind a window decal).
  const heroFacade=heroBuildings.addBuilding({
@@ -3741,13 +3749,14 @@ function rpAppendOSMElements(elements){
      tracks:railWays.filter(e=>e.tags?.railway==='rail')
        .map(e=>e.geometry.map(asXZ))
    });
-   const drawing=createStationPlatformCanopy(THREE,{layer:osmLayer,terrainAt,plan});
+   const stationBaseY=window.__miloviceLandmarkDebug?.stationGroundBase;
+   const drawing=createStationPlatformCanopy(THREE,{layer:osmLayer,stationBaseY,plan});
    window.__miloviceStationPlatformCanopy={
      ...drawing,railFacing:plan.railFacing===true,
      streetFacingRoofCount:plan.streetFacingRoofCount||0,
      sourceWayIds:[trainStation.id,railPlatform.id],photoDate:'2013-05-25',
      photoSource:plan.source?.photo||null,
-     measuredDimensions:false,modelStatus:'photo-informed OSM-constrained'
+     measuredDimensions:false,sharedStationFoundation:true,modelStatus:'photo-informed OSM-constrained'
    };
  }
  photoStreetEnvironment.addFromRoads(osmDriveRoads);
