@@ -1831,28 +1831,42 @@ function miloviceBlueStarDetail(pts,base,h,cx,cz){
  dirX/=inv;dirZ/=inv;
  const entranceX=corner.x+dirX*.39,entranceZ=corner.y+dirZ*.39;
  const yaw=Math.atan2(dirX,dirZ);
- archPart('blueStarRed',entranceX,base+1.31,entranceZ,2.35,2.62,.19,yaw);
- archPart('starWhite',entranceX,base+1.35,entranceZ+0.02,1.58,2.36,.24,yaw);
- archPart('darkWood',entranceX+dirX*.16,base+1.23,entranceZ+dirZ*.16,1.28,2.18,.17,yaw);
- // Historic-style white balcony, metal balustrade and the pale upper door.
- archPart('starBalcony',entranceX+dirX*.93,base+3.49,entranceZ+dirZ*.93,3.0,.22,1.45,yaw);
- archPart('railing',entranceX+dirX*1.62,base+4.02,entranceZ+dirZ*1.62,2.96,.99,.09,yaw);
- archPart('windowBar',entranceX+dirX*.26,base+4.72,entranceZ+dirZ*.26,1.52,2.12,.12,yaw);
- // Actual photo shows red ground-floor window surrounds and white windows.
- for(let i=0;i<pts.length;i++){
-  const a=pts[i],b=pts[(i+1)%pts.length],dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);
-  if(len<4)continue;
-  let nx=-dz/len,nz=dx/len;
-  const mx=(a.x+b.x)/2,mz=(a.y+b.y)/2;
-  if(nx*(mx-cx)+nz*(mz-cz)<0){nx=-nx;nz=-nz}
-  const rotation=Math.atan2(nx,nz),n=Math.max(1,Math.floor(len/4.7));
-  for(let j=0;j<n;j++){
-   const t=(j+.5)/n,px=a.x+dx*t,pz=a.y+dz*t;
-   if(Math.hypot(px-corner.x,pz-corner.y)<3.8)continue;
-   archPart('blueStarRed',px+nx*.53,base+1.48,pz+nz*.53,1.73,2.03,.15,rotation);
-   archPart('starWhite',px+nx*.62,base+1.48,pz+nz*.62,1.47,1.77,.14,rotation);
-  }
+ // Source photo: narrow arched entrance, not an opaque red/white rectangle.
+ archPart('darkWood',entranceX+dirX*.18,base+1.14,
+  entranceZ+dirZ*.18,1.17,2.19,.09,yaw);
+ for(const sign of [-1,1]){
+  const ux=Math.cos(yaw),uz=-Math.sin(yaw);
+  archPart('starWhite',entranceX+dirX*.25+ux*sign*.66,
+   base+1.16,entranceZ+dirZ*.25+uz*sign*.66,.09,2.25,.12,yaw);
  }
+ archPart('starWhite',entranceX+dirX*.29,base+.11,
+  entranceZ+dirZ*.29,1.35,.12,.14,yaw);
+ // Historic-style white balcony, metal balustrade and the pale upper door.
+ archPart('starBalcony',entranceX+dirX*.93,base+3.49,
+  entranceZ+dirZ*.93,2.48,.16,.96,yaw);
+ // Real balcony balustrade is TRANSPARENT. Old renderer used one solid
+ // 2.96m x .99m black board in place of metal bars.
+ const barX=Math.cos(yaw),barZ=-Math.sin(yaw);
+ const railX=entranceX+dirX*1.38,railZ=entranceZ+dirZ*1.38;
+ archPart('railing',railX,base+4.40,railZ,2.37,.065,.075,yaw);
+ for(let j=0;j<=11;j++){
+  const across=(j/11-.5)*2.33;
+  archPart('railing',railX+barX*across,base+3.95,
+   railZ+barZ*across,.055,.88,.055,yaw);
+ }
+ // No opaque slab filling the balcony's upstairs glazed door.
+ const doorX=entranceX+dirX*.26,doorZ=entranceZ+dirZ*.26;
+ archPart('stationGlass',doorX,base+4.72,doorZ,1.21,1.89,.10,yaw);
+ for(const sign of [-1,0,1])
+  archPart('starWhite',doorX+barX*sign*.60,base+4.72,
+   doorZ+barZ*sign*.60,.075,1.94,.11,yaw);
+ archPart('starWhite',doorX,base+5.70,doorZ,1.28,.085,.12,yaw);
+ archPart('starWhite',doorX,base+3.74,doorZ,1.28,.09,.12,yaw);
+ // One-pass window positions are drawn by the shared facade renderer.
+ // A second window overlay previously had different bay counts, hiding
+ // real glass behind full-size red/white door-shaped blocks.
+ window.__miloviceLandmarkDebug ||= {};
+ window.__miloviceLandmarkDebug.blueStarGhostDoorsRemoved=true;
  // Photo: a white SEMICIRCULAR entrance head below the corner balcony.
  // The old 4.7-metre billboard was not present in this May 2024 view.
  const ring=new THREE.Mesh(new THREE.RingGeometry(.63,.76,26,1,0,Math.PI),
@@ -2976,7 +2990,7 @@ function osmBuilding(points,tags,index,osmId=null){
     archPart('panelSeam',mx+nx*.28,baseHeight+h-.38,mz+nz*.28,len,.10,.14,rotation);
     bands+=3;
    }else if(isBlueStar){
-    archPart('blueStarRed',mx+nx*.18,baseHeight+.36,mz+nz*.18,len,.72,.17,rotation);
+    archPart('foundationBand',mx+nx*.18,baseHeight+.25,mz+nz*.18,len,.50,.17,rotation);
     archPart('starWhite',mx+nx*.15,baseHeight+3.48,mz+nz*.15,len,.12,.16,rotation);
     archPart('starWhite',mx+nx*.24,baseHeight+h-.27,mz+nz*.24,len,.23,.26,rotation);
     bands+=3;
@@ -2991,7 +3005,8 @@ function osmBuilding(points,tags,index,osmId=null){
    if(bands){audit.trimmedShortEdges++;audit.bands+=bands;}
    continue;
   }
-  if(!photoRoofFeatures.length&&(isHouse||isSchool||isStation||isBlueStar||isMirova36)){
+  if(!photoRoofFeatures.length&&(isHouse||isSchool||isStation)&&
+     !isBlueStar&&!isMirova36){
    // Legacy approximated gutters only for unresolved roofs. A sourced
    // full physical fascia/soffit already provides eave closure; layering
    // generic horizontal rods onto it adds floating seams and draw calls.
@@ -3027,7 +3042,7 @@ function osmBuilding(points,tags,index,osmId=null){
    }
   }
   if(isBlueStar){
-   archPart('blueStarRed',mx+nx*.18,baseHeight+.36,mz+nz*.18,len,.72,.17,rotation);
+   archPart('foundationBand',mx+nx*.18,baseHeight+.25,mz+nz*.18,len,.50,.17,rotation);
    archPart('starWhite',mx+nx*.15,baseHeight+3.48,mz+nz*.15,len,.12,.16,rotation);
    archPart('starWhite',mx+nx*.24,baseHeight+h-.27,mz+nz*.24,len,.23,.26,rotation);
   }
