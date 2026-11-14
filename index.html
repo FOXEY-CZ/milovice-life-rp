@@ -1853,7 +1853,23 @@ function miloviceBlueStarDetail(pts,base,h,cx,cz){
    archPart('starWhite',px+nx*.62,base+1.48,pz+nz*.62,1.47,1.77,.14,rotation);
   }
  }
- blueStarFacadeSign(entranceX+dirX*.55,base+3.04,entranceZ+dirZ*.55,yaw);
+ // Photo: a white SEMICIRCULAR entrance head below the corner balcony.
+ // The old 4.7-metre billboard was not present in this May 2024 view.
+ const ring=new THREE.Mesh(new THREE.RingGeometry(.63,.76,26,1,0,Math.PI),
+  architectureMaterials.starWhite);
+ ring.position.set(entranceX+dirX*.30,base+2.34,entranceZ+dirZ*.30);
+ ring.rotation.y=yaw;ring.name='Milovice_blue_star_photo_entrance_arch';
+ ring.userData.lodDetail=true;ring.userData.lodX=entranceX;ring.userData.lodZ=entranceZ;
+ osmLayer.add(ring);
+ const archGlass=new THREE.Mesh(new THREE.CircleGeometry(.625,26,0,Math.PI),
+  osmDoorMaterial);
+ archGlass.position.set(entranceX+dirX*.26,base+2.34,entranceZ+dirZ*.26);
+ archGlass.rotation.y=yaw;archGlass.userData.lodDetail=true;
+ archGlass.userData.lodX=entranceX;archGlass.userData.lodZ=entranceZ;
+ osmLayer.add(archGlass);
+ window.__miloviceLandmarkDebug ||= {};
+ window.__miloviceLandmarkDebug.blueStarSourceEntranceArch=true;
+ window.__miloviceLandmarkDebug.blueStarInventedBillboardRemoved=true;
 }
 // 4.7 hand-authored station ground floor. True open passage through the precise
 // surveyed OSM footprint. Previous one-piece solid extrusion blocked this completely.
@@ -2428,9 +2444,22 @@ function miloviceMirova36Detail(pts,base,h,cx,cz){
  let nx=-dz/len,nz=dx/len;
  if(nx*(mx-cx)+nz*(mz-cz)<0){nx=-nx;nz=-nz}
  const yaw=Math.atan2(nx,nz);
- archPart('stationFrames',mx+nx*.6,base+1.35,mz+nz*.6,Math.min(7.8,len*.78),2.50,.18,yaw);
- archPart('stationGlass',mx+nx*.72,base+1.41,mz+nz*.72,Math.min(7.3,len*.75),2.25,.12,yaw);
- archPart('stationCanopy',mx+nx*.92,base+2.73,mz+nz*.92,Math.min(9.4,len*.88),.18,1.04,yaw);
+ // Photo May 2024: pale storefront divided into separate white-framed
+ // glazing bays. Avoid a single giant blue pane and unsupported canopy.
+ const frontage=Math.min(len*.86,6.1),bays=3,bay=frontage/bays;
+ for(let i=0;i<bays;i++){
+  const along=(i+.5-bays*.5)*bay;
+  const px=mx+along*dx/len,pz=mz+along*dz/len;
+  archPart('stationFrames',px+nx*.59,base+1.32,pz+nz*.59,bay-.10,2.30,.16,yaw);
+  archPart('stationGlass',px+nx*.70,base+1.40,pz+nz*.70,bay-.28,2.02,.10,yaw);
+  archPart('windowBar',px+nx*.78,base+1.52,pz+nz*.78,bay-.31,.065,.09,yaw);
+  archPart('stoneTrim',px+nx*.72,base+.23,pz+nz*.72,bay-.05,.12,.19,yaw);
+ }
+ archPart('stoneTrim',mx+nx*.67,base+2.62,mz+nz*.67,
+  frontage+.20,.15,.24,yaw);
+ window.__miloviceLandmarkDebug ||= {};
+ window.__miloviceLandmarkDebug.mirova36SourceStorefrontBays=bays;
+ window.__miloviceLandmarkDebug.mirova36FakeCanopyRemoved=true;
  // The photo shows mixed business signs, not an invented generic OBCHOD board.
  // The central gable and real sloping rooflights are now created by the
  // separate verified photo-street model; do not double up fake roof boxes.
