@@ -6,6 +6,7 @@ import {selectFacadeEdges,planFaceOpenings} from './facade-model.js';
 import {analyzeGableFootprint} from './city-roof-geometry.js';
 import {classifyFacadeEdgeLength,planFacadePerimeterTrims} from './facade-perimeter.js';
 import {makeSharedFacadeSurfaceMaps} from './facade-surface-kit.js';
+import {exteriorFacadeFrame,flushBoxOffset,RECESSED_GLAZING,facadeGap} from './facade-anchors.js';
 
 export function makeMiloviceHeroArchitecture(THREE,{
   sites=[],radius=240,maxBuildings=68,terrainAt=()=>0
@@ -19,7 +20,8 @@ export function makeMiloviceHeroArchitecture(THREE,{
   suppressedUnverifiedPhotoOrnaments:0,shortWallSegmentsSealed:0,
   skippedDegenerateEdges:0,
   trimmedWallEdges:0,trimmedShortReturns:0,trimmedPerimeterMetres:0,
-  sharedSurfaceTextures:3,surfaceResolution:128,extraMaterialDrawCalls:0};
+  sharedSurfaceTextures:3,surfaceResolution:128,extraMaterialDrawCalls:0,
+  anchoredOpenings:0,maxFrameDetachment:0,wallPlaneSource:'OSM exterior polygon'};
  const box=new THREE.BoxGeometry(1,1,1),glassPlane=new THREE.PlaneGeometry(1,1);
  const mats={
   wall:new THREE.MeshStandardMaterial({vertexColors:true,roughness:.92,side:THREE.DoubleSide}),
@@ -138,7 +140,8 @@ export function makeMiloviceHeroArchitecture(THREE,{
    // The SAME base/cornice planner is used BEFORE splitting long facades
    // from short, undecorated returns. Previously an early continue skipped
    // both bands on every short return, leaving visibly broken plinths.
-   const trim=planFacadePerimeterTrims(a,b,centroid,{base,height});
+   const edgeFrame=exteriorFacadeFrame(pts,sideIndex);
+   const trim=planFacadePerimeterTrims(a,b,centroid,{base,height,frame:edgeFrame});
    if(!trim)throw Error('Valid facade edge has no perimeter bands');
    const addBand=band=>placement(chunk,band.kind,
     band.x,band.y,band.z,band.width,band.height,band.depth,band.yaw);
@@ -189,21 +192,33 @@ export function makeMiloviceHeroArchitecture(THREE,{
      state.cutoutWindows++;
      const wx=a.x+ux*along,wz=a.y+uz*along;
      const front=(offset)=>({x:wx+nx*offset,z:wz+nz*offset});
-     const inner=front(-.18),frame=front(.065),sill=front(.18);
+     // Real cutout: pane is recessed into the void; boxed frame/sill
+     // back faces touch the same OSM polygon edge. No 0.5m drift.
+     const inner=front(-.13);
+     const frame=front(flushBoxOffset(.18));
+     const middle=front(flushBoxOffset(.13));
+     const sill=front(flushBoxOffset(.32));
      placement(chunk,'dark',inner.x,base+bottom+h*.50,inner.z,w+.08,h+.08,.04,yaw);
-     placement(chunk,'glass',wx+nx*(-.13),base+bottom+h*.5,wz+nz*(-.13),w-.035,h-.035,1,yaw,true);
+     placement(chunk,'glass',wx+nx*RECESSED_GLAZING,base+bottom+h*.5,
+       wz+nz*RECESSED_GLAZING,w-.035,h-.035,1,yaw,true);
      placement(chunk,'frame',frame.x,base+bottom+h+.035,frame.z,w+.13,.085,.18,yaw);
      placement(chunk,'frame',frame.x,base+bottom-.035,frame.z,w+.13,.09,.18,yaw);
-     placement(chunk,'frame',wx+ux*(w*.5+.038)+nx*.065,base+bottom+h*.5,
-       wz+uz*(w*.5+.038)+nz*.065,.082,h+.10,.18,yaw);
-     placement(chunk,'frame',wx-ux*(w*.5+.038)+nx*.065,base+bottom+h*.5,
-       wz-uz*(w*.5+.038)+nz*.065,.082,h+.10,.18,yaw);
-     placement(chunk,'frame',frame.x,base+bottom+h*.5,frame.z,.054,h,.13,yaw);
+     placement(chunk,'frame',wx+ux*(w*.5+.038)+nx*flushBoxOffset(.18),base+bottom+h*.5,
+       wz+uz*(w*.5+.038)+nz*flushBoxOffset(.18),.082,h+.10,.18,yaw);
+     placement(chunk,'frame',wx-ux*(w*.5+.038)+nx*flushBoxOffset(.18),base+bottom+h*.5,
+       wz-uz*(w*.5+.038)+nz*flushBoxOffset(.18),.082,h+.10,.18,yaw);
+     placement(chunk,'frame',middle.x,base+bottom+h*.5,middle.z,.054,h,.13,yaw);
      placement(chunk,'sill',sill.x,base+bottom-.055,sill.z,w+.28,.11,.32,yaw);
+     state.anchoredOpenings++;
+     state.maxFrameDetachment=Math.max(state.maxFrameDetachment,
+      facadeGap(edgeFrame,frame,.18));
      // On a verified facade never invent shutter/lintel ornaments at random.
      if(!sideLayout&&(index+i+floor)%2===0){
       if(photoAnchored)state.suppressedUnverifiedPhotoOrnaments++;
-      else placement(chunk,'sill',frame.x,base+bottom+h+.16,frame.z,w+.22,.12,.23,yaw);
+      else {
+       const lintel=front(flushBoxOffset(.23));
+       placement(chunk,'sill',lintel.x,base+bottom+h+.16,lintel.z,w+.22,.12,.23,yaw);
+      }
      }
      // Window shutters are a PHOTOGRAPHIC property, never an
      // index-based random decoration. Unsupported facades stay provisional.
@@ -214,21 +229,32 @@ export function makeMiloviceHeroArchitecture(THREE,{
      if(useShutters){
       const off=w*.5+.26;
       for(const sign of [-1,1])
-       placement(chunk,'wood',wx+ux*off*sign+nx*.08,base+bottom+h*.5,
-         wz+uz*off*sign+nz*.08,.22,h-.05,.09,yaw);
+       placement(chunk,'wood',wx+ux*off*sign+nx*flushBoxOffset(.09),
+         base+bottom+h*.5,
+         wz+uz*off*sign+nz*flushBoxOffset(.09),.22,h-.05,.09,yaw);
      }
    }
    // Actual front door opening, framed with a 3D threshold/hood.
    if(entry){
     const xx=a.x+ux*entranceU,zz=a.y+uz*entranceU;
-    placement(chunk,'dark',xx-nx*.15,base+doorBottom+doorHeight*.5,zz-nz*.15,doorWidth+.03,doorHeight,.07,yaw);
-    placement(chunk,'wood',xx-nx*.105,base+doorBottom+doorHeight*.5,zz-nz*.105,doorWidth-.14,doorHeight-.11,.07,yaw);
+    placement(chunk,'dark',xx-nx*.13,base+doorBottom+doorHeight*.5,
+     zz-nz*.13,doorWidth+.03,doorHeight,.07,yaw);
+    placement(chunk,'wood',xx-nx*.085,base+doorBottom+doorHeight*.5,
+     zz-nz*.085,doorWidth-.14,doorHeight-.11,.07,yaw);
+    const jamb=flushBoxOffset(.24),lintel=flushBoxOffset(.27);
     for(const d of [-1,1]){
-     placement(chunk,'frame',xx+ux*d*(doorWidth*.5+.06)+nx*.07,base+doorBottom+doorHeight*.5,
-       zz+uz*d*(doorWidth*.5+.06)+nz*.07,.11,doorHeight+.18,.24,yaw);
+     placement(chunk,'frame',xx+ux*d*(doorWidth*.5+.06)+nx*jamb,
+      base+doorBottom+doorHeight*.5,
+      zz+uz*d*(doorWidth*.5+.06)+nz*jamb,.11,doorHeight+.18,.24,yaw);
     }
-    placement(chunk,'frame',xx+nx*.08,base+doorBottom+doorHeight+.055,zz+nz*.08,doorWidth+.22,.12,.27,yaw);
-    placement(chunk,'base',xx+nx*.53,base+doorBottom-.025,zz+nz*.53,doorWidth+.36,.20,.82,yaw);
+    placement(chunk,'frame',xx+nx*lintel,base+doorBottom+doorHeight+.055,
+     zz+nz*lintel,doorWidth+.22,.12,.27,yaw);
+    const threshold=flushBoxOffset(.32);
+    placement(chunk,'base',xx+nx*threshold,base+doorBottom-.025,
+     zz+nz*threshold,doorWidth+.36,.20,.32,yaw);
+    state.anchoredOpenings++;
+    state.maxFrameDetachment=Math.max(state.maxFrameDetachment,
+     facadeGap(edgeFrame,{x:xx+nx*jamb,z:zz+nz*jamb},.24));
     // No photo-approved awning geometry exists in the per-facade schema.
     // Suppress blanket door awnings rather than falsely decorating every
     // unrelated house. A later explicit source-backed profile may add it.
