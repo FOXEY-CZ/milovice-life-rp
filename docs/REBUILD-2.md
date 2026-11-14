@@ -165,3 +165,14 @@ Podobný herní vzhled těchto skupin **neprokazuje shodu** se screenshotem, jed
 Přiložené záběry dokazují štěrk mezi oběma řadami. Nová lehká indexovaná plocha následuje výškový model v mřížce 6×9, se štěrkem z originální generované 128px textury. Odvoditelná vnitřní plocha je přibližně **14,2×20,5 m**, její hranice jsou **odhad** mezi doloženými průčelími a vnějšími hranami OSM, nikoli zaměřený katastrální výkres. Výkon: jeden materiál a draw call pro dvůr; detaily vrat jsou GPU instancované pro všech 17 budov, ne individuální draw cally za každé žebro.
 
 Zachované hranice: bez redistribuce cizích obrazových dat, bez přidělení čísel k ID, bez náhodného parkování/plotů/vegetace a bez tvrzení, že fotografie **17. 5. 2022** potvrzují existenci/vzhled v roce 2026. Zbytek Nádražní i ostatních ulic nadále čeká na fotografický 360° audit. CI test `scripts/nadrazni-photo-garage-court.test.mjs` navazuje na datovou integritu, převrácené OSM polygonové pořadí, ochranu před cizími garážemi a nejednoznačným číslováním.
+
+
+## 5.63.1 — kritická oprava „Unknown door family garage-photo-2022“
+
+**Nahlášeno 14. 11. 2026** uživatelským screenshotem při načtení skutečné mapy Milovic. Nedovolovalo načíst celou OSM scénu. Diagnóza: ve 3D foto-garážové větvi byly správně vypočtené prahy a dveře, ale následné `recordEntranceGrade(grade,'garage-photo-2022',osmId)` zavolalo neexistující rodinu v kontrolním registru `entranceGradeAudit`, který obsahuje jen `garageDoors`, `schoolDoors`, `industrialDoors`, `commerceDoors`, `legacyDoors`, `heroDoors`. Funkce hodila výjimku, která přerušila přidávání OSM budov do hry. Oprava mění kategorii na `garage`, **nikoli samotný fotograficky doložený model**.
+
+Pro prevenci do budoucna doplněn test všech používaných rodin v `scripts/entrance-grade.test.mjs` s ochrannou podmínkou, že nová neznámá kategorie neprojde do výroby. Fotografické garáže mají nadále vlastní metadata v `window.__milovicePhotoGarageCourt`, takže není důvod vymýšlet další hodnoty interního typu prahu.
+
+`scripts/nadrazni-photo-garage-court.test.mjs` navíc počítá všech **17 garážových prahů** na původní 10m mřížce ČÚZK DMR 4G, stejným způsobem jako hry. Prošly všechny 17/17 včetně výšky dveří a návaznosti prahu na místní terén.
+
+Ověřená verze kódu: `5.63.1`, build `20261114-nadrazni-garage-hotfix-5631`. Na telefonu je třeba otevřít novou adresu s `?v=5631`. Stav publikování GitHub Pages je třeba ověřit v prohlížeči, protože kontrola veřejné stránky není z tohoto prostředí dostupná.
