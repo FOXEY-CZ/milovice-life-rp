@@ -1,4 +1,4 @@
-// Milovice RP 5.74 — smooth dangling island-paver edges without moving roads.
+// Milovice RP 5.74 — smoothly chamfer the saw-tooth island paving edges, with unchanged roads.
 // The 5.72 "fix" drew a new OSM sidewalk directly OVER Nádražní's asphalt,
 // rather than removing the relevant strip from the parking surface.
 // The user confirmed the exact topology: existing road (UNTOUCHED),
@@ -66,6 +66,35 @@ function frame(a,b){
 }
 function at(f,along,offset){
  return {x:f.a.x+f.ux*along+f.nx*offset,z:f.a.z+f.uz*along+f.nz*offset};
+}
+// Convert the 0.74m stair-stepping along the photo-marked OUTER edge
+// into a clipped diagonal on the already safe pavement cells. This only
+// REMOVES tiny triangles from rectangular sidewalk tiles; no extension
+// into the carriageway is permitted. Continuous adjacent tiles share their
+// boundary position even when Nádražní's course changes.
+export function planOuterSidewalkChamfers(tiles,{rowStep=.76}={}){
+ const rows=new Map();
+ for(const p of tiles){
+  if(!rows.has(p.along))rows.set(p.along,[]);
+  rows.get(p.along).push(p);
+ }
+ const ordered=[...rows.entries()].sort((a,b)=>a[0]-b[0]);
+ const result=new Map();
+ for(let i=0;i<ordered.length;i++){
+  const [station,row]=ordered[i];
+  const outer=row.reduce((p,q)=>q.offset>p.offset?q:p);
+  const outerEdge=outer.offset+outer.depth*.5;
+  const neighborOffset=(j)=>{
+   if(j<0||j>=ordered.length||Math.abs(ordered[j][0]-station)>rowStep+.045)
+    return outerEdge;
+   return Math.max(...ordered[j][1].map(p=>p.offset+p.depth*.5));
+  };
+  const limit=outer.depth-.10;
+  const start=Math.max(0,Math.min(limit,outerEdge-neighborOffset(i-1)));
+  const end=Math.max(0,Math.min(limit,outerEdge-neighborOffset(i+1)));
+  if(start>.08||end>.08)result.set(outer,{start,end});
+ }
+ return result;
 }
 export function planStationPhotoParking(elements,roadClearance){
  if(!Array.isArray(elements)||!roadClearance?.isClear)return null;
@@ -297,6 +326,9 @@ export function planStationPhotoParking(elements,roadClearance){
  }
  if(outerSidewalkCells.length<100||centralParkingCells.length<270)
   return null;
+ const outerEdgeChamfers=planOuterSidewalkChamfers(outerSidewalkCells);
+ const chamferedExteriorCorners=[...outerEdgeChamfers.values()]
+  .reduce((n,c)=>n+(c.start>.08?1:0)+(c.end>.08?1:0),0);
  // Refuse any stranded road-side edge tile; no "floating fingers".
  for(const [station,row] of orderedRows){
   if(row.length>=2&&row.at(-1).offset-row.at(-2).offset>acrossStep+.035)
@@ -367,7 +399,7 @@ export function planStationPhotoParking(elements,roadClearance){
   railSideParking,railRejected,
   outerFootwaySegments,outerFootwayStations,outerSidewalkCells,
   outerSidewalkCurbs,outerSidewalkMaxOsmDistance,
-  edgeSpursTrimmed:edgeSpursRemoved.size,
+  edgeSpursTrimmed:edgeSpursRemoved.size,chamferedExteriorCorners,
   centralParkingCells,cornerPaving,cornerCurbs,cornerRejected,
   rightCornerFootwayId:cornerWay.id,centralFootwayId:centralFootway.id,
   incorrectlyPlacedRailSidewalkRemoved:true,
@@ -413,6 +445,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   outerSidewalkPatches:planned?.outerSidewalkCells.length||0,
   outerSidewalkCurbs:planned?.outerSidewalkCurbs.length||0,
   isolatedOuterSpursRemoved:planned?.edgeSpursTrimmed||0,
+  smoothedExteriorCorners:planned?.chamferedExteriorCorners||0,
   maxOuterFootwayOsmDistance:planned?.outerSidewalkMaxOsmDistance??null,
   visibleOuterSidewalkTiles:0,
   oldInnerSidewalkTiles:0,
@@ -456,17 +489,19 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
  function texturedOuterSidewalk(group,tiles,material){
   if(!tiles.length||!material)return;
   const vertices=[],uvs=[],indices=[];
+  const chamfers=planOuterSidewalkChamfers(tiles);
   for(const p of tiles){
    const k=vertices.length/3;
    // Each 0.75x0.73 tile occupies a 0.76x0.74 grid. Expand by 6mm
    // within the existing 25mm clearance buffer to hide bright-green
    // terrain pinstripes. This is a VISUAL seam closure, not new territory.
    const overlap=.006;
+   const clip=chamfers.get(p)||{start:0,end:0};
    const corners=[
     [p.along-p.length/2-overlap,p.offset-p.depth/2-overlap],
     [p.along+p.length/2+overlap,p.offset-p.depth/2-overlap],
-    [p.along+p.length/2+overlap,p.offset+p.depth/2+overlap],
-    [p.along-p.length/2-overlap,p.offset+p.depth/2+overlap]
+    [p.along+p.length/2+overlap,p.offset+p.depth/2+overlap-clip.end],
+    [p.along-p.length/2-overlap,p.offset+p.depth/2+overlap-clip.start]
    ];
    for(const [along,offset] of corners){
     const pt=at(planned.frame,along,offset);
