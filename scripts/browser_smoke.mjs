@@ -351,15 +351,15 @@ try{
   throw new Error('5.24 photo-GPS station A/B and strict reality contract broken: '+JSON.stringify(realityStation));
  console.log('5.24 geotagged station forecourt:',JSON.stringify(realityStation));
  const stationParking=await page.evaluate(()=>window.__miloviceStationParking||null);
- if(!stationParking?.active||stationParking.osmWayId!==675778842||
-    stationParking.photos!==2||stationParking.parkingBays<16||
-    stationParking.parkingBays>28||
-    stationParking.parkingSides.length!==2||
-    stationParking.drawMeshes>3||
-    stationParking.grassGridTiles!==stationParking.parkingBays*28||
+ if(!stationParking?.active||
+    JSON.stringify(stationParking.sourceIds)!=='[675778842,128308366]'||
+    stationParking.photos!==2||stationParking.pavingCells<340||
+    stationParking.coveredRows<55||stationParking.oldDetachedPaverStripsRemoved!==true||
+    stationParking.roundedTip!==true||stationParking.drawMeshes>3||
+    stationParking.instances<stationParking.pavingCells*2||
     stationParking.collisionSafe!==true||stationParking.noSyntheticCars!==true)
-   throw new Error('5.66 photographed station grass-paver parking or mobile budget broken: '+JSON.stringify(stationParking));
- console.log('5.66 photo-grounded parking on mapped station service road:',JSON.stringify(stationParking));
+   throw new Error('5.67 photographed station paved island / mobile budget broken: '+JSON.stringify(stationParking));
+ console.log('5.67 full-width photo-informed station paved island:',JSON.stringify(stationParking));
 
  const cutoutTest=await page.evaluate(async()=>{
   const THREE=await import('three');
