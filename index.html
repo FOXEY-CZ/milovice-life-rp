@@ -2452,30 +2452,43 @@ function miloviceMirova36Detail(pts,base,h,cx,cz){
   const a=pts[i],b=pts[(i+1)%pts.length],len=a.distanceTo(b);
   if(len<4)continue;
   const mx=(a.x+b.x)/2,mz=(a.y+b.y)/2,dd=Math.hypot(mx-cameraPoint.x,mz-cameraPoint.y);
-  if(dd<dist){dist=dd;best={a,b,len,mx,mz}}
+  if(dd<dist){dist=dd;best={a,b,len,mx,mz,i}}
  }
  if(!best)return;
- const {a,b,len,mx,mz}=best,dx=b.x-a.x,dz=b.y-a.y;
- let nx=-dz/len,nz=dx/len;
- if(nx*(mx-cx)+nz*(mz-cz)<0){nx=-nx;nz=-nz}
- const yaw=Math.atan2(nx,nz);
+ const {a,b,len}=best,dx=b.x-a.x,dz=b.y-a.y;
+ const face=exteriorFacadeFrame(pts,best.i);
+ if(!face)return;
+ const {nx,nz,mx,mz,yaw}=face;
  // Photo May 2024: pale storefront divided into separate white-framed
  // glazing bays. Avoid a single giant blue pane and unsupported canopy.
  const frontage=Math.min(len*.86,6.1),bays=3,bay=frontage/bays;
  for(let i=0;i<bays;i++){
   const along=(i+.5-bays*.5)*bay;
   const px=mx+along*dx/len,pz=mz+along*dz/len;
-  archPart('stationFrames',px+nx*.59,base+1.32,pz+nz*.59,bay-.10,2.30,.16,yaw);
-  archPart('stationGlass',px+nx*.70,base+1.40,pz+nz*.70,bay-.28,2.02,.10,yaw);
-  archPart('windowBar',px+nx*.78,base+1.52,pz+nz*.78,bay-.31,.065,.09,yaw);
-  archPart('stoneTrim',px+nx*.72,base+.23,pz+nz*.72,bay-.05,.12,.19,yaw);
+  // No opaque "frame" cuboid in front of glass. Glass is 24mm
+  // from the OSM wall and surrounded by slim physical white jambs.
+  archPart('stationGlass',px+nx*FACE_PLANE,base+1.40,
+   pz+nz*FACE_PLANE,bay-.28,2.02,.026,yaw);
+  const frameOffset=flushBoxOffset(.08);
+  for(const side of [-1,1])archPart('stationFrames',
+   px+dx/len*side*(bay-.10)*.5+nx*frameOffset,base+1.36,
+   pz+dz/len*side*(bay-.10)*.5+nz*frameOffset,.085,2.31,.08,yaw);
+  archPart('stationFrames',px+nx*frameOffset,base+2.51,
+   pz+nz*frameOffset,bay-.10,.08,.08,yaw);
+  archPart('stationFrames',px+nx*frameOffset,base+.20,
+   pz+nz*frameOffset,bay-.10,.09,.08,yaw);
+  archPart('windowBar',px+nx*flushBoxOffset(.09),base+1.52,
+   pz+nz*flushBoxOffset(.09),bay-.31,.065,.09,yaw);
+  archPart('stoneTrim',px+nx*flushBoxOffset(.19),base+.23,
+   pz+nz*flushBoxOffset(.19),bay-.05,.12,.19,yaw);
  }
- archPart('stoneTrim',mx+nx*.67,base+2.62,mz+nz*.67,
-  frontage+.20,.15,.24,yaw);
+ archPart('stoneTrim',mx+nx*flushBoxOffset(.24),base+2.62,
+  mz+nz*flushBoxOffset(.24),frontage+.20,.15,.24,yaw);
  window.__miloviceLandmarkDebug ||= {};
  window.__miloviceLandmarkDebug.mirova36SourceStorefrontBays=bays;
  window.__miloviceLandmarkDebug.mirova36EaveWallHeight=h;
  window.__miloviceLandmarkDebug.mirova36FakeCanopyRemoved=true;
+ window.__miloviceLandmarkDebug.mirova36FacadeAnchored=true;
  // The photo shows mixed business signs, not an invented generic OBCHOD board.
  // The central gable and real sloping rooflights are now created by the
  // separate verified photo-street model; do not double up fake roof boxes.
