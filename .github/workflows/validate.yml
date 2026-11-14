@@ -25,6 +25,8 @@ jobs:
         run: node scripts/station-platform-canopy.test.mjs
       - name: Prohibit unverified Nádražní garage objects without direct photographic evidence
         run: node scripts/photo-verification-policy.test.mjs
+      - name: Identify the exact clicked 3D building from its mapped OSM footprint
+        run: node scripts/osm-building-inspector.test.mjs
       - name: Validate adaptive mobile frame-rate and detail budgets
         run: node scripts/performance-governor.test.mjs
       - name: Validate ground-level thresholds at ALL building entrances
