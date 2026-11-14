@@ -102,3 +102,14 @@ Uživatel opravil zadání: krytí patří **nad částí průchodu / jeho žele
 - Kontrolují se také skutečný OSM polygon nástupiště, bezpečný odstup od kolejí, stejná výška základny jako u nádraží a výkonnostní strop **3 draw cally**.
 - Pokud OSM pěší průchod chybí, je od mapy nebo nesedí na nástupištní fasádu, konstrukce se **nevygeneruje**; žádná náhodná náhradní stříška.
 - Vizuální podobu a velikost oproti skutečné současné stavbě je nadále třeba porovnat z fotek včetně pohledu od podchodu. Tato oprava zajišťuje správnou **část nádraží**, nikoli kompletní dokončení ulice.
+
+
+## PART 12 — 5.59: obě řady severních garáží Nádražní
+
+Implementována další **fyzická změna ve 3D scéně**, která se týká celého bloku, nikoli jedné budovy. Lokalita severní části Nádražní je mapově vymezena kolem 50.23040 N, 14.88345 E (45m vyhledávací rozsah). OpenStreetMap v této zóně obsahuje **17 individuálních garáží**, dvě rovnoběžné řady, typický půdorys 2,96 × 5,85 m. Modely domů už existovaly, ale vratový algoritmus používal nejdelší fasádu, která u řad zpravidla tvoří **společnou boční zeď** mezi garážemi.
+
+Nový `scripts/nadrazni-garage-court.js` před vytvořením 3D detailů zkontroluje všechny garáže najednou. Pro každou povolí pouze krátkou 2,35–4,1m stěnu, jejíž vnější normála směřuje k ostatním mapovaným garážím **přes společný otevřený prostor** (oddělení přibližně 8–33 m, s příčnou tolerancí pro posunuté řady). Vše je čitelně označeno jako **geometrický odhad směru vrat**, ne jako foto-ověřená barva nebo stavební dokumentace. **17/17 řadových garáží** dostalo nástupní čelo s běžným, stávajícím modelem vrat, který se usazuje podle DEM pro práh a přimyká k čelní zdi. Vrata do společných bočních zdí byla tím odstraněna.
+
+Systém neumisťuje žádné parkovací čáry, pojezdové plochy, cestu mezi řadami, strom nebo dopravní značku bez odpovídajícího podkladu. Test `scripts/nadrazni-garage-court.test.mjs` zakotvuje 17 reálných OSM ID, délky vybraných hran, výhled do dvou protilehlých řad, invariantnost při převrácení pořadí OSM vrcholů a bezpečné vypnutí při neúplném mapování. Napojen na GitHub CI. Další etapa Nádražní zůstává otevřená a zahrnuje okolní domy, chodníky, nádražní parkování, vybavení a zeleň.
+
+**Poznámka k postupu:** Přijetí stříšky nádraží 5.58 je dočasné a neznamená, že je její vizuální podoba bezvadná.
