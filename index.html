@@ -1,4 +1,4 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.58.0 Passage-Aligned Platform Canopy</title><meta name="milovice-build" content="20261114-passage-canopy-5580"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
+<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.59.0 Nádražní Courtyard Garage Rebuild</title><meta name="milovice-build" content="20261114-nadrazni-garage-court-5590"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
 #realmap{position:fixed;inset:0;z-index:100;background:#101e2c;display:none;flex-direction:column;color:#fff;font-family:system-ui}#realmap.open{display:flex}#maphead{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#142c3e}#maphead button{flex:0 0 auto;min-height:40px}#osmmap{flex:1;min-height:0;touch-action:pan-x pan-y}#mapfoot{padding:8px 12px;background:#142c3e;font-size:12px;line-height:1.4}#maplaunch{position:fixed;right:12px;top:75px;z-index:45;background:#193d58;border:1px solid #93b4c7;box-shadow:0 2px 8px #0006}#realmap .leaflet-container{background:#d7e5da}#realmap a{color:#aedbff} @media(max-width:700px){#maplaunch{top:72px;right:8px;padding:7px 10px;font-size:12px;min-height:36px}#maphead{font-size:13px}}
 </style><style>#perf{position:fixed;top:10px;right:10px;z-index:42;background:#102437e8;border:1px solid #77a7b6;border-radius:10px;padding:7px 10px;color:#c8f6d4;font:600 12px system-ui;pointer-events:none;min-width:100px;text-align:center}#perf small{display:block;color:#c9d5dd;font-size:10px;font-weight:400}@media(max-width:700px){#perf{top:8px;right:8px;padding:5px 7px;font-size:11px}#maplaunch{top:100px!important}}</style><style id="milovice-modern-ui">
 #hud{background:linear-gradient(145deg,rgba(9,24,39,.88),rgba(20,44,61,.82));backdrop-filter:blur(12px);border:1px solid rgba(176,214,235,.3);box-shadow:0 10px 30px #061b2b33;border-radius:18px}
@@ -188,6 +188,7 @@ import {createRoadClearance} from './scripts/road-clearance.js?v=5262';
 import {isCarriageway,isPedestrianWay,safePedestrianPieces,pedestrianPieceKey,markedCrossing,planZebraPieces,planStationPassage} from './scripts/reality-walkways.js?v=5270';
 import {makeStationForecourtScene} from './scripts/station-forecourt-pass.js?v=5241';
 import {planStationPlatformCanopy,createStationPlatformCanopy} from './scripts/station-platform-canopy.js?v=5580';
+import {planNadrazniGarageCourt,NADRAZNI_GARAGE_SITE} from './scripts/nadrazni-garage-court.js?v=5590';
 import {makeSchoolGrounds} from './scripts/school-grounds-pass.js?v=5510';
 import {buildPhotographedEaveCorniceGeometry,PHOTO_EAVE_PROFILE_COLOR} from './scripts/facade-perimeter.js?v=5430';
 import {planFootprintPitchedRoof} from './scripts/station-roof-geometry.js?v=5282';
@@ -2840,6 +2841,7 @@ const roofEnvelopeAudit={version:'5.32.0',pitchedRoofs:0,flatFallbacks:0,
  seamTriangles:0,maxGapCovered:0,failedWallJoins:0};
 window.__miloviceRoofEnvelopeAudit=roofEnvelopeAudit;
 const osmRoofEdgeMaterial=new THREE.LineBasicMaterial({color:0x454d50});
+const nadrazniGarageCourtFronts=new Map(); // OSM-id => mapped courtyard-facing short wall.
 const legacyRealityAudit=makeRetrospectiveAuditTracker();
 function publishLegacyRealityAudit(){window.__miloviceLegacyRealityAudit=legacyRealityAudit.summary();}
 function osmBuilding(points,tags,index,osmId=null){
@@ -3599,27 +3601,51 @@ function osmBuilding(points,tags,index,osmId=null){
   const cityAudit=window.__miloviceCityUnverifiedFeatures ||= {};
   cityAudit.suppressedInventedChimneys=(cityAudit.suppressedInventedChimneys||0)+1;
  }
- if(auditedCore&&isGarage)legacyRealityAudit.suppressed('suppressedGarageDoors');
- if(isGarage&&!auditedCore){
-  // Garage footprints are OSM surveyed; garage door orientation is inferred.
-  let front=null;
-  for(let i=0;i<pts.length;i++){
-   const a=pts[i],b=pts[(i+1)%pts.length],len=a.distanceTo(b);
-   if(len>2.25&&len<16&&(!front||len>front.len))front={a,b,len,i};
+ // REBUILD 2.0: the 17 real garage bays on northern Nádražní have
+ // TWO opposing rows. Their mapped 2.96m SHORT ends face the shared
+ // courtyard; the old algorithm used their 5.85m PARTY WALLS as doors.
+ // Keep historical suppression for unverified garages without this evidence.
+ const courtFront=nadrazniGarageCourtFronts.get(osmId)||null;
+ if(auditedCore&&isGarage&&!courtFront)
+  legacyRealityAudit.suppressed('suppressedGarageDoors');
+ if(isGarage&&(courtFront||!auditedCore)){
+  let front=courtFront?{a:pts[courtFront.edge],
+    b:pts[(courtFront.edge+1)%pts.length],
+    len:courtFront.len,i:courtFront.edge}:null;
+  if(!front){
+   // Other old garages retain the established fallback; don't claim
+   // the courtyard orientation method applies outside the mapped site.
+   for(let i=0;i<pts.length;i++){
+    const a=pts[i],b=pts[(i+1)%pts.length],len=a.distanceTo(b);
+    if(len>2.25&&len<16&&(!front||len>front.len))
+     front={a,b,len,i};
+   }
   }
   if(front){
    const {len}=front,facade=exteriorFacadeFrame(pts,front.i);
    if(!facade)throw Error('Invalid garage facade edge');
-   const {nx,nz,mx,mz,yaw}=facade,doorWidth=Math.min(2.7,len-.42);
+   const {nx,nz,mx,mz,yaw}=facade;
+   const doorWidth=courtFront?courtFront.doorWidth:Math.min(2.7,len-.42);
    const garageGrade=planGroundedEntrance(facade,{
     terrainAt,baseHeight,topY:baseHeight+2.31});
    if(!garageGrade)throw Error('Garage entrance has no local grade '+osmId);
    recordEntranceGrade(garageGrade,'garage',osmId);
+   // All parts meet the actual OSM wall at flush offsets — not
+   // floating 0.5m in front of the building or up in the air.
    archPart('garageMetal',mx+nx*flushBoxOffset(.13),garageGrade.centerY,
     mz+nz*flushBoxOffset(.13),doorWidth,garageGrade.doorHeight,.13,yaw);
    for(let j=0;j<5;j++)archPart('windowBar',mx+nx*flushBoxOffset(.07),
     garageGrade.floorY+.32+j*(garageGrade.doorHeight-.60)/4,
     mz+nz*flushBoxOffset(.07),doorWidth,.025,.07,yaw);
+   if(courtFront){
+    const audit=window.__miloviceNadrazniGarageAudit||={rendered:0,
+      wallsOnCourtyard:0,formerLongestPartyWallDoorsRemoved:0,
+      ids:[],source:'OSM opposing rows; actual door orientation unverified'};
+    audit.rendered++;
+    audit.wallsOnCourtyard++;
+    audit.formerLongestPartyWallDoorsRemoved++;
+    audit.ids.push(osmId);
+   }
   }
  }
  // The old one-size-fits-all horizontal roof LineLoop sat at y=h+.12
@@ -3733,6 +3759,31 @@ function rpAppendOSMElements(elements){
  for(const el of railWays.filter(e=>e.tags.railway==='platform')){
   osmRailways.push(el);miloviceRailTrack(el.geometry.map(osmPoint),el.tags);
  }
+ // Nádražní, north: calculate all 17 garage facades TOGETHER before
+ // generating any building. The two actual OSM rows face each other across
+ // a forecourt, not across their shared 6m long party walls. Do not create
+ // a fake road or parking spaces between them: only their entrance facades.
+ const courtAnchor=osmPoint(NADRAZNI_GARAGE_SITE.anchor);
+ const northernGarages=buildingWays.filter(el=>{
+   if(!['garage','garages'].includes(el.tags?.building)||!el.geometry?.length)
+    return false;
+   const center=el.geometry.map(osmPoint).reduce((a,p)=>({
+     x:a.x+p.x/el.geometry.length,z:a.z+p.y/el.geometry.length
+   }),{x:0,z:0});
+   return Math.hypot(center.x-courtAnchor.x,center.z-courtAnchor.y)<
+     NADRAZNI_GARAGE_SITE.radiusM;
+ });
+ const plannedGates=planNadrazniGarageCourt(northernGarages.map(el=>({
+   id:el.id,building:el.tags.building,
+   points:el.geometry.map(p=>{const v=osmPoint(p);return {x:v.x,z:v.y};})
+ })));
+ for(const [id,front] of plannedGates)nadrazniGarageCourtFronts.set(id,front);
+ window.__miloviceNadrazniGarageAudit={
+   planned:plannedGates.size,mapped:northernGarages.length,
+   rendered:0,wallsOnCourtyard:0,formerLongestPartyWallDoorsRemoved:0,
+   ids:[],source:'OSM north Nádražní garage footprints',
+   doorOrientationEstimated:true,externalParkingInvented:false,
+   landscapingInvented:false,streetContext:'both paired rows'};
  for(const el of buildingWays){osmBuilding(el.geometry,el.tags,osmBuildings,el.id);osmAddLandmark(el)}
  // REBUILD 2.0: actual sheltered RAIL PLATFORM, not the fake 29m STREET-side
  // green canopy removed in 5.27.3. Uses only OSM way 53865956 and the
