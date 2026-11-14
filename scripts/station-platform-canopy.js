@@ -1,4 +1,4 @@
-// Milovice RP 5.57 — physically placed, photo-informed RAIL-SIDE platform canopy.
+// Milovice RP 5.58 — canopy explicitly over the MAPPED station passage portal.
 //
 // The old green ~29 m structure on the STREET/Bike Tower side was wrong and
 // remains removed. OSM 549346219 identifies an actual sheltered train
@@ -10,7 +10,7 @@
 // https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_n%C3%A1stupi%C5%A1t%C4%9B.jpg
 // https://commons.wikimedia.org/wiki/Category:Milovice_(train_station)
 // © OpenStreetMap contributors, ODbL for the mapped polygons.
-export const PLATFORM_CANOPY_OSM={station:53865956,platform:549346219};
+export const PLATFORM_CANOPY_OSM={station:53865956,platform:549346219,passage:1550920096};
 export const PLATFORM_CANOPY_SOURCE={
   photo:'https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_n%C3%A1stupi%C5%A1t%C4%9B.jpg',
   author:'Palickap',license:'CC BY-SA 3.0',taken:'2013-05-25',
@@ -57,18 +57,31 @@ function nearestTrackDistance(p,trackLines){
 /**
  * Returns wall-backed roof strips wholly on the rail-platform side of the
  * real OSM station footprint. Never extends along the street-facing wall.
- * Each entry stores world-space x/z vertices; the renderer places Y using
- * its existing terrainAt function, not a guessed absolute altitude.
+ * Each entry stores world-space x/z vertices; the renderer shares the
+ * same Y foundation anchor as the station. No interpolated fake entrance.
  */
-export function planStationPlatformCanopy({station,platform,tracks=[],stationId=53865956,
-  platformId=549346219,spanWidth=2.2,minRailDistance=3.9}={}){
-  if(stationId!==PLATFORM_CANOPY_OSM.station||platformId!==PLATFORM_CANOPY_OSM.platform)
+export function planStationPlatformCanopy({station,platform,passage,tracks=[],
+  stationId=53865956,platformId=549346219,passageId=1550920096,
+  spanWidth=2.2,halfLength=3.2,minRailDistance=3.9}={}){
+  if(stationId!==PLATFORM_CANOPY_OSM.station||
+    platformId!==PLATFORM_CANOPY_OSM.platform||
+    passageId!==PLATFORM_CANOPY_OSM.passage)
     return {segments:[],reason:'unknown-OSM-site'};
   const wall=pts(station),ground=pts(platform);
   if(!wall.length||!ground.length||Math.abs(area(wall))<25||Math.abs(area(ground))<25)
     return {segments:[],reason:'invalid-footprints'};
-  if(!Number.isFinite(spanWidth)||spanWidth<1||spanWidth>3||minRailDistance<2.8)
+  if(!Number.isFinite(spanWidth)||spanWidth<1||spanWidth>3||
+    !Number.isFinite(halfLength)||halfLength<1.5||halfLength>4.5||
+    !Number.isFinite(minRailDistance)||minRailDistance<2.8)
     return {segments:[],reason:'unsafe-parameters'};
+  // This is the real through-building OSM footway. Two endpoints are
+  // independently mapped on the street and platform sides of the building.
+  // No passage data = no roof; length of an arbitrary wall proves nothing.
+  if(!Array.isArray(passage)||passage.length<2||
+    passage.some(p=>![Number(p?.x),Number(p?.z??p?.y)].every(Number.isFinite)))
+    return {segments:[],reason:'missing-mapped-passage'};
+  const portals=[passage[0],passage[passage.length-1]].map(p=>({
+    x:Number(p.x),z:Number(p.z??p.y)}));
   const direction=Math.sign(area(wall));
   // Tracks are linear OSM ways, sometimes only TWO vertices. Polygon
   // validation would silently drop them and miss a rail clearance hazard.
@@ -97,28 +110,73 @@ export function planStationPlatformCanopy({station,platform,tracks=[],stationId=
     segments.push({edge:i,a,b,length,nx,nz,width:spanWidth,railClearance:minTrack,
       placement:'platform-polygon-facing-wall',estimated:true});
   }
-  // The biggest uninterrupted, photograph-supported wall face is the
-  // anchor. NEVER jump across an unverified wall notch: disjoint 2.2 m
-  // roofing blocks read as random floating fragments from street level.
-  // Adjacent candidate edges may extend the run only if normals align.
-  const byEdge=new Map(segments.map(s=>[s.edge,s]));
-  segments.sort((a,b)=>b.length-a.length||a.edge-b.edge);
-  const primary=segments[0],chosen=primary?[primary]:[];
-  let metres=primary?.length||0;
-  for(const step of [-1,1]){
-    let index=primary?.edge??-1;
-    while(index>=0){
-      const next=(index+step+wall.length)%wall.length,seg=byEdge.get(next);
-      if(!seg||seg.nx*primary.nx+seg.nz*primary.nz<.96||
-        metres+seg.length>24.5)break;
-      chosen.push(seg);metres+=seg.length;index=next;
-    }
+  // Crucial: choose the PLATFORM-SIDE exit of the *mapped station passage*,
+  // never the longest available facade. The old algorithm chose edge 2,
+  // some 10+ metres away from the exit. In this OSM footprint the exit is
+  // the shared vertex between the two platform-facing wall edges 4 and 5.
+  const projected=(p,s)=>{
+    const dx=s.b.x-s.a.x,dz=s.b.z-s.a.z;
+    const t=Math.max(0,Math.min(1,((p.x-s.a.x)*dx+(p.z-s.a.z)*dz)/
+      (s.length*s.length)));
+    const foot=positionOnEdge(s.a,s.b,0,0,t,0);
+    return {distance:Math.hypot(foot.x-p.x,foot.z-p.z),t};
+  };
+  let match=null;
+  for(const portal of portals)for(const seg of segments){
+    const hit=projected(portal,seg);
+    if(hit.distance>.65)continue;
+    if(!match||hit.distance<match.distance-1e-5||
+      Math.abs(hit.distance-match.distance)<1e-5&&seg.edge<match.segment.edge)
+      match={portal,segment:seg,...hit};
+  }
+  if(!match)return {segments:[],reason:'unmatched-rail-passage',
+    rejectedEdges:rejected,allCandidateEdges:segments.length};
+
+  // Trim the roof to the short area ABOVE that exit. When the portal lies
+  // at an OSM corner, continue a few metres along its contiguous neighbour
+  // instead of pulling the whole 15 m roof down the station frontage.
+  const chosen=[],available=segments.filter(s=>projected(match.portal,s).distance<.1 &&
+    s.nx*match.segment.nx+s.nz*match.segment.nz>.96);
+  const anchored=available.length?available:[match.segment];
+  for(const seg of anchored){
+    const hit=projected(match.portal,seg),left=Math.min(halfLength,hit.t*seg.length),
+      right=Math.min(halfLength,(1-hit.t)*seg.length);
+    if(left+right<.8)continue;
+    const a=positionOnEdge(seg.a,seg.b,0,0,hit.t-left/seg.length,0);
+    const b=positionOnEdge(seg.a,seg.b,0,0,hit.t+right/seg.length,0);
+    const length=Math.hypot(b.x-a.x,b.z-a.z);
+    if(length<.8)continue;
+    const polygonClear=[.05,.2,.5,.8,.95].every(t=>
+      [.35,1.05,spanWidth].every(offset=>
+        inPoly(positionOnEdge(a,b,seg.nx,seg.nz,t,offset),ground)));
+    const railClearance=Math.min(...[.05,.5,.95].map(t=>
+      nearestTrackDistance(positionOnEdge(a,b,seg.nx,seg.nz,t,spanWidth),
+      trackLines)));
+    if(!polygonClear||railClearance<minRailDistance)continue;
+    chosen.push({...seg,a,b,length,railClearance,
+      portalDistanceM:hit.distance,placement:'mapped-passage-platform-exit'});
   }
   chosen.sort((a,b)=>a.edge-b.edge);
+  const metres=chosen.reduce((sum,s)=>sum+s.length,0);
+  if(!chosen.length||metres>halfLength*2+.15)return {
+    segments:[],reason:'passage-roof-clearance-failed',
+    rejectedEdges:rejected};
+  // Seal the roof joint at a notched, real OSM wall vertex.
+  // At a corner both panels use one shared, averaged outward normal.
+  for(let i=0;i<chosen.length-1;i++){
+    const a=chosen[i],b=chosen[i+1];
+    if(Math.hypot(a.b.x-b.a.x,a.b.z-b.a.z)<.08){
+      const dx=a.nx+b.nx,dz=a.nz+b.nz,len=Math.hypot(dx,dz)||1;
+      a.endNormal={x:dx/len,z:dz/len};
+      b.startNormal=a.endNormal;
+    }
+  }
   return {segments:chosen,metres,railFacing:true,streetFacingRoofCount:0,
+    passageAnchored:true,passageWayId:PLATFORM_CANOPY_OSM.passage,
+    railPortal:match.portal,portalDistanceM:match.distance,
     source:PLATFORM_CANOPY_SOURCE,estimated:true,
     rejectedEdges:rejected,allCandidateEdges:segments.length,
-    model:'wall-mounted platform canopy / no freestanding blocking posts'};
+    model:'short canopy centered above mapped station rail passage'};
 }
 function appendQuad(vertices,a,b,c,d){
   // Both sided material: consistent source winding still gives a continuous
@@ -137,11 +195,13 @@ export function createStationPlatformCanopy(THREE,{
   const baseAt=()=>stationBaseY;
   for(const seg of plan.segments){
     const {a,b,nx,nz,width,length}=seg;
-    const start=.15/length,end=1-start;
-    const p=positionOnEdge(a,b,nx,nz,start,.16);
-    const q=positionOnEdge(a,b,nx,nz,end,.16);
-    const r=positionOnEdge(a,b,nx,nz,end,width);
-    const s=positionOnEdge(a,b,nx,nz,start,width);
+    const start=0,end=1;
+    const first=seg.startNormal||{x:nx,z:nz};
+    const last=seg.endNormal||{x:nx,z:nz};
+    const p={x:a.x+first.x*.16,z:a.z+first.z*.16};
+    const q={x:b.x+last.x*.16,z:b.z+last.z*.16};
+    const r={x:b.x+last.x*width,z:b.z+last.z*width};
+    const s={x:a.x+first.x*width,z:a.z+first.z*width};
     // Keep station eaves above the strip; existing roof is not replaced.
     const nearHeight=3.32,outerHeight=3.06,thickness=.09;
     const v=(x,y,z)=>({x,y:baseAt(x,z)+y,z});
@@ -202,5 +262,7 @@ export function createStationPlatformCanopy(THREE,{
     positionSource:'real OSM rail-platform polygon',
     photographedShapeApproximate:true,
     streetSideCanopy:false,noGroundColumns:true,
-    roofVertices:verts.length/3,stationBaseY};
+    roofVertices:verts.length/3,stationBaseY,
+    passageAnchored:plan.passageAnchored===true,passageWayId:plan.passageWayId,
+    railPortal:plan.railPortal,portalDistanceM:plan.portalDistanceM};
 }
