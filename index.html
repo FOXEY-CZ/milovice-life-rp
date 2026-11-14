@@ -1788,14 +1788,26 @@ function miloviceChurchTower(pts,base,h){
  for(let i=0;i<pts.length;i++){
   const p=pts[i],q=pts[(i+1)%pts.length],dx=q.x-p.x,dz=q.y-p.y,len=Math.hypot(dx,dz);
   if(len<8||len>45)continue;
-  let nx=-dz/len,nz=dx/len,mx=(p.x+q.x)/2,mz=(p.y+q.y)/2;
-  if(nx*(mx-cx)+nz*(mz-cz)<0){nx=-nx;nz=-nz}
-  const yaw=Math.atan2(nx,nz);
+  const frame=exteriorFacadeFrame(pts,i);
+  if(!frame)continue;
+  const {nx,nz,ux,uz,yaw}=frame;
   for(let j=1;j<=Math.min(3,Math.floor(len/5));j++){
    const t=j/(Math.min(3,Math.floor(len/5))+1),px=p.x+dx*t,pz=p.y+dz*t;
-   archPart('stoneTrim',px+nx*.45,base+6.3,pz+nz*.45,1.42,3.45,.18,yaw);
-   archPart('gothicGlass',px+nx*.59,base+6.4,pz+nz*.59,1.10,3.15,.13,yaw);
-   archPart('stoneTrim',px+nx*.65,base+6.45,pz+nz*.65,.075,2.95,.09,yaw);
+   // Church nave: flush narrow glazing with separate limestone jambs.
+   // Former solid 1.42x3.45m slab was 45cm off the mapped wall and
+   // the glazing another 59cm out, making a second fake facade.
+   archPart('gothicGlass',px+nx*FACE_PLANE,base+6.4,
+    pz+nz*FACE_PLANE,1.10,3.15,.026,yaw);
+   const trim=flushBoxOffset(.09);
+   for(const sign of [-1,1])
+    archPart('stoneTrim',px+ux*sign*.66+nx*trim,base+6.3,
+     pz+uz*sign*.66+nz*trim,.10,3.45,.09,yaw);
+   archPart('stoneTrim',px+nx*trim,base+8.04,pz+nz*trim,
+    1.42,.12,.09,yaw);
+   archPart('stoneTrim',px+nx*trim,base+4.61,pz+nz*trim,
+    1.42,.11,.09,yaw);
+   archPart('stoneTrim',px+nx*trim,base+6.4,pz+nz*trim,
+    .075,3.02,.09,yaw);
   }
  }
 }
