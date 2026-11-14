@@ -64,8 +64,8 @@ assert(!('railSidewalk' in plan),
 assert(!('railSideCurbs' in plan),
  'No stray kerb can remain on the wrong rail-side sidewalk');
 assert.equal(plan.incorrectlyPlacedRailSidewalkRemoved,true);
-assert.equal(plan.centralParkingCells,plan.cells,
- 'ALL concrete-grid island cells are parking, not a broad invented sidewalk');
+assert.notEqual(plan.centralParkingCells,plan.cells,
+ 'Carved sidewalk must REMOVE a strip from the broad parking surface instead of drawing over asphalt');
 assert(plan.centralParkingCells.length>270,
  'Parking still needs a broad contiguous surface after a narrow sidewalk is carved');
 assert(!('centralWalkingCells' in plan),
