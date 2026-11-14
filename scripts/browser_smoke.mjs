@@ -72,6 +72,25 @@ try{
   trimmedShortReturns:hero.trimmedShortReturns,
   trimmedPerimeterMetres:hero.trimmedPerimeterMetres
  }));
+ // 5.36: validate REAL rendered facade attachment coordinates, not just
+ // that helpers compiled. Both provisional and actual wall cutouts are
+ // anchored to the same real OSM edge in a rotated city block.
+ const facadeAttachment=await page.evaluate(()=>
+  window.__miloviceFacadeAttachmentAudit||null);
+ if(!facadeAttachment||facadeAttachment.version!=='5.36.0'||
+    facadeAttachment.legacyWindows<100||
+    facadeAttachment.legacyEdges<100||
+    facadeAttachment.maxLegacyFaceGap>.04||
+    !(hero.anchoredOpenings>100)||hero.maxFrameDetachment>.04)
+  throw new Error('5.36 floating facade objects still present: '+
+   JSON.stringify({facadeAttachment,heroAnchored:hero.anchoredOpenings,
+    heroMaxGap:hero.maxFrameDetachment}));
+ console.log('5.36 citywide window/door wall attachment:',
+  JSON.stringify({legacyWindows:facadeAttachment.legacyWindows,
+   legacyDoors:facadeAttachment.legacyDoors,
+   legacyEdges:facadeAttachment.legacyEdges,
+   maxGap:facadeAttachment.maxLegacyFaceGap,
+   heroOpenings:hero.anchoredOpenings,heroMaxGap:hero.maxFrameDetachment}));
  const facadeSourceAudit=await page.evaluate(()=>
   window.__miloviceCityUnverifiedFeatures||null);
  if(!facadeSourceAudit||
