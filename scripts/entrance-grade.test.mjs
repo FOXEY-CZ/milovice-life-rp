@@ -77,4 +77,35 @@ assert(hero.includes('planGroundedEntrance(edgeFrame')&&
  'Hero cut-out walls, plinth and door frame must use the same terrain datum');
 assert(game.includes('Math.min(base+.035,approachY+.025)'),
  'Preserve the already accepted Modra hvezda ground threshold');
+// 5.63.1: a wrong literal family previously crashed ALL OSM loading:
+// "Unknown door family garage-photo-2022". Audit categories are a fixed
+// contract, NOT an arbitrary provenance string. Source attribution belongs
+// in __milovicePhotoGarageCourt instead of the entrance family argument.
+const auditScope=game.slice(game.indexOf('const entranceGradeAudit='),game.indexOf('function recordEntranceGrade('));
+assert(auditScope.length>100&&auditScope.length<3000,
+ 'Door family regression could not find actual entrance audit definitions');
+const registeredDoorFamilies=new Set(
+ [...auditScope.matchAll(/([A-Za-z]+)Doors\s*:/g)].map(m=>m[1])
+);
+assert.deepEqual([...registeredDoorFamilies].sort(),
+ ['commerce','garage','hero','industrial','legacy','school'].sort());
+const allRecordedFamilies=[
+ ...game.matchAll(/recordEntranceGrade\(\s*\w+\s*,\s*'([^']+)'/g)
+].map(m=>m[1]);
+allRecordedFamilies.push('school','legacy'); // conditional school/legacy pair
+assert(allRecordedFamilies.length>=7);
+for(const family of allRecordedFamilies){
+ assert(registeredDoorFamilies.has(family),
+  'Unsupported door family '+family+' would crash the entire real map');
+}
+assert(game.includes("recordEntranceGrade(grade,'garage',osmId);"),
+ 'Source-photographed garage fronts must register as the supported garage family');
+assert(!/recordEntranceGrade\([^;]*'garage-photo-2022'/.test(game),
+ 'Never reintroduce the 5.63 crash from an unsupported photo-specific family');
+assert(game.includes("archPart('garagePhotoDoor'")&&
+ game.includes('gravelCourtDrawCalls=1'),
+ 'Keep photographic garage doors and the mapped gravel court after crash fix');
+assert(game.includes("const BUILD_ID='20261114-nadrazni-garage-hotfix-5631'"),
+ 'A new build ID is required to bypass stale mobile HTML caches');
+console.log('5.63.1 door-family validation PASS: all recorded entrance types are registered');
 console.log('5.45 local entry grade PASS: city, school, shops, industry, garages and hero facade cutouts');
