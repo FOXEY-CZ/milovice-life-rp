@@ -177,7 +177,7 @@ import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
 import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5450';
-import {planSchoolStreetFrontage,schoolFacadeFixture,SCHOOL_PHOTO_WAY_ID} from './scripts/school-street-pass.js?v=5440';
+import {planSchoolStreetFrontage,schoolFacadeFixture,planSchoolPhotographedRoof,SCHOOL_PHOTO_WAY_ID} from './scripts/school-street-pass.js?v=5460';
 import {planGroundedEntrance} from './scripts/entrance-grade.js?v=5450';
 import {exteriorFacadeFrame,selectExteriorFacadeToward,splitFacadeStripForOpening,facadePoint,flushBoxOffset,FACE_PLANE,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './scripts/facade-anchors.js?v=5400';
 import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5410';
@@ -191,7 +191,7 @@ import {planFootprintPitchedRoof} from './scripts/station-roof-geometry.js?v=528
 import {planRoofPerimeterClosure} from './scripts/station-roof-seams.js?v=5320';
 import {planStationRoofEaves} from './scripts/station-roof-eaves.js?v=5320';
 import {planSkolskaRoofJoins,SKOLSKA_WAY_ID} from './scripts/skolska-roof.js?v=5320';
-import {planCityBuildingRoof,analyzeGableFootprint} from './scripts/city-roof-geometry.js?v=5320';
+import {planCityBuildingRoof,analyzeGableFootprint} from './scripts/city-roof-geometry.js?v=5460';
 import {planBuildingRoofTopology} from './scripts/building-roof-topology.js?v=5310';
 import {makeRetrospectiveAuditTracker,isLegacyGuessAllowed} from './scripts/legacy-reality-audit.js?v=5261';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
@@ -1215,6 +1215,7 @@ const mirova36Walls=new THREE.MeshStandardMaterial({color:0xdac6a0,map:facadeTex
 const grocerWalls=new THREE.MeshStandardMaterial({color:0xd2cdc1,map:facadeTexture(8),roughness:.9});
 const mirova36Roof=new THREE.MeshStandardMaterial({color:0x853f46,roughness:.86,side:THREE.DoubleSide});
 const schoolWalls=new THREE.MeshStandardMaterial({color:0xe3b42f,map:facadeTexture(37),roughness:.9});
+const schoolRoofMetal=new THREE.MeshStandardMaterial({color:0x89979d,roughness:.81,metalness:.12,side:THREE.DoubleSide});
 const schoolPlinth=new THREE.MeshStandardMaterial({color:0xb34a31,roughness:.86,side:THREE.DoubleSide});
 const garageWalls=new THREE.MeshStandardMaterial({color:0xb1afa4,roughness:.92});
 const workWalls=new THREE.MeshStandardMaterial({color:0xb9b9b0,roughness:.92});
@@ -2861,6 +2862,7 @@ function osmBuilding(points,tags,index,osmId=null){
  const isIndustrial=type==='warehouse'||type==='industrial';
  const isSchool=type==='school'&&tags.name==='ZŠ T. G. Masaryka'&&osmId===SCHOOL_PHOTO_WAY_ID;
   const schoolPhotoPlan=isSchool?planSchoolStreetFrontage(pts):null;
+  const schoolRoofPhoto=isSchool?planSchoolPhotographedRoof(pts):null;
  const isChurch=type==='church'&&tags.name==='sv. Kateřina Alexandrijská';
  const isStation=type==='train_station'&&tags.name==='Milovice';
  const isBlueStar=osmId===202367194; // verified Mírová 134/11 building; photographed 2024, 2 floors.
@@ -2943,7 +2945,7 @@ function osmBuilding(points,tags,index,osmId=null){
  const photoRoofFeatures=isSkolskaRoof?planPhotoRoofFeatures(osmId,pts):[];
  if(isSkolskaRoof&&photoRoofFeatures.length!==2)
   throw Error('Školská: source-backed roof profile incomplete');
- const baseRoofMat=isSchool?osmRoofPalette[4]:oldCenter?osmRoofPalette[0]:osmRoofPalette[index%osmRoofPalette.length];
+ const baseRoofMat=isSchool?schoolRoofMetal:oldCenter?osmRoofPalette[0]:osmRoofPalette[index%osmRoofPalette.length];
  const roofMat=modelCard?.roofColor?localArchitectureMaterial(baseRoofMat,modelCard.roofColor):baseRoofMat;
  const roofPreference=modelCard?.roofKind||'auto';
  const pitched=tags.name==='Penny'&&tags.shop==='supermarket'?
@@ -2958,7 +2960,7 @@ function osmBuilding(points,tags,index,osmId=null){
    ?miloviceRoofOfKind(pts,baseHeight,h,roofMat,2.30,'hip',true,photoRoofFeatures)
    :miloviceHipRoof(pts,baseHeight,h,isChurch?osmRoofPalette[4]:isStation?osmRoofPalette[0]:(isMirova36||isBlueStar)&&!modelCard?.roofColor?
     (isMirova36?mirova36Roof:osmRoofPalette[1]):roofMat,
-    isChurch?4.3:isStation?2.6:isBlueStar?.65:isMirova36?2.55:isSchool?1.05:Math.min(2.3,Math.min(w,d)*.25))):null;
+    isChurch?4.3:isStation?2.6:isBlueStar?.65:isMirova36?2.55:isSchool?schoolRoofPhoto.rise:Math.min(2.3,Math.min(w,d)*.25))):null;
  if(hip&&fallbackFromGable){
   window.__miloviceRoofSafety ||= {rejectedGables:0,compatibleGables:0,fallbackHips:0};
   window.__miloviceRoofSafety.fallbackHips++;
@@ -2966,6 +2968,28 @@ function osmBuilding(points,tags,index,osmId=null){
  // Fixed a major regression: the standard building branch used to put
  // a FLAT roof through every gable or hip, producing intersecting roof skins.
  const pitchedSurface=pitched||hip;
+ if(isSchool){
+  // Do not confuse a queued roof with a rendered, sloping one. Keep an
+  // actual face-geometry audit. The game stays responsive on bad source
+  // polygons, while the browser regression fails if the cap goes flat.
+  const surface=pitchedSurface?.userData.roofRuntimePlan||null;
+  const ys=surface?.faces?.flatMap(face=>face.map(v=>v.y))||[];
+  const span=ys.length?Math.max(...ys)-Math.min(...ys):0;
+  window.__miloviceSchoolRoofAudit={
+   version:'5.46',osmId:SCHOOL_PHOTO_WAY_ID,
+   pitchedRendered:Boolean(pitchedSurface&&surface&&span>.4),
+   flatFallbackUsed:!pitchedSurface,
+   roofModel:surface?.roofModel||'affine-planar',
+   faceCount:surface?.faces?.length||0,
+   actualRise:+span.toFixed(4),
+   targetRise:schoolRoofPhoto?.rise??0,
+   maxEaveError:surface?.correctedBoundaryGap??0,
+   safePerimeter:surface?.roofModel==='perimeter-constrained'||
+    (surface?.roofBoundaryGapBefore??0)<=.10,
+   source:schoolRoofPhoto?.reference||null,
+   preciseRidgeSurveyed:false,rooflightLocationsVerified:false
+  };
+ }
  // Keep the actual host roof surface for photo-fitted objects. Only
  // Mírová 36 currently has source-confirmed rectangular rooflights.
  // All other houses receive no speculative skylights.
