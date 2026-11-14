@@ -4478,7 +4478,7 @@ if((inspect==='school-street'||inspect==='school-elevated')&&schoolRoofScene?.ce
  const p=schoolPhotoCameraWorld(),c=schoolRoofScene.center;
  const elevated=inspect==='school-elevated';
  camera.position.set(p.x,terrainAt(p.x,p.z)+(elevated?29:1.70),p.z);
- camera.lookAt(c.x,c.eaveY+(elevated?.7:-1.4),c.z);
+ camera.lookAt(c.x,c.eaveY+(elevated ? 0.7 : -1.4),c.z);
  window.__miloviceRoofAuditRendered=inspect;
 }else if(selectedPhotoHouse){
  const eye=osmPoint(selectedPhotoHouse.eye),target=osmPoint(selectedPhotoHouse.target);
