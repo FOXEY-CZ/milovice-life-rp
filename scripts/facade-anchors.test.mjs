@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {exteriorFacadeFrame,selectExteriorFacadeToward,splitFacadeStripForOpening,
- facadePoint,facadeGap,flushBoxOffset,FACE_PLANE,RECESSED_GLAZING} from './facade-anchors.js';
+ facadePoint,facadeGap,flushBoxOffset,FACE_PLANE,RECESSED_GLAZING,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './facade-anchors.js';
 import {planFacadePerimeterTrims} from './facade-perimeter.js';
 const near=(a,b,eps=1e-8)=>Math.abs(a-b)<eps;
 const p=(x,z)=>({x,z});
@@ -136,7 +136,22 @@ const hero=readFileSync(new URL('./hero-architecture.js',import.meta.url),'utf8'
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert(hero.includes('exteriorFacadeFrame(pts,sideIndex)'));
 assert(hero.includes('RECESSED_GLAZING'));
-assert(hero.includes('flushBoxOffset(.18)'));
+assert(hero.includes('flushBoxOffset(WINDOW_FRAME_DEPTH)'));
+assert(hero.includes('flushBoxOffset(WINDOW_SILL_DEPTH)'));
+assert(hero.includes("w+.28,.11,WINDOW_SILL_DEPTH,yaw"));
+assert(html.includes('new THREE.BoxGeometry(1.92,.13,WINDOW_SILL_DEPTH)'));
+assert(html.includes('flushBoxOffset(WINDOW_SILL_DEPTH)'));
+assert(!hero.includes('const frame=front(flushBoxOffset(.18))'),
+ 'Old oversized 18cm window trim depth should never return');
+assert(!html.includes('new THREE.BoxGeometry(1.92,.13,.30)'),
+ 'Ordinary windows cannot keep double-depth sills');
+for(const depth of [WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH]){
+ assert(depth<=.16&&depth>.03);
+ const face=exteriorFacadeFrame(rect,0);
+ const placed=facadePoint(face,0,flushBoxOffset(depth));
+ assert(near(facadeGap(face,placed,depth),.008),
+  'Face-mounted trim must touch the actual OSM wall backplane');
+}
 assert(hero.includes('flushBoxOffset(.32)'));
 assert(hero.includes('anchoredOpenings++'));
 assert(html.includes('exteriorFacadeFrame(pts,i)'));
@@ -155,7 +170,7 @@ assert(html.includes('blueStarPlinth(facade);')&&
  'The physical entrance must start at local ground and the stone plinth must be split');
 assert(!html.includes("archPart('foundationBand',mx+nx*flushBoxOffset(.17),baseHeight+.25"),
  'No remaining full-length Blue Star stone band may cover the door');
-console.log('Facade attachment 5.36 PASS',JSON.stringify({
+console.log('Facade attachment 5.40 PASS',JSON.stringify({
  buildings:valid,edges,shortEdges:processedShort,
  maxExteriorFloatingGapMetres:largestGap,framePlane:'OSM winding',
  defaultWindows:'flush overlay',heroWindows:'physical wall cutouts'

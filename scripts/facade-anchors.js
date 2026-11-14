@@ -41,6 +41,12 @@ export function flushBoxOffset(thickness,extra=.008){
   !Number.isFinite(extra)||extra<-.05||extra>.08)return null;
  return thickness*.5+extra;
 }
+// Shared low-profile exterior window trims. Oversized 18-32cm box reveals
+// were conspicuous from side-on mobile cameras and looked detached.
+// Both the cut-out hero wall and ordinary OSM window pass use these
+// SAME dimensions when building the mesh and placing it on the facade.
+export const WINDOW_FRAME_DEPTH=.085;
+export const WINDOW_SILL_DEPTH=.16;
 export const FACE_PLANE=.024; // overlay for ordinary (solid-wall) buildings
 export const RECESSED_GLAZING=-.085; // for hero facade with true wall cutouts
 export function facadeGap(frame,point,thickness=0){

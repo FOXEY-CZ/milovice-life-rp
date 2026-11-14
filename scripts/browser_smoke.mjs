@@ -139,6 +139,12 @@ try{
     landmark.actualArchedWindowMeshes!==4||landmark.rectangularFakeArchRemoved!==2||
     landmark.anchoredDormerRoofs!==2||landmark.removedDetachedRoofBoxPanels!==4)
    throw Error('5.14 photographed street block geometry missing: '+JSON.stringify(landmark));
+ if(landmark.facadeStripOwner!=='osm-facade-renderer-only'||
+    landmark.suppressedDuplicatePerimeterBands<4)
+   throw Error('5.40: extra full-length photo trim beams still drawn over OSM facades: '+
+    JSON.stringify(landmark));
+ console.log('5.40 duplicate photographed facade beams suppressed:',
+  landmark.suppressedDuplicatePerimeterBands);
  const houseRoof=await page.evaluate(()=>window.__miloviceSkolskaRoof||null);
  if(!houseRoof||houseRoof.osmId!==118487980||
     houseRoof.footprintVertices!==7||houseRoof.mainRoofType!=='hip'||

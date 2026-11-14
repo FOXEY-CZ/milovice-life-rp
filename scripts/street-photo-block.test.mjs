@@ -186,6 +186,14 @@ for(const offset of [-2,0,2]){
 }
 assert.equal(planPhotographedRooflight(plan,edge,8),null);
 assert.equal(planPhotographedRooflight(null,edge,0),null);
+// Do not double-render the *same* photographed exterior facade twice:
+ // the common hero/OSM wall renderer already owns full-length upper bands.
+assert(photoPass.includes('suppressedDuplicatePerimeterBands+=features.length*2')&&
+ photoPass.includes("facadeStripOwner:'osm-facade-renderer-only'")&&
+ !photoPass.includes('part(g,edge.len,.10,.23,grout,0,height-.10,.24)')&&
+ !photoPass.includes('part(g,edge.len,.10,.17,paleTrim,0,2.7,.33)')&&
+ !photoPass.includes('part(g,edge.len+.43,.08,.51,paleTrim'),
+ 'The photo layer cannot reintroduce floating long beams over existing facade bands');
 assert(photoPass.includes('p.position.z=dormerFacadeCenter(depth)')&&
  !photoPass.includes('arched?(-depth*.5+.04):-.65'),
  'Every photographed dormer must share the same host-facade setback');
