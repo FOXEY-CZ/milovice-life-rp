@@ -5,6 +5,7 @@ import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {selectFacadeEdges,planFaceOpenings} from './facade-model.js';
 import {analyzeGableFootprint} from './city-roof-geometry.js';
 import {classifyFacadeEdgeLength,planFacadePerimeterTrims} from './facade-perimeter.js';
+import {makeSharedFacadeSurfaceMaps} from './facade-surface-kit.js';
 
 export function makeMiloviceHeroArchitecture(THREE,{
   sites=[],radius=240,maxBuildings=68,terrainAt=()=>0
@@ -17,7 +18,8 @@ export function makeMiloviceHeroArchitecture(THREE,{
   suppressedArbitraryChimneys:0,skippedUnverifiedGables:0,
   suppressedUnverifiedPhotoOrnaments:0,shortWallSegmentsSealed:0,
   skippedDegenerateEdges:0,
-  trimmedWallEdges:0,trimmedShortReturns:0,trimmedPerimeterMetres:0};
+  trimmedWallEdges:0,trimmedShortReturns:0,trimmedPerimeterMetres:0,
+  sharedSurfaceTextures:3,surfaceResolution:128,extraMaterialDrawCalls:0};
  const box=new THREE.BoxGeometry(1,1,1),glassPlane=new THREE.PlaneGeometry(1,1);
  const mats={
   wall:new THREE.MeshStandardMaterial({vertexColors:true,roughness:.92,side:THREE.DoubleSide}),
@@ -29,6 +31,12 @@ export function makeMiloviceHeroArchitecture(THREE,{
   wood:new THREE.MeshStandardMaterial({color:0x715242,roughness:.83}),
   awning:new THREE.MeshStandardMaterial({color:0x786e62,roughness:.82})
  };
+ // Single set of 128px textures shared by every batched hero house.
+ // Never generate one texture per building or add draw calls.
+ const sharedSurfaces=makeSharedFacadeSurfaceMaps(THREE);
+ mats.wall.map=sharedSurfaces.stucco;
+ mats.base.map=sharedSurfaces.plinth;
+ mats.glass.map=sharedSurfaces.glass;
  const colors=[0xd0bea5,0xdcd2bd,0xd2c3a6,0xc8c0b2,0xe1d3b8,0xbebda9,0xd5c4b1,0xd7cbac];
  const kinds=Object.keys(mats).filter(k=>k!=='wall');
  
