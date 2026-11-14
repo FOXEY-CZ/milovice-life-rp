@@ -98,8 +98,8 @@ assert.equal(plan.rightCornerFootwayId,1282187911,
  'Right corner must anchor to the actual OSM turning path, not guessed rails');
 assert.equal(plan.centralFootwayId,1165594426,
  'The already mapped central-island footway must remain preserved');
-assert(plan.pedestrianCorridorWidth>=1.4,
- 'Photo-marked central pedestrian band must remain visually legible');
+assert(plan.pedestrianCorridorWidth>=1.35&&plan.pedestrianCorridorWidth<=1.6,
+ 'Actual dedicated west-edge walking band must remain narrow and visible');
 assert(plan.railSideParking.every(b=>b.offset<0),
  'Opposite parking remains, without an invented sidewalk behind it');
 for(const p of plan.cornerPaving)
