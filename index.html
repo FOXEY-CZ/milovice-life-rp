@@ -176,9 +176,9 @@ import {addLanduseFeature,forestInstancePlacements} from './scripts/landscapes.j
 import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
-import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5360';
-import {exteriorFacadeFrame,selectExteriorFacadeToward,splitFacadeStripForOpening,facadePoint,flushBoxOffset,FACE_PLANE,facadeGap} from './scripts/facade-anchors.js?v=5390';
-import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5370';
+import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5400';
+import {exteriorFacadeFrame,selectExteriorFacadeToward,splitFacadeStripForOpening,facadePoint,flushBoxOffset,FACE_PLANE,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './scripts/facade-anchors.js?v=5400';
+import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5400';
 import {clipRoofFacesForFeatures,planRoofFeatureBackClosures} from './scripts/roof-opening-geometry.js?v=5320';
 import {makePhotoStreetEnvironment} from './scripts/street-environment-reality.js?v=5262';
 import {createRoadClearance} from './scripts/road-clearance.js?v=5262';
@@ -1548,7 +1548,7 @@ window.__miloviceFurnitureBatch={objects:0,instances:0,drawMeshes:0,meshesSaved:
  queued:0,types:0,disabled:true,scope:'Global unverified roadside props removed'};
 // Shared instanced facade details: thousands of windows, only four draw calls.
 const facadeBatches=[new Map(),new Map(),new Map(),new Map()];
-const facadeGeo=[new THREE.PlaneGeometry(1.75,1.65),new THREE.PlaneGeometry(1.42,1.34),new THREE.BoxGeometry(.085,1.35,.065),new THREE.BoxGeometry(1.92,.13,.30)];
+const facadeGeo=[new THREE.PlaneGeometry(1.75,1.65),new THREE.PlaneGeometry(1.42,1.34),new THREE.BoxGeometry(.085,1.35,.065),new THREE.BoxGeometry(1.92,.13,WINDOW_SILL_DEPTH)];
 const facadeMat=[new THREE.MeshStandardMaterial({color:0xe6e4dd,roughness:.85,side:THREE.DoubleSide}),new THREE.MeshStandardMaterial({color:0x3b657a,metalness:.22,roughness:.18,side:THREE.DoubleSide}),new THREE.MeshStandardMaterial({color:0xe3dfd5,roughness:.8,side:THREE.DoubleSide}),new THREE.MeshStandardMaterial({color:0x9d9b95,roughness:.92})];
 function miloviceWindowGlass(){
  const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');
@@ -3195,19 +3195,19 @@ function osmBuilding(points,tags,index,osmId=null){
      pz+nz*(FACE_PLANE+.007),rotation,baseHeight);
     addFacadePart(2,px+nx*flushBoxOffset(.065),y,
      pz+nz*flushBoxOffset(.065),rotation,baseHeight);
-    addFacadePart(3,px+nx*flushBoxOffset(.30),y-.85,
-     pz+nz*flushBoxOffset(.30),rotation,baseHeight);
+    addFacadePart(3,px+nx*flushBoxOffset(WINDOW_SILL_DEPTH),y-.85,
+     pz+nz*flushBoxOffset(WINDOW_SILL_DEPTH),rotation,baseHeight);
     attachmentAudit.legacyWindows++;
     attachmentAudit.maxLegacyFaceGap=Math.max(
      attachmentAudit.maxLegacyFaceGap,facadeGap(facade,{x:wx,z:wz},0),
-     facadeGap(facade,{x:px+nx*flushBoxOffset(.30),
-      z:pz+nz*flushBoxOffset(.30)},.30));
+     facadeGap(facade,{x:px+nx*flushBoxOffset(WINDOW_SILL_DEPTH),
+      z:pz+nz*flushBoxOffset(WINDOW_SILL_DEPTH)},WINDOW_SILL_DEPTH));
     // Photo-referenced white mullions: panes stop looking like flat blue rectangles.
     if(isBlueStar||isHouse||isSchool||isPanelBlock||j%2===0){
-     const bx=px+nx*flushBoxOffset(.09),
-      bz=pz+nz*flushBoxOffset(.09);
-     archPart('windowBar',bx,baseHeight+y,bz,.065,1.31,.09,rotation);
-     archPart('windowBar',bx,baseHeight+y+.07,bz,1.40,.045,.09,rotation);
+     const bx=px+nx*flushBoxOffset(WINDOW_FRAME_DEPTH),
+      bz=pz+nz*flushBoxOffset(WINDOW_FRAME_DEPTH);
+     archPart('windowBar',bx,baseHeight+y,bz,.065,1.31,WINDOW_FRAME_DEPTH,rotation);
+     archPart('windowBar',bx,baseHeight+y+.07,bz,1.40,.045,WINDOW_FRAME_DEPTH,rotation);
     }
     if(isPanelBlock&&j%3===0){
      archPart('panelSeam',px+nx*flushBoxOffset(.11)+ux*1.45,baseHeight+h*.5,
