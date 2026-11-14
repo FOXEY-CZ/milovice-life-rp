@@ -14,7 +14,18 @@ try{
  page.on('pageerror',error=>errors.push(String(error.stack||error)));
  page.on('console',message=>{if(message.type()==='error')errors.push('console: '+message.text())});
  await page.goto('http://127.0.0.1:8080/?roofAudit=1',{waitUntil:'domcontentloaded',timeout:30000});
- await page.waitForFunction(()=>window.__miloviceStarted===true,{timeout:45000});
+ try{
+  await page.waitForFunction(()=>window.__miloviceStarted===true,null,{timeout:45000});
+ }catch(error){
+  const pageState=await page.evaluate(()=>({
+   started:window.__miloviceStarted,
+   status:document.getElementById('status')?.textContent,
+   osmReady:window.__miloviceAreasLoaded,
+   loading:document.getElementById('osm-status')?.textContent
+  }));
+  throw new Error('Milovice startup failed: '+JSON.stringify(pageState)+
+   '; JS errors: '+JSON.stringify(errors.slice(-12))+'; '+String(error));
+ }
  await page.waitForFunction(()=>{
   const el=document.getElementById('rp-spawn');
   return el&&!el.hidden;
