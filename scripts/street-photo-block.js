@@ -6,6 +6,7 @@
  // keeping this module importable in standalone Node geometry tests.
 import {planSkolskaDormerRoof} from './skolska-roof.js';
 import {roofHeightAtPoint} from './roof-opening-geometry.js';
+import {exteriorFacadeFrame} from './facade-anchors.js';
 
 export const PHOTO_STREET_BLOCK=[
  {id:'202367194',name:'Mírová 134/11 · Modrá hvězda',street:'Mírová / 5. května',
@@ -65,23 +66,22 @@ export function pointFromGps(lat,lon){
  return {x:(lon-14.889)*111320*cos,z:-(lat-50.226)*111320};
 }
 export function photoFacingEdges(points,camera,{minLength=4,limit=2}={}){
- if(!Array.isArray(points)||points.length<3)return [];
+ if(!Array.isArray(points)||points.length<3||!camera||
+  !Number.isFinite(camera.x)||!Number.isFinite(camera.z))return [];
  const pts=points.map(p=>({x:p.x,z:p.z??p.y}));
  if(Math.hypot(pts[0].x-pts.at(-1).x,pts[0].z-pts.at(-1).z)<.15)pts.pop();
- const cx=pts.reduce((n,p)=>n+p.x,0)/pts.length,cz=pts.reduce((n,p)=>n+p.z,0)/pts.length;
  const edges=[];
  for(let i=0;i<pts.length;i++){
-  const a=pts[i],b=pts[(i+1)%pts.length],dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz);
-  if(len<minLength)continue;
-  const mx=(a.x+b.x)/2,mz=(a.z+b.z)/2;
-  let nx=-dz/len,nz=dx/len;
-  if(nx*(mx-cx)+nz*(mz-cz)<0){nx=-nx;nz=-nz}
+  // Facade direction MUST match the ordinary building/window generator.
+  // Centroid-to-wall flips normals at reflex L-/U-shaped courtyard edges.
+  const frame=exteriorFacadeFrame(pts,i);
+  if(!frame||frame.len<minLength)continue;
+  const {a,b,mx,mz,nx,nz,ux,uz,len,yaw}=frame;
   const d=Math.hypot(mx-camera.x,mz-camera.z);
-  // Prefer photographer-visible, outward-facing walls over walls across the building.
   const visibility=((camera.x-mx)*nx+(camera.z-mz)*nz)/Math.max(1,d);
   if(visibility<-.12)continue;
-  edges.push({index:i,a,b,mx,mz,nx,nz,ux:dx/len,uz:dz/len,len,
-   yaw:Math.atan2(nx,nz),distance:d,visibility,score:d-(visibility*6)-Math.min(len,25)*.11});
+  edges.push({index:i,a,b,mx,mz,nx,nz,ux,uz,len,
+   yaw,distance:d,visibility,score:d-(visibility*6)-Math.min(len,25)*.11});
  }
  return edges.sort((a,b)=>a.score-b.score).slice(0,limit);
 }
