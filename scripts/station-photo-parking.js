@@ -205,14 +205,15 @@ export function planStationPhotoParking(elements,roadClearance){
  if(segmentLength<65||segmentLength>160)return null;
  const ux=dx/segmentLength,uz=dz/segmentLength,nx=-uz,nz=ux;
  const cornerYaw=Math.atan2(-uz,ux);
- // Choose the outside of the mapped way with the greatest clearance
- // from the real Nádražní roadway; never invent a new road on the inside.
+ // Choose the side with greatest clearance to ALL mapped streets, not
+ // merely Nádražní. The opposite side is Školská (OSM 22880480):
+ // choosing it would bury the supposedly right-hand sidewalk in asphalt.
  const sideCandidates=[-1,1].map(side=>{
   const point={x:cornerPoint.x+nx*side*1.9,
    z:cornerPoint.z+nz*side*1.9};
-  return {side,distance:closestPointToPolyline(point,other)?.distance??0};
+  return {side,clearance:roadClearance.nearest(point)?.clearance??-Infinity};
  });
- sideCandidates.sort((a,b)=>b.distance-a.distance);
+ sideCandidates.sort((a,b)=>b.clearance-a.clearance);
  const cornerSide=sideCandidates[0].side;
  const cornerAt=(along,lateral)=>({
   x:cornerPoint.x+ux*along+nx*cornerSide*lateral,
