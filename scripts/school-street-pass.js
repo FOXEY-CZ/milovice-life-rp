@@ -65,3 +65,35 @@ export function schoolFacadeFixture(frame,along,thickness){
  const center=facadePoint(frame,along,flushBoxOffset(thickness,-.012));
  return {...center,yaw:frame.yaw,width:thickness};
 }
+
+/**
+ * Roof evidence for the MAIN modern school building (Školská 112/15).
+ * Official school annual reports 2021/22 and 2024/25 show a broad,
+ * shallow PITCHED light-grey roof. Street photos also show a slope.
+ * Rise and slope are not surveyed and the positions of rooflights are
+ * not reconstructed without exact photographic/geographic alignment.
+ */
+export const SCHOOL_ROOF_REFERENCE=
+ 'https://zsmilovice.cz/wp-content/uploads/2025/09/V%C3%BDro%C4%8Dn%C3%AD%20zpr%C3%A1va%202024-2025_sk.pdf';
+export function planSchoolPhotographedRoof(points){
+ if(!Array.isArray(points)||points.length<8||points.length>80)return null;
+ const pts=points.map(p=>({x:p.x,z:p.z??p.y}));
+ if(pts.some(p=>!Number.isFinite(p.x)||!Number.isFinite(p.z)))return null;
+ // Sufficient width for a multi-storey school, reject accidental use on
+ // detached residential houses with the same fallback material.
+ const width=Math.max(...pts.map(p=>p.x))-Math.min(...pts.map(p=>p.x));
+ const depth=Math.max(...pts.map(p=>p.z))-Math.min(...pts.map(p=>p.z));
+ if(Math.min(width,depth)<12)return null;
+ return {
+  osmId:SCHOOL_PHOTO_WAY_ID,
+  kind:'hip',
+  rise:1.85, // explicitly approximate; real roof pitch not surveyed
+  color:0x89979d,
+  material:'light-grey-metal',
+  reference:SCHOOL_ROOF_REFERENCE,
+  photographicPitch:true,
+  preciseRoofRidgeSurveyed:false,
+  rooflightLocationsVerified:false,
+  forceSafePerimeter:true
+ };
+}

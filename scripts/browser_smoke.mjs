@@ -144,6 +144,20 @@ try{
     commerce:grade.commerceDoors,hero:hero.groundedDoors},
    splitHeroPlinths:hero.doorPlinthOpenings,
    maxStep:grade.maxGroundStep}));
+ // 5.46: inspect ACTUAL generated roof faces of the 22-edge school.
+ // The old code silently returned a flat fallback that looked like none.
+ const schoolRoof=await page.evaluate(()=>
+  window.__miloviceSchoolRoofAudit||null);
+ if(!schoolRoof||schoolRoof.version!=='5.46'||
+    schoolRoof.osmId!==118487979||!schoolRoof.pitchedRendered||
+    schoolRoof.flatFallbackUsed||schoolRoof.faceCount<20||
+    schoolRoof.actualRise<.4||schoolRoof.targetRise<1.5||
+    !schoolRoof.safePerimeter||schoolRoof.maxEaveError>.025||
+    !schoolRoof.source?.includes('zsmilovice.cz'))
+  throw Error('5.46 school roof still missing, flat or geometrically unsafe: '+
+   JSON.stringify(schoolRoof));
+ console.log('5.46 school photo-informed pitched roof PASS:',
+  JSON.stringify(schoolRoof));
  const roofTopology=await page.evaluate(()=>window.__miloviceRoofTopologyAudit||null);
  if(!roofTopology||roofTopology.version!=='3.0'||
     roofTopology.processed<300||roofTopology.partitionable<100||

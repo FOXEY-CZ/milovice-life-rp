@@ -91,27 +91,37 @@ export function planCityBuildingRoof({footprint,triangles,baseY,rise,
  const pts=footprint.map(coord);
  const origin={x:pts.reduce((s,p)=>s+p.x,0)/pts.length,
   z:pts.reduce((s,p)=>s+p.z,0)/pts.length};
+ // Try the exact-footprint, perimeter-constrained hip if the ordinary
+ // affine planes fail area/finite tests. Previously we returned null here,
+ // and the caller silently replaced complex 20+ edge roofs with FLAT caps.
+ // The fallback retains the OSM perimeter, seals every eave and is marked
+ // provisional unless a photographic roof profile has been reviewed.
+ const safeHip=(reason,gap=0)=>{
+  if(kind!=='hip')return null;
+  const corrected=planPerimeterConstrainedRoof({
+   footprint:pts,triangles,baseY,rise,axis,kind
+  });
+  if(!corrected||corrected.maxEaveError>.025)return null;
+  return {...corrected,kind,roofBoundaryGapBefore:gap,
+   correctedBoundaryGap:corrected.maxEaveError,
+   sourceProfileRequired:true,reasonForConstrainedFallback:reason};
+ };
  const model=planFootprintPitchedRoof({
   triangles,origin,axis,kind,eaveY:baseY,rise
  });
  if(!model||model.relativeAreaError>1e-4||!model.faces.length||
-  model.faces.some(face=>face.some(p=>!Number.isFinite(p.y))))return null;
+  model.faces.some(face=>face.some(p=>!Number.isFinite(p.y))))
+  return safeHip('invalid-affine-plan');
  // Boundary-height QUALITY GATE for every future building:
  // a basic bounding-box hip is not valid on many skewed, L or
  // cut-corner footprints. Its apparent eave can end >1m above the wall,
  // producing huge exposed triangular panels and dark roof flaps.
  const gap=roofBoundaryGap({...model,origin},pts);
- if(!Number.isFinite(gap))return null;
+ if(!Number.isFinite(gap))return safeHip('invalid-boundary-gap');
  if(kind==='hip'&&gap>.10){
-  const corrected=planPerimeterConstrainedRoof({
-   footprint:pts,triangles,baseY,rise,axis,kind
-  });
-  // Fail closed: never render the known-bad pitched geometry when the
-  // safe envelope cannot be created. Caller uses a flat fallback.
-  if(!corrected||corrected.maxEaveError>.025)return null;
-  return {...corrected,kind,roofBoundaryGapBefore:gap,
-   correctedBoundaryGap:corrected.maxEaveError,
-   sourceProfileRequired:true};
+  // For a complex U/T/22-edge outline, the global hip can float metres
+  // above real wall edges. Substitute an area-conserving local roof instead.
+  return safeHip('eave-does-not-follow-OSM-wall',gap);
  }
  return {...model,origin,kind,globalAxis:axis,roofBoundaryGapBefore:gap};
 }
