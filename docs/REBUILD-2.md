@@ -76,3 +76,17 @@ Zdroj: https://www.kdykde.cz/rejstrik/kostel-sv-kateriny-alexandrijske/ (Mírov�
 - Automatický test rebuild2-survey.test.mjs chrání před ztrátou OSM objektů, duplikací zdrojů a chybným přiřazením křižovatky. Nejde o automatický důkaz fotografické 3D shody; ta musí následovat před opravami fasád, parkování a mobiliáře.
 
 **Další fyzický rebuild:** Nádražní projít od jednoho konce k druhému přes všechny přiřazené i hraniční objekty; opravovat pouze to, co potvrdí fotografie nebo geodata. Zachovat stávající kolize a kontrolu FPS. V této fázi se 3D modely svévolně nepřestavovaly.
+
+
+## PART 12 — 5.57: první skutečná 3D oprava u nástupiště
+
+**Změna je přímo v herní scéně**, nikoli jen na kontrolním dashboardu. Na železniční straně stanice (OSM 53865956) se nyní vytváří **kompaktní, konstrukčně přiznaná zastřešená část** nad mapovaným nástupištěm OSM 549346219 (railway=platform, shelter=yes). Vychází z [fotografie nástupiště z 25. 5. 2013 (Palickap, CC BY-SA 3.0)](https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_n%C3%A1stupi%C5%A1t%C4%9B.jpg). Fotografie potvrzuje existenci typu konstrukce v roce 2013, **nepřináší však přesné geodetické rozměry ani automatický důkaz stavu roku 2026**.
+
+- Nový čistý plánovač scripts/station-platform-canopy.js: všechny rohy a nosníky vycházejí z přímé vnější hrany skutečného OSM půdorysu nádraží a pouze směrem **dovnitř skutečného polygonu železničního nástupiště**. Nikdy nevytváří 29m stříšku u silnice a cyklověže; ta zůstává odstraněná.
+- Z více kandidátů se bere nejdelší **souvislá** a bezpečná strana zdiva; na aktuálních datech cca **15,00 m**. Nepropojuje oddělené hrany přes výklenky a nedělá náhodné vyčnívající střechy.
+- Vzhled je pouze foto-inspirovaný: přesah přibližně **2,2 m**, lehce skloněný nízký kryt s kovovou konstrukcí, bez průchozích volně stojících sloupů. Vše přiznané jako **odhad**, vyžaduje hráčské 360° porovnání.
+- Navázání na terén: konstrukce používá **stejnou vypočtenou základní výšku** jako budova nádraží (zjištěnou při tvorbě skutečného modelu, nikoli nezávislé vzorkování DEM na krajích), takže nezůstává výšková mezera vůči fasádě. Pod stříškou zůstává pěší průchod.
+- Railway-clearance testuje také krátké dvoubodové OSM koleje; zastřešení nesmí zasáhnout do vlakové trasy. 3D část přidává nejvýše **3 draw cally** (střešní líc, podhled a instancované konzoly), žádnou per-frame geometrii.
+- Přidána automatická kontrola scripts/station-platform-canopy.test.mjs v GitHub Actions, včetně obráceného pořadí vrcholů polygonu, nulové stříšky bez podkladu, vlakové vůle, společné výšky a omezeného renderovacího rozpočtu. **Bez fotografického schválení z telefonu se Nádražní nepovažuje za dokončenou.**
+
+**Další opravy celého bloku:** obě strany silnice, skutečná pozice parkování, pěší přístup a schody, stanoviště A/B, budovy a fasády po jednotlivých OSM ID, návaznost na Školskou a 5. května, následně kostelní blok. Nezaměňovat dílčí model zastřešení za hotovou ulici.
