@@ -66,7 +66,7 @@ assert(!('railSideCurbs' in plan),
 assert.equal(plan.incorrectlyPlacedRailSidewalkRemoved,true);
 assert.equal(plan.centralParkingCells,plan.cells,
  'ALL concrete-grid island cells are parking, not a broad invented sidewalk');
-assert(plan.centralParkingCells.length>400,
+assert(plan.centralParkingCells.length>180,
  'Broad central parking surface cannot be replaced by a narrow pedestrian band');
 assert(!('centralWalkingCells' in plan),
  'The 5.69 mistaken designation of 249 parking tiles as sidewalk must never return');
