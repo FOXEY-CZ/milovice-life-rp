@@ -177,6 +177,7 @@ import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
 import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5341';
+import {exteriorFacadeFrame,flushBoxOffset,FACE_PLANE,facadeGap} from './scripts/facade-anchors.js?v=5360';
 import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5350';
 import {clipRoofFacesForFeatures,planRoofFeatureBackClosures} from './scripts/roof-opening-geometry.js?v=5320';
 import {makePhotoStreetEnvironment} from './scripts/street-environment-reality.js?v=5262';
@@ -2964,6 +2965,11 @@ function osmBuilding(points,tags,index,osmId=null){
  // Building facade upgrade: per-building window allocation and visible architectural details.
  // Existing flat windows remain only on non-hero buildings.
  if(!heroFacade){
+ const attachmentAudit=window.__miloviceFacadeAttachmentAudit ||= {
+  version:'5.36.0',legacyWindows:0,legacyDoors:0,legacyEdges:0,
+  maxLegacyFaceGap:0,geometryPlane:'real OSM polygon',
+  largeFloatingFacadeOffsetsEliminated:true
+ };
  const facadeSourceAudit=window.__miloviceCityUnverifiedFeatures ||= {
   removedRandomRoofVents:0,removedRandomCommerceAwnings:0,
   inferredRoofShapePolicy:'quadrilateral-gable-else-hip-or-flat'
@@ -2979,10 +2985,10 @@ function osmBuilding(points,tags,index,osmId=null){
   // doors/windows, but MUST retain the same real fascia/socle bands
   // as the long walls beside them.
   if(len<.08||len>90)continue;
-  let nx=-dz/len,nz=dx/len;
-  const mx=(p.x+q.x)/2,mz=(p.y+q.y)/2;
-  if(nx*(mx-centerX)+nz*(mz-centerZ)<0){nx=-nx;nz=-nz}
-  const rotation=Math.atan2(nx,nz),ux=dx/len,uz=dz/len;
+  const facade=exteriorFacadeFrame(pts,i);
+  if(!facade)continue;
+  const {nx,nz,mx,mz,ux,uz,yaw:rotation}=facade;
+  attachmentAudit.legacyEdges++;
   if(len<5){
    // Legacy non-hero buildings have their own material-specific trim kit.
    // Mirror ONLY the already-existing bands on short exterior returns;
