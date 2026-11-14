@@ -81,7 +81,7 @@ export function planNadrazniGarageCourt(garages=[]){
         const forward=vx*nx+vz*nz,lateral=Math.abs(vx*nz-vz*nx);
         // Two rows separated by a shared open court. Nearby units in the
         // same row (3m apart) are deliberately excluded by >=8m clearance.
-        if(forward<8||forward>33||lateral>5.2)continue;
+        if(forward<8||forward>33||lateral>6.25)continue;
         if(segmentsCollideWithGarageOutline(a,b,items,g.id,h.id))continue;
         const score=lateral*1.4+Math.abs(forward-19.5)*.09;
         if(!best||score<best.score){
@@ -95,13 +95,14 @@ export function planNadrazniGarageCourt(garages=[]){
     }
     if(best)result.set(g.id,best);
   }
-  // A legitimate row has a stable orientation on BOTH sides of the
-  // courtyard. An isolated accidentally matched garage must not turn into
-  // an invented shutter on the wrong street facade.
-  if(result.size<6)return new Map();
-  const bothSides=[...result.values()].filter(g=>result.has(g.opposingId));
-  if(bothSides.length<6)return new Map();
-  for(const [id,entry] of result)if(!result.has(entry.opposingId))
-    result.delete(id);
+  // Require many pairings across TWO opposing rows. The nearest mapped
+  // unit on the opposite side is not necessarily reciprocal when rows have
+  // a staggered 3 m rhythm, so do NOT delete those legitimate garage bays.
+  if(result.size<12)return new Map();
+  const normals=[...result.values()].map(v=>v.normal);
+  const main=normals[0];
+  const forward=normals.filter(n=>n.x*main.x+n.z*main.z>.90).length;
+  const backward=normals.filter(n=>n.x*main.x+n.z*main.z<-.90).length;
+  if(forward<5||backward<5)return new Map();
   return result;
 }
