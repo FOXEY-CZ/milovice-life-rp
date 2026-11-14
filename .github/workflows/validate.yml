@@ -23,6 +23,8 @@ jobs:
         run: node scripts/rebuild2-survey.test.mjs
       - name: Validate physical railway-side platform canopy and zero floating supports
         run: node scripts/station-platform-canopy.test.mjs
+      - name: Validate north Nádražní garage-court fronts from real OSM rows
+        run: node scripts/nadrazni-garage-court.test.mjs
       - name: Validate adaptive mobile frame-rate and detail budgets
         run: node scripts/performance-governor.test.mjs
       - name: Validate ground-level thresholds at ALL building entrances
