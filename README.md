@@ -1,3 +1,26 @@
+# Milovice RP 5.66 — skutečné dvoustranné parkování před nádražím
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5660  
+**Nádražní inventář celé ulice:** https://foxey-cz.github.io/milovice-life-rp/survey.html?id=old%3AN%C3%A1dra%C5%BEn%C3%AD
+
+## Fotografické doklady a skutečná mapová osa
+
+- [Milovice, nádraží, parkoviště.jpg](https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_parkovi%C5%A1t%C4%9B.jpg), ŠJů, **30. 5. 2024**, CC BY 4.0, kamera **50.2297692, 14.8823936**, azimut 200°.
+- [Milovice, nádraží, parkoviště (01).jpg](https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_parkovi%C5%A1t%C4%9B_(01).jpg), stejný autor, datum a licence, kamera **50.2296525, 14.8823131**, azimut 200°.
+- Obě fotografie zobrazují **asfaltový průjezd a parkovací stání po obou stranách**, světle šedé zatravňovací/rastrační betonové tvárnice, obrubníky a v blízkosti železniční provoz. Kamera stojí u **skutečné OSM jednosměrné servisní komunikace way 675778842** (průměrná kolmá odchylka kamer od osy 0,27 a 1,16 m). Zaměření přesných hran jednotlivých stání dostupné není; **počet míst ani jejich hranice není tvrzen jako geodeticky přesný**.
+
+## Skutečně provedená změna
+
+Nová 3D vrstva `scripts/station-photo-parking.js` staví na tomto konkrétním OSM úseku cca **25 viditelných parkovacích panelů**, po dvou stranách přístupové komunikace. Materiál je vlastnoruční procedurální 3D geometrie: **700 nízkých světlých dlažebních segmentů** na zeleně prokresleném podkladě a subtilní betonové obruby, pouze **3 InstancedMesh / 3 draw cally**. Počet panelů je modelovací aproximace, nikoliv doklad oficiální kapacity parkoviště.
+
+Každý celý parkovací obdélník se kontroluje proti všem načteným **OSM vozovkám a pěším cestám**; další vzorkování odmítá kandidáty u **budov a provozních železničních kolejí**. V testech projde **25 z 26 navržených panelů** (13 na jedné straně, 12 na druhé), jedno odmítnutí kvůli prostorové kolizi. Kandidáti na parkující auta z původního provozního systému zůstali nezměněni; **nepřidáváme auta z fotografie roku 2024 jako pevné kulisy**, abychom netvrdili jejich aktuální přítomnost.
+
+Zachována cyklověž 5.64 se všemi 52 interními nosníky, autobusové sloupky A/B 5.65, stříška nástupiště, nádražní budova, obě řady opravených garáží a ostatní město. Nebyly přidány stromový ostrůvek, dvojramenná lampa, parkovací značka ani zábradlí: jsou na fotografiích viditelné, ale **jejich přesné kotevní polohy jsme ještě neodvodili z nezávislého podkladu**.
+
+**Kontrola:** `scripts/station-photo-parking.test.mjs` ověřuje identitu OSM komunikace, GPS obou fotografií, obě řady, 2D vůle a zachování předchozích vrstev; GitHub Actions WebGL smoke ověřuje skutečné vykreslení a limit tří draw callů. Mobilní 360° kontrola stále není dokončená. Neodvozujeme stav roku 2026 ze snímků roku 2024.
+
+---
+
 # Milovice RP 5.65 — fotografické přednádraží, směrové tabule autobusových stanovišť A/B
 
 **Spustit hru:** https://foxey-cz.github.io/milovice-life-rp/?v=5650  
