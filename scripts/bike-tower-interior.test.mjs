@@ -46,9 +46,10 @@ for(const fragment of [
  'createBikeTowerSteelwork(THREE,g,steelPlan)',
  'window.__miloviceBikeTowerInterior={',
  'externalFootprintUnchanged:true',
- 'addedStreetFurniture:0',
- "const BUILD_ID='20261114-bike-tower-interior-5640'"
+ 'addedStreetFurniture:0'
 ])assert(prior.includes(fragment),'Missing real in-game photo-derived steelwork '+fragment);
+assert.match(prior,/const BUILD_ID='[a-zA-Z0-9-]+';/,
+ 'Each subsequent version must keep a non-empty runtime build identifier');
 assert(prior.includes('miloviceBikeTower(pts,baseHeight)'),
  'Bike Tower must still occupy SAME OSM building footprint');
 assert(prior.includes('station-photo-forecourt')||prior.includes('station-forecourt-pass'),
