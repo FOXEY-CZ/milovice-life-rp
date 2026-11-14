@@ -177,7 +177,7 @@ import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
 import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5360';
-import {exteriorFacadeFrame,selectExteriorFacadeToward,facadePoint,flushBoxOffset,FACE_PLANE,facadeGap} from './scripts/facade-anchors.js?v=5380';
+import {exteriorFacadeFrame,selectExteriorFacadeToward,splitFacadeStripForOpening,facadePoint,flushBoxOffset,FACE_PLANE,facadeGap} from './scripts/facade-anchors.js?v=5390';
 import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5370';
 import {clipRoofFacesForFeatures,planRoofFeatureBackClosures} from './scripts/roof-opening-geometry.js?v=5320';
 import {makePhotoStreetEnvironment} from './scripts/street-environment-reality.js?v=5262';
@@ -1843,16 +1843,26 @@ function miloviceBlueStarDetail(pts,base,h,cx,cz){
  if(!face)return;
  const dirX=face.nx,dirZ=face.nz;
  const entranceX=face.mx,entranceZ=face.mz,yaw=face.yaw;
+ // The building plinth is higher than some adjoining terrain samples.
+ // Anchor the door's actual BOTTOM to the local path grade, keeping the
+ // photographed semicircular head and balcony heights unchanged.
+ const approachY=terrainAt(entranceX+dirX*.28,entranceZ+dirZ*.28);
+ const floorY=Number.isFinite(approachY)?
+  Math.min(base+.035,approachY+.025):base+.035;
+ const doorTop=base+2.235,jambTop=base+2.285;
+ const doorCenter=(doorTop+floorY)*.5,doorHeight=doorTop-floorY;
+ const jambCenter=(jambTop+floorY)*.5,jambHeight=jambTop-floorY;
  // Source photo: narrow arched entrance, not an opaque red/white rectangle.
- archPart('darkWood',entranceX+dirX*flushBoxOffset(.09,-.012),base+1.14,
-  entranceZ+dirZ*flushBoxOffset(.09,-.012),1.17,2.19,.09,yaw);
+ archPart('darkWood',entranceX+dirX*flushBoxOffset(.09,-.012),doorCenter,
+  entranceZ+dirZ*flushBoxOffset(.09,-.012),1.17,doorHeight,.09,yaw);
  for(const sign of [-1,1]){
   const ux=Math.cos(yaw),uz=-Math.sin(yaw);
   archPart('starWhite',entranceX+dirX*flushBoxOffset(.12,-.012)+ux*sign*.66,
-   base+1.16,entranceZ+dirZ*flushBoxOffset(.12,-.012)+uz*sign*.66,.09,2.25,.12,yaw);
+   jambCenter,entranceZ+dirZ*flushBoxOffset(.12,-.012)+uz*sign*.66,
+   .09,jambHeight,.12,yaw);
  }
- archPart('starWhite',entranceX+dirX*flushBoxOffset(.14,-.012),base+.11,
-  entranceZ+dirZ*flushBoxOffset(.14,-.012),1.35,.12,.14,yaw);
+ archPart('starWhite',entranceX+dirX*flushBoxOffset(.14,-.012),floorY+.045,
+  entranceZ+dirZ*flushBoxOffset(.14,-.012),1.35,.09,.14,yaw);
  // Historic-style white balcony, metal balustrade and the pale upper door.
  archPart('starBalcony',entranceX+dirX*flushBoxOffset(.96,-.012),base+3.49,
   entranceZ+dirZ*flushBoxOffset(.96,-.012),2.48,.16,.96,yaw);
@@ -1900,6 +1910,9 @@ function miloviceBlueStarDetail(pts,base,h,cx,cz){
  window.__miloviceLandmarkDebug.blueStarVirtualCornerRemoved=true;
  window.__miloviceLandmarkDebug.blueStarRealWallEdge=face.index;
  window.__miloviceLandmarkDebug.blueStarRealWallLength=+face.len.toFixed(3);
+ window.__miloviceLandmarkDebug.blueStarEntranceFloorY=+floorY.toFixed(3);
+ window.__miloviceLandmarkDebug.blueStarEntranceApproachY=+approachY.toFixed(3);
+ window.__miloviceLandmarkDebug.blueStarEntryRaisedSillRemoved=true;
  window.__miloviceLandmarkDebug.blueStarMaxFixtureWallGap=facadeGap(face,
   facadePoint(face,0,flushBoxOffset(.96,-.012)),.96);
 }
@@ -3051,6 +3064,33 @@ function osmBuilding(points,tags,index,osmId=null){
  };
  facadeSourceAudit.suppressedRandomShutters ||= 0;
  facadeSourceAudit.suppressedRandomBalconies ||= 0;
+ // Use the very SAME mapped corner edge for the photo door and its
+ // masonry base. A full-height grey base strip had been drawn IN FRONT
+ // of the entrance for the first 50cm, hiding the door's actual bottom.
+ // Splitting just the door interval retains the rest of the plinth on both
+ // sides of the corner; neighboring walls stay continuous.
+ const blueStarEntranceFace=isBlueStar?selectExteriorFacadeToward(pts,
+  osmPoint({lat:50.2280572,lon:14.8840981}),{
+   minLength:2.8,maxLength:7.2}):null;
+ if(blueStarEntranceFace){
+  window.__miloviceLandmarkDebug ||= {};
+  window.__miloviceLandmarkDebug.blueStarPlinthOpeningCount=0;
+ }
+ function blueStarPlinth(face){
+  const portal=blueStarEntranceFace?.index===face.index;
+  const pieces=portal?
+   splitFacadeStripForOpening(face,{along:0,width:1.48,padding:.045}):
+   [{along:0,width:face.len}];
+  for(const piece of pieces){
+   const point=facadePoint(face,piece.along,flushBoxOffset(.17));
+   archPart('foundationBand',point.x,baseHeight+.25,point.z,
+    piece.width,.50,.17,face.yaw);
+  }
+  if(portal){
+   window.__miloviceLandmarkDebug ||= {};
+   window.__miloviceLandmarkDebug.blueStarPlinthOpeningCount++;
+  }
+ }
  // Windows/doors remain explicitly provisional until a photo is reviewed;
  // undocumented decorative extras must not become false local landmarks.
  const visibleFloors=tags.shop==='supermarket'||isGarage||isChurch?0:isBlueStar||isMirova36?2:isGrocer74?1:isIndustrial?1:isPanelBlock?Math.min(floors,16):Math.min(Math.max(1,Math.floor(h/3)),8);
@@ -3079,7 +3119,7 @@ function osmBuilding(points,tags,index,osmId=null){
     archPart('panelSeam',mx+nx*flushBoxOffset(.14),baseHeight+h-.38,mz+nz*flushBoxOffset(.14),len,.10,.14,rotation);
     bands+=3;
    }else if(isBlueStar){
-    archPart('foundationBand',mx+nx*flushBoxOffset(.17),baseHeight+.25,mz+nz*flushBoxOffset(.17),len,.50,.17,rotation);
+    blueStarPlinth(facade);
     archPart('starWhite',mx+nx*flushBoxOffset(.16),baseHeight+3.48,mz+nz*flushBoxOffset(.16),len,.12,.16,rotation);
     archPart('starWhite',mx+nx*flushBoxOffset(.26),baseHeight+h-.27,mz+nz*flushBoxOffset(.26),len,.23,.26,rotation);
     bands+=3;
@@ -3131,7 +3171,7 @@ function osmBuilding(points,tags,index,osmId=null){
    }
   }
   if(isBlueStar){
-   archPart('foundationBand',mx+nx*flushBoxOffset(.17),baseHeight+.25,mz+nz*flushBoxOffset(.17),len,.50,.17,rotation);
+   blueStarPlinth(facade);
    archPart('starWhite',mx+nx*flushBoxOffset(.16),baseHeight+3.48,mz+nz*flushBoxOffset(.16),len,.12,.16,rotation);
    archPart('starWhite',mx+nx*flushBoxOffset(.26),baseHeight+h-.27,mz+nz*flushBoxOffset(.26),len,.23,.26,rotation);
   }
