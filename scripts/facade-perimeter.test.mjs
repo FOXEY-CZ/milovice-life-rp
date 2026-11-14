@@ -102,7 +102,7 @@ const world=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert(!world.includes('if(len<5||len>90)continue'),
  'No short mapped facade edge may be dropped before its trim is considered');
 assert(world.includes('if(len<5){')&&
- world.includes("archPart('foundationBand',mx+nx*.22,baseHeight+.52"),
+ world.includes("archPart('foundationBand',mx+nx*flushBoxOffset(.10),baseHeight+.52"),
  'Existing non-hero foundation band must continue on short returns');
 assert(world.includes('window.__miloviceLegacyFacadeBandAudit'),
  'Instrument the fallback renderer for missing short-edge trim');
