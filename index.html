@@ -3127,26 +3127,30 @@ function osmBuilding(points,tags,index,osmId=null){
   if(auditedCore&&inventedEntrance)legacyRealityAudit.suppressed('suppressedDoors');
   if(!auditedCore&&inventedEntrance){
   let longest=null;
-  for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length],len=a.distanceTo(b);if(len>5&&(!longest||len>longest.len))longest={a,b,len}}
+  for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length],len=a.distanceTo(b);if(len>5&&(!longest||len>longest.len))longest={a,b,len,i}}
   if(longest){
    const a=longest.a,b=longest.b,dx=b.x-a.x,dz=b.y-a.y,len=longest.len;
-   let nx=-dz/len,nz=dx/len;const mx=(a.x+b.x)*.5,mz=(a.y+b.y)*.5;
-   if(nx*(mx-centerX)+nz*(mz-centerZ)<0){nx=-nx;nz=-nz}
-   const yaw=Math.atan2(nx,nz),ux=dx/len,uz=dz/len;
-   const doorx=mx+nx*.60,doorz=mz+nz*.60;
+   const entrance=exteriorFacadeFrame(pts,longest.i);
+   if(!entrance)throw Error('Mapped exterior entrance edge is degenerate');
+   const {nx,nz,mx,mz,ux,uz,yaw}=entrance;
+   const doorx=mx+nx*flushBoxOffset(.12),doorz=mz+nz*flushBoxOffset(.12);
    archPart('darkWood',doorx,baseHeight+1.16,doorz,1.28,2.22,.12,yaw);
-   archPart('bronze',doorx+ux*.48,baseHeight+1.23,doorz+uz*.48,.06,.14,.16,yaw);
+   archPart('bronze',doorx+ux*.48+nx*.12,baseHeight+1.23,
+    doorz+uz*.48+nz*.12,.06,.14,.16,yaw);
+   attachmentAudit.legacyDoors++;
+   attachmentAudit.maxLegacyFaceGap=Math.max(attachmentAudit.maxLegacyFaceGap,
+    facadeGap(entrance,{x:doorx,z:doorz},.12));
    if(isSchool){
-    archPart('glassAwning',mx+nx*1.42,baseHeight+2.58,mz+nz*1.42,4.2,.13,2.45,yaw);
-    schoolFacadeSign('ZŠ T. G. MASARYKA',mx+nx*.78,baseHeight+4.34,mz+nz*.78,yaw);
+    archPart('glassAwning',mx+nx*flushBoxOffset(2.45),baseHeight+2.58,mz+nz*flushBoxOffset(2.45),4.2,.13,2.45,yaw);
+    schoolFacadeSign('ZŠ T. G. MASARYKA',mx+nx*flushBoxOffset(.16),baseHeight+4.34,mz+nz*flushBoxOffset(.16),yaw);
    }else if(isStation){
-    archPart('glassAwning',mx+nx*1.45,baseHeight+2.9,mz+nz*1.45,Math.min(11,len*.72),.24,2.9,yaw);
-    stationFacadeSign('Milovice',mx+nx*.85,baseHeight+4.45,mz+nz*.85,yaw);
+    archPart('glassAwning',mx+nx*flushBoxOffset(2.9),baseHeight+2.9,mz+nz*flushBoxOffset(2.9),Math.min(11,len*.72),.24,2.9,yaw);
+    stationFacadeSign('Milovice',mx+nx*flushBoxOffset(.16),baseHeight+4.45,mz+nz*flushBoxOffset(.16),yaw);
    }else if(isPanelBlock){
-    archPart('panelEntry',mx+nx*.96,baseHeight+2.57,mz+nz*.96,3.2,.18,1.6,yaw);
-    archPart('whiteTrim',mx+nx*.50,baseHeight+1.37,mz+nz*.50,1.65,2.42,.12,yaw);
+    archPart('panelEntry',mx+nx*flushBoxOffset(1.6),baseHeight+2.57,mz+nz*flushBoxOffset(1.6),3.2,.18,1.6,yaw);
+    archPart('whiteTrim',mx+nx*flushBoxOffset(.12),baseHeight+1.37,mz+nz*flushBoxOffset(.12),1.65,2.42,.12,yaw);
    }else if(oldCenter||!isIndustrial){
-    archPart('glassAwning',mx+nx*.88,baseHeight+2.53,mz+nz*.88,2.45,.11,.88,yaw);
+    archPart('glassAwning',mx+nx*flushBoxOffset(.88),baseHeight+2.53,mz+nz*flushBoxOffset(.88),2.45,.11,.88,yaw);
    }
   }
  }
