@@ -18,7 +18,7 @@ export function classifyFacadeEdgeLength(length,{
  * the edge normals differ. No new draw materials are needed.
  */
 export function planFacadePerimeterTrims(a,b,centroid,{
- base=0,height=3,cornerOverlap=.08
+ base=0,height=3,cornerOverlap=.08,frame=null
 }={}){
  const z=p=>p?.z??p?.y;
  const az=z(a),bz=z(b),cz=z(centroid);
@@ -28,7 +28,15 @@ export function planFacadePerimeterTrims(a,b,centroid,{
  if(classifyFacadeEdgeLength(len)==='degenerate')return null;
  const ux=dx/len,uz=dz/len,mx=(a.x+b.x)*.5,mz=(az+bz)*.5;
  let nx=-uz,nz=ux;
- if(nx*(mx-centroid.x)+nz*(mz-cz)<0){nx=-nx;nz=-nz;}
+ if(frame){
+  // The same winding-derived exterior normal as the windows/doors.
+  // A concave building centroid may lie on the wrong side of a return.
+  if(!Number.isFinite(frame.nx)||!Number.isFinite(frame.nz)||
+   Math.hypot(frame.nx,frame.nz)<.99)return null;
+  nx=frame.nx;nz=frame.nz;
+ }else if(nx*(mx-centroid.x)+nz*(mz-cz)<0){
+  nx=-nx;nz=-nz;
+ }
  const yaw=Math.atan2(nx,nz);
  const width=len+2*Math.min(cornerOverlap,len*.08);
  const band=(kind,offset,y,h,depth)=>({
@@ -36,6 +44,6 @@ export function planFacadePerimeterTrims(a,b,centroid,{
   width,height:h,depth,yaw
  });
  return {length:len,ux,uz,nx,nz,mx,mz,yaw,
-  base:band('base',.09,base+.23,.46,.16),
-  upper:band('sill',.15,base+height-.12,.20,.28)};
+  base:band('base',.085,base+.23,.46,.16),
+  upper:band('sill',.148,base+height-.12,.20,.28)};
 }
