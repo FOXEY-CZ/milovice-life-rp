@@ -1,9 +1,10 @@
-// Milovice RP 5.67 — repairs the unpaved green wedge in the photographed
-// Milovice railway-station forecourt. OSM defines the TWO bounding driveways;
-// the user's 2022 Mapy.com screenshot independently confirms a broad pale
-// paver island between asphalt lanes, with a rounded end. NO copyrighted
-// screenshot pixels are imported or used as textures. Exact curb/stone outlines
-// are NOT surveyed. Original 5.66 isolated narrow strips are removed.
+// Milovice RP 5.68 — BOTH photographed parking halves and a protected sidewalk.
+// The 2022 user comparison shows a pale central island BETWEEN two mapped
+// roads and a second row of grass-grid parking on the RAIL SIDE of the
+// western access road, plus an outer paved pedestrian strip. 5.67 rebuilt
+// only the central island. This pass makes all three distinct surfaces.
+// Geometry is source-constrained, approximate, and drawn from our own shapes.
+// NO Mapy.com screenshot pixels, panoramas, or textures are redistributed.
 import {isRoadFreeRect} from './road-clearance.js';
 import {stationGpsToWorld} from './station-forecourt-pass.js';
 
@@ -20,6 +21,8 @@ export const STATION_PARKING_REFERENCE=Object.freeze({
  userReference:'user-shared 2022-05-17 Mapy.com comparison, observation only, no image retained',
  observed:['two dark asphalt routes bound a large pale paved parking island',
   'wide pale concrete-block paving rather than narrow detached strips',
+  'second grass-grid parking row across the western access road',
+  'outer light-paved sidewalk and curved kerb beside the rail-side parking',
   'rounded island tip and a low kerb','bike tower and rail-side vegetation'],
  excluded:['unlocated trees and traffic signs','imaginary parked cars','invented new asphalt roads'],
  accuracy:'Photo-informed broad surface and tip. Only OSM road centerlines are georeferenced. Edges, counts and paving pattern are approximations.'
@@ -143,7 +146,57 @@ export function planStationPhotoParking(elements,roadClearance){
   }
  }
  if(!cells.length)return null;
+ // 5.68: opposite (rail-side) parking is a SEPARATE row across the existing
+ // western access asphalt. The screenshot shows grass-grid slabs there.
+ // Reserve a FULL 1.54m pedestrian strip outside the parking; never assume
+ // every untagged grassy patch belongs to the parking bay.
+ const railSideParking=[],railSidewalk=[],railSideCurbs=[],railRejected=[];
+ const railParkingOffset=-5.03,railParkingDepth=4.02;
+ const walkwayOffset=-8.35,walkwayWidth=1.54;
+ const parkingOuterEdge=Math.abs(railParkingOffset)+railParkingDepth*.5;
+ const walkwayInnerEdge=Math.abs(walkwayOffset)-walkwayWidth*.5;
+ const separation=walkwayInnerEdge-parkingOuterEdge;
+ if(separation<.45)throw Error('Rail-side parking would obstruct the pedestrian route');
+ const safePlace=(p,length,depth,buffer=.12)=>{
+  if(!isRoadFreeRect(roadClearance,{...p,length,depth,yaw:f.yaw,buffer,step:.36}))
+   return 'mapped-road-or-footway';
+  for(let i=-3;i<=3;i++)for(let j=-4;j<=4;j++){
+   const q=at(f,(p.x-f.a.x)*f.ux+(p.z-f.a.z)*f.uz+i*length/6,
+    (p.x-f.a.x)*f.nx+(p.z-f.a.z)*f.nz+j*depth/8);
+   if(buildings.some(poly=>signedPolygonGap(q,poly)<.30))return 'building-footprint';
+   if(rails.some(line=>(closestPointToPolyline(q,line)?.distance??Infinity)<2.30))
+    return 'railway-clearance';
+  }
+  return null;
+ };
+ for(let along=8;along<=Math.min(65,f.length-8);along+=2.85){
+  const p=at(f,along,railParkingOffset);
+  const failure=safePlace(p,2.46,railParkingDepth);
+  if(failure)railRejected.push({along,kind:'parking',reason:failure});
+  else railSideParking.push({...p,along,offset:railParkingOffset,yaw:f.yaw,
+   length:2.46,depth:railParkingDepth});
+ }
+ // The physical sidewalk alignment is a photo-informed approximation until
+ // an independent mapped path becomes available; it is not claimed as OSM.
+ // Keep the already mapped 1165594426 path entirely untouched.
+ for(let along=6;along<=Math.min(67,f.length-6);along+=.80){
+  const p=at(f,along,walkwayOffset);
+  const failure=safePlace(p,.74,walkwayWidth,.08);
+  if(failure)railRejected.push({along,kind:'sidewalk',reason:failure});
+  else{
+   railSidewalk.push({...p,along,offset:walkwayOffset,yaw:f.yaw,
+    length:.74,depth:walkwayWidth});
+   // Separate slim kerb near the parking edge, not over the walkway itself.
+   const curb=at(f,along,-7.39);
+   if(!safePlace(curb,.68,.12,.04))
+    railSideCurbs.push({...curb,along,yaw:f.yaw});
+  }
+ }
  return {cells,curbs,rejected,rowStats,frame:f,cameras,
+  railSideParking,railSidewalk,railSideCurbs,railRejected,
+  parkingBanks:['central-between-roads','opposite-rail-side'],
+  pedestrianCorridorWidth:walkwayWidth,pedestrianSeparation:separation,
+  mappedFootwayIdPreserved:1165594426,
   sourceIds:[west.id,east.id],sourcePhotos:STATION_PARKING_REFERENCE.photos.length,
   groundType:'concrete-paving-island',exactParkingOutlineMeasured:false,
   photoInformed:true,modelledRoundedNose:true,legacyDetachedStripsRemoved:true,
@@ -155,7 +208,10 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
  const material={
   grout:new THREE.MeshLambertMaterial({color:0x92928a}),
   paver:new THREE.MeshLambertMaterial({color:0xc7c6bd}),
-  curb:new THREE.MeshLambertMaterial({color:0xb9b9b3})
+  curb:new THREE.MeshLambertMaterial({color:0xb9b9b3}),
+  railGrid:new THREE.MeshLambertMaterial({color:0x69794f}),
+  railPaver:new THREE.MeshLambertMaterial({color:0xc1c3b9}),
+  sidewalk:new THREE.MeshLambertMaterial({color:0xc9c7bd})
  };
  let planned=null,drawMeshes=0,instances=0;
  const stats=()=>({
@@ -164,7 +220,13 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   pavingCells:planned?.cells.length||0,curbSegments:planned?.curbs.length||0,
   rejectedCells:planned?.rejected.length||0,
   coveredRows:planned?.rowStats.filter(r=>r.accepted>0).length||0,
-  surface:'continuous-photo-informed-paved-median',
+  parkingBanks:planned?.parkingBanks||[],
+  oppositeParkingBays:planned?.railSideParking.length||0,
+  reservedSidewalkTiles:planned?.railSidewalk.length||0,
+  sidewalkWidth:planned?.pedestrianCorridorWidth||0,
+  sidewalkBuffer:planned?.pedestrianSeparation||0,
+  mappedFootwayIdPreserved:planned?.mappedFootwayIdPreserved||null,
+  surface:'continuous-photo-informed-paved-median-and-railside-bays',
   oldDetachedPaverStripsRemoved:true,
   roundedTip:true,drawMeshes,instances,
   collisionSafe:true,estimatedLayout:true,noSyntheticCars:true,sourceAnchored:true
@@ -197,6 +259,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   group.userData.lodZ=planned.frame.a.z+planned.frame.uz*31;
   group.userData.lodDetail=true;
   const grout=[],stones=[],curb=[];
+  const oppositeGrass=[],oppositePavers=[],sidewalkPavers=[];
   for(const p of planned.cells){
    const y=terrainAt(p.x,p.z);
    grout.push({...p,y:y+.110,sx:p.length,sy:.036,sz:p.depth});
@@ -204,8 +267,32 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   }
   for(const p of planned.curbs)
    curb.push({...p,y:terrainAt(p.x,p.z)+.161,sx:.71,sy:.095,sz:.11});
+  // 5.68: the separate second parking bank uses the observed permeable
+  // green-grid surface, NOT a duplicate of the broad central pale island.
+  for(const bay of planned.railSideParking){
+   const y=terrainAt(bay.x,bay.z);
+   oppositeGrass.push({...bay,y:y+.027,sx:bay.length,sy:.038,sz:bay.depth});
+   for(let i=0;i<4;i++)for(let j=0;j<7;j++){
+    const p=at(planned.frame,bay.along+(i-1.5)*.58,
+     bay.offset+(j-3)*.53);
+    oppositePavers.push({...p,y:terrainAt(p.x,p.z)+.066,
+     yaw:bay.yaw,sx:.49,sy:.045,sz:.40});
+   }
+  }
+  // The outer pedestrian band has its own placement/safety check. We do not
+  // paint a sidewalk THROUGH the parking bays or over existing OSM footways.
+  for(const p of planned.railSidewalk)
+   sidewalkPavers.push({...p,y:terrainAt(p.x,p.z)+.054,
+    sx:p.length,sy:.056,sz:p.depth});
+  for(const p of planned.railSideCurbs)
+   curb.push({...p,y:terrainAt(p.x,p.z)+.106,
+    sx:.68,sy:.16,sz:.12});
   batch(group,material.grout,grout);
   batch(group,material.paver,stones,[0xcac9c0,0xd4d1c8,0xc4c3bb,0xbdbeb6]);
+  batch(group,material.railGrid,oppositeGrass);
+  batch(group,material.railPaver,oppositePavers,
+   [0xbcbeb4,0xcacbc1,0xaeb4a8,0xd4d2c7]);
+  batch(group,material.sidewalk,sidewalkPavers);
   batch(group,material.curb,curb);
   layer.add(group);roots.push(group);publish();return stats();
  }
