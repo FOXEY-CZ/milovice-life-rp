@@ -176,14 +176,15 @@ import {addLanduseFeature,forestInstancePlacements} from './scripts/landscapes.j
 import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
-import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5400';
+import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5410';
 import {exteriorFacadeFrame,selectExteriorFacadeToward,splitFacadeStripForOpening,facadePoint,flushBoxOffset,FACE_PLANE,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './scripts/facade-anchors.js?v=5400';
-import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5400';
+import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5410';
 import {clipRoofFacesForFeatures,planRoofFeatureBackClosures} from './scripts/roof-opening-geometry.js?v=5320';
 import {makePhotoStreetEnvironment} from './scripts/street-environment-reality.js?v=5262';
 import {createRoadClearance} from './scripts/road-clearance.js?v=5262';
 import {isCarriageway,isPedestrianWay,safePedestrianPieces,pedestrianPieceKey,markedCrossing,planZebraPieces,planStationPassage} from './scripts/reality-walkways.js?v=5270';
 import {makeStationForecourtScene} from './scripts/station-forecourt-pass.js?v=5241';
+import {planPhotographedEaveCornice} from './scripts/facade-perimeter.js?v=5410';
 import {planFootprintPitchedRoof} from './scripts/station-roof-geometry.js?v=5282';
 import {planRoofPerimeterClosure} from './scripts/station-roof-seams.js?v=5320';
 import {planStationRoofEaves} from './scripts/station-roof-eaves.js?v=5320';
@@ -1863,9 +1864,16 @@ function miloviceBlueStarDetail(pts,base,h,cx,cz){
  }
  archPart('starWhite',entranceX+dirX*flushBoxOffset(.14,-.012),floorY+.045,
   entranceZ+dirZ*flushBoxOffset(.14,-.012),1.35,.09,.14,yaw);
- // Historic-style white balcony, metal balustrade and the pale upper door.
+ // The balcony slab is embedded in the REAL chamfer wall and receives
+ // two short bearing brackets underneath, just like a wall-supported slab.
+ const balconySlabTop=base+3.57;
  archPart('starBalcony',entranceX+dirX*flushBoxOffset(.96,-.012),base+3.49,
   entranceZ+dirZ*flushBoxOffset(.96,-.012),2.48,.16,.96,yaw);
+ for(const side of [-1,1]){
+  const bearing=facadePoint(face,side*.96,.19);
+  archPart('starWhite',bearing.x,base+3.33,bearing.z,
+   .20,.18,.43,yaw);
+ }
  // Real balcony balustrade is TRANSPARENT. Old renderer used one solid
  // 2.96m x .99m black board in place of metal bars.
  const barX=Math.cos(yaw),barZ=-Math.sin(yaw);
@@ -1876,15 +1884,31 @@ function miloviceBlueStarDetail(pts,base,h,cx,cz){
   archPart('railing',railX+barX*across,base+3.95,
    railZ+barZ*across,.055,.88,.055,yaw);
  }
+ // Wall-connected side returns close the formerly incomplete front-only
+ // railing, following the balcony slab rather than hanging in the street.
+ for(const side of [-1,1]){
+  const sideAlong=side*1.15;
+  const middle=facadePoint(face,sideAlong,.46);
+  archPart('railing',middle.x,base+4.40,middle.z,
+   .80,.065,.075,yaw+Math.PI/2);
+  for(let j=0;j<=4;j++){
+   const post=facadePoint(face,sideAlong,.07+j*.1975);
+   archPart('railing',post.x,base+3.98,post.z,.055,.84,.055,yaw);
+  }
+ }
  // No opaque slab filling the balcony's upstairs glazed door.
  const doorX=entranceX+dirX*flushBoxOffset(.10,-.012),
   doorZ=entranceZ+dirZ*flushBoxOffset(.10,-.012);
- archPart('stationGlass',doorX,base+4.72,doorZ,1.21,1.89,.10,yaw);
+ const balconyDoorTop=base+5.665;
+ const balconyDoorHeight=balconyDoorTop-balconySlabTop;
+ const balconyDoorY=(balconyDoorTop+balconySlabTop)*.5;
+ archPart('stationGlass',doorX,balconyDoorY,doorZ,
+  1.21,balconyDoorHeight,.10,yaw);
  for(const sign of [-1,0,1])
-  archPart('starWhite',doorX+barX*sign*.60,base+4.72,
-   doorZ+barZ*sign*.60,.075,1.94,.11,yaw);
- archPart('starWhite',doorX,base+5.70,doorZ,1.28,.085,.12,yaw);
- archPart('starWhite',doorX,base+3.74,doorZ,1.28,.09,.12,yaw);
+  archPart('starWhite',doorX+barX*sign*.60,balconyDoorY,
+   doorZ+barZ*sign*.60,.075,balconyDoorHeight+.05,.11,yaw);
+ archPart('starWhite',doorX,balconyDoorTop+.02,doorZ,1.28,.085,.12,yaw);
+ archPart('starWhite',doorX,balconySlabTop+.02,doorZ,1.28,.09,.12,yaw);
  // One-pass window positions are drawn by the shared facade renderer.
  // A second window overlay previously had different bay counts, hiding
  // real glass behind full-size red/white door-shaped blocks.
@@ -1913,6 +1937,10 @@ function miloviceBlueStarDetail(pts,base,h,cx,cz){
  window.__miloviceLandmarkDebug.blueStarEntranceFloorY=+floorY.toFixed(3);
  window.__miloviceLandmarkDebug.blueStarEntranceApproachY=+approachY.toFixed(3);
  window.__miloviceLandmarkDebug.blueStarEntryRaisedSillRemoved=true;
+ window.__miloviceLandmarkDebug.blueStarBalconySideReturns=2;
+ window.__miloviceLandmarkDebug.blueStarBalconyWallBrackets=2;
+ window.__miloviceLandmarkDebug.blueStarBalconyDoorFlushToFloor=
+  Math.abs(balconyDoorY-balconyDoorHeight*.5-balconySlabTop)<.001;
  window.__miloviceLandmarkDebug.blueStarMaxFixtureWallGap=facadeGap(face,
   facadePoint(face,0,flushBoxOffset(.96,-.012)),.96);
 }
@@ -3104,6 +3132,19 @@ function osmBuilding(points,tags,index,osmId=null){
   if(!facade)continue;
   const {nx,nz,mx,mz,ux,uz,yaw:rotation}=facade;
   attachmentAudit.legacyEdges++;
+  if(isSkolskaRoof){
+   // One photographed light cornice immediately beneath the roof:
+   // same real OSM wall plane, no independent floating overlay.
+   // Hero buildings substitute this profile for their existing upper band.
+   const cornice=planPhotographedEaveCornice(facade,{
+    base:baseHeight,height:h});
+   if(cornice){
+    archPart('whiteTrim',cornice.x,cornice.y,cornice.z,
+     cornice.width,cornice.height,cornice.depth,cornice.yaw);
+    const audit=window.__milovicePhotoEaveCornice ||= {bands:0};
+    audit.bands++;
+   }
+  }
   if(len<5){
    // Legacy non-hero buildings have their own material-specific trim kit.
    // Mirror ONLY the already-existing bands on short exterior returns;
