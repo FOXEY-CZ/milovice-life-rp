@@ -1,4 +1,4 @@
-// Milovice RP 5.70 — prevent broad island parking from becoming a false sidewalk
+// Milovice RP 5.71 — prevent an invisible sidewalk or parking/sidewalk overlap
 // from recurring. Verify original OSM ways, full-stone-rectangle road checks,
 // photo-camera correlation, no fake cars, and constant draw-call budget.
 import assert from 'node:assert/strict';
@@ -44,12 +44,12 @@ assert.equal(plan.legacyDetachedStripsRemoved,true);
 assert.equal(plan.originalCarriagewaysUntouched,true);
 assert.equal(plan.modelledRoundedNose,true);
 assert(plan.cameras.every(p=>p.distance<3));
-assert(plan.cells.length>340&&plan.cells.length<1000,
- 'A few narrow isolated rows do not fix the missing giant paved island: '+plan.cells.length);
+assert(plan.cells.length>180&&plan.cells.length<700,
+ 'Central parking surface must remain broad after reserving a separate sidewalk: '+plan.cells.length);
 assert(plan.rowStats.filter(r=>r.accepted>0).length>=55,
  'The median must be a continuous length of forecourt, not tiny separated strips');
-assert(plan.rowStats.slice(12,25).every(r=>r.accepted>=6),
- 'Full-width central parking paving must remain continuous after the tapered entrance');
+assert(plan.rowStats.slice(12,25).every(r=>r.accepted>=4),
+ 'Parking must retain multiple clear paver rows BESIDE the narrow walkway');
 assert(plan.rowStats.at(-1).accepted<=3,
  'Photo-informed far-end taper must narrow to a rounded tip');
 assert.equal(plan.protectedRoadsAndPaths,true);
@@ -71,9 +71,25 @@ assert(plan.centralParkingCells.length>400,
 assert(!('centralWalkingCells' in plan),
  'The 5.69 mistaken designation of 249 parking tiles as sidewalk must never return');
 assert.equal(plan.mistakenParkingAsSidewalkRemoved,true);
-assert.equal(plan.centralPedestrianSurface,'OSM-footway-only-no-duplicate-parking',
- 'The narrow mapped path must remain distinct from the broad parking');
-assert.equal(plan.centralParkingSurface,'all-validated-concrete-grid-cells');
+assert.equal(plan.centralPedestrianSurface,'distinct-photo-grounded-west-edge-strip');
+assert.equal(plan.centralParkingSurface,'separate-gridded-island-parking-cells');
+assert.equal(plan.pedestrianStripSide,'west-of-parking-facing-service-675778842');
+assert.equal(plan.pedestrianStripPhotoEstimated,true);
+assert(plan.westPedestrianStrip.length>=60,
+ 'The user-marked long west-side sidewalk must be visibly built, not merely declared');
+assert(plan.westPedestrianCurbs.length>=40,'The walking band must have a curb');
+assert(plan.westPedestrianStrip.every((p,i)=>
+ p.offset>2.6&&p.offset+p.depth/2<4.02&&
+ (!i||p.along-plan.westPedestrianStrip[i-1].along<1.1)),
+ 'Visible walkway must form a continuous narrow strip along WEST island edge');
+assert(plan.centralParkingCells.every(p=>p.offset>=4.44),
+ 'Keep actual parking cells entirely EAST of the physical pedestrian band');
+assert(plan.pedestrianSeparation>0&&plan.pedestrianSeparation<.3,
+ 'The sidewalk and parking must be distinct but have no grass-filled canyon');
+for(const p of plan.westPedestrianStrip)
+ assert(isRoadFreeRect(occupied,{
+  x:p.x,z:p.z,length:p.length,depth:p.depth,yaw:p.yaw,buffer:.028,step:.36
+ }), 'The full visible sidewalk must clear OSM roads and mapped footways');
 assert(plan.cornerPaving.length>=8,
  'Right entrance corner should have a photo-informed paved apron');
 assert(plan.cornerPaving.every(p=>Number.isFinite(p.yaw)&&p.length<1),
@@ -112,10 +128,10 @@ assert.equal(planStationPhotoParking(ways.map(e=>e.id===675778842?{
  ...e,geometry:e.geometry.map(p=>({...p,lon:p.lon+.001}))
 }:e),occupied),null);
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(game.includes("from './scripts/station-photo-parking.js?v=5700'"));
+assert(game.includes("from './scripts/station-photo-parking.js?v=5710'"));
 assert(game.includes('stationPhotoParking.create(elements)'));
 assert(game.includes('stationPhotoParking.reset()'));
-assert(game.includes("const BUILD_ID='20261114-parking-surface-vs-footway-5700'"));
+assert(game.includes("const BUILD_ID='20261114-west-edge-visible-sidewalk-5710'"));
 assert(game.includes("from './scripts/bike-tower-interior.js?v=5640'"));
 assert(game.includes("from './scripts/station-forecourt-pass.js?v=5650'"));
 const code=readFileSync(new URL('./station-photo-parking.js',import.meta.url),'utf8');
@@ -130,13 +146,17 @@ assert(code.includes('for(let i=-1;i<=1;i+=2)'),
  'Smaller 2x2 concrete pavers must replace the previous oversized white blocks');
 assert(!code.includes('new THREE.Mesh(new THREE.BoxGeometry('));
 assert(!code.includes('document.createElement'),'No Mapy.com screenshots may become textures');
-console.log('5.70 correctly classified parking vs footway regression PASS',JSON.stringify({
+console.log('5.71 visible west-edge sidewalk distinct from gridded parking PASS',JSON.stringify({
  roadIds:plan.sourceIds,photoCameras:plan.cameras.map(c=>+c.distance.toFixed(2)),
  pavingCells:plan.cells.length,coveredRows:plan.rowStats.filter(r=>r.accepted>0).length,
  curbs:plan.curbs.length,rejected:plan.rejected.length,
  oppositeParkingBays:plan.railSideParking.length,
  centralParkingCells:plan.centralParkingCells.length,
  invalidWideSidewalkTiles:0,
+ visibleWestSidewalkTiles:plan.westPedestrianStrip.length,
+ visibleWestSidewalkCurbs:plan.westPedestrianCurbs.length,
+ walkwayWidth:plan.pedestrianCorridorWidth,
+ walkwayParkingGap:plan.pedestrianSeparation,
  mappedFootway:plan.centralFootwayId,
  rightCornerTiles:plan.cornerPaving.length,
  rightCornerCurbs:plan.cornerCurbs.length,
