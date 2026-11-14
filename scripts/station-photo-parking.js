@@ -514,42 +514,43 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   if(colors)mesh.instanceColor.needsUpdate=true;
   mesh.computeBoundingSphere();group.add(mesh);drawMeshes++;instances+=items.length;
  }
- // Join all reserved outer island cells into ONE textured ground mesh.
- // Zero BoxGeometry slabs for the sidewalk; every world-space corner comes
- // from the exact original OSM-validated parking footprint.
- function texturedOuterSidewalk(group,tiles,material){
-  if(!tiles.length||!material)return;
-  const vertices=[],uvs=[],indices=[];
-  const chamfers=planOuterSidewalkChamfers(tiles);
-  for(const p of tiles){
-   const k=vertices.length/3;
-   // Each 0.75x0.73 tile occupies a 0.76x0.74 grid. Expand by 6mm
-   // within the existing 25mm clearance buffer to hide bright-green
-   // terrain pinstripes. This is a VISUAL seam closure, not new territory.
-   const overlap=.006;
-   const clip=chamfers.get(p)||{start:0,end:0};
-   const corners=[
-    [p.along-p.length/2-overlap,p.offset-p.depth/2-overlap],
-    [p.along+p.length/2+overlap,p.offset-p.depth/2-overlap],
-    [p.along+p.length/2+overlap,p.offset+p.depth/2+overlap-clip.end],
-    [p.along-p.length/2-overlap,p.offset+p.depth/2+overlap-clip.start]
-   ];
-   for(const [along,offset] of corners){
-    const pt=at(planned.frame,along,offset);
-    vertices.push(pt.x,terrainAt(pt.x,pt.z)+.214,pt.z);
-    // Same ground-paving UV scale and material as regular city sidewalks.
-    uvs.push(offset/1.8,along/8);
+ // ONE continuous road-like sidewalk strip (plus continuous low kerb).
+ // Sections join at half-way intersections of adjacent OSM-safe cells:
+ // no individual square pavement panels, no asphalt changes.
+ function texturedOuterSidewalk(group,ribbon,sidewalkMaterial){
+  if(!ribbon?.parts?.length||!sidewalkMaterial)return;
+  function meshFor(kind,mat){
+   const vertices=[],uvs=[],indices=[];
+   for(const part of ribbon.parts){
+    const start=vertices.length/3;
+    for(const cross of part){
+     const inside=kind==='kerb'?cross.high-.115:cross.low;
+     const outside=kind==='kerb'?cross.high-.015:cross.high;
+     for(const offset of [inside,outside]){
+      const pt=at(planned.frame,cross.along,offset);
+      const height=kind==='kerb'?.245:.214;
+      vertices.push(pt.x,terrainAt(pt.x,pt.z)+height,pt.z);
+      uvs.push(offset/1.8,cross.along/8);
+     }
+    }
+    for(let i=0;i<part.length-1;i++){
+     const k=start+i*2;
+     // Station tangent/normal -> upward-facing front triangles.
+     indices.push(k,k+1,k+2,k+1,k+3,k+2);
+    }
    }
-   // Upward-facing winding in x,z world coordinates.
-   indices.push(k,k+2,k+1,k,k+3,k+2);
+   const geometry=new THREE.BufferGeometry();
+   geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));
+   geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
+   geometry.setIndex(indices);geometry.computeVertexNormals();
+   geometry.computeBoundingSphere();
+   const mesh=new THREE.Mesh(geometry,mat);
+   mesh.receiveShadow=true;
+   mesh.name=kind==='kerb'?'ContinuousOuterSidewalkKerb':'ContinuousOuterSidewalkPaving';
+   group.add(mesh);drawMeshes++;
   }
-  const geometry=new THREE.BufferGeometry();
-  geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));
-  geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
-  geometry.setIndex(indices);geometry.computeVertexNormals();
-  const mesh=new THREE.Mesh(geometry,material);
-  mesh.receiveShadow=true;mesh.name='OuterParkingCarvedTexturedFootway';
-  group.add(mesh);drawMeshes++;
+  meshFor('sidewalk',sidewalkMaterial);
+  meshFor('kerb',material.curb);
  }
  function create(elements,{sidewalkMaterial}={}){
   if(roots.length)return stats();
@@ -597,9 +598,8 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   // Road edges stay EXACTLY as in 5.72, but the wrongly forced full-width
   // road-facing overlay is gone. A narrow pedestrian path is cut OUT of
   // the validated parking island, using the real city's paving texture.
-  for(const p of planned.outerSidewalkCurbs)
-   curb.push({...p,y:terrainAt(p.x,p.z)+.217,
-    sx:.735,sy:.105,sz:.10});
+  // No individual square outer-kerb blocks: the long ribbon has one
+  // continuous slim kerb mesh on its road-facing exterior edge.
   // Wrong rail-side sidewalk stays removed. Keep the RIGHT entrance corner
   // as a separate part of the observed pedestrian environment.
   for(const p of planned.cornerPaving)
@@ -615,7 +615,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
    [0xbcbeb4,0xcacbc1,0xaeb4a8,0xd4d2c7]);
   batch(group,material.sidewalk,sidewalkPavers);
   batch(group,material.curb,curb);
-  texturedOuterSidewalk(group,planned.outerSidewalkCells,
+  texturedOuterSidewalk(group,planned.continuousRibbon,
    sidewalkMaterial||material.sidewalk);
   layer.add(group);roots.push(group);publish();return stats();
  }
