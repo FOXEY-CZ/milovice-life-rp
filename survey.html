@@ -50,6 +50,7 @@ footer{text-align:center;color:var(--muted);padding:20px}
 <script type="module">
 import {STREET_PHOTO_EVIDENCE,previewForCommonsPhoto} from './scripts/street-photo-evidence.js';
 import {photoRenderingDecision} from './scripts/photo-verification-policy.js?v=5610';
+import {isPhotoGarageWay,PHOTO_GARAGE_COURT} from './scripts/nadrazni-photo-garage-court.js?v=5630';
 const $=id=>document.getElementById(id);
 const url=new URL(location.href),wanted=url.searchParams.get('id')||'old:Nádražní';
 const label={buildings:'Budovy',roads:'Silnice',walkways:'Chodníky a cesty',railway:'Koleje a nástupiště',landscape:'Zeleň',publicObjects:'Veřejné objekty',utilities:'Infrastruktura',other:'Ostatní'};
@@ -86,7 +87,7 @@ function objectProgress(){
 $('heading').textContent='🧭 '+(street.street||'Nepřiřazené objekty')+' — REBUILD 2.0';
 $('intro').textContent=street.regionName+' · etapa '+street.phase+' · '+street.status+' · žádná část není tímto průzkumem automaticky schválená';
 const summary=[['Mapových objektů',street.total],...keys.filter(k=>street.counts[k]>0).map(k=>[label[k]||k,street.counts[k]])];
-if(disputedObjects.length)summary.push(['📸 Neověřené starší modely – ve 3D obnovené provizorně',
+if(disputedObjects.length)summary.push(['📸 Řadové garáže – panoramata 17. 5. 2022 (číslování OSM není ověřeno)',
  disputedObjects.length]);
 for(const [name,count] of summary){const s=node('span');s.append(node('strong',String(count)),node('span','  '+name));$('counts').append(s)}
 for(const kind of keys){if(!street.counts[kind])continue;const option=node('option',label[kind]||kind);option.value=kind;$('category').append(option)}
@@ -134,8 +135,10 @@ function focus(o){
  document.querySelectorAll('.object').forEach(b=>b.classList.toggle('active',b.dataset.id===o.id));
  const e=o.entry,box=$('focus');box.replaceChildren();
  box.append(node('strong',(label[o.kind]||o.kind)+' · '+o.id));
- if(photoDisputed(o)){
-  box.append(node('p','⚠️ NEOVĚŘENO: OSM uvádí „building=garage“, ale konkrétní objekt ani jeho vzhled nebyly potvrzeny fotografií. Původní starší 3D model byl obnoven po chybné blokaci, nikoli fotograficky schválen.'));
+ if(photoDisputed(o)&&isPhotoGarageWay(e.id)){
+  box.append(node('p','📸 FOTOGRAFICKÝ PODKLAD BLOKU: uživatelem poskytnutá panoramata Mapy.com ze 17. 5. 2022. Doložené: dvě protilehlé řady, hnědá profilovaná vrata, světlé sloupky a štěrk mezi řadami. Přesné přiřazení čísla vrat k jednotlivým OSM ID a současný stav roku 2026 nejsou ověřené. Fotografie nejsou redistribuované.'));
+ }else if(photoDisputed(o)){
+  box.append(node('p','⚠️ NEOVĚŘENO: OSM uvádí „building=garage“, ale identita a vzhled konkrétního objektu vyžadují přiřazení fotografie.'));
  }else box.append(node('p',e?.tags?.name||e?.tags?.building||e?.tags?.highway||e?.tags?.railway||'Mapový prvek, bez podrobného popisu'));
  if(e){const a=node('a','🔗 Otevřít původní OSM objekt');a.target='_blank';a.rel='noopener noreferrer';const [type,id]=o.id.split(':');a.href='https://www.openstreetmap.org/'+type+'/'+id;box.append(a)}
  const statusLabel=node('label','Osobní stav objektu (nepublikuje změny ve hře)');
@@ -160,7 +163,7 @@ function rows(){
  for(const o of objects.filter(o=>(!kind||kind===o.kind)&&(!onlyUnfinished||objectStatus(o.id)==='unknown'))){
   const button=node('button',null,'object');button.type='button';button.dataset.id=o.id;
   const status=objectStatus(o.id);if(status!=='unknown')button.classList.add(status);
-  button.append(node('span',photoDisputed(o)?'📸 Původní model obnoven · typ stavby neověřen (OSM: garage)':
+  button.append(node('span',photoDisputed(o)&&isPhotoGarageWay(o.entry.id)?'📸 Doložená řada garáží (2022) · číslo vrat k ID neověřeno':photoDisputed(o)?'📸 Původní model obnoven · typ stavby neověřen (OSM: garage)':
   o.entry?.tags?.name||o.entry?.tags?.building||o.entry?.tags?.highway||o.entry?.tags?.railway||label[o.kind]||o.kind));
   button.append(node('small',(status==='repair'?'🔧 ':status==='needs'?'📸 ':status==='local'?'✓ ':'')+o.id));button.addEventListener('click',()=>focus(o));
   if(o.id===selectedId)button.classList.add('active');
