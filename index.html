@@ -2999,21 +2999,21 @@ function osmBuilding(points,tags,index,osmId=null){
    audit.shortEdges++;
    let bands=0;
    if(isPanelBlock){
-    archPart('panelPlinth',mx+nx*.23,baseHeight+.66,mz+nz*.23,len,1.30,.15,rotation);
-    archPart('panelSeam',mx+nx*.25,baseHeight+h*.52,mz+nz*.25,len,.045,.13,rotation);
-    archPart('panelSeam',mx+nx*.28,baseHeight+h-.38,mz+nz*.28,len,.10,.14,rotation);
+    archPart('panelPlinth',mx+nx*flushBoxOffset(.15),baseHeight+.66,mz+nz*flushBoxOffset(.15),len,1.30,.15,rotation);
+    archPart('panelSeam',mx+nx*flushBoxOffset(.13),baseHeight+h*.52,mz+nz*flushBoxOffset(.13),len,.045,.13,rotation);
+    archPart('panelSeam',mx+nx*flushBoxOffset(.14),baseHeight+h-.38,mz+nz*flushBoxOffset(.14),len,.10,.14,rotation);
     bands+=3;
    }else if(isBlueStar){
-    archPart('foundationBand',mx+nx*.18,baseHeight+.25,mz+nz*.18,len,.50,.17,rotation);
-    archPart('starWhite',mx+nx*.15,baseHeight+3.48,mz+nz*.15,len,.12,.16,rotation);
-    archPart('starWhite',mx+nx*.24,baseHeight+h-.27,mz+nz*.24,len,.23,.26,rotation);
+    archPart('foundationBand',mx+nx*flushBoxOffset(.17),baseHeight+.25,mz+nz*flushBoxOffset(.17),len,.50,.17,rotation);
+    archPart('starWhite',mx+nx*flushBoxOffset(.16),baseHeight+3.48,mz+nz*flushBoxOffset(.16),len,.12,.16,rotation);
+    archPart('starWhite',mx+nx*flushBoxOffset(.26),baseHeight+h-.27,mz+nz*flushBoxOffset(.26),len,.23,.26,rotation);
     bands+=3;
    }else if(isSchool){
-    archPart('schoolRed',mx+nx*.14,baseHeight+1.28,mz+nz*.14,len,2.52,.15,rotation);
-    archPart('schoolRed',mx+nx*.20,baseHeight+3.48,mz+nz*.20,len,.20,.10,rotation);
+    archPart('schoolRed',mx+nx*flushBoxOffset(.15),baseHeight+1.28,mz+nz*flushBoxOffset(.15),len,2.52,.15,rotation);
+    archPart('schoolRed',mx+nx*flushBoxOffset(.10),baseHeight+3.48,mz+nz*flushBoxOffset(.10),len,.20,.10,rotation);
     bands+=2;
    }else if(isHouse&&oldCenter){
-    archPart('foundationBand',mx+nx*.22,baseHeight+.52,mz+nz*.22,len,1.02,.1,rotation);
+    archPart('foundationBand',mx+nx*flushBoxOffset(.10),baseHeight+.52,mz+nz*flushBoxOffset(.10),len,1.02,.1,rotation);
     bands++;
    }
    if(bands){audit.trimmedShortEdges++;audit.bands+=bands;}
@@ -3024,25 +3024,25 @@ function osmBuilding(points,tags,index,osmId=null){
    // Legacy approximated gutters only for unresolved roofs. A sourced
    // full physical fascia/soffit already provides eave closure; layering
    // generic horizontal rods onto it adds floating seams and draw calls.
-   archPart('roofGutter',mx+nx*.23,baseHeight+h+.11,mz+nz*.23,len,.075,.12,rotation);
+   archPart('roofGutter',mx+nx*flushBoxOffset(.15),baseHeight+h+.11,mz+nz*flushBoxOffset(.15),len,.075,.12,rotation);
    if(len>6&&i%2===0)archPart('roofGutter',p.x+nx*.21,baseHeight+h*.53,p.y+nz*.21,.10,h*.98,.12,rotation);
   }
   if(isPanelBlock){
-   archPart('panelPlinth',mx+nx*.23,baseHeight+.66,mz+nz*.23,len,1.30,.15,rotation);
-   archPart('panelSeam',mx+nx*.25,baseHeight+h*.52,mz+nz*.25,len,.045,.13,rotation);
-   archPart('panelSeam',mx+nx*.28,baseHeight+h-.38,mz+nz*.28,len,.10,.14,rotation);
+   archPart('panelPlinth',mx+nx*flushBoxOffset(.15),baseHeight+.66,mz+nz*flushBoxOffset(.15),len,1.30,.15,rotation);
+   archPart('panelSeam',mx+nx*flushBoxOffset(.13),baseHeight+h*.52,mz+nz*flushBoxOffset(.13),len,.045,.13,rotation);
+   archPart('panelSeam',mx+nx*flushBoxOffset(.14),baseHeight+h-.38,mz+nz*flushBoxOffset(.14),len,.10,.14,rotation);
     // Recognizable palette variants: Braniborská pale-ochre, Rakouská cooler accents.
     // Street-level treatment is indicative, not a claim of surveyed individual paintwork.
     if(braniborska||rakouska){
      for(let floorBand=1;floorBand<Math.min(floors,10);floorBand+=2){
-      archPart(braniborska?'panelTint':'panelAccent',mx+nx*.27,baseHeight+floorBand*3.05,mz+nz*.27,len,.23,.14,rotation);
+      archPart(braniborska?'panelTint':'panelAccent',mx+nx*flushBoxOffset(.14),baseHeight+floorBand*3.05,mz+nz*flushBoxOffset(.14),len,.23,.14,rotation);
      }
     }
   }else if(isCommerce&&!isBlueStar&&!auditedCore){
    // Only mapped commercial frontage: leave simple glazing until a photo
    // survey establishes its real doors/windows. Earlier every wall received
    // an invented billboard and 1.13m deep awning on that entire wall.
-   archPart('stationGlass',mx+nx*.31,baseHeight+1.52,mz+nz*.31,
+   archPart('stationGlass',mx+nx*flushBoxOffset(.13),baseHeight+1.52,mz+nz*flushBoxOffset(.13),
     Math.max(1.0,len-.55),2.15,.13,rotation);
    const audit=window.__miloviceCityUnverifiedFeatures ||= {
     removedRandomRoofVents:0,removedRandomCommerceAwnings:0,
@@ -3052,20 +3052,20 @@ function osmBuilding(points,tags,index,osmId=null){
    const bays=Math.max(1,Math.floor(len/6));
    for(let j=0;j<bays;j++){
     const t=(j+.5)/bays;
-    archPart('industrialDoor',p.x+dx*t+nx*.41,baseHeight+1.9,p.y+dz*t+nz*.41,Math.min(3.9,len/bays-.4),3.62,.21,rotation);
+    archPart('industrialDoor',p.x+dx*t+nx*flushBoxOffset(.21),baseHeight+1.9,p.y+dz*t+nz*flushBoxOffset(.21),Math.min(3.9,len/bays-.4),3.62,.21,rotation);
    }
   }
   if(isBlueStar){
-   archPart('foundationBand',mx+nx*.18,baseHeight+.25,mz+nz*.18,len,.50,.17,rotation);
-   archPart('starWhite',mx+nx*.15,baseHeight+3.48,mz+nz*.15,len,.12,.16,rotation);
-   archPart('starWhite',mx+nx*.24,baseHeight+h-.27,mz+nz*.24,len,.23,.26,rotation);
+   archPart('foundationBand',mx+nx*flushBoxOffset(.17),baseHeight+.25,mz+nz*flushBoxOffset(.17),len,.50,.17,rotation);
+   archPart('starWhite',mx+nx*flushBoxOffset(.16),baseHeight+3.48,mz+nz*flushBoxOffset(.16),len,.12,.16,rotation);
+   archPart('starWhite',mx+nx*flushBoxOffset(.26),baseHeight+h-.27,mz+nz*flushBoxOffset(.26),len,.23,.26,rotation);
   }
   if(isSchool){
    // The photographed Školská school has a warm yellow upper facade and deep red ground floor.
-   archPart('schoolRed',mx+nx*.14,baseHeight+1.28,mz+nz*.14,len,2.52,.15,rotation);
-   archPart('schoolRed',mx+nx*.20,baseHeight+3.48,mz+nz*.20,len,.20,.10,rotation);
+   archPart('schoolRed',mx+nx*flushBoxOffset(.15),baseHeight+1.28,mz+nz*flushBoxOffset(.15),len,2.52,.15,rotation);
+   archPart('schoolRed',mx+nx*flushBoxOffset(.10),baseHeight+3.48,mz+nz*flushBoxOffset(.10),len,.20,.10,rotation);
   }else if(isHouse&&oldCenter){
-   archPart('foundationBand',mx+nx*.22,baseHeight+.52,mz+nz*.22,len,1.02,.1,rotation);
+   archPart('foundationBand',mx+nx*flushBoxOffset(.10),baseHeight+.52,mz+nz*flushBoxOffset(.10),len,1.02,.1,rotation);
   }
   const windows=Math.min(24,Math.max(1,Math.floor(len/(isPanelBlock?3.12:isBlueStar?3.6:isSchool?3.0:isHouse?4.2:3.5))));
   for(let floor=0;floor<visibleFloors;floor++){
