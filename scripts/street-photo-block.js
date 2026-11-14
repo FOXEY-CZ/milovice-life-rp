@@ -213,7 +213,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   part(p,w,1.48,depth,wall,0,.74,.0);
   part(p,w+.14,.14,.16,trim,0,.12,depth*.5+.09);
   const front=depth*.5+.12;
-  const winW=w*.43,winH=.93;
+  const winW=w*(arched?.43:.72),winH=.93;
   if(arched){
    const profile=planArchedDormerWindow({width:winW});
    const makePath=(points)=>{
@@ -245,9 +245,13 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
    part(p,winW+.17,.105,.15,trim,0,profile.bottom-.06,front+.14);
    actualArchedWindowMeshes+=2;rectangularFakeArchRemoved++;
   }else{
+   // Mírová 36 photo: a broad white three-lite attic casement,
+   // not a single opaque stripe or an oversized unverified attic floor.
    part(p,winW+.17,winH+.17,.095,trim,0,.87,front);
    part(p,winW,winH,.10,glazing,0,.87,front+.066);
-   part(p,.065,winH,.12,trim,0,.87,front+.138);
+   for(const x of [-winW/6,winW/6])
+    part(p,.062,winH,.12,trim,x,.87,front+.138);
+   part(p,winW+.25,.10,.19,trim,0,.35,front+.14);
   }
   // A real triangular gable plus two inclined roof planes; no flat-topped box.
   const shape=new THREE.Shape();
@@ -277,6 +281,9 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  function addRooflights(edge,base,h,offsets){
   const g=exteriorGroup(edge,base+h);
   for(const offset of offsets){
+   // Bounds of actual OSM edge; previous +/-3.4m skylights could hang
+   // outside Mírová's photographed 6.45m wing.
+   if(Math.abs(offset)>edge.len*.5-.68)continue;
    // Photographed skylights on a roof slope, not vertical facade windows.
    // Approximate placement because the roof pitch is not in OSM.
    part(g,1.20,.10,1.47,rooflightFrame,offset,1.03,-1.95,-.43);
@@ -288,7 +295,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  function addHedge(edge,base,sections=6){
   // Clipped, continuous, low green hedge visible on Mírová 36 streetfront.
   // It is decoration only: leaves the crossing/entrance area open.
-  if(edge.len<5.5)return; // Mírová 36 street-side OSM frontage ~6.45m
+  if(edge.len<4.3)return; // allow documented 4–6m street-side hedge returns
   const g=exteriorGroup(edge,base);
   const pieces=Math.min(sections,Math.max(2,Math.floor(edge.len/2.0)));
   const mesh=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),hedge,pieces);
@@ -309,16 +316,20 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   const batchStart=ownedGroups.size;
   const camera=key==='118487980'?pointFromGps(50.2290672,14.8822619):
    pointFromGps(50.2280572,14.8840981);
-  const edges=photoFacingEdges(pts,camera,{minLength:5,limit:3});
+  const edges=photoFacingEdges(pts,camera,{
+   minLength:key==='202367254'?3.3:5,limit:6});
   if(!edges.length)return false;
   if(key==='202367254'){
-   // Mírová 36: one central, projecting upper gable; two rooflights,
-   // and cropped hedges separated from the small entrance path.
-   const face=edges.find(e=>e.len>9)||edges[0];
-   addGableDormer(face,base,height,{w:2.65,depth:2.25,arched:false,wall:warmWall,roof:roofMaterial});
-   addRooflights(face,base,height,[-3.25,3.4]);
+   // Mírová 36: use the actual camera-facing OSM frontage, not its
+   // bounding rectangle. Photo shows a three-lite raised central gable,
+   // three skylights across two visible roof slopes and clipped hedges.
+   const face=edges.find(e=>e.len>5.5)||edges[0];
+   addGableDormer(face,base,height,{w:2.85,depth:2.25,
+    roofRise:1.65,arched:false,wall:warmWall,roof:roofMaterial});
+   addRooflights(face,base,height,[-.82]);
+   const returnWall=edges.find(e=>e.index!==face.index&&e.len>=4.3);
+   if(returnWall)addRooflights(returnWall,base,height,[-.78,.78]);
    addHedge(face,base,5);
-   const returnWall=edges.find(e=>e.index!==face.index&&e.len>7);
    if(returnWall)addHedge(returnWall,base,3);
   }else if(key==='118487980'){
    // The same document-backed profile drives BOTH the dormer meshes
