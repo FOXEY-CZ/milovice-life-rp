@@ -49,3 +49,38 @@ export function facadeGap(frame,point,thickness=0){
  const d=(point.x-frame.mx)*frame.nx+(point.z-frame.mz)*frame.nz;
  return d-thickness*.5;
 }
+
+/**
+ * Pick the actual OSM wall visible from a documented street camera.
+ * The result always carries the same winding-derived facade frame used by
+ * physical walls, doors and windows; no centroid-to-corner "virtual wall".
+ *
+ * min/maxLength only restrict which photographed frontage can carry the
+ * fixture (e.g. a narrow corner entrance), never change the wall position.
+ */
+export function selectExteriorFacadeToward(outline,camera,{
+ minLength=1,maxLength=140
+}={}){
+ const cz=camera?.z??camera?.y;
+ if(!Number.isFinite(camera?.x)||!Number.isFinite(cz)||
+  !Number.isFinite(minLength)||!Number.isFinite(maxLength)||
+  minLength<.08||maxLength<minLength)return null;
+ const size=Array.isArray(outline)?outline.length:0;
+ let best=null;
+ for(let i=0;i<size;i++){
+  const frame=exteriorFacadeFrame(outline,i);
+  if(!frame||frame.len<minLength||frame.len>maxLength)continue;
+  const dx=camera.x-frame.mx,dz=cz-frame.mz;
+  const frontDistance=dx*frame.nx+dz*frame.nz;
+  if(frontDistance<=.01)continue;
+  const along=Math.max(-frame.len*.5,Math.min(frame.len*.5,
+   dx*frame.ux+dz*frame.uz));
+  const nearest=facadePoint(frame,along);
+  const distance=Math.hypot(camera.x-nearest.x,cz-nearest.z);
+  if(!best||distance<best.cameraDistance-1e-7||
+   (Math.abs(distance-best.cameraDistance)<=1e-7&&frame.len<best.len))
+   best={...frame,cameraDistance:distance,cameraVisibility:
+    frontDistance/Math.max(distance,.001)};
+ }
+ return best;
+}
