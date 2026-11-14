@@ -23,6 +23,8 @@ jobs:
         run: node scripts/rebuild2-survey.test.mjs
       - name: Validate physical railway-side platform canopy and zero floating supports
         run: node scripts/station-platform-canopy.test.mjs
+      - name: Validate actual photographed Milovice Bike Tower internal steelwork
+        run: node scripts/bike-tower-interior.test.mjs
       - name: Prohibit unverified Nádražní garage objects without direct photographic evidence
         run: node scripts/photo-verification-policy.test.mjs
       - name: Identify the exact clicked 3D building from its mapped OSM footprint
