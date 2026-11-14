@@ -1,3 +1,24 @@
+# Milovice RP 5.73 — chodník vzniká odebráním vnějšího pásu PARKOVIŠTĚ, nikoli na silnici
+
+**Aktuální hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5730  
+**Bezpečná záloha 5.72 před úpravou:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/572-before-sidewalk-from-parking
+
+## Důležitá uživatelem potvrzená geometrie
+
+Screenshot hry **5.72** z 14. 11. 2026 přímo doložil, že předchozí zásah vykreslil dlouhý chodník **na vozovce Nádražní**. Přesně vyjasněné zadání zní: **silnice nesmí být změněna, chodník leží na VNĚJŠÍ straně parkovacího ostrova u Nádražní a jeho šířka se odebere POUZE z vnějšího okraje parkovací plochy**. Potom pokračuje zbytek parkovacího ostrova směrem dovnitř. Dřívější chybné chodníky na vnitřní straně nebo za parkováním u kolejí se nesmí vrátit.
+
+## Technická oprava 5.73
+
+- **Přestala se vykreslovat speciálně vynucená část OSM chodníku 1165594426 přes asfalt.** Generické mapované pěší trasy zůstávají pod standardním systémem ořezávání vůči vozovkám. Stávající asfaltové komunikace OSM **675778842** a **128308366** se neměnily.
+- Ostrov původně sestával z **523 buněk**, které již všechny prošly testem celé obdélníkové stopy mimo silnice, mapované pěší cesty, koleje a budovy. Rozdělením podle příčné polohy **170 buněk z vnější východní hrany** vytváří úzkou chodníkovou plochu a **353 buněk zbývá jako parkovací plocha**. Každá buňka má právě jednu roli, nikde nedochází k dvojitému překreslení parkování chodníkem.
+- Texturovaný chodník se staví jako **jedna spojená výškově přiléhající síť trojúhelníků** s **identickým herním materiálem `osmSidewalkMat` a `citySurfaceKit.paving`** jako ostatní chodníky. Není to série jasně bílých 3D kvádrů a nepokrývá vozovku. Přibližná šířka běžné části **1,48 m** (dvě původní buňky); v koncích se zužuje. Za krajní bezpečnou částí má nízký obrubník, prověřovaný proti komunikacím.
+- Poloha vnější strany je ověřena podle blízkosti skutečné OSM pěší trasy **1165594426**. Protože reálné obruby a hranice parkovacích stání nejsou zaměřené, jde stále o **fotograficky podloženou prostorovou aproximaci**: nepřesouváme silnici ani netvrdíme geodetickou přesnost.
+- Opačná parkovací řada (20 stání), cyklověž, nádražní budova, pravé nároží příjezdu a okolní objekty zůstaly zachovány. **Žádné snímky Mapy.com se nepřevádějí do textur ani se neukládají do repozitáře.**
+
+**Testy:** `scripts/station-photo-parking.test.mjs` kontroluje, že každé pěší pole je **mimo celé vykreslované silniční pásy**, má vysoký příčný offset na **vnější straně** ostrova, neexistuje současně jako parkoviště a je poblíž správné OSM pěší trasy. `scripts/browser_smoke.mjs` hlídá skutečnou WebGL scénu, texturovaný společný materiál a nepřítomnost starého vynuceného překryvu přes silnici. Nová dlažba přidává **jednu vykreslovací skupinu**, celkem nejvýše 7 pro fotorekonstrukci parkoviště.
+
+---
+
 # Milovice RP 5.72 — opravena STRANA chodníku + stejná textura jako ostatní chodníky
 
 **Hrát:** https://foxey-cz.github.io/milovice-life-rp/?v=5720  
