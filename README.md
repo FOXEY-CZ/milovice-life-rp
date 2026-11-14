@@ -1,3 +1,22 @@
+# Milovice RP 5.71 — konečně viditelný úzký chodník u parkoviště
+
+**Nová hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5710  
+**Záloha 5.70 před opravou:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/570-before-visible-sidewalk-fix
+
+## Oprava podle mobilních screenshotů ze 14. 11. 2026
+
+Na screenshotu 5.70 **chodník vůbec nebyl vidět**, přestože předchozí změna tvrdila, že existuje jako samostatná OSM pěší cesta. Technicky byla chyba v tom, že **parkovací buňky sahaly už od příčného odsazení 2,52 m od západní servisní komunikace**, a zabíraly plochu fotodoloženého pěšího pásu. OSM chodník **1165594426** byl v jiné vrstvě a jeho vykreslení nemohlo nahradit chybějící viditelný chodník na této hraně ostrova.
+
+Oprava 5.71 do samostatné instancované geometrie přidává **83 navazujících betonových dílů dlouhého pěšího pásu (~63 m × 1,38 m)** v orientaci dle zmapované komunikace **675778842**, s **83 díly nízké obruby** oddělujícími pěší povrch od parkování. Parkovací dlažba se **posunula o přibližně 1,9 m směrem dovnitř ostrova**, takže zbylo **382 bezpečně umístěných polí**. Mezera mezi chodníkem a parkovacími bloky je pouhých **8,5 cm** (ne velký zelený pruh). Žádné původní parkovací pole není pouze přebarveno na chodník; jedná se o dvě samostatné fyzické plochy.
+
+**Zachováno:** druhá parkovací řada směrem ke kolejím (20 stání), krátké pravé nároží vjezdu (OSM 1282187911), původní mapovaný chodník 1165594426, nádraží, cyklověž, garáže, železniční tratě. **Žádný chybně přidaný dlouhý chodník za železničním parkováním.** Výkonově zůstává maximálně šest instancovaných vykreslovacích skupin; bez nových textur.
+
+**Poznámka k přesnosti:** Přítomnost chodníku podél levé hrany ostrova a jeho vizuální stranu doložil uživatel červenou anotací na panoramatu Mapy.com **17. 5. 2022**. Výše uvedená poloha a šířka jsou však **odhad** navázaný na veřejné OSM silniční osy, ne geodeticky přesné zachycení obrubníků. Mapy.com obrázky nikdy nepoužíváme jako herní textury ani neukládáme do repozitáře. Po vydání znovu porovnat mobilní 3D s fotografií z identického úhlu.
+
+**Testy:** `scripts/station-photo-parking.test.mjs` nyní vyžaduje nejméně 60 navazujících pěších polí na západní hraně, ochranu komunikace a oddělení od parkovacích dlaždic; `scripts/browser_smoke.mjs` ověřuje skutečné vytvoření těchto instancí v WebGL spolu se zachováním nároží a druhé části parkování.
+
+---
+
 # Milovice RP 5.70 — opravená záměna parkovací dlažby a chodníku
 
 **Nová hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5700  
