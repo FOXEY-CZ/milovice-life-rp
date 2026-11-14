@@ -6,7 +6,7 @@
   "withMappedLevels": 450,
   "withMappedHeight": 0,
   "withMappedRoofShape": 0,
-  "withPhotoReference": 3,
+  "withPhotoReference": 4,
   "priorityAreas": {
     "Nádražní / nádraží": 44,
     "5. května / Mírová": 86,
@@ -1711,8 +1711,8 @@
       "levels": "3",
       "verifiedHeight": null,
       "verifiedRoofShape": null,
-      "photoReference": false,
-      "reviewStatus": "needs-photo-survey",
+      "photoReference": true,
+      "reviewStatus": "photo-anchored-partial",
       "focus": "ostatní Milovice",
       "distanceToFocusM": 211
     },
