@@ -1,4 +1,4 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.62.0 Identify Exact OSM Building</title><meta name="milovice-build" content="20261114-3d-object-inspector-5620"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
+<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.63.0 Photo-Rebuilt Nádražní Garage Court</title><meta name="milovice-build" content="20261114-nadrazni-photo-garages-5630"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
 #realmap{position:fixed;inset:0;z-index:100;background:#101e2c;display:none;flex-direction:column;color:#fff;font-family:system-ui}#realmap.open{display:flex}#maphead{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#142c3e}#maphead button{flex:0 0 auto;min-height:40px}#osmmap{flex:1;min-height:0;touch-action:pan-x pan-y}#mapfoot{padding:8px 12px;background:#142c3e;font-size:12px;line-height:1.4}#maplaunch{position:fixed;right:12px;top:75px;z-index:45;background:#193d58;border:1px solid #93b4c7;box-shadow:0 2px 8px #0006}#realmap .leaflet-container{background:#d7e5da}#realmap a{color:#aedbff} @media(max-width:700px){#maplaunch{top:72px;right:8px;padding:7px 10px;font-size:12px;min-height:36px}#maphead{font-size:13px}}
 </style><style>#perf{position:fixed;top:10px;right:10px;z-index:42;background:#102437e8;border:1px solid #77a7b6;border-radius:10px;padding:7px 10px;color:#c8f6d4;font:600 12px system-ui;pointer-events:none;min-width:100px;text-align:center}#perf small{display:block;color:#c9d5dd;font-size:10px;font-weight:400}@media(max-width:700px){#perf{top:8px;right:8px;padding:5px 7px;font-size:11px}#maplaunch{top:100px!important}}</style><style id="milovice-modern-ui">
 #hud{background:linear-gradient(145deg,rgba(9,24,39,.88),rgba(20,44,61,.82));backdrop-filter:blur(12px);border:1px solid rgba(176,214,235,.3);box-shadow:0 10px 30px #061b2b33;border-radius:18px}
@@ -86,7 +86,7 @@
 #rp-joystick[data-intensity="běh"]{border-color:#ffd36e}#rp-joystick[data-intensity="běh"] #rp-joystick-knob{background:linear-gradient(145deg,#e3a84c,#8e5720);border-color:#fff0ae}
 @media(max-width:850px){html.rp-analog-controls #rp-joystick{display:block}html.rp-analog-controls #controls button[data-key]{display:none!important}}
 @media(max-width:400px){#rp-joystick{width:113px;height:113px;left:8px}}
-</style></head><body><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.62.0 · build <strong id="build-label">20261114-3d-object-inspector-5620</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
+</style></head><body><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.63.0 · build <strong id="build-label">20261114-nadrazni-photo-garages-5630</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
 <button id="osm-inspect-toggle" type="button" aria-pressed="false" title="Klepnutím na konkrétní budovu zjistíš její OSM identitu">🔎 Objekt</button>
 <section id="osm-inspect-result" role="status" aria-live="polite" hidden>
 <strong id="osm-inspect-title">Identifikace objektu</strong>
@@ -218,6 +218,7 @@ import {makeStationForecourtScene} from './scripts/station-forecourt-pass.js?v=5
 import {planStationPlatformCanopy,createStationPlatformCanopy} from './scripts/station-platform-canopy.js?v=5580';
 import {photoRenderingDecision,NADRAZNI_PHOTO_PENDING_OSM_IDS} from './scripts/photo-verification-policy.js?v=5610';
 import {identifyOsmBuildingFromRay,formatOsmInspectorResult} from './scripts/osm-building-inspector.js?v=5620';
+import {planPhotographedGarageCourt,isPhotoGarageWay,PHOTO_GARAGE_COURT} from './scripts/nadrazni-photo-garage-court.js?v=5630';
 import {makeSchoolGrounds} from './scripts/school-grounds-pass.js?v=5510';
 import {buildPhotographedEaveCorniceGeometry,PHOTO_EAVE_PROFILE_COLOR} from './scripts/facade-perimeter.js?v=5430';
 import {planFootprintPitchedRoof} from './scripts/station-roof-geometry.js?v=5282';
@@ -242,7 +243,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261114-3d-object-inspector-5620';
+const BUILD_ID='20261114-nadrazni-photo-garages-5630';
 const rpStationRoofAuditCamera=new URLSearchParams(location.search).has('roofAudit');
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x9bc8ec);scene.fog=new THREE.Fog(0x9bc8ec,280,850);const camera=new THREE.PerspectiveCamera(67,innerWidth/innerHeight,.1,1400);const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,matchMedia('(pointer:coarse)').matches?1.6:1.25));renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x65725a,1.6));const sun=new THREE.DirectionalLight(0xffefcc,1.7);sun.position.set(50,100,30);scene.add(sun);
 
@@ -1337,6 +1338,12 @@ const schoolRooflightMullion=new THREE.MeshStandardMaterial({color:0xc2ccd0,roug
 const schoolAerialSteel=new THREE.MeshStandardMaterial({color:0x879399,metalness:.26,roughness:.69});
 const schoolPlinth=new THREE.MeshStandardMaterial({color:0xb34a31,roughness:.86,side:THREE.DoubleSide});
 const garageWalls=new THREE.MeshStandardMaterial({color:0xb1afa4,roughness:.92});
+// 2022 Mapy.com panorama supplied in chat: dark brown metal garage fronts,
+// off-white masonry dividing piers and flat brown coping. These materials
+// are original procedural art, never extracted from source imagery.
+const garagePhotoWalls=new THREE.MeshStandardMaterial({color:0xc8c7bd,roughness:.94});
+const garagePhotoRoof=new THREE.MeshStandardMaterial({color:0x493833,roughness:.95});
+
 const workWalls=new THREE.MeshStandardMaterial({color:0xb9b9b0,roughness:.92});
 const osmParkMaterial=mat(0x769b65),osmStripeMaterial=mat(0xf5e8c8);
 let osmActive=false,osmReady=false,osmLoading=false,oldPosition=null,osmRoads=[],osmBuildings=0,osmNamedRoads=[],osmLandmarks=[];
@@ -1814,7 +1821,10 @@ function finalizeFoundations(){
 }
 // Photo-referenced detail pass: repeated meshes are batched as instanced geometry.
 // Facades are modelled from mapped footprints, not copied from proprietary photos.
-const architectureColors={panelSeam:0x838e94,panelAccent:0x72a0c3,panelEntry:0x356a87,commercialSign:0x435b66,panelPlinth:0x7e8587,industrialDoor:0x68717a,stationPlaster:0xe6e4d9,stationWindowSill:0xa36d66,stationCanopyGreen:0x23533f,stationCanopyUnder:0x203d31,stationCanopyBeam:0x244838,stationCanopySteel:0x295c45,stationCanopyRib:0x3b604f,stationGlass:0x4a7480,stationFrames:0xf2f0e7,stationIron:0x3a3e40,stationCanopy:0x903f35,blueStarPlaster:0xd68c34,blueStarRed:0xb7352c,starWhite:0xf0eae0,starBalcony:0xcfc6b5,railSleeper:0x685643,railPole:0x777d7f,gothicGlass:0x263c48,stoneTrim:0xe8d9b7,whiteTrim:0xe3e6de,photoEaveCornice:PHOTO_EAVE_PROFILE_COLOR,windowBar:0xd6e2e4,darkWood:0x514339,garageMetal:0x727f7b,bronze:0x8b6a48,glassAwning:0x7e9e9f,schoolRed:0xc16c57,roofGutter:0x687173,chimney:0xad6749,balcony:0xc9c1b7,railing:0x394447,shutter:0x8b705e,foundationBand:0x8e7f72,stationTimber:0x554338,stationPaving:0xaba6a1,panelTint:0xb1c5cc};
+const architectureColors={panelSeam:0x838e94,panelAccent:0x72a0c3,panelEntry:0x356a87,commercialSign:0x435b66,panelPlinth:0x7e8587,industrialDoor:0x68717a,stationPlaster:0xe6e4d9,stationWindowSill:0xa36d66,stationCanopyGreen:0x23533f,stationCanopyUnder:0x203d31,stationCanopyBeam:0x244838,stationCanopySteel:0x295c45,stationCanopyRib:0x3b604f,stationGlass:0x4a7480,stationFrames:0xf2f0e7,stationIron:0x3a3e40,stationCanopy:0x903f35,blueStarPlaster:0xd68c34,blueStarRed:0xb7352c,starWhite:0xf0eae0,starBalcony:0xcfc6b5,railSleeper:0x685643,railPole:0x777d7f,gothicGlass:0x263c48,stoneTrim:0xe8d9b7,whiteTrim:0xe3e6de,photoEaveCornice:PHOTO_EAVE_PROFILE_COLOR,windowBar:0xd6e2e4,darkWood:0x514339,garageMetal:0x727f7b,
+garagePhotoDoor:0x463531,garagePhotoRib:0x5b463e,
+garagePhotoPillar:0xd3d1c6,garagePhotoCoping:0x40312d,
+garagePhotoHandle:0x8e8b83,bronze:0x8b6a48,glassAwning:0x7e9e9f,schoolRed:0xc16c57,roofGutter:0x687173,chimney:0xad6749,balcony:0xc9c1b7,railing:0x394447,shutter:0x8b705e,foundationBand:0x8e7f72,stationTimber:0x554338,stationPaving:0xaba6a1,panelTint:0xb1c5cc};
 const architectureQueues=Object.fromEntries(Object.keys(architectureColors).map(k=>[k,[]]));
 const architectureMaterials=Object.fromEntries(Object.entries(architectureColors).map(([k,v])=>[k,new THREE.MeshStandardMaterial({color:v,roughness:k==='glassAwning'?.3:.8,metalness:k==='roofGutter'||k==='railing'?.4:.04})]));
  // Shared atlas-style surface response for every station architectural instance.
@@ -2961,6 +2971,15 @@ window.__milovicePhotoVerificationAudit={
  legacyCityAuditPending:true,garageRowsUnverified:true
 };
 // 5.62: exact model-to-map identity, not a guess based on a screenshot.
+const nadrazniPhotoGarageFronts=new Map();
+window.__milovicePhotoGarageCourt={
+ source:'user-provided Mapy.com panorama (17 May 2022)',
+ photographedRowCount:2,photoDate:'2022-05-17',
+ planned:0,rendered:0,gravelCourtDrawCalls:0,
+ geometryFromOsm:true,imageTexturesCopied:false,
+ numberedDoorsAssignedToOsm:false,current2026Unverified:true,
+ oldUnverifiedFacadeGeneratorsBypassed:0
+};
 const osmInspectionBuildings=[];
 window.__miloviceOsmInspection={count:0,selected:null,source:'mapped OSM footprints',
  noPhotoInference:true,modelChanges:0};
@@ -3008,6 +3027,8 @@ function osmBuilding(points,tags,index,osmId=null){
  const xs=pts.map(p=>p.x),zs=pts.map(p=>p.y),w=Math.max(...xs)-Math.min(...xs),d=Math.max(...zs)-Math.min(...zs);
  if(w<2||d<2||w>140||d>140)return;
  const type=tags.building||'yes',isGarage=type==='garage'||type==='garages';
+ const photoGarageFront=isGarage?nadrazniPhotoGarageFronts.get(osmId)||null:null;
+ const isPhotoGarage=Boolean(photoGarageFront);
  const isIndustrial=type==='warehouse'||type==='industrial';
  const isSchool=type==='school'&&tags.name==='ZŠ T. G. Masaryka'&&osmId===SCHOOL_PHOTO_WAY_ID;
   const schoolPhotoPlan=isSchool?planSchoolStreetFrontage(pts):null;
@@ -3036,7 +3057,7 @@ function osmBuilding(points,tags,index,osmId=null){
  const hasMappedShopfront=Boolean(String(tags.name||'').trim()&&(tags.shop||['restaurant','fast_food','clinic','school','pharmacy','cafe'].includes(tags.amenity)||['retail','supermarket','commercial'].includes(type)));
  const isOldResidential=type==='house'&&floors<=3;
  const explicitHeight=parseFloat(tags.height);
- let h=Math.min(isPanelBlock?54:36,Math.max(isGarage?2.35:3.0,Number.isFinite(explicitHeight)&&explicitHeight>2?explicitHeight:isBlueStar?7.15:isMirova36?4.15:isGrocer74?3.65:isStation?7.4:isGarage?2.75:isIndustrial?5.3:isChurch?11.5:floors*(isSchool?3.4:3.05)));
+ let h=Math.min(isPanelBlock?54:36,Math.max(isGarage?2.35:3.0,Number.isFinite(explicitHeight)&&explicitHeight>2?explicitHeight:isBlueStar?7.15:isMirova36?4.15:isGrocer74?3.65:isStation?7.4:isPhotoGarage?2.49:isGarage?2.75:isIndustrial?5.3:isChurch?11.5:floors*(isSchool?3.4:3.05)));
   if(!(Number.isFinite(explicitHeight)&&explicitHeight>2)&&photoEstimatedStoreHeights.has(osmId))h=photoEstimatedStoreHeights.get(osmId);
  if(modelCard&&modelCard.height!==null)h=modelCard.height;
  const isHouse=!isBlueStar&&!isMirova36&&!isGrocer74&&(type==='house'||
@@ -3081,7 +3102,7 @@ function osmBuilding(points,tags,index,osmId=null){
    }
   }
  }
- const baseWallMat=tags.shop==='supermarket'?(tags.name==='Tesco'?tescoCorrugation:tags.name==='Penny'?pennyFacade:groceryCladding):isBlueStar?blueStarWalls:isMirova36?mirova36Walls:isGrocer74?grocerWalls:isSchool?schoolWalls:isChurch?churchWalls:isStation?stationWalls:isGarage?garageWalls:isPanelBlock?panelFacadeMaterials[braniborska?1:rakouska?3:Math.abs(osmId||index)%panelFacadeMaterials.length]:isCommerce?commerceFacadeMaterials[Math.abs(osmId||index)%commerceFacadeMaterials.length]:isIndustrial?workWalls:osmBuildingMaterial[(oldCenter?index+3:index)%osmBuildingMaterial.length];
+ const baseWallMat=tags.shop==='supermarket'?(tags.name==='Tesco'?tescoCorrugation:tags.name==='Penny'?pennyFacade:groceryCladding):isBlueStar?blueStarWalls:isMirova36?mirova36Walls:isGrocer74?grocerWalls:isSchool?schoolWalls:isChurch?churchWalls:isStation?stationWalls:isPhotoGarage?garagePhotoWalls:isGarage?garageWalls:isPanelBlock?panelFacadeMaterials[braniborska?1:rakouska?3:Math.abs(osmId||index)%panelFacadeMaterials.length]:isCommerce?commerceFacadeMaterials[Math.abs(osmId||index)%commerceFacadeMaterials.length]:isIndustrial?workWalls:osmBuildingMaterial[(oldCenter?index+3:index)%osmBuildingMaterial.length];
  const wallMat=modelCard?.facadeColor?localArchitectureMaterial(baseWallMat,modelCard.facadeColor):baseWallMat;
  // Ordinary buildings are solid on the ground floor; the open station is handled
  // as separate wall segments so the real public passage never becomes blocked.
@@ -3112,7 +3133,7 @@ function osmBuilding(points,tags,index,osmId=null){
  const photoRoofFeatures=isSkolskaRoof?planPhotoRoofFeatures(osmId,pts):[];
  if(isSkolskaRoof&&photoRoofFeatures.length!==2)
   throw Error('Školská: source-backed roof profile incomplete');
- const baseRoofMat=isSchool?schoolRoofMetal:oldCenter?osmRoofPalette[0]:osmRoofPalette[index%osmRoofPalette.length];
+ const baseRoofMat=isPhotoGarage?garagePhotoRoof:isSchool?schoolRoofMetal:oldCenter?osmRoofPalette[0]:osmRoofPalette[index%osmRoofPalette.length];
  const roofMat=modelCard?.roofColor?localArchitectureMaterial(baseRoofMat,modelCard.roofColor):baseRoofMat;
  const roofPreference=modelCard?.roofKind||'auto';
  const pitched=tags.name==='Penny'&&tags.shop==='supermarket'?
@@ -3478,6 +3499,47 @@ function osmBuilding(points,tags,index,osmId=null){
   if(!facade)continue;
   const {nx,nz,mx,mz,ux,uz,yaw:rotation}=facade;
   attachmentAudit.legacyEdges++;
+  if(isPhotoGarage){
+   // EXACTLY 17 OSM buildings, two source-photographed courtyard-facing rows.
+   // Old generic shutters/blue windows must not survive on party walls.
+   if(i===photoGarageFront.edge){
+    const doorWidth=Math.min(len-.22,2.82);
+    const grade=planGroundedEntrance(facade,{
+     terrainAt,baseHeight,topY:baseHeight+h-.18});
+    if(!grade)throw Error('Photographed garage threshold cannot follow ground '+osmId);
+    recordEntranceGrade(grade,'garage-photo-2022',osmId);
+    // Painted dark vertical-profile metal door, flush with real wall.
+    const wallOffset=flushBoxOffset(.09),ribOffset=flushBoxOffset(.145);
+    archPart('garagePhotoDoor',mx+nx*wallOffset,grade.centerY,mz+nz*wallOffset,
+     doorWidth,grade.doorHeight,.065,rotation);
+    // Bright masonry piers frame each photographed garage; use SHORT OSM
+    // width, not an inferred massive gateway cutting a 5.8 m party wall.
+    for(const side of [-1,1]){
+     const x=mx+ux*side*(len*.5-.072)+nx*flushBoxOffset(.105);
+     const z=mz+uz*side*(len*.5-.072)+nz*flushBoxOffset(.105);
+     archPart('garagePhotoPillar',x,baseHeight+h*.5,z,.145,h,.105,rotation);
+    }
+    // Original lightweight corrugations; no copied panorama pixels.
+    const ribs=Math.max(10,Math.round(doorWidth/.14));
+    for(let rib=1;rib<ribs;rib++){
+     const t=rib/ribs-.5;
+     archPart('garagePhotoRib',mx+ux*t*doorWidth+nx*ribOffset,
+      grade.centerY,mz+uz*t*doorWidth+nz*ribOffset,
+      .018,grade.doorHeight-.045,.018,rotation);
+    }
+    archPart('garagePhotoHandle',mx+nx*flushBoxOffset(.18),
+     grade.floorY+Math.min(1.05,grade.doorHeight*.5),
+     mz+nz*flushBoxOffset(.18),.07,.12,.055,rotation);
+    archPart('garagePhotoCoping',mx+nx*flushBoxOffset(.10),
+     baseHeight+h+.025,mz+nz*flushBoxOffset(.10),
+     len,.13,.16,rotation);
+    window.__milovicePhotoGarageCourt.rendered++;
+    window.__milovicePhotoGarageCourt.oldUnverifiedFacadeGeneratorsBypassed++;
+   }
+   // No windows, awnings, invented signage, roadside garage doors or
+   // duplicate panels on shared 5.85m partition walls.
+   continue;
+  }
   if(len<5){
    // Legacy non-hero buildings have their own material-specific trim kit.
    // Mirror ONLY the already-existing bands on short exterior returns;
@@ -3750,7 +3812,7 @@ function osmBuilding(points,tags,index,osmId=null){
  // Its complete citywide photographic audit is pending. For the 17 disputed
  // Nádražní OSM objects, osmBuilding returned BEFORE any 3D geometry.
  if(auditedCore&&isGarage)legacyRealityAudit.suppressed('suppressedGarageDoors');
- if(isGarage&&!auditedCore){
+ if(isGarage&&!auditedCore&&!isPhotoGarage){
   // Legacy garage shutters: OSM supplies a footprint, not a photographic
   // statement about the location or design of the entrance. Retained for
   // unreviewed historical areas, never accepted as photographed.
@@ -3885,9 +3947,72 @@ function rpAppendOSMElements(elements){
  for(const el of railWays.filter(e=>e.tags.railway==='platform')){
   osmRailways.push(el);miloviceRailTrack(el.geometry.map(osmPoint),el.tags);
  }
- // 5.60: do NOT generate these disputed garage fronts from OSM alone.
- // The early photoRenderingDecision gate in osmBuilding removes their
- // speculative 3D shells/colliders while keeping footprints in survey data.
+ // 5.63: panorama on 17 May 2022 DOCUMENTS paired brown garage
+ // fronts and gravel across this exact 7+10 court. Derive only geometry
+ // from the actual 17 mapped OSM ways; no number-to-way pairing is asserted.
+ const sourceGarages=buildingWays.filter(el=>isPhotoGarageWay(el.id));
+ if(sourceGarages.length){
+  const photoPlan=planPhotographedGarageCourt(sourceGarages.map(el=>({
+   id:el.id,building:el.tags.building,
+   points:el.geometry.map(p=>{const v=osmPoint(p);return {x:v.x,z:v.y};})
+  })));
+  const audit=window.__milovicePhotoGarageCourt;
+  audit.planned=photoPlan.valid?photoPlan.fronts.length:0;
+  audit.rowCounts=photoPlan.rows||null;
+  audit.reason=photoPlan.reason||null;
+  if(photoPlan.valid){
+   for(const front of photoPlan.fronts)nadrazniPhotoGarageFronts.set(front.id,front);
+   // The photos show a continuous GREY/BEIGE GRAVEL court between the
+   // documented rows — not grass or paved asphalt. A single chunked ground
+   // mesh follows the DEM. Outer photographed fences/trees are held for
+   // a later positioning pass, not automatically invented.
+   const span=photoPlan.court,cols=6,rows=9;
+   const positions=[],uvs=[],triangles=[];
+   for(let iz=0;iz<=rows;iz++)for(let ix=0;ix<=cols;ix++){
+    const x=span.xMin+(span.xMax-span.xMin)*ix/cols,
+       z=span.zMin+(span.zMax-span.zMin)*iz/rows;
+    positions.push(x,terrainAt(x,z)+.085,z);
+    uvs.push((x-span.xMin)/2.7,(z-span.zMin)/2.7);
+   }
+   for(let iz=0;iz<rows;iz++)for(let ix=0;ix<cols;ix++){
+    const a=iz*(cols+1)+ix,b=a+1,d=a+(cols+1),e=d+1;
+    triangles.push(a,d,b,b,d,e);
+   }
+   const gravelGeometry=new THREE.BufferGeometry();
+   gravelGeometry.setAttribute('position',
+    new THREE.Float32BufferAttribute(positions,3));
+   gravelGeometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
+   gravelGeometry.setIndex(triangles);gravelGeometry.computeVertexNormals();
+   // Small seeded noise texture, generated by us: not cropped from Mapy.
+   const texCanvas=document.createElement('canvas');texCanvas.width=texCanvas.height=128;
+   const textureContext=texCanvas.getContext('2d'),image=textureContext.createImageData(128,128);
+   let seed=20220517;
+   const rand=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;
+    return seed/4294967296};
+   for(let i=0;i<image.data.length;i+=4){
+    const grain=rand(),shade=grain>.90?35:grain<.10?-36:(grain-.5)*35;
+    image.data[i]=Math.max(0,Math.min(255,164+shade));
+    image.data[i+1]=Math.max(0,Math.min(255,157+shade));
+    image.data[i+2]=Math.max(0,Math.min(255,143+shade));
+    image.data[i+3]=255;
+   }
+   textureContext.putImageData(image,0,0);
+   const texture=new THREE.CanvasTexture(texCanvas);
+   texture.wrapS=texture.wrapT=THREE.RepeatWrapping;
+   texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=2;
+   const gravelMaterial=new THREE.MeshLambertMaterial({
+    map:texture,roughness:1,side:THREE.DoubleSide});
+   const courtMesh=new THREE.Mesh(gravelGeometry,gravelMaterial);
+   courtMesh.name='Milovice_Nadrazni_photo_2022_17_garage_gravel_court';
+   courtMesh.userData.lodX=(span.xMin+span.xMax)*.5;
+   courtMesh.userData.lodZ=(span.zMin+span.zMax)*.5;
+   courtMesh.receiveShadow=true;osmLayer.add(courtMesh);
+   audit.gravelCourtDrawCalls=1;
+   audit.gravelCourtyardExtentEstimated=true;
+   audit.courtSourceDate=PHOTO_GARAGE_COURT.photoDate;
+   audit.photoProof='user-uploaded Mapy.com panorama, 17 May 2022';
+  }
+ }
  for(const el of buildingWays){osmBuilding(el.geometry,el.tags,osmBuildings,el.id);osmAddLandmark(el)}
  // REBUILD 2.0: actual sheltered RAIL PLATFORM, not the fake 29m STREET-side
  // green canopy removed in 5.27.3. Uses only OSM way 53865956 and the
