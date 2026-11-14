@@ -3,6 +3,7 @@ import {PHOTO_STREET_BLOCK,photoFacingEdges,pointFromGps,planDormerRoofSlopes,pl
  planPhotographedRooflight} from './street-photo-block.js';
 import {planCityBuildingRoof} from './city-roof-geometry.js';
 import {roofHeightAtPoint} from './roof-opening-geometry.js';
+import {exteriorFacadeFrame,facadePoint,facadeGap} from './facade-anchors.js';
 assert.equal(PHOTO_STREET_BLOCK.length,3);
 assert.deepEqual(PHOTO_STREET_BLOCK.map(x=>x.id),['202367194','202367254','118487980']);
 assert(PHOTO_STREET_BLOCK.every(x=>x.photoDate==='2024-05-30'&&x.license==='CC BY 4.0'&&
@@ -12,6 +13,26 @@ const front=photoFacingEdges(pts,{x:7.5,z:-12},{limit:2});
 assert.equal(front[0].index,0,'photo on north side should choose corresponding visible wall');
 assert(front.every(e=>e.len>=4&&e.visibility>-.12));
 assert.equal(photoFacingEdges(pts,{x:999,z:999},{minLength:16}).length,0);
+// Every exterior photograph-facing wall must share the actual physical
+// opening frame, even on L-shaped, reversed and rotated cadastral outlines.
+const notch=[{x:0,z:0},{x:14,z:0},{x:14,z:3},
+ {x:4,z:3},{x:4,z:13},{x:0,z:13}];
+const c=Math.cos(.42),s=Math.sin(.42);
+for(const outline of [notch,[...notch].reverse(),
+ notch.map(p=>({x:p.x*c-p.z*s+413,z:p.x*s+p.z*c-211}))]){
+ for(let i=0;i<outline.length;i++){
+  const frame=exteriorFacadeFrame(outline,i);
+  if(!frame||frame.len<1)continue;
+  const camera=facadePoint(frame,0,9);
+  const chosen=photoFacingEdges(outline,camera,{
+   minLength:1,limit:outline.length}).find(e=>e.index===i);
+  assert(chosen,'Photographed facade skipped outward-looking edge');
+  assert(Math.abs(chosen.nx-frame.nx)<1e-9&&Math.abs(chosen.nz-frame.nz)<1e-9,
+   'A photographed roof detail is rotated away from its actual host wall');
+  assert(Math.abs(chosen.yaw-frame.yaw)<1e-9);
+  assert(Math.abs(facadeGap(frame,facadePoint(chosen,0,.024))-.024)<1e-8);
+ }
+}
 const p=pointFromGps(50.226,14.889);
 assert(Math.abs(p.x)<1e-3&&Math.abs(p.z)<1e-3);
 console.log('Photo street block OK: 3 independently georeferenced Commons landmarks, exterior wall selection and no fake dimensions');
@@ -59,6 +80,28 @@ assert(html.includes('facadeSourceAudit.suppressedRandomBalconies++'),
 // May 2024 Wikimedia Commons references, not a generic guessed style.
 const city=JSON.parse((await import('node:fs')).readFileSync(
  new URL('../data/milovice-osm.json',import.meta.url),'utf8'));
+// Whole-city regression, not one specific station or Mírová facade.
+let checkedPhotoEdges=0,checkedPhotoBuildings=0;
+for(const b of city.elements.filter(e=>e.tags?.building&&Array.isArray(e.geometry))){
+ const outline=b.geometry.slice(0,-1).map(p=>pointFromGps(p.lat,p.lon));
+ let checked=0;
+ for(let i=0;i<outline.length;i++){
+  const frame=exteriorFacadeFrame(outline,i);
+  if(!frame||frame.len<5)continue;
+  const camera=facadePoint(frame,0,8);
+  const photographed=photoFacingEdges(outline,camera,{
+   minLength:5,limit:outline.length}).find(e=>e.index===i);
+  assert(photographed,'Photo facade missing OSM edge '+b.id+'/'+i);
+  assert(Math.abs(photographed.nx-frame.nx)<1e-8&&
+   Math.abs(photographed.nz-frame.nz)<1e-8);
+  checked++;checkedPhotoEdges++;
+ }
+ if(checked)checkedPhotoBuildings++;
+}
+assert(checkedPhotoBuildings>500&&checkedPhotoEdges>1300,
+ 'The entire mapped city must share one facade attachment contract');
+console.log('5.37 photo facade attachment PASS',
+ {buildings:checkedPhotoBuildings,edges:checkedPhotoEdges});
 const mirova=city.elements.find(b=>b.id===202367254);
 assert(mirova,'The documented Mírová 36 OSM footprint was deleted');
 const outline=mirova.geometry.slice(0,-1).map(p=>pointFromGps(p.lat,p.lon));
