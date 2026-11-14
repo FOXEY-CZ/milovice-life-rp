@@ -63,3 +63,16 @@ Nezasekávat se na jednotlivých detailech bez konce: používat společný syst
 
 ### Kostelní uzel – identita ulice
 Zdroj: https://www.kdykde.cz/rejstrik/kostel-sv-kateriny-alexandrijske/ (Mírová, poblíž 5. května a Poštovní). OSM sousední ulice má jen orientační spád do skupiny Poštovní; před skutečnou přestavbou ověřit pěší napojení a rozsah křižovatky. Poštovní se musí projít **celá**, nejen kostel.
+
+
+## PART 12 — 5.56: Nádražní / prvotní kontrolní průchod (nikoliv schválená ulice)
+
+- [Otevřít celou ulici v mapové kontrole](../survey.html?id=old%3AN%C3%A1dra%C5%BEn%C3%AD). Jednotný prohlížeč funguje i pro zbývajících 77 skupin přes odkaz v [REBUILD dashboardu](../rebuild.html).
+- Čte **skutečné mapové OSM ID** a rozlišuje 22 budov, 6 vozovek, 5 pěších tras a 5 železničních objektů aktuálně *přiřazených* Nádražní. To není soupis všech lamp, značek a jednotlivých stromů; položky mimo OSM mají zůstat „chybí podklady“.
+- Stanice (53865956), cyklověž (1011197691), dvě OSM pěší trasy ke stanici (549346217, 1550920096) a nástupiště (549346219) jsou zachované. Čtyři doložené jednosměrné OSM úseky zůstávají ve scéně i v evidenci.
+- **Přímo na mapě** jsou vyznačeny také sousední komunikace 5. května (22880478), Školská (22880480) a jejich navazující pěší trasy (1282187908, 1282187911), ale nepočítají se jako hotová Nádražní.
+- Dvě veřejné fotografie přednádražního prostoru z roku 2024 a samostatné fotografie stanovišť A/B ze stejného roku jsou odkázané s licencí a geolokací **kamery**, ne nepodložených fyzických objektů. Pro stanoviště A/B je odkázané též schéma PID s platností od 15. prosince 2024.
+- Přístup přes rebuild.html, každou jeho uliční kartu i mapu přímo ve hře. Vlastní 15bodová kontrola / poznámky jsou pouze **lokálně v prohlížeči**, bez zásahu do sdílených herních dat a bez změny stavu approved.
+- Automatický test rebuild2-survey.test.mjs chrání před ztrátou OSM objektů, duplikací zdrojů a chybným přiřazením křižovatky. Nejde o automatický důkaz fotografické 3D shody; ta musí následovat před opravami fasád, parkování a mobiliáře.
+
+**Další fyzický rebuild:** Nádražní projít od jednoho konce k druhému přes všechny přiřazené i hraniční objekty; opravovat pouze to, co potvrdí fotografie nebo geodata. Zachovat stávající kolize a kontrolu FPS. V této fázi se 3D modely svévolně nepřestavovaly.
