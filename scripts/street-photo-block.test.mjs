@@ -52,4 +52,39 @@ assert(!html.includes("archPart('shutter'"),
  'Citywide provisional facades may not spawn random shutters');
 assert(html.includes('facadeSourceAudit.suppressedRandomBalconies++'),
  'Automatically generated balconies must be suppressed until photographed');
+// Photo-driven multi-building regression. These names refer to real
+// May 2024 Wikimedia Commons references, not a generic guessed style.
+const city=JSON.parse((await import('node:fs')).readFileSync(
+ new URL('../data/milovice-osm.json',import.meta.url),'utf8'));
+const mirova=city.elements.find(b=>b.id===202367254);
+assert(mirova,'The documented Mírová 36 OSM footprint was deleted');
+const outline=mirova.geometry.slice(0,-1).map(p=>pointFromGps(p.lat,p.lon));
+const visible=photoFacingEdges(outline,pointFromGps(50.2280572,14.8840981),
+ {minLength:3.3,limit:6});
+const front=visible.find(e=>e.len>5.5);
+const side=visible.find(e=>e.index!==front.index&&e.len>=4.3);
+assert(front&&side,'Both photographed Mírová 36 streetfront edge groups must exist');
+assert(front.len>6&&front.len<7,'Use the real 6.45m face, not a 20m bbox');
+for(const [edge,offsets] of [[front,[-.82]],[side,[-.78,.78]]])
+ for(const offset of offsets)
+  assert(Math.abs(offset)<=edge.len*.5-.68,
+   'Photo rooflight cannot extend beyond its source OSM facade');
+const photoPass=(await import('node:fs')).readFileSync(
+ new URL('./street-photo-block.js',import.meta.url),'utf8');
+const sourceIdx=photoPass.indexOf("if(key==='202367254')");
+assert(sourceIdx>0);
+const sourceCode=photoPass.slice(sourceIdx,sourceIdx+1000);
+assert(sourceCode.includes('roofRise:1.65')&&
+ sourceCode.includes('addRooflights(face,base,height,[-.82])')&&
+ sourceCode.includes('addRooflights(returnWall,base,height,[-.78,.78])'));
+assert(photoPass.includes('const winW=w*(arched?.43:.72)'),
+ 'Mírová upper three-lite casement must be wider than an arched gable pane');
+const game=html;
+assert(game.includes('isMirova36?4.15')&&game.includes('isMirova36?2.55'),
+ 'The photographed one-storey street wing must not have 2+ storey eaves');
+assert(game.includes('mirova36SourceStorefrontBays=bays')&&
+ game.includes('blueStarSourceEntranceArch=true')&&
+ game.includes('blueStarInventedBillboardRemoved=true'));
+assert(!game.includes(' blueStarFacadeSign(entranceX+dirX*.55'),
+ 'A floating hotel billboard unsupported by the May 2024 photo must remain absent');
 console.log('5.29.0 Školská 220/1 actual arched attic windows, no invented shutters or floating roof outlines PASS');
