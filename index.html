@@ -2500,16 +2500,31 @@ function miloviceGrocer74Detail(pts,base,h,cx,cz){
   const a=pts[i],b=pts[(i+1)%pts.length],len=a.distanceTo(b);
   if(len<4)continue;
   const mx=(a.x+b.x)/2,mz=(a.y+b.y)/2,d=Math.hypot(mx-roadside.x,mz-roadside.y);
-  if(d<dist){dist=d;best={a,b,len,mx,mz}}
+  if(d<dist){dist=d;best={a,b,len,mx,mz,i}}
  }
  if(!best)return;
- const {a,b,len,mx,mz}=best,dx=b.x-a.x,dz=b.y-a.y;
- let nx=-dz/len,nz=dx/len;if(nx*(mx-cx)+nz*(mz-cz)<0){nx=-nx;nz=-nz}
- const yaw=Math.atan2(nx,nz);
- archPart('stationGlass',mx+nx*.42,base+1.55,mz+nz*.42,Math.min(6.0,len*.78),2.05,.16,yaw);
- archPart('stationFrames',mx+nx*.53,base+1.57,mz+nz*.53,Math.min(6.3,len*.82),2.16,.09,yaw);
- archPart('stationCanopy',mx+nx*.80,base+2.82,mz+nz*.80,Math.min(7.5,len*.90),.13,1.0,yaw);
- stationBoard('POTRAVINY',mx+nx*.66,base+3.12,mz+nz*.66,yaw,'#2b5670');
+ const face=exteriorFacadeFrame(pts,best.i);
+ if(!face)return;
+ const {nx,nz,mx,mz,yaw}=face;
+ const width=Math.min(6.0,len*.78),frameDepth=.08;
+ archPart('stationGlass',mx+nx*FACE_PLANE,base+1.55,
+  mz+nz*FACE_PLANE,width-.17,2.05,.026,yaw);
+ // Four slim frame pieces, never a full-size opaque slab over the glass.
+ const jambOffset=flushBoxOffset(frameDepth);
+ for(const sign of [-1,1]){
+  const x=mx+dx/len*sign*width*.5+nx*jambOffset,
+    z=mz+dz/len*sign*width*.5+nz*jambOffset;
+  archPart('stationFrames',x,base+1.55,z,.09,2.17,frameDepth,yaw);
+ }
+ archPart('stationFrames',mx+nx*jambOffset,base+2.63,
+  mz+nz*jambOffset,width+.1,.09,frameDepth,yaw);
+ archPart('stationFrames',mx+nx*jambOffset,base+.48,
+  mz+nz*jambOffset,width+.1,.09,frameDepth,yaw);
+ archPart('stationCanopy',mx+nx*flushBoxOffset(1.0),
+  base+2.82,mz+nz*flushBoxOffset(1.0),
+  Math.min(7.5,len*.90),.13,1.0,yaw);
+ stationBoard('POTRAVINY',mx+nx*FACE_PLANE,base+3.12,
+  mz+nz*FACE_PLANE,yaw,'#2b5670');
 }
 // 4.7: Milovice 2021 glass biketower – 8m surveyed OSM footprint and
 // 11.4m public reported height. Reference: Wikimedia ŠJů, 30 May 2024.
