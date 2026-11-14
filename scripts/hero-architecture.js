@@ -4,7 +4,7 @@
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {selectFacadeEdges,planFaceOpenings} from './facade-model.js';
 import {analyzeGableFootprint} from './city-roof-geometry.js';
-import {classifyFacadeEdgeLength} from './facade-perimeter.js';
+import {classifyFacadeEdgeLength,planFacadePerimeterTrims} from './facade-perimeter.js';
 
 export function makeMiloviceHeroArchitecture(THREE,{
   sites=[],radius=240,maxBuildings=68,terrainAt=()=>0
@@ -16,7 +16,8 @@ export function makeMiloviceHeroArchitecture(THREE,{
   detailInstances:0,drawMeshes:0,chunkCount:0,
   suppressedArbitraryChimneys:0,skippedUnverifiedGables:0,
   suppressedUnverifiedPhotoOrnaments:0,shortWallSegmentsSealed:0,
-  skippedDegenerateEdges:0};
+  skippedDegenerateEdges:0,
+  trimmedWallEdges:0,trimmedShortReturns:0,trimmedPerimeterMetres:0};
  const box=new THREE.BoxGeometry(1,1,1),glassPlane=new THREE.PlaneGeometry(1,1);
  const mats={
   wall:new THREE.MeshStandardMaterial({vertexColors:true,roughness:.92,side:THREE.DoubleSide}),
@@ -124,6 +125,18 @@ export function makeMiloviceHeroArchitecture(THREE,{
    // on concave OSM buildings, exposing the sky below the hip roof.
    const wallKind=classifyFacadeEdgeLength(len);
    if(wallKind==='degenerate'){state.skippedDegenerateEdges++;continue;}
+   // The SAME base/cornice planner is used BEFORE splitting long facades
+   // from short, undecorated returns. Previously an early continue skipped
+   // both bands on every short return, leaving visibly broken plinths.
+   const trim=planFacadePerimeterTrims(a,b,centroid,{base,height});
+   if(!trim)throw Error('Valid facade edge has no perimeter bands');
+   const addBand=band=>placement(chunk,band.kind,
+    band.x,band.y,band.z,band.width,band.height,band.depth,band.yaw);
+   addBand(trim.base);
+   addBand(trim.upper);
+   state.trimmedWallEdges++;
+   state.trimmedPerimeterMetres+=trim.length;
+   if(wallKind==='solid-return')state.trimmedShortReturns++;
    if(wallKind==='solid-return'){
     const shortWall=wallGeometry(a,b,base,height,[],tone);
     if(shortWall){
@@ -132,11 +145,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
     }
     continue;
    }
-   const ux=(b.x-a.x)/len,uz=(b.y-a.y)/len;
-   let nx=-uz,nz=ux;
-   const mx=(a.x+b.x)*.5,mz=(a.y+b.y)*.5;
-   if(nx*(mx-centroid.x)+nz*(mz-centroid.z)<0){nx=-nx;nz=-nz}
-   const yaw=Math.atan2(nx,nz),holes=[];
+   const {ux,uz,nx,nz,mx,mz,yaw}=trim,holes=[];
    // One independently reviewed facade can replace only its own selected
    // surveyed wall; corners/chamfers and unreviewed sides keep the old model.
    const photoAnchored=Boolean(override?.source);
@@ -214,8 +223,6 @@ export function makeMiloviceHeroArchitecture(THREE,{
      else placement(chunk,'awning',xx+nx*.37,base+doorBottom+doorHeight+.40,zz+nz*.37,doorWidth+.77,.16,.85,yaw);
     }
    }
-   placement(chunk,'base',mx+nx*.09,base+.23,mz+nz*.09,len,.46,.16,yaw);
-   placement(chunk,'sill',mx+nx*.15,base+height-.12,mz+nz*.15,len,.20,.28,yaw);
    const geometry=wallGeometry(a,b,base,height,holes,sideLayout?.wallColor||tone);
    if(geometry){chunk.walls.push(geometry);state.solidWalls++}
   }
