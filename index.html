@@ -2813,6 +2813,11 @@ function osmBuilding(points,tags,index,osmId=null){
  // Fixed a major regression: the standard building branch used to put
  // a FLAT roof through every gable or hip, producing intersecting roof skins.
  const pitchedSurface=pitched||hip;
+ // Keep the actual host roof surface for photo-fitted objects. Only
+ // Mírová 36 currently has source-confirmed rectangular rooflights.
+ // All other houses receive no speculative skylights.
+ const photoHostRoofPlan=isMirova36?
+  pitchedSurface?.userData.roofRuntimePlan||null:null;
  if(pitchedSurface){
   roofEnvelopeAudit.pitchedRoofs++;
   const roofPlan=pitchedSurface.userData.roofRuntimePlan;
@@ -2941,7 +2946,10 @@ function osmBuilding(points,tags,index,osmId=null){
    if(isBlueStar)miloviceBlueStarDetail(pts,baseHeight,h,centerX,centerZ);
    if(isMirova36)miloviceMirova36Detail(pts,baseHeight,h,centerX,centerZ);
    if(isGrocer74)miloviceGrocer74Detail(pts,baseHeight,h,centerX,centerZ);
-   photoStreetBlock.add({id:osmId,points:pts,base:baseHeight,height:h});
+   photoStreetBlock.add({
+    id:osmId,points:pts,base:baseHeight,height:h,
+    roofPlan:photoHostRoofPlan
+   });
     miloviceBusinessFront(pts,tags,baseHeight,h,centerX,centerZ,osmId);
  // Every fifth unreviewed building used to receive a giant 4×3m invented
  // rooftop box. Nothing in OSM or photos supports those. Remove across the
