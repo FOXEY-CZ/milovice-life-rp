@@ -359,32 +359,36 @@ try{
     stationParking.instances<stationParking.pavingCells*2||
     stationParking.parkingBanks?.length!==2||
     stationParking.oppositeParkingBays<18||
-    stationParking.centralParkingTiles<400||
+    stationParking.centralParkingTiles<270||
+    stationParking.outerSidewalkPatches<100||
+    stationParking.outerSidewalkCurbs<70||
+    stationParking.centralParkingTiles+stationParking.outerSidewalkPatches!==stationParking.pavingCells||
+    stationParking.roadSurfaceUnmodified!==true||
+    stationParking.sharedCitySidewalkTexture!==true||
+    stationParking.maxOuterFootwayOsmDistance>4.5||
     stationParking.centralMistakenSidewalkTiles!==0||
     stationParking.parkingSidewalkSwapFixed!==true||
     stationParking.mappedOuterSidewalkSegments!==3||
-    stationParking.outerSidewalkRendering!=='city-textured-terrain-strip-no-boxes'||
+    stationParking.outerSidewalkRendering!=='carved-terrain-mesh-shared-city-paving'||
     stationParking.oldInnerSidewalkTiles!==0||
-    stationParking.visibleOuterSidewalkTiles!==0||
     stationParking.visibleSidewalkSide!=='outer-east-facing-Nadrazni-128308366'||
-    stationParking.centralWalkwaySource!=='mapped-OSM-1165594426-outer-east-edge'||
+    stationParking.centralWalkwaySource!=='carved-from-OSM-safe-outer-parking-cells'||
     stationParking.rightCornerPavingTiles<8||
     stationParking.wrongRailSidewalkTiles!==0||
     stationParking.wrongRailSidewalkRemoved!==true||
     stationParking.mappedFootwayIdPreserved!==1165594426||
     stationParking.rightCornerFootwayId!==1282187911||
-    stationParking.drawMeshes>6||
+    stationParking.drawMeshes>7||
     stationParking.collisionSafe!==true||stationParking.noSyntheticCars!==true)
-   throw new Error('5.72 outer Nádražní textured walkway / parking budget broken: '+JSON.stringify(stationParking));
+   throw new Error('5.73 carved outer sidewalk must be INSIDE the island, away from asphalt: '+JSON.stringify(stationParking));
  const outerFootwayAudit=await page.evaluate(()=>({
-  pathSegments:window.__miloviceStreetGeometryAudit?.photoOuterFootwaySegments||0,
-  sharedPavingTexture:window.__miloviceStreetGeometryAudit?.photoOuterFootwayTextureShared===true,
+  forcedFootwaySegments:window.__miloviceStreetGeometryAudit?.photoOuterFootwaySegments||0,
   cityPavingTexture:window.__miloviceGraphics2?.surfaceMaterials?.sidewalk===true
  }));
- if(outerFootwayAudit.pathSegments!==3||!outerFootwayAudit.sharedPavingTexture||
+ if(outerFootwayAudit.forcedFootwaySegments!==0||
     !outerFootwayAudit.cityPavingTexture)
-  throw new Error('5.72 actual terrain-adaptive OSM sidewalk not drawn with native city paving texture: '+JSON.stringify(outerFootwayAudit));
- console.log('5.72 actual mapped exterior OSM footway in native city paving texture:',JSON.stringify({stationParking,outerFootwayAudit}));
+  throw new Error('5.73 must NOT force OSM footway over asphalt; carved patch shares city paving: '+JSON.stringify(outerFootwayAudit));
+ console.log('5.73 paved sidewalk CARVED from parking island, never painted on asphalt:',JSON.stringify({stationParking,outerFootwayAudit}));
 
  const cutoutTest=await page.evaluate(async()=>{
   const THREE=await import('three');
