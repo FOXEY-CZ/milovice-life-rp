@@ -37,6 +37,17 @@ const collection={type:'FeatureCollection',features:[valid,valid,{...valid,id:'u
 const parsed=parsePanoramaxResponse(collection);
 assert.equal(parsed.photos.length,1);
 assert.equal(parsed.morePages,true);
+const federated=parsePanoramaxResponse({
+ features:[valid],links:[] // api.panoramax.xyz actual 2026 metadata shape
+});
+assert.equal(federated.photos.length,1);
+assert.equal(federated.catalogueFormat,'federated-feature-list');
+assert.equal(parsePanoramaxResponse({features:[],links:[]}).photos.length,0,
+ 'Empty valid meta-catalogue must NOT be treated as an API error');
+assert.equal(parsed.catalogueFormat,'stac-feature-collection');
+assert.throws(()=>parsePanoramaxResponse({type:'Error',features:[]}),
+ 'Do not accept unknown feature containers');
+
 assert.equal(parsed.photos[0].reviewStatus,'candidate-unreviewed');
 assert.throws(()=>parsePanoramaxResponse({data:[]}));
 let requests=0;
