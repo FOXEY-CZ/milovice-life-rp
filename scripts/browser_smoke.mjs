@@ -145,6 +145,18 @@ try{
     JSON.stringify(landmark));
  console.log('5.40 duplicate photographed facade beams suppressed:',
   landmark.suppressedDuplicatePerimeterBands);
+ const fallbackPhotoCornice=await page.evaluate(()=>
+  window.__milovicePhotoEaveCornice||null);
+ if(!((hero.photoEaveBands||0)+(fallbackPhotoCornice?.bands||0)>0)||
+    landmark.flushDormerWindowFaces!==landmark.dormers||
+    landmark.flushDormerWindowFaces<3)
+  throw Error('5.41 photo cornice or wall-mounted dormer panes missing: '+
+   JSON.stringify({heroCornices:hero.photoEaveBands,
+    fallbackCornice:fallbackPhotoCornice,photo:landmark}));
+ console.log('5.41 attached eave cornice and flush dormer panes:',
+  JSON.stringify({heroCornices:hero.photoEaveBands,
+   fallbackCornices:fallbackPhotoCornice?.bands||0,
+   dormers:landmark.flushDormerWindowFaces}));
  const houseRoof=await page.evaluate(()=>window.__miloviceSkolskaRoof||null);
  if(!houseRoof||houseRoof.osmId!==118487980||
     houseRoof.footprintVertices!==7||houseRoof.mainRoofType!=='hip'||
@@ -312,6 +324,11 @@ try{
     JSON.stringify(citySigns));
  if(landmarkChecks.blueStarGhostDoorsRemoved!==true)
    throw Error('5.35: hotel still has full-size fake opaque window doors');
+ if(landmarkChecks.blueStarBalconySideReturns!==2||
+    landmarkChecks.blueStarBalconyWallBrackets!==2||
+    landmarkChecks.blueStarBalconyDoorFlushToFloor!==true)
+   throw Error('5.41 incomplete balcony side rails or door not connected to slab: '+
+    JSON.stringify(landmarkChecks));
  if(landmarkChecks.blueStarEntryRaisedSillRemoved!==true||
     landmarkChecks.blueStarPlinthOpeningCount!==1||
     !Number.isFinite(landmarkChecks.blueStarEntranceFloorY)||

@@ -166,6 +166,20 @@ export function dormerFacadeCenter(depth,projection=.04){
   !Number.isFinite(projection)||projection<0||projection>.2)return null;
  return projection-depth*.5;
 }
+/**
+ * The pictured dormer is a small extension of its real OSM facade.
+ * Window panes, moldings and the triangular gable must share the front
+ * of its own solid dormer wall, not add 12-30cm of unanchored distance.
+ */
+export function planDormerWindowMount(depth){
+ const center=dormerFacadeCenter(depth);
+ if(center===null)return null;
+ const face=depth*.5;
+ return {center,face,
+  glass:face+.016,surround:face+.028,mullion:face+.032,
+  sill:face+.045,gable:face+.006,bottomTrim:face+.044,
+  windowFaceWorld:center+face,maxWindowFaceRelief:.11};
+}
 export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  const roofMaterial=new THREE.MeshStandardMaterial({color:0x583b38,roughness:.88});
  const darkRoof=new THREE.MeshStandardMaterial({color:0x404348,roughness:.90});
@@ -180,6 +194,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  let anchoredDormerRoofs=0,removedDetachedRoofBoxPanels=0,joinedOrdinaryDormerRoofs=0;
  let detailDrawMeshes=0,meshesSavedByBatching=0,flushRooflights=0;
  let suppressedDuplicatePerimeterBands=0;
+ let flushDormerWindowFaces=0;
  let rooflightHostPlan=null,rooflightRejected=0;
  const rooflightFailures=[];
  const ids=new Set(),ownedGroups=new Set();
@@ -254,10 +269,13 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   // The photographed gable stands on the outside masonry face,
   // while its rear intersects the main hip. No facade floating past a
   // narrow ground-floor edge when the roof-bay depth changes.
-  p.position.z=dormerFacadeCenter(depth);g.add(p);
-  part(p,w,1.48,depth,wall,0,.74,.0);
-  part(p,w+.14,.14,.16,trim,0,.12,depth*.5+.09);
-  const front=depth*.5+.12;
+  const mount=planDormerWindowMount(depth);
+  if(!mount)throw Error('Unsupported photographed dormer depth');
+  p.position.z=mount.center;g.add(p);
+  part(p,w,1.48,depth,wall,0,.74,0);
+  // Source-backed lower molding has its back face inside the gable wall.
+  part(p,w+.14,.14,.12,trim,0,.12,mount.bottomTrim);
+  const front=mount.face;
   const winW=w*(arched?.43:.72),winH=.93;
   if(arched){
    const profile=planArchedDormerWindow({width:winW});
@@ -274,36 +292,36 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
    for(let i=1;i<profile.inner.length;i++)
     panePath.lineTo(profile.inner[i].x,profile.inner[i].y);
    panePath.closePath();
-   addMesh(p,new THREE.ShapeGeometry(panePath),glazing,0,0,front+.112);
+   addMesh(p,new THREE.ShapeGeometry(panePath),glazing,0,0,mount.glass);
    const frameShape=new THREE.Shape();
    frameShape.moveTo(profile.outer[0].x,profile.outer[0].y);
    for(let i=1;i<profile.outer.length;i++)
     frameShape.lineTo(profile.outer[i].x,profile.outer[i].y);
    frameShape.closePath();
    frameShape.holes.push(makePath(profile.inner));
-   addMesh(p,new THREE.ShapeGeometry(frameShape),trim,0,0,front+.152);
+   addMesh(p,new THREE.ShapeGeometry(frameShape),trim,0,0,mount.surround);
    // A slim true mullion and transom, fitted below the semicircular head.
    part(p,.058,profile.shoulder-profile.bottom-.09,.065,trim,
-    0,(profile.bottom+profile.shoulder)*.5,front+.182);
+    0,(profile.bottom+profile.shoulder)*.5,mount.mullion);
    part(p,winW-profile.border*2,.048,.062,trim,
-    0,profile.shoulder-.13,front+.184);
-   part(p,winW+.17,.105,.15,trim,0,profile.bottom-.06,front+.14);
+    0,profile.shoulder-.13,mount.mullion);
+   part(p,winW+.17,.105,.13,trim,0,profile.bottom-.06,mount.sill);
    actualArchedWindowMeshes+=2;rectangularFakeArchRemoved++;
   }else{
    // Mírová 36 photo: a broad white three-lite attic casement,
    // not a single opaque stripe or an oversized unverified attic floor.
-   part(p,winW+.17,winH+.17,.095,trim,0,.87,front);
-   part(p,winW,winH,.10,glazing,0,.87,front+.066);
+   part(p,winW+.17,winH+.17,.095,trim,0,.87,front+.002);
+   part(p,winW,winH,.045,glazing,0,.87,front+.040);
    for(const x of [-winW/6,winW/6])
-    part(p,.062,winH,.12,trim,x,.87,front+.138);
-   part(p,winW+.25,.10,.19,trim,0,.35,front+.14);
+    part(p,.062,winH,.065,trim,x,.87,front+.053);
+   part(p,winW+.25,.10,.13,trim,0,.35,mount.sill);
   }
   // A real triangular gable plus two inclined roof planes; no flat-topped box.
   const shape=new THREE.Shape();
   shape.moveTo(-w*.5,1.43);shape.lineTo(w*.5,1.43);
   shape.lineTo(0,1.43+roofRise);shape.closePath();
   const geom=new THREE.ShapeGeometry(shape);
-  addMesh(p,geom,wall,0,0,front+.01);
+  addMesh(p,geom,wall,0,0,mount.gable);
   // Both arched and ordinary cross-gables share ONE geometry constructor.
   // Old ordinary gable used two independent rotated black boxes with
   // hardcoded 0.94m rise, even when the house requested 1.65m, creating
@@ -318,6 +336,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   if(arched){
    anchoredDormerRoofs++;removedDetachedRoofBoxPanels+=2;
   }else joinedOrdinaryDormerRoofs++;
+  flushDormerWindowFaces++;
   dormers++;
   return g;
  }
@@ -430,7 +449,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   anchoredDormerRoofs,removedDetachedRoofBoxPanels,joinedOrdinaryDormerRoofs,
   flushRooflights,rooflightHostPlan,rooflightRejected,
   rooflightFailures:rooflightFailures.slice(0,5),
-  landmarkIds:[...ids],suppressedDuplicatePerimeterBands,
+  landmarkIds:[...ids],suppressedDuplicatePerimeterBands,flushDormerWindowFaces,
   facadeStripOwner:'osm-facade-renderer-only',
   photoReferenceCount:PHOTO_STREET_BLOCK.length,
   scope:'Mírová–5. května–Školská; photographed geometry approximation'};}
@@ -445,7 +464,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   rooflightHostPlan=null;rooflightFailures.length=0;
   actualArchedWindowMeshes=rectangularFakeArchRemoved=0;
   anchoredDormerRoofs=removedDetachedRoofBoxPanels=joinedOrdinaryDormerRoofs=0;
-  suppressedDuplicatePerimeterBands=0;
+  suppressedDuplicatePerimeterBands=flushDormerWindowFaces=0;
   ids.clear();publish()
  }
  publish();

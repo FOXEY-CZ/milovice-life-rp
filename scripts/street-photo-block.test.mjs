@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {PHOTO_STREET_BLOCK,photoFacingEdges,pointFromGps,planDormerRoofSlopes,planArchedDormerWindow,
- planPhotographedRooflight,dormerFacadeCenter} from './street-photo-block.js';
+ planPhotographedRooflight,dormerFacadeCenter,planDormerWindowMount} from './street-photo-block.js';
 import {planCityBuildingRoof} from './city-roof-geometry.js';
 import {roofHeightAtPoint} from './roof-opening-geometry.js';
 import {exteriorFacadeFrame,selectExteriorFacadeToward,flushBoxOffset,facadePoint,facadeGap} from './facade-anchors.js';
@@ -40,6 +40,21 @@ for(const depth of [1.2,1.72,1.9,2.25,2.9]){
  assert(Math.abs(center+depth*.5)<.1,
   'No photographed gable may float 40-50cm away from its wall');
 }
+// Windows belong to the actual dormer WALL, not to a second translated
+// facade panel 12-30cm beyond the front of the wall.
+for(const depth of [1.2,1.72,1.9,2.25,2.9]){
+ const mount=planDormerWindowMount(depth);
+ assert(mount&&Math.abs(mount.center+mount.face-.04)<1e-9);
+ for(const name of ['glass','surround','mullion','gable']){
+  const protrusion=mount[name]-mount.face;
+  assert(protrusion>=0&&protrusion<=.035,
+   'Dormer window layer detached from wall: '+name);
+ }
+ assert(mount.sill-mount.face<.05&&
+  mount.sill-.13*.5<mount.face,
+  'Dormer sill must physically overlap the gable wall');
+}
+assert.equal(planDormerWindowMount(0),null);
 assert.equal(dormerFacadeCenter(0),null);
 const p=pointFromGps(50.226,14.889);
 assert(Math.abs(p.x)<1e-3&&Math.abs(p.z)<1e-3);
@@ -194,13 +209,25 @@ assert(photoPass.includes('suppressedDuplicatePerimeterBands+=features.length*2'
  !photoPass.includes('part(g,edge.len,.10,.17,paleTrim,0,2.7,.33)')&&
  !photoPass.includes('part(g,edge.len+.43,.08,.51,paleTrim'),
  'The photo layer cannot reintroduce floating long beams over existing facade bands');
-assert(photoPass.includes('p.position.z=dormerFacadeCenter(depth)')&&
+assert(photoPass.includes('p.position.z=mount.center')&&
+ photoPass.includes('const mount=planDormerWindowMount(depth)')&&
+ photoPass.includes('const front=mount.face')&&
+ photoPass.includes('mount.glass')&&photoPass.includes('mount.surround')&&
+ !photoPass.includes('front+.112')&&!photoPass.includes('front+.152')&&
+ !photoPass.includes('front+.182')&&!photoPass.includes('front+.138')&&
  !photoPass.includes('arched?(-depth*.5+.04):-.65'),
- 'Every photographed dormer must share the same host-facade setback');
+ 'Every photographed dormer must share its own real masonry front');
 assert(photoPass.includes('const joined=planSkolskaDormerRoof({')&&
  photoPass.includes('joinedOrdinaryDormerRoofs++')&&
  !photoPass.includes('part(p,slope.panelLength,.095,depth+.28,roof,'),
  'ALL photo gables must use one continuous roof rather than floating rotated plates');
+assert(game.includes('blueStarBalconySideReturns=2')&&
+ game.includes('blueStarBalconyWallBrackets=2')&&
+ game.includes('blueStarBalconyDoorFlushToFloor=')&&
+ game.includes('balconyDoorTop-balconySlabTop')&&
+ game.includes('facadePoint(face,sideAlong,.46)')&&
+ !game.includes("archPart('stationGlass',doorX,base+4.72"),
+ 'Hotel balcony must have side rails, wall brackets and a door at slab height');
 assert(game.includes('blueStarGhostDoorsRemoved=true')&&
  game.includes('const railX=entranceX+dirX*.86')&&
  game.includes('blueStarVirtualCornerRemoved=true')&&
