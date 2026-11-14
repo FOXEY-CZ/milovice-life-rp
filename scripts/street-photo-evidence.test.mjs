@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {
  STREET_PHOTO_EVIDENCE,streetEvidenceForBuilding,streetPhotoCoverage,
- distanceBetweenPhotosAndBuilding
+ distanceBetweenPhotosAndBuilding,previewForCommonsPhoto
 } from './street-photo-evidence.js';
 
 const photos=STREET_PHOTO_EVIDENCE;
@@ -45,6 +45,11 @@ assert(stats.withNearbyPhotos>=3&&stats.withNearbyPhotos<stats.buildings,
  'Only a minority of houses have locally discovered photo candidates');
 assert.equal(stats.allFacadesVerified,false);
 assert(photos.some(x=>x.taken==='2014-07-26'&&x.scope==='historical-streetscape'));
+assert(photos.every(p=>previewForCommonsPhoto(p)?.includes('/wiki/Special:FilePath/')&&
+ previewForCommonsPhoto(p)?.endsWith('?width=320')),
+ 'All low-res source previews must come from the credited Commons originals');
+assert.equal(previewForCommonsPhoto({url:'https://untrusted.example/foo.png'}),null);
+assert.equal(previewForCommonsPhoto({url:'javascript:alert(1)'}),null);
 const editor=readFileSync(new URL('../editor.html',import.meta.url),'utf8');
 for(const tag of [
  'id="street-evidence-panel"','id="street-evidence-gallery"',
@@ -52,7 +57,9 @@ for(const tag of [
  "streetEvidenceForBuilding(chosen,{radiusM:135,max:9})",
  "btn.dataset.evidenceId",
  "$('face-status').value='unreviewed'",
- "saveFace();faceButtons();"
+ "saveFace();faceButtons();",
+ "class=\"evidence-preview\"",
+ "previewForCommonsPhoto(p)"
 ])assert(editor.includes(tag),'Missing safe editor candidate UI '+tag);
 assert(!editor.includes('image-data: STREEET_PHOTO_EVIDENCE'));
 console.log('Street photo source catalog QA PASS',JSON.stringify({
