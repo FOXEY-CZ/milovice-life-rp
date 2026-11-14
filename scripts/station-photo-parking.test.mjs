@@ -1,4 +1,4 @@
-// Milovice RP 5.72 — actual exterior sidewalk uses mapped OSM textured surface
+// Milovice RP 5.73 — outside path is CARVED OUT of OSM-safe parking, never asphalt
 // from recurring. Verify original OSM ways, full-stone-rectangle road checks,
 // photo-camera correlation, no fake cars, and constant draw-call budget.
 import assert from 'node:assert/strict';
@@ -66,18 +66,37 @@ assert(!('railSideCurbs' in plan),
 assert.equal(plan.incorrectlyPlacedRailSidewalkRemoved,true);
 assert.equal(plan.centralParkingCells,plan.cells,
  'ALL concrete-grid island cells are parking, not a broad invented sidewalk');
-assert(plan.centralParkingCells.length>400,
- 'Broad central parking must remain full width, with sidewalk OUTSIDE');
+assert(plan.centralParkingCells.length>270,
+ 'Parking still needs a broad contiguous surface after a narrow sidewalk is carved');
 assert(!('centralWalkingCells' in plan),
  'The 5.69 mistaken designation of 249 parking tiles as sidewalk must never return');
 assert.equal(plan.mistakenParkingAsSidewalkRemoved,true);
-assert.equal(plan.centralPedestrianSurface,'mapped-OSM-1165594426-outer-east-edge');
-assert.equal(plan.centralParkingSurface,'full-inner-grid-parking-cells');
+assert.equal(plan.centralPedestrianSurface,'carved-from-OSM-safe-outer-parking-cells');
+assert.equal(plan.centralParkingSurface,'remaining-inner-grid-parking-cells');
 assert.equal(plan.pedestrianStripSide,'outer-east-facing-Nadrazni-128308366');
-assert.equal(plan.pedestrianStripOsmAnchored,true);
-assert.equal(plan.pedestrianStripPhotoEstimated,false);
-assert.equal(plan.outerFootwayRendering,'city-textured-terrain-strip-no-boxes',
- 'Sidewalk must use the same paving texture/mesh system as other sidewalks');
+assert.equal(plan.pedestrianStripOsmAnchored,false);
+assert.equal(plan.pedestrianStripPhotoEstimated,true);
+assert.equal(plan.originalRoadSurfaceUnmodified,true);
+assert.equal(plan.outerFootwayRendering,'carved-terrain-mesh-shared-city-paving',
+ 'Sidewalk must use a texture on a surface removed from parking, not 3D boxes on asphalt');
+assert(plan.outerSidewalkCells.length>=100,'A true long sidewalk needs many contiguous safe parking cells');
+assert(plan.centralParkingCells.length+plan.outerSidewalkCells.length===plan.cells.length,
+ 'No parking tile can be lost or painted twice when carving the sidewalk');
+assert(plan.outerSidewalkMaxOsmDistance<4.5,
+ 'Carved path must be near the real outer OSM sidewalk, not an invented inner edge');
+const parkingSet=new Set(plan.centralParkingCells);
+const footwaySet=new Set(plan.outerSidewalkCells);
+for(const foot of footwaySet){
+ assert(!parkingSet.has(foot),'Sidewalk must REPLACE, not overlay, a parking patch');
+ assert(isRoadFreeRect(occupied,{
+  x:foot.x,z:foot.z,length:foot.length,depth:foot.depth,yaw:foot.yaw,
+  buffer:.025,step:.33
+ }), 'Carved sidewalk must stay entirely outside carriageways and mapped paths');
+ assert(!plan.centralParkingCells.some(p=>p.along===foot.along&&p.offset>foot.offset),
+  'The pedestrian band must be the OUTER edge; parkable cells must be INSIDE');
+}
+assert(plan.outerSidewalkCurbs.length>=70,
+ 'The outside kerb must follow the recreated sidewalk without touching the road');
 assert(!('westPedestrianStrip' in plan),'The incorrectly positioned INNER strip must be absent');
 assert(!('outerPedestrianStrip' in plan),
  'Do not replace mapped sidewalks with pale 3D boxes');
@@ -103,8 +122,8 @@ assert.equal(plan.rightCornerFootwayId,1282187911,
  'Right corner must anchor to the actual OSM turning path, not guessed rails');
 assert.equal(plan.centralFootwayId,1165594426,
  'The already mapped central-island footway must remain preserved');
-assert.equal(plan.pedestrianCorridorWidth,1.8,
- 'The OUTER existing OSM footway must reuse the standard 1.8m sidewalk width');
+assert.equal(plan.pedestrianCorridorWidth,1.48,
+ 'Two 0.74m OSM-safe parking columns become the narrow exterior pedestrian strip');
 assert(plan.railSideParking.every(b=>b.offset<0),
  'Opposite parking remains, without an invented sidewalk behind it');
 for(const p of plan.cornerPaving)
@@ -133,14 +152,14 @@ assert.equal(planStationPhotoParking(ways.map(e=>e.id===675778842?{
  ...e,geometry:e.geometry.map(p=>({...p,lon:p.lon+.001}))
 }:e),occupied),null);
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(game.includes("from './scripts/station-photo-parking.js?v=5720'"));
+assert(game.includes("from './scripts/station-photo-parking.js?v=5730'"));
 assert(game.includes('stationPhotoParking.create(elements)'));
 assert(game.includes('stationPhotoParking.reset()'));
-assert(game.includes('osmStrip(points[i-1],points[i],1.8,osmSidewalkMat,.235);'),
- 'The actual outside footpath must use the city shared textured, terrain-hugging paving');
-assert(game.includes("if(el.id===1165594426&&kind==='footway'&&i>=5&&i<=7)"),
- 'Only the mapped exterior footway subsegments should override the road-width clipping');
-assert(game.includes("const BUILD_ID='20261114-outer-osm-textured-footway-5720'"));
+assert(!game.includes('osmStrip(points[i-1],points[i],1.8,osmSidewalkMat,.235);'),
+ 'The 5.72 forced sidewalk directly on Nádražní asphalt MUST be disabled');
+assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})'),
+ 'Carved sidewalk must reuse the same existing city paving material');
+assert(game.includes("const BUILD_ID='20261115-carved-outer-parking-sidewalk-5730'"));
 assert(game.includes("from './scripts/bike-tower-interior.js?v=5640'"));
 assert(game.includes("from './scripts/station-forecourt-pass.js?v=5650'"));
 const code=readFileSync(new URL('./station-photo-parking.js',import.meta.url),'utf8');
@@ -150,21 +169,27 @@ assert(!code.includes('const centralWalkSet='));
 assert(!code.includes('centralWalkingCells'),
  'Parking blocks must never be relabelled as pedestrian paving');
 assert(!code.includes('for(const p of planned.outerPedestrianStrip)'),
- 'Do not draw a box slab copy of the actual OSM footway');
+ 'Do not bring back offset white boxes');
+assert(code.includes('new THREE.BufferGeometry()'));
+assert(code.includes("mesh.name='OuterParkingCarvedTexturedFootway'"));
+assert(code.includes('terrainAt(pt.x,pt.z)+.214'));
+assert(code.includes('sidewalkMaterial||material.sidewalk'));
 assert(code.includes('for(const p of planned.centralParkingCells)'),
  'Entire broad island surface must have real parking blocks');
 assert(code.includes('for(let i=-1;i<=1;i+=2)'),
  'Smaller 2x2 concrete pavers must replace the previous oversized white blocks');
 assert(!code.includes('new THREE.Mesh(new THREE.BoxGeometry('));
 assert(!code.includes('document.createElement'),'No Mapy.com screenshots may become textures');
-console.log('5.72 outer native OSM-textured footway separate from full parking PASS',JSON.stringify({
+console.log('5.73 carved exterior sidewalk without asphalt overlays PASS',JSON.stringify({
  roadIds:plan.sourceIds,photoCameras:plan.cameras.map(c=>+c.distance.toFixed(2)),
  pavingCells:plan.cells.length,coveredRows:plan.rowStats.filter(r=>r.accepted>0).length,
  curbs:plan.curbs.length,rejected:plan.rejected.length,
  oppositeParkingBays:plan.railSideParking.length,
  centralParkingCells:plan.centralParkingCells.length,
- invalidWideSidewalkTiles:0,
- visibleInnerSidewalkTiles:0,
+ outerSidewalkCells:plan.outerSidewalkCells.length,
+ outerSidewalkCurbs:plan.outerSidewalkCurbs.length,
+ exteriorFootwayOSMdistance:+plan.outerSidewalkMaxOsmDistance.toFixed(2),
+ noTilesDoublePainted:true,roadSurfaceUntouched:true,
  mappedOuterFootwaySegments:plan.outerFootwaySegments.length,
  outerFootwayRendering:plan.outerFootwayRendering,
  walkwayWidth:plan.pedestrianCorridorWidth,
