@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {classifyFacadeEdgeLength} from './facade-perimeter.js';
+import {classifyFacadeEdgeLength,planFacadePerimeterTrims} from './facade-perimeter.js';
 const osm=JSON.parse(readFileSync(new URL('../data/milovice-osm.json',import.meta.url),'utf8'));
 const buildings=osm.elements.filter(el=>el.tags?.building&&el.geometry?.length>=3);
 assert.equal(buildings.length,684);
@@ -22,6 +22,44 @@ for(const b of buildings){
  }
  if(own)shortBuildings++;
 }
+// Every valid wall edge must receive the SAME continuous plinth and upper
+// trim, including newly repaired returns shorter than 3m and reversed rings.
+// This audits the complete OSM core, not only a hardcoded house ID.
+let plannedBands=0,plannedShortBands=0,totalTrimMetres=0;
+for(const building of buildings){
+ const raw=building.geometry.map(p=>({
+  x:(p.lon-14.889)*111320*cos,z:-(p.lat-50.226)*111320
+ }));
+ if(raw.length>3&&Math.hypot(raw[0].x-raw.at(-1).x,
+  raw[0].z-raw.at(-1).z)<.05)raw.pop();
+ const centroid={x:raw.reduce((sum,p)=>sum+p.x,0)/raw.length,
+  z:raw.reduce((sum,p)=>sum+p.z,0)/raw.length};
+ for(let i=0;i<raw.length;i++){
+  const a=raw[i],b=raw[(i+1)%raw.length];
+  const len=Math.hypot(b.x-a.x,b.z-a.z),kind=classifyFacadeEdgeLength(len);
+  const trims=planFacadePerimeterTrims(a,b,centroid,{base:17,height:3.75});
+  if(kind==='degenerate'){
+   assert.equal(trims,null,'Degenerate lines cannot receive ornaments');
+   continue;
+  }
+  assert(trims,'Missing facade trim on OSM '+building.id+' edge '+i);
+  assert(['base','sill'].every((k,j)=>[trims.base,trims.upper][j].kind===k));
+  assert(trims.base.width>=len&&trims.upper.width>=len);
+  assert(trims.base.width<=len+.321&&trims.upper.width<=len+.321);
+  assert(Math.abs(trims.base.y-(17+.23))<1e-8);
+  assert(Math.abs(trims.upper.y-(17+3.75-.12))<1e-8);
+  assert([trims.base,trims.upper].every(band=>
+   [band.x,band.y,band.z,band.width,band.depth,band.yaw].every(Number.isFinite)));
+  // Neither the reversed polygon nor opposite wall traversal may change
+  // which side of the masonry carries the exterior bands.
+  const back=planFacadePerimeterTrims(b,a,centroid,{base:17,height:3.75});
+  assert(Math.abs(back.nx-trims.nx)<1e-8&&Math.abs(back.nz-trims.nz)<1e-8);
+  if(kind==='solid-return')plannedShortBands++;
+  totalTrimMetres+=len;plannedBands++;
+ }
+}
+assert(plannedBands>1500&&plannedShortBands>20);
+assert(totalTrimMetres>10000);
 const skolska=buildings.find(b=>b.id===118487980);
 assert(skolska);
 const pts=skolska.geometry;
@@ -40,9 +78,16 @@ assert(shortReturns>20&&shortBuildings>15,
  'Several mapped Milovice buildings have short wall segments, never leave them open');
 const hero=readFileSync(new URL('./hero-architecture.js',import.meta.url),'utf8');
 assert(hero.includes("wallKind==='solid-return'"));
+assert(hero.includes('const trim=planFacadePerimeterTrims(a,b,centroid,{base,height});'));
+assert(hero.includes('addBand(trim.base);')&&hero.includes('addBand(trim.upper);'));
+assert(hero.includes('state.trimmedShortReturns++'));
+assert(hero.indexOf('addBand(trim.base);')<hero.indexOf("if(wallKind==='solid-return'){"),
+ 'Repair trims must be emitted BEFORE the early-return short-wall branch');
+assert.equal(hero.split('addBand(trim.base);').length,2,'Avoid duplicate base bands');
+assert.equal(hero.split('addBand(trim.upper);').length,2,'Avoid duplicate cornices');
 assert(hero.includes('chunk.walls.push(shortWall)'));
 assert(hero.includes('state.shortWallSegmentsSealed++'));
 assert(!hero.includes('if(len<3||len>70)continue'));
 console.log(JSON.stringify({audited:buildings.length,shortReturns,shortBuildings,detailed,degenerate,
  skolskaShortReturnMetres:segments.find(l=>l>1&&l<1.5)},null,2));
-console.log('Roof-wall perimeter closure across Milovice: short wall returns always solid PASS');
+console.log('Roof-wall facade closure across Milovice: short return and continuous base/cornice bands PASS',JSON.stringify({plannedBands,plannedShortBands,totalTrimMetres:Math.round(totalTrimMetres)}));
