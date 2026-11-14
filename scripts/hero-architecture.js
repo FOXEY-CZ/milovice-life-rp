@@ -4,7 +4,7 @@
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {selectFacadeEdges,planFaceOpenings} from './facade-model.js';
 import {analyzeGableFootprint} from './city-roof-geometry.js';
-import {classifyFacadeEdgeLength,planFacadePerimeterTrims} from './facade-perimeter.js';
+import {classifyFacadeEdgeLength,planFacadePerimeterTrims,planPhotographedEaveCornice} from './facade-perimeter.js';
 import {makeSharedFacadeSurfaceMaps} from './facade-surface-kit.js';
 import {exteriorFacadeFrame,flushBoxOffset,RECESSED_GLAZING,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './facade-anchors.js';
 
@@ -20,6 +20,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
   suppressedUnverifiedPhotoOrnaments:0,shortWallSegmentsSealed:0,
   skippedDegenerateEdges:0,
   trimmedWallEdges:0,trimmedShortReturns:0,trimmedPerimeterMetres:0,
+  photoEaveBands:0,
   sharedSurfaceTextures:3,surfaceResolution:128,extraMaterialDrawCalls:0,
   anchoredOpenings:0,maxFrameDetachment:0,wallPlaneSource:'OSM exterior polygon'};
  const box=new THREE.BoxGeometry(1,1,1),glassPlane=new THREE.PlaneGeometry(1,1);
@@ -143,6 +144,14 @@ export function makeMiloviceHeroArchitecture(THREE,{
    const edgeFrame=exteriorFacadeFrame(pts,sideIndex);
    const trim=planFacadePerimeterTrims(a,b,centroid,{base,height,frame:edgeFrame});
    if(!trim)throw Error('Valid facade edge has no perimeter bands');
+   // Replace the common upper band with the actual photo-supported
+   // pale eave cornice. A second decorative overlay would float again.
+   const photoCornice=String(identity)==='118487980'?
+    planPhotographedEaveCornice(edgeFrame,{base,height}):null;
+   if(photoCornice){
+    trim.upper=photoCornice;
+    state.photoEaveBands++;
+   }
    const addBand=band=>placement(chunk,band.kind,
     band.x,band.y,band.z,band.width,band.height,band.depth,band.yaw);
    addBand(trim.base);
