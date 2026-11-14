@@ -1,3 +1,19 @@
+## Milovice RP 5.36.0 — společná rovina fasád pro celé město
+
+Po hráčské 360° kontrole se ukázalo, že dveře, okna, sklo, lišty a výlohy na mnoha domech **viditelně levitují**. Starší generátor posouval například vrstvy běžného okna **0,38 / 0,405 / 0,43 / 0,49 m** před půdorysovou zeď; domovní dveře **0,60 m**; některé obchodní výlohy 0,4–0,8 m.
+
+**Systémová oprava, nikoli jeden barák:**
+- Nová čistá geometrie `scripts/facade-anchors.js`: `exteriorFacadeFrame` odvozuje normálu skutečné venkovní zdi z orientace OSM polygonu (funguje pro obrácený směr bodů, rotované budovy a L/U výklenky, kde může heuristika přes těžiště vybrat špatnou stranu); `flushBoxOffset(depth)` umisťuje zadní stranu kvádru cca **8 mm u povrchu zdi**, `FACE_PLANE` drží lehké předsazené skleněné plochy cca **24 mm** u zdi.
+- **Všechny běžné domy, panelové domy a garáže**: čtyři vrstvy oken (omítkový rám, sklo, sloupek a parapet), dveřní výplně, lišty, sokly, fasádní pásy, průmyslové brány a garážová vrata sdílejí stejnou skutečnou rovinu své stěny. Nic nezískává výsuvný náhodný offset podle indexu domu nebo rohu.
+- **68 hero domů**: sklo se nachází **uvnitř skutečného otvoru ve zdi**, rám a parapet se opírají o stěnu; stejná orientace polygonu řídí i dříve opravené souvislé sokly. U domů s reálným výřezem už se navíc nesmí vykreslovat druhý fiktivní provizorní vstup.
+- **Významné budovy a obchody**: Mírová 36 a další pojmenovaná prodejna, komerční fasády a výlohy, kostelní okna i okna nádraží nyní využívají tenké skutečné zasklení, samostatné rámovací lišty a fasádně kotvené pozice, místo velkých neprůhledných desek často plovoucích před zdivem. Nádraží přitom používá známou tloušťku modelové zdi 32 cm, takže jeho rám vychází z vnějšího povrchu této zdi, nikoli z její střednice.
+- **Automatická ochrana budoucích domů**: `scripts/facade-anchors.test.mjs` ověřuje normalizaci a odsazení na podkladové mapě **684 OSM budov**, obrácených/otočených půdorysech a konkávních výklencích. Záměrně ignoruje fyzikálně neviditelné katastrální hrany kratší než 8 cm. GitHub Actions a Chromium WebGL smoke sledují skutečné počty, `maxLegacyFaceGap`, `anchoredOpenings`, `maxFrameDetachment` i zdrojové výlohy. Nemodeluje nové detaily bez podkladu.
+- **Výkon:** vše používá původní instanced/chunked batching. Žádné hledání nejbližší zdi za každým snímkem; společná geometrie se vyřeší jen při sestavení města. Při samotné změně umístění se nepřidává žádný nový draw call na dům.
+
+**Poctivé omezení:** u nedoložených domů zůstávají okna jen tenké vizuální překryvy **na plné zdi**, protože bez fotografického podkladu nelze hromadně správně vyříznout neznámé okenní otvory. Fotorealistické členění jednotlivých fasád a kontrola z telefonu je další krok. Tento update řeší hlavně **odstup od skutečné stěny**.
+
+---
+
 ## Milovice RP 5.35.0 — kontrola fotoreality po 9 uživatelských snímcích (Part 9)
 
 **Východisko:** majitel projektu poslal 9 pohledů ze hry v telefonu, GPU hlásila **70–99 FPS**. Je důležité neodvozovat z těchto hodnot garantovaný výkon. Místo dalšího přidávání náhodných detailů se porovnávaly modely s konkrétními historickými fotografiemi ŠJů z 30. května 2024: [Modrá hvězda, Mírová 11](https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_11,_hotel_Modr%C3%A1_hv%C4%9Bzda.jpg), [Mírová 36](https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_36.jpg). **Fotografie zachycují rok 2024, neaktuální stav roku 2026 není zaručen.**
