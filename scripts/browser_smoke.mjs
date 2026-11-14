@@ -175,8 +175,8 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('photo-block-5340'))
-  throw new Error('5.34.0 browser loaded a stale HTML build');
+ if(!(await page.locator('#build-label').innerText()).includes('photo-block-5341'))
+  throw new Error('5.34.1 browser loaded a stale HTML build');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
     sidewalkCheck.separatedSidewalks!==0||
