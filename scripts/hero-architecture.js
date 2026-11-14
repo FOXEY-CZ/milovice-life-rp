@@ -197,10 +197,11 @@ export function makeMiloviceHeroArchitecture(THREE,{
       if(photoAnchored)state.suppressedUnverifiedPhotoOrnaments++;
       else placement(chunk,'sill',frame.x,base+bottom+h+.16,frame.z,w+.22,.12,.23,yaw);
      }
+     // Window shutters are a PHOTOGRAPHIC property, never an
+     // index-based random decoration. Unsupported facades stay provisional.
      const randomShutters=floor===0&&i%3===1;
-     const useShutters=sideLayout?sideLayout.shutters===true:
-      !photoAnchored&&randomShutters;
-     if(photoAnchored&&!sideLayout&&randomShutters)
+     const useShutters=sideLayout?.shutters===true;
+     if(!sideLayout&&randomShutters)
       state.suppressedUnverifiedPhotoOrnaments++;
      if(useShutters){
       const off=w*.5+.26;
@@ -220,10 +221,10 @@ export function makeMiloviceHeroArchitecture(THREE,{
     }
     placement(chunk,'frame',xx+nx*.08,base+doorBottom+doorHeight+.055,zz+nz*.08,doorWidth+.22,.12,.27,yaw);
     placement(chunk,'base',xx+nx*.53,base+doorBottom-.025,zz+nz*.53,doorWidth+.36,.20,.82,yaw);
-    if(!sideLayout){
-     if(photoAnchored)state.suppressedUnverifiedPhotoOrnaments++;
-     else placement(chunk,'awning',xx+nx*.37,base+doorBottom+doorHeight+.40,zz+nz*.37,doorWidth+.77,.16,.85,yaw);
-    }
+    // No photo-approved awning geometry exists in the per-facade schema.
+    // Suppress blanket door awnings rather than falsely decorating every
+    // unrelated house. A later explicit source-backed profile may add it.
+    if(!sideLayout)state.suppressedUnverifiedPhotoOrnaments++;
    }
    const geometry=wallGeometry(a,b,base,height,holes,sideLayout?.wallColor||tone);
    if(geometry){chunk.walls.push(geometry);state.solidWalls++}
