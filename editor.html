@@ -32,6 +32,14 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
 @media(max-width:650px){header{padding:10px}h1{font-size:16px}main{display:flex;flex-direction:column;height:auto}aside{overflow:visible;padding:11px}#map{height:46dvh;min-height:310px;order:-1}#streets{max-height:180px;overflow:auto}aside:last-child{max-height:none}#buildings{max-height:330px;overflow:auto}}
 #facade-switches{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0}#facade-switches button.active{border-color:var(--hot);background:#465b6a}#facade-switches button{text-align:left}#facade-switches small{display:block;color:var(--muted)}
 #pano-host{height:300px;background:#172a3b;border:1px solid #628395;border-radius:9px;overflow:hidden}#pano-message{font-size:12px}
+#street-evidence-panel{border:1px solid #476a80;border-radius:10px;padding:10px;margin:12px 0;background:#122536}
+#street-evidence-panel .evidence-card{padding:9px 0;border-bottom:1px solid #36546b}
+#street-evidence-panel .evidence-card:last-child{border-bottom:0}
+#street-evidence-panel .evidence-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px;align-items:center}
+#street-evidence-panel .evidence-actions button{font-size:12px}
+#street-evidence-panel .evidence-meta{font-size:12px;color:#b7cddd}
+#street-evidence-panel a{font-size:12px;color:#d2e9f8}
+#street-photo-summary{font-size:12px;color:#c6dbe8;margin:8px 0}
 #photo-panel{border:1px solid #607c8f;border-radius:10px;padding:10px;margin:14px 0;background:#102332}
 #photo-canvas{width:100%;height:auto;max-height:62dvh;touch-action:none;display:block;background:#101820;border-radius:7px;border:1px solid #617e8e}
 #photo-tools{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}#photo-tools button{font-size:12px}
@@ -66,6 +74,7 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
  <label>Ulice podle nejbližšího mapovaného úseku</label>
  <div id="streets" aria-label="Seznam ulic"></div>
  <div class="row"><h2 id="street-title" style="flex:1;margin:0">Domy</h2><button id="next" type="button">Další dům</button></div>
+ <div id="street-photo-summary" aria-live="polite"></div>
  <div id="buildings"></div>
 </aside>
 <div id="map" role="application" aria-label="Mapa ulic a domů"></div>
@@ -84,6 +93,12 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
    <a id="mapillary" href="#" target="_blank" rel="noopener noreferrer">📷 Mapillary</a>
    <a id="osm" href="#" target="_blank" rel="noopener noreferrer">🗺️ OSM budova</a>
   </div>
+  <section id="street-evidence-panel" aria-label="Fotografie bloku">
+   <h2>📸 Fotografie v okolí domu</h2>
+   <p id="street-evidence-summary" class="muted">Načítám archivní podklady…</p>
+   <div id="street-evidence-gallery"></div>
+   <p class="muted">Ověřený název budovy je něco jiného než fotografie pořízená poblíž. Poloha kamery sama o sobě <strong>nedokazuje</strong>, že je na snímku tato fasáda. Uložení odkazu neoznačí žádný pohled jako ověřený.</p>
+  </section>
   <p class="muted">Pohledy jsou plánované podle skutečných půdorysů a mapovaných ulic, ne odhadnuté ze snímků.</p>
   <h2>🧭 Pohledy na fasády</h2><p id="face-progress" class="muted"></p><div id="facade-switches"></div>
   <p id="face-info" class="muted"></p>
@@ -202,6 +217,7 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script type="module">
 import {planFacadeViews,nextStreetHouse} from './scripts/facade-review.js?v=590';
+import {streetEvidenceForBuilding,streetPhotoCoverage,STREET_PHOTO_EVIDENCE} from './scripts/street-photo-evidence.js?v=5330';
 import {normalizeFacadeLayout} from './scripts/facade-model.js?v=5110';
 import {initPhotoSurvey} from './scripts/photo-survey-ui.js?v=5110';
 import {initImageryDiscovery} from './scripts/mapillary-discovery-ui.js?v=5120';
@@ -339,6 +355,11 @@ function shown(){
 }
 function renderLists(){
  const count=buildings.length,complete=buildings.filter(b=>state(b)==='verified').length;
+ const photoSummary=streetPhotoCoverage(shown());
+ $('street-photo-summary').textContent='📸 Doložené snímky bloku: '+
+  photoSummary.withIdentifiedBuildingPhotos+' identifikovaných budov, '+
+  photoSummary.withNearbyPhotos+'/'+photoSummary.buildings+
+  ' domů má fotografii poblíž. Neznamená ověřené fasády.';
  $('summary').textContent=count+' domů · '+complete+' ověřených / zveřejněných';
  $('bar').style.width=(count?complete/count*100:0).toFixed(1)+'%';
  const choices=streetNames(),all=[['*',count],...choices];
@@ -367,6 +388,29 @@ function renderMap(){
   polygons.set(String(b.id),poly);
  }
 }
+function renderPhotoEvidence(b){
+ const candidates=streetEvidenceForBuilding(b,{radiusM:135,max:9});
+ const directlyIdentified=candidates.filter(x=>x.directEvidence).length;
+ $('street-evidence-summary').textContent=candidates.length+
+  ' veřejných zdrojů v okolí · '+directlyIdentified+
+  ' přímo pojmenovaných fotografií tohoto domu. Žádný zdroj automaticky nepotvrzuje fasádu.';
+ $('street-evidence-gallery').innerHTML=candidates.length?
+  candidates.map(p=>{
+   const badge=p.directEvidence?'✅ Název odpovídá domu':
+    '📍 Jen okolí, obsah nutno ověřit';
+   const dist=p.distanceM===null?'GPS snímku neověřeno':
+    'kamera cca '+p.distanceM+' m od středu půdorysu';
+   const oldPhoto=p.taken<'2020'?' ⚠ historický stav, ne dnešní vzhled':'';
+   return '<article class="evidence-card">'+
+    '<strong>'+safe(p.title)+'</strong>'+
+    '<div class="evidence-meta">'+safe(badge+' · '+p.taken+' · '+p.author+
+     ' · '+p.license+' · '+dist+oldPhoto)+'</div>'+
+    '<div class="evidence-actions"><a href="'+safe(p.url)+
+    '" target="_blank" rel="noopener noreferrer">🔗 Zobrazit originál</a> '+
+    '<button type="button" data-evidence-id="'+safe(p.id)+
+    '">Použít jako kandidáta zdroje</button></div></article>';
+  }).join(''):'<p class="muted">V katalogu zatím není žádný geotagovaný snímek poblíž. Otevři Mapillary nebo Mapy.com.</p>';
+}
 function selectBuilding(id){
  const b=buildings.find(v=>String(v.id)===String(id));if(!b)return;
  if(chosen&&currentFace&&String(chosen.id)!==String(b.id))saveFace();
@@ -376,6 +420,7 @@ function selectBuilding(id){
  $('selected-title').textContent=b.name+' · OSM '+b.id;
  $('selected-meta').textContent=b.street+' · GPS '+lat+', '+lon+' · OSM patra '+(b.levels||'nezadána');
  renderRoofTopology(b);
+ renderPhotoEvidence(b);
  $('mapy').href='https://mapy.com/cs/zakladni?x='+lon+'&y='+lat+'&z=19';
  $('mapillary').href='https://www.mapillary.com/app/?lat='+lat+'&lng='+lon+'&z=18';
  $('osm').href='https://www.openstreetmap.org/way/'+b.id;
@@ -568,6 +613,19 @@ $('buildings').addEventListener('click',event=>{
  const button=event.target.closest('[data-building]');if(button)selectBuilding(button.dataset.building);
 });
 $('next').addEventListener('click',nextBuilding);
+$('street-evidence-gallery').addEventListener('click',event=>{
+ const btn=event.target.closest('button[data-evidence-id]');
+ if(!btn||!chosen||!currentFace)return;
+ const p=STREET_PHOTO_EVIDENCE.find(x=>x.id===btn.dataset.evidenceId);
+ if(!p)return;
+ $('face-source').value=p.url;
+ // The image may show another facade: leave the current side explicitly
+ // UNREVIEWED until the viewer confirms the photo's contents and angle.
+ $('face-status').value='unreviewed';
+ saveFace();faceButtons();
+ $('face-info').textContent='📷 Kandidát z Wikimedia Commons uložen pouze jako odkaz. '+
+  'Otevři fotografii a ověř, zda opravdu zobrazuje tento pohled.';
+});
 $('search').addEventListener('input',()=>{renderLists();renderMap()});
 $('district').addEventListener('change',()=>loadDistrict($('district').value));
 $('inspector').addEventListener('submit',event=>{
@@ -639,6 +697,9 @@ window.__miloviceEditor={get loaded(){return buildings.length>0},get buildings()
  get streets(){return streetNames().length},get currentDistrict(){return $('district').value},
  get chosenId(){return chosen?.id||null},get cards(){return Object.keys(records).length},
  get imageryCount(){return imageryDiscovery.count},get imageryCoverage(){return imageryDiscovery.coveredHouses},
+ get streetPhotoEvidence(){return streetPhotoCoverage(shown())},
+ get photoCandidateCount(){return chosen?
+  streetEvidenceForBuilding(chosen,{radiusM:135,max:9}).length:0},
  get publishedCount(){return approvedArchitecture.size},
  get reviewCandidateCount(){return Object.keys(prepareReviewBatch({
   schema:'milovice-rp-street-architecture-v1',buildings:records
