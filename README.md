@@ -1,3 +1,26 @@
+# Milovice RP 5.70 — opravená záměna parkovací dlažby a chodníku
+
+**Nová hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5700  
+**Bezpečná záloha původní 5.69:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/569-before-parking-surface-correction
+
+## Proč byla 5.69 vizuálně špatně
+
+Uživatel poslal 14. 11. 2026 dva nové screenshoty hry (v části ostrova byly **velké zelené mezery a nadměrně světlý dlouhý chodníkový pruh**), poté výslovně upozornil, že parkovací a chodníkové povrchy mohou být vzájemně prohozené. Kontrola zdrojového kódu potvrdila **sémantickou záměnu**: verze 5.69 přebarvila **249 ze 492 dlážděných parkovacích buněk** na samostatnou pěší vrstvu `centralWalkingCells`, ačkoliv úzká pěší trasa OSM **1165594426** již kolem širokého ostrova existuje a je nezávisle vykreslena základním silničním systémem.
+
+## Oprava 5.70
+
+- **Celá středová dlážděná plocha = parkovací povrch.** Zcela odstraněna chybná klasifikace `centralWalkingCells`, obě skutečné parkovací části se zachovaly. Pěší chodník tvoří pouze originální **OSM 1165594426**; přímo u pravého rohu zůstává fotokontrolovaná nárožní dlažba od OSM **1282187911**.
+- **Dlažba už není tvořena velkými půlmetrovými podélnými panely.** Každá bezpečná oblast parkování má čtyři vlastní menší betonové bloky s úzkou spárou; podklad je téměř souvislý, takže zelený terén nemá prosvítat mezi jednotlivými dlaždicemi. Kamenný povrch i obrubníky jsou ve výšce nad okolním asfaltovým povrchem.
+- **Zaoblená přední špička vydlážděného ostrova** začíná přibližně o několik metrů blíž k vjezdu; každá část stále prochází kontrolou celé stopy proti mapovaným ulicím a pěším trasám, nikoliv pouze bodovým výpočtem.
+- **Druhá parkovací řada směrem ke kolejím** nadále používá zeleno-betonový rastr. Na její vnější straně nebyl obnoven nesprávný vymyšlený chodník. Nárožní chodník na pravé straně u vjezdu zůstává.
+- **Výkon:** geometrie je instancovaná po materiálech, stále se maximálně šesti draw cally pro celý parkovací přídavek. Žádná fotografie Mapy.com nebyla kopírována nebo převedena do textury.
+
+**Míra přesnosti:** OSM prokazuje středové linie cest a existenci pěší trasy; 2022 screenshoty uživatele a Commons fotografie ŠJů (2024) pomáhají porovnat povrch. Přesné obrysy, počty míst a špička ostrova zůstávají aproximací do dalšího mobilního porovnání. V žádném případě nejde o dokončenou celou ulici Nádražní.
+
+**Ověření:** `scripts/station-photo-parking.test.mjs` musí odmítnout každé obnovení `centralWalkingCells` nebo široké náhradní pěší vrstvy. `scripts/browser_smoke.mjs` kontroluje OSM chodník, obě parkovací skupiny, nárožní dlažbu a nulový počet chybně přeznačených polí.
+
+---
+
 # Milovice RP 5.69 — chodníky podle červeného označení uživatele
 
 **Nová hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5690  
