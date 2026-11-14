@@ -6,7 +6,7 @@ import {selectFacadeEdges,planFaceOpenings} from './facade-model.js';
 import {analyzeGableFootprint} from './city-roof-geometry.js';
 import {classifyFacadeEdgeLength,planFacadePerimeterTrims} from './facade-perimeter.js';
 import {makeSharedFacadeSurfaceMaps} from './facade-surface-kit.js';
-import {exteriorFacadeFrame,flushBoxOffset,RECESSED_GLAZING,facadeGap} from './facade-anchors.js';
+import {exteriorFacadeFrame,flushBoxOffset,RECESSED_GLAZING,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './facade-anchors.js';
 
 export function makeMiloviceHeroArchitecture(THREE,{
   sites=[],radius=240,maxBuildings=68,terrainAt=()=>0
@@ -195,29 +195,29 @@ export function makeMiloviceHeroArchitecture(THREE,{
      // Real cutout: pane is recessed into the void; boxed frame/sill
      // back faces touch the same OSM polygon edge. No 0.5m drift.
      const inner=front(-.13);
-     const frame=front(flushBoxOffset(.18));
-     const middle=front(flushBoxOffset(.13));
-     const sill=front(flushBoxOffset(.32));
+     const frame=front(flushBoxOffset(WINDOW_FRAME_DEPTH));
+     const middle=front(flushBoxOffset(.07));
+     const sill=front(flushBoxOffset(WINDOW_SILL_DEPTH));
      placement(chunk,'dark',inner.x,base+bottom+h*.50,inner.z,w+.08,h+.08,.04,yaw);
      placement(chunk,'glass',wx+nx*RECESSED_GLAZING,base+bottom+h*.5,
        wz+nz*RECESSED_GLAZING,w-.035,h-.035,1,yaw,true);
-     placement(chunk,'frame',frame.x,base+bottom+h+.035,frame.z,w+.13,.085,.18,yaw);
-     placement(chunk,'frame',frame.x,base+bottom-.035,frame.z,w+.13,.09,.18,yaw);
-     placement(chunk,'frame',wx+ux*(w*.5+.038)+nx*flushBoxOffset(.18),base+bottom+h*.5,
-       wz+uz*(w*.5+.038)+nz*flushBoxOffset(.18),.082,h+.10,.18,yaw);
-     placement(chunk,'frame',wx-ux*(w*.5+.038)+nx*flushBoxOffset(.18),base+bottom+h*.5,
-       wz-uz*(w*.5+.038)+nz*flushBoxOffset(.18),.082,h+.10,.18,yaw);
-     placement(chunk,'frame',middle.x,base+bottom+h*.5,middle.z,.054,h,.13,yaw);
-     placement(chunk,'sill',sill.x,base+bottom-.055,sill.z,w+.28,.11,.32,yaw);
+     placement(chunk,'frame',frame.x,base+bottom+h+.035,frame.z,w+.13,.085,WINDOW_FRAME_DEPTH,yaw);
+     placement(chunk,'frame',frame.x,base+bottom-.035,frame.z,w+.13,.09,WINDOW_FRAME_DEPTH,yaw);
+     placement(chunk,'frame',wx+ux*(w*.5+.038)+nx*flushBoxOffset(WINDOW_FRAME_DEPTH),base+bottom+h*.5,
+       wz+uz*(w*.5+.038)+nz*flushBoxOffset(WINDOW_FRAME_DEPTH),.082,h+.10,WINDOW_FRAME_DEPTH,yaw);
+     placement(chunk,'frame',wx-ux*(w*.5+.038)+nx*flushBoxOffset(WINDOW_FRAME_DEPTH),base+bottom+h*.5,
+       wz-uz*(w*.5+.038)+nz*flushBoxOffset(WINDOW_FRAME_DEPTH),.082,h+.10,WINDOW_FRAME_DEPTH,yaw);
+     placement(chunk,'frame',middle.x,base+bottom+h*.5,middle.z,.054,h,.07,yaw);
+     placement(chunk,'sill',sill.x,base+bottom-.055,sill.z,w+.28,.11,WINDOW_SILL_DEPTH,yaw);
      state.anchoredOpenings++;
      state.maxFrameDetachment=Math.max(state.maxFrameDetachment,
-      facadeGap(edgeFrame,frame,.18));
+      facadeGap(edgeFrame,frame,WINDOW_FRAME_DEPTH));
      // On a verified facade never invent shutter/lintel ornaments at random.
      if(!sideLayout&&(index+i+floor)%2===0){
       if(photoAnchored)state.suppressedUnverifiedPhotoOrnaments++;
       else {
-       const lintel=front(flushBoxOffset(.23));
-       placement(chunk,'sill',lintel.x,base+bottom+h+.16,lintel.z,w+.22,.12,.23,yaw);
+       const lintel=front(flushBoxOffset(.10));
+       placement(chunk,'sill',lintel.x,base+bottom+h+.16,lintel.z,w+.22,.12,.10,yaw);
       }
      }
      // Window shutters are a PHOTOGRAPHIC property, never an
