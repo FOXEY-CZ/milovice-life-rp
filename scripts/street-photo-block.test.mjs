@@ -42,6 +42,14 @@ assert(!html.includes('const roofTrim=new THREE.LineLoop('),'Never add generic h
 assert(html.includes('unverifiedRoofOutlinesSuppressed++'));
 const hero=await import('node:fs').then(f=>f.readFileSync(new URL('./hero-architecture.js',import.meta.url),'utf8'));
 assert(hero.includes('const photoAnchored=Boolean(override?.source)'));
-assert(hero.includes('!photoAnchored&&randomShutters'));
+assert(hero.includes('const useShutters=sideLayout?.shutters===true;'));
+assert(!hero.includes('!photoAnchored&&randomShutters'),
+ 'No unreviewed house may get random shutters');
+assert(!hero.includes("placement(chunk,'awning'"),
+ 'No invented blanket awnings over every house door');
 assert(hero.includes('suppressedUnverifiedPhotoOrnaments'));
+assert(!html.includes("archPart('shutter'"),
+ 'Citywide provisional facades may not spawn random shutters');
+assert(html.includes('facadeSourceAudit.suppressedRandomBalconies++'),
+ 'Automatically generated balconies must be suppressed until photographed');
 console.log('5.29.0 Školská 220/1 actual arched attic windows, no invented shutters or floating roof outlines PASS');
