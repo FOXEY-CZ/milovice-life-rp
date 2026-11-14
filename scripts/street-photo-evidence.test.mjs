@@ -40,7 +40,7 @@ assert.equal(distanceBetweenPhotosAndBuilding(null,[50,14]),Infinity);
 assert.equal(streetEvidenceForBuilding(null).length,0);
 const stats=streetPhotoCoverage(homes);
 assert.equal(stats.buildings,684);
-assert.equal(stats.withIdentifiedBuildingPhotos,3);
+assert.equal(stats.withIdentifiedBuildingPhotos,4);
 assert(stats.withNearbyPhotos>=3&&stats.withNearbyPhotos<stats.buildings,
  'Only a minority of houses have locally discovered photo candidates');
 assert.equal(stats.allFacadesVerified,false);
