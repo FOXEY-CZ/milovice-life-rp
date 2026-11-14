@@ -4,7 +4,7 @@
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {selectFacadeEdges,planFaceOpenings} from './facade-model.js';
 import {analyzeGableFootprint} from './city-roof-geometry.js';
-import {classifyFacadeEdgeLength,planFacadePerimeterTrims,planPhotographedEaveCornice} from './facade-perimeter.js';
+import {classifyFacadeEdgeLength,planFacadePerimeterTrims,planPhotographedEaveCornice} from './facade-perimeter.js?v=5420';
 import {makeSharedFacadeSurfaceMaps} from './facade-surface-kit.js';
 import {exteriorFacadeFrame,flushBoxOffset,RECESSED_GLAZING,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './facade-anchors.js';
 
@@ -20,7 +20,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
   suppressedUnverifiedPhotoOrnaments:0,shortWallSegmentsSealed:0,
   skippedDegenerateEdges:0,
   trimmedWallEdges:0,trimmedShortReturns:0,trimmedPerimeterMetres:0,
-  photoEaveBands:0,
+  photoEaveBands:0,photoEaveVisibleBands:0,
   sharedSurfaceTextures:3,surfaceResolution:128,extraMaterialDrawCalls:0,
   anchoredOpenings:0,maxFrameDetachment:0,wallPlaneSource:'OSM exterior polygon'};
  const box=new THREE.BoxGeometry(1,1,1),glassPlane=new THREE.PlaneGeometry(1,1);
@@ -151,6 +151,10 @@ export function makeMiloviceHeroArchitecture(THREE,{
    if(photoCornice){
     trim.upper=photoCornice;
     state.photoEaveBands++;
+    if(photoCornice.visibleBelowEave>=.20&&
+       photoCornice.faceProtrusion>=.20&&
+       photoCornice.hostWallOverlap>=.01)
+     state.photoEaveVisibleBands++;
    }
    const addBand=band=>placement(chunk,band.kind,
     band.x,band.y,band.z,band.width,band.height,band.depth,band.yaw);

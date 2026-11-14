@@ -93,13 +93,25 @@ for(const outline of [schoolOutline,[...schoolOutline].reverse()]){
   assert(band&&band.kind==='frame'&&band.source.startsWith('photo-Skolska'));
   assert(Math.abs(facadeGap(wall,band,band.depth)+.012)<1e-7,
    'Photographed eave fascia must penetrate its real OSM wall by 12mm');
-  assert(Math.abs(band.y-(11+3.75-.13))<1e-9);
+  assert(Math.abs(band.y-(11+3.75-.30))<1e-9);
+  assert(band.visibleBelowEave>=.20,
+   'Eave cornice is too close to roof fascia and will become invisible again');
+  assert(Math.abs(band.visibleBelowEave-(11+3.75-(band.y+band.height/2)))<1e-9);
+  assert(band.faceProtrusion>=.20&&band.faceProtrusion<=.30);
+  assert(band.roofFasciaClear&&band.attachedToHost);
+  assert(Math.abs(band.hostWallOverlap-.012)<1e-10);
   assert(band.width>=wall.len&&band.width<=wall.len+.12);
   photoEaveEdges++;
  }
 }
 assert(photoEaveEdges>=12);
 assert.equal(planPhotographedEaveCornice(null),null);
+assert.equal(planPhotographedEaveCornice(
+ exteriorFacadeFrame(schoolOutline,0),{dropBelowEave:.10}),null,
+ 'Do not regress to the old visually hidden eave height');
+assert.equal(planPhotographedEaveCornice(
+ exteriorFacadeFrame(schoolOutline,0),{depth:.06}),null,
+ 'A cream cornice flush inside the wall cannot be seen from a street view');
 const hero=readFileSync(new URL('./hero-architecture.js',import.meta.url),'utf8');
 assert(hero.includes("wallKind==='solid-return'"));
 assert(hero.includes('const edgeFrame=exteriorFacadeFrame(pts,sideIndex);'));
