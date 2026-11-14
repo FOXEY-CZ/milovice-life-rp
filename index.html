@@ -3778,12 +3778,14 @@ function rpAppendOSMElements(elements){
    points:el.geometry.map(p=>{const v=osmPoint(p);return {x:v.x,z:v.y};})
  })));
  for(const [id,front] of plannedGates)nadrazniGarageCourtFronts.set(id,front);
- window.__miloviceNadrazniGarageAudit={
-   planned:plannedGates.size,mapped:northernGarages.length,
-   rendered:0,wallsOnCourtyard:0,formerLongestPartyWallDoorsRemoved:0,
-   ids:[],source:'OSM north Nádražní garage footprints',
-   doorOrientationEstimated:true,externalParkingInvented:false,
-   landscapingInvented:false,streetContext:'both paired rows'};
+ if(northernGarages.length){
+   window.__miloviceNadrazniGarageAudit={
+     planned:plannedGates.size,mapped:northernGarages.length,
+     rendered:0,wallsOnCourtyard:0,formerLongestPartyWallDoorsRemoved:0,
+     ids:[],source:'OSM north Nádražní garage footprints',
+     doorOrientationEstimated:true,externalParkingInvented:false,
+     landscapingInvented:false,streetContext:'both paired rows'};
+ }
  for(const el of buildingWays){osmBuilding(el.geometry,el.tags,osmBuildings,el.id);osmAddLandmark(el)}
  // REBUILD 2.0: actual sheltered RAIL PLATFORM, not the fake 29m STREET-side
  // green canopy removed in 5.27.3. Uses only OSM way 53865956 and the
