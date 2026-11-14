@@ -36,7 +36,8 @@ try{
     hero.solidWalls<10||hero.drawMeshes<4||!(hero.shortWallSegmentsSealed>=1)||
     hero.trimmedWallEdges!==hero.solidWalls||
     hero.trimmedShortReturns!==hero.shortWallSegmentsSealed||
-    hero.trimmedPerimeterMetres<150)
+    hero.trimmedPerimeterMetres<150||
+    hero.suppressedUnverifiedPhotoOrnaments<20)
   throw new Error('5.7.0 genuinely cut-out old-town buildings absent: '+JSON.stringify(hero));
  console.log('5.7.0 actual wall cut-outs in Old Milovice:',JSON.stringify(hero));
  console.log('5.32.2 perimeter trim + wall continuity:',JSON.stringify({
@@ -44,6 +45,17 @@ try{
   trimmedShortReturns:hero.trimmedShortReturns,
   trimmedPerimeterMetres:hero.trimmedPerimeterMetres
  }));
+ const facadeSourceAudit=await page.evaluate(()=>
+  window.__miloviceCityUnverifiedFeatures||null);
+ if(!facadeSourceAudit||
+  !(facadeSourceAudit.suppressedRandomShutters>0)||
+  !(facadeSourceAudit.suppressedRandomBalconies>=0))
+  throw Error('5.33 street facades still generate random unsourced ornaments: '+
+   JSON.stringify(facadeSourceAudit));
+ console.log('5.33.0 source-gated facades and suppressed invented extras:',
+  JSON.stringify({hero:hero.suppressedUnverifiedPhotoOrnaments,
+   city:facadeSourceAudit.suppressedRandomShutters,
+   randomBalconies:facadeSourceAudit.suppressedRandomBalconies}));
  const roofTopology=await page.evaluate(()=>window.__miloviceRoofTopologyAudit||null);
  if(!roofTopology||roofTopology.version!=='3.0'||
     roofTopology.processed<300||roofTopology.partitionable<100||
@@ -161,8 +173,8 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('facade-walls-5322'))
-  throw new Error('5.32.2 browser loaded a stale HTML build');
+ if(!(await page.locator('#build-label').innerText()).includes('photo-streets-5330'))
+  throw new Error('5.33.0 browser loaded a stale HTML build');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
     sidewalkCheck.separatedSidewalks!==0||
