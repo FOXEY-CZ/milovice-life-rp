@@ -1,3 +1,21 @@
+# Milovice RP 5.64 — fotopodložené detaily cyklověže u nádraží
+
+**Spustit hru:** https://foxey-cz.github.io/milovice-life-rp/?v=5640  
+**Identifikace objektů:** https://foxey-cz.github.io/milovice-life-rp/?inspect=1&v=5640  
+**Přehled celé ulice:** https://foxey-cz.github.io/milovice-life-rp/survey.html?id=old%3AN%C3%A1dra%C5%BEn%C3%AD
+
+Po uživatelském potvrzení 17 správně modelovaných garáží jsme se přesunuli k další **fotograficky zdokumentované části přednádraží**, konkrétně ke skutečné **cyklověži BIKETOWER BT 2.2** podle výrobce (realizace 2021). Ve veřejných fotografiích Nádražní z 30. 5. 2024 je doložena skutečná věž s průhledným pláštěm a viditelnou vnitřní konstrukcí. Zdroje: [ŠJů na Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Milovice,_N%C3%A1dra%C5%BEn%C3%AD,_cyklov%C4%9B%C5%BE.jpg) (CC BY 4.0); [BIKETOWER – Reference a mapa](https://www.biketower.cz/reference-a-mapa/).
+
+**V herním 3D:** již existující objekt OSM **way 1011197691** má uvnitř skleněné věže nově viditelnou ocelovou soustavu s **52 instancovanými příčkami a výztuhami**, vykreslovanou **jedním dodatečným draw callem**. Je to fotograficky inspirovaný konstrukční princip, **přesné délky a rozmístění všech vnitřních tyčí nejsou geodeticky změřeny**. Nezměnil se OSM půdorys, výška, vchod, silnice, zastávky, přístřešek ani garáže. Fotografie nebyly kopírovány jako textura.
+
+**Bez nepodloženého umisťování:** Wikimedia Commons obsahuje snímek „Milovice, nádraží, schodiště z Nádražní“, ale v našich stávajících OSM datech se nepodařilo nalézt samostatnou odpovídající trasu `highway=steps` poblíž stanice. Schody, zábradlí a nová parkovací místa proto nebyly vymýšleny.
+
+**Testy:** `scripts/bike-tower-interior.test.mjs` (OSM, reálný fotopodklad, jediný draw call, 52 interních prvků, validita rozměrů) přidán do GitHub Actions. Test ochrany před chybou neznámého typu garážových dveří 5.63.1 dál funguje a není přivázán k zastaralému číslu verze.
+
+**Stav:** fotograficky podložený typ vnitřní ocelové konstrukce, ale konkrétní rozmístění je aproximace. Zbývá srovnání 360° ze hry. Kompletní Nádražní je stále rozpracovaná, nikoli finálně schválená.
+
+---
+
 # Milovice RP 5.63.1 — HOTFIX: mapa se znovu načítá
 
 **Opravená verze hry:** https://foxey-cz.github.io/milovice-life-rp/?v=5631
