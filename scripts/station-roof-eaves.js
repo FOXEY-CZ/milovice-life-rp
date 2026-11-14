@@ -1,4 +1,4 @@
-// Milovice RP 5.28.8 — continuous mapped exterior eaves, no bogus caps.
+// Milovice RP 5.48 — continuous mapped exterior eaves, no bogus caps.
 // Roof top and soffit are partitions of the SAME affine roof planes as the
 // source station roof, not bent quadrilaterals crossing hip creases.
 const EPS=1e-8;
@@ -42,10 +42,12 @@ function miter(before,after,width){
  const a=before||after,b=after||before;
  if(!a)return {x:0,z:0};
  const dot=a.nx*b.nx+a.nz*b.nz;
- if(dot<-.45)return {x:b.nx*width,z:b.nz*width};
- const scale=width/(1+dot),x=(a.nx+b.nx)*scale,z=(a.nz+b.nz)*scale;
- const len=Math.hypot(x,z),max=width*1.8;
- return len>max?{x:x*max/len,z:z*max/len}:{x,z};
+ // Sharp corners need one shared outward bisector, not the next wall's
+ // normal: the latter folded strips inward and dropped the whole eave.
+ const sx=a.nx+b.nx,sz=a.nz+b.nz,len=Math.hypot(sx,sz);
+ if(len<1e-6)return {x:0,z:0}; // degenerate U-turn: fail safely
+ const scale=Math.min(width/(1+dot),width*1.8/len);
+ return {x:sx*scale,z:sz*scale};
 }
 function roofPlanes(roof,origin){
  const {ax,az}=roof.globalAxis,{minS,maxS,minT,maxT}=roof.bounds;
@@ -105,7 +107,8 @@ export function planPerimeterRoofEaves({outline,originalOutline,roof,
  width=.32,thickness=.10}={}){
  const section=ring(outline),original=ring(originalOutline);
  if(!section||!original||roof?.roofModel!=='perimeter-constrained'||
-  !Number.isFinite(roof.eaveY)||width<.10||width>.65||
+  !Number.isFinite(roof.eaveY)||!Number.isFinite(width)||
+  !Number.isFinite(thickness)||width<.10||width>.65||
   thickness<.04||thickness>.20)return null;
  const edges=section.map((a,i)=>stationExteriorEdge(a,
   section[(i+1)%section.length],original));

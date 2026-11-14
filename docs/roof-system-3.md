@@ -59,3 +59,8 @@ Both the game and editor use the same engine. The game exposes a one-time struct
 `node scripts/editor_smoke.mjs`: selects a real house and checks that source-safe topology appears in the real editor.
 
 The guiding rule is **unique architecture backed by real sources, reusable construction backed by reliable geometry**.
+
+
+## 5.48 — universal bounded roof corners
+
+The previous physical-eave miter chose the following wall normal for very sharp corners. On real Milovice OSM way `202775821`, this could fold a strip inward and make the entire eave mesh disappear. The shared planner now uses a bounded outward angular bisector so the same 3D corner is welded on both adjoining walls. A non-finite width or thickness is rejected. Tests cover the actual Milovice footprint, reversed winding, sharp synthetic corners, finite geometry, corner connection and the 1.8× overhang cap. The school’s 22-edge roof is unchanged. This is a geometric safeguard for new photo-backed roofs, not a claim of verified roof shapes on every building.
