@@ -2912,6 +2912,14 @@ function osmBuilding(points,tags,index,osmId=null){
  // Building facade upgrade: per-building window allocation and visible architectural details.
  // Existing flat windows remain only on non-hero buildings.
  if(!heroFacade){
+ const facadeSourceAudit=window.__miloviceCityUnverifiedFeatures ||= {
+  removedRandomRoofVents:0,removedRandomCommerceAwnings:0,
+  inferredRoofShapePolicy:'quadrilateral-gable-else-hip-or-flat'
+ };
+ facadeSourceAudit.suppressedRandomShutters ||= 0;
+ facadeSourceAudit.suppressedRandomBalconies ||= 0;
+ // Windows/doors remain explicitly provisional until a photo is reviewed;
+ // undocumented decorative extras must not become false local landmarks.
  const visibleFloors=tags.shop==='supermarket'||isGarage||isChurch?0:isBlueStar||isMirova36?2:isGrocer74?1:isIndustrial?1:isPanelBlock?Math.min(floors,16):Math.min(Math.max(1,Math.floor(h/3)),8);
  for(let i=0;i<pts.length;i++){
   const p=pts[i],q=pts[(i+1)%pts.length],dx=q.x-p.x,dz=q.y-p.y,len=Math.hypot(dx,dz);
@@ -3020,34 +3028,26 @@ function osmBuilding(points,tags,index,osmId=null){
     if(isPanelBlock&&j%3===0){
      archPart('panelSeam',px+nx*.35+ux*1.45,baseHeight+h*.5,pz+nz*.35+uz*1.45,.09,h-.32,.11,rotation);
      if(floor>0){
-      const by=baseHeight+y-.95,bx=px+nx*.91,bz=pz+nz*.91;
-      archPart('balcony',bx,by,bz,2.34,.13,1.15,rotation);
-      archPart('railing',bx+nx*.62,by+.57,bz+nz*.62,2.22,1.07,.055,rotation);
-      archPart('railing',bx+ux*1.07,by+.53,bz+uz*1.07,.06,1.01,1.22,rotation);
-      archPart('railing',bx-ux*1.07,by+.53,bz-uz*1.07,.06,1.01,1.22,rotation);
+      // A regular panel-grid window is not evidence of a balcony.
+      facadeSourceAudit.suppressedRandomBalconies++;
      }
     }
     if(isHouse){
      archPart('whiteTrim',px+nx*.55,baseHeight+y-.77,pz+nz*.55,1.53,.13,.32,rotation);
-     if(auditedCore&&(index+j+floor)%4===0)legacyRealityAudit.suppressed('suppressedShutters');
-      if(!auditedCore&&(index+j+floor)%4===0){
-      const side=j%2?1:-1;
-      archPart('shutter',px+nx*.56+ux*side*.90,baseHeight+y,pz+nz*.56+uz*side*.90,.23,1.51,.13,rotation);
+     if((index+j+floor)%4===0){
+      facadeSourceAudit.suppressedRandomShutters++;
+      if(auditedCore)legacyRealityAudit.suppressed('suppressedShutters');
      }
     }
-    if(auditedCore&&oldCenter&&isHouse&&j%2===0)legacyRealityAudit.suppressed('suppressedShutters');
-     if(!auditedCore&&oldCenter&&isHouse&&j%2===0){
-     archPart('shutter',px+nx*.54+ux*.91,baseHeight+y,pz+nz*.54+uz*.91,.24,1.52,.13,rotation);
+    if(oldCenter&&isHouse&&j%2===0){
+     facadeSourceAudit.suppressedRandomShutters++;
+     if(auditedCore)legacyRealityAudit.suppressed('suppressedShutters');
     }
     const inventedBalcony=!isHouse&&!isSchool&&!isIndustrial&&!isPanelBlock&&!isBlueStar&&!isMirova36&&!isGrocer74&&floor>0&&j%3===0;
-     if(auditedCore&&inventedBalcony)legacyRealityAudit.suppressed('suppressedBalconies');
-     if(!auditedCore&&inventedBalcony){
-     const bx=px+nx*.83,bz=pz+nz*.83,by=baseHeight+y-.93;
-     archPart('balcony',bx,by,bz,2.22,.13,1.02,rotation);
-     archPart('railing',bx+nx*.59,by+.52,bz+nz*.59,2.10,.93,.055,rotation);
-     archPart('railing',bx+ux*1.04,by+.50,bz+uz*1.04,.055,.94,1.10,rotation);
-     archPart('railing',bx-ux*1.04,by+.50,bz-uz*1.04,.055,.94,1.10,rotation);
-    }
+     if(inventedBalcony){
+      facadeSourceAudit.suppressedRandomBalconies++;
+      if(auditedCore)legacyRealityAudit.suppressed('suppressedBalconies');
+     }
    }
   }
  }
