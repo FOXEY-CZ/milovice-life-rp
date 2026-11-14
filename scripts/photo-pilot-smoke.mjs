@@ -17,7 +17,7 @@ try{
   assert.equal(url.pathname,'/api/search');
   assert.equal(url.searchParams.get('limit'),'30');
   return route.fulfill({status:200,contentType:'application/geo+json',body:JSON.stringify({
-   type:'FeatureCollection',
+   // Deliberately omit 'type': federated Panoramax response in production.
    features:[{type:'Feature',id:photoId,geometry:{
     type:'Point',coordinates:[14.8824,50.2295]},
     properties:{datetime:'2024-05-30T11:00:00Z','view:azimuth':200}
