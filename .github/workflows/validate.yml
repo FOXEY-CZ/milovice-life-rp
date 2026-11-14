@@ -21,6 +21,8 @@ jobs:
         run: node scripts/performance-governor.test.mjs
       - name: Validate photographed street block and mapped building IDs
         run: node scripts/street-photo-block.test.mjs
+      - name: Review whole-street Wikimedia photo provenance and coverage without false matches
+        run: node scripts/street-photo-evidence.test.mjs
       - name: Validate photo-referenced whole-street environment and OSM alignment
         run: node scripts/street-environment-pass.test.mjs
       - name: Prevent roadside trees, lamps and fences from occupying OSM roads
