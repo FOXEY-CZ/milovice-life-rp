@@ -22,3 +22,6 @@ The editor persists cards using localStorage on the current device. Export to \`
 - ČÚZK DMR 4G elevation: CC BY 4.0.
 - Mapy.com Panorama: navigate in the provider app; do not bulk scrape imagery.
 - Mapillary: publicly browsable user-sourced imagery; refer to the applicable license and its attribution/share-alike conditions.
+
+### 6. Required roof silhouette QA (v5.49)
+Every **photo-backed** roof must satisfy the common geometry and pedestrian-view checks before anyone marks it ready: requested height is reached by actual 3D triangles, mapped eaves remain attached to the corresponding walls, and a street-level sightline clears the front wall. Check real street and elevated screenshots against authorized photographic references as a separate manual step. The automatic occlusion gate in `scripts/roof-street-visibility.js` is a helpful visibility proxy, **not** a pixel-perfect photo match. Unknown roofs retain provisional geometric defaults and must never be blindly enlarged or decorated with invented skylights/antennas. Core building tests run on all 684 imported OSM building footprints.

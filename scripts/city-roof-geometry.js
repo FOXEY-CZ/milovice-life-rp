@@ -4,7 +4,7 @@
 // a particular way. Both could turn roof planes inside-out on rotated sites.
 // Build real bounded planar gable/hip facets instead, clipped to OSM triangles.
 import {planFootprintPitchedRoof} from './station-roof-geometry.js';
-import {planPerimeterConstrainedRoof,roofBoundaryGap} from './perimeter-roof-envelope.js';
+import {planPerimeterConstrainedRoof,roofBoundaryGap} from './perimeter-roof-envelope.js?v=5490';
 
 function coord(p){return {x:p.x,z:p.z??p.y}}
 function safeUnit(x,z){

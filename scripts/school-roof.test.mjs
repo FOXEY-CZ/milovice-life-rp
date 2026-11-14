@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {planCityBuildingRoof} from './city-roof-geometry.js';
-import {planSchoolPhotographedRoof,SCHOOL_PHOTO_WAY_ID} from './school-street-pass.js';
+import {planSchoolPhotographedRoof,schoolPhotoCameraWorld,SCHOOL_PHOTO_WAY_ID} from './school-street-pass.js';
 import {planPerimeterConstrainedRoof} from './perimeter-roof-envelope.js';
+import {auditRoofStreetVisibility} from './roof-street-visibility.js';
 const osm=JSON.parse(readFileSync(new URL('../data/milovice-osm.json',import.meta.url),'utf8'));
 const school=osm.elements.find(el=>el.id===SCHOOL_PHOTO_WAY_ID);
 assert(school&&school.tags['building:levels']==='3');
@@ -43,7 +44,7 @@ const polyArea=Math.abs(outline.reduce((sum,p,i)=>{
  const q=outline[(i+1)%outline.length];return sum+p.x*q.z-p.z*q.x;
 },0))/2;
 const photo=planSchoolPhotographedRoof(outline);
-assert(photo&&photo.rise>=1.5&&photo.kind==='hip');
+assert(photo&&photo.rise>=2.5&&photo.kind==='hip');
 assert(photo.photographicPitch&&!photo.preciseRoofRidgeSurveyed);
 assert(photo.reference.includes('zsmilovice.cz'));
 const validate=(shape,tag)=>{
@@ -55,6 +56,9 @@ const validate=(shape,tag)=>{
  assert(model,tag+' must not revert to a FLAT cap');
  assert(model.faces.length>=ts.length);
  assert(model.relativeAreaError<1e-4);
+ if(model.roofModel==='perimeter-constrained')
+  assert(!model.slopeClamped&&model.actualRise>=photo.rise*.98,
+   tag+' does not actually reach the requested photo-backed roof height');
  assert(!model.faces.some(f=>f.some(v=>!Number.isFinite(v.y))));
  const ys=model.faces.flatMap(f=>f.map(v=>v.y));
  assert(Math.max(...ys)-Math.min(...ys)>.4,'School roof must have an actual visibly inclined surface');
@@ -68,6 +72,11 @@ const validate=(shape,tag)=>{
 const primary=validate(outline,'normal');
 const reversed=validate(outline.slice().reverse(),'reverse winding');
 assert.equal(reversed.faces.length,primary.faces.length);
+const photoCamera=schoolPhotoCameraWorld();
+const visible=auditRoofStreetVisibility({roof:primary,outline,
+ camera:{...photoCamera,y:1.7},minVisible:.06});
+assert(visible?.pass&&visible.visibleFraction>.06,
+ 'Photographed school roof hidden behind own wall: '+JSON.stringify(visible));
 const fallback=planPerimeterConstrainedRoof({
  footprint:outline,triangles:triangulate(outline),
  baseY:11.3,rise:photo.rise,kind:'hip'
@@ -81,7 +90,7 @@ assert(html.includes('const schoolRoofPhoto=isSchool?planSchoolPhotographedRoof(
 assert(html.includes('isSchool?schoolRoofPhoto.rise:'));
 assert(html.includes('const schoolRoofMetal=new THREE.MeshStandardMaterial'));
 assert(html.includes('window.__miloviceSchoolRoofAudit='));
-assert(html.includes("version:'5.46'"));
+assert(html.includes("version:'5.49'"));
 assert(html.includes('pitchedRendered:Boolean(pitchedSurface&&surface&&span>.4)'));
 const roofSource=readFileSync(new URL('./city-roof-geometry.js',import.meta.url),'utf8');
 assert(roofSource.includes("return safeHip('invalid-affine-plan')"));

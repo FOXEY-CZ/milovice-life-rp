@@ -1,4 +1,4 @@
-// Milovice RP Roof System 3.1 — shared perimeter-safe fallback for
+// Milovice RP Roof System 3.2 / 5.49 — shared perimeter-safe fallback for
 // irregular OSM building outlines. OSM does not identify the actual roof:
 // this deliberately provisional surface prevents elevated/flapping eaves
 // until a source-approved architectural roof profile is available.
@@ -100,10 +100,22 @@ export function planPerimeterConstrainedRoof({footprint,triangles,baseY,rise,
  const tSpan=Math.max(...local.map(p=>p.t))-Math.min(...local.map(p=>p.t));
  const narrow=Math.min(sSpan,tSpan);
  if(narrow<1)return null;
- const envelopeSlope=rise/Math.max(.9,narrow*.49);
+ // Calibrate pitch to actual generated samples, not the bounding box.
+ // On a 22-wall school roof the old target 1.85m rendered only .71m.
  const n=subdivisions===null?
   Math.min(5,Math.max(2,Math.ceil(Math.sqrt(shape.area)/3.2))):subdivisions;
  if(!Number.isInteger(n)||n<1||n>7)return null;
+ let maxReach=0;
+ for(const tri of source)for(let i=0;i<=n;i++)for(let j=0;j<=n-i;j++){
+  const u=i/n,v=j/n;
+  const p={x:tri[0].x*(1-u-v)+tri[1].x*u+tri[2].x*v,
+   z:tri[0].z*(1-u-v)+tri[1].z*u+tri[2].z*v};
+  maxReach=Math.max(maxReach,distanceToExterior(p,outline));
+ }
+ if(maxReach<.05)return null;
+ const requestedSlope=rise/maxReach;
+ const envelopeSlope=Math.min(1.0,requestedSlope);
+ const slopeClamped=envelopeSlope<requestedSlope-1e-8;
  const roof={kind:'hip',roofModel:'perimeter-constrained',source:'OSM provisional envelope',
   perimeterOutline:outline,envelopeSlope,rise,eaveY:baseY,ridgeY:baseY+rise,
   origin,globalAxis:{ax:ax/norm,az:az/norm},subdivisions:n};
@@ -135,12 +147,16 @@ export function planPerimeterConstrainedRoof({footprint,triangles,baseY,rise,
    if(i+j<n-1)emit(b,grid[i+1][j+1],c);
   }
  }
+ let actualRise=0;
+ for(const face of faces)for(const p of face)
+  actualRise=Math.max(actualRise,p.y-baseY);
  const relativeAreaError=Math.abs(outputArea-sourceArea)/sourceArea;
  if(!faces.length||relativeAreaError>1e-4||
   faces.some(f=>f.some(p=>!Number.isFinite(p.y)||
    p.y<baseY-.00001||p.y>baseY+rise+.00001)))return null;
  return {...roof,faces,sourceArea,outputArea,relativeAreaError,
   maxPerimeterOvershoot:0,verifiedAppearance:false,
+  actualRise,requestedRise:rise,slopeClamped,maxInteriorReach:maxReach,
   originalArea:shape.area,triangles:faces.length,
   maxEaveError:roofBoundaryGapFromSurface(roof)};
 }

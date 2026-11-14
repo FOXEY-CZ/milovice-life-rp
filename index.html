@@ -177,7 +177,7 @@ import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
 import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5450';
-import {planSchoolStreetFrontage,schoolFacadeFixture,planSchoolPhotographedRoof,schoolPhotoCameraWorld,SCHOOL_PHOTO_WAY_ID} from './scripts/school-street-pass.js?v=5460';
+import {planSchoolStreetFrontage,schoolFacadeFixture,planSchoolPhotographedRoof,schoolPhotoCameraWorld,SCHOOL_PHOTO_WAY_ID} from './scripts/school-street-pass.js?v=5490';
 import {planGroundedEntrance} from './scripts/entrance-grade.js?v=5450';
 import {exteriorFacadeFrame,selectExteriorFacadeToward,splitFacadeStripForOpening,facadePoint,flushBoxOffset,FACE_PLANE,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './scripts/facade-anchors.js?v=5400';
 import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5410';
@@ -191,7 +191,8 @@ import {planFootprintPitchedRoof} from './scripts/station-roof-geometry.js?v=528
 import {planRoofPerimeterClosure} from './scripts/station-roof-seams.js?v=5320';
 import {planStationRoofEaves,planPerimeterRoofEaves} from './scripts/station-roof-eaves.js?v=5480';
 import {planSkolskaRoofJoins,SKOLSKA_WAY_ID} from './scripts/skolska-roof.js?v=5320';
-import {planCityBuildingRoof,analyzeGableFootprint} from './scripts/city-roof-geometry.js?v=5460';
+import {planCityBuildingRoof,analyzeGableFootprint} from './scripts/city-roof-geometry.js?v=5490';
+import {auditRoofStreetVisibility} from './scripts/roof-street-visibility.js?v=5490';
 import {planBuildingRoofTopology} from './scripts/building-roof-topology.js?v=5310';
 import {makeRetrospectiveAuditTracker,isLegacyGuessAllowed} from './scripts/legacy-reality-audit.js?v=5261';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
@@ -2977,6 +2978,10 @@ function osmBuilding(points,tags,index,osmId=null){
   const surface=pitchedSurface?.userData.roofRuntimePlan||null;
   const ys=surface?.faces?.flatMap(face=>face.map(v=>v.y))||[];
   const span=ys.length?Math.max(...ys)-Math.min(...ys):0;
+  const eye=schoolPhotoCameraWorld();
+  const visualRoof=surface?auditRoofStreetVisibility({roof:surface,outline:pts,
+   camera:{x:eye.x,z:eye.z,y:terrainAt(eye.x,eye.z)+1.7},
+   minVisible:.06}):null;
   // A shallow roof behind a 10-metre facade is often invisible at human
   // eye level. Its photographed sheet-metal edge must have a physical
   // overhang, closed fascia and soffit (not an infinitely thin cap).
@@ -2991,7 +2996,11 @@ function osmBuilding(points,tags,index,osmId=null){
    stationEaveMesh(eaves.fascia,schoolRoofFascia,'Milovice_school_photo_eave_fascia');
   }
   window.__miloviceSchoolRoofAudit={
-   version:'5.46',osmId:SCHOOL_PHOTO_WAY_ID,
+   version:'5.49',osmId:SCHOOL_PHOTO_WAY_ID,
+   realRise:visualRoof?.actualRise||0,
+   streetVisible:visualRoof?.pass===true,
+   streetFraction:visualRoof?.visibleFraction||0,
+   streetSamples:visualRoof?.sampled||0,
    pitchedRendered:Boolean(pitchedSurface&&surface&&span>.4),
    flatFallbackUsed:!pitchedSurface,
    roofModel:surface?.roofModel||'affine-planar',

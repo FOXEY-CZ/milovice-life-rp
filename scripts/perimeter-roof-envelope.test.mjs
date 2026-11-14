@@ -124,6 +124,10 @@ for(const b of osm.elements.filter(e=>e.tags?.building&&e.geometry?.length>=3)){
  if(roof.roofModel==='perimeter-constrained'){
   core.perimeterSafe++;
   assert(roof.maxEaveError<=.025,'OSM '+b.id+' has airborne roof eaves');
+  assert(Number.isFinite(roof.actualRise)&&roof.actualRise>0,
+   'OSM '+b.id+' generated an invisible flat roof');
+  assert(roof.slopeClamped||roof.actualRise>=roof.rise*.99,
+   'OSM '+b.id+' did not render its requested height');
   core.maxCurrentEaveError=Math.max(core.maxCurrentEaveError,roof.maxEaveError);
   assert(roof.faces.length<=triangles.length*25,
    'OSM '+b.id+' exceeds adaptive facet budget');
