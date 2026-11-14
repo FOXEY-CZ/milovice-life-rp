@@ -1,3 +1,23 @@
+# Milovice RP 5.62 — zjisti OSM ID přímo klepnutím na budovu
+
+**Otevřít hru s aktivním identifikátorem:** https://foxey-cz.github.io/milovice-life-rp/?inspect=1&v=5620  
+**Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5620
+
+Zkušenost s posledními screenshots ukázala, že se u kostela a Nádražní nachází několik různých řad nízkých budov. Odhady jen podle podobné šedé fasády vedly k chybnému upravování a skrývání úplně jiných objektů. Nově je přímo ve 3D hře plně funkční **tlačítko 🔎 Objekt**. Po aktivaci se klepnutím na skutečnou zeď či střechu zobrazí **přesné OSM way ID**, název a účel pouze **podle OSM**, světová GPS pozice a odkaz k otevření skutečného prvku v mapě. Je možné zkopírovat ID a souřadnice do chatu. Klávesové ovládání a kamerová rotace fungují; velké tažení kamerou není interpretováno jako výběr objektu.
+
+**Důležité:** Jde o spolehlivé propojení **konkrétního herního modelu s jeho OSM ID**, nikoliv o potvrzení skutečného vzhledu. Fotografie stále musí zachycovat přímo danou stavbu a současný stav; OSM tag „garage“ není fotografický důkaz. Bez něj zůstává objekt provizorní a neděláme nezdokumentované detaily.
+
+**Kandidátní skupiny, které se nesmí zaměňovat:**
+- [Severní Nádražní: 17 samostatných OSM ways](https://www.openstreetmap.org/#map=19/50.230396/14.883489), střed 50.230396, 14.883489.
+- [Dukelská: 7 samostatných OSM ways](https://www.openstreetmap.org/#map=19/50.229744/14.886733), střed 50.229744, 14.886733.
+- [Východní část: 8 samostatných OSM ways](https://www.openstreetmap.org/#map=19/50.226192/14.890987), střed 50.226192, 14.890987.
+
+Zdroje pro konkrétní čelní stěny těchto řad nebyly fotograficky potvrzeny. Žádné další budovy nebyly odstraněny ani předělány.
+
+Technické soubory: `scripts/osm-building-inspector.js`, `scripts/osm-building-inspector.test.mjs` a napojení v `index.html`. Raycast určuje první **skutečnou modelovou polygonální stěnu** v dosahu 180 m, nikoliv nejbližší OSM adresu. Regresní testy byly přidány do automatických GitHub Actions.
+
+---
+
 # Milovice RP 5.61 — vráceno 17 omylem skrytých budov
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5610  
