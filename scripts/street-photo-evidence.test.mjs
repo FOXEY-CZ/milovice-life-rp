@@ -10,7 +10,7 @@ assert(photos.length>=8,'Real-world street batch needs multiple independent sour
 assert.equal(new Set(photos.map(p=>p.id)).size,photos.length);
 assert.equal(new Set(photos.map(p=>p.url)).size,photos.length);
 assert(photos.every(p=>/^https:\/\/commons\.wikimedia\.org\/wiki\/File:/.test(p.url)&&
- /^(2014|2024)-\d\d-\d\d$/.test(p.taken)&&
+ /^(2013|2014|2024)-\d\d-\d\d$/.test(p.taken)&&
  p.author&&p.license.includes('CC BY')&&
  (!p.camera||p.camera.length===2&&p.camera.every(Number.isFinite))));
 const core=JSON.parse(readFileSync(new URL('../data/architecture/building-audit-queue.json',import.meta.url),'utf8'));
@@ -45,6 +45,9 @@ assert(stats.withNearbyPhotos>=3&&stats.withNearbyPhotos<stats.buildings,
  'Only a minority of houses have locally discovered photo candidates');
 assert.equal(stats.allFacadesVerified,false);
 assert(photos.some(x=>x.taken==='2014-07-26'&&x.scope==='historical-streetscape'));
+assert(photos.some(x=>x.id==='nadrazi-rail-platform-2013'&&
+ x.scope==='historical-rail-platform'&&x.camera===null&&x.buildingIds.length===0),
+ 'A historical platform photo can justify canopy type, not measured layout or 2026 status');
 assert(photos.every(p=>previewForCommonsPhoto(p)?.includes('/wiki/Special:FilePath/')&&
  previewForCommonsPhoto(p)?.endsWith('?width=320')),
  'All low-res source previews must come from the credited Commons originals');
