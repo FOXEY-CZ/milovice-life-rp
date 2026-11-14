@@ -3297,8 +3297,12 @@ function osmBuilding(points,tags,index,osmId=null){
  // a second fake freestanding doorway on top of their real entrance.
  const inventedEntrance=!heroFacade&&!isGarage&&!isChurch&&!isBlueStar&&
   !isStation&&!isMirova36&&!isGrocer74;
-  if(auditedCore&&inventedEntrance)legacyRealityAudit.suppressed('suppressedDoors');
-  if(!auditedCore&&inventedEntrance){
+  if(auditedCore&&inventedEntrance&&!isSchool)
+   legacyRealityAudit.suppressed('suppressedDoors');
+  // The 2024 photo IS direct evidence of the school's main entrance;
+  // don't suppress it merely because this OSM building belongs to an
+  // area that otherwise forbids unverified decorative doorway guesses.
+  if((!auditedCore||isSchool)&&inventedEntrance){
   let longest=null;
   if(isSchool&&schoolPhotoPlan){
    // Photo-visible side: longest edge of the OSM footprint is at BACK.
