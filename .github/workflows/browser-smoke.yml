@@ -23,6 +23,9 @@ on:
       - data/milovice-osm.json
       - data/milovice-terrain.json
       - scripts/browser_smoke.mjs
+      - scripts/station-photo-parking.js
+      - scripts/station-photo-parking.test.mjs
+      - scripts/road-clearance.js
       - scripts/station-roof-geometry.js
       - scripts/station-roof-geometry.test.mjs
       - scripts/station-roof-seams.js
