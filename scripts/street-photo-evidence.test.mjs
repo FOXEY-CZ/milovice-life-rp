@@ -18,7 +18,7 @@ const homes=core.entries.map(e=>({id:e.osmId,center:[e.lat,e.lon]}));
 const one=id=>homes.find(p=>p.id===id);
 for(const [id,photoId] of [
  [118487980,'skolska-1-2024'],[202367254,'mirova-36-2024'],
- [202367194,'modra-hvezda-2024']]){
+ [202367194,'modra-hvezda-2024'],[118487979,'school-2024']]){
  const matches=streetEvidenceForBuilding(one(id));
  assert(matches[0]?.id===photoId&&matches[0].directEvidence,
   'Directly named building source must rank ahead of random nearby photos: '+id);
