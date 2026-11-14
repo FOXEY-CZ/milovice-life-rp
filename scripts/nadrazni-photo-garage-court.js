@@ -85,27 +85,25 @@ export function planPhotographedGarageCourt(ways=[]){
  if(west.length<6||east.length<6)return {
   valid:false,reason:'asymmetric-garage-rows',fronts:[],court:null};
  const westCenter=mean(west.map(w=>w.c)),eastCenter=mean(east.map(w=>w.c));
+ const westIds=new Set(west.map(w=>w.id));
  const pairVector={x:eastCenter.x-westCenter.x,z:eastCenter.z-westCenter.z};
  const pairLen=Math.hypot(pairVector.x,pairVector.z);
  if(pairLen<12||pairLen>37)return {
   valid:false,reason:'unreasonable-court-width',fronts:[],court:null};
  const fronts=[];
  for(const w of rows){
-  const opposite=w.c.x<eastCenter.x-3?eastCenter:westCenter;
-  const target={x:opposite.x-w.c.x,z:opposite.z-w.c.z};
-  const tLen=Math.hypot(target.x,target.z)||1;
+  // A staggered 7+10 garage court must face the OTHER ROW across its
+  // nearly east-west gap. Targeting the opposite ROW CENTROID would tilt
+  // end-bay normals toward distant z and falsely reject photo-proven doors.
+  const inwardX=westIds.has(w.id)?1:-1;
   const edges=w.p.map((p,i)=>segment(p,w.p[(i+1)%4],w.sign,i))
    .filter(e=>e.len>=2.2&&e.len<=3.7);
-  edges.sort((a,b)=>{
-   const score=e=>(e.normal.x*target.x+e.normal.z*target.z)/tLen;
-   return score(b)-score(a);
-  });
-  const best=edges[0],score=best?
-   (best.normal.x*target.x+best.normal.z*target.z)/tLen:-1;
+  edges.sort((a,b)=>b.normal.x*inwardX-a.normal.x*inwardX);
+  const best=edges[0],score=best?best.normal.x*inwardX:-1;
   if(!best||score<.90)return {
    valid:false,reason:'missing-opposing-short-facade',fronts:[],court:null};
   fronts.push({id:w.id,edge:best.index,a:best.a,b:best.b,
-   center:best.center,width:best.len,normal:best.normal,row:w.c.x<westCenter.x+4?'west':'east',
+   center:best.center,width:best.len,normal:best.normal,row:westIds.has(w.id)?'west':'east',
    score,photoObservedStyle:true,
    exactDoorNumberUnknown:true});
  }
