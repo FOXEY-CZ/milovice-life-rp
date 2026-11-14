@@ -2531,14 +2531,14 @@ function miloviceGrocer74Detail(pts,base,h,cx,cz){
  const face=exteriorFacadeFrame(pts,best.i);
  if(!face)return;
  const {nx,nz,mx,mz,yaw}=face;
- const width=Math.min(6.0,len*.78),frameDepth=.08;
+ const width=Math.min(6.0,face.len*.78),frameDepth=.08;
  archPart('stationGlass',mx+nx*FACE_PLANE,base+1.55,
   mz+nz*FACE_PLANE,width-.17,2.05,.026,yaw);
  // Four slim frame pieces, never a full-size opaque slab over the glass.
  const jambOffset=flushBoxOffset(frameDepth);
  for(const sign of [-1,1]){
-  const x=mx+dx/len*sign*width*.5+nx*jambOffset,
-    z=mz+dz/len*sign*width*.5+nz*jambOffset;
+  const x=mx+face.ux*sign*width*.5+nx*jambOffset,
+    z=mz+face.uz*sign*width*.5+nz*jambOffset;
   archPart('stationFrames',x,base+1.55,z,.09,2.17,frameDepth,yaw);
  }
  archPart('stationFrames',mx+nx*jambOffset,base+2.63,
