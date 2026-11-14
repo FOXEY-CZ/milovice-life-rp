@@ -541,6 +541,18 @@ try{
    view,{timeout:12000});
   await page.screenshot({path:'browser-artifacts/station-roof-'+view+'.png'});
  }
+ // The school is VERY long: a mathematically correct shallow pitch can
+ // hide behind its own 10m wall at pedestrian height. Save genuine street
+ // and elevated comparisons in the CI artifact for future roof regressions.
+ for(const view of ['school-street','school-elevated']){
+  await page.evaluate(name=>{
+   window.__miloviceRoofAuditView=name;
+   window.__miloviceRoofAuditRendered=null;
+  },view);
+  await page.waitForFunction(name=>window.__miloviceRoofAuditRendered===name,
+   view,{timeout:12000});
+  await page.screenshot({path:'browser-artifacts/review-'+view+'-roof.png'});
+ }
  // Photograph both real 2024 house reference views (not just station).
  // These caught flying inverted black dormer roofs in the user's screenshot.
  for(const view of ['house-skolska','house-mirova36']){
