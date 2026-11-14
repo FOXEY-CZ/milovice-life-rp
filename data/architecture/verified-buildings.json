@@ -1,6 +1,6 @@
 {
   "schema": "milovice-rp-approved-buildings-v1",
-  "updatedAt": "2026-11-13T13:00:00Z",
+  "updatedAt": "2026-11-14T09:00:00Z",
   "description": "First documented intersection group Mírová/5. května/Školská, 3 real photo-reviewed exteriors; geometric heights and openings are approximations.",
   "buildings": {
     "118487980": {
@@ -49,22 +49,24 @@
     "202367254": {
       "stage": "verified",
       "source": "https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_36.jpg",
-      "notes": "Photo 2024-05-30: cream 243/36 corner building with steep dark red-brown hipped roof, a central projecting gabled upper section, two rectangular skylights and clipped hedges along street. Eave and ridge dimensions are estimated, not surveyed.",
+      "notes": "Photo 2024-05-30: cream 243/36 corner building with steep dark red-brown hipped roof, a central projecting gabled upper section, three rectangular skylights and clipped hedges along street. Eave and ridge dimensions are estimated, not surveyed.",
       "facadeColor": "#dfcfb1",
       "roofColor": "#553f3d",
       "roofKind": "hip",
       "review": {
         "approved": true,
         "reviewer": "Milovice RP — manual Commons visual comparison",
-        "summary": "Photo and OSM ID checked: 243/36 has pale walls, dark red tiled hip roof, projecting front gable, sloping rooflights and hedges. Exact slope, dimensions, door and shopfront details remain unmeasured.",
+        "summary": "Photo and OSM ID checked: 243/36 has pale walls, dark red tiled hip roof, projecting front gable, three visible sloping rooflights and hedges. Exact slope, dimensions, door and shopfront details remain unmeasured.",
         "reviewedAt": "2026-11-13T13:00:00Z"
       },
       "provenance": {
         "photoAuthor": "ŠJů",
         "photoLicense": "CC BY 4.0",
         "photoDate": "2024-05-30",
-        "precision": "visual approximation only"
-      }
+        "precision": "One full wall storey with projecting gable/attic; modelled 4.15m eave wall is photographic approximation, NOT a measurement"
+      },
+      "height": "4.15",
+      "floors": "1"
     }
   }
 }
