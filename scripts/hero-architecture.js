@@ -53,7 +53,9 @@ export function makeMiloviceHeroArchitecture(THREE,{
   return geometry;
  }
  function wallGeometry(a,b,base,height,holes,color){
-  const len=Math.hypot(b.x-a.x,b.y-a.y);if(len<1)return null;
+  // Match the same 8cm geometry threshold as classifyFacadeEdgeLength:
+  // <1m returns used to receive decorative trims but no physical wall.
+  const len=Math.hypot(b.x-a.x,b.y-a.y);if(len<.08)return null;
   const shape=new THREE.Shape();
   shape.moveTo(0,0);shape.lineTo(len,0);shape.lineTo(len,height);shape.lineTo(0,height);shape.closePath();
   for(const hole of holes){
