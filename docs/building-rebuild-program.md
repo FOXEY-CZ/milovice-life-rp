@@ -78,3 +78,19 @@ identity and roof ownership from another view, then testing street/wall,
 roof/eave/entrance geometry. No false roof profile, guessed windows,
 or invented entrance was added in v5.53. Progression past a worked
 candidate automatically excludes it and selects the next unworked one.
+
+## 5.54 — actual new source-backed home: OSM 202298939
+
+Two distinct 2024-05-30 ŠJů CC BY 4.0 photographs now support the GREY
+BLANK WEST/SOUTHWEST GABLE and a reddish-tiled roof of OSM 202298939:
+* https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_a_5._kv%C4%9Btna_(01).jpg
+* https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_a_5._kv%C4%9Btna.jpg
+
+The adjacent 202775905 COMMERCIAL building behind the gable is not
+verified. Unlike the generic rectangular-house rule, this SOURCE-GATED
+gable uses triangulation of its actual 8-vertex OSM outline; the shared
+perimeter-closure planner closes all gaps between the wall and roof.
+The blank observed gable has zero fabricated windows or doors.
+3.75m eave height and 2.20m rise are approximate, NOT measured.
+Unseen walls are provisional; full 360 review remains incomplete.
+The worklog marks this as worked, so it will never be picked as new again.

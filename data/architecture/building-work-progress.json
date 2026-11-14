@@ -41,32 +41,21 @@
       "stage": "worked-partial",
       "area": "5. května",
       "notes": "church model reviewed in previous parts"
+    },
+    {
+      "osmId": 202298939,
+      "stage": "photo-backed-partial",
+      "lastVersion": "5.54",
+      "area": "Školská × 5. května",
+      "notes": "Photographed blank grey gable and reddish roof from two licensed 2024 views. Other faces unverified."
     }
   ],
   "nextStreet": "Školská × 5. května, east from station",
   "candidates": [
     {
-      "osmId": 202298939,
-      "status": "photo-camera-aligned-candidate",
-      "priority": 1,
-      "source": "https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_a_5._kv%C4%9Btna_(01).jpg",
-      "supplementarySource": "https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_a_5._kv%C4%9Btna.jpg",
-      "captured": "2024-05-30",
-      "author": "ŠJů",
-      "license": "CC BY 4.0",
-      "viewpoint": {
-        "lat": 50.2290628,
-        "lon": 14.8823614,
-        "headingDeg": 115
-      },
-      "sourceConfidence": "bearing-and-distance-only",
-      "remainingEvidence": "Confirm whether visible grey gable is the 202298939 footprint rather than adjoining 202775905 before altering exterior mesh",
-      "visualEditsApproved": false
-    },
-    {
       "osmId": 202775905,
       "status": "adjacent-photo-identification-required",
-      "priority": 2,
+      "priority": 1,
       "source": "https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_a_5._kv%C4%9Btna_(01).jpg",
       "sourceConfidence": "adjacent-roof-and-wall-unresolved",
       "visualEditsApproved": false

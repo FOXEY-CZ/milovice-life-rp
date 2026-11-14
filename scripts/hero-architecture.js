@@ -194,7 +194,9 @@ export function makeMiloviceHeroArchitecture(THREE,{
    // never be extrapolated to the unseen rear and courtyard walls.
    const observed=!sideLayout?planSourceObservedFacade(String(identity),edgeFrame):null;
    const actualSide=sideLayout||observed?.side||null;
-   const autoEntrance=!observed&&sideIndex===entrySide&&len>5&&
+   // Unknown entrances on 202298939 stay unknown, not automatic doors.
+   const autoEntrance=!observed&&String(identity)!=='202298939'&&
+    sideIndex===entrySide&&len>5&&
     !explicitDoor&&!actualSide?.openings?.length;
    const planned=planFaceOpenings({length:len,height,levels,side:actualSide,
     legacyWindows:override?.windowsPerWall||Math.min(6,Math.max(1,Math.floor((len-1.4)/3.0))),

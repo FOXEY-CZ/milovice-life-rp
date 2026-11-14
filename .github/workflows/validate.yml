@@ -25,6 +25,8 @@ jobs:
         run: node scripts/school-grounds-pass.test.mjs
       - name: Validate next photographed Školská school street frontage
         run: node scripts/school-street-pass.test.mjs
+      - name: Verify new photographed fork gable on actual OSM polygon
+        run: node scripts/fork-gable-house.test.mjs
       - name: Validate photo-anchored Školská 220/1 street-facing openings
         run: node scripts/source-observed-facades.test.mjs
       - name: Validate photographed street block and mapped building IDs

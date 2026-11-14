@@ -27,6 +27,24 @@ function inspect(points){
 const a=inspect(polygon),b=inspect([...polygon].reverse());
 for(const f of a)assert(b.some(x=>Math.hypot(x.x-f.x,x.z-f.z)<.00001&&x.windows===f.windows));
 assert.equal(planSourceObservedFacade(202367254,exteriorFacadeFrame(polygon,4)),null);
+const fork=osm.elements.find(e=>e.id===202298939).geometry.slice(0,-1).map(p=>({
+ x:(p.lon-14.889)*111320*Math.cos(50.226*Math.PI/180),
+ z:-(p.lat-50.226)*111320
+}));
+for(const poly of [fork,[...fork].reverse()]){
+ let blank=0;
+ for(let i=0;i<poly.length;i++){
+  const frame=exteriorFacadeFrame(poly,i),obs=planSourceObservedFacade(202298939,frame);
+  if(!obs)continue;
+  blank++;
+  const op=planFaceOpenings({length:frame.len,height:3.75,levels:1,
+   side:obs.side,autoEntrance:true});
+  assert.equal(obs.groundWindows,0);
+  assert.equal(op.door,null,'Photographed grey gable cannot have imaginary entrance');
+  assert.equal(op.windows.length,0,'Photographed blank gable must stay blank');
+ }
+ assert.equal(blank,1,'Only ONE face photo-verified; no false 360 coverage');
+}
 const html=readFileSync(new URL('./hero-architecture.js',import.meta.url),'utf8');
 assert(html.includes('planSourceObservedFacade(String(identity),edgeFrame)'));
 assert(html.includes('const actualSide=sideLayout||observed?.side||null;'));

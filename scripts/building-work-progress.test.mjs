@@ -13,20 +13,14 @@ assert(worklog.candidates.every(e=>allIds.has(e.osmId)),'Never select fake OSM I
 assert(!worklog.candidates.some(e=>started.includes(e.osmId)),
  'A previously worked-on building must never be advertised as new');
 const next=nextUnworkedStreetBuilding(osm,worklog);
-assert.equal(next?.osmId,202298939);
-assert.equal(next.canBuildFromPhoto,false,'Camera-only photo cannot authorize geometry');
+assert.equal(next?.osmId,202775905,'Advance to unworked adjoining commercial structure');
+assert.equal(next.canBuildFromPhoto,false,'Unverified neighbouring commercial building cannot inherit photo');
 assert.equal(next.requiresPhotoIdentityReview,true);
-assert(next.bearing.distanceMetres>25&&next.bearing.distanceMetres<55);
-assert(next.bearing.deviationDegrees<10,'Photo camera and suggested candidate must really align');
-assert.equal(next.bearing.evidenceStatus,'candidate-only');
-assert.equal(queue.entries.find(x=>x.osmId===next.osmId)?.photoReference,false,
- 'A photo candidate is NOT a verified building reference');
-const after={...worklog,worked:[...worklog.worked,{osmId:202298939,stage:'worked-partial'}]};
-assert.equal(nextUnworkedStreetBuilding(osm,after)?.osmId,202775905,
- 'After finishing this candidate the queue must progress, NOT repeat');
-const later={...after,worked:[...after.worked,{osmId:202775905,stage:'worked-partial'}]};
-assert.equal(nextUnworkedStreetBuilding(osm,later),null,
- 'When no sourced candidates remain, request evidence rather than pick old houses');
+assert.equal(next.bearing,null,'No independent source-camera identity yet for neighbour');
+assert.equal(queue.entries.find(x=>x.osmId===202298939)?.photoReference,true);
+assert(worklog.worked.some(x=>x.osmId===202298939&&x.stage==='photo-backed-partial'));
+const later={...worklog,worked:[...worklog.worked,{osmId:202775905,stage:'worked-partial'}]};
+assert.equal(nextUnworkedStreetBuilding(osm,later),null);
 assert.equal(photoCandidateBearing({viewpoint:{lat:NaN,lon:0,headingDeg:0}},
  osm.elements.find(e=>e.id===202298939)),null);
 console.log('5.53 no-repeat progress tracker: next OSM',next.osmId,

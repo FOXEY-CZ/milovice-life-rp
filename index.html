@@ -2879,6 +2879,8 @@ function osmBuilding(points,tags,index,osmId=null){
  const isMirova36=osmId===202367254; // verified Mírová 243/36 photographed May 2024, cadastral 3 floors incl. attic.
  const isGrocer74=osmId===202298645; // verified Mírová 74/4, Můj obchod - Potraviny D a Š.
  const isSkolskaRoof=osmId===SKOLSKA_WAY_ID;
+ // Licensed 2024 fork photos: blank grey gable on irregular 8-wall house.
+ const isForkPhotoGable=osmId===202298939;
  const isBikeTower=osmId===1011197691; // mapped round 118-bike automated storage near station.
  const isEditableHouse=['house','residential','yes','detached','terrace','semidetached_house'].includes(type)&&
   !isSchool&&!isChurch&&!isStation&&!isGrocer74&&!isBikeTower;
@@ -2960,6 +2962,10 @@ function osmBuilding(points,tags,index,osmId=null){
  const roofPreference=modelCard?.roofKind||'auto';
  const pitched=tags.name==='Penny'&&tags.shop==='supermarket'?
   miloviceGableRoof(pts,baseHeight,h,pennyRoof):
+  isForkPhotoGable?
+  // The photographed main gable is source-backed despite a side notch.
+  // Planar faces are clipped to the real OSM triangles, not a fake box.
+  miloviceRoofOfKind(pts,baseHeight,h,roofMat,2.20,'gable'):
   isHouse&&roofPreference!=='flat'&&roofPreference!=='hip'?
   miloviceGableRoof(pts,baseHeight,h,roofMat,roofPreference==='gable'):null;
  const fallbackFromGable=roofPreference==='gable'&&!pitched;
@@ -3088,11 +3094,25 @@ function osmBuilding(points,tags,index,osmId=null){
   const roofPlan=pitchedSurface.userData.roofRuntimePlan;
   // Hero facades already create their own exact gable-end masonry.
   // Never overlap that material with a second coplanar closure.
-  if(roofPlan&&!isSkolskaRoof&&!(heroFacade&&pitched)){
+  if(roofPlan&&!isSkolskaRoof&&(!(heroFacade&&pitched)||isForkPhotoGable)){
    const closure=planRoofPerimeterClosure({
     outline:pts,roof:roofPlan,origin:roofPlan.origin,
     wallTopY:baseHeight+h
    });
+   if(isForkPhotoGable){
+    window.__miloviceForkHouse={
+     version:'5.54',osmId,photoSource:'https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_a_5._kv%C4%9Btna_(01).jpg',
+     footprintVertices:pts.length,roofKind:roofPlan?.kind||'none',
+     sourceReviewedFrontOnly:true,full360Verified:false,
+     eaveHeightEstimate:h,estimatedRise:2.20,
+     roofTriangles:roofPlan?.faces?.length||0,
+     roofRelativeAreaError:roofPlan?.relativeAreaError??null,
+     maxPerimeterOvershoot:roofPlan?.maxPerimeterOvershoot??null,
+     wallJoinClosed:closure?.closedToRoof===true,
+     wallJoinTriangles:closure?.faces?.length||0,
+     gableNotRectangular:true,exactDimensionsSurveyed:false
+    };
+   }
    if(closure?.closedToRoof){
     roofEnvelopeAudit.checkedWallJoins++;
     roofEnvelopeAudit.maxGapCovered=Math.max(roofEnvelopeAudit.maxGapCovered,

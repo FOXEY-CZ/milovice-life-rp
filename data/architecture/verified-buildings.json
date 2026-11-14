@@ -1,7 +1,7 @@
 {
   "schema": "milovice-rp-approved-buildings-v1",
-  "updatedAt": "2026-11-14T09:00:00Z",
-  "description": "First documented intersection group Mírová/5. května/Školská, 3 real photo-reviewed exteriors; geometric heights and openings are approximations.",
+  "updatedAt": "2026-11-14T16:45:00Z",
+  "description": "Four partial photo-backed buildings at the Milovice core; no 360 surveys are implied.",
   "buildings": {
     "118487980": {
       "stage": "verified",
@@ -24,6 +24,29 @@
         "precision": "One full masonry floor plus roof attic per photo, 3.75m eave estimate unmeasured; OSM two levels include attic"
       },
       "height": "3.75"
+    },
+    "202298939": {
+      "stage": "verified",
+      "source": "https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_a_5._kv%C4%9Btna_(01).jpg",
+      "notes": "Two 30 May 2024 ŠJů photos document the grey blank front gable and reddish tiled roof of the near house OSM 202298939 at the fork of Školská and 5. května. The attached commercial OSM 202775905 is not photo-reviewed. The eight-edge roof is gabled and clipped to the mapped polygon; true plaster joins close gable ends. Wall height 3.75m and rise 2.20m are UNMEASURED estimates. Unknown rear facades retain provisional geometry. No facade door is claimed.",
+      "floors": "1",
+      "height": "3.75",
+      "facadeColor": "#a69f98",
+      "roofColor": "#814d3f",
+      "roofKind": "gable",
+      "review": {
+        "approved": true,
+        "reviewer": "Milovice RP — photo versus footprint visual review",
+        "summary": "Two original dated Commons photos and geographic camera bearings identify the near blank grey gable end, its roof direction and the mapped irregular house. No other facade is claimed.",
+        "reviewedAt": "2026-11-14T16:45:00Z"
+      },
+      "provenance": {
+        "photoAuthor": "ŠJů",
+        "photoLicense": "CC BY 4.0",
+        "photoDate": "2024-05-30",
+        "secondPhoto": "https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_a_5._kv%C4%9Btna.jpg",
+        "precision": "Photo-backed front only; roof and elevations approximated; 360 unknown"
+      }
     },
     "202367194": {
       "stage": "verified",

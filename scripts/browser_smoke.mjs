@@ -194,6 +194,15 @@ try{
   throw Error('5.50 roof photo equipment missing/floating/unbatched: '+
    JSON.stringify(roofDetails));
  console.log('5.50 source-observed school roof fixtures:',roofDetails);
+ const fork=await page.evaluate(()=>window.__miloviceForkHouse||null);
+ if(!fork||fork.version!=='5.54'||fork.osmId!==202298939||
+   fork.roofKind!=='gable'||fork.footprintVertices!==8||
+   fork.roofTriangles<10||fork.roofRelativeAreaError>1e-6||
+   fork.maxPerimeterOvershoot!==0||fork.wallJoinClosed!==true||
+   fork.wallJoinTriangles<6||fork.full360Verified!==false||
+   fork.exactDimensionsSurveyed!==false)
+  throw Error('5.54 missing real source-backed fork house: '+JSON.stringify(fork));
+ console.log('5.54 photographed grey fork gable:',fork);
  const schoolGrounds=await page.evaluate(()=>window.__miloviceSchoolGrounds||null);
  if(!schoolGrounds||schoolGrounds.version!=='5.51'||
     schoolGrounds.osmId!==118634917||
