@@ -1,3 +1,17 @@
+# Milovice RP 5.63.1 — HOTFIX: mapa se znovu načítá
+
+**Opravená verze hry:** https://foxey-cz.github.io/milovice-life-rp/?v=5631
+
+Screenshot uživatele z 14. listopadu 2026 zachytil kritickou regresi 5.63: **„3D mapa se nenačetla: Unknown door family garage-photo-2022“**. Příčina byla přesná a reprodukovatelná: nové modely fotograficky podložených garáží zapisovaly do `recordEntranceGrade` neexistující identifikátor `garage-photo-2022`, ale registr podporuje standardní typ `garage`. Vyvolaná výjimka přerušila kompletní načítání starých Milovic a zůstala jen prázdná hra s chybovým hlášením.
+
+Ve verzi 5.63.1 je volání opravené na `recordEntranceGrade(grade,'garage',osmId)`. **Fotografické zdroje (panoramata z 17. 5. 2022), všechny 17 hnědé garážové modely a štěrkový dvůr zůstávají zachované.** Jejich provenience je i nadále v samostatném registru `window.__milovicePhotoGarageCourt`; nemá se zneužívat názvů interních typů dveří.
+
+Nové testy: `scripts/entrance-grade.test.mjs` kontroluje všechny používané názvy typů proti skutečnému registru, takže nová neznámá kategorie CI zastaví. `scripts/nadrazni-photo-garage-court.test.mjs` nyní na **skutečném výškopisu ČÚZK DMR 4G** vypočítává všechny vchody 17 garáží a ověřuje prahy i minimální světlé výšky. Prověřena také syntaxe stránky a živá logika chyby v izolovaném běhu; opravovaný typ prošel.
+
+**Poznámka:** přímý vykreslovací test na mobilu a automatický stav nasazení GitHub Pages nejsou nezávisle potvrzené; screenshot nové verze je nutný pro vizuální QA.
+
+---
+
 # Milovice RP 5.63 — fotograficky podložené řadové garáže Nádražní
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5630  
