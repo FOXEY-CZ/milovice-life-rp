@@ -84,7 +84,8 @@ assert(survey.includes("status==='legacy-restored-awaiting-photo'"),
 assert(survey.includes('Původní model obnoven'),
  'User-facing inventory must not call restored models approved');
 const activeBuild=index.match(/const BUILD_ID='([^']+)'/)?.[1];
-assert.equal(activeBuild,'20261114-restore-legacy-5610');
+assert(/^20\d{6}-[a-z0-9-]+$/.test(activeBuild||''),
+ 'A valid current build is required, but the legacy restoration test must not pin an obsolete build version');
 console.log('5.61 legacy restitution and photo-verification policy PASS',JSON.stringify({
  restoredLegacy3D:ids.length,photoApproved:PHOTO_VERIFIED_ARCHITECTURE.length,
  remainInOSM:true,legacyCityUntouched:true
