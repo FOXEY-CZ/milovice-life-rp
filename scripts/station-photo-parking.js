@@ -1,4 +1,4 @@
-// Milovice RP 5.74 — smoothly chamfer the saw-tooth island paving edges, with unchanged roads.
+// Milovice RP 5.75 — a continuous road-like sidewalk strip instead of square panels.
 // The 5.72 "fix" drew a new OSM sidewalk directly OVER Nádražní's asphalt,
 // rather than removing the relevant strip from the parking surface.
 // The user confirmed the exact topology: existing road (UNTOUCHED),
@@ -67,34 +67,60 @@ function frame(a,b){
 function at(f,along,offset){
  return {x:f.a.x+f.ux*along+f.nx*offset,z:f.a.z+f.uz*along+f.nz*offset};
 }
-// Convert the 0.74m stair-stepping along the photo-marked OUTER edge
-// into a clipped diagonal on the already safe pavement cells. This only
-// REMOVES tiny triangles from rectangular sidewalk tiles; no extension
-// into the carriageway is permitted. Continuous adjacent tiles share their
-// boundary position even when Nádražní's course changes.
-export function planOuterSidewalkChamfers(tiles,{rowStep=.76}={}){
- const rows=new Map();
+// The user requested a single road-like strip, not Minecraft-like squares.
+// Each band cross-section lies WITHIN the OSM-safe island cells. Halfway
+// intersections connect adjacent rows with diagonal transitions; they never
+// claim ground outside the approved parking-island footprint.
+export function planContinuousOuterSidewalk(tiles,{rowStep=.76,overlap=.006}={}){
+ const grouped=new Map();
  for(const p of tiles){
-  if(!rows.has(p.along))rows.set(p.along,[]);
-  rows.get(p.along).push(p);
+  if(!grouped.has(p.along))grouped.set(p.along,[]);
+  grouped.get(p.along).push(p);
  }
- const ordered=[...rows.entries()].sort((a,b)=>a[0]-b[0]);
- const result=new Map();
- for(let i=0;i<ordered.length;i++){
-  const [station,row]=ordered[i];
-  const outer=row.reduce((p,q)=>q.offset>p.offset?q:p);
-  const outerEdge=outer.offset+outer.depth*.5;
-  const neighborOffset=(j)=>{
-   if(j<0||j>=ordered.length||Math.abs(ordered[j][0]-station)>rowStep+.045)
-    return outerEdge;
-   return Math.max(...ordered[j][1].map(p=>p.offset+p.depth*.5));
-  };
-  const limit=outer.depth-.10;
-  const start=Math.max(0,Math.min(limit,outerEdge-neighborOffset(i-1)));
-  const end=Math.max(0,Math.min(limit,outerEdge-neighborOffset(i+1)));
-  if(start>.08||end>.08)result.set(outer,{start,end});
+ const rows=[...grouped.entries()].sort((a,b)=>a[0]-b[0]).map(([along,cells])=>{
+  const sorted=cells.slice().sort((a,b)=>a.offset-b.offset);
+  return {along,low:sorted[0].offset-sorted[0].depth/2-overlap,
+   high:sorted.at(-1).offset+sorted.at(-1).depth/2+overlap,
+   length:Math.min(...sorted.map(c=>c.length))};
+ });
+ const parts=[],minJoinWidth=.38;
+ let active=null,joins=0;
+ const cap=(row,side)=>({along:row.along+side*(row.length/2+overlap),
+  low:row.low,high:row.high});
+ function add(p){
+  if(!active)active=[];
+  if(!active.length||p.along>active.at(-1).along+.000001)active.push(p);
  }
- return result;
+ function finish(row){
+  if(!active)return;
+  add(cap(row,1));
+  if(active.length>=2)parts.push(active);
+  active=null;
+ }
+ for(let i=0;i<rows.length;i++){
+  const current=rows[i],previous=rows[i-1];
+  if(!previous){
+   add(cap(current,-1));add({along:current.along,low:current.low,high:current.high});
+   continue;
+  }
+  const gap=current.along-previous.along;
+  const low=Math.max(current.low,previous.low);
+  const high=Math.min(current.high,previous.high);
+  if(gap>rowStep+.045||high-low<minJoinWidth){
+   finish(previous);
+   add(cap(current,-1));add({along:current.along,low:current.low,high:current.high});
+   continue;
+  }
+  add({along:(current.along+previous.along)/2,low,high});
+  add({along:current.along,low:current.low,high:current.high});
+  joins++;
+ }
+ if(rows.length)finish(rows.at(-1));
+ return {parts,rows:rows.length,joins,
+  metres:parts.reduce((n,p)=>n+p.at(-1).along-p[0].along,0),
+  triangles:parts.reduce((n,p)=>n+Math.max(0,p.length-1)*2,0),
+  pavementPanels:0,continuous:parts.length===1,
+  roadFootprintExpansion:false,photoEstimatedWidth:true};
 }
 export function planStationPhotoParking(elements,roadClearance){
  if(!Array.isArray(elements)||!roadClearance?.isClear)return null;
@@ -326,9 +352,9 @@ export function planStationPhotoParking(elements,roadClearance){
  }
  if(outerSidewalkCells.length<100||centralParkingCells.length<270)
   return null;
- const outerEdgeChamfers=planOuterSidewalkChamfers(outerSidewalkCells);
- const chamferedExteriorCorners=[...outerEdgeChamfers.values()]
-  .reduce((n,c)=>n+(c.start>.08?1:0)+(c.end>.08?1:0),0);
+ const continuousRibbon=planContinuousOuterSidewalk(outerSidewalkCells);
+ if(!continuousRibbon.parts.length||continuousRibbon.joins<60||
+    continuousRibbon.metres<45)return null;
  // Refuse any stranded road-side edge tile; no "floating fingers".
  for(const [station,row] of orderedRows){
   if(row.length>=2&&row.at(-1).offset-row.at(-2).offset>acrossStep+.035)
@@ -399,7 +425,7 @@ export function planStationPhotoParking(elements,roadClearance){
   railSideParking,railRejected,
   outerFootwaySegments,outerFootwayStations,outerSidewalkCells,
   outerSidewalkCurbs,outerSidewalkMaxOsmDistance,
-  edgeSpursTrimmed:edgeSpursRemoved.size,chamferedExteriorCorners,
+  edgeSpursTrimmed:edgeSpursRemoved.size,continuousRibbon,
   centralParkingCells,cornerPaving,cornerCurbs,cornerRejected,
   rightCornerFootwayId:cornerWay.id,centralFootwayId:centralFootway.id,
   incorrectlyPlacedRailSidewalkRemoved:true,
@@ -409,7 +435,7 @@ export function planStationPhotoParking(elements,roadClearance){
   centralParkingSurface:'remaining-inner-grid-parking-cells',
   pedestrianStripSide:'outer-east-facing-Nadrazni-128308366',
   pedestrianStripOsmAnchored:false,pedestrianStripPhotoEstimated:true,
-  outerFootwayRendering:'carved-terrain-mesh-shared-city-paving',
+  outerFootwayRendering:'continuous-roadlike-terrain-ribbon-city-paving',
   originalRoadSurfaceUnmodified:true,
   mistakenParkingAsSidewalkRemoved:true,
   mappedFootwayIdPreserved:centralFootway.id,
@@ -445,7 +471,12 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   outerSidewalkPatches:planned?.outerSidewalkCells.length||0,
   outerSidewalkCurbs:planned?.outerSidewalkCurbs.length||0,
   isolatedOuterSpursRemoved:planned?.edgeSpursTrimmed||0,
-  smoothedExteriorCorners:planned?.chamferedExteriorCorners||0,
+  continuousSidewalkSegments:planned?.continuousRibbon.parts.length||0,
+  continuousSidewalkJoins:planned?.continuousRibbon.joins||0,
+  continuousSidewalkMetres:planned?.continuousRibbon.metres||0,
+  continuousSidewalkTriangles:planned?.continuousRibbon.triangles||0,
+  sidewalkPanelCount:planned?.continuousRibbon.pavementPanels??null,
+  continuousKerb:true,
   maxOuterFootwayOsmDistance:planned?.outerSidewalkMaxOsmDistance??null,
   visibleOuterSidewalkTiles:0,
   oldInnerSidewalkTiles:0,
