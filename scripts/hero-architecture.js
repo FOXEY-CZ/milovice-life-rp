@@ -4,7 +4,7 @@
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {selectFacadeEdges,planFaceOpenings} from './facade-model.js';
 import {analyzeGableFootprint} from './city-roof-geometry.js';
-import {classifyFacadeEdgeLength,planFacadePerimeterTrims,planPhotographedEaveCornice} from './facade-perimeter.js';
+import {classifyFacadeEdgeLength,planFacadePerimeterTrims,planPhotographedEaveCornice} from './facade-perimeter.js?v=5420';
 import {makeSharedFacadeSurfaceMaps} from './facade-surface-kit.js';
 import {exteriorFacadeFrame,flushBoxOffset,RECESSED_GLAZING,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './facade-anchors.js';
 
