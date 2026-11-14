@@ -59,6 +59,8 @@ jobs:
         run: node scripts/legacy-reality-audit.test.mjs
       - name: Verify photo-sourced station forecourt object clearances and OSM building anchors
         run: node scripts/station-forecourt-pass.test.mjs
+      - name: Verify photographed 2024 station parking pavers on actual OSM access aisle
+        run: node scripts/station-photo-parking.test.mjs
       - name: Verify OSM station roof facets do not overhang and preserve the real footprint
         run: node scripts/station-roof-geometry.test.mjs
       - name: Validate photographed roof gutter and fascia around real 22-edge school footprint
