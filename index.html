@@ -2686,7 +2686,7 @@ function osmBuilding(points,tags,index,osmId=null){
  const hasMappedShopfront=Boolean(String(tags.name||'').trim()&&(tags.shop||['restaurant','fast_food','clinic','school','pharmacy','cafe'].includes(tags.amenity)||['retail','supermarket','commercial'].includes(type)));
  const isOldResidential=type==='house'&&floors<=3;
  const explicitHeight=parseFloat(tags.height);
- let h=Math.min(isPanelBlock?54:36,Math.max(isGarage?2.35:3.0,Number.isFinite(explicitHeight)&&explicitHeight>2?explicitHeight:isBlueStar?7.15:isMirova36?6.75:isGrocer74?3.65:isStation?7.4:isGarage?2.75:isIndustrial?5.3:isChurch?11.5:floors*(isSchool?3.4:3.05)));
+ let h=Math.min(isPanelBlock?54:36,Math.max(isGarage?2.35:3.0,Number.isFinite(explicitHeight)&&explicitHeight>2?explicitHeight:isBlueStar?7.15:isMirova36?4.15:isGrocer74?3.65:isStation?7.4:isGarage?2.75:isIndustrial?5.3:isChurch?11.5:floors*(isSchool?3.4:3.05)));
   if(!(Number.isFinite(explicitHeight)&&explicitHeight>2)&&photoEstimatedStoreHeights.has(osmId))h=photoEstimatedStoreHeights.get(osmId);
  if(modelCard&&modelCard.height!==null)h=modelCard.height;
  const isHouse=!isBlueStar&&!isMirova36&&!isGrocer74&&(type==='house'||
@@ -2761,7 +2761,7 @@ function osmBuilding(points,tags,index,osmId=null){
    ?miloviceRoofOfKind(pts,baseHeight,h,roofMat,2.30,'hip',true,photoRoofFeatures)
    :miloviceHipRoof(pts,baseHeight,h,isChurch?osmRoofPalette[4]:isStation?osmRoofPalette[0]:(isMirova36||isBlueStar)&&!modelCard?.roofColor?
     (isMirova36?mirova36Roof:osmRoofPalette[1]):roofMat,
-    isChurch?4.3:isStation?2.6:isBlueStar?.65:isMirova36?2.9:isSchool?1.05:Math.min(2.3,Math.min(w,d)*.25))):null;
+    isChurch?4.3:isStation?2.6:isBlueStar?.65:isMirova36?2.55:isSchool?1.05:Math.min(2.3,Math.min(w,d)*.25))):null;
  if(hip&&fallbackFromGable){
   window.__miloviceRoofSafety ||= {rejectedGables:0,compatibleGables:0,fallbackHips:0};
   window.__miloviceRoofSafety.fallbackHips++;
