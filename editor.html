@@ -73,7 +73,7 @@ footer{padding:7px;color:var(--muted);font-size:11px;border-top:1px solid var(--
  <label for="search">Najít ulici nebo dům</label><input id="search" type="search" placeholder="Např. Mírová, Nádražní, 118487991">
  <label>Ulice podle nejbližšího mapovaného úseku</label>
  <div id="streets" aria-label="Seznam ulic"></div>
- <div class="row"><h2 id="street-title" style="flex:1;margin:0">Domy</h2><button id="next" type="button">Další dům</button></div>
+ <div class="row"><h2 id="street-title" style="flex:1;margin:0">Domy</h2><button id="next" type="button">Další dům</button><button id="next-photo" type="button" title="Další budova s fotografickým podkladem v okolí; před ověřením bez změny modelu">📸 Další s podkladem</button></div>
  <div id="street-photo-summary" aria-live="polite"></div>
  <div id="buildings"></div>
 </aside>
@@ -364,18 +364,26 @@ function renderLists(){
  $('bar').style.width=(count?complete/count*100:0).toFixed(1)+'%';
  const choices=streetNames(),all=[['*',count],...choices];
  $('streets').innerHTML=all.map(([s,n])=>{
-  const countDone=s==='*'?complete:buildings.filter(b=>b.street===s&&state(b)==='verified').length;
+  const scope=s==='*'?buildings:buildings.filter(b=>b.street===s);
+  const countDone=s==='*'?complete:scope.filter(b=>state(b)==='verified').length;
+  const candidate=streetPhotoCoverage(scope);
   return '<button class="street '+(currentStreet===s?'active':'')+'" data-street="'+safe(s)+'">'+
-   '<span>'+safe(s==='*'?'Všechny ulice':s)+'</span><small>'+countDone+'/'+n+'</small></button>';
+   '<span>'+safe(s==='*'?'Všechny ulice':s)+'</span>'+
+   '<small title="Domy s geotagovanou fotografií poblíž, nikoli ověřené fasády">'+
+   countDone+'/'+n+' · 📸 '+candidate.withNearbyPhotos+'</small></button>';
  }).join('');
  $('street-title').textContent=currentStreet==='*'?'Domy v oblasti':currentStreet;
  const list=shown();
- $('buildings').innerHTML=list.slice(0,500).map(b=>
-  '<button class="building '+(chosen?.id===b.id?'active':'')+'" data-building="'+b.id+'">'+
-  '<span>'+safe(b.name)+'<div class="muted">OSM '+b.id+'</div></span>'+
-  '<span class="tag" style="color:'+colors[state(b)]+'">'+safe(stages[state(b)])+
-  (approvedArchitecture.has(String(b.id))?' 🌐':'')+'</span></button>'
- ).join('')||(buildings.length?'<p>Žádné domy neodpovídají filtru.</p>':'<p>Načítám mapová data…</p>');
+ $('buildings').innerHTML=list.slice(0,500).map(b=>{
+  const photos=streetEvidenceForBuilding(b,{max:9});
+  const photoTag=photos.some(x=>x.directEvidence)?' ✅📸':
+   photos.length?' 📷'+photos.length:'';
+  return '<button class="building '+(chosen?.id===b.id?'active':'')+'" data-building="'+b.id+'">'+
+   '<span>'+safe(b.name)+'<div class="muted">OSM '+b.id+
+   ' · '+safe(photoTag?'Foto kandidáti'+photoTag:'Zatím bez foto podkladu')+'</div></span>'+
+   '<span class="tag" style="color:'+colors[state(b)]+'">'+safe(stages[state(b)])+
+   (approvedArchitecture.has(String(b.id))?' 🌐':'')+'</span></button>';
+ }).join('')||(buildings.length?'<p>Žádné domy neodpovídají filtru.</p>':'<p>Načítám mapová data…</p>');
 }
 function renderMap(){
  roadLayer.clearLayers();buildingLayer.clearLayers();polygons.clear();
@@ -613,6 +621,16 @@ $('buildings').addEventListener('click',event=>{
  const button=event.target.closest('[data-building]');if(button)selectBuilding(button.dataset.building);
 });
 $('next').addEventListener('click',nextBuilding);
+$('next-photo').addEventListener('click',()=>{
+ const sourceHouses=shown().filter(b=>
+  streetEvidenceForBuilding(b,{radiusM:135,max:9}).length>0);
+ if(!sourceHouses.length){
+  $('street-photo-summary').textContent='⚠️ V aktuálně vybrané ulici zatím není žádný podklad.';
+  return;
+ }
+ const at=sourceHouses.findIndex(b=>String(b.id)===String(chosen?.id));
+ selectBuilding(sourceHouses[(at+1)%sourceHouses.length].id);
+});
 $('street-evidence-gallery').addEventListener('click',event=>{
  const btn=event.target.closest('button[data-evidence-id]');
  if(!btn||!chosen||!currentFace)return;
