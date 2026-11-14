@@ -355,13 +355,20 @@ try{
     JSON.stringify(stationParking.sourceIds)!=='[675778842,128308366]'||
     stationParking.photos!==2||stationParking.pavingCells<340||
     stationParking.coveredRows<55||stationParking.oldDetachedPaverStripsRemoved!==true||
-    stationParking.roundedTip!==true||stationParking.drawMeshes>7||
+    stationParking.roundedTip!==true||stationParking.drawMeshes>8||
     stationParking.instances<stationParking.pavingCells*2||
     stationParking.parkingBanks?.length!==2||
     stationParking.oppositeParkingBays<18||
     stationParking.centralParkingTiles<270||
     stationParking.outerSidewalkPatches<100||
     stationParking.outerSidewalkCurbs<70||
+    stationParking.continuousSidewalkSegments<1||
+    stationParking.continuousSidewalkSegments>4||
+    stationParking.continuousSidewalkJoins<60||
+    stationParking.continuousSidewalkMetres<45||
+    stationParking.continuousSidewalkTriangles<120||
+    stationParking.sidewalkPanelCount!==0||
+    stationParking.continuousKerb!==true||
     stationParking.centralParkingTiles+stationParking.outerSidewalkPatches!==stationParking.pavingCells||
     !Number.isInteger(stationParking.isolatedOuterSpursRemoved)||
     stationParking.isolatedOuterSpursRemoved<0||
@@ -371,7 +378,7 @@ try{
     stationParking.centralMistakenSidewalkTiles!==0||
     stationParking.parkingSidewalkSwapFixed!==true||
     stationParking.mappedOuterSidewalkSegments!==3||
-    stationParking.outerSidewalkRendering!=='carved-terrain-mesh-shared-city-paving'||
+    stationParking.outerSidewalkRendering!=='continuous-roadlike-terrain-ribbon-city-paving'||
     stationParking.oldInnerSidewalkTiles!==0||
     stationParking.visibleSidewalkSide!=='outer-east-facing-Nadrazni-128308366'||
     stationParking.centralWalkwaySource!=='carved-from-OSM-safe-outer-parking-cells'||
@@ -380,9 +387,9 @@ try{
     stationParking.wrongRailSidewalkRemoved!==true||
     stationParking.mappedFootwayIdPreserved!==1165594426||
     stationParking.rightCornerFootwayId!==1282187911||
-    stationParking.drawMeshes>7||
+    stationParking.drawMeshes>8||
     stationParking.collisionSafe!==true||stationParking.noSyntheticCars!==true)
-   throw new Error('5.74 smoothed paver exterior must remain INSIDE the island, away from asphalt: '+JSON.stringify(stationParking));
+   throw new Error('5.75 continuous sidewalk ribbon or original asphalt separation broken: '+JSON.stringify(stationParking));
  const outerFootwayAudit=await page.evaluate(()=>({
   forcedFootwaySegments:window.__miloviceStreetGeometryAudit?.photoOuterFootwaySegments||0,
   cityPavingTexture:window.__miloviceGraphics2?.surfaceMaterials?.sidewalk===true
@@ -390,7 +397,7 @@ try{
  if(outerFootwayAudit.forcedFootwaySegments!==0||
     !outerFootwayAudit.cityPavingTexture)
   throw new Error('5.73 must NOT force OSM footway over asphalt; carved patch shares city paving: '+JSON.stringify(outerFootwayAudit));
- console.log('5.74 contiguous island paving, photo-grounded outer footway, unmodified asphalt:',JSON.stringify({stationParking,outerFootwayAudit}));
+ console.log('5.75 continuous city-textured sidewalk ribbon and single smooth kerb:',JSON.stringify({stationParking,outerFootwayAudit}));
 
  const cutoutTest=await page.evaluate(async()=>{
   const THREE=await import('three');
