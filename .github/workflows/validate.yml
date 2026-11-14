@@ -19,6 +19,8 @@ jobs:
         run: node scripts/validate.cjs
       - name: Validate REBUILD 2.0 all-region, all-object street coverage
         run: node scripts/rebuild2-street-inventory.test.mjs
+      - name: Verify first Nádražní all-object photo survey and junction context
+        run: node scripts/rebuild2-survey.test.mjs
       - name: Validate adaptive mobile frame-rate and detail budgets
         run: node scripts/performance-governor.test.mjs
       - name: Validate ground-level thresholds at ALL building entrances
