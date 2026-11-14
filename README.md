@@ -1,3 +1,24 @@
+# Milovice RP 5.72 — opravena STRANA chodníku + stejná textura jako ostatní chodníky
+
+**Hrát:** https://foxey-cz.github.io/milovice-life-rp/?v=5720  
+**Záloha 5.71:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/571-before-outer-edge-walkway-correction
+
+## Proč byla 5.71 špatně
+
+Uživatel výslovně potvrdil: dlouhý chodník u centrálního nádražního parkoviště má být na **VNĚJŠÍ**, nikoliv vnitřní straně. Původní v5.71 vytvořila 83 vysokých světlých kvádrů u **západního vnitřního okraje vedle servisní komunikace OSM 675778842** — tedy přesně na nesprávné straně. Uživatel následně požádal o stejnou texturu jako u ostatních městských chodníků místo zvláštních kvádrů.
+
+## Oprava v5.72
+
+- Chodník **OSM way 1165594426, úsek mezi uzly 4 až 7 (tři navazující segmenty)** leží na **vnější, východní straně mezi parkováním a Nádražní (OSM 128308366)**. Jeho polylinie se používá **přímo**, ne pomocí nové domyšlené paralelní osy.
+- Tři reálné mapované segmenty se vykreslují přímo stávající metodou `osmStrip` se stejným **`osmSidewalkMat` a `citySurfaceKit.paving`** jako jiné chodníky. Šířka podle původního městského standardu **1,8 m**, výškově kopíruje terén. Povrch je jen nepatrně nad asfaltovou texturou, aby byl vidět i přes dříve příliš široký procedurální asfaltový buffer. **Neexistuje 83 nových bílých 3D kvádrů ani druhý vymyšlený chodník.**
+- Parkovací ostrov se opět může plně rozšířit směrem k bývalé chybnému vnitřnímu pásu, jeho dlažební pole zůstávají parkováním, nikoliv přebarveným chodníkem. Druhá řada zatravňovacích parkovacích míst zůstává zachovaná. Chybně vytvořený chodník u kolejí se nevrací.
+- Chodník u pravého zaobleného nároží příjezdu je zachován, stejně jako cyklověž, nádraží a další budovy.
+- Mimo tento lokální doložený úsek **žádné ostatní městské chodníky ani silnice neměníme**. Ve fotografických podkladech z 17. 5. 2022 vidíme polohu pěší plochy, fotografie se nekopírují do herních textur. Přesná hranice obrubníku (šířka přechodů) zůstává orientační, čeká na další porovnání.
+
+**Ověření:** `scripts/station-photo-parking.test.mjs` kontroluje skutečné OSM uzly/stranu a nepřítomnost starých kvádrů. `scripts/browser_smoke.mjs` kontroluje tři reálně vykreslené OSM segmenty, použití sdílené dlažební textury a zachování obou parkovacích ploch.
+
+---
+
 # Milovice RP 5.71 — konečně viditelný úzký chodník u parkoviště
 
 **Nová hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5710  
