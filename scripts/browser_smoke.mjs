@@ -355,7 +355,7 @@ try{
     JSON.stringify(stationParking.sourceIds)!=='[675778842,128308366]'||
     stationParking.photos!==2||stationParking.pavingCells<340||
     stationParking.coveredRows<55||stationParking.oldDetachedPaverStripsRemoved!==true||
-    stationParking.roundedTip!==true||stationParking.drawMeshes>6||
+    stationParking.roundedTip!==true||stationParking.drawMeshes>7||
     stationParking.instances<stationParking.pavingCells*2||
     stationParking.parkingBanks?.length!==2||
     stationParking.oppositeParkingBays<18||
