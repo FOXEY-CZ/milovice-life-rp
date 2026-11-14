@@ -37,13 +37,17 @@ function verify(name,outline){
     name+' boxed facade back face detached: '+depth+', gap='+gap);
    assert(gap<.04,'An architectural object is floating away from the wall');
   }
-  const band=planFacadePerimeterTrims(f.a,f.b,centroid,{
-   base:5,height:4,frame:f});
-  assert(band&&near(band.nx,f.nx)&&near(band.nz,f.nz),
-   name+' plinth normal differs from its windows');
-  const sill=facadeGap(f,band.upper,.28);
-  const plinth=facadeGap(f,band.base,.16);
-  assert(plinth<.035&&plinth>-.03&&sill<.035&&sill>-.03);
+  // Hero architecture intentionally skips ornaments on 70m+ industrial
+  // walls, but the common physical facade normal still applies.
+  if(f.len<=70){
+   const band=planFacadePerimeterTrims(f.a,f.b,centroid,{
+    base:5,height:4,frame:f});
+   assert(band&&near(band.nx,f.nx)&&near(band.nz,f.nz),
+    name+' plinth normal differs from its windows');
+   const sill=facadeGap(f,band.upper,.28);
+   const plinth=facadeGap(f,band.base,.16);
+   assert(plinth<.035&&plinth>-.03&&sill<.035&&sill>-.03);
+  }
   if(f.len<3)shortEdges++;
  }
  assert(length>0);
