@@ -3168,15 +3168,16 @@ function osmBuilding(points,tags,index,osmId=null){
   let front=null;
   for(let i=0;i<pts.length;i++){
    const a=pts[i],b=pts[(i+1)%pts.length],len=a.distanceTo(b);
-   if(len>2.25&&len<16&&(!front||len>front.len))front={a,b,len};
+   if(len>2.25&&len<16&&(!front||len>front.len))front={a,b,len,i};
   }
   if(front){
-   const {a,b,len}=front,dx=b.x-a.x,dz=b.y-a.y;
-   let nx=-dz/len,nz=dx/len;const mx=(a.x+b.x)/2,mz=(a.y+b.y)/2;
-   if(nx*(mx-centerX)+nz*(mz-centerZ)<0){nx=-nx;nz=-nz}
-   const yaw=Math.atan2(nx,nz),doorWidth=Math.min(2.7,len-.42);
-   archPart('garageMetal',mx+nx*.24,baseHeight+1.25,mz+nz*.24,doorWidth,2.12,.13,yaw);
-   for(let j=0;j<5;j++)archPart('windowBar',mx+nx*.31,baseHeight+.46+j*.38,mz+nz*.31,doorWidth,.025,.07,yaw);
+   const {len}=front,facade=exteriorFacadeFrame(pts,front.i);
+   if(!facade)throw Error('Invalid garage facade edge');
+   const {nx,nz,mx,mz,yaw}=facade,doorWidth=Math.min(2.7,len-.42);
+   archPart('garageMetal',mx+nx*flushBoxOffset(.13),baseHeight+1.25,
+    mz+nz*flushBoxOffset(.13),doorWidth,2.12,.13,yaw);
+   for(let j=0;j<5;j++)archPart('windowBar',mx+nx*flushBoxOffset(.07),
+    baseHeight+.46+j*.38,mz+nz*flushBoxOffset(.07),doorWidth,.025,.07,yaw);
   }
  }
  // The old one-size-fits-all horizontal roof LineLoop sat at y=h+.12
