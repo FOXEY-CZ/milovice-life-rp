@@ -1,4 +1,4 @@
-// Milovice RP 5.73 — CARVE the outer sidewalk OUT OF THE PARKING ISLAND.
+// Milovice RP 5.74 — smooth dangling island-paver edges without moving roads.
 // The 5.72 "fix" drew a new OSM sidewalk directly OVER Nádražní's asphalt,
 // rather than removing the relevant strip from the parking surface.
 // The user confirmed the exact topology: existing road (UNTOUCHED),
@@ -232,6 +232,42 @@ export function planStationPhotoParking(elements,roadClearance){
   if(!perRow.has(cell.along))perRow.set(cell.along,[]);
   perRow.get(cell.along).push(cell);
  }
+ // 5.74 photo QA: 5.73's parking/sidewalk polarity is correct, but the
+ // road-facing island edge has isolated one-cell fingers. They come from
+ // rasterized tiles surviving an OSM road-buffer check in one row, while
+ // adjacent rows fail it. TRIM those individual protrusions; never extend
+ // the sidewalk out into Nádražní and never modify a mapped carriageway.
+ const orderedRows=[...perRow.entries()].sort((a,b)=>a[0]-b[0]);
+ const edgeSpursRemoved=new Set();
+ for(const [,row] of orderedRows){
+  row.sort((a,b)=>a.offset-b.offset);
+  // A cell separated by a missing whole tile is not continuous paving.
+  while(row.length>=4&&
+   row.at(-1).offset-row.at(-2).offset>acrossStep+.035){
+   edgeSpursRemoved.add(row.pop());
+  }
+ }
+ for(let i=1;i<orderedRows.length-1;i++){
+  const [station,row]=orderedRows[i];
+  const [priorStation,prior]=orderedRows[i-1];
+  const [nextStation,next]=orderedRows[i+1];
+  if(row.length<4||!prior.length||!next.length||
+     station-priorStation>alongStep+.035||nextStation-station>alongStep+.035)
+   continue;
+  const outer=row.at(-1).offset;
+  // Remove a sole one-tile spike on the outer boundary; the .74m tile
+  // cannot be part of a smoothly joined curb at two smaller neighbours.
+  if(outer>Math.max(prior.at(-1).offset,next.at(-1).offset)+acrossStep*.77)
+   edgeSpursRemoved.add(row.pop());
+ }
+ if(edgeSpursRemoved.size){
+  for(let i=cells.length-1;i>=0;i--)
+   if(edgeSpursRemoved.has(cells[i]))cells.splice(i,1);
+  for(const patch of edgeSpursRemoved)
+   rejected.push({along:patch.along,offset:patch.offset,reason:'isolated-outer-island-spur'});
+  for(const r of rowStats)
+   if(perRow.has(r.along))r.accepted=perRow.get(r.along).length;
+ }
  const centralParkingCells=[],outerSidewalkCells=[],outerSidewalkCurbs=[];
  let outerSidewalkMaxOsmDistance=0;
  for(const row of perRow.values()){
@@ -261,6 +297,11 @@ export function planStationPhotoParking(elements,roadClearance){
  }
  if(outerSidewalkCells.length<100||centralParkingCells.length<270)
   return null;
+ // Refuse any stranded road-side edge tile; no "floating fingers".
+ for(const [station,row] of orderedRows){
+  if(row.length>=2&&row.at(-1).offset-row.at(-2).offset>acrossStep+.035)
+   return null;
+ }
  if(centralParkingCells.length+outerSidewalkCells.length!==cells.length)
   throw Error('Island parking/footpath partition has a missing or double-used cell');
  // The OUTER edge must remain pedestrian, and no parking tile may lie
@@ -326,6 +367,7 @@ export function planStationPhotoParking(elements,roadClearance){
   railSideParking,railRejected,
   outerFootwaySegments,outerFootwayStations,outerSidewalkCells,
   outerSidewalkCurbs,outerSidewalkMaxOsmDistance,
+  edgeSpursTrimmed:edgeSpursRemoved.size,
   centralParkingCells,cornerPaving,cornerCurbs,cornerRejected,
   rightCornerFootwayId:cornerWay.id,centralFootwayId:centralFootway.id,
   incorrectlyPlacedRailSidewalkRemoved:true,
@@ -370,6 +412,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   outerSidewalkRendering:planned?.outerFootwayRendering||null,
   outerSidewalkPatches:planned?.outerSidewalkCells.length||0,
   outerSidewalkCurbs:planned?.outerSidewalkCurbs.length||0,
+  isolatedOuterSpursRemoved:planned?.edgeSpursTrimmed||0,
   maxOuterFootwayOsmDistance:planned?.outerSidewalkMaxOsmDistance??null,
   visibleOuterSidewalkTiles:0,
   oldInnerSidewalkTiles:0,
@@ -415,11 +458,15 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   const vertices=[],uvs=[],indices=[];
   for(const p of tiles){
    const k=vertices.length/3;
+   // Each 0.75x0.73 tile occupies a 0.76x0.74 grid. Expand by 6mm
+   // within the existing 25mm clearance buffer to hide bright-green
+   // terrain pinstripes. This is a VISUAL seam closure, not new territory.
+   const overlap=.006;
    const corners=[
-    [p.along-p.length/2,p.offset-p.depth/2],
-    [p.along+p.length/2,p.offset-p.depth/2],
-    [p.along+p.length/2,p.offset+p.depth/2],
-    [p.along-p.length/2,p.offset+p.depth/2]
+    [p.along-p.length/2-overlap,p.offset-p.depth/2-overlap],
+    [p.along+p.length/2+overlap,p.offset-p.depth/2-overlap],
+    [p.along+p.length/2+overlap,p.offset+p.depth/2+overlap],
+    [p.along-p.length/2-overlap,p.offset+p.depth/2+overlap]
    ];
    for(const [along,offset] of corners){
     const pt=at(planned.frame,along,offset);
@@ -458,7 +505,9 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
    // Nearly seamless backing slabs eliminate the old green pinstripes.
    // Each cell's 2x2 smaller concrete blocks share the same instanced
    // geometry/material, rather than one overbright sidewalk-sized panel.
-   grout.push({...p,y:y+.156,sx:p.length,sy:.030,sz:p.depth});
+   // Seamless backing stays inside the validated 25mm road-clearance
+   // margin; smaller stone blocks remain on the proper parking side.
+   grout.push({...p,y:y+.156,sx:p.length+.012,sy:.030,sz:p.depth+.012});
    for(let i=-1;i<=1;i+=2)for(let j=-1;j<=1;j+=2){
     const q=at(planned.frame,p.along+i*.185,p.offset+j*.181);
     stones.push({...q,y:terrainAt(q.x,q.z)+.178,yaw:p.yaw,
@@ -466,7 +515,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
    }
   }
   for(const p of planned.curbs)
-   curb.push({...p,y:terrainAt(p.x,p.z)+.209,sx:.71,sy:.103,sz:.11});
+   curb.push({...p,y:terrainAt(p.x,p.z)+.209,sx:.75,sy:.103,sz:.11});
   // 5.69: keep the real opposite parking bank without a false footpath behind it.
   // green-grid surface, NOT a duplicate of the broad central pale island.
   for(const bay of planned.railSideParking){
@@ -484,7 +533,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   // the validated parking island, using the real city's paving texture.
   for(const p of planned.outerSidewalkCurbs)
    curb.push({...p,y:terrainAt(p.x,p.z)+.217,
-    sx:.70,sy:.105,sz:.10});
+    sx:.735,sy:.105,sz:.10});
   // Wrong rail-side sidewalk stays removed. Keep the RIGHT entrance corner
   // as a separate part of the observed pedestrian environment.
   for(const p of planned.cornerPaving)
