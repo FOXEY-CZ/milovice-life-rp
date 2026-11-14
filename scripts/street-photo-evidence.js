@@ -41,8 +41,13 @@ export const STREET_PHOTO_EVIDENCE=Object.freeze([
  {id:'school-2024',title:'Školská 112/15 · ZŠ T. G. Masaryka',
   url:'https://commons.wikimedia.org/wiki/File:Milovice,_Z%C5%A0_T._G._Masaryka_(01).jpg',
   author:'ŠJů',license:'CC BY 4.0',taken:'2024-05-30',
-  buildingIds:[],camera:[50.228698,14.885952],heading:85,
-  street:'Školská',scope:'landmark-context'}
+  buildingIds:['118487979'],camera:[50.2286983,14.8859519],heading:85,
+  street:'Školská',scope:'building'},
+ {id:'school-quote-2024',title:'Školská 112/15 · detail školy',
+  url:'https://commons.wikimedia.org/wiki/File:Milovice,_Z%C5%A0_T._G._Masaryka,_Masaryk%C5%AFv_cit%C3%A1t.jpg',
+  author:'ŠJů',license:'CC BY 4.0',taken:'2024-05-30',
+  buildingIds:['118487979'],camera:[50.2283594,14.8866253],heading:50,
+  street:'Školská',scope:'building-detail'}
 ]);
 const R=Math.PI/180;
 export function distanceBetweenPhotosAndBuilding(a,b){
