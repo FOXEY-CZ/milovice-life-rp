@@ -102,6 +102,22 @@ try{
   JSON.stringify({hero:hero.suppressedUnverifiedPhotoOrnaments,
    city:facadeSourceAudit.suppressedRandomShutters,
    randomBalconies:facadeSourceAudit.suppressedRandomBalconies}));
+ // 5.44: the next real city landmark is the Školská 112/15 school.
+ // Validate the ACTUAL photographed street entrance, rather than
+ // checking only that another bright-colored facade material exists.
+ const school=await page.evaluate(()=>window.__miloviceSchoolPhotoAudit||null);
+ if(!school||school.osmId!==118487979||
+    school.photoEntrances!==1||school.entranceEdge!==17||
+    school.photoFrontTerracottaBays!==2||
+    school.canopyDepth>.99||school.doorwayWidth<2||
+    school.rearStillProvisional!==true||
+    !school.source.includes('Masaryka'))
+  throw Error('5.44 photo-anchored Školská school front missing or invented rear panels: '+
+   JSON.stringify(school));
+ console.log('5.44 source-backed school street pass:',
+  JSON.stringify({osmId:school.osmId,entrance:school.entranceEdge,
+   photoAccents:school.photoFrontTerracottaBays,
+   directSource:school.source,unknownRear:school.rearStillProvisional}));
  const roofTopology=await page.evaluate(()=>window.__miloviceRoofTopologyAudit||null);
  if(!roofTopology||roofTopology.version!=='3.0'||
     roofTopology.processed<300||roofTopology.partitionable<100||
