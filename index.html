@@ -187,6 +187,7 @@ import {makePhotoStreetEnvironment} from './scripts/street-environment-reality.j
 import {createRoadClearance} from './scripts/road-clearance.js?v=5262';
 import {isCarriageway,isPedestrianWay,safePedestrianPieces,pedestrianPieceKey,markedCrossing,planZebraPieces,planStationPassage} from './scripts/reality-walkways.js?v=5270';
 import {makeStationForecourtScene} from './scripts/station-forecourt-pass.js?v=5241';
+import {makeSchoolGrounds} from './scripts/school-grounds-pass.js?v=5510';
 import {buildPhotographedEaveCorniceGeometry,PHOTO_EAVE_PROFILE_COLOR} from './scripts/facade-perimeter.js?v=5430';
 import {planFootprintPitchedRoof} from './scripts/station-roof-geometry.js?v=5282';
 import {planRoofPerimeterClosure} from './scripts/station-roof-seams.js?v=5320';
@@ -1287,6 +1288,7 @@ function osmPoint(p){const lat0=50.226,lon0=14.889;return new THREE.Vector2((p.l
 const photoStreetBlock=makePhotoStreetBlock(THREE,{layer:osmLayer,osmPoint,mergeGeometries});
 const photoStreetEnvironment=makePhotoStreetEnvironment(THREE,{layer:osmLayer,terrainAt,roadClearance:osmRoadClearance});
 const stationPhotoForecourt=makeStationForecourtScene(THREE,{layer:osmLayer,terrainAt,roadClearance:osmRoadClearance});
+const schoolGrounds=makeSchoolGrounds(THREE,{layer:osmLayer,terrainAt,roadClearance:osmRoadClearance,collisionWorld});
 // This documented photo survey replaces random street-prop distribution
 // in a SMALL, surveyed section of 5. května, rather than faking precision.
 function insidePhotoStreetZone(x,z,radius=34){
@@ -3705,6 +3707,7 @@ function rpAppendOSMElements(elements){
  for(const el of buildingWays){osmBuilding(el.geometry,el.tags,osmBuildings,el.id);osmAddLandmark(el)}
  photoStreetEnvironment.addFromRoads(osmDriveRoads);
  stationPhotoForecourt.create(elements);
+  schoolGrounds.create(elements);
 }
 // 4.8: Incremental geographic streaming; only the current area is meshed on phone.
 // Connected, overlapping OSM exports are deduplicated by their official way IDs.

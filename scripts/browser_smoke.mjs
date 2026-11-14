@@ -186,6 +186,17 @@ try{
   throw Error('5.50 roof photo equipment missing/floating/unbatched: '+
    JSON.stringify(roofDetails));
  console.log('5.50 source-observed school roof fixtures:',roofDetails);
+ const schoolGrounds=await page.evaluate(()=>window.__miloviceSchoolGrounds||null);
+ if(!schoolGrounds||schoolGrounds.version!=='5.51'||
+    schoolGrounds.osmId!==118634917||
+    schoolGrounds.fencePanels<28||schoolGrounds.fenceMetres<40||
+    schoolGrounds.collisionWalls!==schoolGrounds.fencePanels||
+    schoolGrounds.trees!==3||schoolGrounds.stones!==1||
+    schoolGrounds.drawCalls>7||!schoolGrounds.mappedAccessOpen||
+    schoolGrounds.positionSurveyed!==false||
+    schoolGrounds.roadPavingInvented!==0)
+  throw Error('5.51 school grounds regression: '+JSON.stringify(schoolGrounds));
+ console.log('5.51 school photo surroundings:',schoolGrounds);
  const roofTopology=await page.evaluate(()=>window.__miloviceRoofTopologyAudit||null);
  if(!roofTopology||roofTopology.version!=='3.0'||
     roofTopology.processed<300||roofTopology.partitionable<100||
