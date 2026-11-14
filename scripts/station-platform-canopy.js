@@ -91,16 +91,22 @@ export function planStationPlatformCanopy({station,platform,tracks=[],stationId=
     segments.push({edge:i,a,b,length,nx,nz,width:spanWidth,railClearance:minTrack,
       placement:'platform-polygon-facing-wall',estimated:true});
   }
-  // The longest aligned rail-facing wall is the photo-supported anchor; do
-  // not fabricate a roof on every small return, around the station end or
-  // above the photographed street portal. Cap span to 24 m total.
+  // The biggest uninterrupted, photograph-supported wall face is the
+  // anchor. NEVER jump across an unverified wall notch: disjoint 2.2 m
+  // roofing blocks read as random floating fragments from street level.
+  // Adjacent candidate edges may extend the run only if normals align.
+  const byEdge=new Map(segments.map(s=>[s.edge,s]));
   segments.sort((a,b)=>b.length-a.length||a.edge-b.edge);
-  const primary=segments[0];const aligned=primary?
-    segments.filter(s=>s.nx*primary.nx+s.nz*primary.nz>.96):[];
-  let metres=0;const chosen=[];
-  for(const seg of aligned){
-    if(metres+seg.length>24.5)continue;
-    chosen.push(seg);metres+=seg.length;
+  const primary=segments[0],chosen=primary?[primary]:[];
+  let metres=primary?.length||0;
+  for(const step of [-1,1]){
+    let index=primary?.edge??-1;
+    while(index>=0){
+      const next=(index+step+wall.length)%wall.length,seg=byEdge.get(next);
+      if(!seg||seg.nx*primary.nx+seg.nz*primary.nz<.96||
+        metres+seg.length>24.5)break;
+      chosen.push(seg);metres+=seg.length;index=next;
+    }
   }
   chosen.sort((a,b)=>a.edge-b.edge);
   return {segments:chosen,metres,railFacing:true,streetFacingRoofCount:0,
