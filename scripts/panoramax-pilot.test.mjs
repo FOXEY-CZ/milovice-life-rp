@@ -82,7 +82,7 @@ const syntax=moduleText[1].replace(/^import \{PILOT_LOCATION,searchBox,fetchPano
 assert.doesNotThrow(()=>new Function(syntax),'PILOT inline script syntax must parse');
 const main=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert(/const BUILD_ID='[a-zA-Z0-9-]+';/.test(main),
- 'Photo survey pilot must not remove the real game's independent build ID');
+ "Photo survey pilot must not remove the main game build identifier");
 assert(main.includes('stationPhotoParking.create(elements)'),
  'The 3D game remains independently functional while photo pilot is read-only');
 assert(!main.includes('panoramax-pilot.js'),'The pilot must never be imported into live game');
