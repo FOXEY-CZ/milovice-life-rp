@@ -172,6 +172,8 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  let actualArchedWindowMeshes=0,rectangularFakeArchRemoved=0;
  let anchoredDormerRoofs=0,removedDetachedRoofBoxPanels=0,joinedOrdinaryDormerRoofs=0;
  let detailDrawMeshes=0,meshesSavedByBatching=0,flushRooflights=0;
+ let rooflightHostPlan=null,rooflightRejected=0;
+ const rooflightFailures=[];
  const ids=new Set(),ownedGroups=new Set();
  // Each photo-referenced facade is statically batched by material. A dozen
  // window bars no longer turn into a dozen GPU draw calls at 27 FPS.
@@ -323,7 +325,16 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   layer.add(g);ownedGroups.add(g);
   for(const offset of offsets){
    const plan=planPhotographedRooflight(roofPlan,edge,offset);
-   if(!plan)continue;
+   if(!plan){
+    rooflightRejected++;
+    const px=edge.mx+edge.ux*offset-edge.nx*1.16;
+    const pz=edge.mz+edge.uz*offset-edge.nz*1.16;
+    rooflightFailures.push({
+     edge:edge.index,len:edge.len,offset,
+     centerHeight:roofHeightAtPoint(roofPlan,{x:px,z:pz})
+    });
+    continue;
+   }
    joinedRoofFaces(g,plan.frame,rooflightFrame);
    joinedRoofFaces(g,plan.glass,glazing);
    joinedRoofFaces(g,plan.mullion,paleTrim);
@@ -361,6 +372,12 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
    minLength:key==='202367254'?3.3:5,limit:6});
   if(!edges.length)return false;
   if(key==='202367254'){
+   rooflightHostPlan={
+    supplied:!!roofPlan,
+    model:roofPlan?.roofModel||roofPlan?.kind||'missing',
+    faceCount:roofPlan?.faces?.length||0,
+    y:roofPlan?.eaveY
+   };
    // Mírová 36: use the actual camera-facing OSM frontage, not its
    // bounding rectangle. Photo shows a three-lite raised central gable,
    // three skylights across two visible roof slopes and clipped hedges.
@@ -402,7 +419,9 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  function getStatus(){return {buildings,dormers,rooflights,hedgeGroups,detailMeshes,
   detailDrawMeshes,meshesSavedByBatching,
   actualArchedWindowMeshes,rectangularFakeArchRemoved,
-  anchoredDormerRoofs,removedDetachedRoofBoxPanels,joinedOrdinaryDormerRoofs,flushRooflights,
+  anchoredDormerRoofs,removedDetachedRoofBoxPanels,joinedOrdinaryDormerRoofs,
+  flushRooflights,rooflightHostPlan,rooflightRejected,
+  rooflightFailures:rooflightFailures.slice(0,5),
   landmarkIds:[...ids],photoReferenceCount:PHOTO_STREET_BLOCK.length,
   scope:'Mírová–5. května–Školská; photographed geometry approximation'};}
  function publish(){if(typeof window!=='undefined')window.__milovicePhotoStreetPass=getStatus()}
@@ -412,7 +431,8 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
    root.traverse(o=>{if(o.isMesh||o.isInstancedMesh)o.geometry?.dispose()});
   }
   ownedGroups.clear();buildings=dormers=rooflights=hedgeGroups=detailMeshes=0;
-  detailDrawMeshes=meshesSavedByBatching=flushRooflights=0;
+  detailDrawMeshes=meshesSavedByBatching=flushRooflights=rooflightRejected=0;
+  rooflightHostPlan=null;rooflightFailures.length=0;
   actualArchedWindowMeshes=rectangularFakeArchRemoved=0;
   anchoredDormerRoofs=removedDetachedRoofBoxPanels=joinedOrdinaryDormerRoofs=0;
   ids.clear();publish()
