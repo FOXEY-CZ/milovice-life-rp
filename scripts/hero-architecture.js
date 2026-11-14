@@ -20,7 +20,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
   suppressedUnverifiedPhotoOrnaments:0,shortWallSegmentsSealed:0,
   skippedDegenerateEdges:0,
   trimmedWallEdges:0,trimmedShortReturns:0,trimmedPerimeterMetres:0,
-  photoEaveBands:0,
+  photoEaveBands:0,photoEaveVisibleBands:0,
   sharedSurfaceTextures:3,surfaceResolution:128,extraMaterialDrawCalls:0,
   anchoredOpenings:0,maxFrameDetachment:0,wallPlaneSource:'OSM exterior polygon'};
  const box=new THREE.BoxGeometry(1,1,1),glassPlane=new THREE.PlaneGeometry(1,1);
@@ -151,6 +151,10 @@ export function makeMiloviceHeroArchitecture(THREE,{
    if(photoCornice){
     trim.upper=photoCornice;
     state.photoEaveBands++;
+    if(photoCornice.visibleBelowEave>=.20&&
+       photoCornice.faceProtrusion>=.20&&
+       photoCornice.hostWallOverlap>=.01)
+     state.photoEaveVisibleBands++;
    }
    const addBand=band=>placement(chunk,band.kind,
     band.x,band.y,band.z,band.width,band.height,band.depth,band.yaw);
