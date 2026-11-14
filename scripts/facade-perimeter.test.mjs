@@ -181,9 +181,22 @@ assert(hero.includes('if(len<.08)return null;'),
  'Sub-metre valid short returns need solid walls as well as both trim bands');
 assert(!hero.includes('if(len<1)return null;'),
  'The old 1m limit left roof-to-wall gaps on micro-returns');
-assert(hero.indexOf('addBand(trim.base);')<hero.indexOf("if(wallKind==='solid-return'){"),
- 'Repair trims must be emitted BEFORE the early-return short-wall branch');
-assert.equal(hero.split('addBand(trim.base);').length,2,'Avoid duplicate base bands');
+// 5.45: a short opaque return always gets a continuous band BEFORE its
+// early return. Detailed walls instead split the SAME band around any door.
+// These are mutually exclusive branches; requiring one unconditional band
+// before the branch would paint a solid plinth over the entrance threshold.
+const shortBranch=hero.indexOf("if(wallKind==='solid-return'){");
+const shortBand=hero.indexOf('addBand(trim.base);',shortBranch);
+const earlyReturn=hero.indexOf('continue;',shortBranch);
+assert(shortBranch>=0&&shortBand>shortBranch&&shortBand<earlyReturn,
+ 'Short returns must still get their uninterrupted stone plinth');
+assert(hero.includes('}else addBand(trim.base);')&&
+ hero.includes('splitFacadeStripForOpening(edgeFrame')&&
+ hero.includes('for(const p of parts){')&&
+ hero.includes('state.doorPlinthOpenings++'),
+ 'Detailed walls need one plinth; a door must interrupt it, not hide its threshold');
+assert.equal(hero.split('addBand(trim.base);').length,3,
+ 'Exactly two mutually exclusive normal band placements: short return or no doorway');
 assert.equal(hero.split('addBand(trim.upper);').length,2,'Avoid duplicate cornices');
 assert(hero.includes('chunk.walls.push(shortWall)'));
 assert(hero.includes('state.shortWallSegmentsSealed++'));
