@@ -175,11 +175,11 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
  const glazing=new THREE.MeshStandardMaterial({color:0x345566,metalness:.13,roughness:.25});
  const rooflightFrame=new THREE.MeshStandardMaterial({color:0x454a4d,metalness:.25,roughness:.5});
  const hedge=new THREE.MeshStandardMaterial({color:0x385732,roughness:1});
- const grout=new THREE.MeshStandardMaterial({color:0xc8b99d,roughness:.94});
  let buildings=0,dormers=0,rooflights=0,hedgeGroups=0,detailMeshes=0;
  let actualArchedWindowMeshes=0,rectangularFakeArchRemoved=0;
  let anchoredDormerRoofs=0,removedDetachedRoofBoxPanels=0,joinedOrdinaryDormerRoofs=0;
  let detailDrawMeshes=0,meshesSavedByBatching=0,flushRooflights=0;
+ let suppressedDuplicatePerimeterBands=0;
  let rooflightHostPlan=null,rooflightRejected=0;
  const rooflightFailures=[];
  const ids=new Set(),ownedGroups=new Set();
@@ -405,20 +405,20 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
    for(const {edge,profile} of features)addGableDormer(edge,base,height,{
     w:profile.width,depth:profile.depth,roofRise:profile.rise,
     arched:profile.arched,wall:creamWall,roof:darkRoof});
-   for(const {edge} of features){
-    const g=exteriorGroup(edge,base);
-    part(g,edge.len,.10,.23,grout,0,height-.10,.24);
-    part(g,edge.len,.10,.17,paleTrim,0,2.7,.33);
-   }
+   // Shared OSM/hero facade already draws its own continuous cornice.
+   // Avoid adding two extra full-length white beams on the same wall.
+   // The photo pass still owns the documented dormers above this facade.
+   suppressedDuplicatePerimeterBands+=features.length*2;
   }else if(key==='202367194'){
    // Corner hotel's shallow brown/red roof and pale overhanging eaves.
    // Existing game already supplies its corner balcony, orange walls and
    // red window reveals; only enhance its photographed low roof silhouette.
    for(const edge of edges.filter(e=>e.len>8)){
     const g=exteriorGroup(edge,base);
-    part(g,edge.len+.45,.23,.48,roofMaterial,0,height-.015,.12);
-    part(g,edge.len+.43,.08,.51,paleTrim,0,height-.24,.12);
-    part(g,edge.len+.35,.08,.16,paleTrim,0,3.39,.30);
+    // Keep the shallow roof lip, not duplicate long white cornices
+    // already produced by the OSM facade renderer beneath it.
+    part(g,edge.len+.35,.23,.48,roofMaterial,0,height-.015,.12);
+    suppressedDuplicatePerimeterBands+=2;
    }
   }
   optimizeOwnedGroups(batchStart);
@@ -430,7 +430,9 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   anchoredDormerRoofs,removedDetachedRoofBoxPanels,joinedOrdinaryDormerRoofs,
   flushRooflights,rooflightHostPlan,rooflightRejected,
   rooflightFailures:rooflightFailures.slice(0,5),
-  landmarkIds:[...ids],photoReferenceCount:PHOTO_STREET_BLOCK.length,
+  landmarkIds:[...ids],suppressedDuplicatePerimeterBands,
+  facadeStripOwner:'osm-facade-renderer-only',
+  photoReferenceCount:PHOTO_STREET_BLOCK.length,
   scope:'Mírová–5. května–Školská; photographed geometry approximation'};}
  function publish(){if(typeof window!=='undefined')window.__milovicePhotoStreetPass=getStatus()}
  function reset(){
@@ -443,6 +445,7 @@ export function makePhotoStreetBlock(THREE,{layer,osmPoint,mergeGeometries}={}){
   rooflightHostPlan=null;rooflightFailures.length=0;
   actualArchedWindowMeshes=rectangularFakeArchRemoved=0;
   anchoredDormerRoofs=removedDetachedRoofBoxPanels=joinedOrdinaryDormerRoofs=0;
+  suppressedDuplicatePerimeterBands=0;
   ids.clear();publish()
  }
  publish();
