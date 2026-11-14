@@ -45,7 +45,7 @@ assert.equal(streetOnly.segments.length,0,'Rail shelter cannot be placed when ma
 const fakedWidth=planStationPlatformCanopy({...options,spanWidth:15});
 assert.equal(fakedWidth.segments.length,0,'Cannot fabricate giant road-spanning canopy');
 const nearbyRail=planStationPlatformCanopy({...options,
- tracks:[shell.slice(0,2)] /* at the building, block the roof */]});
+ tracks:[shell.slice(0,2)] /* at the building, block the roof */});
 assert(nearbyRail.segments.length<=plan.segments.length,
  'Track clearance remains safe for short 2-point rail ways');
 const script=read('index.html');
