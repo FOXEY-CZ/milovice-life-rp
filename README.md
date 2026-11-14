@@ -1,3 +1,25 @@
+# Milovice RP 5.67 — oprava široké dlážděné plochy před nádražím
+
+**Spustit 5.67:** https://foxey-cz.github.io/milovice-life-rp/?v=5670  
+**Záloha hry před experimenty:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/566-before-photo-pilot
+
+## Proč jsme opravovali verzi 5.66
+
+Hráč poskytl přímé dvojité porovnání **mobilní herní scény 5.66** a **Mapy.com Panorama 17. 5. 2022**. Ve hře se mezi dvěma asfaltovými jízdními plochami nacházel výrazný **zelený klín**, zatímco reálná fotografie potvrzuje **široký světlý dlážděný parkovací ostrov s nízkým obrubníkem a zaobleným koncem**. Dosavadní modul 5.66 nesprávně kladl **25 samostatných úzkých pásů** na obě strany jedné komunikace; tím nemohl souvislou plochu vůbec vytvořit.
+
+## Geometrická oprava 5.67
+
+- Dvě nezávislé a přesně identifikované OSM komunikace: **675778842** (jednosměrný servisní průjezd) a **128308366** (Nádražní). Jejich vzájemná vzdálenost přibližně 8–14 m určuje **rozsah kandidátní mezery**. Žádná nová silnice se nevytváří.
+- Místo 25 izolovaných pásů vzniká **souvislý fotograficky inspirovaný dlažební ostrov**, s úzkými spárami, jemnou variací barev betonových kamenů, zaoblenou jižní špičkou a nízkým obrubníkem. Půdorys a špička jsou **odhady podle fotografií**, nikoli geodetické zaměření.
+- Přes **490 instancovaných dlažebních prvků v 87 příčných řadách**, dvě sdílené materiálové dávky a jedna dávka obrubníků: **maximálně 3 draw cally**. Pro každý dlažební prvek se kontroluje celý obdélník vůči **všem silnicím a chodníkům OSM** a rohy vůči budovám a kolejím. Povrch respektuje výškový terén.
+- Ponechána nádražní budova, skutečná cyklověž a její vnitřní výztuhy, nástupiště, autobusová stanoviště A/B, garáže, ostatní budovy, kolize i doprava. **Žádné dodatečné fotografie ani screenshoty Mapy.com nebyly kopírovány do herních textur nebo do GitHubu.** Původní vlastní geometrie je odvozena z OSM, dovolených veřejných fotografií a proporčních pozorování. Přesnost stále čeká na uživatelský 360° vizuální audit.
+
+**Původní licencovaná fotodokumentace:** [Wikimedia – milovické nádražní parkoviště](https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_parkovi%C5%A1t%C4%9B.jpg) a [druhý pohled](https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_parkovi%C5%A1t%C4%9B_(01).jpg) (ŠJů, CC BY 4.0, 30. 5. 2024). Panorama uživatele slouží ke kontrole nesouladu, jeho obrazové bajty ani strojové deriváty se neukládají.
+
+**Automatická QA:** `scripts/station-photo-parking.test.mjs`, součást GitHub Actions, a prohlížečový WebGL smoke test. Fyzická realita je ověřená v rozsahu konkrétního viditelného prvku; nejde o dokončenou celou Nádražní.
+
+---
+
 # Milovice RP 5.66 — skutečné dvoustranné parkování před nádražím
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5660  
