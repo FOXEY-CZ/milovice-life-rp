@@ -1,4 +1,4 @@
-// Milovice RP 5.73 — outside path is CARVED OUT of OSM-safe parking, never asphalt
+// Milovice RP 5.74 — PHOTO QA: no detached outer paver spur, grass seams, or road overlay
 // from recurring. Verify original OSM ways, full-stone-rectangle road checks,
 // photo-camera correlation, no fake cars, and constant draw-call budget.
 import assert from 'node:assert/strict';
@@ -82,6 +82,25 @@ assert.equal(plan.outerFootwayRendering,'carved-terrain-mesh-shared-city-paving'
 assert(plan.outerSidewalkCells.length>=100,'A true long sidewalk needs many contiguous safe parking cells');
 assert(plan.centralParkingCells.length+plan.outerSidewalkCells.length===plan.cells.length,
  'No parking tile can be lost or painted twice when carving the sidewalk');
+assert(Number.isInteger(plan.edgeSpursTrimmed)&&plan.edgeSpursTrimmed>=0,
+ 'Photo regression must expose how many isolated outside-edge blocks were removed');
+const islandRows=new Map();
+for(const c of plan.cells){
+ if(!islandRows.has(c.along))islandRows.set(c.along,[]);
+ islandRows.get(c.along).push(c);
+}
+for(const row of islandRows.values()){
+ row.sort((a,b)=>a.offset-b.offset);
+ if(row.length>1)assert(row.at(-1).offset-row.at(-2).offset<=.775,
+  'A detached paving patch must not protrude from the outside sidewalk edge');
+}
+assert(plan.rejected.filter(x=>x.reason==='isolated-outer-island-spur').length===
+ plan.edgeSpursTrimmed,'Every removed photographic spur must remain auditable');
+for(const p of plan.outerSidewalkCells)
+ assert(isRoadFreeRect(occupied,{
+  x:p.x,z:p.z,length:p.length+.012,depth:p.depth+.012,
+  yaw:p.yaw,buffer:.009,step:.3
+ }), 'Seam-closed sidewalk texture must still stay away from all mapped roads');
 assert(plan.outerSidewalkMaxOsmDistance<4.5,
  'Carved path must be near the real outer OSM sidewalk, not an invented inner edge');
 const parkingSet=new Set(plan.centralParkingCells);
@@ -152,7 +171,7 @@ assert.equal(planStationPhotoParking(ways.map(e=>e.id===675778842?{
  ...e,geometry:e.geometry.map(p=>({...p,lon:p.lon+.001}))
 }:e),occupied),null);
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(game.includes("from './scripts/station-photo-parking.js?v=5730'"));
+assert(game.includes("from './scripts/station-photo-parking.js?v=5740'"));
 assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})'),
  'The island sidewalk must receive the exact city paving material');
 assert(game.includes('stationPhotoParking.reset()'));
@@ -160,7 +179,7 @@ assert(!game.includes('osmStrip(points[i-1],points[i],1.8,osmSidewalkMat,.235);'
  'The 5.72 forced sidewalk directly on Nádražní asphalt MUST be disabled');
 assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})'),
  'Carved sidewalk must reuse the same existing city paving material');
-assert(game.includes("const BUILD_ID='20261115-carved-outer-parking-sidewalk-5730'"));
+assert(game.includes("const BUILD_ID='20261115-smooth-station-island-edges-5740'"));
 assert(game.includes("from './scripts/bike-tower-interior.js?v=5640'"));
 assert(game.includes("from './scripts/station-forecourt-pass.js?v=5650'"));
 const code=readFileSync(new URL('./station-photo-parking.js',import.meta.url),'utf8');
@@ -174,6 +193,10 @@ assert(!code.includes('for(const p of planned.outerPedestrianStrip)'),
 assert(code.includes('new THREE.BufferGeometry()'));
 assert(code.includes("mesh.name='OuterParkingCarvedTexturedFootway'"));
 assert(code.includes('terrainAt(pt.x,pt.z)+.214'));
+assert(code.includes('const overlap=.006;'),'Need surface seam closure in textured walking mesh');
+assert(code.includes('sx:p.length+.012'),'Parking paver grout must fill the former grass pinstripes');
+assert(code.includes('edgeSpursRemoved.add(row.pop())'),
+ 'Jutting single-row island paving spurs must be removed, not projected over the roadway');
 assert(code.includes('sidewalkMaterial||material.sidewalk'));
 assert(code.includes('for(const p of planned.centralParkingCells)'),
  'Entire broad island surface must have real parking blocks');
@@ -181,7 +204,7 @@ assert(code.includes('for(let i=-1;i<=1;i+=2)'),
  'Smaller 2x2 concrete pavers must replace the previous oversized white blocks');
 assert(!code.includes('new THREE.Mesh(new THREE.BoxGeometry('));
 assert(!code.includes('document.createElement'),'No Mapy.com screenshots may become textures');
-console.log('5.73 carved exterior sidewalk without asphalt overlays PASS',JSON.stringify({
+console.log('5.74 island outer-edge cleanup without road geometry changes PASS',JSON.stringify({
  roadIds:plan.sourceIds,photoCameras:plan.cameras.map(c=>+c.distance.toFixed(2)),
  pavingCells:plan.cells.length,coveredRows:plan.rowStats.filter(r=>r.accepted>0).length,
  curbs:plan.curbs.length,rejected:plan.rejected.length,
@@ -190,6 +213,7 @@ console.log('5.73 carved exterior sidewalk without asphalt overlays PASS',JSON.s
  outerSidewalkCells:plan.outerSidewalkCells.length,
  outerSidewalkCurbs:plan.outerSidewalkCurbs.length,
  exteriorFootwayOSMdistance:+plan.outerSidewalkMaxOsmDistance.toFixed(2),
+ edgeSpursRemoved:plan.edgeSpursTrimmed,
  noTilesDoublePainted:true,roadSurfaceUntouched:true,
  mappedOuterFootwaySegments:plan.outerFootwaySegments.length,
  outerFootwayRendering:plan.outerFootwayRendering,
