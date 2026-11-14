@@ -1,4 +1,4 @@
-import {flushBoxOffset} from './facade-anchors.js';
+import {flushBoxOffset,exteriorFacadeFrame} from './facade-anchors.js';
 // Every actual non-degenerate OSM polygon edge has a physical wall.
 // Short returns/chamfers must be SEALED, but get no invented windows,
 // door slots or decorative facade rows.
@@ -89,4 +89,89 @@ export function planPhotographedEaveCornice(frame,{
   source:'photo-Skolska-220-1-2024',
   attachedToHost:true,roofFasciaClear:true
  };
+}
+
+/**
+ * 5.43: the photographed eave is ONE 3-step continuous stone/plaster
+ * profile rather than seven square boxes. Each tier uses a single miter
+ * position at each actual OSM polygon vertex, shared by both adjacent
+ * facades. No extra corner caps, seams, or independent floating bars.
+ * The small depth/colour variations are visual approximations: the photo
+ * does not establish measured moulding dimensions.
+ */
+export const PHOTO_EAVE_PROFILE_COLOR=0xd5cbb9;
+export const PHOTO_EAVE_PROFILE_TIERS=Object.freeze([
+ {name:'foot',low:-.080,high:-.043,projection:.115},
+ {name:'face',low:-.046,high:.044,projection:.151},
+ {name:'crown',low:.041,high:.080,projection:.185}
+]);
+export function planPhotographedEaveCorniceRing(outline,{
+ base=0,height=3.75,dropBelowEave=.30,miterLimit=2.6
+}={}){
+ if(!Array.isArray(outline)||outline.length<3||
+  ![base,height,dropBelowEave,miterLimit].every(Number.isFinite)||
+  height<2.3||dropBelowEave<.23||dropBelowEave>.55||
+  miterLimit<1.1||miterLimit>4)return null;
+ const p=outline.map(v=>({x:v?.x,z:v?.z??v?.y}));
+ if(!p.every(v=>Number.isFinite(v.x)&&Number.isFinite(v.z)))return null;
+ if(p.length>3&&Math.hypot(p[0].x-p.at(-1).x,p[0].z-p.at(-1).z)<.10)p.pop();
+ if(p.length<3||p.length>32)return null;
+ const frames=p.map((_,i)=>exteriorFacadeFrame(p,i));
+ if(frames.some(f=>!f||f.len<.08||f.len>140))return null;
+ function cornerAt(i,offset){
+  const before=frames[(i+p.length-1)%p.length],after=frames[i];
+  const dot=Math.max(-1,Math.min(1,before.nx*after.nx+before.nz*after.nz));
+  const denom=1+dot;
+  let dx=after.nx*offset,dz=after.nz*offset;
+  if(denom>.10){
+   dx=(before.nx+after.nx)*offset/denom;
+   dz=(before.nz+after.nz)*offset/denom;
+  }
+  const length=Math.hypot(dx,dz),allowed=Math.abs(offset)*miterLimit;
+  if(length>allowed&&allowed>0){dx*=allowed/length;dz*=allowed/length}
+  return {x:p[i].x+dx,z:p[i].z+dz};
+ }
+ const wallOverlap=.012;
+ const tiers=PHOTO_EAVE_PROFILE_TIERS.map(t=>({
+  name:t.name,bottom:base+height-dropBelowEave+t.low,
+  top:base+height-dropBelowEave+t.high,
+  inner:p.map((_,i)=>cornerAt(i,-wallOverlap)),
+  outer:p.map((_,i)=>cornerAt(i,t.projection)),
+  projection:t.projection
+ }));
+ return {
+  source:'photo-Skolska-220-1-2024',
+  color:PHOTO_EAVE_PROFILE_COLOR,segmentCount:p.length,
+  cornerCount:p.length,profileSteps:tiers.length,
+  wallOverlap,dropBelowEave,tiers
+ };
+}
+/** Build ONE watertight polygonal ring mesh, with profiled mitered corners. */
+export function buildPhotographedEaveCorniceGeometry(THREE,outline,opts={}){
+ const plan=planPhotographedEaveCorniceRing(outline,opts);
+ if(!plan||!THREE?.BufferGeometry||!THREE?.Float32BufferAttribute)return null;
+ const coords=[];
+ const quad=(a,b,c,d)=>{
+  for(const v of [a,b,c,a,c,d])coords.push(v.x,v.y,v.z);
+ };
+ for(const t of plan.tiers){
+  for(let i=0;i<plan.segmentCount;i++){
+   const j=(i+1)%plan.segmentCount;
+   const ib={...t.inner[i],y:t.bottom},jb={...t.inner[j],y:t.bottom},
+    it={...t.inner[i],y:t.top},jt={...t.inner[j],y:t.top},
+    ob={...t.outer[i],y:t.bottom},pb={...t.outer[j],y:t.bottom},
+    ot={...t.outer[i],y:t.top},pt={...t.outer[j],y:t.top};
+   // Each adjacent wall owns the SAME miter corner vertex.
+   quad(ob,pb,pt,ot); // external vertical fascia
+   quad(it,jt,pt,ot); // upper horizontal shoulder
+   quad(ib,ob,pb,jb); // bottom soffit
+   quad(ib,jb,jt,it); // back face inside solid OSM wall
+  }
+ }
+ const g=new THREE.BufferGeometry();
+ g.setAttribute('position',new THREE.Float32BufferAttribute(coords,3));
+ g.computeVertexNormals();
+ g.userData={source:plan.source,segments:plan.segmentCount,
+  corners:plan.cornerCount,profileSteps:plan.profileSteps};
+ return g;
 }

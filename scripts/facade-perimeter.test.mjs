@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {classifyFacadeEdgeLength,planFacadePerimeterTrims,planPhotographedEaveCornice} from './facade-perimeter.js';
+import {classifyFacadeEdgeLength,planFacadePerimeterTrims,planPhotographedEaveCornice,planPhotographedEaveCorniceRing,buildPhotographedEaveCorniceGeometry,PHOTO_EAVE_PROFILE_COLOR,PHOTO_EAVE_PROFILE_TIERS} from './facade-perimeter.js';
 import {exteriorFacadeFrame,facadeGap} from './facade-anchors.js';
 const osm=JSON.parse(readFileSync(new URL('../data/milovice-osm.json',import.meta.url),'utf8'));
 const buildings=osm.elements.filter(el=>el.tags?.building&&el.geometry?.length>=3);
@@ -112,6 +112,56 @@ assert.equal(planPhotographedEaveCornice(
 assert.equal(planPhotographedEaveCornice(
  exteriorFacadeFrame(schoolOutline,0),{depth:.06}),null,
  'A cream cornice flush inside the wall cannot be seen from a street view');
+// Version 5.43 - actual source polygon with one continuous miter
+// at every corner. The profile is deliberately low-relief warm plaster.
+const schoolRing=planPhotographedEaveCorniceRing(schoolOutline,{
+ base:11,height:3.75
+});
+assert(schoolRing&&schoolRing.profileSteps===3&&
+ schoolRing.cornerCount===schoolOutline.length&&
+ schoolRing.segmentCount===schoolOutline.length);
+assert.equal(PHOTO_EAVE_PROFILE_COLOR,0xd5cbb9);
+assert.equal(PHOTO_EAVE_PROFILE_TIERS.length,3);
+for(const tier of schoolRing.tiers){
+ assert.equal(tier.outer.length,schoolOutline.length);
+ assert.equal(tier.inner.length,schoolOutline.length);
+ assert(tier.top>tier.bottom&&tier.projection<.20);
+ for(let i=0;i<schoolOutline.length;i++){
+  // One JOINED vertex is reused on both adjacent sides: no dark seam.
+  const outer=tier.outer[i],inner=tier.inner[i],p=schoolOutline[i];
+  assert([outer.x,outer.z,inner.x,inner.z].every(Number.isFinite));
+  assert(Math.hypot(outer.x-p.x,outer.z-p.z)<
+   tier.projection*2.6+.001);
+  assert(Math.hypot(inner.x-p.x,inner.z-p.z)<.05);
+ }
+}
+assert.equal(planPhotographedEaveCorniceRing([]),null);
+assert.equal(planPhotographedEaveCorniceRing(schoolOutline,{height:1}),null);
+assert.equal(planPhotographedEaveCorniceRing([...schoolOutline,
+ schoolOutline[0]]).segmentCount,schoolRing.segmentCount);
+const reversedRing=planPhotographedEaveCorniceRing([...schoolOutline].reverse(),{
+ base:11,height:3.75});
+assert(reversedRing&&reversedRing.segmentCount===schoolRing.segmentCount);
+for(let i=0;i<schoolRing.segmentCount;i++){
+ const same=reversedRing.tiers[2].outer.find(v=>
+  Math.hypot(v.x-schoolRing.tiers[2].outer[i].x,
+   v.z-schoolRing.tiers[2].outer[i].z)<1e-6);
+ assert(same,'Mitered corner must not move on reversed OSM winding');
+}
+// A lightweight THREE stand-in makes this pure test verify actual triangles.
+class TestGeometry{
+ constructor(){this.attributes={};this.userData={}}
+ setAttribute(name,attr){this.attributes[name]=attr}
+ computeVertexNormals(){this.hasNormals=true}
+}
+class TestAttribute{constructor(array,itemSize){this.array=array;this.itemSize=itemSize}}
+const geom=buildPhotographedEaveCorniceGeometry({
+ BufferGeometry:TestGeometry,Float32BufferAttribute:TestAttribute
+},schoolOutline,{base:11,height:3.75});
+assert(geom?.hasNormals&&geom?.userData.profileSteps===3);
+assert.equal(geom.attributes.position.array.length,
+ schoolRing.segmentCount*3*4*6*3);
+assert(geom.attributes.position.array.every(Number.isFinite));
 const hero=readFileSync(new URL('./hero-architecture.js',import.meta.url),'utf8');
 assert(hero.includes("wallKind==='solid-return'"));
 assert(hero.includes('const edgeFrame=exteriorFacadeFrame(pts,sideIndex);'));
@@ -120,8 +170,12 @@ assert(hero.includes('RECESSED_GLAZING'));
 assert(hero.includes('flushBoxOffset(.32)'));
 assert(hero.includes('addBand(trim.base);')&&hero.includes('addBand(trim.upper);'));
 assert(hero.includes('trim.upper=photoCornice;')&&
- hero.includes("String(identity)==='118487980'"),
- 'Photographed pale eave replaces the generic hero cornice, not an extra detached row');
+ hero.includes("String(identity)==='118487980'")&&
+ hero.includes('if(!photoCornice)addBand(trim.upper);')&&
+ hero.includes('chunk.photoCornices.push(profile);')&&
+ hero.includes('photoEaveProfileMeshes++')&&
+ hero.includes('buildPhotographedEaveCorniceGeometry(THREE,pts,'),
+ 'The hero facade must render ONE continuous eave ring instead of separate boxes');
 assert(hero.includes('state.trimmedShortReturns++'));
 assert(hero.includes('if(len<.08)return null;'),
  'Sub-metre valid short returns need solid walls as well as both trim bands');
@@ -143,10 +197,11 @@ assert(!world.includes('if(len<5||len>90)continue'),
 assert(world.includes('if(len<5){')&&
  world.includes("archPart('foundationBand',mx+nx*flushBoxOffset(.10),baseHeight+.52"),
  'Existing non-hero foundation band must continue on short returns');
-assert(world.includes('planPhotographedEaveCornice(facade,')&&
- world.includes("archPart('whiteTrim',cornice.x,cornice.y,cornice.z")&&
- world.includes('window.__milovicePhotoEaveCornice'),
- 'Fallback Školská must retain exactly one genuine attached eave cornice');
+assert(world.includes('buildPhotographedEaveCorniceGeometry(THREE,pts,')&&
+ world.includes('architectureMaterials.photoEaveCornice')&&
+ world.includes('window.__milovicePhotoEaveCornice')&&
+ !world.includes("archPart('whiteTrim',cornice.x,cornice.y,cornice.z"),
+ 'Fallback Školská must use one connected warm-beige eave ring, never separate bars');
 assert(world.includes('window.__miloviceLegacyFacadeBandAudit'),
  'Instrument the fallback renderer for missing short-edge trim');
 console.log('Roof-wall facade closure across Milovice: short return and continuous base/cornice bands PASS',JSON.stringify({plannedBands,plannedShortBands,totalTrimMetres:Math.round(totalTrimMetres)}));

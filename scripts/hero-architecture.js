@@ -4,7 +4,7 @@
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {selectFacadeEdges,planFaceOpenings} from './facade-model.js';
 import {analyzeGableFootprint} from './city-roof-geometry.js';
-import {classifyFacadeEdgeLength,planFacadePerimeterTrims,planPhotographedEaveCornice} from './facade-perimeter.js?v=5420';
+import {classifyFacadeEdgeLength,planFacadePerimeterTrims,planPhotographedEaveCornice,buildPhotographedEaveCorniceGeometry,PHOTO_EAVE_PROFILE_COLOR} from './facade-perimeter.js?v=5430';
 import {makeSharedFacadeSurfaceMaps} from './facade-surface-kit.js';
 import {exteriorFacadeFrame,flushBoxOffset,RECESSED_GLAZING,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './facade-anchors.js';
 
@@ -21,6 +21,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
   skippedDegenerateEdges:0,
   trimmedWallEdges:0,trimmedShortReturns:0,trimmedPerimeterMetres:0,
   photoEaveBands:0,photoEaveVisibleBands:0,
+  photoEaveProfileSteps:0,photoEaveJoinedCorners:0,photoEaveProfileMeshes:0,
   sharedSurfaceTextures:3,surfaceResolution:128,extraMaterialDrawCalls:0,
   anchoredOpenings:0,maxFrameDetachment:0,wallPlaneSource:'OSM exterior polygon'};
  const box=new THREE.BoxGeometry(1,1,1),glassPlane=new THREE.PlaneGeometry(1,1);
@@ -28,6 +29,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
   wall:new THREE.MeshStandardMaterial({vertexColors:true,roughness:.92,side:THREE.DoubleSide}),
   glass:new THREE.MeshStandardMaterial({color:0x82aec4,metalness:.14,roughness:.24,side:THREE.DoubleSide}),
   frame:new THREE.MeshStandardMaterial({color:0xe7e5dd,roughness:.78}),
+  photoCornice:new THREE.MeshStandardMaterial({color:PHOTO_EAVE_PROFILE_COLOR,roughness:.88,side:THREE.DoubleSide}),
   sill:new THREE.MeshStandardMaterial({color:0xc0bab0,roughness:.89}),
   base:new THREE.MeshStandardMaterial({color:0x77746d,roughness:.97}),
   dark:new THREE.MeshStandardMaterial({color:0x343e43,roughness:.71}),
@@ -46,7 +48,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
  const cell=120;
  function bucket(x,z){
   const k=Math.floor(x/cell)+','+Math.floor(z/cell);
-  if(!chunks.has(k))chunks.set(k,{key:k,walls:[],props:new Map()});
+  if(!chunks.has(k))chunks.set(k,{key:k,walls:[],props:new Map(),photoCornices:[]});
   return chunks.get(k);
  }
  function placement(chunk,kind,x,y,z,w,h,d,yaw=0,asPlane=false){
@@ -159,7 +161,9 @@ export function makeMiloviceHeroArchitecture(THREE,{
    const addBand=band=>placement(chunk,band.kind,
     band.x,band.y,band.z,band.width,band.height,band.depth,band.yaw);
    addBand(trim.base);
-   addBand(trim.upper);
+   // Photo eave: one connected three-step polygon ring, never separate
+   // square boxes that leave dark seams on the building corners.
+   if(!photoCornice)addBand(trim.upper);
    state.trimmedWallEdges++;
    state.trimmedPerimeterMetres+=trim.length;
    if(wallKind==='solid-return')state.trimmedShortReturns++;
@@ -276,6 +280,14 @@ export function makeMiloviceHeroArchitecture(THREE,{
    const geometry=wallGeometry(a,b,base,height,holes,sideLayout?.wallColor||tone);
    if(geometry){chunk.walls.push(geometry);state.solidWalls++}
   }
+  if(String(identity)==='118487980'){
+   const profile=buildPhotographedEaveCorniceGeometry(THREE,pts,{base,height});
+   if(profile){
+    chunk.photoCornices.push(profile);
+    state.photoEaveProfileSteps=profile.userData.profileSteps;
+    state.photoEaveJoinedCorners=profile.userData.corners;
+   }
+  }
   // ONLY cap a true supported GABLE where its TWO end walls are across
   // the verified roof ridge. Former code guessed ends from pts[0]-pts[1]
   // and erected triangular walls in the wrong direction on reversed/rotated
@@ -320,6 +332,15 @@ export function makeMiloviceHeroArchitecture(THREE,{
     inst.userData.lodX=(bx+.5)*cell;inst.userData.lodZ=(bz+.5)*cell;
     inst.userData.lodDetail=true;
     parent.add(inst);state.drawMeshes++;batches++;
+   }
+   for(const geometry of chunk.photoCornices){
+    const mesh=new THREE.Mesh(geometry,mats.photoCornice);
+    const [bx,bz]=key.split(',').map(Number);
+    mesh.userData.lodX=(bx+.5)*cell;
+    mesh.userData.lodZ=(bz+.5)*cell;
+    mesh.userData.lodDetail=true;
+    parent.add(mesh);
+    state.drawMeshes++;state.photoEaveProfileMeshes++;batches++;
    }
    chunks.delete(key);
   }
