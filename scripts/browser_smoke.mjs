@@ -118,6 +118,32 @@ try{
   JSON.stringify({osmId:school.osmId,entrance:school.entranceEdge,
    photoAccents:school.photoFrontTerracottaBays,
    directSource:school.source,unknownRear:school.rearStillProvisional}));
+ // 5.45: verify locally grounded thresholds for EVERY generated
+ // entrance family, including real hero facade cutouts and the school.
+ const grade=await page.evaluate(()=>window.__miloviceEntranceGradeAudit||null);
+ if(!grade||grade.version!=='5.45.0'||
+    grade.schoolDoors!==1||grade.maxGroundStep>.081||
+    grade.maxThresholdError>.00001||
+    !(grade.schoolDoors+grade.legacyDoors+grade.garageDoors+
+       grade.industrialDoors+grade.commerceDoors>1)||
+    school.entranceOnLocalTerrain!==true||
+    school.entranceGroundStep>.081||
+    !(hero.groundedDoors>0)||
+    hero.groundedDoors!==hero.cutoutDoors||
+    hero.doorPlinthOpenings!==hero.cutoutDoors||
+    hero.maxDoorGroundStep>.081||
+    hero.groundedDoorWallHoles!==hero.cutoutDoors)
+   throw Error('5.45 floating entrance thresholds detected: '+
+    JSON.stringify({grade,school,heroDoors:hero.groundedDoors,
+     cutoutDoors:hero.cutoutDoors,heroGroundStep:hero.maxDoorGroundStep}));
+ console.log('5.45 all building entrance grades:',
+  JSON.stringify({schoolGround:school.entranceGroundY,
+   schoolFloor:school.entranceThresholdY,
+   families:{school:grade.schoolDoors,legacy:grade.legacyDoors,
+    garage:grade.garageDoors,industrial:grade.industrialDoors,
+    commerce:grade.commerceDoors,hero:hero.groundedDoors},
+   splitHeroPlinths:hero.doorPlinthOpenings,
+   maxStep:grade.maxGroundStep}));
  const roofTopology=await page.evaluate(()=>window.__miloviceRoofTopologyAudit||null);
  if(!roofTopology||roofTopology.version!=='3.0'||
     roofTopology.processed<300||roofTopology.partitionable<100||

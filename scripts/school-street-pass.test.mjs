@@ -49,7 +49,7 @@ assert(world.includes('schoolPhotoPlan=isSchool?planSchoolStreetFrontage(pts):nu
 assert(world.includes("if(isSchool&&schoolPhotoPlan?.accents.some("));
 assert(world.includes('if(isSchool&&schoolPhotoPlan){')&&
  world.includes('longest={a:pts[f.index],b:pts[(f.index+1)%pts.length]'));
-assert(world.includes("archPart('stationGlass',glass.x,baseHeight+1.17"));
+assert(world.includes("archPart('stationGlass',glass.x,grade.centerY"));
 assert(world.includes("schoolPhotoPlan.canopyDepth")&&
  !world.includes("archPart('glassAwning',mx+nx*flushBoxOffset(2.45)"));
 assert(!world.includes("archPart('schoolRed',mx+nx*flushBoxOffset(.15),baseHeight+1.28"),

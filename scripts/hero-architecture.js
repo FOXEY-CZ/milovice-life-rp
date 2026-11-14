@@ -6,7 +6,8 @@ import {selectFacadeEdges,planFaceOpenings} from './facade-model.js';
 import {analyzeGableFootprint} from './city-roof-geometry.js';
 import {classifyFacadeEdgeLength,planFacadePerimeterTrims,planPhotographedEaveCornice,buildPhotographedEaveCorniceGeometry,PHOTO_EAVE_PROFILE_COLOR} from './facade-perimeter.js?v=5430';
 import {makeSharedFacadeSurfaceMaps} from './facade-surface-kit.js';
-import {exteriorFacadeFrame,flushBoxOffset,RECESSED_GLAZING,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './facade-anchors.js';
+import {exteriorFacadeFrame,flushBoxOffset,RECESSED_GLAZING,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH,splitFacadeStripForOpening} from './facade-anchors.js';
+import {planGroundedEntrance,doorwayWallHole} from './entrance-grade.js?v=5450';
 
 export function makeMiloviceHeroArchitecture(THREE,{
   sites=[],radius=240,maxBuildings=68,terrainAt=()=>0
@@ -23,7 +24,9 @@ export function makeMiloviceHeroArchitecture(THREE,{
   photoEaveBands:0,photoEaveVisibleBands:0,
   photoEaveProfileSteps:0,photoEaveJoinedCorners:0,photoEaveProfileMeshes:0,
   sharedSurfaceTextures:3,surfaceResolution:128,extraMaterialDrawCalls:0,
-  anchoredOpenings:0,maxFrameDetachment:0,wallPlaneSource:'OSM exterior polygon'};
+  anchoredOpenings:0,maxFrameDetachment:0,wallPlaneSource:'OSM exterior polygon',
+  groundedDoors:0,maxDoorGroundStep:0,maxFormerDoorGap:0,
+  doorPlinthOpenings:0,groundedDoorWallHoles:0};
  const box=new THREE.BoxGeometry(1,1,1),glassPlane=new THREE.PlaneGeometry(1,1);
  const mats={
   wall:new THREE.MeshStandardMaterial({vertexColors:true,roughness:.92,side:THREE.DoubleSide}),
@@ -160,7 +163,8 @@ export function makeMiloviceHeroArchitecture(THREE,{
    }
    const addBand=band=>placement(chunk,band.kind,
     band.x,band.y,band.z,band.width,band.height,band.depth,band.yaw);
-   addBand(trim.base);
+   // The base band must be split at any real doorway BELOW. A complete
+   // grey band would hide the corrected lower part of grounded doors.
    // Photo eave: one connected three-step polygon ring, never separate
    // square boxes that leave dark seams on the building corners.
    if(!photoCornice)addBand(trim.upper);
@@ -168,6 +172,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
    state.trimmedPerimeterMetres+=trim.length;
    if(wallKind==='solid-return')state.trimmedShortReturns++;
    if(wallKind==='solid-return'){
+    addBand(trim.base);
     const shortWall=wallGeometry(a,b,base,height,[],tone);
     if(shortWall){
      chunk.walls.push(shortWall);state.solidWalls++;
@@ -190,8 +195,30 @@ export function makeMiloviceHeroArchitecture(THREE,{
    const entry=!!planned.door;
    const entranceU=planned.door?.x??len*.5;
    const doorWidth=planned.door?.w??1.21;
-   const doorBottom=planned.door?.y??.13,doorHeight=planned.door?.h??2.27;
-   if(entry){holes.push(planned.door);state.cutoutDoors++}
+   const doorway=entry?planGroundedEntrance(edgeFrame,{
+    terrainAt,baseHeight:base,
+    topY:base+planned.door.y+planned.door.h,
+    along:entranceU-len*.5}):null;
+   if(entry&&!doorway)throw Error('Hero door has no valid local terrain threshold');
+   if(entry){
+    const opening=doorwayWallHole(doorway,doorWidth);
+    if(!opening)throw Error('Hero door cut-out has no valid grounded wall opening');
+    holes.push({...planned.door,...opening});
+    state.cutoutDoors++;state.groundedDoors++;
+    state.groundedDoorWallHoles++;
+    state.maxDoorGroundStep=Math.max(state.maxDoorGroundStep,doorway.maxGroundStep);
+    state.maxFormerDoorGap=Math.max(state.maxFormerDoorGap,doorway.formerGap);
+    // Door-width cut interrupts just the PLINTH and keeps the two
+    // neighbouring wall segments. The upper cornice stays continuous.
+    const parts=splitFacadeStripForOpening(edgeFrame,{
+     along:entranceU-len*.5,width:doorWidth,padding:.055});
+    for(const p of parts){
+     addBand({...trim.base,width:p.width,
+      x:trim.base.x+edgeFrame.ux*p.along,
+      z:trim.base.z+edgeFrame.uz*p.along});
+    }
+    state.doorPlinthOpenings++;
+   }else addBand(trim.base);
    if(sideLayout){
     state.verifiedFaces++;
     if(planned.photoMapped){
@@ -254,21 +281,21 @@ export function makeMiloviceHeroArchitecture(THREE,{
    // Actual front door opening, framed with a 3D threshold/hood.
    if(entry){
     const xx=a.x+ux*entranceU,zz=a.y+uz*entranceU;
-    placement(chunk,'dark',xx-nx*.13,base+doorBottom+doorHeight*.5,
-     zz-nz*.13,doorWidth+.03,doorHeight,.07,yaw);
-    placement(chunk,'wood',xx-nx*.085,base+doorBottom+doorHeight*.5,
-     zz-nz*.085,doorWidth-.14,doorHeight-.11,.07,yaw);
+    placement(chunk,'dark',xx-nx*.13,doorway.centerY,
+     zz-nz*.13,doorWidth+.03,doorway.doorHeight,.07,yaw);
+    placement(chunk,'wood',xx-nx*.085,doorway.centerY,
+     zz-nz*.085,doorWidth-.14,doorway.doorHeight-.11,.07,yaw);
     const jamb=flushBoxOffset(.24),lintel=flushBoxOffset(.27);
     for(const d of [-1,1]){
      placement(chunk,'frame',xx+ux*d*(doorWidth*.5+.06)+nx*jamb,
-      base+doorBottom+doorHeight*.5,
-      zz+uz*d*(doorWidth*.5+.06)+nz*jamb,.11,doorHeight+.18,.24,yaw);
+      doorway.centerY,
+      zz+uz*d*(doorWidth*.5+.06)+nz*jamb,.11,doorway.doorHeight+.18,.24,yaw);
     }
-    placement(chunk,'frame',xx+nx*lintel,base+doorBottom+doorHeight+.055,
+    placement(chunk,'frame',xx+nx*lintel,doorway.topY+.055,
      zz+nz*lintel,doorWidth+.22,.12,.27,yaw);
     const threshold=flushBoxOffset(.32);
-    placement(chunk,'base',xx+nx*threshold,base+doorBottom-.025,
-     zz+nz*threshold,doorWidth+.36,.20,.32,yaw);
+    placement(chunk,'base',xx+nx*threshold,doorway.floorY+.045,
+     zz+nz*threshold,doorWidth+.36,.09,.32,yaw);
     state.anchoredOpenings++;
     state.maxFrameDetachment=Math.max(state.maxFrameDetachment,
      facadeGap(edgeFrame,{x:xx+nx*jamb,z:zz+nz*jamb},.24));

@@ -176,8 +176,9 @@ import {addLanduseFeature,forestInstancePlacements} from './scripts/landscapes.j
 import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
-import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5430';
+import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5450';
 import {planSchoolStreetFrontage,schoolFacadeFixture,SCHOOL_PHOTO_WAY_ID} from './scripts/school-street-pass.js?v=5440';
+import {planGroundedEntrance} from './scripts/entrance-grade.js?v=5450';
 import {exteriorFacadeFrame,selectExteriorFacadeToward,splitFacadeStripForOpening,facadePoint,flushBoxOffset,FACE_PLANE,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './scripts/facade-anchors.js?v=5400';
 import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5410';
 import {clipRoofFacesForFeatures,planRoofFeatureBackClosures} from './scripts/roof-opening-geometry.js?v=5320';
@@ -1566,6 +1567,36 @@ function miloviceWindowGlass(){
 facadeMat[1].map=miloviceWindowGlass();facadeMat[1].color.setHex(0xffffff);facadeMat[1].needsUpdate=true;
 
 const facadePosition=new THREE.Vector3(),facadeRotation=new THREE.Quaternion(),facadeScale=new THREE.Vector3(1,1,1),facadeMatrix=new THREE.Matrix4();
+// All street-level entrances must be grounded to the APPROACH terrain,
+ // not the highest corner of a levelled building foundation.
+const entranceGradeAudit=window.__miloviceEntranceGradeAudit={
+ version:'5.45.0',legacyDoors:0,schoolDoors:0,garageDoors:0,
+ industrialDoors:0,commerceDoors:0,heroDoors:0,
+ maxGroundStep:0,maxFormerGap:0,maxThresholdError:0,
+ raisedDoorsRepaired:0,gradeSource:'local exterior DEM, not foundation maximum',
+ samples:[]
+};
+function recordEntranceGrade(grounded,type,osmId){
+ if(!grounded)throw Error('Missing terrain-grounded entrance at OSM '+osmId);
+ const key=type+'Doors';
+ if(!(key in entranceGradeAudit))throw Error('Unknown door family '+type);
+ entranceGradeAudit[key]++;
+ entranceGradeAudit.maxGroundStep=Math.max(
+  entranceGradeAudit.maxGroundStep,grounded.maxGroundStep);
+ entranceGradeAudit.maxFormerGap=Math.max(
+  entranceGradeAudit.maxFormerGap,grounded.formerGap);
+ const actualBottom=grounded.centerY-grounded.doorHeight*.5;
+ entranceGradeAudit.maxThresholdError=Math.max(
+  entranceGradeAudit.maxThresholdError,Math.abs(actualBottom-grounded.floorY));
+ if(grounded.formerGap>.12)entranceGradeAudit.raisedDoorsRepaired++;
+ if(entranceGradeAudit.samples.length<16)entranceGradeAudit.samples.push({
+  osmId,type,grade:+grounded.groundY.toFixed(3),
+  threshold:+grounded.floorY.toFixed(3),
+  originalGap:+grounded.formerGap.toFixed(3),
+  resultGap:+(actualBottom-grounded.floorY).toFixed(5)
+ });
+}
+
 function addFacadePart(kind,x,y,z,rotation,baseHeight=terrainAt(x,z)){facadePosition.set(x,y+baseHeight,z);facadeRotation.setFromAxisAngle(new THREE.Vector3(0,1,0),rotation);facadeMatrix.compose(facadePosition,facadeRotation,facadeScale);{const key=Math.floor(x/120)+','+Math.floor(z/120);if(!facadeBatches[kind].has(key))facadeBatches[kind].set(key,[]);facadeBatches[kind].get(key).push(facadeMatrix.clone())}}
 function finalizeFacades(){
  for(let i=0;i<4;i++){
@@ -2725,17 +2756,22 @@ function miloviceBusinessFront(pts,tags,base,height,cx,cz,osmId){
  }
  // Entrances and generous floor-to-ceiling glazing, bounded to the surveyed wall.
  const glassW=Math.max(2.5,Math.min(w*.95,len-.32));
+ const commerceGrade=planGroundedEntrance(face,{
+  terrainAt,baseHeight:base,topY:base+2.4});
+ if(!commerceGrade)throw Error('Mapped business frontage has no local grade '+osmId);
+ recordEntranceGrade(commerceGrade,'commerce',osmId);
  // Glass lies on mapped wall, with narrow actual jambs and mullions.
  // No large opaque panels or 0.6m floating white frames across the shop.
- archPart('stationGlass',mx+nx*FACE_PLANE,base+1.39,
-  mz+nz*FACE_PLANE,glassW-.35,2.02,.026,yaw);
+ archPart('stationGlass',mx+nx*FACE_PLANE,commerceGrade.centerY,
+  mz+nz*FACE_PLANE,glassW-.35,commerceGrade.doorHeight,.026,yaw);
  const frameOffset=flushBoxOffset(.08),jamb=glassW*.49;
  for(const side of [-1,0,1]){
   archPart('stationFrames',mx+dx/len*jamb*side+nx*frameOffset,
-   base+1.38,mz+dz/len*jamb*side+nz*frameOffset,
-   .095,2.26,.08,yaw);
+   (commerceGrade.floorY+base+2.51)*.5,
+   mz+dz/len*jamb*side+nz*frameOffset,
+   .095,base+2.51-commerceGrade.floorY,.08,yaw);
  }
- for(const dy of [base+.26,base+2.51])
+ for(const dy of [commerceGrade.floorY+.045,base+2.51])
   archPart('stationFrames',mx+nx*frameOffset,dy,
    mz+nz*frameOffset,glassW,.085,.08,yaw);
  archPart(normalized==='billa'?'billaBlack':normalized==='penny'?'pennyRed':normalized==='tesco'?'tescoWhite':'stationCanopy',
@@ -3218,7 +3254,14 @@ function osmBuilding(points,tags,index,osmId=null){
    const bays=Math.max(1,Math.floor(len/6));
    for(let j=0;j<bays;j++){
     const t=(j+.5)/bays;
-    archPart('industrialDoor',p.x+dx*t+nx*flushBoxOffset(.21),baseHeight+1.9,p.y+dz*t+nz*flushBoxOffset(.21),Math.min(3.9,len/bays-.4),3.62,.21,rotation);
+    const industrialGrade=planGroundedEntrance(facade,{
+     terrainAt,baseHeight,topY:baseHeight+3.71,
+     along:(t-.5)*len});
+    if(!industrialGrade)throw Error('Industrial entrance has no grade '+osmId);
+    recordEntranceGrade(industrialGrade,'industrial',osmId);
+    archPart('industrialDoor',p.x+dx*t+nx*flushBoxOffset(.21),
+     industrialGrade.centerY,p.y+dz*t+nz*flushBoxOffset(.21),
+     Math.min(3.9,len/bays-.4),industrialGrade.doorHeight,.21,rotation);
    }
   }
   if(isBlueStar){
@@ -3318,24 +3361,32 @@ function osmBuilding(points,tags,index,osmId=null){
    if(!entrance)throw Error('Mapped exterior entrance edge is degenerate');
    const {nx,nz,mx,mz,ux,uz,yaw}=entrance;
    const doorx=mx+nx*flushBoxOffset(.12),doorz=mz+nz*flushBoxOffset(.12);
+   const grade=planGroundedEntrance(entrance,{
+    terrainAt,baseHeight,topY:baseHeight+(isSchool?2.32:2.27)});
+   if(!grade)throw Error('Unable to ground mapped building entrance '+osmId);
+   recordEntranceGrade(grade,isSchool?'school':'legacy',osmId);
    if(isSchool){
     // Photo-supported pair of glazed entry leaves with white jambs.
     const glass=schoolFacadeFixture(entrance,0,.04);
-    archPart('stationGlass',glass.x,baseHeight+1.17,glass.z,
-     schoolPhotoPlan.doorwayWidth,2.30,.04,yaw);
+    archPart('stationGlass',glass.x,grade.centerY,glass.z,
+     schoolPhotoPlan.doorwayWidth,grade.doorHeight,.04,yaw);
     for(const side of [-1,0,1]){
      const jamb=schoolFacadeFixture(entrance,
       side*schoolPhotoPlan.doorwayWidth*.5,.085);
-     archPart('stationFrames',jamb.x,baseHeight+1.17,jamb.z,.09,2.39,.085,yaw);
+     archPart('stationFrames',jamb.x,
+      (grade.floorY+grade.topY+.045)*.5,jamb.z,
+      .09,grade.topY+.045-grade.floorY,.085,yaw);
     }
-    for(const level of [baseHeight+.035,baseHeight+2.38]){
+    for(const level of [grade.floorY+.045,grade.topY+.04]){
      const rail=schoolFacadeFixture(entrance,0,.085);
      archPart('stationFrames',rail.x,level,rail.z,
       schoolPhotoPlan.doorwayWidth+.10,.095,.085,yaw);
     }
    }else{
-    archPart('darkWood',doorx,baseHeight+1.16,doorz,1.28,2.22,.12,yaw);
-    archPart('bronze',doorx+ux*.48+nx*.12,baseHeight+1.23,
+    archPart('darkWood',doorx,grade.centerY,doorz,
+     1.28,grade.doorHeight,.12,yaw);
+    archPart('bronze',doorx+ux*.48+nx*.12,
+     grade.floorY+grade.doorHeight*.52,
      doorz+uz*.48+nz*.12,.06,.14,.16,yaw);
    }
    attachmentAudit.legacyDoors++;
@@ -3348,7 +3399,10 @@ function osmBuilding(points,tags,index,osmId=null){
      4.10,.14,schoolPhotoPlan.canopyDepth,yaw);
     for(const side of [-1,1]){
      const p=facadePoint(entrance,side*1.94,.85);
-     archPart('stationFrames',p.x,baseHeight+1.34,p.z,.075,2.55,.075,yaw);
+     const postTop=baseHeight+2.615;
+     archPart('stationFrames',p.x,
+      (grade.floorY+postTop)*.5,p.z,
+      .075,postTop-grade.floorY,.075,yaw);
     }
     const label=facadePoint(entrance,0,.024);
     schoolFacadeSign('ZŠ T. G. MASARYKA',
@@ -3359,14 +3413,22 @@ function osmBuilding(points,tags,index,osmId=null){
      photoEntrances:1,doorwayWidth:schoolPhotoPlan.doorwayWidth,
      canopyDepth:schoolPhotoPlan.canopyDepth,
      source:schoolPhotoPlan.source,sourceDate:schoolPhotoPlan.sourceDate,
-     rearStillProvisional:true
+     rearStillProvisional:true,
+     entranceGroundY:+grade.groundY.toFixed(4),
+     entranceThresholdY:+grade.floorY.toFixed(4),
+     formerThresholdGap:+grade.formerGap.toFixed(4),
+     entranceGroundStep:+grade.maxGroundStep.toFixed(4),
+     entranceOnLocalTerrain:true
     };
    }else if(isStation){
     archPart('glassAwning',mx+nx*flushBoxOffset(2.9),baseHeight+2.9,mz+nz*flushBoxOffset(2.9),Math.min(11,len*.72),.24,2.9,yaw);
     stationFacadeSign('Milovice',mx+nx*flushBoxOffset(.16),baseHeight+4.45,mz+nz*flushBoxOffset(.16),yaw);
    }else if(isPanelBlock){
     archPart('panelEntry',mx+nx*flushBoxOffset(1.6),baseHeight+2.57,mz+nz*flushBoxOffset(1.6),3.2,.18,1.6,yaw);
-    archPart('whiteTrim',mx+nx*flushBoxOffset(.12),baseHeight+1.37,mz+nz*flushBoxOffset(.12),1.65,2.42,.12,yaw);
+    const frameTop=baseHeight+2.58;
+    archPart('whiteTrim',mx+nx*flushBoxOffset(.12),
+     (grade.floorY+frameTop)*.5,mz+nz*flushBoxOffset(.12),
+     1.65,frameTop-grade.floorY,.12,yaw);
    }else if(oldCenter||!isIndustrial){
     archPart('glassAwning',mx+nx*flushBoxOffset(.88),baseHeight+2.53,mz+nz*flushBoxOffset(.88),2.45,.11,.88,yaw);
    }
@@ -3394,10 +3456,15 @@ function osmBuilding(points,tags,index,osmId=null){
    const {len}=front,facade=exteriorFacadeFrame(pts,front.i);
    if(!facade)throw Error('Invalid garage facade edge');
    const {nx,nz,mx,mz,yaw}=facade,doorWidth=Math.min(2.7,len-.42);
-   archPart('garageMetal',mx+nx*flushBoxOffset(.13),baseHeight+1.25,
-    mz+nz*flushBoxOffset(.13),doorWidth,2.12,.13,yaw);
+   const garageGrade=planGroundedEntrance(facade,{
+    terrainAt,baseHeight,topY:baseHeight+2.31});
+   if(!garageGrade)throw Error('Garage entrance has no local grade '+osmId);
+   recordEntranceGrade(garageGrade,'garage',osmId);
+   archPart('garageMetal',mx+nx*flushBoxOffset(.13),garageGrade.centerY,
+    mz+nz*flushBoxOffset(.13),doorWidth,garageGrade.doorHeight,.13,yaw);
    for(let j=0;j<5;j++)archPart('windowBar',mx+nx*flushBoxOffset(.07),
-    baseHeight+.46+j*.38,mz+nz*flushBoxOffset(.07),doorWidth,.025,.07,yaw);
+    garageGrade.floorY+.32+j*(garageGrade.doorHeight-.60)/4,
+    mz+nz*flushBoxOffset(.07),doorWidth,.025,.07,yaw);
   }
  }
  // The old one-size-fits-all horizontal roof LineLoop sat at y=h+.12
