@@ -177,6 +177,7 @@ import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
 import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5430';
+import {planSchoolStreetFrontage,schoolFacadeFixture,SCHOOL_PHOTO_WAY_ID} from './scripts/school-street-pass.js?v=5440';
 import {exteriorFacadeFrame,selectExteriorFacadeToward,splitFacadeStripForOpening,facadePoint,flushBoxOffset,FACE_PLANE,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './scripts/facade-anchors.js?v=5400';
 import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5410';
 import {clipRoofFacesForFeatures,planRoofFeatureBackClosures} from './scripts/roof-opening-geometry.js?v=5320';
@@ -1699,13 +1700,13 @@ function finalizeArchitecture(){
   items.length=0;
  }
 }
-function schoolFacadeSign(text,x,y,z,orientation){
+function schoolFacadeSign(text,x,y,z,orientation,width=3.7,height=.55){
  const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=176;const ctx=canvas.getContext('2d');
  ctx.fillStyle='#fff4d5';ctx.fillRect(0,0,1024,176);
  ctx.fillStyle='#9d3a2a';ctx.fillRect(0,0,1024,8);
  ctx.font='bold 83px system-ui';ctx.fillStyle='#243e52';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,512,94,990);
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
- const label=new THREE.Mesh(new THREE.PlaneGeometry(7.7,1.32),new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide}));
+ const label=new THREE.Mesh(new THREE.PlaneGeometry(width,height),new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide}));
  label.position.set(x,y,z);label.rotation.y=orientation;osmLayer.add(label);
 }
 const osmDoorMaterial=new THREE.MeshStandardMaterial({color:0x394a50,metalness:.25,roughness:.28,side:THREE.DoubleSide});
@@ -2822,7 +2823,8 @@ function osmBuilding(points,tags,index,osmId=null){
  if(w<2||d<2||w>140||d>140)return;
  const type=tags.building||'yes',isGarage=type==='garage'||type==='garages';
  const isIndustrial=type==='warehouse'||type==='industrial';
- const isSchool=type==='school'&&tags.name==='ZŠ T. G. Masaryka';
+ const isSchool=type==='school'&&tags.name==='ZŠ T. G. Masaryka'&&osmId===SCHOOL_PHOTO_WAY_ID;
+  const schoolPhotoPlan=isSchool?planSchoolStreetFrontage(pts):null;
  const isChurch=type==='church'&&tags.name==='sv. Kateřina Alexandrijská';
  const isStation=type==='train_station'&&tags.name==='Milovice';
  const isBlueStar=osmId===202367194; // verified Mírová 134/11 building; photographed 2024, 2 floors.
@@ -3173,9 +3175,9 @@ function osmBuilding(points,tags,index,osmId=null){
     archPart('starWhite',mx+nx*flushBoxOffset(.26),baseHeight+h-.27,mz+nz*flushBoxOffset(.26),len,.23,.26,rotation);
     bands+=3;
    }else if(isSchool){
-    archPart('schoolRed',mx+nx*flushBoxOffset(.15),baseHeight+1.28,mz+nz*flushBoxOffset(.15),len,2.52,.15,rotation);
-    archPart('schoolRed',mx+nx*flushBoxOffset(.10),baseHeight+3.48,mz+nz*flushBoxOffset(.10),len,.20,.10,rotation);
-    bands+=2;
+    // Short OSM returns are not photo-mapped: keep native yellow wall.
+    const audit=window.__miloviceSchoolPhotoAudit ||= {};
+    audit.unknownShortReturnsPreserved=(audit.unknownShortReturnsPreserved||0)+1;
    }else if(isHouse&&oldCenter){
     archPart('foundationBand',mx+nx*flushBoxOffset(.10),baseHeight+.52,mz+nz*flushBoxOffset(.10),len,1.02,.1,rotation);
     bands++;
@@ -3224,10 +3226,12 @@ function osmBuilding(points,tags,index,osmId=null){
    archPart('starWhite',mx+nx*flushBoxOffset(.16),baseHeight+3.48,mz+nz*flushBoxOffset(.16),len,.12,.16,rotation);
    archPart('starWhite',mx+nx*flushBoxOffset(.26),baseHeight+h-.27,mz+nz*flushBoxOffset(.26),len,.23,.26,rotation);
   }
-  if(isSchool){
-   // The photographed Školská school has a warm yellow upper facade and deep red ground floor.
-   archPart('schoolRed',mx+nx*flushBoxOffset(.15),baseHeight+1.28,mz+nz*flushBoxOffset(.15),len,2.52,.15,rotation);
-   archPart('schoolRed',mx+nx*flushBoxOffset(.10),baseHeight+3.48,mz+nz*flushBoxOffset(.10),len,.20,.10,rotation);
+  if(isSchool&&schoolPhotoPlan?.accents.some(f=>f.index===i)){
+   // Only photo-facing terracotta wall bays; no fictitious red wrap.
+   const q=schoolFacadeFixture(facade,0,.018);
+   archPart('schoolRed',q.x,baseHeight+h*.5,q.z,len-.04,h-.10,.018,rotation);
+   const audit=window.__miloviceSchoolPhotoAudit ||= {};
+   audit.photoFrontTerracottaBays=(audit.photoFrontTerracottaBays||0)+1;
   }else if(isHouse&&oldCenter){
    archPart('foundationBand',mx+nx*flushBoxOffset(.10),baseHeight+.52,mz+nz*flushBoxOffset(.10),len,1.02,.1,rotation);
   }
@@ -3238,6 +3242,8 @@ function osmBuilding(points,tags,index,osmId=null){
    if(y+.78>=h)continue; // Allow ground-floor windows on genuine one-storey houses.
    for(let j=0;j<windows;j++){
     const t=(j+1)/(windows+1),px=p.x+dx*t,pz=p.y+dz*t;
+    if(isSchool&&floor===0&&schoolPhotoPlan?.entrance.index===i&&
+     Math.abs((t-.5)*len)<schoolPhotoPlan.doorwayWidth*.5+.45)continue;
     const wx=px+nx*FACE_PLANE,wz=pz+nz*FACE_PLANE;
     addFacadePart(0,wx,y,wz,rotation,baseHeight);
     addFacadePart(1,px+nx*(FACE_PLANE+.007),y,
