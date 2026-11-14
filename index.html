@@ -1,4 +1,4 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.61.0 Restore Incorrectly Hidden Buildings</title><meta name="milovice-build" content="20261114-restore-legacy-5610"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
+<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.62.0 Identify Exact OSM Building</title><meta name="milovice-build" content="20261114-3d-object-inspector-5620"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
 #realmap{position:fixed;inset:0;z-index:100;background:#101e2c;display:none;flex-direction:column;color:#fff;font-family:system-ui}#realmap.open{display:flex}#maphead{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#142c3e}#maphead button{flex:0 0 auto;min-height:40px}#osmmap{flex:1;min-height:0;touch-action:pan-x pan-y}#mapfoot{padding:8px 12px;background:#142c3e;font-size:12px;line-height:1.4}#maplaunch{position:fixed;right:12px;top:75px;z-index:45;background:#193d58;border:1px solid #93b4c7;box-shadow:0 2px 8px #0006}#realmap .leaflet-container{background:#d7e5da}#realmap a{color:#aedbff} @media(max-width:700px){#maplaunch{top:72px;right:8px;padding:7px 10px;font-size:12px;min-height:36px}#maphead{font-size:13px}}
 </style><style>#perf{position:fixed;top:10px;right:10px;z-index:42;background:#102437e8;border:1px solid #77a7b6;border-radius:10px;padding:7px 10px;color:#c8f6d4;font:600 12px system-ui;pointer-events:none;min-width:100px;text-align:center}#perf small{display:block;color:#c9d5dd;font-size:10px;font-weight:400}@media(max-width:700px){#perf{top:8px;right:8px;padding:5px 7px;font-size:11px}#maplaunch{top:100px!important}}</style><style id="milovice-modern-ui">
 #hud{background:linear-gradient(145deg,rgba(9,24,39,.88),rgba(20,44,61,.82));backdrop-filter:blur(12px);border:1px solid rgba(176,214,235,.3);box-shadow:0 10px 30px #061b2b33;border-radius:18px}
@@ -8,6 +8,26 @@
 #maplaunch{background:linear-gradient(150deg,#234d69,#143248);border-radius:13px;box-shadow:0 7px 18px #0005}
 #perf{backdrop-filter:blur(8px);border-radius:12px}
 #minimap{box-shadow:0 6px 20px #0007}
+</style><style id="osm-object-inspect-style">
+#osm-inspect-toggle{position:fixed;right:12px;top:148px;z-index:47;
+ color:#fff;background:#264e65;border:1px solid #a2cce4;border-radius:12px;
+ box-shadow:0 4px 12px #0006;padding:10px 12px;font-size:13px;cursor:pointer}
+#osm-inspect-toggle[aria-pressed="true"]{background:#0c6a6b;border-color:#b8f3d3}
+#osm-inspect-result{position:fixed;top:204px;right:12px;z-index:47;
+ width:min(345px,calc(100vw - 24px));background:#102737ef;
+ border:1px solid #8fbacb;border-radius:12px;padding:11px;
+ color:#fff;box-shadow:0 8px 26px #0008;font:13px/1.4 system-ui}
+#osm-inspect-result[hidden]{display:none!important}
+#osm-inspect-result strong{display:block;margin-bottom:5px}
+#osm-inspect-result p{color:#d7e9ef;margin:5px 0}
+#osm-inspect-result small{display:block;color:#ebd29c;font-size:11px}
+#osm-inspect-actions{display:flex;gap:8px;align-items:center;margin-top:8px}
+#osm-inspect-actions a{color:#a6dffd;white-space:nowrap}
+#osm-inspect-copy{padding:7px 10px;min-height:34px}
+@media(max-width:700px){
+ #osm-inspect-toggle{top:147px;right:8px;padding:7px 10px;font-size:12px}
+ #osm-inspect-result{top:191px;right:8px;font-size:12px;max-height:44dvh;overflow:auto}
+}
 </style><style id="rp-451-ui">
 /* Contextual controls: the minimap is ALWAYS ABOVE the moving-size toolbar. */
 #controls button[hidden],#hud [hidden],.rp-overlay[hidden]{display:none!important}
@@ -66,7 +86,15 @@
 #rp-joystick[data-intensity="běh"]{border-color:#ffd36e}#rp-joystick[data-intensity="běh"] #rp-joystick-knob{background:linear-gradient(145deg,#e3a84c,#8e5720);border-color:#fff0ae}
 @media(max-width:850px){html.rp-analog-controls #rp-joystick{display:block}html.rp-analog-controls #controls button[data-key]{display:none!important}}
 @media(max-width:400px){#rp-joystick{width:113px;height:113px;left:8px}}
-</style></head><body><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.61.0 · build <strong id="build-label">20261114-restore-legacy-5610</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
+</style></head><body><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.62.0 · build <strong id="build-label">20261114-3d-object-inspector-5620</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
+<button id="osm-inspect-toggle" type="button" aria-pressed="false" title="Klepnutím na konkrétní budovu zjistíš její OSM identitu">🔎 Objekt</button>
+<section id="osm-inspect-result" role="status" aria-live="polite" hidden>
+<strong id="osm-inspect-title">Identifikace objektu</strong>
+<p id="osm-inspect-description">Zapni režim a klepni na budovu ve 3D.</p>
+<small>OSM označení nepředstavuje fotografické ověření stavby.</small>
+<div id="osm-inspect-actions"><a id="osm-inspect-link" target="_blank" rel="noopener noreferrer" hidden>Otevřít v OSM</a>
+<button id="osm-inspect-copy" type="button" hidden>📋 Kopírovat ID a polohu</button></div>
+</section>
 <section class="rp-overlay" id="rp-spawn" aria-label="Výběr vozidla" hidden>
  <div class="rp-modal">
   <div class="rp-modal-head"><div><h2>🚘 Jak chceš začít?</h2><p>Vyber si vozidlo nebo vyraz pěšky. Vozidla slouží pro volnou jízdu.</p></div><button id="rp-spawn-close" type="button">✕</button></div>
@@ -189,6 +217,7 @@ import {isCarriageway,isPedestrianWay,safePedestrianPieces,pedestrianPieceKey,ma
 import {makeStationForecourtScene} from './scripts/station-forecourt-pass.js?v=5241';
 import {planStationPlatformCanopy,createStationPlatformCanopy} from './scripts/station-platform-canopy.js?v=5580';
 import {photoRenderingDecision,NADRAZNI_PHOTO_PENDING_OSM_IDS} from './scripts/photo-verification-policy.js?v=5610';
+import {identifyOsmBuildingFromRay,formatOsmInspectorResult} from './scripts/osm-building-inspector.js?v=5620';
 import {makeSchoolGrounds} from './scripts/school-grounds-pass.js?v=5510';
 import {buildPhotographedEaveCorniceGeometry,PHOTO_EAVE_PROFILE_COLOR} from './scripts/facade-perimeter.js?v=5430';
 import {planFootprintPitchedRoof} from './scripts/station-roof-geometry.js?v=5282';
@@ -213,7 +242,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261114-restore-legacy-5610';
+const BUILD_ID='20261114-3d-object-inspector-5620';
 const rpStationRoofAuditCamera=new URLSearchParams(location.search).has('roofAudit');
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x9bc8ec);scene.fog=new THREE.Fog(0x9bc8ec,280,850);const camera=new THREE.PerspectiveCamera(67,innerWidth/innerHeight,.1,1400);const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,matchMedia('(pointer:coarse)').matches?1.6:1.25));renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x65725a,1.6));const sun=new THREE.DirectionalLight(0xffefcc,1.7);sun.position.set(50,100,30);scene.add(sun);
 
@@ -673,6 +702,85 @@ const keys=new Set();
  });
 // Camera orbit: drag the 3D world with mouse or a finger (not the UI buttons).
 let orbitPointer=null,orbitX=0,orbitY=0;
+// 5.62: object identification works on normal mobile taps. It NEVER edits
+// scene geometry. A completed tap (not an orbit-drag) raycasts the exact
+// OSM footprint walls that actually rendered, returning the nearest hit.
+const osmInspectToggle=document.getElementById('osm-inspect-toggle');
+const osmInspectResult=document.getElementById('osm-inspect-result');
+const osmInspectTitle=document.getElementById('osm-inspect-title');
+const osmInspectDescription=document.getElementById('osm-inspect-description');
+const osmInspectLink=document.getElementById('osm-inspect-link');
+const osmInspectCopy=document.getElementById('osm-inspect-copy');
+const osmInspectRaycaster=new THREE.Raycaster();
+const osmInspectPointer=new THREE.Vector2();
+let osmInspectActive=new URLSearchParams(location.search).get('inspect')==='1';
+let osmInspectDown=null,osmInspectCopied='';
+function osmInspectShow(message,formatted=null){
+ osmInspectResult.hidden=false;
+ if(!formatted){
+  osmInspectTitle.textContent='🔎 Identifikace budovy';
+  osmInspectDescription.textContent=message;
+  osmInspectLink.hidden=true;osmInspectCopy.hidden=true;
+  return;
+ }
+ const label=formatted.name?formatted.name+' · ':'';
+ osmInspectTitle.textContent='OSM way '+formatted.id;
+ osmInspectDescription.textContent=label+
+  'Mapové označení: '+formatted.type+
+  ' · '+formatted.point.lat.toFixed(6)+', '+formatted.point.lon.toFixed(6)+
+  ' · '+(formatted.face==='roof-approx'?'pohled na střechu':'pohled na fasádu')+
+  '. Pozor: typ ani vzhled nejsou tímto fotograficky potvrzené.';
+ osmInspectLink.href=formatted.osmUrl;osmInspectLink.hidden=false;
+ osmInspectCopy.hidden=false;
+ osmInspectCopied='Milovice RP 5.62: OSM way '+formatted.id+
+  ', typ dle OSM '+formatted.type+
+  ', poloha '+formatted.point.lat.toFixed(6)+', '+formatted.point.lon.toFixed(6)+
+  ', '+formatted.osmUrl+'. Fotografie konkrétního objektu není ověřená.';
+ window.__miloviceOsmInspection.selected=formatted;
+}
+osmInspectToggle.addEventListener('click',()=>{
+ osmInspectActive=!osmInspectActive;
+ osmInspectToggle.setAttribute('aria-pressed',String(osmInspectActive));
+ osmInspectToggle.textContent=osmInspectActive?'🔎 Klepni na stavbu':'🔎 Objekt';
+ osmInspectResult.hidden=!osmInspectActive;
+ if(osmInspectActive)osmInspectShow('Teď klepni přímo na fasádu nebo střechu ve hře. Přetažení stále otáčí kameru.');
+});
+if(osmInspectActive){
+ osmInspectToggle.setAttribute('aria-pressed','true');
+ osmInspectToggle.textContent='🔎 Klepni na stavbu';
+ osmInspectShow('Klepni na fasádu vybrané budovy; přesná OSM identita se objeví tady.');
+}
+osmInspectCopy.addEventListener('click',async()=>{
+ if(!osmInspectCopied)return;
+ try{
+  await navigator.clipboard.writeText(osmInspectCopied);
+  osmInspectCopy.textContent='✓ Zkopírováno';
+ }catch(_){
+  osmInspectCopy.textContent='Kopírování nedostupné; použij ID nahoře';
+ }
+});
+renderer.domElement.addEventListener('pointerdown',e=>{
+ if(osmInspectActive)osmInspectDown={id:e.pointerId,x:e.clientX,y:e.clientY};
+});
+renderer.domElement.addEventListener('pointerup',e=>{
+ if(!osmInspectActive||!osmInspectDown||osmInspectDown.id!==e.pointerId)return;
+ const moved=Math.hypot(e.clientX-osmInspectDown.x,e.clientY-osmInspectDown.y);
+ osmInspectDown=null;if(moved>13)return;
+ const bounds=renderer.domElement.getBoundingClientRect();
+ osmInspectPointer.set(((e.clientX-bounds.left)/bounds.width)*2-1,
+  1-((e.clientY-bounds.top)/bounds.height)*2);
+ osmInspectRaycaster.setFromCamera(osmInspectPointer,camera);
+ const ray=osmInspectRaycaster.ray;
+ const hit=identifyOsmBuildingFromRay({
+  origin:ray.origin,direction:ray.direction,
+  buildings:osmInspectionBuildings,maxDistance:180});
+ const item=formatOsmInspectorResult(hit);
+ osmInspectCopy.textContent='📋 Kopírovat ID a polohu';
+ if(item)osmInspectShow('',item);
+ else osmInspectShow('Žádnou OSM budovu jsem v tomto záběru nezasáhla. Klepni přímo na stěnu, ideálně z menší vzdálenosti.');
+});
+renderer.domElement.addEventListener('pointercancel',()=>{osmInspectDown=null});
+
 renderer.domElement.addEventListener('pointerdown',e=>{if(!walking)return;orbitPointer=e.pointerId;orbitX=e.clientX;orbitY=e.clientY;try{renderer.domElement.setPointerCapture(e.pointerId)}catch(_){}});
 renderer.domElement.addEventListener('pointermove',e=>{if(!walking||e.pointerId!==orbitPointer)return;orbitYaw-=(e.clientX-orbitX)*.008;orbitPitch=Math.max(-.35,Math.min(.95,orbitPitch+(e.clientY-orbitY)*.005));orbitX=e.clientX;orbitY=e.clientY});
 for(const eventName of ['pointerup','pointercancel','lostpointercapture'])renderer.domElement.addEventListener(eventName,e=>{if(e.pointerId===orbitPointer)orbitPointer=null});
@@ -2852,6 +2960,10 @@ window.__milovicePhotoVerificationAudit={
  source:'OSM is not proof of real-world type or facade appearance',
  legacyCityAuditPending:true,garageRowsUnverified:true
 };
+// 5.62: exact model-to-map identity, not a guess based on a screenshot.
+const osmInspectionBuildings=[];
+window.__miloviceOsmInspection={count:0,selected:null,source:'mapped OSM footprints',
+ noPhotoInference:true,modelChanges:0};
 const legacyRealityAudit=makeRetrospectiveAuditTracker();
 function publishLegacyRealityAudit(){window.__miloviceLegacyRealityAudit=legacyRealityAudit.summary();}
 function osmBuilding(points,tags,index,osmId=null){
@@ -2950,6 +3062,14 @@ function osmBuilding(points,tags,index,osmId=null){
   for(let j=0;j<=steps;j++){const t=j/steps;baseHeight=Math.max(baseHeight,terrainAt(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t))}
  }
  baseHeight+=.10;
+ // Every registered object is an actual rendered OSM building, including
+ // its world-space footprint and Y foundation. Ray hits use this registry,
+ // never the nearest random OSM feature or a 2D screenshot approximation.
+ osmInspectionBuildings.push({id:osmId,
+   tags:{building:tags.building||'yes',name:tags.name||''},
+   points:pts.map(p=>({x:p.x,z:p.y})),
+   base:baseHeight,height:h,photographicApproval:photoDecision.photographicApproval});
+ window.__miloviceOsmInspection.count=osmInspectionBuildings.length;
  if(terrainGrid){
   for(let i=0;i<pts.length;i++){
    const a=pts[i],b=pts[(i+1)%pts.length],steps=Math.max(1,Math.ceil(a.distanceTo(b)/3));
