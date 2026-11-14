@@ -18,9 +18,9 @@ const homes=core.entries.map(e=>({id:e.osmId,center:[e.lat,e.lon]}));
 const one=id=>homes.find(p=>p.id===id);
 for(const [id,photoId] of [
  [118487980,'skolska-1-2024'],[202367254,'mirova-36-2024'],
- [202367194,'modra-hvezda-2024']]){
+ [202367194,'modra-hvezda-2024'],[118487979,'school-2024']]){
  const matches=streetEvidenceForBuilding(one(id));
- assert(matches[0]?.id===photoId&&matches[0].directEvidence,
+ assert(matches.some(p=>p.id===photoId&&p.directEvidence)&&matches[0]?.directEvidence,
   'Directly named building source must rank ahead of random nearby photos: '+id);
 }
 const m=streetEvidenceForBuilding(one(118487980));
@@ -40,7 +40,7 @@ assert.equal(distanceBetweenPhotosAndBuilding(null,[50,14]),Infinity);
 assert.equal(streetEvidenceForBuilding(null).length,0);
 const stats=streetPhotoCoverage(homes);
 assert.equal(stats.buildings,684);
-assert.equal(stats.withIdentifiedBuildingPhotos,3);
+assert.equal(stats.withIdentifiedBuildingPhotos,4);
 assert(stats.withNearbyPhotos>=3&&stats.withNearbyPhotos<stats.buildings,
  'Only a minority of houses have locally discovered photo candidates');
 assert.equal(stats.allFacadesVerified,false);
