@@ -35,7 +35,7 @@ for(const band of split){
  assert(to<=openingLeft+1e-7||from>=openingRight-1e-7,
   'Foundation band hides the corrected floor-level door');
 }
-const reverseFrame=exteriorFacadeFrame(outside,3);
+const reverseFrame=exteriorFacadeFrame(outside,2);
 const reversed=planGroundedEntrance(reverseFrame,{
  terrainAt:(x,z)=>.03*x+.14*Math.abs(z),
  baseHeight:1.8,topY:4.20,along:2
@@ -66,7 +66,6 @@ assert(game.includes('recordEntranceGrade(grade,isSchool?')&&
  'Every rendered ordinary, school, garage, factory and shop entrance family needs local terrain grounding');
 assert(game.includes("window.__miloviceEntranceGradeAudit=")&&
  game.includes('recordEntranceGrade(grade,')&&
- game.includes('grade.floorY+postTop')===false&&
  game.includes('(grade.floorY+postTop)*.5'),
  'Real school canopy posts must reach the same door grade');
 assert(hero.includes('planGroundedEntrance(edgeFrame')&&
