@@ -89,6 +89,7 @@ try{
  const landmark=await page.evaluate(()=>window.__milovicePhotoStreetPass||null);
  if(!landmark||landmark.buildings!==3||landmark.dormers<3||
     landmark.rooflights!==3||landmark.hedgeGroups<2||
+    landmark.flushRooflights!==3||landmark.joinedOrdinaryDormerRoofs!==1||
     !(landmark.meshesSavedByBatching>0&&landmark.detailDrawMeshes<landmark.detailMeshes)||
     !['202367194','202367254','118487980'].every(id=>landmark.landmarkIds.includes(id))||
     landmark.actualArchedWindowMeshes!==4||landmark.rectangularFakeArchRemoved!==2||
@@ -175,8 +176,8 @@ try{
  console.log('5.7.0 verified wall-hole ray geometry:',JSON.stringify(cutoutTest));
 
 
- if(!(await page.locator('#build-label').innerText()).includes('photo-block-5341'))
-  throw new Error('5.34.1 browser loaded a stale HTML build');
+ if(!(await page.locator('#build-label').innerText()).includes('reality-scene-5350'))
+  throw new Error('5.35.0 browser loaded a stale HTML build');
  const sidewalkCheck=await page.evaluate(()=>window.__miloviceSidewalkDebug||null);
  if(!sidewalkCheck||sidewalkCheck.legacyUnderRoadBands!==0||
     sidewalkCheck.separatedSidewalks!==0||
@@ -253,6 +254,20 @@ try{
  const wheels=await page.evaluate(()=>window.__miloviceVehicleDebug);
  console.log('5.4.0 moving car and bus wheel rotation:',JSON.stringify(wheels));
  const landmarkChecks=await page.evaluate(()=>window.__miloviceLandmarkDebug||{});
+ const citySigns=await page.evaluate(()=>window.__miloviceStreetSignReality||null);
+ if(!citySigns||citySigns.inventedWorldBillboards!==0||
+    citySigns.inventedRoadPoles!==0||
+    citySigns.roadNamesRetainedInMap!==true)
+   throw Error('5.35: world contains invented 8m floating street signs: '+
+    JSON.stringify(citySigns));
+ if(landmarkChecks.blueStarGhostDoorsRemoved!==true)
+   throw Error('5.35: hotel still has full-size fake opaque window doors');
+ console.log('5.35 photographed city models: '+JSON.stringify({
+  openHotelBalcony:true,ghostHotelDoors:0,
+  flushMirovaRooflights:landmark.flushRooflights,
+  connectedMirovaGable:landmark.joinedOrdinaryDormerRoofs,
+  removedFakeRoadBillboards:citySigns.inventedWorldBillboards
+ }));
  if(landmarkChecks.blueStarSourceEntranceArch!==true||
     landmarkChecks.blueStarInventedBillboardRemoved!==true||
     landmarkChecks.mirova36SourceStorefrontBays!==3||
