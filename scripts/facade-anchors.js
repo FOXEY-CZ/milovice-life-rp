@@ -84,3 +84,25 @@ export function selectExteriorFacadeToward(outline,camera,{
  }
  return best;
 }
+
+/**
+ * Physically interrupt a continuous facade/plinth strip at a real doorway.
+ * Segments stay in the original mapped wall's local tangent coordinate.
+ * Works for short chamfers, rotated walls, reversed winding and long fronts.
+ * A strip crossing an entrance would hide its lower 50 cm and make the
+ * visible door look as though its threshold floats above the pavement.
+ */
+export function splitFacadeStripForOpening(frame,{
+ along=0,width=1.5,padding=0,minWidth=.03
+}={}){
+ if(!frame||![frame.len,along,width,padding,minWidth].every(Number.isFinite)||
+  frame.len<=0||width<=0||padding<0||minWidth<0)return [];
+ const half=frame.len*.5,left=Math.max(-half,along-width*.5-padding),
+  right=Math.min(half,along+width*.5+padding);
+ if(right<=left)return [{along:0,width:frame.len}];
+ const result=[];
+ for(const [begin,end] of [[-half,left],[right,half]]){
+  if(end-begin>minWidth)result.push({along:(begin+end)*.5,width:end-begin});
+ }
+ return result;
+}
