@@ -326,9 +326,9 @@ try{
   throw new Error('5.29 house roofs still carry floating generic outlines: '+JSON.stringify(photoBuildingPass));
  console.log('5.29 roof outline suppression and photo-building audit:',photoBuildingPass);
  const official=await page.evaluate(()=>window.__miloviceArchitectureBridge);
- if(!official||official.publishedVerified!==3||
-    !['202367194','202367254','118487980'].every(id=>official.appliedIds.includes(id)))
-   throw Error('Three source-reviewed public building cards were not applied to OSM ways: '+JSON.stringify(official));
+ if(!official||official.publishedVerified!==4||
+    !['202367194','202367254','118487980','202298939'].every(id=>official.appliedIds.includes(id)))
+   throw Error('Four source-reviewed public building cards were not applied to OSM ways: '+JSON.stringify(official));
  console.log('5.29 photo-grounded block: Školská 220/1 actual curved attic windows + documented buildings',
    JSON.stringify({landmark,published:official.publishedVerified}));
  const environment=await page.evaluate(()=>window.__miloviceStreetEnvironment||null);

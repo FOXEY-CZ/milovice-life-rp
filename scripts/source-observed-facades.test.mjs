@@ -48,5 +48,7 @@ for(const poly of [fork,[...fork].reverse()]){
 const html=readFileSync(new URL('./hero-architecture.js',import.meta.url),'utf8');
 assert(html.includes('planSourceObservedFacade(String(identity),edgeFrame)'));
 assert(html.includes('const actualSide=sideLayout||observed?.side||null;'));
-assert(html.includes('!observed&&sideIndex===entrySide'));
+assert(html.includes("String(identity)!=='202298939'")&&
+ html.includes('sideIndex===entrySide'),
+ 'No photo-confirmed fork entry may be invented on an unseen wall');
 console.log('5.52 photographed street facades, 4 front windows, zero fake street doors PASS');
