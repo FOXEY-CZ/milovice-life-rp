@@ -12,7 +12,7 @@ assert(audit.entries.every(x=>ids.has(x.osmId)),'Never invent buildings or fake 
 assert.equal(audit.withMappedLevels,actual.filter(e=>e.tags['building:levels']!=null).length);
 assert.equal(audit.withMappedHeight,actual.filter(e=>e.tags.height!=null).length);
 assert.equal(audit.withMappedRoofShape,actual.filter(e=>e.tags['roof:shape']!=null).length);
-assert.equal(audit.withPhotoReference,3);
+assert.equal(audit.withPhotoReference,4);
 assert(audit.entries.every(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lon)&&
  x.reviewStatus!=='verified-1to1'),'Exact photo 1:1 status cannot be claimed from the current evidence');
 const counts=Object.values(audit.priorityAreas).reduce((n,v)=>n+v,0);
