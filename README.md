@@ -1,3 +1,22 @@
+# Milovice RP 5.59 — severní Nádražní: 17 garáží v řadách
+
+**Spustit hru:** https://foxey-cz.github.io/milovice-life-rp/  
+**Interaktivní QA celé ulice:** https://foxey-cz.github.io/milovice-life-rp/survey.html?id=old%3AN%C3%A1dra%C5%BEn%C3%AD
+
+**Skutečná 3D změna v ulici:** na severní Nádražní je podle půdorysů OpenStreetMap vyznačeno 17 jednotlivých garáží v **dvou protilehlých řadách**. Dřívější renderer vybíral 5,85m nejdelší stěnu, ačkoli to bývá sousední společná zeď. Verze 5.59 vybírá **kratší ~3m čelní fasádu**, která se orientuje směrem do prostoru mezi řadami, a umisťuje na ni terénně usazená sekční vrata a vodorovné pásy.
+
+- Využity existující OSM tvary všech 17 garáží a skutečné vnější normály.
+- Algoritmus **vyžaduje mapované párové řady**, neumisťuje dveře do společných zdí; pokud chybí podklady, nepřidá žádný odhadovaný detail.
+- Žádná nová nezdokumentovaná parkovací plocha, komunikace, dopravní značení ani zeleň. **Poloha vrat na čelní stěně je geometry-driven odhad**; konkrétní barevnost/typ vyžaduje fotografie.
+- Společná instancovaná architektura ponechána, bez nového velkého počtu draw callů.
+- Přidána automatická kontrola `scripts/nadrazni-garage-court.test.mjs` do GitHub Actions; ověření počtu 17, výběru krátkých stěn, protilehlosti řad, pořadí vrcholů OSM a průběhu při neúplném mapování.
+
+**Předchozí dokončená fáze:** 5.58, krátká stříška nad železničním vyústěním průchodu nádražím (zatím provizorně přijatá). Zbytek Nádražní stále čeká na 360° fotografické srovnání a opravy budov, chodníků, parkování, vegetace a ostatních prvků.
+
+Podrobné stavební poznámky: [REBUILD 2.0](docs/REBUILD-2.md).
+
+---
+
 # Milovice RP 5.58 — opravená stříška PŘÍMO nad průchodem nádraží
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/  
