@@ -1,9 +1,9 @@
-// Milovice RP 5.70 — correct the swapped parking/sidewalk surface classes.
+// Milovice RP 5.71 — visibly separate pedestrian strip along the photographed island edge.
 // The user's 2022 Mapy.com comparison identifies a BROAD concrete-grid
 // PARKING surface on the central island, with a NARROW footpath running along
 // its western edge, already represented by OSM footway 1165594426. Version
 // 5.69 mislabeled 249 parking grid tiles as a broad pedestrian surface.
-// This fixes the semantic swap and preserves the real mapped pedestrian way,
+// This provides a real narrow WEST-edge footpath and preserves the existing mapped pedestrian way,
 // the opposite parking bank and the separate right-hand entrance corner.
 // Screenshots are VISUAL EVIDENCE only: no proprietary image is stored.
 // Geometry is source-constrained, approximate, and drawn from our own shapes.
@@ -26,7 +26,7 @@ export const STATION_PARKING_REFERENCE=Object.freeze({
  observed:['two dark asphalt routes bound a large pale paved parking island',
   'wide pale concrete-block paving rather than narrow detached strips',
   'second grass-grid parking row across the western access road',
-  'broad central island parking surface immediately beside a separate narrow OSM footway',
+  'broad central island parking surface beside a visible narrow WEST-edge pedestrian strip',
   'separate paved right corner at the road entrance, connected to mapped footway 1282187911',
   'rounded island tip and a low kerb','bike tower and rail-side vegetation'],
  excluded:['unlocated trees and traffic signs','imaginary parked cars','invented new asphalt roads'],
@@ -112,7 +112,9 @@ export function planStationPhotoParking(elements,roadClearance){
   half*=Math.sqrt(Math.max(.01,1-(1-nose)**2));
   left=center-half;right=center+half;
   let acceptedRow=0;
-  for(let offset=2.52;offset<gap-3.96;offset+=acrossStep){
+  // Reserve the photo-marked WEST edge for a separate walking surface.
+  // Previously parking started at 2.52m and left no room for the footpath.
+  for(let offset=4.45;offset<gap-3.96;offset+=acrossStep){
    if(offset<left+depth*.47||offset>right-depth*.47)continue;
    const p=at(f,along,offset);
    // Whole tile's footprint (not just its centre) clears ALL OSM roads and
@@ -176,10 +178,35 @@ export function planStationPhotoParking(elements,roadClearance){
   else railSideParking.push({...p,along,offset:railParkingOffset,yaw:f.yaw,
    length:2.46,depth:railParkingDepth});
  }
- // 5.70 correction: all island pavers outside the mapped footway are
- // PARKING, not pedestrian pavement. The original real-world path runs
- // along its Nádražní edge and is rendered by the core OSM footway layer.
- // No second fake sidewalk or pale duplicate band can be added here.
+ // 5.71: photo-marked narrow pedestrian strip WEST of the parking,
+ // along the edge beside OSM service way 675778842. The screenshot confirms
+ // this physical placement but its exact 1.38m width is only approximated.
+ // It is deliberately separate from the wider parking-grid polygons.
+ const westPedestrianStrip=[],westPedestrianCurbs=[],walkRejected=[];
+ const walkOffset=3.31,walkWidth=1.38,walkLength=.785,walkStep=.76;
+ const walkMin=walkOffset-walkWidth/2,walkMax=walkOffset+walkWidth/2;
+ const firstParkingEdge=4.45-depth/2;
+ if(walkMin<2.50||walkMax>=firstParkingEdge-.025)
+  throw Error('Central parking overlaps the west-side walking strip or roadway');
+ for(let along=3.65;along<Math.min(66,f.length-7);along+=walkStep){
+  const p=at(f,along,walkOffset);
+  const failure=safePlace(p,walkLength,walkWidth,.028);
+  if(failure){walkRejected.push({along,reason:failure});continue;}
+  westPedestrianStrip.push({...p,along,offset:walkOffset,yaw:f.yaw,
+   length:walkLength,depth:walkWidth});
+  // Low kerb between the walkway and concrete parking surface, with
+  // a shared material batch so the whole addition remains mobile-friendly.
+  const edge=at(f,along,4.055);
+  if(!safePlace(edge,.74,.105,.02))
+   westPedestrianCurbs.push({...edge,along,yaw:f.yaw});
+ }
+ // A few isolated white blocks would not count as a usable walkway.
+ if(westPedestrianStrip.length<60||
+  westPedestrianStrip.some((p,i)=>i&&p.along-westPedestrianStrip[i-1].along>1.1))
+  return null;
+ // All broad island grid cells remain PARKING, never relabelled as walkway.
+ // An independently drawn, narrow WEST-edge path is modeled below.
+ // OSM 1165594426 is still handled by the base city footway renderer.
  const centralParkingCells=cells;
  const centralFootway=elements.find(e=>
   Number(e.id)===STATION_PARKING_REFERENCE.centralFootwayId);
@@ -241,13 +268,16 @@ export function planStationPhotoParking(elements,roadClearance){
  }
  return {cells,curbs,rejected,rowStats,frame:f,cameras,
   railSideParking,railRejected,
+  westPedestrianStrip,westPedestrianCurbs,walkRejected,
   centralParkingCells,cornerPaving,cornerCurbs,cornerRejected,
   rightCornerFootwayId:cornerWay.id,centralFootwayId:centralFootway.id,
   incorrectlyPlacedRailSidewalkRemoved:true,
   parkingBanks:['central-between-roads','opposite-rail-side'],
-  pedestrianCorridorWidth:1.8,pedestrianSeparation:null,
-  centralPedestrianSurface:'OSM-footway-only-no-duplicate-parking',
-  centralParkingSurface:'all-validated-concrete-grid-cells',
+  pedestrianCorridorWidth:walkWidth,pedestrianSeparation:firstParkingEdge-walkMax,
+  centralPedestrianSurface:'distinct-photo-grounded-west-edge-strip',
+  centralParkingSurface:'separate-gridded-island-parking-cells',
+  pedestrianStripSide:'west-of-parking-facing-service-675778842',
+  pedestrianStripPhotoEstimated:true,
   mistakenParkingAsSidewalkRemoved:true,
   mappedFootwayIdPreserved:centralFootway.id,
   sourceIds:[west.id,east.id],sourcePhotos:STATION_PARKING_REFERENCE.photos.length,
@@ -264,7 +294,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   curb:new THREE.MeshLambertMaterial({color:0xb9b9b3}),
   railGrid:new THREE.MeshLambertMaterial({color:0x69794f}),
   railPaver:new THREE.MeshLambertMaterial({color:0xc1c3b9}),
-  sidewalk:new THREE.MeshLambertMaterial({color:0xc9c7bd})
+  sidewalk:new THREE.MeshLambertMaterial({color:0xe0dcd1})
  };
  let planned=null,drawMeshes=0,instances=0;
  const stats=()=>({
@@ -277,6 +307,11 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   oppositeParkingBays:planned?.railSideParking.length||0,
   centralParkingTiles:planned?.centralParkingCells.length||0,
   centralMistakenSidewalkTiles:0,
+  visibleWestSidewalkTiles:planned?.westPedestrianStrip.length||0,
+  visibleWestSidewalkCurbs:planned?.westPedestrianCurbs.length||0,
+  visibleSidewalkWidth:planned?.pedestrianCorridorWidth||0,
+  sidewalkParkingGap:planned?.pedestrianSeparation??null,
+  visibleSidewalkSide:planned?.pedestrianStripSide||null,
   centralWalkwaySource:planned?.centralPedestrianSurface||null,
   parkingSidewalkSwapFixed:planned?.mistakenParkingAsSidewalkRemoved||false,
   rightCornerPavingTiles:planned?.cornerPaving.length||0,
@@ -286,7 +321,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   sidewalkWidth:planned?.pedestrianCorridorWidth||0,
   mappedFootwayIdPreserved:planned?.mappedFootwayIdPreserved||null,
   rightCornerFootwayId:planned?.rightCornerFootwayId||null,
-  surface:'central-grid-parking-mapped-edge-footway-and-right-corner',
+  surface:'independent-west-edge-pedestrian-strip-and-broad-grid-parking',
   oldDetachedPaverStripsRemoved:true,
   roundedTip:true,drawMeshes,instances,
   collisionSafe:true,estimatedLayout:true,noSyntheticCars:true,sourceAnchored:true
@@ -346,8 +381,16 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
      yaw:bay.yaw,sx:.49,sy:.026,sz:.40});
    }
   }
-  // The previously invented rail-side sidewalk is gone. Instead widen the
-  // RIGHT entrance corner alongside its documented OSM footway only.
+  // Truly visible continuous 1.38m WEST-side pedestrian strip. It uses
+  // overlapping 0.785m stones spaced 0.76m; it does not recolor parking.
+  for(const p of planned.westPedestrianStrip)
+   sidewalkPavers.push({...p,y:terrainAt(p.x,p.z)+.211,
+    sx:p.length,sy:.035,sz:p.depth});
+  for(const p of planned.westPedestrianCurbs)
+   curb.push({...p,y:terrainAt(p.x,p.z)+.215,
+    sx:.74,sy:.092,sz:.105});
+  // Wrong rail-side sidewalk stays removed. Keep the RIGHT entrance corner
+  // as a separate part of the observed pedestrian environment.
   for(const p of planned.cornerPaving)
    sidewalkPavers.push({...p,y:terrainAt(p.x,p.z)+.187,
     sx:p.length,sy:.058,sz:p.depth});
