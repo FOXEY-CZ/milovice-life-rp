@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="cs"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Milovice RP — bezpečný fotoprůzkum (PILOT)</title>
+<style>
+:root{color-scheme:dark;font:16px system-ui,sans-serif;background:#0b1523;color:#e8f0f7}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(135deg,#10243a,#09111e 55%)}
+main{max-width:1120px;margin:auto;padding:22px 16px 90px}header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+h1{font-size:clamp(25px,4vw,38px);margin:10px 0 7px}h2{font-size:19px;margin:0 0 13px}
+p{line-height:1.5}.muted{color:#b9c8d8}.small{font-size:13px}
+strong{color:#fff}.pill{display:inline-block;border:1px solid #4a7b83;color:#a9e8db;border-radius:40px;padding:5px 11px;font-size:12px;font-weight:700;letter-spacing:.06em}
+a{color:#a8d9ff}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav a{font-size:14px;text-decoration:none;border:1px solid #34506c;border-radius:9px;padding:9px 12px;background:#172d41}
+.grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:16px;margin-top:18px}
+.panel{background:#122439ed;border:1px solid #304f67;border-radius:16px;padding:18px;min-width:0}
+button{font:inherit;color:#fff;border:1px solid #3d7994;background:#185270;border-radius:10px;padding:12px 15px;cursor:pointer;touch-action:manipulation}
+button:hover:not(:disabled){background:#1f6484}button:disabled{opacity:.5;cursor:default}
+button.secondary{background:#233346;border-color:#4c6071}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+#map{display:block;width:100%;border-radius:12px;border:1px solid #476077;background:#142d36;aspect-ratio:16/10}
+#status{padding:12px 14px;border-radius:10px;background:#1a3149;color:#e5f4ff;min-height:50px}
+#photos{display:grid;gap:10px;max-height:570px;overflow-y:auto;padding-right:4px}
+.result{border:1px solid #38546b;border-radius:10px;background:#1c3348;padding:12px}
+.result[aria-selected=true]{border-color:#9cdeec;background:#245269}
+.result h3{font-size:15px;margin:0 0 5px}.result p{margin:6px 0;font-size:13px}
+.result button{padding:7px 10px;font-size:13px}
+.result a{display:inline-block;margin-top:7px;font-size:13px}
+.note{border-left:3px solid #caad70;padding:10px 12px;background:#29303b;border-radius:6px;margin:15px 0}
+.footer{font-size:13px;color:#adbece;margin-top:22px}
+code{font-size:.92em;overflow-wrap:anywhere}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.panel{padding:13px}#photos{max-height:none}main{padding:15px 12px 70px}}
+</style></head><body><main>
+<header>
+ <div><span class="pill">PILOT · POUZE ČTENÍ</span><h1>📸 Fotografický průzkum Milovic</h1><p class="muted">Nádražní a přednádraží · experiment vedle hry, bez zásahů do 3D</p></div>
+ <nav class="nav" aria-label="Navigace"><a href="./index.html">🎮 Hra 5.66</a><a href="./editor.html">🏗️ Editor</a></nav>
+</header>
+<div class="note"><strong>Bezpečnostní režim:</strong> Mapy.com Panorama nijak neprocházíme ani nestahujeme. Pracujeme jen s metadaty fotografií z veřejného Panoramax STAC API. Není tu automatické přepisování budov, import fotografií do hry, přihlašování ani ukládání dat. Případné fotografie otevřeš přímo u jejich poskytovatele.</div>
+<div class="panel">
+ <h2>1. Průzkum oblasti nádraží</h2>
+ <p class="muted">Po stisknutí tlačítka proběhne <strong>jeden omezený dotaz</strong> na metadata snímků v okruhu 190 metrů od Nádražní. Zjistíme, zda jsou v této oblasti vůbec nějaké veřejné snímky. Prostorová blízkost ještě nedokazuje, co snímek zobrazuje.</p>
+ <div class="actions">
+  <button id="find" type="button">🔎 Vyhledat fotografie</button>
+  <button id="cancel" type="button" class="secondary" disabled>✕ Zrušit</button>
+  <a href="https://api.panoramax.xyz/?focus=map&map=18/50.22949/14.88242" target="_blank" rel="noopener noreferrer">Otevřít Panoramax</a>
+  <a href="https://mapy.com/cs/zakladni?x=14.88242&y=50.22949&z=18" target="_blank" rel="noopener noreferrer">Mapy.com (ruční prohlížení)</a>
+ </div>
+ <p id="status" role="status" aria-live="polite">Připraveno. Žádný externí požadavek zatím neproběhl.</p>
+</div>
+<div class="grid">
+ <section class="panel">
+  <h2>2. OSM situační plánek a zjištěné pozice</h2>
+  <canvas id="map" width="960" height="600" role="img" aria-label="Schéma mapy kolem milovického nádraží a případných fotografických pozic"></canvas>
+  <p class="muted small">Šedé: půdorysy objektů. Modré: OSM komunikace. Hnědé: železnice. Tyrkysová: cyklověž. Žluté body: nalezené polohy kamer. Nejde o mapu přesnosti fasád.</p>
+ </section>
+ <section class="panel">
+  <h2>3. Fotografické kandidáty</h2>
+  <div id="summary" class="muted small">Zatím nic nehledáno.</div>
+  <div id="photos"><p class="muted">Po vyhledání se zde objeví odkazy na původní 360° nebo běžné snímky, pokud je poskytovatel v oblasti nabízí.</p></div>
+ </section>
+</div>
+<div class="panel" style="margin-top:16px">
+ <h2>Jak budeme pokračovat, pokud něco najdeme?</h2>
+ <p>Otevřeme původní snímek u zdroje a ručně ověříme, jakou budovu nebo část ulice skutečně ukazuje. Teprve po kontrole licence, identity objektu a měřítka může vzniknout samostatný návrh změny pro 3D. Samotný pilot <strong>nemůže uložit ani schválit žádnou fasádu</strong>.</p>
+ <p class="muted small">Zdroje: <a href="https://docs.panoramax.fr/backend/api/api/" target="_blank" rel="noopener">Panoramax STAC API</a> · <a href="https://docs.panoramax.fr/web-viewer/03_URL_settings/" target="_blank" rel="noopener">prohlížeč fotografií</a> · <a href="https://developer.mapy.com/cs/smluvni-ujednani-dev/" target="_blank" rel="noopener">Mapy.com podmínky</a>. © OpenStreetMap contributors, ODbL.</p>
+</div>
+<p class="footer">Experiment je samostatný soubor <code>photo-pilot.html</code>. Návrat k původnímu projektu: GitHub větev <code>backup/566-before-photo-pilot</code>. Neodesíláme žádný účet, API token ani obsah tvých vlastních fotografií.</p>
+</main>
+<script type="module">
+import {PILOT_LOCATION,searchBox,fetchPanoramaxPilot} from './scripts/panoramax-pilot.js?v=1';
+const $=s=>document.getElementById(s),canvas=$('map'),ctx=canvas.getContext('2d');
+let photos=[],selected=null,ways=null,abort=null,busy=false;
+const BOX=searchBox(PILOT_LOCATION),pad=35;
+const project=(lon,lat)=>({
+ x:pad+(lon-BOX[0])/(BOX[2]-BOX[0])*(canvas.width-pad*2),
+ y:pad+(BOX[3]-lat)/(BOX[3]-BOX[1])*(canvas.height-pad*2)
+});
+function drawPath(points,fill,stroke,width=1){
+ if(!points?.length)return;
+ ctx.beginPath();
+ for(let i=0;i<points.length;i++){
+  const v=points[i],p=project(v.lon,v.lat);
+  i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);
+ }
+ if(fill){ctx.closePath();ctx.fillStyle=fill;ctx.fill()}
+ if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke()}
+}
+function draw(){
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ ctx.fillStyle='#17323a';ctx.fillRect(0,0,canvas.width,canvas.height);
+ ctx.strokeStyle='#2e5564';ctx.lineWidth=1;
+ for(let i=0;i<11;i++){
+  const x=pad+i*(canvas.width-pad*2)/10;
+  ctx.beginPath();ctx.moveTo(x,pad);ctx.lineTo(x,canvas.height-pad);ctx.stroke();
+ }
+ for(let i=0;i<8;i++){
+  const y=pad+i*(canvas.height-pad*2)/7;
+  ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(canvas.width-pad,y);ctx.stroke();
+ }
+ if(ways)for(const e of ways){
+  if(!e.geometry||e.geometry.length<2)continue;
+  const pts=e.geometry;
+  if(!pts.some(v=>v.lon>=BOX[0]-.0002&&v.lon<=BOX[2]+.0002&&v.lat>=BOX[1]-.0002&&v.lat<=BOX[3]+.0002))continue;
+  if(e.tags?.highway)drawPath(pts,null,e.tags.highway==='footway'?'#7b9e94':'#4c91ae',e.tags.highway==='footway'?2.2:5);
+  else if(e.tags?.railway==='rail')drawPath(pts,null,'#bb9268',3);
+  else if(e.tags?.building)drawPath(pts,e.id===1011197691?'#398f88':'#596774','#a1bec7',1);
+ }
+ const station=project(14.88206,50.2291);
+ ctx.fillStyle='#fff';ctx.font='bold 19px system-ui';ctx.fillText('Nádraží',station.x-25,station.y+25);
+ const bike=project(14.8822178,50.2292742);
+ ctx.fillText('Cyklověž',bike.x-30,bike.y-18);
+ photos.forEach((ph,i)=>{
+  const p=project(ph.lon,ph.lat),active=ph.id===selected;
+  ctx.beginPath();ctx.arc(p.x,p.y,active?11:7,0,Math.PI*2);
+  ctx.fillStyle=active?'#fff2b0':'#e9c862';ctx.fill();
+  ctx.strokeStyle='#243342';ctx.lineWidth=2;ctx.stroke();
+ });
+}
+function setBusy(value){busy=value;$('find').disabled=value;$('cancel').disabled=!value}
+function drawList(){
+ $('photos').replaceChildren();
+ const summary=$('summary');
+ summary.textContent=photos.length+' různých pozic kamer ve vybraném okruhu. Všechny jsou zatím NEOVĚŘENÉ kandidáty.';
+ if(!photos.length){
+  const p=document.createElement('p');p.className='muted';
+  p.textContent='V této oblasti nebyly v odpovědi nalezeny žádné snímky. Neznamená to, že zde žádná jiná fotodokumentace neexistuje.';
+  $('photos').append(p);draw();return;
+ }
+ for(const [i,ph] of photos.entries()){
+  const box=document.createElement('article');box.className='result';
+  box.setAttribute('aria-selected',String(ph.id===selected));
+  const title=document.createElement('h3');title.textContent='📷 Kandidát '+(i+1);
+  const meta=document.createElement('p');meta.textContent=
+   (ph.date?new Date(ph.date).toLocaleDateString('cs-CZ'):'Datum neuvedeno')+
+   ' · '+ph.lat.toFixed(6)+', '+ph.lon.toFixed(6)+
+   (ph.heading===null?' · směr neznámý':' · azimut '+Math.round(ph.heading)+'°');
+  const note=document.createElement('p');note.className='muted';
+  note.textContent='Viditelnost budov a právo použít snímek k tvorbě 3D zatím nebyly ověřeny.';
+  const select=document.createElement('button');select.type='button';select.className='secondary';
+  select.textContent='📍 Ukázat na plánku';
+  select.addEventListener('click',()=>{selected=ph.id;drawList()});
+  const a=document.createElement('a');a.href=ph.viewerUrl;a.target='_blank';a.rel='noopener noreferrer';
+  a.textContent='Otevřít u poskytovatele ↗';
+  const bottom=document.createElement('div');bottom.style.cssText='display:flex;align-items:center;flex-wrap:wrap;gap:12px';
+  bottom.append(select,a);box.append(title,meta,note,bottom);$('photos').append(box);
+ }
+ draw();
+}
+async function getWays(){
+ if(ways)return;
+ const r=await fetch('./data/milovice-osm.json',{cache:'default'});
+ if(!r.ok)throw new Error('Lokální OSM podklad HTTP '+r.status);
+ const json=await r.json();
+ ways=(json.elements||[]).filter(e=>e.geometry&&
+  (e.tags?.building||e.tags?.highway||e.tags?.railway));
+ draw();
+}
+$('cancel').addEventListener('click',()=>{
+ if(abort)abort.abort();
+ $('status').textContent='Průzkum přerušen. Žádná změna v projektu.';
+});
+$('find').addEventListener('click',async()=>{
+ if(busy)return;
+ setBusy(true);abort=new AbortController();
+ $('status').textContent='Načítám jediný omezený dotaz na metadata Panoramax. Nesahám na žádné obrázky ani 3D objekty…';
+ try{
+  const [result]=await Promise.all([
+   fetchPanoramaxPilot(PILOT_LOCATION,{signal:abort.signal}),
+   getWays()
+  ]);
+  photos=result.photos;selected=null;drawList();
+  $('status').textContent='Hotovo: '+photos.length+' nalezených kandidátů.'+
+   (result.morePages?' Výsledků může být víc; pilot další stránky nestahuje.':'')+
+   ' Neproběhly žádné změny hry a žádné fotografie nebyly uloženy.';
+ }catch(e){
+  if(e.name==='AbortError')$('status').textContent='Průzkum přerušen. Hra a editor zůstaly beze změn.';
+  else $('status').textContent='Metadata se nepodařilo načíst ('+String(e.message).slice(0,160)+
+   '). Může jít o nedostupné API nebo ochranu prohlížeče. Použij přímý odkaz Panoramax výše.';
+ }finally{abort=null;setBusy(false);window.__milovicePhotoPilot={
+  active:true,readOnly:true,storedPictures:0,autoGameMutations:0,source:'Panoramax STAC',
+  candidates:photos.length,queryCountLimit:1,backupBranch:'backup/566-before-photo-pilot'
+ }}
+});
+draw();
+</script></body></html>
