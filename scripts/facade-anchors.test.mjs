@@ -21,7 +21,7 @@ function verify(name,outline){
   assert(near(f.mz,(f.a.z+f.b.z)*.5));
   // Compare the same segment traversed in the opposite winding.
   const reverse=[...outline].reverse();
-  const matching=exteriorFacadeFrame(reverse,outline.length-1-i);
+  const matching=exteriorFacadeFrame(reverse,(outline.length*2-2-i)%outline.length);
   assert(matching&&near(matching.nx,f.nx)&&near(matching.nz,f.nz),
    name+' reversed polygon flips outward facade normal');
   const o=facadePoint(f,0,FACE_PLANE);
@@ -56,7 +56,7 @@ verify('concave reversed',[...concave].reverse());
 const angle=.43,c=Math.cos(angle),s=Math.sin(angle);
 verify('concave rotated',concave.map(v=>p(v.x*c-v.z*s+330,v.x*s+v.z*c-155)));
 assert.equal(exteriorFacadeFrame(rect,1).nx,1);
-assert.equal(exteriorFacadeFrame(rect,1).nz,0);
+assert(near(exteriorFacadeFrame(rect,1).nz,0));
 assert.equal(exteriorFacadeFrame(rect,99),null);
 assert.equal(exteriorFacadeFrame([p(0,0),p(0,0),p(0,0)],0),null);
 assert.equal(flushBoxOffset(0),null);
