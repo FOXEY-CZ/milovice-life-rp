@@ -51,6 +51,8 @@ jobs:
         run: node scripts/building-roof-topology.test.mjs
       - name: Confirm every short OSM exterior return has a solid wall
         run: node scripts/facade-perimeter.test.mjs
+      - name: Audit every city window, door and plinth against physical OSM wall plane
+        run: node scripts/facade-anchors.test.mjs
       - name: Verify no roof-to-wall gaps on irregular station footprints
         run: node scripts/station-roof-seams.test.mjs
       - name: Verify solid station eaves overhang only exterior mapped walls
