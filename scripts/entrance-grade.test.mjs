@@ -105,7 +105,8 @@ assert(!/recordEntranceGrade\([^;]*'garage-photo-2022'/.test(game),
 assert(game.includes("archPart('garagePhotoDoor'")&&
  game.includes('gravelCourtDrawCalls=1'),
  'Keep photographic garage doors and the mapped gravel court after crash fix');
-assert(game.includes("const BUILD_ID='20261114-nadrazni-garage-hotfix-5631'"),
- 'A new build ID is required to bypass stale mobile HTML caches');
+assert(/^20\d{6}-[a-z0-9-]+$/.test(
+ game.match(/const BUILD_ID='([^']+)'/)?.[1]||''),
+ 'Game build ID must be valid, but door-family regression may not pin a past version');
 console.log('5.63.1 door-family validation PASS: all recorded entrance types are registered');
 console.log('5.45 local entry grade PASS: city, school, shops, industry, garages and hero facade cutouts');
