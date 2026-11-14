@@ -153,6 +153,16 @@ try{
   throw Error('5.41 photo cornice or wall-mounted dormer panes missing: '+
    JSON.stringify({heroCornices:hero.photoEaveBands,
     fallbackCornice:fallbackPhotoCornice,photo:landmark}));
+ // 5.42 regression: 5.41 had seven INSTANCED cornices but they were
+ // invisible because the roof fascia hid them. Count only profiles with a
+ // visible vertical strip below the roof, measurable in wall coordinates.
+ if(hero.photoEaveBands<6||
+    hero.photoEaveVisibleBands!==hero.photoEaveBands)
+  throw Error('5.42 photographed cornice still hidden under roof soffit: '+
+   JSON.stringify({bands:hero.photoEaveBands,
+    exposed:hero.photoEaveVisibleBands}));
+ console.log('5.42 all Školská cornice edges exposed BELOW roof fascia:',
+  JSON.stringify({bands:hero.photoEaveBands,visible:hero.photoEaveVisibleBands}));
  console.log('5.41 attached eave cornice and flush dormer panes:',
   JSON.stringify({heroCornices:hero.photoEaveBands,
    fallbackCornices:fallbackPhotoCornice?.bands||0,
