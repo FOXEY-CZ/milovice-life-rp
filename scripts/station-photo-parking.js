@@ -1,11 +1,11 @@
-// Milovice RP 5.72 — render real OUTER sidewalk with shared city paving texture.
-// The user's 2022 Mapy.com comparison identifies a BROAD concrete-grid
-// PARKING surface on the central island, with the NARROW OUTER sidewalk
-// along its eastern Nádražní-facing edge. The user corrected our 5.71
-// mistake: the bright strip was on the INNER edge, beside service road
-// 675778842. The correct OUTER sidewalk is the actual mapped OSM footway
-// 1165594426; use its vertices instead of a parallel guessed line.
-// Keep both parking banks and the separate right-hand entrance corner.
+// Milovice RP 5.73 — CARVE the outer sidewalk OUT OF THE PARKING ISLAND.
+// The 5.72 "fix" drew a new OSM sidewalk directly OVER Nádražní's asphalt,
+// rather than removing the relevant strip from the parking surface.
+// The user confirmed the exact topology: existing road (UNTOUCHED),
+// narrow sidewalk from the OUTER/EAST edge of the parking island,
+// and remaining gridded parking to its WEST. Reuse the same textured
+// city sidewalk material without copying any Mapy.com imagery.
+// Keep both parking banks and the independent right-hand entrance corner.
 // Screenshots are VISUAL EVIDENCE only: no proprietary image is stored.
 // Geometry is source-constrained, approximate, and drawn from our own shapes.
 // NO Mapy.com screenshot pixels, panoramas, or textures are redistributed.
@@ -27,7 +27,7 @@ export const STATION_PARKING_REFERENCE=Object.freeze({
  observed:['two dark asphalt routes bound a large pale paved parking island',
   'wide pale concrete-block paving rather than narrow detached strips',
   'second grass-grid parking row across the western access road',
-  'broad central parking island with the OUTER Nádražní-facing sidewalk following OSM 1165594426',
+  'outer Nádražní-facing sidewalk CARVED FROM the safe parking-island footprint, aligned with nearby OSM 1165594426',
   'separate paved right corner at the road entrance, connected to mapped footway 1282187911',
   'rounded island tip and a low kerb','bike tower and rail-side vegetation'],
  excluded:['unlocated trees and traffic signs','imaginary parked cars','invented new asphalt roads'],
@@ -144,7 +144,9 @@ export function planStationPhotoParking(elements,roadClearance){
   if(acceptedRow){
    // Curbs border the PHOTO-APPROXIMATE island, not the carriageway.
    // Their tiny sections are each checked against mapped road surfaces.
-   for(const edge of [2.52,gap-4.16]){
+   // The eastern curb is rebuilt from the LAST safe tile edge below:
+   // the old gap-4.16 curb crossed the proposed sidewalk itself.
+   for(const edge of [2.52]){
     const p=at(f,along,edge);
     if(!isRoadFreeRect(roadClearance,{
      ...p,length:.71,depth:.11,yaw:f.yaw,buffer:.03,step:.26
@@ -180,9 +182,10 @@ export function planStationPhotoParking(elements,roadClearance){
   else railSideParking.push({...p,along,offset:railParkingOffset,yaw:f.yaw,
    length:2.46,depth:railParkingDepth});
  }
- // The full gridded island is PARKING. The real mapped sidewalk lies
- // on the opposite, EXTERIOR EAST/Nádražní edge, never by the service lane.
- const centralParkingCells=cells;
+ // A central candidate cell must have EXACTLY ONE role. We partition
+ // ALL validated OSM-safe island tiles into parking OR outer sidewalk.
+ // No extra terrain is claimed, so no new path can overlay the road.
+ // Partitioning is below, after verifying the mapped OUTER path's identity.
  const centralFootway=elements.find(e=>
   Number(e.id)===STATION_PARKING_REFERENCE.centralFootwayId);
  const cornerWay=elements.find(e=>
@@ -219,6 +222,54 @@ export function planStationPhotoParking(elements,roadClearance){
   waySegmentIndex:i+5,metres:d2(outerFootwayPoints[i],b)
  }));
  if(outerFootwaySegments.some(s=>s.metres<2))return null;
+ // 5.73: reserve the TWO most easterly columns (where available) on each
+ // photographed parking-island cross-section. This removes these pavers
+ // from PARKING and replaces them in situ with a sidewalk texture. Every
+ // selected footprint was already road/footway/rail/building checked above.
+ // The outside position is checked against the actual outer OSM footway.
+ const perRow=new Map();
+ for(const cell of cells){
+  if(!perRow.has(cell.along))perRow.set(cell.along,[]);
+  perRow.get(cell.along).push(cell);
+ }
+ const centralParkingCells=[],outerSidewalkCells=[],outerSidewalkCurbs=[];
+ let outerSidewalkMaxOsmDistance=0;
+ for(const row of perRow.values()){
+  row.sort((a,b)=>a.offset-b.offset);
+  const reserved=Math.min(row.length,row.length>=3?2:1);
+  const split=row.length-reserved;
+  centralParkingCells.push(...row.slice(0,split));
+  const pathCells=row.slice(split);
+  for(const patch of pathCells){
+   const source=closestPointToPolyline(patch,outerFootwayPoints);
+   const distance=source?.distance??Infinity;
+   // The photo tells us which SIDE to build on. Actual pedestrian paving
+   // is INSIDE the island, NOT along the OSM path where 5.72 hit asphalt.
+   if(distance>4.5)return null;
+   outerSidewalkMaxOsmDistance=Math.max(outerSidewalkMaxOsmDistance,distance);
+   outerSidewalkCells.push(patch);
+  }
+  // Keep a low curb on the road-facing boundary of the new sidewalk,
+  // deliberately INSET from the last SAFE paver footprint.
+  const edge=pathCells.at(-1);
+  if(edge){
+   const curb=at(f,edge.along,edge.offset+edge.depth/2-.085);
+   if(isRoadFreeRect(roadClearance,{
+    ...curb,length:.70,depth:.10,yaw:f.yaw,buffer:.015,step:.25
+   }))outerSidewalkCurbs.push({...curb,yaw:f.yaw,along:edge.along});
+  }
+ }
+ if(outerSidewalkCells.length<100||centralParkingCells.length<270)
+  return null;
+ if(centralParkingCells.length+outerSidewalkCells.length!==cells.length)
+  throw Error('Island parking/footpath partition has a missing or double-used cell');
+ // The OUTER edge must remain pedestrian, and no parking tile may lie
+ // further toward Nádražní in the same row.
+ for(const foot of outerSidewalkCells){
+  if(centralParkingCells.some(p=>p.along===foot.along&&p.offset>foot.offset))
+   return null;
+ }
+
  // User's RIGHT-HAND curved sidewalk is the southern corner by this
  // photographed, mapped east-bound footway. Extend only its exterior edge,
  // never paint through the OSM footway or a roadway.
@@ -273,17 +324,19 @@ export function planStationPhotoParking(elements,roadClearance){
  }
  return {cells,curbs,rejected,rowStats,frame:f,cameras,
   railSideParking,railRejected,
-  outerFootwaySegments,outerFootwayStations,
+  outerFootwaySegments,outerFootwayStations,outerSidewalkCells,
+  outerSidewalkCurbs,outerSidewalkMaxOsmDistance,
   centralParkingCells,cornerPaving,cornerCurbs,cornerRejected,
   rightCornerFootwayId:cornerWay.id,centralFootwayId:centralFootway.id,
   incorrectlyPlacedRailSidewalkRemoved:true,
   parkingBanks:['central-between-roads','opposite-rail-side'],
-  pedestrianCorridorWidth:walkWidth,pedestrianSeparation:null,
-  centralPedestrianSurface:'mapped-OSM-1165594426-outer-east-edge',
-  centralParkingSurface:'full-inner-grid-parking-cells',
+  pedestrianCorridorWidth:1.48,pedestrianSeparation:0,
+  centralPedestrianSurface:'carved-from-OSM-safe-outer-parking-cells',
+  centralParkingSurface:'remaining-inner-grid-parking-cells',
   pedestrianStripSide:'outer-east-facing-Nadrazni-128308366',
-  pedestrianStripOsmAnchored:true,pedestrianStripPhotoEstimated:false,
-  outerFootwayRendering:'city-textured-terrain-strip-no-boxes',
+  pedestrianStripOsmAnchored:false,pedestrianStripPhotoEstimated:true,
+  outerFootwayRendering:'carved-terrain-mesh-shared-city-paving',
+  originalRoadSurfaceUnmodified:true,
   mistakenParkingAsSidewalkRemoved:true,
   mappedFootwayIdPreserved:centralFootway.id,
   sourceIds:[west.id,east.id],sourcePhotos:STATION_PARKING_REFERENCE.photos.length,
@@ -302,7 +355,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   railPaver:new THREE.MeshLambertMaterial({color:0xc1c3b9}),
   sidewalk:new THREE.MeshLambertMaterial({color:0xe0dcd1})
  };
- let planned=null,drawMeshes=0,instances=0;
+ let planned=null,drawMeshes=0,instances=0,sharedSidewalkTexture=false;
  const stats=()=>({
   active:roots.length>0,sourceIds:planned?.sourceIds||[],
   photos:STATION_PARKING_REFERENCE.photos.length,
@@ -315,8 +368,13 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   centralMistakenSidewalkTiles:0,
   mappedOuterSidewalkSegments:planned?.outerFootwaySegments.length||0,
   outerSidewalkRendering:planned?.outerFootwayRendering||null,
+  outerSidewalkPatches:planned?.outerSidewalkCells.length||0,
+  outerSidewalkCurbs:planned?.outerSidewalkCurbs.length||0,
+  maxOuterFootwayOsmDistance:planned?.outerSidewalkMaxOsmDistance??null,
   visibleOuterSidewalkTiles:0,
   oldInnerSidewalkTiles:0,
+  roadSurfaceUnmodified:planned?.originalRoadSurfaceUnmodified||false,
+  sharedCitySidewalkTexture:sharedSidewalkTexture,
   visibleSidewalkWidth:planned?.pedestrianCorridorWidth||0,
   sidewalkParkingGap:planned?.pedestrianSeparation??null,
   visibleSidewalkSide:planned?.pedestrianStripSide||null,
@@ -329,7 +387,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   sidewalkWidth:planned?.pedestrianCorridorWidth||0,
   mappedFootwayIdPreserved:planned?.mappedFootwayIdPreserved||null,
   rightCornerFootwayId:planned?.rightCornerFootwayId||null,
-  surface:'osm-anchored-outer-nadrazni-sidewalk-and-inner-grid-parking',
+  surface:'walkway-carved-from-outer-safe-parking-no-road-overlays',
   oldDetachedPaverStripsRemoved:true,
   roundedTip:true,drawMeshes,instances,
   collisionSafe:true,estimatedLayout:true,noSyntheticCars:true,sourceAnchored:true
@@ -349,11 +407,43 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   if(colors)mesh.instanceColor.needsUpdate=true;
   mesh.computeBoundingSphere();group.add(mesh);drawMeshes++;instances+=items.length;
  }
- function create(elements){
+ // Join all reserved outer island cells into ONE textured ground mesh.
+ // Zero BoxGeometry slabs for the sidewalk; every world-space corner comes
+ // from the exact original OSM-validated parking footprint.
+ function texturedOuterSidewalk(group,tiles,material){
+  if(!tiles.length||!material)return;
+  const vertices=[],uvs=[],indices=[];
+  for(const p of tiles){
+   const k=vertices.length/3;
+   const corners=[
+    [p.along-p.length/2,p.offset-p.depth/2],
+    [p.along+p.length/2,p.offset-p.depth/2],
+    [p.along+p.length/2,p.offset+p.depth/2],
+    [p.along-p.length/2,p.offset+p.depth/2]
+   ];
+   for(const [along,offset] of corners){
+    const pt=at(planned.frame,along,offset);
+    vertices.push(pt.x,terrainAt(pt.x,pt.z)+.214,pt.z);
+    // Same ground-paving UV scale and material as regular city sidewalks.
+    uvs.push(offset/1.8,along/8);
+   }
+   // Upward-facing winding in x,z world coordinates.
+   indices.push(k,k+2,k+1,k,k+3,k+2);
+  }
+  const geometry=new THREE.BufferGeometry();
+  geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));
+  geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
+  geometry.setIndex(indices);geometry.computeVertexNormals();
+  const mesh=new THREE.Mesh(geometry,material);
+  mesh.receiveShadow=true;mesh.name='OuterParkingCarvedTexturedFootway';
+  group.add(mesh);drawMeshes++;
+ }
+ function create(elements,{sidewalkMaterial}={}){
   if(roots.length)return stats();
   planned=planStationPhotoParking(elements,roadClearance);
   if(!planned){publish();return stats()}
   const group=new THREE.Group();group.name='PhotoStationForecourtPavedIsland_2022_2024';
+  sharedSidewalkTexture=!!sidewalkMaterial?.map;
   group.userData.photoInformedLayout=true;
   group.userData.estimatedParkingPolygon=true;
   group.userData.sourceWayIds=planned.sourceIds;
@@ -389,9 +479,12 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
      yaw:bay.yaw,sx:.49,sy:.026,sz:.40});
    }
   }
-  // OUTER sidewalk is rendered once, by the core terrain-hugging textured
-  // OSM road renderer, using citySurfaceKit.paving and osmSidewalkMat.
-  // This module draws PARKING only; no redundant 3D sidewalk boxes.
+  // Road edges stay EXACTLY as in 5.72, but the wrongly forced full-width
+  // road-facing overlay is gone. A narrow pedestrian path is cut OUT of
+  // the validated parking island, using the real city's paving texture.
+  for(const p of planned.outerSidewalkCurbs)
+   curb.push({...p,y:terrainAt(p.x,p.z)+.217,
+    sx:.70,sy:.105,sz:.10});
   // Wrong rail-side sidewalk stays removed. Keep the RIGHT entrance corner
   // as a separate part of the observed pedestrian environment.
   for(const p of planned.cornerPaving)
@@ -407,11 +500,13 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
    [0xbcbeb4,0xcacbc1,0xaeb4a8,0xd4d2c7]);
   batch(group,material.sidewalk,sidewalkPavers);
   batch(group,material.curb,curb);
+  texturedOuterSidewalk(group,planned.outerSidewalkCells,
+   sidewalkMaterial||material.sidewalk);
   layer.add(group);roots.push(group);publish();return stats();
  }
  function reset(){
   for(const root of roots)root.parent?.remove(root);
-  roots.length=0;planned=null;drawMeshes=instances=0;publish();
+  roots.length=0;planned=null;drawMeshes=instances=0;sharedSidewalkTexture=false;publish();
  }
  publish();
  return {create,reset,status:stats,plan:()=>planned};
