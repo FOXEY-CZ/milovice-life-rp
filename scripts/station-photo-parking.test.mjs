@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createRoadClearance,isRoadFreeRect} from './road-clearance.js';
-import {STATION_PARKING_REFERENCE,planStationPhotoParking} from './station-photo-parking.js';
+import {STATION_PARKING_REFERENCE,planStationPhotoParking,planOuterSidewalkChamfers} from './station-photo-parking.js';
 import {stationGpsToWorld} from './station-forecourt-pass.js';
 
 const data=JSON.parse(readFileSync(new URL('../data/milovice-osm.json',import.meta.url),'utf8'));
@@ -96,6 +96,19 @@ for(const row of islandRows.values()){
 }
 assert(plan.rejected.filter(x=>x.reason==='isolated-outer-island-spur').length===
  plan.edgeSpursTrimmed,'Every removed photographic spur must remain auditable');
+const smooth=planOuterSidewalkChamfers(plan.outerSidewalkCells);
+const clipping=[...smooth.entries()].flatMap(([p,c])=>[c.start,c.end].map(amount=>({p,amount})));
+assert.equal(plan.chamferedExteriorCorners,clipping.filter(c=>c.amount>.08).length,
+ 'Edge chamfer planner must report real clipping, not a decorative counter');
+for(const {p,amount} of clipping)
+ assert(amount>=0&&amount<=p.depth-.1+1e-6,
+  'Visual outer edge cleanup may only REMOVE terrain from a known road-safe cell');
+assert.equal(smooth.size,planOuterSidewalkCellsWithChamfers(plan),
+ 'Photo cleanup must preserve all shared outer-row chamfer locations');
+function planOuterSidewalkCellsWithChamfers(plan){
+ return [...planOuterSidewalkChamfers(plan.outerSidewalkCells).keys()].length;
+}
+
 for(const p of plan.outerSidewalkCells)
  assert(isRoadFreeRect(occupied,{
   x:p.x,z:p.z,length:p.length+.012,depth:p.depth+.012,
@@ -197,6 +210,10 @@ assert(code.includes('const overlap=.006;'),'Need surface seam closure in textur
 assert(code.includes('sx:p.length+.012'),'Parking paver grout must fill the former grass pinstripes');
 assert(code.includes('edgeSpursRemoved.add(row.pop())'),
  'Jutting single-row island paving spurs must be removed, not projected over the roadway');
+assert(code.includes('const chamfers=planOuterSidewalkChamfers(tiles);'),
+ 'Mapped exterior paving must chamfer jagged right-hand boundary in-place');
+assert(code.includes('overlap-clip.end')&&code.includes('overlap-clip.start'),
+ 'Do not extend paving beyond the already validated island to fake smooth edges');
 assert(code.includes('sidewalkMaterial||material.sidewalk'));
 assert(code.includes('for(const p of planned.centralParkingCells)'),
  'Entire broad island surface must have real parking blocks');
@@ -214,6 +231,7 @@ console.log('5.74 island outer-edge cleanup without road geometry changes PASS',
  outerSidewalkCurbs:plan.outerSidewalkCurbs.length,
  exteriorFootwayOSMdistance:+plan.outerSidewalkMaxOsmDistance.toFixed(2),
  edgeSpursRemoved:plan.edgeSpursTrimmed,
+ smoothedExteriorCorners:plan.chamferedExteriorCorners,
  noTilesDoublePainted:true,roadSurfaceUntouched:true,
  mappedOuterFootwaySegments:plan.outerFootwaySegments.length,
  outerFootwayRendering:plan.outerFootwayRendering,
