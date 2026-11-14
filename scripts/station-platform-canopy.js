@@ -120,11 +120,15 @@ function appendQuad(vertices,a,b,c,d){
   for(const p of [a,b,c,a,c,d])vertices.push(p.x,p.y,p.z);
 }
 export function createStationPlatformCanopy(THREE,{
-  layer,terrainAt=()=>0,plan
+  layer,stationBaseY,plan
 }={}){
-  if(!THREE||!layer||!plan?.segments?.length)return {drawMeshes:0,segments:0};
+  if(!THREE||!layer||!plan?.segments?.length||
+    !Number.isFinite(stationBaseY))return {drawMeshes:0,segments:0,reason:'missing-station-base'};
   const verts=[],under=[],outerEdges=[],brackets=[];
-  const baseAt=(x,z)=>terrainAt(x,z);
+  // Ground floor of the station is leveled to the highest sampled perimeter
+  // grade. The canopy must share THAT EXACT Y reference, never sample DEM
+  // independently at each corner (which creates gaps at sloping sites).
+  const baseAt=()=>stationBaseY;
   for(const seg of plan.segments){
     const {a,b,nx,nz,width,length}=seg;
     const start=.15/length,end=1-start;
@@ -192,5 +196,5 @@ export function createStationPlatformCanopy(THREE,{
     positionSource:'real OSM rail-platform polygon',
     photographedShapeApproximate:true,
     streetSideCanopy:false,noGroundColumns:true,
-    roofVertices:verts.length/3};
+    roofVertices:verts.length/3,stationBaseY};
 }
