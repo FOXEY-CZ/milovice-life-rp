@@ -39,3 +39,17 @@ left OPEN at the mapped access road. Candidate fence panels (1.45m modules)
 and garden props are rejected on any indexed OSM road or footway and at
 building/driveway footprints. The fence has real collision walls; all
 visuals use six instanced draw batches. Do not invent paths or crossing paint.
+
+### 11. Next reviewed frontage — Školská 220/1, v5.52
+At junction with 5. května (OSM 118487980) the 30 May 2024 photo
+by ŠJů under CC BY 4.0 shows three ground-floor windows on its longer
+street-facing wall and one on the return. The dark hipped roof and
+paired arched cross-gables already exist from earlier fixes.
+A generic hero facade formerly put a door on its LONGEST wall,
+even though the photograph documents windows there instead.
+`source-observed-facades.js` uses TWO actual geographic wall
+midpoints and outward normals to override only these source-backed
+fronts. It never extends photo claims to unseen sides or fabricates an
+entrance location. Shapes and sizes remain approximations, and 360 review
+is pending. Matching works with reversed OSM winding, suitable as a shared
+method for future photo-annotated buildings.

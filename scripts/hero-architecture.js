@@ -8,6 +8,7 @@ import {classifyFacadeEdgeLength,planFacadePerimeterTrims,planPhotographedEaveCo
 import {makeSharedFacadeSurfaceMaps} from './facade-surface-kit.js';
 import {exteriorFacadeFrame,flushBoxOffset,RECESSED_GLAZING,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH,splitFacadeStripForOpening} from './facade-anchors.js';
 import {planGroundedEntrance,doorwayWallHole} from './entrance-grade.js?v=5450';
+import {planSourceObservedFacade} from './source-observed-facades.js?v=5520';
 
 export function makeMiloviceHeroArchitecture(THREE,{
   sites=[],radius=240,maxBuildings=68,terrainAt=()=>0
@@ -15,7 +16,8 @@ export function makeMiloviceHeroArchitecture(THREE,{
  const chunks=new Map(),selected=new Set();
  const appliedFaces=[];
  const state={buildings:0,verifiedOverrides:0,verifiedFaces:0,photoMappedFaces:0,
-  photoMappedWindows:0,solidWalls:0,cutoutWindows:0,cutoutDoors:0,gables:0,
+  photoMappedWindows:0,sourceObservedFacades:0,sourceObservedWindows:0,
+  sourceInventedDoorsPrevented:0,solidWalls:0,cutoutWindows:0,cutoutDoors:0,gables:0,
   detailInstances:0,drawMeshes:0,chunkCount:0,
   suppressedArbitraryChimneys:0,skippedUnverifiedGables:0,
   suppressedUnverifiedPhotoOrnaments:0,shortWallSegmentsSealed:0,
@@ -188,10 +190,23 @@ export function makeMiloviceHeroArchitecture(THREE,{
    // Show functional provisional openings, not randomly invented ornaments.
    const cardinal=faceEdges.get(sideIndex);
    const sideLayout=cardinal?override?.facades?.[cardinal]||null:null;
-   const autoEntrance=sideIndex===entrySide&&len>5&&!explicitDoor&&!sideLayout?.openings?.length;
-   const planned=planFaceOpenings({length:len,height,levels,side:sideLayout,
+   // Reviewed per-wall layouts take priority. One dated photograph must
+   // never be extrapolated to the unseen rear and courtyard walls.
+   const observed=!sideLayout?planSourceObservedFacade(String(identity),edgeFrame):null;
+   const actualSide=sideLayout||observed?.side||null;
+   const autoEntrance=!observed&&sideIndex===entrySide&&len>5&&
+    !explicitDoor&&!actualSide?.openings?.length;
+   const planned=planFaceOpenings({length:len,height,levels,side:actualSide,
     legacyWindows:override?.windowsPerWall||Math.min(6,Math.max(1,Math.floor((len-1.4)/3.0))),
     autoEntrance});
+   if(observed){
+    state.sourceObservedFacades++;
+    state.sourceObservedWindows+=planned.windows.length;
+    if(sideIndex===entrySide&&!explicitDoor)state.sourceInventedDoorsPrevented++;
+    appliedFaces.push({id:String(identity),side:'OSM:'+sideIndex,
+     photoSource:observed.source,windows:planned.windows.length,
+     photoObserved:true,door:!!planned.door,positionSurveyed:false});
+   }
    const entry=!!planned.door;
    const entranceU=planned.door?.x??len*.5;
    const doorWidth=planned.door?.w??1.21;

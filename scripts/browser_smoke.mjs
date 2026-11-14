@@ -66,6 +66,14 @@ try{
     hero.sharedSurfaceTextures!==3||hero.surfaceResolution!==128||
     hero.extraMaterialDrawCalls!==0)
   throw new Error('5.7.0 genuinely cut-out old-town buildings absent: '+JSON.stringify(hero));
+ if(hero.sourceObservedFacades<2||hero.sourceObservedWindows<4||
+    hero.sourceInventedDoorsPrevented<1)
+   throw Error('5.52 source-reviewed Školská front openings not rendered: '+
+    JSON.stringify({facades:hero.sourceObservedFacades,
+     windows:hero.sourceObservedWindows,
+     absentDoor:hero.sourceInventedDoorsPrevented}));
+ console.log('5.52 source-backed Školská facades:',hero.sourceObservedFacades,
+  hero.sourceObservedWindows);
  console.log('5.7.0 actual wall cut-outs in Old Milovice:',JSON.stringify(hero));
  console.log('5.32.2 perimeter trim + wall continuity:',JSON.stringify({
   trimmedWallEdges:hero.trimmedWallEdges,
