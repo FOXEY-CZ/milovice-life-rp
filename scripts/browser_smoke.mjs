@@ -359,7 +359,10 @@ try{
     stationParking.instances<stationParking.pavingCells*2||
     stationParking.parkingBanks?.length!==2||
     stationParking.oppositeParkingBays<18||
-    stationParking.centralSidewalkTiles<120||
+    stationParking.centralParkingTiles<400||
+    stationParking.centralMistakenSidewalkTiles!==0||
+    stationParking.parkingSidewalkSwapFixed!==true||
+    stationParking.centralWalkwaySource!=='OSM-footway-only-no-duplicate-parking'||
     stationParking.rightCornerPavingTiles<8||
     stationParking.wrongRailSidewalkTiles!==0||
     stationParking.wrongRailSidewalkRemoved!==true||
@@ -367,8 +370,8 @@ try{
     stationParking.mappedFootwayIdPreserved!==1165594426||
     stationParking.rightCornerFootwayId!==1282187911||
     stationParking.collisionSafe!==true||stationParking.noSyntheticCars!==true)
-   throw new Error('5.69 corrected central/right pedestrian paths or GPU budget broken: '+JSON.stringify(stationParking));
- console.log('5.69 photo-marked sidewalk locations (no false rail-side strip):',JSON.stringify(stationParking));
+   throw new Error('5.70 parking vs sidewalk surface classification and GPU budget broken: '+JSON.stringify(stationParking));
+ console.log('5.70 central parking surface restored; only mapped OSM footway remains:',JSON.stringify(stationParking));
 
  const cutoutTest=await page.evaluate(async()=>{
   const THREE=await import('three');
