@@ -57,7 +57,7 @@ assert(!world.includes("archPart('schoolRed',mx+nx*flushBoxOffset(.15),baseHeigh
 const photos=readFileSync(new URL('./street-photo-evidence.js',import.meta.url),'utf8');
 assert(photos.includes("buildingIds:['118487979']"));
 const queue=JSON.parse(readFileSync(new URL('../data/architecture/building-audit-queue.json',import.meta.url),'utf8'));
-assert.equal(queue.withPhotoReference,4);
+assert.equal(queue.withPhotoReference,5);
 assert.equal(queue.entries.find(x=>x.osmId===118487979)?.reviewStatus,'photo-anchored-partial');
 console.log('5.44 school 2024 photo street-front PASS',
  {osmId:plan.osmId,streetFace:plan.entrance.index,
