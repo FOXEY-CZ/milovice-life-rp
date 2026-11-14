@@ -1,3 +1,29 @@
+# Milovice RP 5.68 — obě části parkoviště a prostor pro chodník
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5680  
+**Návrat k 5.67 před touto úpravou:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/567-before-parking-both-sides-fix  
+**Starší bezpečná záloha 5.66:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/566-before-photo-pilot
+
+## Problém a opětovná kontrola přímo proti fotografii uživatele
+
+Uživatel upozornil, že oprava 5.67 zaplnila zelenou mezeru mezi asfaltovými komunikacemi, ale **zapomněla na protilehlou druhou parkovací řadu** a ohrozila prostor pro chodník. Na porovnání mobilní hry a panoramatu Mapy.com z **17. 5. 2022** jsou vidět nejméně tři odlišné povrchy: (1) světlý vydlážděný ostrov mezi asfaltovými komunikacemi, (2) parkování na opačné straně příjezdového průjezdu, blíže kolejím, (3) pěší chodník s obrubou podél okraje plochy. Screenshot není herní asset ani nová textura.
+
+## Oprava bez ztráty předchozí práce
+
+- **Uprostřed:** zůstává široká světlá dlážděná plocha 5.67, jejíž příčné hranice se odvozují od OSM **675778842** (jednosměrný servisní průjezd) a **128308366** (Nádražní). Zůstává fotograficky inspirované zaoblení špičky. Žádná nová cesta se nevymýšlí.
+- **Na opačné straně průjezdu směrem ke kolejím:** vrácená oddělená řada cca **20 míst** se zeleným podkladem a betonovým rastrovým dlážděním. Identita jednotlivých stání a jejich rozměry jsou přibližné, ne geodetické.
+- **Dále od jízdního pruhu:** nový samostatný **cca 1,54 m široký pěší pás** v bezpečně kontrolované mezeře za parkováním, přibližně 77 dílů a nízká obruba. Jeho přesná linie je **odhad podle fotografie, ne samostatný mapovaný OSM chodník**. Existující OSM chodník **1165594426** na druhé straně se zachovává beze změny.
+- **Kolizní kontrola:** každý kandidát parkovacího místa, dlaždice chodníku i obrubníku prochází výlukou z mapovaných silnic a chodníků; další kontrola odmítá blízkost půdorysů budov a kolejí. Mezi opačnými stáními a pěším pásem je navíc vyhrazena mezera nejméně **0,45 m**. Na koleje, pod budovy ani přes silnici nové objekty nevstupují.
+- **Výkon:** hromadné `THREE.InstancedMesh`, maximálně šest vykreslovacích skupin nového parkoviště, žádná individuální textura nebo kopie Mapy.com snímků. Ponechaná cyklověž, sloupky A/B, garáže, železniční nástupiště a ostatní město.
+
+**Důležité:** OSM poskytuje osy cest, nikoliv zaměřené skutečné obrubníky a parkovací čáry. Fotografie potvrzuje **existenci typů ploch a orientační vzájemné vztahy**, ale nezaručuje jejich přesnou šířku a historický stav pro rok 2026. Zejména protilehlá řada a nový chodník čekají na kontrolu screenshotem ze hry z odpovídajícího úhlu.
+
+**Zdroje:** fotografie parkování [ŠJů, 30. 5. 2024 (CC BY 4.0)](https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_parkovi%C5%A1t%C4%9B.jpg) a [druhý pohled](https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_parkovi%C5%A1t%C4%9B_(01).jpg), geodata OSM 675778842, 128308366, 1165594426; uživatelem dodaný screenshot Mapy.com pouze jako kontrolní reference. Změny v 3D byly nově vymodelovány, ne obrazově převzaty.
+
+**Testy:** `scripts/station-photo-parking.test.mjs` + WebGL `scripts/browser_smoke.mjs` kontrolují obě poloviny parkování, pěší koridor, ochranu skutečného OSM chodníku, nulové překrytí jízdních pruhů a rozpočet vykreslování.
+
+---
+
 # Milovice RP 5.67 — oprava široké dlážděné plochy před nádražím
 
 **Spustit 5.67:** https://foxey-cz.github.io/milovice-life-rp/?v=5670  
