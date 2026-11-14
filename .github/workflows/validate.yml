@@ -21,6 +21,8 @@ jobs:
         run: node scripts/performance-governor.test.mjs
       - name: Validate photographed street block and mapped building IDs
         run: node scripts/street-photo-block.test.mjs
+      - name: Verify shared facade textures stay deterministic and phone-friendly
+        run: node scripts/facade-surface-kit.test.mjs
       - name: Review whole-street Wikimedia photo provenance and coverage without false matches
         run: node scripts/street-photo-evidence.test.mjs
       - name: Validate photo-referenced whole-street environment and OSM alignment
