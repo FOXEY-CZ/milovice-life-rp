@@ -1,0 +1,36 @@
+name: Diagnose Panoramax Metadata API
+on:
+  push:
+    paths:
+      - .github/workflows/photo-api-diagnostic.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect-metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Probe two published Panoramax catalogue endpoints (metadata only)
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import urllib.request, json
+          bbox="14.87974,50.22778,14.88510,50.23120"
+          for host in ("https://api.panoramax.xyz", "https://panoramax.openstreetmap.fr"):
+              url=host+"/api/search?bbox="+bbox+"&limit=2"
+              try:
+                  req=urllib.request.Request(url, headers={"Accept":"application/geo+json, application/json","User-Agent":"Milovice-RP-photo-metadata-diagnostic/1.0"})
+                  with urllib.request.urlopen(req, timeout=12) as r:
+                      body=r.read(10240)
+                      print("HOST",host, "status",r.status,"final-url",r.url,"content-type",r.headers.get("Content-Type"),"bytes-sampled",len(body))
+                      try:
+                          o=json.loads(body)
+                          print("STRUCTURE",type(o).__name__,"keys", list(o)[:18] if isinstance(o,dict) else "-", "type",o.get("type") if isinstance(o,dict) else "-","features",len(o.get("features",[])) if isinstance(o,dict) and isinstance(o.get("features"),list) else "-")
+                          if isinstance(o,dict) and not isinstance(o.get("features"),list):
+                              print("API_MESSAGE",str(o.get("message") or o.get("detail") or o.get("error"))[:220])
+                      except Exception as e:
+                          print("JSON_ERROR",str(e)[:130],"BODY_PREFIX",repr(body[:220]))
+              except Exception as e:
+                  print("REQUEST_ERROR",host,str(e)[:200])
+          PY
