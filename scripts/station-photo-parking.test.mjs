@@ -428,7 +428,7 @@ assert(code.includes('Math.min(...rows.map(other=>other.high+'));
 assert(!code.includes('planRoadSafeParkingEdgeChamfers('));
 assert(code.includes('smoothRoadsideWithinSafeCells:'));
 assert(code.includes('const sections=['));
-assert(code.includes('mesh.userData.smoothInfillRows=infillProfile.rows.length'));
+assert(code.includes('mesh.userData.smoothInfillRows=infillProfile.visibleRows'));
 const safeInfillTriangles=smooth.rows.length*4;
 assert(safeInfillTriangles>200&&safeInfillTriangles<650);
 for(const patch of plan.outerSidewalkCells)
