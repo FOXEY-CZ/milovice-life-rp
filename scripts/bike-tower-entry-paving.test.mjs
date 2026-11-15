@@ -151,7 +151,7 @@ assert.equal(planBikeTowerEntryPaving([...elements,shoulderBuilding],clearance),
 
 const source=readFileSync(new URL('bike-tower-entry-paving.js',import.meta.url),'utf8');
 assert(source.includes('isRoadFreeRect(roadClearance'));
-assert(source.includes('terrainAt(x,z)+plan.groundOffset'));
+assert(source.includes('terrainAt(pt.x,pt.z)+plan.groundOffset'));
 assert(source.includes('sharedMaterial=sidewalkMaterial'));
 assert(source.includes('layer.add(root)'));
 assert(source.includes('nearbyProtectedSegments'));
