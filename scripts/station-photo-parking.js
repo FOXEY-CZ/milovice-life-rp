@@ -1,4 +1,4 @@
-// Milovice RP 5.81.12 — bevel only convex roadside infill steps within the already road-safe cells.
+// Milovice RP 5.81.13 — smooth the entire road-facing island profile INSIDE existing road-safe paving cells.
 // The 5.72 "fix" drew a new OSM sidewalk directly OVER Nádražní's asphalt,
 // rather than removing the relevant strip from the parking surface.
 // The user confirmed the exact topology: existing road (UNTOUCHED),
@@ -511,30 +511,52 @@ export function planStationPhotoParking(elements,roadClearance){
   protectedRoadsAndPaths:true,protectedBuildings:true,protectedRailways:true,
   originalCarriagewaysUntouched:true};
 }
-// No OSM boundary is invented: bevel only a PROTRUDING outside corner of an
-// already checked pedestrian cell. The square's safe bounding box remains
-// unchanged. This softens the long stair-step edge seen in the 5.81.11 mobile
-// overhead review without cutting out the successfully sealed green holes.
-export function planRoadSafeParkingEdgeChamfers(patches){
- const byRow=new Map();
- if(!Array.isArray(patches))return new Map();
+// Build a continuous road-side silhouette from ALL verified pedestrian
+// island cells, not short bevels on the handful of raster row transitions.
+// Never raise the edge above any row's OUTERMOST accepted cell: a global
+// Lipschitz minorant walks smoothly inward along the 70m island without
+// ever growing pavement into the adjacent (protected) Nádražní road.
+// Each row is a continuous side-by-side strip of the prevalidated cells;
+// the returned surface will be stitched into ONE existing 3D draw call.
+export function planRoadSafeParkingInfillProfiles(patches,{maxSlope=.12}={}){
+ if(!Array.isArray(patches)||!patches.length||!(maxSlope>0&&maxSlope<=.25))
+  return null;
+ const groups=new Map();
  for(const patch of patches){
-  const previous=byRow.get(patch.along);
-  if(!previous||patch.offset>previous.offset)
-   byRow.set(patch.along,patch);
+  if(!Number.isFinite(patch.along)||!Number.isFinite(patch.offset)||
+     !(patch.length>0&&patch.depth>0))return null;
+  if(!groups.has(patch.along))groups.set(patch.along,[]);
+  groups.get(patch.along).push(patch);
  }
- const rows=[...byRow.values()].sort((a,b)=>a.along-b.along);
- const chamfers=new Map();
+ const rows=[...groups].sort((a,b)=>a[0]-b[0]).map(([along,cells])=>{
+  cells.sort((a,b)=>a.offset-b.offset);
+  // Fail closed rather than connecting across missing/unvalidated tiles.
+  if(cells.some((c,i)=>i&&c.offset-cells[i-1].offset>
+      (c.depth+cells[i-1].depth)*.5+.045))return null;
+  const low=cells[0].offset-(cells[0].depth+.012)/2;
+  const high=cells.at(-1).offset+(cells.at(-1).depth+.012)/2;
+  const halfAlong=(Math.min(...cells.map(c=>c.length))+.012)/2;
+  return {along,low,high,halfAlong,cellCount:cells.length};
+ });
+ if(rows.some(x=>!x||x.high-x.low<.4))return null;
+ for(const row of rows){
+  // No new terrain is claimed: edge <= original safe-row bound.
+  row.edge=Math.min(row.high,Math.max(row.low+.28,
+   Math.min(...rows.map(other=>other.high+
+    maxSlope*Math.abs(row.along-other.along)))));
+ }
+ let maxEdgeStep=0,joins=0;
  for(let i=0;i<rows.length;i++){
-  const current=rows[i],prev=rows[i-1],next=rows[i+1];
-  const cut=Math.min(.22,current.length*.29,current.depth*.29);
-  const lead=prev&&current.along-prev.along<.81&&
-   current.offset-prev.offset>.55?cut:0;
-  const tail=next&&next.along-current.along<.81&&
-   current.offset-next.offset>.55?cut:0;
-  if(lead||tail)chamfers.set(current,{lead,tail});
+  const row=rows[i],prev=rows[i-1],next=rows[i+1];
+  const prevJoined=prev&&row.along-prev.along<=.81;
+  const nextJoined=next&&next.along-row.along<=.81;
+  row.start=prevJoined?Math.min(row.edge,prev.edge):row.edge;
+  row.end=nextJoined?Math.min(row.edge,next.edge):row.edge;
+  if(prevJoined){joins++;maxEdgeStep=Math.max(maxEdgeStep,
+   Math.abs(row.edge-prev.edge));}
  }
- return chamfers;
+ return {rows,joins,maxSlope,maxEdgeStep,areaExpanded:false,
+  sourceCells:patches.length,roadSafeCellsOnly:true};
 }
 export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadClearance}={}){
  const roots=[],geo=new THREE.BoxGeometry(1,1,1);
@@ -546,7 +568,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   railPaver:new THREE.MeshLambertMaterial({color:0xc1c3b9}),
   sidewalk:new THREE.MeshLambertMaterial({color:0xe0dcd1})
  };
- let planned=null,drawMeshes=0,instances=0,sharedSidewalkTexture=false,roadEdgeChamfers=0;
+ let planned=null,drawMeshes=0,instances=0,sharedSidewalkTexture=false,infillProfile=null;
  const stats=()=>({
   active:roots.length>0,sourceIds:planned?.sourceIds||[],
   photos:STATION_PARKING_REFERENCE.photos.length,
@@ -574,9 +596,13 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   // 5.81.11: meshes are part of the existing single sidewalk drawcall,
   // not new sidewalk rectangles on the OSM road or extra scene objects.
   roadSafeInfillCells:planned?.outerSidewalkCells.length||0,
-  roadSafeInfillTriangles:(planned?.outerSidewalkCells.length||0)*2+roadEdgeChamfers,
-  roadEdgeChamfers,
-  roadEdgeChamfersWithinSafeCells:true,
+  roadSafeInfillTriangles:(infillProfile?.rows.length||0)*4,
+  smoothRoadsideInfill:true,
+  smoothInfillRows:infillProfile?.rows.length||0,
+  smoothInfillJoins:infillProfile?.joins||0,
+  smoothInfillMaxEdgeStep:infillProfile?.maxEdgeStep??null,
+  smoothInfillMaxSlope:infillProfile?.maxSlope??null,
+  smoothRoadsideWithinSafeCells:infillProfile?.roadSafeCellsOnly||false,
   infillExtraDrawCalls:0,
   continuousKerb:true,
   maxOuterFootwayOsmDistance:planned?.outerSidewalkMaxOsmDistance??null,
@@ -650,32 +676,26 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
     // its material, road axis and UV phase; one merged drawcall remains.
     // The 1.2cm overlap closes 0.01m gaps from the .76/.74m cell grid;
     // road-clearance tests already check expanded dimensions of each cell.
-    const bevels=planRoadSafeParkingEdgeChamfers(planned.outerSidewalkCells);
-    roadEdgeChamfers=0;
-    for(const patch of planned.outerSidewalkCells){
-     const halfAlong=(patch.length+.012)/2;
-     const halfAcross=(patch.depth+.012)/2;
-     const {lead=0,tail=0}=bevels.get(patch)||{};
-     roadEdgeChamfers+=(lead>0?1:0)+(tail>0?1:0);
-     // Clockwise in the (along,offset) frame, preserving upward faces.
-     // Each cut moves INSIDE the old bounding box at a protruding corner.
-     const polygon=[
-      [-halfAlong,-halfAcross],
-      [-halfAlong,halfAcross-lead],
-      ...(lead>0?[[-halfAlong+lead,halfAcross]]:[]),
-      ...(tail>0?[[halfAlong-tail,halfAcross]]:[]),
-      [halfAlong,halfAcross-tail],
-      [halfAlong,-halfAcross]
+    infillProfile=planRoadSafeParkingInfillProfiles(planned.outerSidewalkCells);
+    if(!infillProfile)throw Error('Roadsafe island infill requires contiguous OSM-cleared cells');
+    for(const row of infillProfile.rows){
+     const sections=[
+      {along:row.along-row.halfAlong,outer:row.start},
+      {along:row.along,outer:row.edge},
+      {along:row.along+row.halfAlong,outer:row.end}
      ];
      const start=vertices.length/3;
-     for(const [ds,dt] of polygon){
-      const along=patch.along+ds,offset=patch.offset+dt;
-      const pt=at(planned.frame,along,offset);
-      vertices.push(pt.x,terrainAt(pt.x,pt.z)+.193,pt.z);
-      uvs.push(offset/1.8,along/8);
+     for(const section of sections){
+      for(const offset of [row.low,section.outer]){
+       const pt=at(planned.frame,section.along,offset);
+       vertices.push(pt.x,terrainAt(pt.x,pt.z)+.193,pt.z);
+       uvs.push(offset/1.8,section.along/8);
+      }
      }
-     for(let i=1;i<polygon.length-1;i++)
-      indices.push(start,start+i,start+i+1);
+     // Slope-limited join from the previous row's SAME road-facing edge;
+     // whole surfaces remain inside the previously approved safe cells.
+     indices.push(start,start+1,start+2,start+1,start+3,start+2,
+      start+2,start+3,start+4,start+3,start+5,start+4);
     }
    }
    const geometry=new THREE.BufferGeometry();
@@ -688,7 +708,8 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
    mesh.name=kind==='kerb'?'ContinuousOuterSidewalkKerb':'ContinuousOuterSidewalkPaving';
    if(kind==='sidewalk'){
     mesh.userData.roadSafeInfillCells=planned.outerSidewalkCells.length;
-    mesh.userData.roadEdgeChamfers=roadEdgeChamfers;
+    mesh.userData.smoothInfillRows=infillProfile.rows.length;
+    mesh.userData.smoothInfillMaxEdgeStep=infillProfile.maxEdgeStep;
     mesh.userData.infillExtraDrawCalls=0;
     mesh.userData.infillHeightBelowRibbonMeters=.021;
    }
@@ -766,7 +787,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
  }
  function reset(){
   for(const root of roots)root.parent?.remove(root);
-  roots.length=0;planned=null;drawMeshes=instances=roadEdgeChamfers=0;sharedSidewalkTexture=false;publish();
+  roots.length=0;planned=null;drawMeshes=instances=0;infillProfile=null;sharedSidewalkTexture=false;publish();
  }
  publish();
  return {create,reset,status:stats,plan:()=>planned};
