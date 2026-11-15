@@ -1,4 +1,4 @@
-// Milovice RP 5.81.15 — photo-bounded tapered rail-side parking apron, road and rail clearance preserved.
+// Milovice RP 5.81.16 — close the false grassy roadside gap using verified OSM-clear paving, no asphalt overlays.
 // The 5.72 "fix" drew a new OSM sidewalk directly OVER Nádražní's asphalt,
 // rather than removing the relevant strip from the parking surface.
 // The user confirmed the exact topology: existing road (UNTOUCHED),
@@ -386,7 +386,29 @@ export function planStationPhotoParking(elements,roadClearance){
   if(!chosen){
    const p=at(f,along,coreOffset);
    railRejected.push({along,kind:'parking',reason:failed,position:p});
-  }else railSideParking.push(chosen);
+  }else{
+   // 2023 aerial: the rail-side pavement meets the service aisle rather
+   // than being separated by a conspicuous grass strip. Try advancing ONLY
+   // the traffic-facing edge toward the road in small 0.12m increments.
+   // Keep the accepted rail-facing boundary unchanged. Every complete
+   // widened footprint must pass the original full road/rail/building
+   // checks; fail closed at the last safe edge.
+   const originalRailEdge=chosen.offset-chosen.depth/2;
+   const originalRoadEdge=chosen.offset+chosen.depth/2;
+   let acceptedRoadEdge=originalRoadEdge;
+   for(const candidate of [-2.90,-2.78,-2.66]){
+    const trialDepth=candidate-originalRailEdge;
+    const trialOffset=(originalRailEdge+candidate)/2;
+    const trial=at(f,along,trialOffset);
+    if(safePlace(trial,2.46,trialDepth,.12))break;
+    acceptedRoadEdge=candidate;
+    chosen={...chosen,...trial,offset:trialOffset,depth:trialDepth};
+   }
+   chosen.roadFacingEdge=acceptedRoadEdge;
+   chosen.railFacingEdge=originalRailEdge;
+   chosen.roadsideSeamClosedMetres=acceptedRoadEdge-originalRoadEdge;
+   railSideParking.push(chosen);
+  }
  }
  // The 2023 aerial shows ONE pale paved western bank, not separated
  // grass-grid boxes. Bridge only the short 0.39m gaps BETWEEN two fully
@@ -400,10 +422,14 @@ export function planStationPhotoParking(elements,roadClearance){
   const right=next.along-next.length/2,gap=right-left;
   if(gap<=0||gap>.7)continue;
   const mid=(left+right)/2;
-  // A bridge is never wider than EITHER accepted bay it connects.
-  // Its road-facing edge stays exactly on the old safe -3.02m line.
-  const depth=Math.min(previous.depth,next.depth);
-  const offset=railRoadFacingOffset-depth/2,p=at(f,mid,offset);
+  // Join only the overlap of the two previously checked widened bays.
+  // This avoids a rectangular bridge widening into asphalt if one adjacent
+  // bay is closer to the carriageway than its neighbour.
+  const roadEdge=Math.min(previous.roadFacingEdge,next.roadFacingEdge);
+  const railEdge=Math.max(previous.railFacingEdge,next.railFacingEdge);
+  const depth=roadEdge-railEdge;
+  if(depth<=1.6){railSideJoinRejected.push({along:mid,reason:'no-safe-overlap'});continue;}
+  const offset=(roadEdge+railEdge)/2,p=at(f,mid,offset);
   const length=gap+.025,failed=safePlace(p,length,depth,.022);
   if(failed){railSideJoinRejected.push({along:mid,reason:failed});continue;}
   railSideJoiningSlabs.push({...p,along:mid,offset,
@@ -615,6 +641,9 @@ export function planStationPhotoParking(elements,roadClearance){
   railGrassGridRemoved:true,diagonalBayMarkingsPhotoApproximate:true,
   railPavingVariableDepth:true,railPavingBaseDepth:railParkingDepth,
   railPavingRoadFacingOffset:railRoadFacingOffset,
+  railPavingTrafficEdgeSafelyExtended:true,
+  railPavingSeamCells:railSideParking.filter(b=>b.roadsideSeamClosedMetres>.01).length,
+  railPavingLargestSeamReduction:Math.max(0,...railSideParking.map(b=>b.roadsideSeamClosedMetres||0)),
   pedestrianCorridorWidth:1.48,pedestrianSeparation:0,
   centralPedestrianSurface:'carved-from-OSM-safe-outer-parking-cells',
   centralParkingSurface:'remaining-inner-grid-parking-cells',
@@ -741,6 +770,9 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   railPavingMaxDepth:planned?.railSideParking.length?
    Math.max(...planned.railSideParking.map(b=>b.depth)):null,
   railPavingTaperedMesh:planned?.railSideParking.length>0,
+  railPavingSeamCells:planned?.railPavingSeamCells||0,
+  railPavingLargestSeamReduction:planned?.railPavingLargestSeamReduction||0,
+  railPavingTrafficEdgeSafelyExtended:planned?.railPavingTrafficEdgeSafelyExtended||false,
   railSideJoinRejected:planned?.railSideJoinRejected.length||0,
   railSideSurface:planned?.railParkingSurface||null,
   railGrassGridRemoved:planned?.railGrassGridRemoved||false,
