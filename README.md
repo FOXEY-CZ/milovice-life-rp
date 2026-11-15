@@ -1,3 +1,19 @@
+# Milovice RP 5.81.12 — zmírnění schodovitých krajů parkovacího ostrova
+
+**Nová mobilní kontrola shora:** https://foxey-cz.github.io/milovice-life-rp/?v=58112&forecourtAudit=wide&parkingOverview=1  
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=58112  
+**Záloha před změnou:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/58110-before-island-grass-gaps-fix
+
+## Kontrola mobilního screenshotu 5.81.11 z 15. 11. 2026 19:17
+
+Oprava 5.81.11 odstranila dlouhé zelené trojúhelníkové díry uvnitř chodníkového pásu a neprohodila parkování a chodník. Z nadhledu ale nadále vystupují hranaté schody z odlišně vybraných koncových buněk u silnice.
+
+5.81.12 ponechává spodní vyplňovací dlažbu ve všech dříve ověřených bezpečných buňkách. Tam, kde se nejsvrchnější road-side buňka vychyluje proti sousední řadě o více než 0.55m, zkosení **maximálně 0.22m pouze uvnitř staré povolené buňky** změkčí vyčnívající roh. Ani část polygonu nepřekročí její původní bounding box, hranice žádné OSM silnice/železnice/domu se nemění. Úpravy se přidávají do jednoho existujícího drawcallu, nemění materiál ani UV měřítko.
+
+Testy ověřují, že se zkosení objeví jen u skutečných schodů, jsou omezená rozměry buněk a nepřidávají nové meshe. Přesný skutečný tvar parkovacího obrubníku nadále neznáme, proto jde o **kosmetickou úpravu modelové zpevněné plochy, nikoliv tvrzení o geodetické přesnosti**.
+
+---
+
 # Milovice RP 5.81.11 — odstranění zelených děr v parkovacím ostrově
 
 **Pohled shora:** https://foxey-cz.github.io/milovice-life-rp/?v=58111&forecourtAudit=wide&parkingOverview=1  
