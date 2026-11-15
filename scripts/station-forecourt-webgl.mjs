@@ -24,7 +24,7 @@ try{
    viewport:{width:cfg.width,height:cfg.height},deviceScaleFactor:1,
    isMobile:cfg.mobile,hasTouch:cfg.mobile});
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=5810&forecourtAudit='+cfg.view,
+  await page.goto('http://127.0.0.1:8080/?v=5811&forecourtAudit='+cfg.view,
    {waitUntil:'domcontentloaded',timeout:30000});
   await page.waitForFunction(()=>window.__miloviceForecourtAuditRendered?.active===true,
    null,{timeout:120000});
@@ -40,7 +40,7 @@ try{
    fov:(()=>window.__miloviceForecourtAuditRendered?.active?1:null)()
   }));
   const v=state.review;
-  assert.equal(state.build,'20261115-forecourt-photo-audit-5810');
+  assert.equal(state.build,'20261115-biketower-glass-photo-5811');
   assert.equal(state.panelVisible,true);
   assert.equal(state.spawnHidden,true);
   assert.equal(state.normalTicketPanelHidden,true);
@@ -64,7 +64,7 @@ try{
    cfg.view+': mapped '+id+' must be in real camera frame');
   assert.equal(state.sourceLink,v.source);
   assert.deepEqual(errors,[]);
-  const path='browser-artifacts/milovice-forecourt-581-'+cfg.view+
+  const path='browser-artifacts/milovice-forecourt-5811-'+cfg.view+
    (cfg.mobile?'-mobile':'')+'.png';
   await page.screenshot({path});
   console.log('5.81 FORECOURT WebGL PASS',JSON.stringify({
