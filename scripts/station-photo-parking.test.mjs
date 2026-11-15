@@ -506,6 +506,27 @@ assert(code.includes('for(let i=-1;i<=1;i+=2)'),
  'Smaller 2x2 concrete pavers must replace the previous oversized white blocks');
 assert(!code.includes('new THREE.Mesh(new THREE.BoxGeometry('));
 assert(!code.includes('document.createElement'),'No Mapy.com screenshots may become textures');
+const railEdgeAudit=plan.railSideParking.map(b=>{
+ const pt={x:plan.frame.a.x+plan.frame.ux*b.along+plan.frame.nx*b.roadFacingEdge,
+  z:plan.frame.a.z+plan.frame.uz*b.along+plan.frame.nz*b.roadFacingEdge};
+ const road=occupied.nearest(pt.x,pt.z);
+ return {along:+b.along.toFixed(2),edge:+b.roadFacingEdge.toFixed(3),
+  buffer:b.roadFacingBuffer,nearestWay:road?.id,
+  roadClearance:road?+road.clearance.toFixed(3):null,
+  joinedWidth:+b.depth.toFixed(3)};
+});
+console.log('RAIL_EDGE_DIAGNOSTIC_58121',JSON.stringify({
+ edgeSamples:railEdgeAudit,edgeHistogram:Object.fromEntries(
+  [...new Set(railEdgeAudit.map(x=>x.edge))].map(edge=>
+   [edge,railEdgeAudit.filter(x=>x.edge===edge).length])),
+ minClearance:Math.min(...railEdgeAudit.map(x=>x.roadClearance??Infinity)),
+ rejectedRailBays:plan.railRejected.length,
+ joinedSlabs:plan.railSideJoiningSlabs.length,
+ terminalRibbon:plan.continuousRibbon.parts.map(p=>({
+  start:p[0],end:p.at(-1),count:p.length})),
+ ribbonProfiles:plan.continuousRibbon.profiles.slice(-7).map(p=>({
+  along:p.along,low:p.low,high:p.high,safe:p.safe}))
+}));
 console.log('5.76 road-aligned smooth sidewalk, no parking-grid stair steps PASS',JSON.stringify({
  roadIds:plan.sourceIds,photoCameras:plan.cameras.map(c=>+c.distance.toFixed(2)),
  pavingCells:plan.cells.length,coveredRows:plan.rowStats.filter(r=>r.accepted>0).length,
