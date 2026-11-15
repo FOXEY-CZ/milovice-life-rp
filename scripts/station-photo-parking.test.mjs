@@ -516,8 +516,12 @@ const railEdgeAudit=plan.railSideParking.map(b=>{
   roadClearance:road?+road.clearance.toFixed(3):null,
   joinedWidth:+b.depth.toFixed(3)};
 });
-console.log('RAIL_EDGE_DIAGNOSTIC_58121',JSON.stringify({
- edgeSamples:railEdgeAudit,edgeHistogram:Object.fromEntries(
+assert(railEdgeAudit.length>=18&&railEdgeAudit.filter(x=>x.edge>=-2.301).length>=18,
+ 'Precise collision sampling should remove most visible rail-side green seam');
+assert(railEdgeAudit.every(x=>x.roadClearance>=.045),
+ 'No parking slab may touch the mapped OSM carriageway even after finer sampling');
+console.log('RAIL_EDGE_DIAGNOSTIC_58122',JSON.stringify({
+ edgeHistogram:Object.fromEntries(
   [...new Set(railEdgeAudit.map(x=>x.edge))].map(edge=>
    [edge,railEdgeAudit.filter(x=>x.edge===edge).length])),
  minClearance:Math.min(...railEdgeAudit.map(x=>x.roadClearance??Infinity)),
