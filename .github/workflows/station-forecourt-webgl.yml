@@ -1,0 +1,37 @@
+name: Nádražní 5.81 Forecourt photo WebGL
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  forecourt-photo-webgl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium client
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save --no-package-lock playwright-core@1.57.0
+      - name: Verify 3 real camera views, station/tower and existing bus stops
+        run: |
+          CHROME_BIN="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          export CHROME_BIN
+          python3 -m http.server 8080 >/tmp/milovice-581-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          node scripts/station-forecourt-webgl.mjs
+      - name: Save actual 3D forecourt screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: milovice-forecourt-581-camera-evidence
+          path: browser-artifacts/milovice-forecourt-581-*.png
+          if-no-files-found: ignore
