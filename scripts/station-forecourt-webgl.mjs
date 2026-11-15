@@ -35,6 +35,7 @@ try{
    review:window.__miloviceForecourtAuditRendered,
    towerMaterials:window.__miloviceBikeTowerInterior,
    roadDiagnostic:window.__miloviceRoadTextureDiagnostic,
+   roadUv:window.__miloviceRoadUVValidation,
    joystickHidden:getComputedStyle(document.getElementById('rp-joystick')).display==='none',
    liveLoadingPopupHidden:getComputedStyle(document.getElementById('osmnotice-live')).display==='none',
    mapSwitchHidden:getComputedStyle(document.getElementById('osm3d')).display==='none',
@@ -61,6 +62,19 @@ try{
   assert.equal(state.roadDiagnostic?.roadMaterialHasTexture,!cfg.flat);
   assert.equal(state.roadDiagnostic?.geometryModified,false);
   assert.equal(state.roadDiagnostic?.roadMaterialOnly,true);
+  assert.equal(state.roadDiagnostic?.worldAlignedRoadUv,true);
+  assert.equal(state.roadDiagnostic?.metersPerAsphaltTile,7);
+  assert.deepEqual(state.roadDiagnostic?.textureRepeat,{x:1,y:1});
+  assert.equal(state.roadDiagnostic?.changedOnlyAsphaltUV,true);
+  assert.equal(state.roadDiagnostic?.originalRoadGeometry,true);
+  assert.equal(state.roadDiagnostic?.textureFilter,'LinearMipmapLinearFilter');
+  assert.equal(state.roadUv?.worldAligned,true);
+  assert.equal(state.roadUv?.metersPerTile,7);
+  assert(state.roadUv?.strips>0,'3D city must actually tessellate OSM asphalt');
+  assert(state.roadUv?.sampledVertices>0);
+  assert(state.roadUv?.maxUVError<.0002,
+   'Every sampled asphalt UV must match its world X/Z without stretching');
+  assert.equal(state.roadUv?.changedRoadVertices,false);
   assert.equal(v.roadTextureDiagnostic?.flat,Boolean(cfg.flat));
   assert(state.diagnosticLink.includes(cfg.flat?'forecourtAudit=tower':'roadSurfaceFlat=1')
    ||cfg.view!=='tower');
@@ -101,6 +115,8 @@ try{
    sourceHeading:v.cameraGps.heading,existingStops:v.stopCount,
    newRoadObjects:0,upperSignDrawCalls:1,
    flatRoadMaterial:state.roadDiagnostic.flat,
+   asphaltUvSamples:state.roadUv.sampledVertices,
+   maxUvError:state.roadUv.maxUVError,
    joystickHidden:state.joystickHidden,
    errors:errors.length
   }));
