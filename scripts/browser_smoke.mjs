@@ -367,6 +367,10 @@ try{
     stationParking.continuousSidewalkJoins<60||
     stationParking.continuousSidewalkMetres<45||
     stationParking.continuousSidewalkTriangles<120||
+    stationParking.sidewalkRoadAxisAligned!==true||
+    stationParking.sidewalkRoadReferenceId!==128308366||
+    stationParking.sidewalkRoadMargin<.38||
+    stationParking.sidewalkMaxRoadEdgeStep>.115||
     stationParking.sidewalkPanelCount!==0||
     stationParking.continuousKerb!==true||
     stationParking.centralParkingTiles+stationParking.outerSidewalkPatches!==stationParking.pavingCells||
@@ -378,7 +382,7 @@ try{
     stationParking.centralMistakenSidewalkTiles!==0||
     stationParking.parkingSidewalkSwapFixed!==true||
     stationParking.mappedOuterSidewalkSegments!==3||
-    stationParking.outerSidewalkRendering!=='continuous-roadlike-terrain-ribbon-city-paving'||
+    stationParking.outerSidewalkRendering!=='road-axis-aligned-continuous-terrain-ribbon'||
     stationParking.oldInnerSidewalkTiles!==0||
     stationParking.visibleSidewalkSide!=='outer-east-facing-Nadrazni-128308366'||
     stationParking.centralWalkwaySource!=='carved-from-OSM-safe-outer-parking-cells'||
@@ -389,7 +393,7 @@ try{
     stationParking.rightCornerFootwayId!==1282187911||
     stationParking.drawMeshes>8||
     stationParking.collisionSafe!==true||stationParking.noSyntheticCars!==true)
-   throw new Error('5.75 continuous sidewalk ribbon or original asphalt separation broken: '+JSON.stringify(stationParking));
+   throw new Error('5.76 road-aligned sidewalk edge may not step 74cm or cover the carriageway: '+JSON.stringify(stationParking));
  const outerFootwayAudit=await page.evaluate(()=>({
   forcedFootwaySegments:window.__miloviceStreetGeometryAudit?.photoOuterFootwaySegments||0,
   cityPavingTexture:window.__miloviceGraphics2?.surfaceMaterials?.sidewalk===true
@@ -397,7 +401,7 @@ try{
  if(outerFootwayAudit.forcedFootwaySegments!==0||
     !outerFootwayAudit.cityPavingTexture)
   throw new Error('5.73 must NOT force OSM footway over asphalt; carved patch shares city paving: '+JSON.stringify(outerFootwayAudit));
- console.log('5.75 continuous city-textured sidewalk ribbon and single smooth kerb:',JSON.stringify({stationParking,outerFootwayAudit}));
+ console.log('5.76 road-parallel curb and sidewalk without tiled edge steps:',JSON.stringify({stationParking,outerFootwayAudit}));
 
  const cutoutTest=await page.evaluate(async()=>{
   const THREE=await import('three');
