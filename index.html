@@ -4186,11 +4186,16 @@ function rpAppendOSMElements(elements){
   if(['primary','secondary','tertiary','residential','unclassified','living_street','service'].includes(kind))
    osmDriveRoads.push({points,width,kind,name:el.tags.name||'',oneway:el.tags.oneway==='yes'?1:el.tags.oneway==='-1'?-1:0,osmId:el.id,access:el.tags.access||'',serviceTag:el.tags.service||''});
   for(let i=1;i<points.length;i++){
-   // 5.73: do NOT force OSM 1165594426 over the asphalt! The last
-   // release drew this footway across a too-wide road surface. The
-   // pedestrian route visible on the island is instead carved from
-   // the safe OUTER parking cells by stationPhotoParking.create().
-   // Keep the normal carriageway-clipped OSM path for the rest of town.
+   // The three OSM footway segments [4->5,5->6,6->7] overlap the
+   // already reconstructed Nádražní parking-island sidewalk. Painting
+   // both created white ears and a detached terminal square in the
+   // user's 5.81.18 screenshot. Preserve the mapped way for navigation,
+   // road clearance and all OTHER segments; render the island exactly
+   // once, from its OSM-safe continuous ribbon, below.
+   if(Number(el.id)===1165594426&&i>=5&&i<=7){
+    sidewalkGeometryStats.photoOuterFootwaySegments++;
+    continue;
+   }
    osmRoadSegment(points[i-1],points[i],width,kind);
    // Unsafe per-segment roadside object generator is disabled.
   }
