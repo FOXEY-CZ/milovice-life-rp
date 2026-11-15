@@ -188,14 +188,14 @@ assert(!source.includes('new THREE.CanvasTexture'));
 assert(!source.includes('new THREE.TextureLoader'));
 assert(!source.includes('fetch('));
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(html.includes("const BUILD_ID='20261115-road-safe-rail-apron-gap-58121'"));
-assert(html.includes("from './scripts/bike-tower-entry-paving.js?v=58121'"));
+assert(html.includes("const BUILD_ID='20261115-verified-parking-roadside-58122'"));
+assert(html.includes("from './scripts/bike-tower-entry-paving.js?v=58122'"));
 assert(html.includes("bikeTowerEntryPaving.create(elements,{sidewalkMaterial:osmSidewalkMat})"));
 assert(html.includes('bikeTowerEntryPaving.reset()'));
 assert(html.includes('bikeTowerEntryPaving:bikeTowerEntryPaving.status()'));
 assert(html.includes("stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})"));
 assert(html.includes('worldAlignedRoadUv:true'));
-console.log('5.81.21 PASS continuous wide Bike Tower forecourt with actual OSM road and building exclusions',JSON.stringify({
+console.log('5.81.22 PASS continuous wide Bike Tower forecourt with actual OSM road and building exclusions',JSON.stringify({
  sourceIds:p.sourceWayIds,width:p.width,depth:p.depth,
  indexedStreetSegments:indexed,
  clearanceMeters:+clearance.nearest(p.x,p.z).clearance.toFixed(2),
