@@ -1,3 +1,19 @@
+# Milovice RP 5.81.11 — odstranění zelených děr v parkovacím ostrově
+
+**Pohled shora:** https://foxey-cz.github.io/milovice-life-rp/?v=58111&forecourtAudit=wide&parkingOverview=1  
+**Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=58111  
+**Záloha před opravou:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/58110-before-island-grass-gaps-fix
+
+## Co je opravené
+
+Na uživatelském screenshotu z 15. listopadu 2026 v 18:52 je podél vnější strany parkovacího ostrova vidět série dlouhých zelených klínů uvnitř dlažby. V modelu 5.76 vznikaly proto, že hladký souvislý chodníkový pás pokrýval pouze část dvou sloupců buněk již vyhrazených pro pěší, aniž by zbývající povrch dostal dlažbu.
+
+V 5.81.11 se tato zbývající část pokrývá spodní vrstvou **pouze uvnitř původních OSM-bezpečných buněk vyhrazených pro chodník**. Vrstva sdílí UV měřítko, natočení a materiál s hlavním chodníkem, má překrytí sousedních buněk 12 mm a je o 21 mm pod hlavním pásem. Trojúhelníky se přidávají do původního mesh bufferu, takže nevzniká nový drawcall ani další objekt ve scéně.
+
+**Nezměněné:** půdorysy budov, vozovky, skutečné OSM průchody, strana parkování, samotné kontrolní kamery, plocha trávy mimo dříve schválené buňky. Automatické testy nadále ověřují, že rozšířené buňky nezasahují do žádné mapované silnice či pěšiny. Skutečné hranice parkování jsou stále fotografickým odhadem, nikoli geodeticky zaměřenou pravdou.
+
+---
+
 ## 15. 11. 2026 — mobilní kontrola 5.81.10: přednádraží z obou směrů
 
 **Nová technická kamera parkování shora:** https://foxey-cz.github.io/milovice-life-rp/?v=58110&forecourtAudit=wide&parkingOverview=1
