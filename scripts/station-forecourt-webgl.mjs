@@ -92,6 +92,15 @@ try{
   assert.equal(v.photoDate,'2024-05-30');
   assert.equal(v.landmarks.length,2);
   assert.equal(v.stopCount,2);
+  assert.equal(v.bikeTowerEntryPaving?.active,true,
+   'Photo-anchored tower entry must render its paved access, not grass');
+  assert.equal(v.bikeTowerEntryPaving?.drawCalls,1);
+  assert.equal(v.bikeTowerEntryPaving?.width,3.1);
+  assert.equal(v.bikeTowerEntryPaving?.depth,2.1);
+  assert.equal(v.bikeTowerEntryPaving?.materialReused,true);
+  assert.equal(v.bikeTowerEntryPaving?.roadClearanceVerified,true);
+  assert.equal(v.bikeTowerEntryPaving?.originalRoadsUntouched,true);
+  assert.equal(v.bikeTowerEntryPaving?.photosCopied,false);
   assert.equal(v.existingBikeTowerUpperSign?.active,true);
   assert.equal(v.existingBikeTowerUpperSign.drawCalls,1);
   assert.equal(v.existingBikeTowerUpperSign.wayId,1011197691);
