@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createRoadClearance,isRoadFreeRect} from './road-clearance.js';
-import {STATION_PARKING_REFERENCE,planStationPhotoParking,planContinuousOuterSidewalk,planRoadSafeParkingInfillProfiles,planSatelliteParkingMarkings,planRailApronProfiles} from './station-photo-parking.js';
+import {STATION_PARKING_REFERENCE,planStationPhotoParking,planContinuousOuterSidewalk,planRoadSafeParkingInfillProfiles,planSatelliteParkingMarkings,planRailApronProfiles,planRailApronBoundaryKerbs} from './station-photo-parking.js';
 import {stationGpsToWorld} from './station-forecourt-pass.js';
 
 const data=JSON.parse(readFileSync(new URL('../data/milovice-osm.json',import.meta.url),'utf8'));
@@ -100,6 +100,36 @@ for(const p of apron.profiles){
  assert(p.startRoad>p.startRail&&p.endRoad>p.endRail);
 }
 assert.equal(planRailApronProfiles([]),null);
+// Rail-facing kerbs + two short terminal returns are derived ONLY from
+// accepted paved slabs, never from unlocated planting-bed guesswork.
+const railKerbs=planRailApronBoundaryKerbs(
+ [...plan.railSideParking,...plan.railSideJoiningSlabs],plan.frame,occupied);
+assert(railKerbs&&railKerbs.sections.length>=30,
+ 'The rail-facing kerb must run along the photo-confirmed parking apron');
+assert.equal(railKerbs.endCaps.length,2,
+ 'Both ends need a short low kerb without blocking the access aisle');
+assert.equal(railKerbs.noNewParkingFootprint,true);
+assert.equal(railKerbs.railFacingOnly,true);
+assert.equal(railKerbs.plantingCoordinatesUnverified,true);
+assert.deepEqual(plan.railApronKerbs,railKerbs);
+const railSafeSources=[...plan.railSideParking,...plan.railSideJoiningSlabs];
+for(const section of [...railKerbs.sections,...railKerbs.endCaps]){
+ assert.equal(section.sourceRectValidated,true);
+ assert(section.length>.11&&section.depth===.09);
+ assert(isRoadFreeRect(occupied,{x:section.x,z:section.z,
+  length:section.length,depth:section.depth,yaw:section.yaw,
+  buffer:.035,step:.14}), 'Kerb must clear every OSM roadway and footway');
+ const owner=railSafeSources.find(p=>Math.abs(p.along-section.sourceAlong)<.00001);
+ assert(owner,'Each kerb must be linked to a previously approved parking slab');
+ for(const tip of [section.from,section.to]){
+  assert(Math.abs(tip.along-owner.along)<=owner.length/2+.001);
+  assert(tip.offset>=owner.offset-owner.depth/2-.001);
+  assert(tip.offset<=owner.offset+owner.depth/2+.001);
+ }
+}
+assert.equal(planRailApronBoundaryKerbs([],plan.frame,occupied),null);
+assert.equal(plan.terminalPlantingBedsDeferred,true);
+
 assert.equal(plan.railGrassGridRemoved,true,
  'User 2023 aerial requires paved bank, NOT separate concrete pads in grass');
 assert(plan.railSideJoiningSlabs.length>10,
@@ -342,7 +372,7 @@ assert.equal(planStationPhotoParking(ways.map(e=>e.id===675778842?{
  ...e,geometry:e.geometry.map(p=>({...p,lon:p.lon+.001}))
 }:e),occupied),null);
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(game.includes("from './scripts/station-photo-parking.js?v=58116'"));
+assert(game.includes("from './scripts/station-photo-parking.js?v=58117'"));
 assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})'),
  'The island sidewalk must receive the exact city paving material');
 assert(game.includes('stationPhotoParking.reset()'));
@@ -350,9 +380,9 @@ assert(!game.includes('osmStrip(points[i-1],points[i],1.8,osmSidewalkMat,.235);'
  'The 5.72 forced sidewalk directly on Nádražní asphalt MUST be disabled');
 assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})'),
  'Carved sidewalk must reuse the same existing city paving material');
-assert(game.includes("from './scripts/station-photo-parking.js?v=58116'"),
+assert(game.includes("from './scripts/station-photo-parking.js?v=58117'"),
  'The reviewed 5.76 parking geometry must now load safe gap filler, not a stale 5.76 module');
-assert(game.includes("const BUILD_ID='20261115-osm-safe-parking-roadside-seam-58116'"),
+assert(game.includes("const BUILD_ID='20261115-rail-apron-kerb-58117'"),
  'New game version must retain 5.76 parking with the added ticket-machine scene');
 assert(game.includes("from './scripts/bike-tower-interior.js?v=5640'"));
 assert(game.includes("from './scripts/station-forecourt-pass.js?v=5650'"));
