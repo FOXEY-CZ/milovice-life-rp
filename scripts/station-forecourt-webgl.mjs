@@ -30,7 +30,7 @@ try{
    viewport:{width:cfg.width,height:cfg.height},deviceScaleFactor:1,
    isMobile:cfg.mobile,hasTouch:cfg.mobile});
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=58113&forecourtAudit='+cfg.view+
+  await page.goto('http://127.0.0.1:8080/?v=58114&forecourtAudit='+cfg.view+
    (cfg.flat?'&roadSurfaceFlat=1':'')+
    (cfg.inspection?'&entryInspection=1':'')+
    (cfg.overview?'&parkingOverview=1':''),
@@ -61,7 +61,7 @@ try{
    fov:(()=>window.__miloviceForecourtAuditRendered?.active?1:null)()
   }));
   const v=state.review;
-  assert.equal(state.build,'20261115-continuous-osm-safe-island-edge-58113');
+  assert.equal(state.build,'20261115-photo-2023-two-paved-parking-banks-58114');
   assert.equal(state.panelVisible,true);
   assert.equal(state.compact,cfg.mobile);
   assert.equal(state.expansionButton,cfg.mobile?'false':'true');
@@ -84,6 +84,15 @@ try{
   assert.equal(state.stationParking.infillExtraDrawCalls,0,
    'Safe underlay belongs in the existing sidewalk drawcall');
   assert.equal(state.stationParking.roadSurfaceUnmodified,true);
+  assert.equal(state.stationParking.satelliteReferenceDate,'2023-06-04');
+  assert.equal(state.stationParking.railGrassGridRemoved,true);
+  assert.equal(state.stationParking.railSideSurface,'continuous-pale-concrete-with-safe-bridges');
+  assert(state.stationParking.railSideJoiningSlabs>10);
+  assert(state.stationParking.railBayLines>=14);
+  assert(state.stationParking.centralBayLines>=6);
+  assert.equal(state.stationParking.bayLinePositionsEstimated,true);
+  assert(state.stationParking.drawMeshes<=8,
+   'Joined paved rail bank and both parking line sets must stay mobile-friendly');
   if(cfg.overview){
    assert.equal(v.parkingOverview.sourceIsPhotoCamera,false);
    assert.equal(v.parkingOverview.cameraBasedOnMappedRoad,true);
@@ -190,7 +199,7 @@ try{
    cfg.view+': mapped '+id+' must be in real camera frame');
   assert.equal(state.sourceLink,v.source);
   assert.deepEqual(errors,[]);
-  const path='browser-artifacts/milovice-forecourt-58113-'+cfg.view+
+  const path='browser-artifacts/milovice-forecourt-58114-'+cfg.view+
    (cfg.flat?'-flat':'')+(cfg.inspection?'-entry':'')+
    (cfg.overview?'-parking-overview':'')+
    (cfg.mobile?'-mobile':'')+'.png';
