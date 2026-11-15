@@ -58,7 +58,7 @@ for(const segment of segments){
 for(const preserved of [
  "osmStrip(a,b,width,osmRoadMaterial,.17)",
  "osmStrip(new THREE.Vector2(piece.a.x,piece.a.z),",
- "osmStrip(new THREE.Vector2(piece.b.x,piece.b.z),",
+ "new THREE.Vector2(piece.b.x,piece.b.z),width,osmSidewalkMat,.13)",
  "stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})",
  "stationPhotoForecourt.create(elements)",
  "stationTicketMachines.create(elements)",
