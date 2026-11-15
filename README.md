@@ -1,3 +1,28 @@
+# Milovice RP 5.81 — skutečné fotografické pohledy na celé přednádraží
+
+**Hra 5.81:** https://foxey-cz.github.io/milovice-life-rp/?v=5810  
+**Panorama nádraží + cyklověž:** https://foxey-cz.github.io/milovice-life-rp/?v=5810&forecourtAudit=wide  
+**Blízký pohled na cyklověž:** https://foxey-cz.github.io/milovice-life-rp/?v=5810&forecourtAudit=tower  
+**BUS zóna z opačného směru:** https://foxey-cz.github.io/milovice-life-rp/?v=5810&forecourtAudit=bus  
+**Stávající audit jízdenkových automatů:** https://foxey-cz.github.io/milovice-life-rp/?v=5810&ticketPhotoAudit=1  
+**Bezpečná záloha 5.80:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/580-before-forecourt-reality-pass
+
+## Co přesně přibylo
+
+- Tři **samostatné skutečně geotagované fotoaparáty ŠJů z 30. 5. 2024**. URL přepne pouze kontrolní kameru a po načtení skutečné OSM budovy zobrazí nádraží (53865956), cyklověž (1011197691) a již existující sloupky A/B. Při fotografickém auditu se vypne zakrývající výběr vozidla, HUD i joystick a vykreslování ulic se soustředí okolo **správné kamery**, nikoli herního spawnu.
+- Zdroje: [široký záběr, GPS 50.2289419, 14.8823244, heading 335°](https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_autobusov%C3%A1_zast%C3%A1vka_a_cyklov%C4%9B%C5%BE.jpg), [cyklověž GPS 50.2290656, 14.8822978, heading 5°](https://commons.wikimedia.org/wiki/File:Milovice,_N%C3%A1dra%C5%BEn%C3%AD,_cyklov%C4%9B%C5%BE.jpg), [zastávky GPS 50.2292294, 14.8822956, heading 175°](https://commons.wikimedia.org/wiki/File:Milovice,_N%C3%A1dra%C5%BEn%C3%AD,_autobusov%C3%A9_zast%C3%A1vky_p%C5%99ed_n%C3%A1dra%C5%BE%C3%ADm.jpg). Autorem je ŠJů, licence CC BY 4.0. Úhel zorného pole 105° na portrétním mobilu je **pomocný digitální pohled** a nemá se prezentovat jako původní fotoobjektiv.
+- **Jeden fotograficky doložený nový detail na existujícím objektu:** horní modrý znak cykloparkování s bílým P a vlastním jednoduchým piktogramem kola na už postavené cyklověži. Půdorys a vnější plášť věže zůstávají beze změny; značka je orientována shodně s doloženým modrým přízemním vstupem. **1 nový draw call, 1 procedurálně kreslená CanvasTexture, 0 nových objektů na silnici.** Výška/natočení značky jsou vizuální odhad a čekají na kontrolu v mobilní hře; fotografie nebyla vložena do textury. Při rekonstrukci scény se výslovně uvolní její geometrie, materiál i textura.
+- Strom, dvojramenná lampa, záhon, BUS nápisy a protější přístřešek jsou v seznamu **čeká na bezpečnou polohu**. Fotografie z roku 2022 od uživatele a ze 2024 na Commons potvrzují jejich vzhled/přítomnost ve svých datech, ale **nedokazují přímo x/z souřadnice**. Do hry je proto zatím nevkládáme. Toto není finální dokončení Nádražní.
+- Ponechané plochy 5.76, stop sloupky 5.23, automaty 5.80, cyklověž 5.64, mapová geometrie a herní ovládání. Základní i Chromium WebGL testy hlídají, že se tyto vrstvy nerozbily.
+
+## Ověřovací workflow
+
+- `scripts/station-forecourt-photo-audit.test.mjs` kontroluje zdroje kamer, identitu obou budov, konzervativní pravidla `deferred` a ukotvení horní značky v OSM věži.
+- `scripts/station-forecourt-webgl.mjs` ověřuje 3 skutečné kamery v Chromiu (široký záběr, detail věže na portrétním telefonu, BUS zóna) a uloží 3 screenshoty do GitHub Actions. Starý `station-ticket-photo-webgl.mjs` zůstává pro obě jízdenkové automaty.
+- Checklist 5.81 a všech deset uživatelských fotografických pozorování viz [Nádražní Reality Pass](docs/NADRAZNI-5.81-REALITY-PASS.md).
+
+---
+
 # Milovice RP 5.80 — detailnější automaty bez posunu jediného půdorysu
 
 **Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5800  
