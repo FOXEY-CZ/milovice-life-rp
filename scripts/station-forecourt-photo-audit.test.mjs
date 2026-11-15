@@ -70,7 +70,8 @@ assert(html.includes("from './scripts/station-forecourt-photo-audit.js?v=5810'")
 assert(html.includes("from './scripts/bike-tower-photo-sign.js?v=5810'"));
 assert(html.includes("new URLSearchParams(location.search).get('forecourtAudit')"));
 assert(html.includes('rpForecourtAuditPlan=rpForecourtAuditView?'));
-assert(html.includes("camera.fov=rpForecourtEntryInspection?76:105;camera.updateProjectionMatrix()"));
+assert(html.includes('camera.fov=rpForecourtParkingOverview?64:rpForecourtEntryInspection?76:105;'));
+assert(html.includes('camera.position.set(viewX,ground+Math.max(74,f.length*.94),viewZ);'));
 assert(html.includes("if(rpAuditCameraWorld)camera.fov=innerWidth<innerHeight?"));
 assert(html.includes("const cx=rpAuditCameraWorld?.x??(walking?px:x)"));
 assert(html.includes("const cz=rpAuditCameraWorld?.z??(walking?pz:z)"));
