@@ -167,10 +167,11 @@ export function planBikeTowerEntryPaving(elements,roadClearance){
  // The mapped footway endpoint is EXEMPT because it already exists there.
  for(let i=0;i<=26;i++){
   const t=i/26,width=JOIN_WIDTH_AT_PAD*(1-t)+JOIN_WIDTH_AT_FOOTWAY*t;
-  const cx=start.x+(end.x-start.x)*t,cz=start.z+(end.z-start.z)*t;
+  const sectionX=start.x+(end.x-start.x)*t;
+  const sectionZ=start.z+(end.z-start.z)*t;
   for(let j=-4;j<=4;j++){
-   const p={x:cx+side.x*width*.5*j/4,
-    z:cz+side.z*width*.5*j/4};
+   const p={x:sectionX+side.x*width*.5*j/4,
+    z:sectionZ+side.z*width*.5*j/4};
    const other=nearOtherMappedWay(protectedSegments,p);
    otherRoadMargin=Math.min(otherRoadMargin,other.clearance);
    if(other.clearance<.17||gcd(p,{x:cx,z:cz})<radius+.12)
