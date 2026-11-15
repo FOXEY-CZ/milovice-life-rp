@@ -365,6 +365,38 @@ try{
   throw new Error('5.77 photo-authentic station ticket pair missing or incorrectly located: '+JSON.stringify(stationTickets));
  console.log('5.77 original-modeled photo verified ticket pair:',
   JSON.stringify(stationTickets));
+ // The user can review both models against the original 2024 camera viewpoint
+ // without being blocked by the vehicle picker or altering their normal game.
+ const ticketPhotoPage=await context.newPage();
+ const photoJsErrors=[];
+ ticketPhotoPage.on('pageerror',error=>photoJsErrors.push(String(error)));
+ await ticketPhotoPage.goto('http://127.0.0.1:8080/?v=5780&ticketPhotoAudit=1',
+  {waitUntil:'domcontentloaded',timeout:30000});
+ await ticketPhotoPage.waitForFunction(
+  ()=>window.__miloviceTicketPhotoAuditRendered?.active===true,
+  null,{timeout:60000});
+ const ticketPhotoAudit=await ticketPhotoPage.evaluate(()=>({
+  audit:window.__miloviceTicketPhotoAuditRendered,
+  panelVisible:!!document.querySelector('#ticket-photo-audit')?.offsetWidth,
+  pickerHidden:getComputedStyle(document.getElementById('rp-spawn')).display==='none',
+  title:document.title
+ }));
+ if(ticketPhotoAudit.audit.machineCount!==2||
+    ticketPhotoAudit.audit.projectionCount!==2||
+    ticketPhotoAudit.audit.inFrameCount!==2||
+    ticketPhotoAudit.audit.headingDegrees!==110||
+    ticketPhotoAudit.audit.positionsSurveyed!==false||
+    ticketPhotoAudit.audit.photosCopied!==false||
+    ticketPhotoAudit.audit.roadClearanceMin<1||
+    !ticketPhotoAudit.panelVisible||!ticketPhotoAudit.pickerHidden||
+    photoJsErrors.length)
+  throw new Error('5.78 station machine photo-view WebGL error: '+
+   JSON.stringify({ticketPhotoAudit,photoJsErrors}));
+ await mkdir('browser-artifacts',{recursive:true});
+ await ticketPhotoPage.screenshot({path:'browser-artifacts/milovice-ticket-photo-578.png'});
+ console.log('5.78 source-aligned ticket machine photograph viewpoint PASS',
+  JSON.stringify(ticketPhotoAudit.audit));
+ await ticketPhotoPage.close();
  const stationParking=await page.evaluate(()=>window.__miloviceStationParking||null);
  if(!stationParking?.active||
     JSON.stringify(stationParking.sourceIds)!=='[675778842,128308366]'||
