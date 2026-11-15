@@ -1,3 +1,26 @@
+# Milovice RP 5.81.3 — klidnější asfalt bez roztažených šraf
+
+**Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5813  
+**Stejný fotopohled s opravenou texturou:** https://foxey-cz.github.io/milovice-life-rp/?v=5813&forecourtAudit=tower  
+**Kontrolní pohled bez textury:** https://foxey-cz.github.io/milovice-life-rp/?v=5813&forecourtAudit=tower&roadSurfaceFlat=1  
+**Záloha 5.81.2:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/5812-before-asphalt-uv-fix
+
+## Východisko
+
+Dva uživatelské screenshoty z 15. 11. 2026 porovnaly **totožnou foto-kameru cyklověže**: při běžné asfaltové textuře měl blízký úsek silnice výrazné, různě orientované dlouhé šrafy; při vypnutí mapy materiálu byly stejné silniční plochy vizuálně hladké. To jednoznačně prokazuje, že artefakt vyžaduje *texturovaný materiál*; samotný screenshot nedokazuje, zda jsou i některé překryvy road-stripů. Nesmíme proto posunovat fyzické ulice, chodníky ani budovy naslepo.
+
+## Implementace
+
+- **Přesně stejné OSM vrcholy, DEM výšky, indexované trojúhelníky a půdorysy.** Mění se pouze `uv` atribut silničního asfaltu. Starý vzorec `(u, t*len/8)` počítal souřadnice zvlášť pro každý segment a společná textura se navíc opakovala **8× podélně**, takže v křižovatkách a na mobilním obrazu vznikaly ostré pruhy a viditelné změny směru vzoru.
+- **Celosvětové konzistentní UV (`x/7,z/7`).** Nezávislé navazující úseky používají totožné UV na stejném bodě i při odlišném směru jízdy. Dlažba, chodníky, nástupiště, štěrkový dvůr, značení a jiné materiály si ponechávají původní UV. Jde o originální texturu 7×7 m na jednu opakovanou dlaždici, ne zkopírovaný asfalt z Mapy.com.
+- **Mírnější původní procedurální textura:** utlumené barevné zrno, odstraněné ostře kontrastní diagonální tahy a výrazně snížené množství ostrých bodů. Trilineární mip-mapování a anisotropní filtr (maximálně 4×) brání agresivnímu aliasingu na šikmé silnici mobilního telefonu. Tuto novou texturu stále používá i běžná hra – nejde jen o fotoaudit.
+- **Diagnostické porovnání zůstává:** `&roadSurfaceFlat=1` zobrazuje stejný pohled s asfaltovou mapou vypnutou, avšak se stále stejnou geometrií. `window.__miloviceRoadUVValidation` prověřuje skutečné vytvořené vertex-UV atributy vůči jejich world X/Z. Nový Node test a opravdový Chromium/WebGL desktop+mobil test kontrolují trvalou správnost mapování.
+- Nezměněné: dvě PID pokladny a bílá fasáda nádraží, skleněná cyklověž se značkou, obě zastávky, parkoviště, vnější chodník, automobilové kolize, městské souřadnice a budoucí fotoaudit lampy/stromu. Žádné nové asfaltové polygonové výplně nebo fiktivní dopravní značení.
+
+**Co ještě není potvrzené:** zda bude při normálním hraní z Androidu asfalt vizuálně zcela v pořádku. Po vydání je potřeba porovnat stejnou kameru s uživatelským screenshotem a neprohlašovat celou Nádražní za hotovou.
+
+---
+
 # Milovice RP 5.81.2 — oprava fotoauditu + bezpečná diagnostika asfaltu
 
 **Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5812  

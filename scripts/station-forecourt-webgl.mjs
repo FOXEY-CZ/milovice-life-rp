@@ -26,7 +26,7 @@ try{
    viewport:{width:cfg.width,height:cfg.height},deviceScaleFactor:1,
    isMobile:cfg.mobile,hasTouch:cfg.mobile});
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=5812&forecourtAudit='+cfg.view+
+  await page.goto('http://127.0.0.1:8080/?v=5813&forecourtAudit='+cfg.view+
    (cfg.flat?'&roadSurfaceFlat=1':''),
    {waitUntil:'domcontentloaded',timeout:30000});
   await page.waitForFunction(()=>window.__miloviceForecourtAuditRendered?.active===true,
@@ -35,6 +35,7 @@ try{
    review:window.__miloviceForecourtAuditRendered,
    towerMaterials:window.__miloviceBikeTowerInterior,
    roadDiagnostic:window.__miloviceRoadTextureDiagnostic,
+   roadUv:window.__miloviceRoadUVValidation,
    joystickHidden:getComputedStyle(document.getElementById('rp-joystick')).display==='none',
    liveLoadingPopupHidden:getComputedStyle(document.getElementById('osmnotice-live')).display==='none',
    mapSwitchHidden:getComputedStyle(document.getElementById('osm3d')).display==='none',
@@ -50,7 +51,7 @@ try{
    fov:(()=>window.__miloviceForecourtAuditRendered?.active?1:null)()
   }));
   const v=state.review;
-  assert.equal(state.build,'20261115-forecourt-surface-diagnostic-5812');
+  assert.equal(state.build,'20261115-road-asphalt-world-uv-5813');
   assert.equal(state.panelVisible,true);
   assert.equal(state.spawnHidden,true);
   assert.equal(state.joystickHidden,true,'Analog mobile joystick cannot obscure photo audit');
@@ -61,6 +62,19 @@ try{
   assert.equal(state.roadDiagnostic?.roadMaterialHasTexture,!cfg.flat);
   assert.equal(state.roadDiagnostic?.geometryModified,false);
   assert.equal(state.roadDiagnostic?.roadMaterialOnly,true);
+  assert.equal(state.roadDiagnostic?.worldAlignedRoadUv,true);
+  assert.equal(state.roadDiagnostic?.metersPerAsphaltTile,7);
+  assert.deepEqual(state.roadDiagnostic?.textureRepeat,{x:1,y:1});
+  assert.equal(state.roadDiagnostic?.changedOnlyAsphaltUV,true);
+  assert.equal(state.roadDiagnostic?.originalRoadGeometry,true);
+  assert.equal(state.roadDiagnostic?.textureFilter,'LinearMipmapLinearFilter');
+  assert.equal(state.roadUv?.worldAligned,true);
+  assert.equal(state.roadUv?.metersPerTile,7);
+  assert(state.roadUv?.strips>0,'3D city must actually tessellate OSM asphalt');
+  assert(state.roadUv?.sampledVertices>0);
+  assert(state.roadUv?.maxUVError<.0002,
+   'Every sampled asphalt UV must match its world X/Z without stretching');
+  assert.equal(state.roadUv?.changedRoadVertices,false);
   assert.equal(v.roadTextureDiagnostic?.flat,Boolean(cfg.flat));
   assert(state.diagnosticLink.includes(cfg.flat?'forecourtAudit=tower':'roadSurfaceFlat=1')
    ||cfg.view!=='tower');
@@ -93,7 +107,7 @@ try{
    cfg.view+': mapped '+id+' must be in real camera frame');
   assert.equal(state.sourceLink,v.source);
   assert.deepEqual(errors,[]);
-  const path='browser-artifacts/milovice-forecourt-5812-'+cfg.view+
+  const path='browser-artifacts/milovice-forecourt-5813-'+cfg.view+
    (cfg.flat?'-flat':'')+(cfg.mobile?'-mobile':'')+'.png';
   await page.screenshot({path});
   console.log('5.81 FORECOURT WebGL PASS',JSON.stringify({
@@ -101,6 +115,8 @@ try{
    sourceHeading:v.cameraGps.heading,existingStops:v.stopCount,
    newRoadObjects:0,upperSignDrawCalls:1,
    flatRoadMaterial:state.roadDiagnostic.flat,
+   asphaltUvSamples:state.roadUv.sampledVertices,
+   maxUvError:state.roadUv.maxUVError,
    joystickHidden:state.joystickHidden,
    errors:errors.length
   }));
