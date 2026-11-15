@@ -126,6 +126,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <span id="forecourt-audit-label">Pohled doložený fotografií</span>
 <div class="views">
 <a href="?v=58110&forecourtAudit=wide">Nádraží + cyklověž</a>
+<a href="?v=58110&forecourtAudit=wide&parkingOverview=1">📐 Parkování shora (technický pohled)</a>
 <a href="?v=58110&forecourtAudit=tower">Cyklověž detail</a>
 <a href="?v=58110&forecourtAudit=bus">BUS zóna</a>
 <a href="?v=58110&forecourtAudit=tower&entryInspection=1">🔎 Vstup + navazující chodník (technický detail)</a>
@@ -319,6 +320,11 @@ const rpAuditCameraWorld=rpForecourtCameraWorld||rpStationTicketCameraWorld;
 const rpForecourtEntryInspection=Boolean(rpForecourtAuditView)&&
  rpForecourtAuditId==='tower'&&
  new URLSearchParams(location.search).get('entryInspection')==='1';
+// Source-grounded overhead survey of EXISTING 5.76 OSM-safe parking,
+// not a new physical object or a claim of photographed camera coordinates.
+const rpForecourtParkingOverview=Boolean(rpForecourtAuditView)&&
+ rpForecourtAuditId==='wide'&&
+ new URLSearchParams(location.search).get('parkingOverview')==='1';
 const rpRoadSurfaceFlatAudit=Boolean(rpForecourtAuditView)&&
  new URLSearchParams(location.search).get('roadSurfaceFlat')==='1';
 let rpForecourtAuditPlan=null;
@@ -333,6 +339,8 @@ if(rpForecourtAuditView){
  document.getElementById('forecourt-audit-label').textContent=
   rpForecourtEntryInspection?
    'Technický detail z OSM geometrie · NENÍ fotografická kamera':
+   rpForecourtParkingOverview?
+   'Parkovací ostrov a obě vozovky shora · technický OSM pohled, NENÍ fotografická kamera':
    rpForecourtAuditView.label+' · 30. 5. 2024';
  const toggle=document.getElementById('forecourt-audit-toggle');
  function updateAuditPanel(expand){
@@ -346,17 +354,24 @@ if(rpForecourtAuditView){
  const surface=document.getElementById('forecourt-audit-surface');
  surface.textContent=rpRoadSurfaceFlatAudit?'Vrátit původní asfaltovou texturu':'Porovnat asfalt bez textury';
  surface.href='?v=58110&forecourtAudit='+encodeURIComponent(rpForecourtAuditId)+
+  (rpForecourtParkingOverview?'&parkingOverview=1':'')+
+  (rpForecourtEntryInspection?'&entryInspection=1':'')+
   (rpRoadSurfaceFlatAudit?'':'&roadSurfaceFlat=1');
- for(const a of panel.querySelectorAll('.views a'))
-  if(new URL(a.href).searchParams.get('forecourtAudit')===rpForecourtAuditId)
+ for(const a of panel.querySelectorAll('.views a')){
+  const target=new URL(a.href).searchParams;
+  if(target.get('forecourtAudit')===rpForecourtAuditId&&
+     (target.get('parkingOverview')==='1')===rpForecourtParkingOverview&&
+     (target.get('entryInspection')==='1')===rpForecourtEntryInspection)
    a.classList.add('current-view');
+ }
 }
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x9bc8ec);scene.fog=new THREE.Fog(0x9bc8ec,280,850);const camera=new THREE.PerspectiveCamera(67,innerWidth/innerHeight,.1,1400);const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,matchMedia('(pointer:coarse)').matches?1.6:1.25));renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x65725a,1.6));
 // The source image is portrait. A landscape 67° photo audit view would crop
 // the orange machine on a narrow phone; widen ONLY the opt-in diagnostic
 // lens without touching the normal game camera, player or source heading.
 if(rpAuditCameraWorld&&innerWidth<innerHeight){
- camera.fov=rpForecourtEntryInspection?76:105;camera.updateProjectionMatrix();
+ camera.fov=rpForecourtParkingOverview?64:rpForecourtEntryInspection?76:105;
+ camera.updateProjectionMatrix();
 }const sun=new THREE.DirectionalLight(0xffefcc,1.7);sun.position.set(50,100,30);scene.add(sun);
 
 // Visual pipeline 3.8: cinematic tonemapping, improved sky and material response.
@@ -5180,7 +5195,24 @@ if(rpForecourtCameraWorld&&rpForecourtAuditView){
  const eye=rpForecourtCameraWorld;
  const heading=rpForecourtAuditView.camera.heading*Math.PI/180;
  const paving=rpForecourtEntryInspection?bikeTowerEntryPaving.plan():null;
- if(paving?.connector){
+ const parkingPlan=rpForecourtParkingOverview?stationPhotoParking.plan():null;
+ const parkingFrame=parkingPlan?.frame||null;
+ let technicalParkingCamera=false;
+ if(rpForecourtParkingOverview&&parkingFrame){
+  // Frame is the actual OSM 675778842 one-way service road used to build
+  // the source-bounded parking island. Place camera above that axis and
+  // orient its UP direction along the mapped street, so portrait phones
+  // show the WHOLE parking footprint rather than 60% empty sky.
+  const f=parkingFrame;
+  const viewX=f.a.x+f.ux*f.length*.5+f.nx*5.2;
+  const viewZ=f.a.z+f.uz*f.length*.5+f.nz*5.2;
+  const ground=terrainAt(viewX,viewZ);
+  camera.up.set(f.ux,0,f.uz);
+  camera.fov=innerWidth<innerHeight?64:55;
+  camera.position.set(viewX,ground+Math.max(74,f.length*.94),viewZ);
+  camera.lookAt(viewX,ground+.1,viewZ);
+  technicalParkingCamera=true;
+ }else if(paving?.connector){
   // This is a derived engineering view, NOT the photographer's 2024 GPS.
   // Aim down at the entire existing entry + pedestrian OSM join from the
   // real tower entry side. Never move a single city mesh or the player.
@@ -5221,7 +5253,24 @@ if(rpForecourtCameraWorld&&rpForecourtAuditView){
  }):[];
  window.__miloviceForecourtAuditRendered={
   active:Boolean(rpForecourtAuditPlan),view:rpForecourtAuditId,
-  cameraMode:rpForecourtEntryInspection?'technical-osm-derived':'documented-photo-gps',
+  cameraMode:(rpForecourtEntryInspection||technicalParkingCamera)?
+   'technical-osm-derived':'documented-photo-gps',
+  parkingOverview:{
+   requested:rpForecourtParkingOverview,enabled:technicalParkingCamera,
+   sourceIsPhotoCamera:false,
+   referenceServiceWayId:675778842,
+   referenceEastRoadId:128308366,
+   referencePedestrianWayId:1165594426,
+   centralParkingTiles:stationPhotoParking.status().centralParkingTiles,
+   oppositeParkingBays:stationPhotoParking.status().oppositeParkingBays,
+   outerSidewalkPatches:stationPhotoParking.status().outerSidewalkPatches,
+   mappedOuterSidewalkSegments:stationPhotoParking.status().mappedOuterSidewalkSegments,
+   parkingBanks:stationPhotoParking.status().parkingBanks,
+   underlyingRoadsUnchanged:stationPhotoParking.status().roadSurfaceUnmodified,
+   modelledSurface:stationPhotoParking.status().estimatedLayout,
+   cameraBasedOnMappedRoad:technicalParkingCamera,
+   noGeometryChanges:true
+  },
   entryInspection:{enabled:rpForecourtEntryInspection,
    sourceIsPhotoCamera:!rpForecourtEntryInspection,
    padAndPathOneMesh:bikeTowerEntryPaving.status()?.drawCalls===1,
@@ -5331,5 +5380,7 @@ if(rpForecourtCameraWorld&&rpForecourtAuditView){
  perfEl.style.color=fps>=45?'#a6f3b9':fps>=25?'#ffe39b':'#ff9e9e';
  perfFrames=0;perfCpuMs=0;perfWebGLMs=0;perfSince=t
 }}requestAnimationFrame(animate);setTimeout(()=>osmBtn.click(),300);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;if(rpAuditCameraWorld)camera.fov=innerWidth<innerHeight?
- (rpForecourtEntryInspection?76:105):67;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+ (rpForecourtParkingOverview?64:rpForecourtEntryInspection?76:105):
+ (rpForecourtParkingOverview?55:67);
+ camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 </script></body></html>
