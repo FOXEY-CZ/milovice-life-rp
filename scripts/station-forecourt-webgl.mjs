@@ -28,7 +28,7 @@ try{
    viewport:{width:cfg.width,height:cfg.height},deviceScaleFactor:1,
    isMobile:cfg.mobile,hasTouch:cfg.mobile});
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=5816&forecourtAudit='+cfg.view+
+  await page.goto('http://127.0.0.1:8080/?v=5817&forecourtAudit='+cfg.view+
    (cfg.flat?'&roadSurfaceFlat=1':'')+
    (cfg.inspection?'&entryInspection=1':''),
    {waitUntil:'domcontentloaded',timeout:30000});
@@ -57,7 +57,7 @@ try{
    fov:(()=>window.__miloviceForecourtAuditRendered?.active?1:null)()
   }));
   const v=state.review;
-  assert.equal(state.build,'20261115-biketower-entry-inspection-5816');
+  assert.equal(state.build,'20261115-biketower-rendered-footway-5817');
   assert.equal(state.panelVisible,true);
   assert.equal(state.compact,cfg.mobile);
   assert.equal(state.expansionButton,cfg.mobile?'false':'true');
@@ -67,6 +67,7 @@ try{
   if(cfg.inspection){
    assert.equal(v.entryInspection.sourceIsPhotoCamera,false);
    assert.equal(v.entryInspection.padAndPathOneMesh,true);
+   assert.equal(v.entryInspection.pathEndsOnRenderedSafeFootway,true);
    assert.equal(v.entryInspection.projectedPoints.length,3);
    assert(v.entryInspection.projectedPoints.every(p=>p.inFrame),
     'Close camera must show entrance, physical joint AND mapped footway together');
@@ -116,9 +117,11 @@ try{
   assert.equal(v.bikeTowerEntryPaving?.drawCalls,1);
   assert.equal(v.bikeTowerEntryPaving?.connectedToMappedFootway,true);
   assert.equal(v.bikeTowerEntryPaving?.expectedFootwayId,1165594426);
-  assert(v.bikeTowerEntryPaving?.connectorLength>1);
-  assert(v.bikeTowerEntryPaving?.connectorLength<3.5);
-  assert.equal(v.bikeTowerEntryPaving?.connectorEndWidth,.68);
+  assert(v.bikeTowerEntryPaving?.connectorLength>6);
+  assert(v.bikeTowerEntryPaving?.connectorLength<10);
+  assert.equal(v.bikeTowerEntryPaving?.connectorEndWidth,1.55);
+  assert.equal(v.bikeTowerEntryPaving?.targetInsideActuallyRenderedFootway,true);
+  assert.equal(v.bikeTowerEntryPaving?.mappedFootwaySegment,3);
   assert(v.bikeTowerEntryPaving?.connectorRoadMargin>.17);
   assert.equal(v.bikeTowerEntryPaving?.width,3.1);
   assert.equal(v.bikeTowerEntryPaving?.depth,2.1);
@@ -141,7 +144,7 @@ try{
    cfg.view+': mapped '+id+' must be in real camera frame');
   assert.equal(state.sourceLink,v.source);
   assert.deepEqual(errors,[]);
-  const path='browser-artifacts/milovice-forecourt-5816-'+cfg.view+
+  const path='browser-artifacts/milovice-forecourt-5817-'+cfg.view+
    (cfg.flat?'-flat':'')+(cfg.inspection?'-entry':'')+
    (cfg.mobile?'-mobile':'')+'.png';
   await page.screenshot({path});
