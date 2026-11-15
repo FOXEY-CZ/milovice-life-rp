@@ -1,3 +1,19 @@
+# Milovice RP 5.81.13 — průběžně vyhlazená hrana přednádražního chodníku
+
+**Nová kontrolní kamera shora:** https://foxey-cz.github.io/milovice-life-rp/?v=58113&forecourtAudit=wide&parkingOverview=1  
+**Spustit hru:** https://foxey-cz.github.io/milovice-life-rp/?v=58113  
+**Záloha před novou geometrií:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/58112-before-continuous-roadside-profile
+
+## Mobilní zpětná vazba 15. listopadu 2026, 19:27
+
+Na screenshotu 5.81.12 zůstala dlouhá schodišťová hranice ostrova. Krátké lokální zkosení 22 cm nemohlo narovnat hranici, jejíž tloušťka se měnila po desítkách na sebe navazujících buněk.
+
+V 5.81.13 je původní spodní výplň jednotlivých čtverců nahrazena **souvisle dopočítaným příčným profilem** přes všechna již fotodoložená a OSM-bezpečná dlažební pole. Vnější hrana se získává jako omezená obálka a smí se měnit maximálně zhruba o 12 cm na 1 m délky. Každý řez leží **uvnitř existujících ověřených buněk**, ne na vozovce ani v náhodně vymyšlené zeleni; konec z jediné buňky se smí zúžit na 10 cm místo vynucení dalšího schodu. Stejná textura, pozice původního horního chodníku a jediný drawcall zůstávají.
+
+Jedná se o technické zarovnání **modelového** parkovacího ostrova, ne o důkaz geodeticky skutečné hrany v listopadu 2026. Reálné rozmístění stromů, lamp, autobusového značení a sousedních budov bude následovat podle správně lokalizovaných fotografií.
+
+---
+
 # Milovice RP 5.81.12 — zmírnění schodovitých krajů parkovacího ostrova
 
 **Nová mobilní kontrola shora:** https://foxey-cz.github.io/milovice-life-rp/?v=58112&forecourtAudit=wide&parkingOverview=1  
