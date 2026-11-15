@@ -1,4 +1,4 @@
-// Milovice RP 5.81.11: test the generated REAL mesh topology, not only
+// Milovice RP 5.81.12: test the generated REAL mesh topology, not only
 // the OSM point planner. Prevent disconnected triangles, reversed faces,
 // duplicated overlapping apron+ribbon patches and accidental extra drawcalls.
 import assert from 'node:assert/strict';
@@ -127,7 +127,7 @@ scene.create(elements,{sidewalkMaterial:material});
 assert.equal(layers.length,1,'After reset exactly one mesh recreated');
 scene.reset();
 delete globalThis.window;
-console.log('5.81.11 MESH PASS',JSON.stringify({
+console.log('5.81.12 MESH PASS',JSON.stringify({
  vertices:n,triangles:first.triangles,meshComponents:1,
  areaM2:+projectedArea.toFixed(2),maxWidth:+p.connector.widestWidth.toFixed(2),
  nearestRoadMargin:+p.connector.otherRoadMargin.toFixed(3),
