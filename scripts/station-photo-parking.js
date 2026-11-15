@@ -1,4 +1,4 @@
-// Milovice RP 5.81.17 — rail-facing apron kerbs and verified end returns; no road overlays.
+// Milovice RP 5.81.18 — narrow road-side grass seam and trim unsupported island-tip infill.
 // The 5.72 "fix" drew a new OSM sidewalk directly OVER Nádražní's asphalt,
 // rather than removing the relevant strip from the parking surface.
 // The user confirmed the exact topology: existing road (UNTOUCHED),
@@ -396,7 +396,11 @@ export function planStationPhotoParking(elements,roadClearance){
    const originalRailEdge=chosen.offset-chosen.depth/2;
    const originalRoadEdge=chosen.offset+chosen.depth/2;
    let acceptedRoadEdge=originalRoadEdge;
-   for(const candidate of [-2.90,-2.78,-2.66]){
+   // The photographed pavement meets the service aisle: 5.81.17 left a
+   // conspicuous narrow green strip. Approach the mapped 4.5m OSM
+   // service road in 12cm steps, never closer than road clearance permits.
+   // The WHOLE slab is rechecked for roads, paths, rails and buildings.
+   for(const candidate of [-2.90,-2.78,-2.66,-2.54,-2.42]){
     const trialDepth=candidate-originalRailEdge;
     const trialOffset=(originalRailEdge+candidate)/2;
     const trial=at(f,along,trialOffset);
@@ -849,9 +853,11 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   // 5.81.11: meshes are part of the existing single sidewalk drawcall,
   // not new sidewalk rectangles on the OSM road or extra scene objects.
   roadSafeInfillCells:planned?.outerSidewalkCells.length||0,
-  roadSafeInfillTriangles:(infillProfile?.rows.length||0)*4,
+  roadSafeInfillTriangles:(infillProfile?.visibleRows||0)*4,
   smoothRoadsideInfill:true,
-  smoothInfillRows:infillProfile?.rows.length||0,
+  smoothInfillRows:infillProfile?.visibleRows||0,
+  unsupportedTerminalInfillRowsTrimmed:infillProfile?.trimmedRows||0,
+  infillRestrictedToSafeRibbon:true,
   smoothInfillJoins:infillProfile?.joins||0,
   smoothInfillMaxEdgeStep:infillProfile?.maxEdgeStep??null,
   smoothInfillMaxSlope:infillProfile?.maxSlope??null,
@@ -931,7 +937,16 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
     // road-clearance tests already check expanded dimensions of each cell.
     infillProfile=planRoadSafeParkingInfillProfiles(planned.outerSidewalkCells);
     if(!infillProfile)throw Error('Roadsafe island infill requires contiguous OSM-cleared cells');
-    for(const row of infillProfile.rows){
+    // Only add an underlay where a genuine continuous sidewalk ribbon is
+    // present. End rows with no ribbon were the detached rectangular tail
+    // at the narrow southern island tip in the user's overhead screenshot.
+    const supportedStations=new Set(planned.continuousRibbon.profiles
+     .filter(profile=>profile.safe).map(profile=>profile.along));
+    const visibleInfillRows=infillProfile.rows.filter(row=>
+     supportedStations.has(row.along));
+    infillProfile.visibleRows=visibleInfillRows.length;
+    infillProfile.trimmedRows=infillProfile.rows.length-visibleInfillRows.length;
+    for(const row of visibleInfillRows){
      const sections=[
       {along:row.along-row.halfAlong,outer:row.start},
       {along:row.along,outer:row.edge},
@@ -961,7 +976,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
    mesh.name=kind==='kerb'?'ContinuousOuterSidewalkKerb':'ContinuousOuterSidewalkPaving';
    if(kind==='sidewalk'){
     mesh.userData.roadSafeInfillCells=planned.outerSidewalkCells.length;
-    mesh.userData.smoothInfillRows=infillProfile.rows.length;
+    mesh.userData.smoothInfillRows=infillProfile.visibleRows;
     mesh.userData.smoothInfillMaxEdgeStep=infillProfile.maxEdgeStep;
     mesh.userData.infillExtraDrawCalls=0;
     mesh.userData.infillHeightBelowRibbonMeters=.021;
