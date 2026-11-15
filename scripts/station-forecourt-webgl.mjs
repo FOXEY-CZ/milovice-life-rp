@@ -30,7 +30,7 @@ try{
    viewport:{width:cfg.width,height:cfg.height},deviceScaleFactor:1,
    isMobile:cfg.mobile,hasTouch:cfg.mobile});
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=58115&forecourtAudit='+cfg.view+
+  await page.goto('http://127.0.0.1:8080/?v=58116&forecourtAudit='+cfg.view+
    (cfg.flat?'&roadSurfaceFlat=1':'')+
    (cfg.inspection?'&entryInspection=1':'')+
    (cfg.overview?'&parkingOverview=1':''),
@@ -61,7 +61,7 @@ try{
    fov:(()=>window.__miloviceForecourtAuditRendered?.active?1:null)()
   }));
   const v=state.review;
-  assert.equal(state.build,'20261115-photo-2023-tapered-rail-apron-58115');
+  assert.equal(state.build,'20261115-osm-safe-parking-roadside-seam-58116');
   assert.equal(state.panelVisible,true);
   assert.equal(state.compact,cfg.mobile);
   assert.equal(state.expansionButton,cfg.mobile?'false':'true');
@@ -87,6 +87,10 @@ try{
   assert.equal(state.stationParking.satelliteReferenceDate,'2023-06-04');
   assert.equal(state.stationParking.railGrassGridRemoved,true);
   assert.equal(state.stationParking.railPavingVariableDepth,true);
+  assert.equal(state.stationParking.railPavingTrafficEdgeSafelyExtended,true);
+  assert(state.stationParking.railPavingSeamCells>=2);
+  assert(state.stationParking.railPavingLargestSeamReduction>.10);
+  assert(state.stationParking.railPavingLargestSeamReduction<=.361);
   assert(state.stationParking.railPavingExpandedBays>=2,
    'Tapered rail-side apron must widen in OSM-safe places, not remain a rectangle');
   assert(state.stationParking.railPavingMaxDepth>
@@ -205,7 +209,7 @@ try{
    cfg.view+': mapped '+id+' must be in real camera frame');
   assert.equal(state.sourceLink,v.source);
   assert.deepEqual(errors,[]);
-  const path='browser-artifacts/milovice-forecourt-58115-'+cfg.view+
+  const path='browser-artifacts/milovice-forecourt-58116-'+cfg.view+
    (cfg.flat?'-flat':'')+(cfg.inspection?'-entry':'')+
    (cfg.overview?'-parking-overview':'')+
    (cfg.mobile?'-mobile':'')+'.png';
