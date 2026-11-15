@@ -1,3 +1,25 @@
+# Milovice RP 5.81.14 — skutečné dvě parkovací plochy podle satelitního snímku 4. 6. 2023
+
+**Kontrola shora:** https://foxey-cz.github.io/milovice-life-rp/?v=58114&forecourtAudit=wide&parkingOverview=1  
+**Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=58114  
+**Záloha před opravou:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/58113-before-2023-satellite-parking-banks
+
+## Nový doložený podklad (15. 11. 2026, uživatelský screenshot)
+
+Uživatel poskytl dvojici porovnatelných pohledů shora: hru 5.81.13 a satelitní snímek místa se zobrazeným datem **4. 6. 2023**. Orientační body jsou kolejiště vlevo, středová příjezdová komunikace OSM 675778842, Nádražní OSM 128308366 vpravo, parkování na obou stranách příjezdové komunikace. Ze snímku je přímo vidět, že **rail-side bank je jedna světle zpevněná parkovací plocha s diagonálním značením**, nikoliv zelená tráva s 20 samostatnými čtvercovými rošty. **Mezi příjezdovou komunikací a Nádražní** je rozšířený světlý parkovací ostrov s bílými šikmými čárami a úzkým vnějším pěším okrajem. U zakončení jsou malé ostrůvky zeleně. Výchozí záběr nemá geodeticky přesné hranice parkovacích míst. Fotografie 2023 dokládá historickou podobu, nikoliv automaticky stav v listopadu 2026.
+
+## Co je v tomto buildu opraveno
+
+- Zachovaný OSM půdorys obou silnic a původní interní rozdělení pravého parkovacího ostrova na parkování/vnější chodník, bez dalších náhodných ploch.
+- Levá parkovací řada se mění z **trávy s izolovanými zelenými rošty** na **světlé zpevněné parkování**. Mezery 0,39 m se vyplňují jen tehdy, pokud celý přemosťující obdélník projde stejnou kontrolou vůči komunikacím, železnici a budovám jako původní stání; jinak zůstává původní bezpečný okraj.
+- **Diagonální bílé čáry** na obou stranách příjezdové komunikace. Vycházejí z již ověřených ploch (na levé straně jednotlivá bezpečná stání, na pravé spojité ověřené parkovací dlaždice). Každá čára znovu prochází dopravním safety testem; nic se nedomalovává přes asfaltovou příjezdovou cestu, Nádražní ani kolej.
+- Nepřidáváme automobily ze satelitu (byly dočasně zaparkované), ani náhodné stromy/lampy. Počty a úhly čar jsou **fotograficky poučená aproximace**, nikoliv geodetická data.
+- Renderovací náklady zůstávají nízké: rail-side povrch tvoří jeden instancovaný materiál a všechna parkovací značení jeden sdílený instancovaný materiál. Ve scéně nejsou stovky jednotlivých objektů.
+
+**Další etapa:** po mobilním porovnání geometrie a bílé linky proti realitě následně samostatně potvrdit výsadbové ostrůvky, skutečné směrování chodníků a značky BUS, bez domýšlení souřadnic.
+
+---
+
 # Milovice RP 5.81.13 — průběžně vyhlazená hrana přednádražního chodníku
 
 **Nová kontrolní kamera shora:** https://foxey-cz.github.io/milovice-life-rp/?v=58113&forecourtAudit=wide&parkingOverview=1  
