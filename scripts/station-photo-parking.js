@@ -187,6 +187,15 @@ export function planContinuousOuterSidewalk(tiles,{
  const limits=rows.map(r=>Math.min(r.highSafe,r.roadEdgeTarget));
  const high=rows.map((row,i)=>
   Math.min(...limits.map((v,j)=>v+metric(i,j))));
+ // 5.81.23: at the south station nose the loose 0.60m/m slope allowed a
+ // .46m outer bulge and a sudden reduction, causing a rectangular ear.
+ // Cap the first ~5m to the already verified first-row road-side edge.
+ const terminalHigh=high[0];
+ let southernOuterEarsClipped=0;
+ for(let i=1;i<rows.length&&rows[i].along<=6;i++){
+  if(high[i]>terminalHigh+.000001)southernOuterEarsClipped++;
+  high[i]=Math.min(high[i],terminalHigh);
+ }
  // Constrain the OUTER edge to follow the already monotonic Nádražní road,
  // not any occasional one-column positive jump in the parking raster.
  for(let i=1;i<high.length;i++)
@@ -199,8 +208,16 @@ export function planContinuousOuterSidewalk(tiles,{
    high[i]<=row.highSafe+.00001}));
  const parts=[],minJoinWidth=.32;
  let active=null,joins=0;
- const cap=(r,side)=>({along:r.along+side*(r.length/2+overlap),
-  low:r.low,high:r.high});
+ const cap=(r,side)=>{
+  const along=r.along+side*(r.length/2+overlap);
+  // Narrow only the initial safe 0.75m-wide sidewalk cap to .38m,
+  // so the end is tapered rather than a floating full-width square.
+  if(side<0&&r===profiles[0]){
+   const inset=Math.min(.18,Math.max(0,(r.high-r.low-.38)/2));
+   return {along,low:r.low+inset,high:r.high-inset,southNoseCap:true};
+  }
+  return {along,low:r.low,high:r.high};
+ };
  function add(section){
   if(!active)active=[];
   if(!active.length||section.along>active.at(-1).along+.000001)
@@ -255,6 +272,8 @@ export function planContinuousOuterSidewalk(tiles,{
  for(const row of profiles.filter(r=>r.safe))
   roadMarginMin=Math.min(roadMarginMin,row.roadOffset-roadWidth/2-row.high);
  return {parts,rows:rows.length,joins,
+  southNoseCap:parts[0]?.[0]?.southNoseCap===true,
+  southernOuterEarsClipped,
   shortTerminalPartsTrimmed:shortTerminalParts.length,
   metres:parts.reduce((n,p)=>n+p.at(-1).along-p[0].along,0),
   triangles:parts.reduce((n,p)=>n+Math.max(0,p.length-1)*2,0),
@@ -828,6 +847,8 @@ export function planClippedRoadsideInfill(infill,ribbon,{overlap=.006}={}){
  const profiles=new Map(ribbon.profiles.filter(r=>r.safe)
   .map(r=>[r.along,r]));
  const rows=[];
+ const nose=ribbon.parts[0]?.[0];
+ const firstRibbonStation=ribbon.profiles.find(p=>p.safe)?.along;
  for(const r of infill.rows){
   const p=profiles.get(r.along);
   if(!p||!supported.some(part=>
@@ -843,7 +864,13 @@ export function planClippedRoadsideInfill(infill,ribbon,{overlap=.006}={}){
   const start=Math.min(r.start,high);
   const end=Math.min(r.end,high);
   if(Math.min(edge,start,end)-low<.16)continue;
-  rows.push({...r,low,high,edge,start,end,
+  // Underlay and visible sidewalk must have exactly the same curved cap.
+  // Otherwise the untrimmed underlay rectangle still protrudes at the tip.
+  const southCap=!!nose?.southNoseCap&&r.along===firstRibbonStation;
+  rows.push({...r,low,high,edge,
+   start:southCap?Math.min(start,nose.high):start,end,
+   startInner:southCap?nose.low:low,
+   southCapMatched:southCap,
    supportedRoadEdge:p.high,innerSafeFootprintPreserved:true,
    clippedToContinuousRibbon:true});
  }
@@ -923,6 +950,8 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   clippedInfillInnerFootprintPreserved:true,
   roadsideOverhangClipped:infillProfile?.roadsideOverhangClipped||false,
   shortDetachedSidewalkPartsTrimmed:planned?.continuousRibbon?.shortTerminalPartsTrimmed||0,
+  southernNoseCurvedInsideSafeCells:planned?.continuousRibbon?.southNoseCap||false,
+  southernOuterPaverEarsClipped:planned?.continuousRibbon?.southernOuterEarsClipped||0,
   smoothInfillJoins:infillProfile?.joins||0,
   smoothInfillMaxEdgeStep:infillProfile?.maxEdgeStep??null,
   smoothInfillMaxSlope:infillProfile?.maxSlope??null,
@@ -1013,13 +1042,13 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
     infillProfile.roadsideOverhangClipped=clipped.clippedToContinuousRibbon;
     for(const row of clipped.rows){
      const sections=[
-      {along:row.along-row.halfAlong,outer:row.start},
-      {along:row.along,outer:row.edge},
-      {along:row.along+row.halfAlong,outer:row.end}
+      {along:row.along-row.halfAlong,inner:row.startInner,outer:row.start},
+      {along:row.along,inner:row.low,outer:row.edge},
+      {along:row.along+row.halfAlong,inner:row.low,outer:row.end}
      ];
      const start=vertices.length/3;
      for(const section of sections){
-      for(const offset of [row.low,section.outer]){
+      for(const offset of [section.inner,section.outer]){
        const pt=at(planned.frame,section.along,offset);
        vertices.push(pt.x,terrainAt(pt.x,pt.z)+.193,pt.z);
        uvs.push(offset/1.8,section.along/8);
