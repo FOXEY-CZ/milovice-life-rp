@@ -176,10 +176,22 @@ export function makeStationTicketMachineScene(THREE,{layer,terrainAt=()=>0}={}){
   layer.add(group);roots.push(group);publish();return status();
  }
  function reset(){
-  for(const root of roots){root.parent?.remove(root);
-   root.traverse(obj=>{if(obj.geometry&&obj.name.startsWith('PID_TicketMachine')===false&&
-     obj.geometry.type==='PlaneGeometry')obj.geometry.dispose();});
+  // Everything is owned by this small photo scene. Unlike old station
+  // props, both shared body geometry and the four mesh materials get freed
+  // after every city reset: no cumulative mobile GPU or CanvasTexture leak.
+  const geometries=new Set(),materials=new Set();
+  for(const root of roots){
+   root.traverse(obj=>{
+    if(!obj.isMesh)return;
+    if(obj.geometry)geometries.add(obj.geometry);
+    if(Array.isArray(obj.material)){
+     for(const mat of obj.material)materials.add(mat);
+    }else if(obj.material)materials.add(obj.material);
+   });
+   root.parent?.remove(root);
   }
+  for(const geometry of geometries)geometry.dispose();
+  for(const mat of materials)mat.dispose();
   roots.length=0;
   for(const t of textures)t.dispose();
   textures=[];drawMeshes=0;plan=null;publish();
