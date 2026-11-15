@@ -541,7 +541,11 @@ export function planRoadSafeParkingInfillProfiles(patches,{maxSlope=.12}={}){
  if(rows.some(x=>!x||x.high-x.low<.4))return null;
  for(const row of rows){
   // No new terrain is claimed: edge <= original safe-row bound.
-  row.edge=Math.min(row.high,Math.max(row.low+.28,
+  // At the extreme tapered end, neighbouring rows sometimes have just
+  // ONE tile and non-overlapping lateral spans. Allow its final strip to
+  // taper to 10cm rather than forcing an artificial 28cm outside step.
+  const minVisibleWidth=row.cellCount===1?.10:.28;
+  row.edge=Math.min(row.high,Math.max(row.low+minVisibleWidth,
    Math.min(...rows.map(other=>other.high+
     maxSlope*Math.abs(row.along-other.along)))));
  }
