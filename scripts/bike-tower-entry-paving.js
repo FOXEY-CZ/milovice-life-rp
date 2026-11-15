@@ -314,6 +314,12 @@ export function makeBikeTowerEntryPavingScene(THREE,{layer,terrainAt=()=>0,
    connectorLength:plan?.connector?.length||0,
    connectorEndWidth:plan?.connector?.widthEnd||0,
    connectorRoadMargin:plan?.connector?.otherRoadMargin??null,
+   nearbyBuildingMargin:plan?.connector?.buildingMargin??null,
+   widestPavedWidth:plan?.connector?.widestWidth??0,
+   narrowestPavedWidth:plan?.connector?.narrowestWidth??0,
+   estimatedPavedAreaM2:plan?.connector?.estimatedAreaM2??0,
+   oneContinuousSurface:!!root&&!!plan?.singleContinuousSurface,
+   preservedGreenery:!!root&&!!plan?.sourceLandscapeVegetationPreserved,
    expectedFootwayId:BIKE_TOWER_ENTRY_PAVING_SOURCE.footwayWayId,
    source:BIKE_TOWER_ENTRY_PAVING_SOURCE.photo,
    photoDimensionsEstimated:true,roadClearanceVerified:!!root,
@@ -330,47 +336,24 @@ export function makeBikeTowerEntryPavingScene(THREE,{layer,terrainAt=()=>0,
   if(root)return window.__miloviceBikeTowerEntryPaving;
   plan=planBikeTowerEntryPaving(elements,roadClearance);
   if(!plan||!sidewalkMaterial){publish();return window.__miloviceBikeTowerEntryPaving;}
-  // ONE terrain-following mesh for both doorway pad and tapering connector.
-  // It reuses the existing sidewalk material and its tile scale, no extra
-  // texture, no isolated squares, no new road or parking geometry.
-  const countX=8,countZ=6,vertices=[],uvs=[],indices=[];
-  const tanX=plan.nz,tanZ=-plan.nx;
-  for(let i=0;i<=countX;i++){
-   const u=(i/countX-.5)*plan.width;
-   for(let j=0;j<=countZ;j++){
-    const v=(j/countZ-.5)*plan.depth;
-    const x=plan.x+tanX*u+plan.nx*v;
-    const z=plan.z+tanZ*u+plan.nz*v;
-    vertices.push(x,terrainAt(x,z)+plan.groundOffset,z);
-    uvs.push(u/1.2,v/1.2);
-   }
-  }
-  for(let i=0;i<countX;i++)for(let j=0;j<countZ;j++){
-   const k=i*(countZ+1)+j,after=k+countZ+1;
-   // Right-handed tangent/front orientation; these triangles face UP.
-   indices.push(k,k+1,after,k+1,after+1,after);
-  }
-  // Straight, nearly constant-width corridor to the RENDERED (unclipped)
-  // mapped footway. Offset 4 mm above pad to prevent coincident
-  // triangles flickering where the two pieces overlap at the entrance.
-  const baseVertex=vertices.length/3,alongSteps=10,acrossSteps=4;
-  const link=plan.connector;
-  for(let i=0;i<=alongSteps;i++){
-   const t=i/alongSteps;
-   const width=link.widthStart*(1-t)+link.widthEnd*t;
-   const cx=link.start.x+(link.end.x-link.start.x)*t;
-   const cz=link.start.z+(link.end.z-link.start.z)*t;
-   for(let j=0;j<=acrossSteps;j++){
-    const lateral=(j/acrossSteps-.5)*width;
-    const x=cx+link.side.x*lateral,z=cz+link.side.z*lateral;
-    vertices.push(x,terrainAt(x,z)+plan.groundOffset+.004,z);
-    const localX=(x-plan.x)*plan.nz-(z-plan.z)*plan.nx;
-    const localZ=(x-plan.x)*plan.nx+(z-plan.z)*plan.nz;
+  // One continuous, NON-OVERLAPPING terrain-following mesh from the
+  // entry threshold to the visibly rendered OSM sidewalk. Widening is
+  // deliberately asymmetric toward the station. There is no separate
+  // rectangular pad or pointed ribbon intersecting it.
+  const vertices=[],uvs=[],indices=[];
+  const rows=plan.connector.forecourtRows;
+  for(const row of rows){
+   for(let j=0;j<=ACROSS_ROWS;j++){
+    const pt=sampleRow(row,j/ACROSS_ROWS);
+    vertices.push(pt.x,terrainAt(pt.x,pt.z)+plan.groundOffset,pt.z);
+    const localX=(pt.x-plan.x)*plan.nz-(pt.z-plan.z)*plan.nx;
+    const localZ=(pt.x-plan.x)*plan.nx+(pt.z-plan.z)*plan.nz;
     uvs.push(localX/1.2,localZ/1.2);
    }
   }
-  for(let i=0;i<alongSteps;i++)for(let j=0;j<acrossSteps;j++){
-   const k=baseVertex+i*(acrossSteps+1)+j,after=k+acrossSteps+1;
+  for(let i=0;i<rows.length-1;i++)for(let j=0;j<ACROSS_ROWS;j++){
+   const k=i*(ACROSS_ROWS+1)+j,after=k+ACROSS_ROWS+1;
+   // sideWEST crossed with directionOUT points upward in world coordinates.
    indices.push(k,k+1,after,k+1,after+1,after);
   }
   geometry=new THREE.BufferGeometry();
@@ -385,6 +368,8 @@ export function makeBikeTowerEntryPavingScene(THREE,{layer,terrainAt=()=>0,
   root.userData.lodX=plan.cx;root.userData.lodZ=plan.cz;
   root.userData.lodDetail=true;
   root.userData.originalRoadsUntouched=true;
+  root.userData.singleContinuousSurface=true;
+  root.userData.sourceAreaApproximate=true;
   layer.add(root);publish();
   return window.__miloviceBikeTowerEntryPaving;
  }
