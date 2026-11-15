@@ -1661,6 +1661,10 @@ function miloviceGableRoof(pts,base,h,material,allowSquare=false){
 // World-space asphalt UVs are continuous across independently rendered OSM
 // segments, junctions and merged batches; no local directional rescaling.
 const ROAD_ASPHALT_TILE_METERS=7;
+const roadUvAudit=window.__miloviceRoadUVValidation={
+ worldAligned:true,metersPerTile:ROAD_ASPHALT_TILE_METERS,
+ strips:0,sampledVertices:0,maxUVError:0,changedRoadVertices:false
+};
 const roadStripBatches=new Map();
 const roadStripStats={inputStrips:0,drawMeshes:0,meshesSaved:0,mergeFailures:0};
 function queueRoadStrip(geometry,material,mx,mz){
@@ -1725,6 +1729,17 @@ function osmStrip(a,b,width,material,y=.15){
  geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));
  geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
  geometry.setIndex(indices);geometry.computeVertexNormals();
+ if(worldAlignedAsphalt){
+  roadUvAudit.strips++;
+  const position=geometry.getAttribute('position'),uv=geometry.getAttribute('uv');
+  for(const k of [0,Math.floor(position.count/2),position.count-1]){
+   const err=Math.max(
+    Math.abs(uv.getX(k)-position.getX(k)/ROAD_ASPHALT_TILE_METERS),
+    Math.abs(uv.getY(k)-position.getZ(k)/ROAD_ASPHALT_TILE_METERS));
+   roadUvAudit.maxUVError=Math.max(roadUvAudit.maxUVError,err);
+   roadUvAudit.sampledVertices++;
+  }
+ }
  queueRoadStrip(geometry,material,(a.x+b.x)*.5,(a.y+b.y)*.5);
 }
 // 5.2.1: Road and footpath geometry must NOT compete for the same ground pixels.
