@@ -1,3 +1,30 @@
+# Milovice RP 5.81.2 — oprava fotoauditu + bezpečná diagnostika asfaltu
+
+**Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5812  
+**Fotoaudit cyklověže – původní asfalt:** https://foxey-cz.github.io/milovice-life-rp/?v=5812&forecourtAudit=tower  
+**Stejný záběr – asfalt bez textury:** https://foxey-cz.github.io/milovice-life-rp/?v=5812&forecourtAudit=tower&roadSurfaceFlat=1  
+**Přednádraží – široký záběr:** https://foxey-cz.github.io/milovice-life-rp/?v=5812&forecourtAudit=wide  
+**BUS zóna:** https://foxey-cz.github.io/milovice-life-rp/?v=5812&forecourtAudit=bus  
+**Záloha verze 5.81.1:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/5811-before-audit-ui-diagnostics
+
+## Proč tato oprava
+
+Uživatelský screenshot z Androidu 15. 11. 2026 zobrazuje v režimu `forecourtAudit=tower` stále virtuální joystick a samostatnou modrou OSM notifikaci „Načítám Mladá ze skutečné mapy…“. Mobilní CSS po načtení aplikace znovu zapnulo joystick, protože předchozí audit skrýval jen `#controls`, nikoli `#rp-joystick`. Pod kamerou je rovněž výrazné protažení nebo křížení asfaltové textury. **Ze snímku nelze jednoznačně určit**, zda jde jen o příliš opakovanou texturu, perspektivní aliasing, překryv sousedních silničních pásů nebo závadu DEM.
+
+## Co skutečně mění 5.81.2
+
+- **Čisté fotografické rozhraní:** `html.rp-ticket-photo-audit` nově skrývá také `#rp-joystick`, runtime přepínač OSM `#osm3d`, kontrolní objekty a samostatné načítací okno `#osmnotice-live`. Přitom zůstávají dostupné tři zdrojově doložené kontrolní pohledy a zpětný odkaz do běžné hry. Normální režim řízení a chůze tyto CSS změny neovlivňují.
+- **Stav načítání je stále vidět uvnitř auditního panelu**, nikoliv ve druhém přesahujícím modrém popupu. Při dokončení se ukáže „Mapa načtena“; skutečné chyby načítání se mohou nadále promítnout do stavového textu.
+- **Srovnání asfaltu A/B:** v každém fotoauditu přednádraží můžeš jedním odkazem zapnout `roadSurfaceFlat=1`. To je **diagnostika pouze pro fotografie**: ponechá všechny silnice, jejich fyzickou 3D geometrii, UV souřadnice a původní OSM polohy, ale dočasně odstraní kreslenou asfaltovou mapu ze `osmRoadMaterial` a použije homogenní šedý materiál. **V běžné hře asfalt zůstává beze změny.**
+- Diagnostika publikuje `window.__miloviceRoadTextureDiagnostic` včetně příznaku skutečně připojené textury a `geometryModified:false`. Pokud závada při přepnutí zmizí, je pravděpodobným viníkem textura/UV nebo jejich filtrování. Pokud zůstane stejná, další test má zkontrolovat překryv road stripů a jejich úrovně nad DEM. **Není to ještě oprava asfaltu.**
+- Stále zachované: OSM nádraží 53865956, cyklověž 1011197691 a její světlé materiály z 5.81.1, oba jízdenkové automaty, sloupky A/B, parkování a vnější chodník 5.76; nejsou přidané žádné fiktivní obruby, asfaltové pruhy, lampy ani stromy.
+
+## Testovací kritéria
+
+`scripts/station-forecourt-photo-audit.test.mjs` nyní ověřuje skutečné názvy CSS prvků a bezpečné zapnutí diagnostiky. `scripts/station-forecourt-webgl.mjs` pořizuje na portrétním Chromiu dvě varianty **totožné GPS kamery cyklověže** (texturovaný asfalt a homogenní asfalt) a kontroluje odstranění joysticku, popupu i přepínače mapy. Dále nadále běží testy nádražní stěny, automatů, parkování a ostatní přednádražní pohledy.
+
+---
+
 # Milovice RP 5.81.1 — skleněná cyklověž světlejší podle fotografií
 
 **Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5811  
