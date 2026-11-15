@@ -74,11 +74,11 @@ assert.equal(plan.railPavingTrafficEdgeSafelyExtended,true);
 assert(plan.railPavingSeamCells>=2,
  'At least some individually checked bays should reduce the unrealistic grassy road seam');
 assert(plan.railPavingLargestSeamReduction>.10&&
- plan.railPavingLargestSeamReduction<=.361,
- 'Do not move road-facing paving more than tested 36cm toward service traffic');
+ plan.railPavingLargestSeamReduction<=.601,
+ 'Never move road-facing paving more than separately OSM-checked 60cm toward service traffic');
 for(const bay of plan.railSideParking){
  assert(bay.depth>=4.02&&bay.depth<=6.01);
- assert(bay.roadFacingEdge>=-3.02000001&&bay.roadFacingEdge<=-2.65999999);
+ assert(bay.roadFacingEdge>=-3.02000001&&bay.roadFacingEdge<=-2.41999999);
  assert(Math.abs(bay.offset+bay.depth/2-bay.roadFacingEdge)<1e-9);
  assert(Math.abs(bay.offset-bay.depth/2-bay.railFacingEdge)<1e-9);
  assert(Math.abs(bay.roadFacingEdge+3.02-bay.roadsideSeamClosedMetres)<1e-9,
@@ -92,7 +92,7 @@ assert(apron&&apron.profiles.length>=plan.railSideParking.length);
 assert.equal(apron.variableDepth,true);
 assert.equal(apron.noFootprintExpansion,true);
 assert(apron.originalRoadFacingOffset>=-3.02000001&&
- apron.originalRoadFacingOffset<=-2.65999999);
+ apron.originalRoadFacingOffset<=-2.41999999);
 for(const p of apron.profiles){
  assert(p.validSafeRect);
  assert(p.startRail>=p.railSide&&p.endRail>=p.railSide);
@@ -412,7 +412,11 @@ assert(!code.includes('const chamfers=planOuterSidewalkChamfers(tiles);'),
  'No separate 0.75m sidewalk quads may remain');
 assert(!code.includes('for(const p of planned.outerSidewalkCurbs)'),
  'No individual Minecraft-like kerbstone boxes along outer sidewalk');
-assert(code.includes('for(const row of infillProfile.rows)'),
+assert(code.includes('for(const row of visibleInfillRows)'),
+ 'End infill must be limited to the actual continuous sidewalk, not extend as a rectangular tail');
+assert(code.includes('supportedStations.has(row.along)'),
+ 'Exclude isolated underlay rows at the tapered parking-island tip');
+assert(code.includes('infillProfile.visibleRows=visibleInfillRows.length'),
  'Infill must use a full-length constrained roadside profile, not square tiles');
 assert(code.includes('vertices.push(pt.x,terrainAt(pt.x,pt.z)+.193,pt.z)'),
  'The merged smooth infill must remain below the current sidewalk strip');
@@ -446,7 +450,7 @@ assert(code.includes('planRailApronProfiles([...planned.railSideParking,'));
 assert(code.includes('const midBulge=Math.max(0,Math.sin(Math.PI*t))'));
 assert(code.includes('const roadEdge=Math.min(previous.roadFacingEdge,next.roadFacingEdge)'));
 assert(code.includes('const railEdge=Math.max(previous.railFacingEdge,next.railFacingEdge)'));
-assert(code.includes('for(const candidate of [-2.90,-2.78,-2.66])'));
+assert(code.includes('for(const candidate of [-2.90,-2.78,-2.66,-2.54,-2.42])'));
 assert(code.includes('if(safePlace(trial,2.46,trialDepth,.12))break;'));
 assert(!code.includes('batch(group,material.railPaved,railPaving)'));
 assert(code.includes('batch(group,material.bayLines,photoBayLines)'));
