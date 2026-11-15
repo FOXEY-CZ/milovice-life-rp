@@ -401,6 +401,11 @@ assert(game.includes("from './scripts/station-photo-parking.js?v=58119'"));
 assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})'),
  'The island sidewalk must receive the exact city paving material');
 assert(game.includes('stationPhotoParking.reset()'));
+assert(game.includes('Number(el.id)===1165594426&&i>=5&&i<=7'),
+ 'Do not double-render the THREE actual OSM pedestrian segments replaced by the road-safe island ribbon');
+assert(game.includes('sidewalkGeometryStats.photoOuterFootwaySegments++'),
+ 'Preserve a count of pedestrian pieces intentionally rendered by the parking island instead');
+
 assert(!game.includes('osmStrip(points[i-1],points[i],1.8,osmSidewalkMat,.235);'),
  'The 5.72 forced sidewalk directly on Nádražní asphalt MUST be disabled');
 assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})'),
