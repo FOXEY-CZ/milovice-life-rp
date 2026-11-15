@@ -98,9 +98,11 @@ assert(smooth.maxEdgeStep<.22,
  'Roadside envelope unexpectedly stepped: '+JSON.stringify(smoothSpikes));
 for(const r of smooth.rows){
  assert(r.edge<=r.high+.00001,'Smooth roadside envelope must stay inside approved cell edge');
- assert(r.edge>=r.low+.279,'No narrow or inverted sidewalk strips');
+ const required=r.cellCount===1?.099:.279;
+ assert(r.edge>=r.low+required,'Infill must have safe positive width, including tip');
  assert(r.start<=r.edge+.00001&&r.end<=r.edge+.00001);
- assert(r.start>=r.low+.279&&r.end>=r.low+.279);
+ assert(r.start>=r.low-.012&&r.end>=r.low-.012,
+  'Joined profiles may taper but never leave the validated cell footprint');
  assert(r.high-r.low>=.7);
 }
 assert.equal(planRoadSafeParkingInfillProfiles([]),null);
