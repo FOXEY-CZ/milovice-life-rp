@@ -59,6 +59,8 @@ jobs:
         run: node scripts/legacy-reality-audit.test.mjs
       - name: Verify photo-sourced station forecourt object clearances and OSM building anchors
         run: node scripts/station-forecourt-pass.test.mjs
+      - name: Verify 2024 geotagged photo cameras, unchanged OSM anchors and single Bike Tower upper sign
+        run: node scripts/station-forecourt-photo-audit.test.mjs
       - name: Validate two real orange/yellow PID ticket machines against the 2024 station-wall photograph
         run: node scripts/station-ticket-machines.test.mjs
       - name: Verify 2024 door, orange machine, yellow machine and rectangular window do not overlap
