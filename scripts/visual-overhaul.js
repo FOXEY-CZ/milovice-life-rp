@@ -20,16 +20,16 @@ export function makeMiloviceVisualKit(THREE){
    g.fillRect(r()*256,r()*256,.4+r()*2,.4+r()*2);
   }
  };
- const asphalt=tile(47015,[65,70,71,36],(g,r)=>{
-  dots(g,r,14000,15,216);
-  for(let i=0;i<24;i++){
-   let x=r()*256,y=r()*256;
-   g.strokeStyle='rgba(16,20,20,'+(.09+r()*.11)+')';g.lineWidth=.5+r();
-   g.beginPath();g.moveTo(x,y);for(let j=0;j<4;j++)g.lineTo(x+=(r()-.5)*13,y+=(r()-.5)*13);g.stroke();
-  }
-  for(let i=0;i<15;i++){
-   g.fillStyle='rgba(31,36,35,.10)';
-   g.beginPath();g.ellipse(r()*256,r()*256,6+r()*19,2+r()*11,r()*6,0,7);g.fill();
+ // 5.81.3: soft, direction-free asphalt micrograin. The previous
+ // high-contrast 14k dots and long strokes turned into cross-hatched
+ // radial streaks on a phone when mapped along short road segments.
+ // Original, deterministic procedural pixels; no photo textures copied.
+ const asphalt=tile(47015,[65,70,71,14],(g,r)=>{
+  dots(g,r,2800,42,114);
+  for(let i=0;i<44;i++){
+   const x=r()*256,y=r()*256;
+   g.fillStyle=r()>.5?'rgba(125,133,133,.045)':'rgba(21,27,27,.045)';
+   g.beginPath();g.ellipse(x,y,2+r()*10,2+r()*8,r()*Math.PI,0,Math.PI*2);g.fill();
   }
  });
  const paving=tile(5091,[186,180,170,18],(g,r)=>{
