@@ -1788,6 +1788,7 @@ const sidewalkGeometryStats={legacyUnderRoadBands:0,separatedSidewalks:0,
  residentialInventedEdgeLinesDisabled:true,
  inventedEdgeLinesDisabled:true,inventedCentreDashesDisabled:true,
  mappedFootwaySegments:0,photoOuterFootwaySegments:0,
+ photoOuterFootwaySegmentsReplaced:0,
  photoOuterFootwayTextureShared:true,proceduralSidewalksDisabled:true,
  removedInventedCrosswalks:true,mappedMarkedCrossings:0,
  crossingStripeSegments:0};
@@ -4193,7 +4194,7 @@ function rpAppendOSMElements(elements){
    // road clearance and all OTHER segments; render the island exactly
    // once, from its OSM-safe continuous ribbon, below.
    if(Number(el.id)===1165594426&&i>=5&&i<=7){
-    sidewalkGeometryStats.photoOuterFootwaySegments++;
+    sidewalkGeometryStats.photoOuterFootwaySegmentsReplaced++;
     continue;
    }
    osmRoadSegment(points[i-1],points[i],width,kind);
