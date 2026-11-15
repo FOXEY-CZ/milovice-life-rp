@@ -1,4 +1,4 @@
-// Milovice RP 5.81.18 — narrow road-side grass seam and trim unsupported island-tip infill.
+// Milovice RP 5.81.19 — clip sidewalk underlay to the main safe ribbon and eliminate detached terminal pavers.
 // The 5.72 "fix" drew a new OSM sidewalk directly OVER Nádražní's asphalt,
 // rather than removing the relevant strip from the parking surface.
 // The user confirmed the exact topology: existing road (UNTOUCHED),
@@ -237,6 +237,14 @@ export function planContinuousOuterSidewalk(tiles,{
   previous=row;joins++;
  }
  finish(previous);
+ // A single isolated, terminal .75m paver once appeared as a floating
+ // square at the narrow north tip. Only long continuous safe ribbons are
+ // rendered; discontinuous tip fragments are not standalone pavements.
+ const shortTerminalParts=parts.filter(part=>
+  part.at(-1).along-part[0].along<2.8);
+ for(let i=parts.length-1;i>=0;i--)
+  if(parts[i].at(-1).along-parts[i][0].along<2.8)parts.splice(i,1);
+ if(!parts.length)return null;
  const body=profiles.filter(r=>r.safe&&r.along>=8&&r.along<=60);
  let maxBodyEdgeStep=0,roadMarginMin=Infinity;
  for(let i=1;i<body.length;i++){
@@ -247,6 +255,7 @@ export function planContinuousOuterSidewalk(tiles,{
  for(const row of profiles.filter(r=>r.safe))
   roadMarginMin=Math.min(roadMarginMin,row.roadOffset-roadWidth/2-row.high);
  return {parts,rows:rows.length,joins,
+  shortTerminalPartsTrimmed:shortTerminalParts.length,
   metres:parts.reduce((n,p)=>n+p.at(-1).along-p[0].along,0),
   triangles:parts.reduce((n,p)=>n+Math.max(0,p.length-1)*2,0),
   pavementPanels:0,continuous:parts.length===1,
@@ -792,6 +801,38 @@ export function planRailApronBoundaryKerbs(patches,roadFrame,roadClearance){
   roadClearanceVerified:true,railFacingOnly:true,
   noNewParkingFootprint:true,plantingCoordinatesUnverified:true};
 }
+
+// 5.81.19. The raw cell-underlay had an independent smoothed outline and
+// therefore protruded beyond the road-aligned sidewalk at the two tapers.
+// Merely choosing rows where profiles.safe=true did not prevent these ears.
+// Clip every underlay station to the ALREADY rendered continuous ribbon,
+// reject detached terminal pieces, and never grow the path onto a road.
+export function planClippedRoadsideInfill(infill,ribbon,{overlap=.006}={}){
+ if(!infill?.rows?.length||!ribbon?.parts?.length||!ribbon?.profiles?.length||
+    overlap<0||overlap>.012)return null;
+ const supported=ribbon.parts.filter(part=>
+  part.at(-1).along-part[0].along>=2.8);
+ if(!supported.length)return null;
+ const profiles=new Map(ribbon.profiles.filter(r=>r.safe)
+  .map(r=>[r.along,r]));
+ const rows=[];
+ for(const r of infill.rows){
+  const p=profiles.get(r.along);
+  if(!p||!supported.some(part=>
+    r.along>=part[0].along&&r.along<=part.at(-1).along))continue;
+  const low=Math.max(r.low,p.low);
+  const high=Math.min(r.high,p.high+overlap);
+  const edge=Math.min(r.edge,high);
+  const start=Math.min(r.start,high);
+  const end=Math.min(r.end,high);
+  if(Math.min(edge,start,end)-low<.16)continue;
+  rows.push({...r,low,high,edge,start,end,
+   supportedRoadEdge:p.high,clippedToContinuousRibbon:true});
+ }
+ return {rows,visibleRows:rows.length,trimmedRows:infill.rows.length-rows.length,
+  roadSafeCellsOnly:true,clippedToContinuousRibbon:true,
+  discardedDisconnectedPieces:ribbon.shortTerminalPartsTrimmed||0};
+}
 export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadClearance}={}){
  const roots=[],geo=new THREE.BoxGeometry(1,1,1);
  const material={
@@ -858,6 +899,8 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   smoothInfillRows:infillProfile?.visibleRows||0,
   unsupportedTerminalInfillRowsTrimmed:infillProfile?.trimmedRows||0,
   infillRestrictedToSafeRibbon:true,
+  roadsideOverhangClipped:infillProfile?.roadsideOverhangClipped||false,
+  shortDetachedSidewalkPartsTrimmed:planned?.continuousRibbon?.shortTerminalPartsTrimmed||0,
   smoothInfillJoins:infillProfile?.joins||0,
   smoothInfillMaxEdgeStep:infillProfile?.maxEdgeStep??null,
   smoothInfillMaxSlope:infillProfile?.maxSlope??null,
@@ -940,13 +983,13 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
     // Only add an underlay where a genuine continuous sidewalk ribbon is
     // present. End rows with no ribbon were the detached rectangular tail
     // at the narrow southern island tip in the user's overhead screenshot.
-    const supportedStations=new Set(planned.continuousRibbon.profiles
-     .filter(profile=>profile.safe).map(profile=>profile.along));
-    const visibleInfillRows=infillProfile.rows.filter(row=>
-     supportedStations.has(row.along));
-    infillProfile.visibleRows=visibleInfillRows.length;
-    infillProfile.trimmedRows=infillProfile.rows.length-visibleInfillRows.length;
-    for(const row of visibleInfillRows){
+    const clipped=planClippedRoadsideInfill(infillProfile,planned.continuousRibbon);
+    if(!clipped||!clipped.rows.length)
+     throw Error('Outer sidewalk underlay must match verified ribbon geometry');
+    infillProfile.visibleRows=clipped.visibleRows;
+    infillProfile.trimmedRows=clipped.trimmedRows;
+    infillProfile.roadsideOverhangClipped=clipped.clippedToContinuousRibbon;
+    for(const row of clipped.rows){
      const sections=[
       {along:row.along-row.halfAlong,outer:row.start},
       {along:row.along,outer:row.edge},
