@@ -25,6 +25,8 @@ on:
       - scripts/browser_smoke.mjs
       - scripts/station-photo-parking.js
       - scripts/station-photo-parking.test.mjs
+      - scripts/station-ticket-machines.js
+      - scripts/station-ticket-machines.test.mjs
       - scripts/road-clearance.js
       - scripts/station-roof-geometry.js
       - scripts/station-roof-geometry.test.mjs
