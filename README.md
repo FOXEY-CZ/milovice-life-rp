@@ -1,3 +1,23 @@
+# Milovice RP 5.79 — odstraněna okna a parapet skrz dva jízdenkové automaty
+
+**Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5790  
+**Fotoaudit stejného místa:** https://foxey-cz.github.io/milovice-life-rp/?v=5790&ticketPhotoAudit=1  
+**Záloha neměněné 5.78:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/578-before-station-photo-facade
+
+## Co přesně bylo chybně a co se změnilo
+
+Uživatelský mobilní screenshot z 15. listopadu 2026 zobrazil dva stávající PID automaty **před generickým obloukovým oknem nádraží**; jeho červený parapet doslova protínal automaty. Předchozí WebGL test kontroloval jejich viditelnost v obraze, ne vzájemné 3D překrytí s ostatní fasádou.
+
+Na původní fotografii ŠJů ze dne **30. května 2024 (CC BY 4.0)** je přitom doložené přesné **pořadí zleva doprava: bílé dveře → oranžový automat → žlutý automat → pravoúhlé bíle rámované okno**. Zdroj: https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_automaty_na_j%C3%ADzdenky.jpg.
+
+- Pro **jedinou fotograficky identifikovanou stěnu OSM budovy 53865956 (segment 4→5)** se nevykreslují dvě automaticky odhadnutá oblouková okna; přitom se zachovává původní **OSM obvodová stěna, kolize, základy, římsa i střecha**.
+- Místo nich je na této stěně nové **bílé dveřní křídlo s prosklením** vlevo od obou automatů a **jedno obdélníkové bílé okno s parapetem** vpravo. Polohy podél 6,5m fasády jsou foto-odhadnuté, nikoli geodeticky zaměřené. Dveře jsou prozatím vizuální zavřené dveře, nikoliv vymyšlená nová průchozí trasa.
+- Nová funkce `planStationPhotographedFacade` sdílí s automaty tutéž tabulku rozměrů/roztečí: ověřuje **hranice celých modelů včetně nejširšího parapetu**, ne pouhé souřadnice středů. Požaduje souvislé mezery (nejméně 12 cm), skutečný OSM wall anchor a fotografické pořadí; jinak doplněk odmítne.
+- Žádná změna modelu automatů, střešní geometrie, nádražního průchodu, zeleného zastřešení, parkoviště, vnějšího chodníku, silnice, zastávek ani vozidel. Fasádní prvky používají **stejné sdílené materiály a instancované vykreslování**, žádné nové texturové soubory, žádná přidaná náhodná dekorace.
+- Kontroly: `scripts/station-photo-facade.test.mjs`, existující testy fotografických automatů a živý `scripts/station-ticket-photo-webgl.mjs`; poslední také ověřuje debug informaci o **nepřítomnosti falešných okének**. Konečné vizuální potvrzení foto-stěny z více úhlů zůstává uživatelským krokem.
+
+---
+
 # Milovice RP 5.78 — fotografický kontrolní pohled na oba nádražní automaty
 
 **Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5780  
