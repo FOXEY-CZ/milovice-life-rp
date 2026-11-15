@@ -1,0 +1,31 @@
+// 5.81.6: screenshot reported an apparently disconnected entrance,
+// but current camera was too distant and its UI hid half the scene.
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const s=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+const paving=readFileSync(new URL('./bike-tower-entry-paving.js',import.meta.url),'utf8');
+assert(s.includes("const BUILD_ID='20261115-biketower-entry-inspection-5816'"));
+assert(s.includes("rpForecourtAuditId==='tower'"));
+assert(s.includes("get('entryInspection')==='1'"));
+assert(s.includes("NENÍ fotografická kamera"));
+assert(s.includes('const paving=rpForecourtEntryInspection?bikeTowerEntryPaving.plan():null'));
+assert(s.includes('camera.lookAt(midX,terrainAt(midX,midZ)+.15,midZ)'));
+assert(s.includes("cameraMode:rpForecourtEntryInspection?'technical-osm-derived':'documented-photo-gps'"));
+assert(s.includes('entryInspection:{enabled:rpForecourtEntryInspection,'));
+assert(s.includes('projectedPoints:entryPoints'));
+assert(s.includes('photoReviewPanelCompact:document.getElementById'));
+assert(s.includes("toggle.addEventListener('click'"));
+assert(s.includes('updateAuditPanel(innerWidth>650)'));
+assert(s.includes('#forecourt-photo-audit.audit-compact'));
+assert(s.includes('id="forecourt-audit-toggle"'));
+assert(s.includes('entryInspection=1'));
+assert(s.includes('bikeTowerEntryPaving.create(elements,{sidewalkMaterial:osmSidewalkMat})'));
+assert(s.includes('bikeTowerEntryPaving.reset()'));
+assert(s.includes('worldGeometryMoved:false'));
+assert(paving.includes('const JOIN_WIDTH_AT_PAD=1.05'));
+assert(paving.includes('const JOIN_FOOTWAY_EDGE_OFFSET=.75'));
+assert(paving.includes('connectedToMappedFootway:true'));
+assert(paving.includes('originalRoadsUntouched:true'));
+assert(paving.includes('const baseVertex=vertices.length/3'));
+assert(paving.includes('indices.push(k,k+1,after,k+1,after+1,after)'));
+console.log('5.81.6 PASS: derived close inspection does not modify OSM paving, parking, sidewalk or road model');
