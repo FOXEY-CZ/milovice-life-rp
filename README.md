@@ -1,3 +1,23 @@
+# Milovice RP 5.77 — dvě skutečně fotografované PID jízdenkové automaty na nádraží
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5770  
+**Bezpečný návrat k hotovému parkovišti 5.76:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/576-before-station-ticket-machines
+
+## Druhý průchod přednádražím bez rozbití chodníku
+
+Po uživatelském potvrzení v5.76 začíná další fotoaudit celého nádražního okolí. Předměty bez ověřeného místa (stromy, zahradní ostrůvky a lampy) se stále NEVKLÁDAJÍ. Už hotové dva autobusové sloupky A/B, fotoověřené z roku 2024, se rovněž neduplikují. Pro tento průchod bylo možné bezpečně určit další dva skutečné objekty:
+
+- **DVA jízdenkové automaty PID**: vlevo oranžový přístroj s tmavým ovládacím panelem, vpravo žlutý přístroj s nápisem `JÍZDENKY/TICKETS`, šedým ovládacím panelem, řadou tlačítek a výdejem jízdenek. Jejich vzhled i vzájemné pořadí dokládá konkrétní fotografie **ŠJů, Wikimedia Commons, 30. 5. 2024, CC BY 4.0**. Zdroj: https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_automaty_na_j%C3%ADzdenky.jpg.
+- **Fotografická poloha**: GPS fotoaparátu **50.2291625, 14.8819250**, směr pohledu **110°**. Není to GPS automatů. Algoritmus kontroluje natočení fotoaparátu vůči skutečné budově **OSM 53865956**, konkrétně její vnější fasádě mezi uzly **4→5**. Fotoaparát je přibližně **2,01 m** před touto stěnou. Automaty jsou na ní mezi fotografovaným bílým vchodem a oknem. Jejich konkrétní rozmístění podél fasády (cca **1,0 m** odstup) a velikost jsou **odhad na základě fotografie**, nikoliv přesné zaměření.
+- **Modely**: dva původní jednoduché vektorově kreslené přední panely (žádné kopie pixelů snímku), dva barevné 3D korpusy, **4 draw calls** pro oba přístroje. Podlaha je navázaná na `terrainAt`, pohledová strana ke skutečnému fotoaparátu; modely nesmějí být na silnici ani mimo původní station building anchor. Předměty neblokují fotografovaný vchod.
+- **Obnovení mapy**: nová scéna má vlastní `create/reset/status` a při restartu se odebírá, aby se nic nezdvojovalo.
+
+**Ochrana již dokončené práce:** žádná změna modelu parkoviště, vnějšího chodníku, středových parkovacích buněk, servisního průjezdu, budovy, cyklověže, střech, nádražní značky, stávajících PID sloupků nebo vozidel. Mění se jen nový izolovaný modul `scripts/station-ticket-machines.js`, jeho integrace do hry a testy.
+
+**Zbývající přednádraží:** fotograficky viditelné osvětlení, zelené ostrůvky a další značení je třeba nejprve prostorově jednoznačně identifikovat. Staré panorama 2022 a fotografie 2024 potvrzují jejich existenci, ale přesné místo není automaticky stejné jako GPS fotografující osoby; **nedohadovat objekty podle samotného jména nebo fotky**.
+
+---
+
 # Milovice RP 5.76 — skutečně souvislý chodník PODÉL Nádražní, ne podle čtverců parkoviště
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5760  
