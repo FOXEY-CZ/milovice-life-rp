@@ -1,4 +1,4 @@
-// Milovice RP 5.81.8: test the generated REAL mesh topology, not only
+// Milovice RP 5.81.9: test the generated REAL mesh topology, not only
 // the OSM point planner. Prevent disconnected triangles, reversed faces,
 // duplicated overlapping apron+ribbon patches and accidental extra drawcalls.
 import assert from 'node:assert/strict';
@@ -56,6 +56,7 @@ assert.equal(first.drawCalls,1);
 assert.equal(first.oneContinuousSurface,true);
 assert.equal(first.preservedGreenery,true);
 assert.equal(first.materialReused,true);
+assert.equal(first.uvAlignedWithMappedFootway,true);
 assert.equal(first.estimatedPavedAreaM2>25,true);
 assert.equal(first.roadClearanceVerified,true);
 assert.equal(layers.length,1);
@@ -68,6 +69,22 @@ assert.equal(geo.index.count,first.triangles*3);
 assert(geo.normalsComputed);
 assert.equal(mesh.userData.singleContinuousSurface,true);
 const pos=geo.attributes.position.array,ix=geo.index.array;
+const uv=geo.attributes.uv.array,basis=p.connector.textureBasis;
+const forward=basis.longitudinal,lateral=basis.lateral,origin=basis.origin;
+assert(Math.abs(forward.x*lateral.x+forward.z*lateral.z)<1e-12,
+ 'Mapped-footway UV axes must be orthogonal');
+for(const k of [0,6,12,145,201,390,396,402]){
+ const dx=pos[3*k]-origin.x,dz=pos[3*k+2]-origin.z;
+ const expectedU=.5+(dx*lateral.x+dz*lateral.z)/1.8;
+ const expectedV=(dx*forward.x+dz*forward.z)/8;
+ assert(Math.abs(uv[2*k]-expectedU)<1e-5,
+  'Paving across-UV must have SAME 1.8m scale as actual OSM sidewalk');
+ assert(Math.abs(uv[2*k+1]-expectedV)<1e-5,
+  'Paving along-UV must have SAME 8m scale/origin as actual OSM sidewalk');
+}
+const endDelta={x:p.connector.end.x-origin.x,z:p.connector.end.z-origin.z};
+assert(Math.abs(.5+(endDelta.x*lateral.x+endDelta.z*lateral.z)/1.8-.5)<1e-8,
+ 'Connection endpoint must remain on mapped sidewalk UV centerline');
 const n=geo.attributes.position.count,parent=Array.from({length:n},(_,i)=>i);
 const root=x=>{while(parent[x]!==x)x=parent[x]=parent[parent[x]];return x};
 const link=(a,b)=>{parent[root(a)]=root(b)};
@@ -106,7 +123,7 @@ scene.create(elements,{sidewalkMaterial:material});
 assert.equal(layers.length,1,'After reset exactly one mesh recreated');
 scene.reset();
 delete globalThis.window;
-console.log('5.81.8 MESH PASS',JSON.stringify({
+console.log('5.81.9 MESH PASS',JSON.stringify({
  vertices:n,triangles:first.triangles,meshComponents:1,
  areaM2:+projectedArea.toFixed(2),maxWidth:+p.connector.widestWidth.toFixed(2),
  nearestRoadMargin:+p.connector.otherRoadMargin.toFixed(3),
