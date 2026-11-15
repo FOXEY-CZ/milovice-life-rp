@@ -31,6 +31,8 @@ jobs:
         run: node scripts/road-asphalt-world-uv-5813.test.mjs
       - name: Verify photo-documented Bike Tower entrance paving stays outside all mapped roads and footways
         run: node scripts/bike-tower-entry-paving.test.mjs
+      - name: Verify continuous asymmetric forecourt really meshes as one connected upward surface
+        run: node scripts/bike-tower-forecourt-mesh-5818.test.mjs
       - name: Verify safe close-up audit and compact mobile controls without any geometry changes
         run: node scripts/bike-tower-entry-inspection-5816.test.mjs
       - name: Prohibit unverified Nádražní garage objects without direct photographic evidence

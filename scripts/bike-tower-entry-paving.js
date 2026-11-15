@@ -1,4 +1,4 @@
-// Milovice RP 5.81.7 — safely connected pavement to ACTUALLY RENDERED OSM path
+// Milovice RP 5.81.8 — single continuous road-safe forecourt between tower and rendered footway
 // outside the existing blue Bike Tower entry. Not a new street or full plaza.
 // Photo evidence: user-shared Mapy.com panorama (2022-05-17) and ŠJů
 // Wikimedia Commons Bike Tower (2024-05-30, CC BY 4.0).
@@ -22,7 +22,8 @@ const DIST_TO_DOOR=.11;
 const PAD_WIDTH=3.10;
 const PAD_DEPTH=2.10;
 const HEIGHT_OFFSET=.15;
-const JOIN_WIDTH_AT_PAD=1.60,JOIN_WIDTH_AT_FOOTWAY=1.55;
+const JOIN_WIDTH_AT_PAD=PAD_WIDTH,JOIN_WIDTH_AT_FOOTWAY=1.64;
+const PAD_ROWS=6,CONNECTOR_ROWS=24,ACROSS_ROWS=12;
 // A connection must terminate ON visible geometry (not an OSM centerline
 // that the game later clips from the road). Do not invent a pointed taper.
 const gcd=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
@@ -79,7 +80,7 @@ function nearbyProtectedSegments(elements,skipId,origin){
  for(const way of elements){
   if(!way?.tags?.highway||Number(way.id)===skipId||way.geometry?.length<2)continue;
   const path=way.geometry.map(stationGpsToWorld),width=roadWidth(way.tags.highway);
-  // This tiny 2 m connector cannot affect an OSM route >16m away.
+  // The short forecourt connector cannot affect an OSM route >16m away.
   const nearest=nearestPointOnPolyline(origin,path);
   if(!nearest||nearest.distance>16+width/2)continue;
   for(let i=1;i<path.length;i++){
@@ -101,6 +102,75 @@ function nearOtherMappedWay(segments,point){
   if(clearance<closest.clearance)closest={clearance,id};
  }
  return closest;
+}
+
+// Shift wider paved area toward the station, preserving more grass around
+// the tower and a narrower 1.64m landing at the 1.8m source-mapped path.
+// Geometric boundaries are visual design estimates, NOT surveyed paving.
+function forecourtHalfWidths(t){
+ const ease=t*t*(3-2*t),bulge=Math.sin(Math.PI*t)**2;
+ return {
+  station:PAD_WIDTH/2+2.10*bulge-.60*ease,
+  road:PAD_WIDTH/2-.86*ease
+ };
+}
+function normalize(v){
+ const d=Math.hypot(v.x,v.z)||1;
+ return {x:v.x/d,z:v.z/d};
+}
+// Use the same station-side orientation for the door apron and corridor.
+function buildForecourtRows({x,z,nx,nz,depth,connector}){
+ const padSide={x:-nz,z:nx},rows=[];
+ for(let i=0;i<=PAD_ROWS;i++){
+  const d=(i/PAD_ROWS-.5)*depth;
+  rows.push({x:x+nx*d,z:z+nz*d,
+   side:padSide,station:PAD_WIDTH/2,road:PAD_WIDTH/2,phase:'apron'});
+ }
+ for(let i=1;i<=CONNECTOR_ROWS;i++){
+  const t=i/CONNECTOR_ROWS;
+  // Exact first connector edge equals last apron edge: no duplicate patch,
+  // overlapping triangles, z-fighting, or seam at the front of the tower.
+  const side=normalize({
+   x:padSide.x*(1-Math.min(1,t*4))+connector.side.x*Math.min(1,t*4),
+   z:padSide.z*(1-Math.min(1,t*4))+connector.side.z*Math.min(1,t*4)
+  });
+  const widths=forecourtHalfWidths(t);
+  rows.push({
+   x:connector.start.x+(connector.end.x-connector.start.x)*t,
+   z:connector.start.z+(connector.end.z-connector.start.z)*t,
+   side,station:widths.station,road:widths.road,phase:'forecourt'
+  });
+ }
+ return rows;
+}
+function sampleRow(row,u){
+ const offset=-row.road+(row.station+row.road)*u;
+ return {x:row.x+row.side.x*offset,z:row.z+row.side.z*offset};
+}
+function nearBuildingPolygons(elements,origin,towerId){
+ const result=[];
+ for(const e of elements){
+  if(!e?.tags?.building||Number(e.id)===towerId||e.geometry?.length<3)
+   continue;
+  const poly=e.geometry.map(stationGpsToWorld);
+  if(!poly.some(p=>gcd(p,origin)<28))continue;
+  result.push(poly);
+ }
+ return result;
+}
+function polygonGap(p,poly){
+ let inside=false,min=Infinity;
+ for(let i=0,j=poly.length-1;i<poly.length;j=i++){
+  const a=poly[j],b=poly[i],dx=b.x-a.x,dz=b.z-a.z;
+  const lengthSq=dx*dx+dz*dz;
+  if(lengthSq>.001){
+   const t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.z-a.z)*dz)/lengthSq));
+   min=Math.min(min,Math.hypot(p.x-a.x-dx*t,p.z-a.z-dz*t));
+  }
+  if(((a.z>p.z)!==(b.z>p.z))&&
+    p.x<(b.x-a.x)*(p.z-a.z)/(b.z-a.z)+a.x)inside=!inside;
+ }
+ return inside?-min:min;
 }
 
 export function planBikeTowerEntryPaving(elements,roadClearance){
@@ -148,8 +218,8 @@ export function planBikeTowerEntryPaving(elements,roadClearance){
  .sort((a,b)=>a.distance-b.distance);
  const selected=candidates[0];
  if(!selected)return null;
- const start={x:x+nx*(PAD_DEPTH/2-.12),
-  z:z+nz*(PAD_DEPTH/2-.12)};
+ const start={x:x+nx*PAD_DEPTH/2,
+  z:z+nz*PAD_DEPTH/2};
  const end=selected.end;
  // Overlap the EXISTING pad by 12cm and end in the visible mapped path.
  const length=gcd(start,end);
@@ -159,29 +229,56 @@ export function planBikeTowerEntryPaving(elements,roadClearance){
  if(!selected.segment.carriageway.isClear(end.x,end.z,.9,.08))
   return null;
  const protectedSegments=nearbyProtectedSegments(elements,Number(footway.id),{x,z});
- if(!protectedSegments.length)return null; // invalid street index
- let otherRoadMargin=Infinity;
- // Check every interpolated ribbon cross-section AND its physical edges.
- // Reject the connector if it approaches any OSM street, other path, or the
- // Bike Tower footprint. Even the new 8m route uses exactly one mesh.
- // The mapped footway endpoint is EXEMPT because it already exists there.
- for(let i=0;i<=26;i++){
-  const t=i/26,width=JOIN_WIDTH_AT_PAD*(1-t)+JOIN_WIDTH_AT_FOOTWAY*t;
-  const sectionX=start.x+(end.x-start.x)*t;
-  const sectionZ=start.z+(end.z-start.z)*t;
-  for(let j=-4;j<=4;j++){
-   const p={x:sectionX+side.x*width*.5*j/4,
-    z:sectionZ+side.z*width*.5*j/4};
-   const other=nearOtherMappedWay(protectedSegments,p);
-   otherRoadMargin=Math.min(otherRoadMargin,other.clearance);
-   if(other.clearance<.17||gcd(p,{x:cx,z:cz})<radius+.12)
-    return null;
+ if(!protectedSegments.length)return null;
+ const connectorBasic={start,end,side,length};
+ const forecourtRows=buildForecourtRows({
+  x,z,nx,nz,depth:PAD_DEPTH,connector:connectorBasic
+ });
+ const buildings=nearBuildingPolygons(elements,{x,z},Number(tower.id));
+ let otherRoadMargin=Infinity,buildingMargin=Infinity,expandedArea=0;
+ let widest=0,narrowest=Infinity;
+ // Validate the *actual expanded boundary*, not the old narrow
+ // connector. Interpolate between rows to cover their whole area.
+ for(let i=PAD_ROWS;i<forecourtRows.length-1;i++){
+  const a=forecourtRows[i],b=forecourtRows[i+1];
+  for(let si=0;si<=2;si++){
+   const u=si/2;
+   const row={
+    x:a.x+(b.x-a.x)*u,z:a.z+(b.z-a.z)*u,
+    side:normalize({
+     x:a.side.x+(b.side.x-a.side.x)*u,
+     z:a.side.z+(b.side.z-a.side.z)*u
+    }),
+    station:a.station+(b.station-a.station)*u,
+    road:a.road+(b.road-a.road)*u
+   };
+   const width=row.station+row.road;
+   widest=Math.max(widest,width);
+   narrowest=Math.min(narrowest,width);
+   for(let j=0;j<=16;j++){
+    const p=sampleRow(row,j/16);
+    const other=nearOtherMappedWay(protectedSegments,p);
+    otherRoadMargin=Math.min(otherRoadMargin,other.clearance);
+    if(other.clearance<.18||gcd(p,{x:cx,z:cz})<radius+.12)
+     return null;
+    for(const polygon of buildings){
+     const gap=polygonGap(p,polygon);
+     buildingMargin=Math.min(buildingMargin,gap);
+     if(gap<.45)return null;
+    }
+   }
   }
+  expandedArea+=(gcd(a,b))*(a.station+a.road+b.station+b.road)/2;
  }
+ if(widest<4||narrowest<1.5||expandedArea<20)return null;
  const connector={
   start,end,side,length,widthStart:JOIN_WIDTH_AT_PAD,
   widthEnd:JOIN_WIDTH_AT_FOOTWAY,
-  footwayWayId:footway.id,otherRoadMargin,
+  footwayWayId:footway.id,otherRoadMargin,buildingMargin,
+  widestWidth:widest,narrowestWidth:narrowest,
+  estimatedAreaM2:expandedArea+PAD_WIDTH*PAD_DEPTH,
+  stationSideExpanded:true,roadSideConstrained:true,
+  singleContinuousSurface:true,forecourtRows,
   targetInsideActuallyRenderedFootway:true,
   sourceFootwaySegment:selected.segment.sourceSegment,
   targetSafeDistanceMeters:gcd({x,z},end),
@@ -192,6 +289,7 @@ export function planBikeTowerEntryPaving(elements,roadClearance){
   x,z,cx,cz,nx,nz,yaw,radius,
   width:PAD_WIDTH,depth:PAD_DEPTH,groundOffset:HEIGHT_OFFSET,
   connector,connectedToMappedFootway:true,
+  singleContinuousSurface:true,sourceLandscapeVegetationPreserved:true,
   sourceWayIds:[tower.id,footway.id],source:BIKE_TOWER_ENTRY_PAVING_SOURCE.photo,
   provenance:'2022-and-2024-photos-plus-OSM-footway',
   approximateWidth:true,approximateBoundary:true,
@@ -216,6 +314,12 @@ export function makeBikeTowerEntryPavingScene(THREE,{layer,terrainAt=()=>0,
    connectorLength:plan?.connector?.length||0,
    connectorEndWidth:plan?.connector?.widthEnd||0,
    connectorRoadMargin:plan?.connector?.otherRoadMargin??null,
+   nearbyBuildingMargin:plan?.connector?.buildingMargin??null,
+   widestPavedWidth:plan?.connector?.widestWidth??0,
+   narrowestPavedWidth:plan?.connector?.narrowestWidth??0,
+   estimatedPavedAreaM2:plan?.connector?.estimatedAreaM2??0,
+   oneContinuousSurface:!!root&&!!plan?.singleContinuousSurface,
+   preservedGreenery:!!root&&!!plan?.sourceLandscapeVegetationPreserved,
    expectedFootwayId:BIKE_TOWER_ENTRY_PAVING_SOURCE.footwayWayId,
    source:BIKE_TOWER_ENTRY_PAVING_SOURCE.photo,
    photoDimensionsEstimated:true,roadClearanceVerified:!!root,
@@ -232,47 +336,24 @@ export function makeBikeTowerEntryPavingScene(THREE,{layer,terrainAt=()=>0,
   if(root)return window.__miloviceBikeTowerEntryPaving;
   plan=planBikeTowerEntryPaving(elements,roadClearance);
   if(!plan||!sidewalkMaterial){publish();return window.__miloviceBikeTowerEntryPaving;}
-  // ONE terrain-following mesh for both doorway pad and tapering connector.
-  // It reuses the existing sidewalk material and its tile scale, no extra
-  // texture, no isolated squares, no new road or parking geometry.
-  const countX=8,countZ=6,vertices=[],uvs=[],indices=[];
-  const tanX=plan.nz,tanZ=-plan.nx;
-  for(let i=0;i<=countX;i++){
-   const u=(i/countX-.5)*plan.width;
-   for(let j=0;j<=countZ;j++){
-    const v=(j/countZ-.5)*plan.depth;
-    const x=plan.x+tanX*u+plan.nx*v;
-    const z=plan.z+tanZ*u+plan.nz*v;
-    vertices.push(x,terrainAt(x,z)+plan.groundOffset,z);
-    uvs.push(u/1.2,v/1.2);
-   }
-  }
-  for(let i=0;i<countX;i++)for(let j=0;j<countZ;j++){
-   const k=i*(countZ+1)+j,after=k+countZ+1;
-   // Right-handed tangent/front orientation; these triangles face UP.
-   indices.push(k,k+1,after,k+1,after+1,after);
-  }
-  // Straight, nearly constant-width corridor to the RENDERED (unclipped)
-  // mapped footway. Offset 4 mm above pad to prevent coincident
-  // triangles flickering where the two pieces overlap at the entrance.
-  const baseVertex=vertices.length/3,alongSteps=10,acrossSteps=4;
-  const link=plan.connector;
-  for(let i=0;i<=alongSteps;i++){
-   const t=i/alongSteps;
-   const width=link.widthStart*(1-t)+link.widthEnd*t;
-   const cx=link.start.x+(link.end.x-link.start.x)*t;
-   const cz=link.start.z+(link.end.z-link.start.z)*t;
-   for(let j=0;j<=acrossSteps;j++){
-    const lateral=(j/acrossSteps-.5)*width;
-    const x=cx+link.side.x*lateral,z=cz+link.side.z*lateral;
-    vertices.push(x,terrainAt(x,z)+plan.groundOffset+.004,z);
-    const localX=(x-plan.x)*plan.nz-(z-plan.z)*plan.nx;
-    const localZ=(x-plan.x)*plan.nx+(z-plan.z)*plan.nz;
+  // One continuous, NON-OVERLAPPING terrain-following mesh from the
+  // entry threshold to the visibly rendered OSM sidewalk. Widening is
+  // deliberately asymmetric toward the station. There is no separate
+  // rectangular pad or pointed ribbon intersecting it.
+  const vertices=[],uvs=[],indices=[];
+  const rows=plan.connector.forecourtRows;
+  for(const row of rows){
+   for(let j=0;j<=ACROSS_ROWS;j++){
+    const pt=sampleRow(row,j/ACROSS_ROWS);
+    vertices.push(pt.x,terrainAt(pt.x,pt.z)+plan.groundOffset,pt.z);
+    const localX=(pt.x-plan.x)*plan.nz-(pt.z-plan.z)*plan.nx;
+    const localZ=(pt.x-plan.x)*plan.nx+(pt.z-plan.z)*plan.nz;
     uvs.push(localX/1.2,localZ/1.2);
    }
   }
-  for(let i=0;i<alongSteps;i++)for(let j=0;j<acrossSteps;j++){
-   const k=baseVertex+i*(acrossSteps+1)+j,after=k+acrossSteps+1;
+  for(let i=0;i<rows.length-1;i++)for(let j=0;j<ACROSS_ROWS;j++){
+   const k=i*(ACROSS_ROWS+1)+j,after=k+ACROSS_ROWS+1;
+   // sideWEST crossed with directionOUT points upward in world coordinates.
    indices.push(k,k+1,after,k+1,after+1,after);
   }
   geometry=new THREE.BufferGeometry();
@@ -287,6 +368,8 @@ export function makeBikeTowerEntryPavingScene(THREE,{layer,terrainAt=()=>0,
   root.userData.lodX=plan.cx;root.userData.lodZ=plan.cz;
   root.userData.lodDetail=true;
   root.userData.originalRoadsUntouched=true;
+  root.userData.singleContinuousSurface=true;
+  root.userData.sourceAreaApproximate=true;
   layer.add(root);publish();
   return window.__miloviceBikeTowerEntryPaving;
  }

@@ -28,7 +28,7 @@ try{
    viewport:{width:cfg.width,height:cfg.height},deviceScaleFactor:1,
    isMobile:cfg.mobile,hasTouch:cfg.mobile});
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=5817&forecourtAudit='+cfg.view+
+  await page.goto('http://127.0.0.1:8080/?v=5818&forecourtAudit='+cfg.view+
    (cfg.flat?'&roadSurfaceFlat=1':'')+
    (cfg.inspection?'&entryInspection=1':''),
    {waitUntil:'domcontentloaded',timeout:30000});
@@ -57,7 +57,7 @@ try{
    fov:(()=>window.__miloviceForecourtAuditRendered?.active?1:null)()
   }));
   const v=state.review;
-  assert.equal(state.build,'20261115-biketower-rendered-footway-5817');
+  assert.equal(state.build,'20261115-biketower-continuous-forecourt-5818');
   assert.equal(state.panelVisible,true);
   assert.equal(state.compact,cfg.mobile);
   assert.equal(state.expansionButton,cfg.mobile?'false':'true');
@@ -119,7 +119,17 @@ try{
   assert.equal(v.bikeTowerEntryPaving?.expectedFootwayId,1165594426);
   assert(v.bikeTowerEntryPaving?.connectorLength>6);
   assert(v.bikeTowerEntryPaving?.connectorLength<10);
-  assert.equal(v.bikeTowerEntryPaving?.connectorEndWidth,1.55);
+  assert.equal(v.bikeTowerEntryPaving?.connectorEndWidth,1.64);
+  assert.equal(v.bikeTowerEntryPaving?.oneContinuousSurface,true);
+  assert.equal(v.bikeTowerEntryPaving?.preservedGreenery,true);
+  assert(v.bikeTowerEntryPaving?.widestPavedWidth>4.3);
+  assert(v.bikeTowerEntryPaving?.narrowestPavedWidth>=1.6);
+  assert(v.bikeTowerEntryPaving?.estimatedPavedAreaM2>25);
+  assert(v.bikeTowerEntryPaving?.connectorRoadMargin>.18);
+  assert(v.bikeTowerEntryPaving?.nearbyBuildingMargin>.45);
+  assert.equal(v.bikeTowerEntryPaving?.triangles,720);
+  assert.equal(v.entryInspection.singleContinuousPaving,true);
+  assert(v.entryInspection.approxAreaM2>25);
   assert.equal(v.bikeTowerEntryPaving?.targetInsideActuallyRenderedFootway,true);
   assert.equal(v.bikeTowerEntryPaving?.mappedFootwaySegment,3);
   assert(v.bikeTowerEntryPaving?.connectorRoadMargin>.17);
@@ -144,7 +154,7 @@ try{
    cfg.view+': mapped '+id+' must be in real camera frame');
   assert.equal(state.sourceLink,v.source);
   assert.deepEqual(errors,[]);
-  const path='browser-artifacts/milovice-forecourt-5817-'+cfg.view+
+  const path='browser-artifacts/milovice-forecourt-5818-'+cfg.view+
    (cfg.flat?'-flat':'')+(cfg.inspection?'-entry':'')+
    (cfg.mobile?'-mobile':'')+'.png';
   await page.screenshot({path});

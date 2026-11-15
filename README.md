@@ -1,3 +1,32 @@
+# Milovice RP 5.81.8 — souvislá zpevněná plocha cyklověže, zeleň a bezpečná vozovka
+
+**Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5818  
+**Technická kamera celé plochy:** https://foxey-cz.github.io/milovice-life-rp/?v=5818&forecourtAudit=tower&entryInspection=1  
+**Původní fotografická kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=5818&forecourtAudit=tower  
+**Záloha předchozí verze:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/5817-before-forecourt-surface
+
+## Kontext
+
+Mobilní screenshot uživatele **15. 11. 2026, 17:34** potvrdil, že 5.81.7 už má technicky spojený vstup cyklověže a skutečně vykreslitelný chodník OSM **1165594426**, avšak výsledek je vizuálně stále jen úzký pruh dlažby přes široký trávník. Reálné panoramatické záběry **17. 5. 2022** (Mapy.com, uživatelské podklady) a snímek **30. 5. 2024** (ŠJů, [Commons](https://commons.wikimedia.org/wiki/File:Milovice,_N%C3%A1dra%C5%BEn%C3%AD,_cyklov%C4%9B%C5%BE.jpg), CC BY 4.0) ukazují u cyklověže nádražní pěší prostředí s dlažbou a zachovanými zelenými plochami. **Z fotografií však nelze vyčíst geodeticky přesné hrany nebo polohu každého záhonu.**
+
+## Co se ve 5.81.8 skutečně mění
+
+- Namísto dvojice překrývajících se ploch (obdélníku u dveří a úzké cesty) vzniká **jeden propojený, bez překryvů vygenerovaný terénní mesh** s 31 podélnými řadami a 13 body v každé řadě: celkem **403 vrcholů a 720 trojúhelníků, jeden draw call a jeden sdílený materiál dlažby**. Není nutná žádná nová textura ani nový 3D objekt.
+- Před modrými dveřmi zůstává ověřená **3,10 × 2,10 m** plocha; dál se dlažba rozšiřuje **asymetricky směrem k nádražní budově** (v nejširší části přes 4,3 m), naopak směrem k silnici se postupně zužuje podle skutečného OSM odstupu. Na konci plynule přechází do šířky kolem **1,64 m**, tedy blízko existující 1,8m široké vykreslené pěší cesty. Nevzniká tak nový ostře zalomený šíp ani velká samostatná plocha přes silnici.
+- **Ochrana celé rozšířené plochy:** posuzuje se každý příčný řez, okraje i spojovací řady vůči reálným OSM jízdním pruhům, dalším chodníkům, konstrukci věže **i okolním budovám**. Rozšíření se odmítne, pokud zasahuje do jakékoliv nepřípustné plochy. Pouze cílový OSM chodník je výjimka, aby na něj bylo možné navázat. U budov držíme minimální odhadovaný volný odstup 0,45 m a u komunikací 0,18 m.
+- **Zachovaná zeleň:** nezastavujeme celý prostor mezi nádražím a cyklověží „od oka“. Jedna lokální pěší plocha se rozšiřuje v bezpečném mapovém koridoru, okolní nepodložené travnaté plochy zůstávají. Přesné obrubníky, záhony, strom a dvojramenná lampa stále čekají na lepší zaměření.
+- **Zachované beze změny:** oprava asfaltových UV 5.81.3, průběh silnice Nádražní, parkování, všechny OSM budovy, vzhled cyklověže, zastávky A/B, vstupy do nádraží, kolize i mobilní ovládání. Technická kontrolní kamera je stále výslovně odlišena od historické fotografické kamery.
+
+## Jak ověřujeme skutečný výsledek
+
+1. `scripts/bike-tower-entry-paving.test.mjs`: nově kontroluje **celou rozšířenou hranici**, bezpečné OSM napojení a zamítnutí simulované nové pěší cesty či budovy ve vzniklé širší části dlažby.
+2. `scripts/bike-tower-forecourt-mesh-5818.test.mjs`: vytvoří **opravdové vrcholy a trojúhelníky** 3D plochy, zkontroluje jeden topologicky propojený povrch, směrování všech ploch nahoru, skutečnou vykreslovanou plochu, sdílený materiál, jediný objekt a bezpečné resetování.
+3. `scripts/station-forecourt-webgl.mjs`: vykreslí ve skutečném Chromiu širokou kameru, detail věže a technický pohled na pěší napojení, včetně mobilu na výšku; ověří 720 trojúhelníků, maximální šířku, zachované odchylky od silnice a fotorežim bez joysticku.
+
+**Další kontrolní bod:** teprve reálný mobilní screenshot potvrdí, že nový rozšířený povrch vypadá přirozeně i při pohledu od nádraží. Z 5.81.8 nelze vyvozovat dokončení celé Nádražní ulice ani přesnou realitu všech zelených záhonů.
+
+---
+
 # Milovice RP 5.81.7 — pěší napojení cyklověže na opravdu viditelný chodník
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5817  
