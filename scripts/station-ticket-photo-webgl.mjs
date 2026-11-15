@@ -57,6 +57,9 @@ try{
  assert.deepEqual(errors,[],'No page-side JavaScript errors allowed');
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/milovice-ticket-photo-580.png'});
+ // Two simultaneous SwiftShader 3D scenes exhaust GPU memory in CI.
+ // Release desktop canvas before launching the separate portrait check.
+ await page.close();
  // The user's reference is a portrait phone screenshot: verify the exact
  // same two machines are visible with the wider diagnostic portrait FOV.
  const phone=await browser.newPage({
