@@ -31,13 +31,25 @@ assert(p.radius>=3.2&&p.radius<=4.1);
 assert.equal(p.drawCalls,1);
 assert.equal(p.connectedToMappedFootway,true);
 assert.equal(p.connector.footwayWayId,1165594426);
-assert(p.connector.length>1&&p.connector.length<3.5);
-assert.equal(p.connector.widthStart,1.05);
-assert.equal(p.connector.widthEnd,.68);
-assert(p.connector.footwayOverlap>.10&&p.connector.footwayOverlap<.25);
+assert(p.connector.length>6&&p.connector.length<10,
+ 'Connection must reach the physically rendered footway, not a clipped line');
+assert.equal(p.connector.widthStart,1.60);
+assert.equal(p.connector.widthEnd,1.55);
+assert.equal(p.connector.targetInsideActuallyRenderedFootway,true);
+assert.equal(p.connector.sourceFootwaySegment,3);
+assert(p.connector.targetCarriagewayClearance>1.04);
+const target=p.connector.end;
+const sourceFootway=elements.find(e=>e.id===1165594426);
+const sourceSegment=p.connector.sourceFootwaySegment;
+assert(sourceSegment>0&&sourceSegment<sourceFootway.geometry.length);
+assert(p.connector.targetSafeDistanceMeters>7);
+assert(p.connector.targetSafeDistanceMeters<11);
+assert(Number.isFinite(target.x)&&Number.isFinite(target.z));
+assert(Math.hypot(target.x-p.x,target.z-p.z)>7);
+
 assert(p.connector.otherRoadMargin>.17);
 assert(p.connector.otherRoadMargin<1,
- 'Near the mapped street the connector must taper rather than cross asphalt');
+ 'Safety margin must remain measurable near the mapped street');
 assert(Math.hypot(p.connector.end.x-p.connector.start.x,
  p.connector.end.z-p.connector.start.z)>1);
 
@@ -89,6 +101,10 @@ assert(source.includes('terrainAt(x,z)+plan.groundOffset'));
 assert(source.includes('sharedMaterial=sidewalkMaterial'));
 assert(source.includes('layer.add(root)'));
 assert(source.includes('nearbyProtectedSegments'));
+assert(source.includes('renderedSafeFootwayPieces'));
+assert(source.includes('safePedestrianPieces('));
+assert(source.includes('targetInsideActuallyRenderedFootway:true'));
+assert(source.includes('createRoadClearance()'));
 assert(source.includes('connectedToMappedFootway:true'));
 assert(source.includes('const baseVertex=vertices.length/3'));
 assert(source.includes('indices.push(k,k+1,after,k+1,after+1,after)'));
@@ -99,14 +115,14 @@ assert(!source.includes('new THREE.CanvasTexture'));
 assert(!source.includes('new THREE.TextureLoader'));
 assert(!source.includes('fetch('));
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(html.includes("const BUILD_ID='20261115-biketower-entry-inspection-5816'"));
-assert(html.includes("from './scripts/bike-tower-entry-paving.js?v=5816'"));
+assert(html.includes("const BUILD_ID='20261115-biketower-rendered-footway-5817'"));
+assert(html.includes("from './scripts/bike-tower-entry-paving.js?v=5817'"));
 assert(html.includes("bikeTowerEntryPaving.create(elements,{sidewalkMaterial:osmSidewalkMat})"));
 assert(html.includes('bikeTowerEntryPaving.reset()'));
 assert(html.includes('bikeTowerEntryPaving:bikeTowerEntryPaving.status()'));
 assert(html.includes("stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})"));
 assert(html.includes('worldAlignedRoadUv:true'));
-console.log('5.81.5 PASS connected and tapering Bike Tower OSM entrance path',JSON.stringify({
+console.log('5.81.7 PASS connected Bike Tower to RENDERED OSM footway',JSON.stringify({
  sourceIds:p.sourceWayIds,width:p.width,depth:p.depth,
  indexedStreetSegments:indexed,
  clearanceMeters:+clearance.nearest(p.x,p.z).clearance.toFixed(2),
