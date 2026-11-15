@@ -30,6 +30,7 @@ try{
    null,{timeout:120000});
   const state=await page.evaluate(()=>({
    review:window.__miloviceForecourtAuditRendered,
+   towerMaterials:window.__miloviceBikeTowerInterior,
    build:document.getElementById('build-label')?.textContent,
    panelVisible:!!document.getElementById('forecourt-photo-audit')?.offsetWidth,
    spawnHidden:getComputedStyle(document.getElementById('rp-spawn')).display==='none',
@@ -46,6 +47,12 @@ try{
   assert.equal(state.normalTicketPanelHidden,true);
   assert.equal(state.visibleCanvas,true);
   assert.equal(v.view,cfg.view);
+  assert.equal(state.towerMaterials?.glassAppearancePass,
+   '5811-silver-2022-2024-photo');
+  assert.equal(state.towerMaterials?.towerGlazingOpacity,.20);
+  assert.equal(state.towerMaterials?.photoGeometryUnchanged,true);
+  assert.equal(state.towerMaterials?.externalFootprintUnchanged,true);
+  assert.equal(state.towerMaterials?.addedStreetFurniture,0);
   assert.equal(v.photoDate,'2024-05-30');
   assert.equal(v.landmarks.length,2);
   assert.equal(v.stopCount,2);
