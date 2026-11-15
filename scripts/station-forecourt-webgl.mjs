@@ -72,8 +72,9 @@ try{
   assert.equal(v.parkingOverview.enabled,Boolean(cfg.overview));
   assert.equal(v.parkingOverview.noGeometryChanges,true);
   assert.equal(state.stationParking.active,true);
-  assert.equal(state.streetGeometry?.photoOuterFootwaySegments,3,
+  assert.equal(state.streetGeometry?.photoOuterFootwaySegmentsReplaced,3,
    'Exactly the three previously duplicate OSM island-footway segments are now custom-rendered');
+  assert.equal(state.streetGeometry?.photoOuterFootwaySegments,0);
   assert(state.streetGeometry?.mappedFootwaySegments>0,
    'Other mapped footways must remain visible');
   assert(state.stationParking.roadSafeInfillCells>100);
