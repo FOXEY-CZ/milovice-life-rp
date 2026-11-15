@@ -17,6 +17,8 @@ try{
    expectedVisible:['station','tower']},
   {view:'tower',mobile:true,width:393,height:852,
    expectedVisible:['tower']},
+  {view:'tower',flat:true,mobile:true,width:393,height:852,
+   expectedVisible:['tower']},
   {view:'bus',mobile:false,width:1280,height:760,
    expectedVisible:[]}
  ]){
@@ -24,13 +26,20 @@ try{
    viewport:{width:cfg.width,height:cfg.height},deviceScaleFactor:1,
    isMobile:cfg.mobile,hasTouch:cfg.mobile});
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=5812&forecourtAudit='+cfg.view,
+  await page.goto('http://127.0.0.1:8080/?v=5812&forecourtAudit='+cfg.view+
+   (cfg.flat?'&roadSurfaceFlat=1':''),
    {waitUntil:'domcontentloaded',timeout:30000});
   await page.waitForFunction(()=>window.__miloviceForecourtAuditRendered?.active===true,
    null,{timeout:120000});
   const state=await page.evaluate(()=>({
    review:window.__miloviceForecourtAuditRendered,
    towerMaterials:window.__miloviceBikeTowerInterior,
+   roadDiagnostic:window.__miloviceRoadTextureDiagnostic,
+   joystickHidden:getComputedStyle(document.getElementById('rp-joystick')).display==='none',
+   liveLoadingPopupHidden:getComputedStyle(document.getElementById('osmnotice-live')).display==='none',
+   mapSwitchHidden:getComputedStyle(document.getElementById('osm3d')).display==='none',
+   diagnosticLink:document.getElementById('forecourt-audit-surface')?.href,
+   statusLabel:document.getElementById('forecourt-audit-status')?.textContent,
    build:document.getElementById('build-label')?.textContent,
    panelVisible:!!document.getElementById('forecourt-photo-audit')?.offsetWidth,
    spawnHidden:getComputedStyle(document.getElementById('rp-spawn')).display==='none',
@@ -44,6 +53,19 @@ try{
   assert.equal(state.build,'20261115-forecourt-surface-diagnostic-5812');
   assert.equal(state.panelVisible,true);
   assert.equal(state.spawnHidden,true);
+  assert.equal(state.joystickHidden,true,'Analog mobile joystick cannot obscure photo audit');
+  assert.equal(state.liveLoadingPopupHidden,true);
+  assert.equal(state.mapSwitchHidden,true);
+  assert.equal(state.roadDiagnostic?.active,true);
+  assert.equal(state.roadDiagnostic?.flat,Boolean(cfg.flat));
+  assert.equal(state.roadDiagnostic?.roadMaterialHasTexture,!cfg.flat);
+  assert.equal(state.roadDiagnostic?.geometryModified,false);
+  assert.equal(state.roadDiagnostic?.roadMaterialOnly,true);
+  assert.equal(v.roadTextureDiagnostic?.flat,Boolean(cfg.flat));
+  assert(state.diagnosticLink.includes(cfg.flat?'forecourtAudit=tower':'roadSurfaceFlat=1')
+   ||cfg.view!=='tower');
+  assert(state.statusLabel?.includes('Mapa načtena'));
+
   assert.equal(state.normalTicketPanelHidden,true);
   assert.equal(state.visibleCanvas,true);
   assert.equal(v.view,cfg.view);
@@ -72,12 +94,15 @@ try{
   assert.equal(state.sourceLink,v.source);
   assert.deepEqual(errors,[]);
   const path='browser-artifacts/milovice-forecourt-5812-'+cfg.view+
-   (cfg.mobile?'-mobile':'')+'.png';
+   (cfg.flat?'-flat':'')+(cfg.mobile?'-mobile':'')+'.png';
   await page.screenshot({path});
   console.log('5.81 FORECOURT WebGL PASS',JSON.stringify({
    view:cfg.view,visibleLandmarks:v.visibleLandmarks,
    sourceHeading:v.cameraGps.heading,existingStops:v.stopCount,
-   newRoadObjects:0,upperSignDrawCalls:1,errors:errors.length
+   newRoadObjects:0,upperSignDrawCalls:1,
+   flatRoadMaterial:state.roadDiagnostic.flat,
+   joystickHidden:state.joystickHidden,
+   errors:errors.length
   }));
   await page.close();
  }
