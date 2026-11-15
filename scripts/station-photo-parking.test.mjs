@@ -224,7 +224,7 @@ assert.equal(planStationPhotoParking(ways.map(e=>e.id===675778842?{
  ...e,geometry:e.geometry.map(p=>({...p,lon:p.lon+.001}))
 }:e),occupied),null);
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(game.includes("from './scripts/station-photo-parking.js?v=5760'"));
+assert(game.includes("from './scripts/station-photo-parking.js?v=58111'"));
 assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})'),
  'The island sidewalk must receive the exact city paving material');
 assert(game.includes('stationPhotoParking.reset()'));
@@ -232,9 +232,9 @@ assert(!game.includes('osmStrip(points[i-1],points[i],1.8,osmSidewalkMat,.235);'
  'The 5.72 forced sidewalk directly on Nádražní asphalt MUST be disabled');
 assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})'),
  'Carved sidewalk must reuse the same existing city paving material');
-assert(game.includes("from './scripts/station-photo-parking.js?v=5760'"),
- 'Station parking remains frozen at reviewed 5.76 geometry');
-assert(game.includes("const BUILD_ID='20261115-biketower-aligned-landing-58110'"),
+assert(game.includes("from './scripts/station-photo-parking.js?v=58111'"),
+ 'The reviewed 5.76 parking geometry must now load safe gap filler, not a stale 5.76 module');
+assert(game.includes("const BUILD_ID='20261115-road-safe-parking-infill-58111'"),
  'New game version must retain 5.76 parking with the added ticket-machine scene');
 assert(game.includes("from './scripts/bike-tower-interior.js?v=5640'"));
 assert(game.includes("from './scripts/station-forecourt-pass.js?v=5650'"));
@@ -264,6 +264,21 @@ assert(!code.includes('const chamfers=planOuterSidewalkChamfers(tiles);'),
  'No separate 0.75m sidewalk quads may remain');
 assert(!code.includes('for(const p of planned.outerSidewalkCurbs)'),
  'No individual Minecraft-like kerbstone boxes along outer sidewalk');
+assert(code.includes('for(const patch of planned.outerSidewalkCells)'),
+ 'Paving gap underlay must use only verified sidewalk cells');
+assert(code.includes('vertices.push(pt.x,terrainAt(pt.x,pt.z)+.193,pt.z)'),
+ 'Road-safe gap filler must be below the 0.214m top sidewalk strip');
+assert(code.includes('uvs.push(offset/1.8,along/8)'),
+ 'Underlay must match continuous sidewalk UV units and rotation');
+assert(code.includes('mesh.userData.infillExtraDrawCalls=0'),
+ 'No hundreds of extra draw calls for patches');
+const safeInfillTriangles=plan.outerSidewalkCells.length*2;
+assert(safeInfillTriangles>200&&safeInfillTriangles<650);
+for(const patch of plan.outerSidewalkCells)
+ assert(isRoadFreeRect(occupied,{
+  x:patch.x,z:patch.z,length:patch.length+.012,depth:patch.depth+.012,
+  yaw:patch.yaw,buffer:.009,step:.3
+ }), 'No expanded infill patch may touch OSM road or footway');
 assert(code.includes("meshFor('sidewalk',sidewalkMaterial)")&&
  code.includes("meshFor('kerb',material.curb)"),
  'Both the pavement and curb must form contiguous meshes, not square blocks');
