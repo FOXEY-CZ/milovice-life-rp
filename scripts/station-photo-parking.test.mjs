@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createRoadClearance,isRoadFreeRect} from './road-clearance.js';
-import {STATION_PARKING_REFERENCE,planStationPhotoParking,planContinuousOuterSidewalk,planRoadSafeParkingInfillProfiles,planSatelliteParkingMarkings,planRailApronProfiles,planRailApronBoundaryKerbs} from './station-photo-parking.js';
+import {STATION_PARKING_REFERENCE,planStationPhotoParking,planContinuousOuterSidewalk,planRoadSafeParkingInfillProfiles,planClippedRoadsideInfill,planSatelliteParkingMarkings,planRailApronProfiles,planRailApronBoundaryKerbs} from './station-photo-parking.js';
 import {stationGpsToWorld} from './station-forecourt-pass.js';
 
 const data=JSON.parse(readFileSync(new URL('../data/milovice-osm.json',import.meta.url),'utf8'));
@@ -203,6 +203,31 @@ assert(plan.outerSidewalkCells.length>=100,'A true long sidewalk needs many cont
 const smooth=planRoadSafeParkingInfillProfiles(plan.outerSidewalkCells);
 assert(smooth,'Only contiguous verified footway cells may feed the smooth underside');
 assert(smooth.rows.length>55&&smooth.joins>50);
+const clippedInfill=planClippedRoadsideInfill(smooth,plan.continuousRibbon);
+assert(clippedInfill?.rows.length>55,'Keep the main paved pedestrian route intact');
+assert.equal(clippedInfill.clippedToContinuousRibbon,true);
+assert.equal(clippedInfill.roadSafeCellsOnly,true);
+assert(clippedInfill.trimmedRows>=0&&clippedInfill.visibleRows<=smooth.rows.length);
+assert.equal(planClippedRoadsideInfill(null,plan.continuousRibbon),null);
+assert.equal(planClippedRoadsideInfill(smooth,null),null);
+assert.equal(planClippedRoadsideInfill(smooth,plan.continuousRibbon,{overlap:.02}),null);
+const supportedParts=plan.continuousRibbon.parts;
+assert(supportedParts.every(part=>
+ part.at(-1).along-part[0].along>=2.8),
+ 'The northern detached sidewalk square must not remain as a short standalone part');
+for(const r of clippedInfill.rows){
+ const p=plan.continuousRibbon.profiles.find(q=>q.along===r.along);
+ assert(p?.safe,'Only a valid sidewalk row may contribute underlay paving');
+ assert(supportedParts.some(part=>
+  r.along>=part[0].along&&r.along<=part.at(-1).along),
+  'No unsupported islands of pavers can be drawn beyond the sidewalk');
+ assert(r.low>=p.low-.00001);
+ assert(r.edge<=p.high+.00601&&r.start<=p.high+.00601&&
+  r.end<=p.high+.00601,
+  'No 0.74m side ears or protrusions beyond the smooth sidewalk silhouette');
+ assert(Math.min(r.edge,r.start,r.end)-r.low>=.16);
+}
+
 assert.equal(smooth.roadSafeCellsOnly,true);
 assert.equal(smooth.areaExpanded,false);
 assert.equal(smooth.sourceCells,plan.outerSidewalkCells.length);
@@ -412,12 +437,10 @@ assert(!code.includes('const chamfers=planOuterSidewalkChamfers(tiles);'),
  'No separate 0.75m sidewalk quads may remain');
 assert(!code.includes('for(const p of planned.outerSidewalkCurbs)'),
  'No individual Minecraft-like kerbstone boxes along outer sidewalk');
-assert(code.includes('for(const row of visibleInfillRows)'),
- 'End infill must be limited to the actual continuous sidewalk, not extend as a rectangular tail');
-assert(code.includes('supportedStations.has(row.along)'),
- 'Exclude isolated underlay rows at the tapered parking-island tip');
-assert(code.includes('infillProfile.visibleRows=visibleInfillRows.length'),
- 'Infill must use a full-length constrained roadside profile, not square tiles');
+assert(code.includes('for(const row of clipped.rows)'),
+ 'The underlay must use ribbon-clipped triangles, not the unconstrained grid');
+assert(code.includes('planClippedRoadsideInfill(infillProfile,planned.continuousRibbon)'),
+ 'Trim unsupported terminal fragments and overhanging infill in one audited geometry pass');
 assert(code.includes('vertices.push(pt.x,terrainAt(pt.x,pt.z)+.193,pt.z)'),
  'The merged smooth infill must remain below the current sidewalk strip');
 assert(code.includes('uvs.push(offset/1.8,section.along/8)'),
