@@ -209,6 +209,22 @@ assert(plan.outerSidewalkCells.length>=100,'A true long sidewalk needs many cont
 const smooth=planRoadSafeParkingInfillProfiles(plan.outerSidewalkCells);
 assert(smooth,'Only contiguous verified footway cells may feed the smooth underside');
 assert(smooth.rows.length>55&&smooth.joins>50);
+const bottomFirst=(r)=>+r.along.toFixed(3);
+console.log('ISLAND_TERMINAL_GEOMETRY_58122',JSON.stringify({
+ parkingRows:[...new Set(plan.cells.map(p=>p.along))].sort((a,b)=>a-b).slice(0,14).map(along=>({
+  along:bottomFirst({along}),
+  cells:plan.cells.filter(p=>p.along===along).map(p=>+p.offset.toFixed(3)),
+  parking:plan.centralParkingCells.filter(p=>p.along===along).map(p=>+p.offset.toFixed(3)),
+  sidewalk:plan.outerSidewalkCells.filter(p=>p.along===along).map(p=>+p.offset.toFixed(3))
+ })),
+ ribbon:plan.continuousRibbon.parts[0].slice(0,28).map(r=>({
+  along:bottomFirst(r),low:+r.low.toFixed(3),high:+r.high.toFixed(3)})),
+ smooth:smooth.rows.slice(0,14).map(r=>({
+  along:bottomFirst(r),low:+r.low.toFixed(3),start:+r.start.toFixed(3),
+  edge:+r.edge.toFixed(3),end:+r.end.toFixed(3),halfAlong:r.halfAlong})),
+ oppositeEnd:{first:plan.continuousRibbon.parts[0][0],
+  last:plan.continuousRibbon.parts[0].at(-1)}
+}));
 const clippedInfill=planClippedRoadsideInfill(smooth,plan.continuousRibbon);
 assert(clippedInfill?.rows.length>55,'Keep the main paved pedestrian route intact');
 assert.equal(clippedInfill.clippedToContinuousRibbon,true);
