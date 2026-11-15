@@ -1,3 +1,26 @@
+# Milovice RP 5.81.5 — pěší propojení od cyklověže na skutečný chodník
+
+**Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5815  
+**Fotokamera cyklověže:** https://foxey-cz.github.io/milovice-life-rp/?v=5815&forecourtAudit=tower  
+**Široký pohled:** https://foxey-cz.github.io/milovice-life-rp/?v=5815&forecourtAudit=wide  
+**Záloha verze 5.81.4:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/5814-before-connected-bike-paving
+
+## Konkrétní důvod
+
+Uživatelův screenshot mobilního fotoauditu **15. 11. 2026, 16:33** potvrzuje, že přidaná dlážděná plocha 5.81.4 před modrým vstupem do cyklověže byla **malý izolovaný obdélník na trávníku**, nikoli návazná pěší plocha z panoramat **2022-05-17** (Mapy.com) a fotografie **ŠJů 2024-05-30** (CC BY 4.0). Vykreslování asfaltu 5.81.3 zůstalo správné, proto se asfalt dále nemění.
+
+## Implementace
+
+- Původní 3,10 × 2,10 m přístupový dlažební díl u **OSM cyklověže 1011197691** se zachovává. Nově na jeho vnější pravé/přední straně **přímo navazuje zúžený pěší spoj** k existující **OSM footway 1165594426**; jeho přibližná délka podle reálných mapových bodů je **1,97 m**. Koncový bod leží v modelované šířce mapového chodníku, aby nevznikl úzký travnatý pás mezi dvěma dělícími se povrchy.
+- Tvar chodníku se plynule zúží z **1,05 m na 0,68 m**, protože v blízkosti napojení vede reálná vozovka **OSM 1459294017**. Celé spojení se vzorkuje napříč a podélně proti *všem dalším* OSM silnicím i pěším komunikacím. **Jedinou výjimkou je cílový OSM chodník 1165594426**, do kterého se musí plynule napojit; jeho konec se překrývá jen zhruba o 15 cm s existujícím mapovým pěším povrchem. Pokud bezpečné spojení neprojde, nový model se nespustí.
+- **Zůstává jeden jediný `BufferGeometry` mesh a 1 draw call**, sdílí původní městský dlažební materiál. Pad a spoj mají společnou orientaci UV; v překryvu je jen 4mm výškový rozdíl pro eliminaci blikání povrchu. Nic dalšího se neinstancuje a nevytvářejí se další samostatné dlažební destičky.
+- **Nezměnilo se:** OSM geometrie silnic, ulic, chodníků, parkoviště 5.76, asfalt 5.81.3, cyklověž, nádraží, dopravní značení, vstupy, kolize ani chůze. Neznámé lampy/stromy/záhony a BUS značení dál čekají na přesné podklady. **Přesná poloha hran dlažby není geodeticky zaměřena:** jde o fotokontrolovanou přibližnou modelářskou návaznost na skutečnou OSM pěší cestu.
+- **Ochrana do budoucna:** `scripts/bike-tower-entry-paving.test.mjs` nově hlídá skutečný přístup na OSM footway, šířky a bezpečný odstup od přilehlé vozovky včetně syntetické další cesty, která by spoj přetnula. Chromium v mobilním i desktopovém režimu kontroluje živé spojení v 3D, zachování **jediného draw callu** a dřívější funkcionalitu cyklověže.
+
+**Požadavek na vizuální schválení:** Záběr z mobilní fotokamery může odhalit, zda je napojení v reálném prostředí příliš úzké nebo nesprávně natočené; potvrzení výstupu neznamená, že je celá Nádražní dokončena.
+
+---
+
 # Milovice RP 5.81.4 — dlážděný vstup k cyklověži, bez asfaltu přes chodník
 
 **Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5814  

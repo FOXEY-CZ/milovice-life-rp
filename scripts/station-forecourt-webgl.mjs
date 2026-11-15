@@ -26,7 +26,7 @@ try{
    viewport:{width:cfg.width,height:cfg.height},deviceScaleFactor:1,
    isMobile:cfg.mobile,hasTouch:cfg.mobile});
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=5814&forecourtAudit='+cfg.view+
+  await page.goto('http://127.0.0.1:8080/?v=5815&forecourtAudit='+cfg.view+
    (cfg.flat?'&roadSurfaceFlat=1':''),
    {waitUntil:'domcontentloaded',timeout:30000});
   await page.waitForFunction(()=>window.__miloviceForecourtAuditRendered?.active===true,
@@ -51,7 +51,7 @@ try{
    fov:(()=>window.__miloviceForecourtAuditRendered?.active?1:null)()
   }));
   const v=state.review;
-  assert.equal(state.build,'20261115-biketower-entry-photo-paving-5814');
+  assert.equal(state.build,'20261115-biketower-connected-footway-5815');
   assert.equal(state.panelVisible,true);
   assert.equal(state.spawnHidden,true);
   assert.equal(state.joystickHidden,true,'Analog mobile joystick cannot obscure photo audit');
@@ -95,6 +95,12 @@ try{
   assert.equal(v.bikeTowerEntryPaving?.active,true,
    'Photo-anchored tower entry must render its paved access, not grass');
   assert.equal(v.bikeTowerEntryPaving?.drawCalls,1);
+  assert.equal(v.bikeTowerEntryPaving?.connectedToMappedFootway,true);
+  assert.equal(v.bikeTowerEntryPaving?.expectedFootwayId,1165594426);
+  assert(v.bikeTowerEntryPaving?.connectorLength>1);
+  assert(v.bikeTowerEntryPaving?.connectorLength<3.5);
+  assert.equal(v.bikeTowerEntryPaving?.connectorEndWidth,.68);
+  assert(v.bikeTowerEntryPaving?.connectorRoadMargin>.17);
   assert.equal(v.bikeTowerEntryPaving?.width,3.1);
   assert.equal(v.bikeTowerEntryPaving?.depth,2.1);
   assert.equal(v.bikeTowerEntryPaving?.materialReused,true);
@@ -116,7 +122,7 @@ try{
    cfg.view+': mapped '+id+' must be in real camera frame');
   assert.equal(state.sourceLink,v.source);
   assert.deepEqual(errors,[]);
-  const path='browser-artifacts/milovice-forecourt-5814-'+cfg.view+
+  const path='browser-artifacts/milovice-forecourt-5815-'+cfg.view+
    (cfg.flat?'-flat':'')+(cfg.mobile?'-mobile':'')+'.png';
   await page.screenshot({path});
   console.log('5.81 FORECOURT WebGL PASS',JSON.stringify({
