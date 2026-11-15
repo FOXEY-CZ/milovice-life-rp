@@ -1,4 +1,4 @@
-// Milovice RP 5.81.8 — single continuous road-safe forecourt between tower and rendered footway
+// Milovice RP 5.81.9 — source-safe continuous forecourt with mapped-footway UV matching between tower and rendered footway
 // outside the existing blue Bike Tower entry. Not a new street or full plaza.
 // Photo evidence: user-shared Mapy.com panorama (2022-05-17) and ŠJů
 // Wikimedia Commons Bike Tower (2024-05-30, CC BY 4.0).
@@ -271,6 +271,21 @@ export function planBikeTowerEntryPaving(elements,roadClearance){
   expandedArea+=(gcd(a,b))*(a.station+a.road+b.station+b.road)/2;
  }
  if(widest<4||narrowest<1.5||expandedArea<20)return null;
+ // Align the new single-surface texture with the EXISTING clipped OSM
+ // sidewalk's UV frame. osmStrip uses u=0..1 across 1.8m and v=distance/8
+ // from the beginning of its rendered segment. Previously this forecourt
+ // used localX/1.2 and localZ/1.2; the abrupt scale/angle change at the
+ // landing looked like an attached patch in close mobile screenshots.
+ const footwayDx=selected.segment.b.x-selected.segment.a.x;
+ const footwayDz=selected.segment.b.z-selected.segment.a.z;
+ const footwayLength=Math.hypot(footwayDx,footwayDz);
+ if(footwayLength<.01)return null;
+ const textureBasis={
+  origin:{x:selected.segment.a.x,z:selected.segment.a.z},
+  longitudinal:{x:footwayDx/footwayLength,z:footwayDz/footwayLength},
+  lateral:{x:-footwayDz/footwayLength,z:footwayDx/footwayLength},
+  footwayWidthMeters:1.8,repeatAlongMeters:8
+ };
  const connector={
   start,end,side,length,widthStart:JOIN_WIDTH_AT_PAD,
   widthEnd:JOIN_WIDTH_AT_FOOTWAY,
@@ -278,7 +293,8 @@ export function planBikeTowerEntryPaving(elements,roadClearance){
   widestWidth:widest,narrowestWidth:narrowest,
   estimatedAreaM2:expandedArea+PAD_WIDTH*PAD_DEPTH,
   stationSideExpanded:true,roadSideConstrained:true,
-  singleContinuousSurface:true,forecourtRows,
+  singleContinuousSurface:true,forecourtRows,textureBasis,
+  uvAlignedWithMappedFootway:true,
   targetInsideActuallyRenderedFootway:true,
   sourceFootwaySegment:selected.segment.sourceSegment,
   targetSafeDistanceMeters:gcd({x,z},end),
@@ -319,6 +335,7 @@ export function makeBikeTowerEntryPavingScene(THREE,{layer,terrainAt=()=>0,
    narrowestPavedWidth:plan?.connector?.narrowestWidth??0,
    estimatedPavedAreaM2:plan?.connector?.estimatedAreaM2??0,
    oneContinuousSurface:!!root&&!!plan?.singleContinuousSurface,
+   uvAlignedWithMappedFootway:!!root&&!!plan?.connector?.uvAlignedWithMappedFootway,
    preservedGreenery:!!root&&!!plan?.sourceLandscapeVegetationPreserved,
    expectedFootwayId:BIKE_TOWER_ENTRY_PAVING_SOURCE.footwayWayId,
    source:BIKE_TOWER_ENTRY_PAVING_SOURCE.photo,
@@ -342,13 +359,16 @@ export function makeBikeTowerEntryPavingScene(THREE,{layer,terrainAt=()=>0,
   // rectangular pad or pointed ribbon intersecting it.
   const vertices=[],uvs=[],indices=[];
   const rows=plan.connector.forecourtRows;
+  const basis=plan.connector.textureBasis;
   for(const row of rows){
    for(let j=0;j<=ACROSS_ROWS;j++){
     const pt=sampleRow(row,j/ACROSS_ROWS);
     vertices.push(pt.x,terrainAt(pt.x,pt.z)+plan.groundOffset,pt.z);
-    const localX=(pt.x-plan.x)*plan.nz-(pt.z-plan.z)*plan.nx;
-    const localZ=(pt.x-plan.x)*plan.nx+(pt.z-plan.z)*plan.nz;
-    uvs.push(localX/1.2,localZ/1.2);
+    const dx=pt.x-basis.origin.x,dz=pt.z-basis.origin.z;
+    // Same UV units, origin and rotation as the mapped OSM sidewalk strip.
+    // World-projected UVs are continuous even as forecourt widths curve.
+    uvs.push(.5+(dx*basis.lateral.x+dz*basis.lateral.z)/basis.footwayWidthMeters,
+     (dx*basis.longitudinal.x+dz*basis.longitudinal.z)/basis.repeatAlongMeters);
    }
   }
   for(let i=0;i<rows.length-1;i++)for(let j=0;j<ACROSS_ROWS;j++){
