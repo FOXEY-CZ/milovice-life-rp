@@ -57,6 +57,38 @@ try{
  assert.deepEqual(errors,[],'No page-side JavaScript errors allowed');
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/milovice-ticket-photo-580.png'});
+ // The user's reference is a portrait phone screenshot: verify the exact
+ // same two machines are visible with the wider diagnostic portrait FOV.
+ const phone=await browser.newPage({
+  viewport:{width:393,height:852},deviceScaleFactor:2,isMobile:true,hasTouch:true
+ });
+ const phoneErrors=[];
+ phone.on('pageerror',e=>phoneErrors.push(String(e.stack||e)));
+ await phone.goto('http://127.0.0.1:8080/?v=5800&ticketPhotoAudit=1',
+  {waitUntil:'domcontentloaded',timeout:30000});
+ await phone.waitForFunction(()=>window.__miloviceTicketPhotoAuditRendered?.active===true,
+  null,{timeout:90000});
+ const mobile=await phone.evaluate(()=>({
+  audit:window.__miloviceTicketPhotoAuditRendered,
+  status:window.__miloviceStationTicketMachines,
+  panelVisible:!!document.getElementById('ticket-photo-audit')?.offsetWidth,
+  canvasW:document.querySelector('canvas')?.clientWidth||0,
+  build:document.getElementById('build-label')?.textContent
+ }));
+ assert.equal(mobile.audit.machineCount,2);
+ assert.equal(mobile.audit.inFrameCount,2,
+  'Portrait phone diagnostic camera must not crop either station machine');
+ assert.equal(mobile.status.panelDetailRevision,580);
+ assert.equal(mobile.panelVisible,true);
+ assert.equal(mobile.build,'20261115-station-detail-5800');
+ assert.deepEqual(phoneErrors,[]);
+ await phone.screenshot({path:'browser-artifacts/milovice-ticket-photo-580-mobile.png'});
+ console.log('5.80 portrait mobile photo audit PASS',JSON.stringify({
+  projections:mobile.audit.machineProjections,
+  canvasWidth:mobile.canvasW,
+  panelDetailRevision:mobile.status.panelDetailRevision
+ }));
+ await phone.close();
  console.log('5.80 station ticket camera real WebGL smoke PASS');
 }finally{
  await browser.close();
