@@ -1,3 +1,22 @@
+# Milovice RP 5.78 — fotografický kontrolní pohled na oba nádražní automaty
+
+**Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5780  
+**Otevřít fotoaudit automatů:** https://foxey-cz.github.io/milovice-life-rp/?v=5780&ticketPhotoAudit=1  
+**Nedotčená záloha 5.77:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/577-before-ticket-photo-audit
+
+## Proč tento krok a co přesně dělá
+Před přidáváním dalšího pouličního osvětlení, zeleně nebo značení je potřeba vizuálně ověřit umístění právě vytvořených dvou automatů. Fotoaudit používá **GPS původního fotografa** 50.2291625, 14.8819250 a EXIF heading **110°**, nikoliv vymyšlenou polohu automatu. Foto: **ŠJů, Wikimedia Commons, 30. 5. 2024, CC BY 4.0**: https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_automaty_na_j%C3%ADzdenky.jpg.
+
+- URL parametr `ticketPhotoAudit=1` zobrazí pevnou diagnostickou 3D kameru z přibližné výšky očí (1,64 m), otočenou podle zdrojového směru 110°. Fotografie nemá přesně doložené parametry objektivu ani přesné zaměření automatů: srovnáváme *odhadnutý model* s fotografií, nikoliv geodetickou shodu snímků.
+- V kontrolním režimu neblokuje výhled běžné herní menu vozidel, HUD ani virtuální joystick. Malý informační panel obsahuje přímý odkaz na **originální foto a licenci** a návrat do běžné hry.
+- 3D streamování se pro tento režim orientuje podle **kontrolní kamery**, ne podle jiné výchozí polohy avatara. To zabrání náhodnému skrytí nádraží z důvodu vzdáleného spawnu.
+- Režim zapisuje do `window.__miloviceTicketPhotoAuditRendered` počty modelů, jejich promítnutí do obrazovky, zdrojový směr a informaci, že jejich přesné pozice nejsou zaměřené. Nový Node test i samostatný scénář Chromium WebGL smoke ověřují viditelnost *obou* automatů z této kamery.
+- **Žádné další lampy, stromy, ostrůvky, přechody či značky zatím nepřidáváme:** nejdříve je třeba potvrdit jejich konkrétní pozice vůči reálným fotografiím. Všechny geometrie nádraží, okolního asfaltu, parkoviště v5.76, vnějšího chodníku, cyklověže a dvou automatů v5.77 zůstávají beze změny. Normální režim kamery a jízdy je nedotčen.
+
+**Další krok po uživatelské kontrole:** porovnat oba automaty na kontrolní URL s původní fotografií; případně upravit pouze polohy nebo vzhled těchto dvou modelů. Bez fotodůkazu neumisťovat osvětlení a zelené ostrůvky.
+
+---
+
 # Milovice RP 5.77 — dvě skutečně fotografované PID jízdenkové automaty na nádraží
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5770  

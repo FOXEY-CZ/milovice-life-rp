@@ -70,10 +70,10 @@ assert(!model.includes('new THREE.TextureLoader('),
  'Photo pixels may not be copied into the game as machine textures');
 assert(!model.includes('fetch('),'Visual source photographs stay external');
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(game.includes("from './scripts/station-ticket-machines.js?v=5770'"));
+assert(game.includes("from './scripts/station-ticket-machines.js?v=5780'"));
 assert(game.includes("stationTicketMachines.create(elements);"));
 assert(game.includes("stationTicketMachines.reset();"));
-assert(game.includes("const BUILD_ID='20261115-station-photo-ticket-machines-5770'"));
+assert(game.includes("const BUILD_ID='20261115-station-photo-camera-audit-5780'"));
 assert(game.includes("stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})"),
  'Do not remove or modify the user-confirmed road-aligned sidewalk or parking');
 console.log('5.77 two photo-observed station ticket machines anchored to real wall PASS',
