@@ -73,6 +73,7 @@ assert(plan.railSideParking.some(b=>b.depth>4.37),
 assert.equal(plan.railPavingTrafficEdgeSafelyExtended,true);
 assert.equal(plan.railPavingNarrowRoadsideGapRetested,true);
 assert.equal(plan.railPavingMinRoadFacingBuffer,.025);
+assert.equal(plan.railPavingRefinedSamplingMetres,.12);
 
 assert(plan.railPavingSeamCells>=2,
  'At least some individually checked bays should reduce the unrealistic grassy road seam');
@@ -89,7 +90,7 @@ for(const bay of plan.railSideParking){
  assert(Math.abs(bay.roadFacingEdge+3.02-bay.roadsideSeamClosedMetres)<1e-9,
   'Paving may only narrow grass seam with independently road-safe testing');
  assert(isRoadFreeRect(occupied,{x:bay.x,z:bay.z,
-  length:bay.length,depth:bay.depth,yaw:bay.yaw,buffer:bay.roadFacingBuffer,step:.36}),
+  length:bay.length,depth:bay.depth,yaw:bay.yaw,buffer:bay.roadFacingBuffer,step:.12}),
   'Every widened rail-side bay must stay outside OSM roads and footways');
 }
 const apron=planRailApronProfiles([...plan.railSideParking,...plan.railSideJoiningSlabs]);
@@ -388,7 +389,7 @@ for(const p of plan.cornerPaving)
  }), 'Right entrance apron must never cover mapped roads or walking paths');
 for(const bay of plan.railSideParking)
  assert(isRoadFreeRect(occupied,{x:bay.x,z:bay.z,length:bay.length,
-  depth:bay.depth,yaw:bay.yaw,buffer:bay.roadFacingBuffer,step:.36}),
+  depth:bay.depth,yaw:bay.yaw,buffer:bay.roadFacingBuffer,step:.12}),
   'Rail-side parking bays may not occupy any OSM road or footpath');
 for(const cell of plan.cells){
  assert(isRoadFreeRect(occupied,{
@@ -491,7 +492,7 @@ assert(code.includes('const roadEdge=Math.min(previous.roadFacingEdge,next.roadF
 assert(code.includes('const railEdge=Math.max(previous.railFacingEdge,next.railFacingEdge)'));
 assert(code.includes('for(const candidate of [-2.90,-2.78,-2.66,-2.54,-2.42,-2.30])'));
 assert(code.includes('const buffer=candidate>=-2.30?.025:candidate>=-2.42?.040:.12;'));
-assert(code.includes('if(safePlace(trial,2.46,trialDepth,buffer))break;'));
+assert(code.includes('if(safePlace(trial,2.46,trialDepth,buffer,.12))break;'));
 assert(code.includes('chosen.roadFacingBuffer=acceptedRoadBuffer;'),
  'Each candidate must keep its own positive OSM safety buffer');
 assert(!code.includes('batch(group,material.railPaved,railPaving)'));
