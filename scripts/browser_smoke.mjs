@@ -350,6 +350,21 @@ try{
     realityStation.deferredWithoutSurvey.length!==3)
   throw new Error('5.24 photo-GPS station A/B and strict reality contract broken: '+JSON.stringify(realityStation));
  console.log('5.24 geotagged station forecourt:',JSON.stringify(realityStation));
+ const stationTickets=await page.evaluate(()=>window.__miloviceStationTicketMachines||null);
+ if(!stationTickets?.active||stationTickets.stationWayId!==53865956||
+    stationTickets.machineCount!==2||
+    JSON.stringify(stationTickets.colors)!=='["orange","yellow"]'||
+    stationTickets.wallSegmentIndex!==5||
+    stationTickets.cameraWallDistance<1.5||stationTickets.cameraWallDistance>2.6||
+    stationTickets.roadClearanceMin<1||
+    stationTickets.photosCopied!==false||
+    stationTickets.ticketMachinesOnly!==true||
+    stationTickets.textureCount!==2||
+    stationTickets.drawMeshes>4||
+    stationTickets.facadeEstimated!==true)
+  throw new Error('5.77 photo-authentic station ticket pair missing or incorrectly located: '+JSON.stringify(stationTickets));
+ console.log('5.77 original-modeled photo verified ticket pair:',
+  JSON.stringify(stationTickets));
  const stationParking=await page.evaluate(()=>window.__miloviceStationParking||null);
  if(!stationParking?.active||
     JSON.stringify(stationParking.sourceIds)!=='[675778842,128308366]'||
