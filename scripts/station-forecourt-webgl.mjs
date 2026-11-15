@@ -19,6 +19,8 @@ try{
    expectedVisible:['tower']},
   {view:'tower',flat:true,mobile:true,width:393,height:852,
    expectedVisible:['tower']},
+  {view:'tower',inspection:true,mobile:true,width:393,height:852,
+   expectedVisible:[]},
   {view:'bus',mobile:false,width:1280,height:760,
    expectedVisible:[]}
  ]){
@@ -26,13 +28,17 @@ try{
    viewport:{width:cfg.width,height:cfg.height},deviceScaleFactor:1,
    isMobile:cfg.mobile,hasTouch:cfg.mobile});
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=5815&forecourtAudit='+cfg.view+
-   (cfg.flat?'&roadSurfaceFlat=1':''),
+  await page.goto('http://127.0.0.1:8080/?v=5816&forecourtAudit='+cfg.view+
+   (cfg.flat?'&roadSurfaceFlat=1':'')+
+   (cfg.inspection?'&entryInspection=1':''),
    {waitUntil:'domcontentloaded',timeout:30000});
   await page.waitForFunction(()=>window.__miloviceForecourtAuditRendered?.active===true,
    null,{timeout:120000});
   const state=await page.evaluate(()=>({
    review:window.__miloviceForecourtAuditRendered,
+   compact:document.getElementById('forecourt-photo-audit').classList.contains('audit-compact'),
+   expansionButton:document.getElementById('forecourt-audit-toggle')?.getAttribute('aria-expanded'),
+   auditLabel:document.getElementById('forecourt-audit-label')?.textContent,
    towerMaterials:window.__miloviceBikeTowerInterior,
    roadDiagnostic:window.__miloviceRoadTextureDiagnostic,
    roadUv:window.__miloviceRoadUVValidation,
@@ -51,8 +57,21 @@ try{
    fov:(()=>window.__miloviceForecourtAuditRendered?.active?1:null)()
   }));
   const v=state.review;
-  assert.equal(state.build,'20261115-biketower-connected-footway-5815');
+  assert.equal(state.build,'20261115-biketower-entry-inspection-5816');
   assert.equal(state.panelVisible,true);
+  assert.equal(state.compact,cfg.mobile);
+  assert.equal(state.expansionButton,cfg.mobile?'false':'true');
+  assert.equal(v.cameraMode,cfg.inspection?
+   'technical-osm-derived':'documented-photo-gps');
+  assert.equal(v.entryInspection.enabled,Boolean(cfg.inspection));
+  if(cfg.inspection){
+   assert.equal(v.entryInspection.sourceIsPhotoCamera,false);
+   assert.equal(v.entryInspection.padAndPathOneMesh,true);
+   assert.equal(v.entryInspection.projectedPoints.length,3);
+   assert(v.entryInspection.projectedPoints.every(p=>p.inFrame),
+    'Close camera must show entrance, physical joint AND mapped footway together');
+   assert(state.auditLabel.includes('NENÍ fotografická kamera'));
+  }
   assert.equal(state.spawnHidden,true);
   assert.equal(state.joystickHidden,true,'Analog mobile joystick cannot obscure photo audit');
   assert.equal(state.liveLoadingPopupHidden,true);
@@ -122,8 +141,9 @@ try{
    cfg.view+': mapped '+id+' must be in real camera frame');
   assert.equal(state.sourceLink,v.source);
   assert.deepEqual(errors,[]);
-  const path='browser-artifacts/milovice-forecourt-5815-'+cfg.view+
-   (cfg.flat?'-flat':'')+(cfg.mobile?'-mobile':'')+'.png';
+  const path='browser-artifacts/milovice-forecourt-5816-'+cfg.view+
+   (cfg.flat?'-flat':'')+(cfg.inspection?'-entry':'')+
+   (cfg.mobile?'-mobile':'')+'.png';
   await page.screenshot({path});
   console.log('5.81 FORECOURT WebGL PASS',JSON.stringify({
    view:cfg.view,visibleLandmarks:v.visibleLandmarks,
