@@ -39,7 +39,7 @@ assert(html.includes('const cx=rpStationTicketCameraWorld?.x??(walking?px:x)'));
 assert(html.includes('const cz=rpStationTicketCameraWorld?.z??(walking?pz:z)'));
 assert(html.includes('id="ticket-photo-audit" hidden'));
 assert(html.includes('html.rp-ticket-photo-audit #rp-spawn'));
-assert(html.includes('20261115-station-detail-5800'));
+assert(html.includes('20261115-forecourt-photo-audit-5810'));
 assert(html.includes("from './scripts/station-ticket-machines.js?v=5800'"));
 assert(!html.includes('20261115-station-photo-ticket-machines-5770'));
 assert(html.includes("stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})"));
