@@ -1005,7 +1005,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   // Existing curb batch / one draw call: the railway edge gains a low,
   // smoothly directed boundary without new road surfaces or objects.
   for(const p of [...planned.railApronKerbs.sections,...planned.railApronKerbs.endCaps])
-   curb.push({...p,y:terrainAt(p.x,p.z)+.248,
+   curb.push({...p,y:terrainAt(p.x,p.z)+.229,
     sx:p.length,sy:.110,sz:p.depth});
   // 5.81.15: contour the previously clearance-tested rail-side slabs
   // as a shared surface, with the west boundary smoothly joined at the
