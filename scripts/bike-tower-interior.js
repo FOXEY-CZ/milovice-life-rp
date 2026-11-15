@@ -62,7 +62,8 @@ export function createBikeTowerSteelwork(THREE,parent,plan){
  if(!THREE||!parent||!plan?.valid||!plan.beams.length)
   return {rendered:false,drawCalls:0,reason:'no-valid-photo-site-plan'};
  const geometry=new THREE.BoxGeometry(.055,1,.055);
- const mat=new THREE.MeshLambertMaterial({color:0x71858c});
+ // Bright galvanized framework visible in the actual photographed glass tower.
+ const mat=new THREE.MeshLambertMaterial({color:0xa5b3b5});
  const batch=new THREE.InstancedMesh(geometry,mat,plan.beams.length);
  const helper=new THREE.Object3D();
  const up=new THREE.Vector3(0,1,0);
