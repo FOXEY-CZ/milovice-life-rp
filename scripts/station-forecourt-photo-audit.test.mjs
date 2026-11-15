@@ -58,7 +58,7 @@ assert.equal(planUpperBiketowerSign({radius:9,nx:1,nz:0}),null);
 assert.equal(planUpperBiketowerSign({radius:3.8,nx:0,nz:0}),null);
 assert.equal(planUpperBiketowerSign({wayId:53865956,radius:3.8,nx:1,nz:0}),null);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(html.includes("const BUILD_ID='20261115-biketower-glass-photo-5811'"));
+assert(html.includes("const BUILD_ID='20261115-forecourt-surface-diagnostic-5812'"));
 assert(html.includes("from './scripts/station-forecourt-photo-audit.js?v=5810'"));
 assert(html.includes("from './scripts/bike-tower-photo-sign.js?v=5810'"));
 assert(html.includes("new URLSearchParams(location.search).get('forecourtAudit')"));
