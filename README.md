@@ -1,3 +1,20 @@
+# Milovice RP 5.81.9 — sladěná textura dlažby cyklověže a existujícího chodníku
+
+**Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5819  
+**Detail spojení s chodníkem:** https://foxey-cz.github.io/milovice-life-rp/?v=5819&forecourtAudit=tower&entryInspection=1  
+**Fotografická kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=5819&forecourtAudit=tower  
+**Bezpečná záloha 5.81.8:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/5818-before-paving-uv-fix
+
+## Co opravila mobilní kontrola z 15. 11. 2026, 18:21
+
+Uživatel zaslal dva snímky verze 5.81.8. Geometrie souvislé pěší plochy funguje, ale v detailu je na jejím konci viditelný přechod mezi drobnou texturou nové dlažby a podstatně většími spárami existujícího OSM chodníku. Původní plánovač používal u nové plochy lokální UV v metrech /1,2, zatímco vykreslovací funkce `osmStrip` používá přes šířku 1,8m U=0..1 a podél chodníku V=délka/8.
+
+Nový mesh proto bere **počátek i orientaci UV z přesně toho bezpečně vykresleného úseku OSM 1165594426, ke kterému je napojen**. Zajišťuje stejnou orientaci a délkové měřítko dlažby na styku s původním chodníkem. Nejde o změnu hrany podle neznámého geodetického zaměření ani o další překryvnou záplatu. Zachovává 403 vrcholů, 720 trojúhelníků, jeden draw call, stejné kolizní zábrany a zachovanou zeleň.
+
+Automatické testy nově porovnávají skutečná UV vytvořeného 3D meshe s orientací, počátkem a měřítkem OSM chodníku. **Fotografická kontrola přesných hran dlažby a zeleně stále není uzavřena**: dostupné panoramatické fotografie 2022 a Commons 2024 potvrzují pěší přístup, ale ne geodeticky přesný polygon. Přirozenost vzhledu je potřeba ověřit přímo na mobilu.
+
+---
+
 # Milovice RP 5.81.8 — souvislá zpevněná plocha cyklověže, zeleň a bezpečná vozovka
 
 **Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5818  
