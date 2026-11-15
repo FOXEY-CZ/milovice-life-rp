@@ -56,7 +56,7 @@ assert(game.includes("if(rpAuditCameraWorld&&innerWidth<innerHeight)"));
 assert(game.includes("camera.fov=rpForecourtParkingOverview?64:rpForecourtEntryInspection?76:105;"));
 assert(game.includes("from './scripts/station-ticket-machines.js?v=5800'"));
 assert(game.includes("from './scripts/station-photo-facade.js?v=5790'"));
-assert(game.includes("const BUILD_ID='20261115-biketower-aligned-landing-58110'"));
+assert(game.includes("const BUILD_ID='20261115-road-safe-parking-infill-58111'"));
 assert(game.includes("stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})"));
 assert(game.includes("stationTicketMachines.reset()"));
 console.log('5.80 safe visual detail PASS',JSON.stringify({
