@@ -1,3 +1,28 @@
+# Milovice RP 5.76 — skutečně souvislý chodník PODÉL Nádražní, ne podle čtverců parkoviště
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5760  
+**Návrat k v5.75:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/575-before-road-aligned-sidewalk
+
+## Screenshot uživatele z 15. 11. 2026: chyba 5.75 pokračovala
+
+Přestože byl v5.75 chodník označen za jeden souvislý ribbon, uživatel v další mobilní fotografii **stále viděl 74cm schody a výstupky na pravé hraně podél vozovky Nádražní** a oprávněně upozornil, že požadovaný **plynulý pruh podél silnice** dosud nevznikl. Snímku rovněž ukazoval krátkodobě pouze **19 FPS**, draw calls 233, 112k trojúhelníků, 13ms WebGL; nelze ale spolehlivě tvrdit, že tento konkrétní propad FPS způsobuje chodník, protože jej screenshot neprofiluje.
+
+**Odhalena příčina:** v5.75 se sice změnil renderer na `THREE.BufferGeometry`, ale vnější bod každého příčného řezu byl nadále `sorted.at(-1).offset + .365`, tj. hrana POSLEDNÍ dlaždice. Když krajní sloupec přeskočil na sousední 0,74m pozici, polygon a obruba nadále skákaly. Pouhé propojení dlaždic samo o sobě nemohlo vizuální schody odstranit.
+
+## Oprava v5.76
+
+- **Skutečná osa Nádražní (OSM 128308366)** je nově přímým vstupem do algoritmu `planContinuousOuterSidewalk`, vedle obou již bezpečně odvozených komunikací kolem parkovacího ostrova. Pro každý řez chodníku se vypočítá polohově blízká osa vozovky a její boční vzdálenost, odečte se pouze **modelová šířka 7,8m + rezerva 0,40m** na straně chodníku. Tím dostává vnější hrana hladký tvar **podél silnice**, nikoliv podél jednotlivých dlažebních čtverců. Jde o **modelovou** šířku OSM obytné komunikace, nikoliv geodeticky doložené skutečné hranice asfaltu.
+- **Bezpečnost:** nové vnější hrany jsou zároveň shora omezené okrajem původních **OSM-safe parkovacích buněk**. Plynulý sklon se řeší konzervativní funkční obálkou, která může chodník směrem OD asfaltu zúžit, **nikdy ne rozšířit přes již ověřené místo**. Vnitřní hrana je obdobně omezená původními parkovacími poli, takže neobsazuje silnici ani se nevrací na nesprávnou vnitřní stranu ostrova.
+- **Měřitelný rozdíl:** u dlouhé střední části parku smí sousední vnější hrany chodníku měnit polohu maximálně o **0,115m na jeden 0,76m krok**, nikoliv o 0,74m. To kontroluje samostatný Node test a reálný Chromium WebGL smoke. Vnější hrana podél cesty je také monotónní, protože tam Nádražní podle mapy plynule přibližuje druhou komunikaci.
+- **Pořád jeden dlouhý texturovaný povrch:** jádrem renderování zůstává sdílená dlažební textura `osmSidewalkMat` a jediná souvislá geometrie s úzkou hladkou obrubou. Na okrajích se síť rozdělí pouze tam, kde bezpečný průnik mezi sousedními parkovacími buňkami není doložen. Nulový počet jednotlivých chodníkových panelů.
+- **NEMĚNÍME** asfalt na žádné komunikaci, počty a orientaci parkovacích buněk (středové a 20 protilehlých stání), budovy, cyklověž, nádraží ani jiné městské části. Nepoužíváme Mapy.com fotografie jako herní textury.
+
+**Výkon:** tento průchod nezvyšuje počet materiálů ani instancovaných panelů. Dosavadní měření 19 FPS na telefonu bereme vážně, ale není správné jej bez skutečného profilování přiřazovat chodníku; uživatelská kontrola FPS ve stejné poloze a teplotě telefonu zůstává otevřená. Max. rozpočet lokálního doplňku **8 draw callů**.
+
+**Poctivá hranice přesnosti:** Obrys parkoviště ani obrubníku nebyl zaměřen. Všechny posuny chodníku jsou omezeny na již schválenou aproximaci z panoramat Mapy.com 17. 5. 2022, geotagovaných Commons fotek 30. 5. 2024 a OSM vozovek. Vizuální shodu musí ještě potvrdit porovnání hry s původní fotografií ze stejného úhlu.
+
+---
+
 # Milovice RP 5.75 — souvislý chodník jako silnice, žádné minecraftové čtverce
 
 **Spustit verzi 5.75:** https://foxey-cz.github.io/milovice-life-rp/?v=5750  
