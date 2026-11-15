@@ -1,4 +1,4 @@
-// Milovice RP 5.81.11 — fill validated grass holes BELOW the original road-parallel sidewalk ribbon.
+// Milovice RP 5.81.12 — bevel only convex roadside infill steps within the already road-safe cells.
 // The 5.72 "fix" drew a new OSM sidewalk directly OVER Nádražní's asphalt,
 // rather than removing the relevant strip from the parking surface.
 // The user confirmed the exact topology: existing road (UNTOUCHED),
@@ -511,6 +511,31 @@ export function planStationPhotoParking(elements,roadClearance){
   protectedRoadsAndPaths:true,protectedBuildings:true,protectedRailways:true,
   originalCarriagewaysUntouched:true};
 }
+// No OSM boundary is invented: bevel only a PROTRUDING outside corner of an
+// already checked pedestrian cell. The square's safe bounding box remains
+// unchanged. This softens the long stair-step edge seen in the 5.81.11 mobile
+// overhead review without cutting out the successfully sealed green holes.
+export function planRoadSafeParkingEdgeChamfers(patches){
+ const byRow=new Map();
+ if(!Array.isArray(patches))return new Map();
+ for(const patch of patches){
+  const previous=byRow.get(patch.along);
+  if(!previous||patch.offset>previous.offset)
+   byRow.set(patch.along,patch);
+ }
+ const rows=[...byRow.values()].sort((a,b)=>a.along-b.along);
+ const chamfers=new Map();
+ for(let i=0;i<rows.length;i++){
+  const current=rows[i],prev=rows[i-1],next=rows[i+1];
+  const cut=Math.min(.22,current.length*.29,current.depth*.29);
+  const lead=prev&&current.along-prev.along<.81&&
+   current.offset-prev.offset>.55?cut:0;
+  const tail=next&&next.along-current.along<.81&&
+   current.offset-next.offset>.55?cut:0;
+  if(lead||tail)chamfers.set(current,{lead,tail});
+ }
+ return chamfers;
+}
 export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadClearance}={}){
  const roots=[],geo=new THREE.BoxGeometry(1,1,1);
  const material={
@@ -521,7 +546,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   railPaver:new THREE.MeshLambertMaterial({color:0xc1c3b9}),
   sidewalk:new THREE.MeshLambertMaterial({color:0xe0dcd1})
  };
- let planned=null,drawMeshes=0,instances=0,sharedSidewalkTexture=false;
+ let planned=null,drawMeshes=0,instances=0,sharedSidewalkTexture=false,roadEdgeChamfers=0;
  const stats=()=>({
   active:roots.length>0,sourceIds:planned?.sourceIds||[],
   photos:STATION_PARKING_REFERENCE.photos.length,
@@ -549,7 +574,9 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   // 5.81.11: meshes are part of the existing single sidewalk drawcall,
   // not new sidewalk rectangles on the OSM road or extra scene objects.
   roadSafeInfillCells:planned?.outerSidewalkCells.length||0,
-  roadSafeInfillTriangles:(planned?.outerSidewalkCells.length||0)*2,
+  roadSafeInfillTriangles:(planned?.outerSidewalkCells.length||0)*2+roadEdgeChamfers,
+  roadEdgeChamfers,
+  roadEdgeChamfersWithinSafeCells:true,
   infillExtraDrawCalls:0,
   continuousKerb:true,
   maxOuterFootwayOsmDistance:planned?.outerSidewalkMaxOsmDistance??null,
@@ -623,18 +650,32 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
     // its material, road axis and UV phase; one merged drawcall remains.
     // The 1.2cm overlap closes 0.01m gaps from the .76/.74m cell grid;
     // road-clearance tests already check expanded dimensions of each cell.
+    const bevels=planRoadSafeParkingEdgeChamfers(planned.outerSidewalkCells);
+    roadEdgeChamfers=0;
     for(const patch of planned.outerSidewalkCells){
      const halfAlong=(patch.length+.012)/2;
      const halfAcross=(patch.depth+.012)/2;
+     const {lead=0,tail=0}=bevels.get(patch)||{};
+     roadEdgeChamfers+=(lead>0?1:0)+(tail>0?1:0);
+     // Clockwise in the (along,offset) frame, preserving upward faces.
+     // Each cut moves INSIDE the old bounding box at a protruding corner.
+     const polygon=[
+      [-halfAlong,-halfAcross],
+      [-halfAlong,halfAcross-lead],
+      ...(lead>0?[[-halfAlong+lead,halfAcross]]:[]),
+      ...(tail>0?[[halfAlong-tail,halfAcross]]:[]),
+      [halfAlong,halfAcross-tail],
+      [halfAlong,-halfAcross]
+     ];
      const start=vertices.length/3;
-     for(const along of [patch.along-halfAlong,patch.along+halfAlong]){
-      for(const offset of [patch.offset-halfAcross,patch.offset+halfAcross]){
-       const pt=at(planned.frame,along,offset);
-       vertices.push(pt.x,terrainAt(pt.x,pt.z)+.193,pt.z);
-       uvs.push(offset/1.8,along/8);
-      }
+     for(const [ds,dt] of polygon){
+      const along=patch.along+ds,offset=patch.offset+dt;
+      const pt=at(planned.frame,along,offset);
+      vertices.push(pt.x,terrainAt(pt.x,pt.z)+.193,pt.z);
+      uvs.push(offset/1.8,along/8);
      }
-     indices.push(start,start+1,start+2,start+1,start+3,start+2);
+     for(let i=1;i<polygon.length-1;i++)
+      indices.push(start,start+i,start+i+1);
     }
    }
    const geometry=new THREE.BufferGeometry();
@@ -647,6 +688,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
    mesh.name=kind==='kerb'?'ContinuousOuterSidewalkKerb':'ContinuousOuterSidewalkPaving';
    if(kind==='sidewalk'){
     mesh.userData.roadSafeInfillCells=planned.outerSidewalkCells.length;
+    mesh.userData.roadEdgeChamfers=roadEdgeChamfers;
     mesh.userData.infillExtraDrawCalls=0;
     mesh.userData.infillHeightBelowRibbonMeters=.021;
    }
@@ -724,7 +766,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
  }
  function reset(){
   for(const root of roots)root.parent?.remove(root);
-  roots.length=0;planned=null;drawMeshes=instances=0;sharedSidewalkTexture=false;publish();
+  roots.length=0;planned=null;drawMeshes=instances=roadEdgeChamfers=0;sharedSidewalkTexture=false;publish();
  }
  publish();
  return {create,reset,status:stats,plan:()=>planned};
