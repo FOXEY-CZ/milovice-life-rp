@@ -53,7 +53,7 @@ assert(game.includes("detailRevision:580,windowSillDepth:.22"));
 assert(game.includes("unchangedFixtureAnchors:true"));
 assert(game.includes("put('stationWindowSill',f,f.bottom-.030,f.sillWidth,.065,.22"));
 assert(game.includes("if(rpAuditCameraWorld&&innerWidth<innerHeight)"));
-assert(game.includes("camera.fov=rpForecourtEntryInspection?76:105;camera.updateProjectionMatrix()"));
+assert(game.includes("camera.fov=rpForecourtParkingOverview?64:rpForecourtEntryInspection?76:105;"));
 assert(game.includes("from './scripts/station-ticket-machines.js?v=5800'"));
 assert(game.includes("from './scripts/station-photo-facade.js?v=5790'"));
 assert(game.includes("const BUILD_ID='20261115-biketower-aligned-landing-58110'"));
