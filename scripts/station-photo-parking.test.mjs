@@ -228,6 +228,28 @@ console.log('ISLAND_TERMINAL_GEOMETRY_58122',JSON.stringify({
 const clippedInfill=planClippedRoadsideInfill(smooth,plan.continuousRibbon);
 assert(clippedInfill?.rows.length>55,'Keep the main paved pedestrian route intact');
 assert.equal(clippedInfill.clippedToContinuousRibbon,true);
+assert.equal(plan.continuousRibbon.southNoseCap,true,
+ 'Southern sidewalk must terminate with a narrow tapered cap');
+assert(plan.continuousRibbon.southernOuterEarsClipped>=2,
+ 'Remove the photographed .46m outward ear at the first island end');
+const southPart=plan.continuousRibbon.parts[0];
+assert.equal(southPart[0].southNoseCap,true);
+assert(southPart[0].high-southPart[0].low>=.37&&
+ southPart[0].high-southPart[0].low<.75,
+ 'South nose must taper INSIDE the already approved tile');
+const initialHigh=plan.continuousRibbon.profiles[0].high;
+for(const p of plan.continuousRibbon.profiles.filter(q=>q.along<=6))
+ assert(p.high<=initialHigh+.000001,
+  'No road-side rectangular lobe may protrude from first 5m of island');
+assert(clippedInfill.rows[0].southCapMatched,
+ 'Underlay must follow the SAME tapered initial cap');
+assert(Math.abs(clippedInfill.rows[0].startInner-southPart[0].low)<.000001);
+assert(Math.abs(clippedInfill.rows[0].start-southPart[0].high)<.000001,
+ 'An independent rectangular underlay must not poke out from south cap');
+assert(clippedInfill.rows.slice(1).every(q=>
+ q.startInner===q.low&&!q.southCapMatched),
+ 'The 5.81.20 inner sidewalk gap fix must stay intact outside the nose');
+
 assert.equal(clippedInfill.roadSafeCellsOnly,true);
 assert(clippedInfill.trimmedRows>=0&&clippedInfill.visibleRows<=smooth.rows.length);
 assert(clippedInfill.rows.filter(r=>r.along>=8&&r.along<=60).length>50,
