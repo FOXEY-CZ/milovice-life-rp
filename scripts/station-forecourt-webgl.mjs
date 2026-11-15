@@ -30,7 +30,7 @@ try{
    viewport:{width:cfg.width,height:cfg.height},deviceScaleFactor:1,
    isMobile:cfg.mobile,hasTouch:cfg.mobile});
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=58110&forecourtAudit='+cfg.view+
+  await page.goto('http://127.0.0.1:8080/?v=58111&forecourtAudit='+cfg.view+
    (cfg.flat?'&roadSurfaceFlat=1':'')+
    (cfg.inspection?'&entryInspection=1':'')+
    (cfg.overview?'&parkingOverview=1':''),
@@ -45,6 +45,7 @@ try{
    towerMaterials:window.__miloviceBikeTowerInterior,
    roadDiagnostic:window.__miloviceRoadTextureDiagnostic,
    roadUv:window.__miloviceRoadUVValidation,
+   stationParking:window.__miloviceStationParking,
    joystickHidden:getComputedStyle(document.getElementById('rp-joystick')).display==='none',
    liveLoadingPopupHidden:getComputedStyle(document.getElementById('osmnotice-live')).display==='none',
    mapSwitchHidden:getComputedStyle(document.getElementById('osm3d')).display==='none',
@@ -60,7 +61,7 @@ try{
    fov:(()=>window.__miloviceForecourtAuditRendered?.active?1:null)()
   }));
   const v=state.review;
-  assert.equal(state.build,'20261115-biketower-aligned-landing-58110');
+  assert.equal(state.build,'20261115-road-safe-parking-infill-58111');
   assert.equal(state.panelVisible,true);
   assert.equal(state.compact,cfg.mobile);
   assert.equal(state.expansionButton,cfg.mobile?'false':'true');
@@ -69,6 +70,13 @@ try{
   assert.equal(v.parkingOverview.requested,Boolean(cfg.overview));
   assert.equal(v.parkingOverview.enabled,Boolean(cfg.overview));
   assert.equal(v.parkingOverview.noGeometryChanges,true);
+  assert.equal(state.stationParking.active,true);
+  assert(state.stationParking.roadSafeInfillCells>100);
+  assert.equal(state.stationParking.roadSafeInfillTriangles,
+   state.stationParking.roadSafeInfillCells*2);
+  assert.equal(state.stationParking.infillExtraDrawCalls,0,
+   'Safe underlay belongs in the existing sidewalk drawcall');
+  assert.equal(state.stationParking.roadSurfaceUnmodified,true);
   if(cfg.overview){
    assert.equal(v.parkingOverview.sourceIsPhotoCamera,false);
    assert.equal(v.parkingOverview.cameraBasedOnMappedRoad,true);
@@ -175,7 +183,7 @@ try{
    cfg.view+': mapped '+id+' must be in real camera frame');
   assert.equal(state.sourceLink,v.source);
   assert.deepEqual(errors,[]);
-  const path='browser-artifacts/milovice-forecourt-58110-'+cfg.view+
+  const path='browser-artifacts/milovice-forecourt-58111-'+cfg.view+
    (cfg.flat?'-flat':'')+(cfg.inspection?'-entry':'')+
    (cfg.overview?'-parking-overview':'')+
    (cfg.mobile?'-mobile':'')+'.png';
