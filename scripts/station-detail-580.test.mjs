@@ -52,11 +52,11 @@ assert(!model.includes("fetch("));
 assert(game.includes("detailRevision:580,windowSillDepth:.22"));
 assert(game.includes("unchangedFixtureAnchors:true"));
 assert(game.includes("put('stationWindowSill',f,f.bottom-.030,f.sillWidth,.065,.22"));
-assert(game.includes("if(rpStationTicketPhotoAudit&&innerWidth<innerHeight)"));
+assert(game.includes("if(rpAuditCameraWorld&&innerWidth<innerHeight)"));
 assert(game.includes("camera.fov=105;camera.updateProjectionMatrix()"));
 assert(game.includes("from './scripts/station-ticket-machines.js?v=5800'"));
 assert(game.includes("from './scripts/station-photo-facade.js?v=5790'"));
-assert(game.includes("const BUILD_ID='20261115-station-detail-5800'"));
+assert(game.includes("const BUILD_ID='20261115-forecourt-photo-audit-5810'"));
 assert(game.includes("stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})"));
 assert(game.includes("stationTicketMachines.reset()"));
 console.log('5.80 safe visual detail PASS',JSON.stringify({

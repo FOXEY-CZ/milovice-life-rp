@@ -1,4 +1,4 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.80.0 Detail nádražních automatů a fasády</title><meta name="milovice-build" content="20261115-station-detail-5800"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
+<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.81.0 Fotoaudit přednádraží a cyklověž</title><meta name="milovice-build" content="20261115-forecourt-photo-audit-5810"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
 #realmap{position:fixed;inset:0;z-index:100;background:#101e2c;display:none;flex-direction:column;color:#fff;font-family:system-ui}#realmap.open{display:flex}#maphead{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#142c3e}#maphead button{flex:0 0 auto;min-height:40px}#osmmap{flex:1;min-height:0;touch-action:pan-x pan-y}#mapfoot{padding:8px 12px;background:#142c3e;font-size:12px;line-height:1.4}#maplaunch{position:fixed;right:12px;top:75px;z-index:45;background:#193d58;border:1px solid #93b4c7;box-shadow:0 2px 8px #0006}#realmap .leaflet-container{background:#d7e5da}#realmap a{color:#aedbff} @media(max-width:700px){#maplaunch{top:72px;right:8px;padding:7px 10px;font-size:12px;min-height:36px}#maphead{font-size:13px}}
 </style><style>#perf{position:fixed;top:10px;right:10px;z-index:42;background:#102437e8;border:1px solid #77a7b6;border-radius:10px;padding:7px 10px;color:#c8f6d4;font:600 12px system-ui;pointer-events:none;min-width:100px;text-align:center}#perf small{display:block;color:#c9d5dd;font-size:10px;font-weight:400}@media(max-width:700px){#perf{top:8px;right:8px;padding:5px 7px;font-size:11px}#maplaunch{top:100px!important}}</style><style id="milovice-modern-ui">
 #hud{background:linear-gradient(145deg,rgba(9,24,39,.88),rgba(20,44,61,.82));backdrop-filter:blur(12px);border:1px solid rgba(176,214,235,.3);box-shadow:0 10px 30px #061b2b33;border-radius:18px}
@@ -100,11 +100,32 @@ html.rp-ticket-photo-audit #hud,html.rp-ticket-photo-audit #perf,
 html.rp-ticket-photo-audit #controls,html.rp-ticket-photo-audit #hint,
 html.rp-ticket-photo-audit #minimap,html.rp-ticket-photo-audit #maplaunch,
 html.rp-ticket-photo-audit #osm-inspect-toggle{display:none!important}
-</style></head><body><aside id="ticket-photo-audit" hidden aria-label="Fotoaudit nádražních automatů">
+#forecourt-photo-audit[hidden]{display:none!important}
+#forecourt-photo-audit{position:fixed;top:10px;left:10px;z-index:130;
+ display:flex;flex-direction:column;gap:5px;
+ max-width:min(440px,calc(100vw - 30px));
+ padding:10px 13px;border:1px solid #b8d9e5aa;border-radius:12px;
+ background:#112638e8;color:#eff7fc;font:12px/1.45 system-ui;
+ box-shadow:0 5px 18px #0008}
+#forecourt-photo-audit strong{font-size:14px}
+#forecourt-photo-audit a{color:#aee5ff}
+#forecourt-photo-audit .views{display:flex;gap:10px;flex-wrap:wrap}
+#forecourt-photo-audit .current-view{font-weight:800;text-decoration:underline}
+</style></head><body><aside id="forecourt-photo-audit" hidden aria-label="Fotoaudit celého přednádraží">
+<strong>📸 Přednádraží · fotoaudit 5.81</strong>
+<span id="forecourt-audit-label">Pohled doložený fotografií</span>
+<div class="views">
+<a href="?v=5810&forecourtAudit=wide">Nádraží + cyklověž</a>
+<a href="?v=5810&forecourtAudit=tower">Cyklověž detail</a>
+<a href="?v=5810&forecourtAudit=bus">BUS zóna</a>
+</div>
+<span>GPS je poloha fotoaparátu, nikoliv stromu či lampy. Ty zatím zůstávají neukotvené.</span>
+<div><a id="forecourt-audit-source" href="https://commons.wikimedia.org/" target="_blank" rel="noopener noreferrer">Původní snímek · ŠJů · CC BY 4.0</a> · <a href="./?v=5810">Zpět do hry</a></div>
+</aside><aside id="ticket-photo-audit" hidden aria-label="Fotoaudit nádražních automatů">
 <strong>📸 Milovice nádraží · fotoaudit 5.80</strong>
 <span>Pohled podle GPS a směru fotoaparátu z 30. 5. 2024. Velikost a poloha automatů jsou odhady, nikoliv geodetické zaměření.</span>
 <div><a href="https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_automaty_na_j%C3%ADzdenky.jpg" target="_blank" rel="noopener noreferrer">Původní fotografie · ŠJů · CC BY 4.0</a> · <a href="./?v=5800">Zpět do hry</a></div>
-</aside><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.80.0 · build <strong id="build-label">20261115-station-detail-5800</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
+</aside><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.81.0 · build <strong id="build-label">20261115-forecourt-photo-audit-5810</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
 <button id="osm-inspect-toggle" type="button" aria-pressed="false" title="Klepnutím na konkrétní budovu zjistíš její OSM identitu">🔎 Objekt</button>
 <section id="osm-inspect-result" role="status" aria-live="polite" hidden>
 <strong id="osm-inspect-title">Identifikace objektu</strong>
@@ -233,6 +254,8 @@ import {makePhotoStreetEnvironment} from './scripts/street-environment-reality.j
 import {createRoadClearance} from './scripts/road-clearance.js?v=5262';
 import {isCarriageway,isPedestrianWay,safePedestrianPieces,pedestrianPieceKey,markedCrossing,planZebraPieces,planStationPassage} from './scripts/reality-walkways.js?v=5270';
 import {makeStationForecourtScene,stationGpsToWorld} from './scripts/station-forecourt-pass.js?v=5650';
+import {STATION_FORECOURT_AUDIT_VIEWS,planStationForecourtAudit} from './scripts/station-forecourt-photo-audit.js?v=5810';
+import {planUpperBiketowerSign,createUpperBiketowerSign} from './scripts/bike-tower-photo-sign.js?v=5810';
 import {makeStationPhotoParkingScene} from './scripts/station-photo-parking.js?v=5760';
 import {makeStationTicketMachineScene,STATION_TICKET_MACHINE_PHOTO} from './scripts/station-ticket-machines.js?v=5800';
 import {planStationPhotographedFacade} from './scripts/station-photo-facade.js?v=5790';
@@ -265,21 +288,41 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261115-station-detail-5800';
+const BUILD_ID='20261115-forecourt-photo-audit-5810';
 const rpStationRoofAuditCamera=new URLSearchParams(location.search).has('roofAudit');
 // Photo-aligned review only: this URL does not move buildings, cars or players.
 const rpStationTicketPhotoAudit=new URLSearchParams(location.search).has('ticketPhotoAudit');
 const rpStationTicketCameraWorld=rpStationTicketPhotoAudit?
  stationGpsToWorld(STATION_TICKET_MACHINE_PHOTO.camera):null;
+// A distinct, opt-in photo review from independently geotagged 2024 cameras.
+// The normal gameplay camera and player positions are not affected.
+const rpForecourtAuditId=rpStationTicketPhotoAudit?null:
+ new URLSearchParams(location.search).get('forecourtAudit');
+const rpForecourtAuditView=STATION_FORECOURT_AUDIT_VIEWS[rpForecourtAuditId]||null;
+const rpForecourtCameraWorld=rpForecourtAuditView?
+ stationGpsToWorld(rpForecourtAuditView.camera):null;
+const rpAuditCameraWorld=rpForecourtCameraWorld||rpStationTicketCameraWorld;
+let rpForecourtAuditPlan=null;
 if(rpStationTicketPhotoAudit){
  document.documentElement.classList.add('rp-ticket-photo-audit');
  document.getElementById('ticket-photo-audit').hidden=false;
+}
+if(rpForecourtAuditView){
+ document.documentElement.classList.add('rp-ticket-photo-audit');
+ const panel=document.getElementById('forecourt-photo-audit');
+ panel.hidden=false;
+ document.getElementById('forecourt-audit-label').textContent=
+  rpForecourtAuditView.label+' · 30. 5. 2024';
+ document.getElementById('forecourt-audit-source').href=rpForecourtAuditView.source;
+ for(const a of panel.querySelectorAll('.views a'))
+  if(new URL(a.href).searchParams.get('forecourtAudit')===rpForecourtAuditId)
+   a.classList.add('current-view');
 }
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x9bc8ec);scene.fog=new THREE.Fog(0x9bc8ec,280,850);const camera=new THREE.PerspectiveCamera(67,innerWidth/innerHeight,.1,1400);const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,matchMedia('(pointer:coarse)').matches?1.6:1.25));renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x65725a,1.6));
 // The source image is portrait. A landscape 67° photo audit view would crop
 // the orange machine on a narrow phone; widen ONLY the opt-in diagnostic
 // lens without touching the normal game camera, player or source heading.
-if(rpStationTicketPhotoAudit&&innerWidth<innerHeight){
+if(rpAuditCameraWorld&&innerWidth<innerHeight){
  camera.fov=105;camera.updateProjectionMatrix();
 }const sun=new THREE.DirectionalLight(0xffefcc,1.7);sun.position.set(50,100,30);scene.add(sun);
 
@@ -1140,8 +1183,8 @@ function chunkMilovice(){
 function updateMiloviceChunks(force=false){
  if(!osmActive&&!force)return;
  // An opt-in photographic review follows the camera, not a distant player spawn.
- const cx=rpStationTicketCameraWorld?.x??(walking?px:x);
- const cz=rpStationTicketCameraWorld?.z??(walking?pz:z);
+ const cx=rpAuditCameraWorld?.x??(walking?px:x);
+ const cz=rpAuditCameraWorld?.z??(walking?pz:z);
  if(!force&&Math.hypot(cx-lastChunkX,cz-lastChunkZ)<30)return;
  lastChunkX=cx;lastChunkZ=cz;
  const budget=rpRenderBudget(),view=rpEffectiveView();
@@ -2922,6 +2965,20 @@ function miloviceBikeTower(pts,base){
  };
  const entranceSide=osmPoint({lat:50.2290656,lon:14.8822978}),dx=entranceSide.x-cx,dz=entranceSide.y-cz;
  const norm=Math.hypot(dx,dz)||1,nx=dx/norm,nz=dz/norm,yaw=Math.atan2(nx,nz);
+ // High blue bicycle-P emblem is visible in the user's 2022 panorama and
+ // 2024 Commons source. Attach to THIS tower, not to guessed road coordinates.
+ window.__miloviceBikeTowerUpperSignDispose?.();
+ const upperSignPlan=planUpperBiketowerSign({
+  wayId:1011197691,radius:rad,height:visibleHeight,nx,nz
+ });
+ const upperSign=createUpperBiketowerSign(THREE,g,upperSignPlan);
+ window.__miloviceBikeTowerUpperSign={
+  active:upperSign.active,drawCalls:upperSign.drawCalls,
+  textureCount:upperSign.textureCount||0,wayId:1011197691,
+  sameTowerFootprint:true,noAddedStreetFurniture:true,
+  estimatedPlacement:true,photoPixelsUsed:false
+ };
+ window.__miloviceBikeTowerUpperSignDispose=upperSign.dispose;
  archPart('stationCanopy',cx+nx*(rad+.3),base+2.52,cz+nz*(rad+.3),3.5,.20,1.5,yaw);
  archPart('stationGlass',cx+nx*(rad+.25),base+1.36,cz+nz*(rad+.25),2.6,2.38,.18,yaw);
  stationBoard('BIKE TOWER',cx+nx*(rad+.37),base+2.94,cz+nz*(rad+.37),yaw,'#166299');
@@ -4180,6 +4237,8 @@ function rpAppendOSMElements(elements){
  }
  photoStreetEnvironment.addFromRoads(osmDriveRoads);
  stationPhotoForecourt.create(elements);
+ rpForecourtAuditPlan=rpForecourtAuditView?
+  planStationForecourtAudit(elements,rpForecourtAuditId):null;
  stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat});
  stationTicketMachines.create(elements);
   schoolGrounds.create(elements);
@@ -4361,7 +4420,7 @@ function osmSetActive(active){
  }
  osmBtn.style.display=active?'none':'block';osmBtn.textContent=active?'🗺️ Milovice 3D':'🔄 Načíst Milovice';
  updateUI();
- if(active&&osmReady&&!rpStationTicketPhotoAudit)rpShowSpawnPicker();
+ if(active&&osmReady&&!rpAuditCameraWorld)rpShowSpawnPicker();
 }
 
 /* Visual pass 3.6: lightweight physically shaded details, batched for mobile. */
@@ -5026,7 +5085,31 @@ const selectedPhotoHouse={
   eye:{lat:50.2280572,lon:14.8840981},target:{lat:50.2281280,lon:14.8843914}}
 }[inspect];
 const schoolRoofScene=window.__miloviceSchoolRoofAudit;
-if(rpStationTicketPhotoAudit&&rpStationTicketCameraWorld){
+if(rpForecourtCameraWorld&&rpForecourtAuditView){
+ const eye=rpForecourtCameraWorld;
+ const heading=rpForecourtAuditView.camera.heading*Math.PI/180;
+ const y=terrainAt(eye.x,eye.z)+1.64;
+ camera.position.set(eye.x,y,eye.z);
+ camera.lookAt(eye.x+Math.sin(heading)*12,y-.05,eye.z-Math.cos(heading)*12);
+ camera.updateMatrixWorld();
+ const landmarks=(rpForecourtAuditPlan?.landmarks||[]).map(l=>{
+  const target=new THREE.Vector3(l.x,terrainAt(l.x,l.z)+(l.id==='tower'?6:3),l.z);
+  const ndc=target.project(camera);
+  return {...l,ndcX:+ndc.x.toFixed(3),ndcY:+ndc.y.toFixed(3),
+   inFrame:ndc.z>=-1&&ndc.z<=1&&Math.abs(ndc.x)<1&&Math.abs(ndc.y)<1};
+ });
+ window.__miloviceForecourtAuditRendered={
+  active:Boolean(rpForecourtAuditPlan),view:rpForecourtAuditId,
+  cameraGps:{...rpForecourtAuditView.camera},photoDate:rpForecourtAuditView.date,
+  source:rpForecourtAuditView.source,
+  landmarks,visibleLandmarks:landmarks.filter(l=>l.inFrame).map(l=>l.id),
+  stopCount:stationPhotoForecourt.status().photoAnchoredStopCount,
+  stopIds:stationPhotoForecourt.status().ids,
+  existingBikeTowerUpperSign:window.__miloviceBikeTowerUpperSign||null,
+  deferred:rpForecourtAuditPlan?.deferred||[],
+  surveyedPositions:false,photosCopied:false,worldGeometryMoved:false
+ };
+}else if(rpStationTicketPhotoAudit&&rpStationTicketCameraWorld){
  // Fixed documented CAMERA location, NOT the inferred GPS of either machine.
  const eye=rpStationTicketCameraWorld;
  const heading=STATION_TICKET_MACHINE_PHOTO.camera.heading*Math.PI/180;
@@ -5107,5 +5190,5 @@ if(rpStationTicketPhotoAudit&&rpStationTicketCameraWorld){
   (isMobileGPU?' · DPR '+renderer.getPixelRatio().toFixed(2):'')+' · JS '+(perfCpuMs/perfFrames).toFixed(1)+' ms · WebGL '+(perfWebGLMs/perfFrames).toFixed(1)+' ms</small>';
  perfEl.style.color=fps>=45?'#a6f3b9':fps>=25?'#ffe39b':'#ff9e9e';
  perfFrames=0;perfCpuMs=0;perfWebGLMs=0;perfSince=t
-}}requestAnimationFrame(animate);setTimeout(()=>osmBtn.click(),300);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;if(rpStationTicketPhotoAudit)camera.fov=innerWidth<innerHeight?105:67;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+}}requestAnimationFrame(animate);setTimeout(()=>osmBtn.click(),300);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;if(rpAuditCameraWorld)camera.fov=innerWidth<innerHeight?105:67;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 </script></body></html>
