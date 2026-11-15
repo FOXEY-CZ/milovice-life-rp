@@ -1,4 +1,4 @@
-// Milovice RP 5.75 — a continuous road-like sidewalk strip instead of square panels.
+// Milovice RP 5.76 — true road-parallel walkway silhouette, not grid-aligned stair steps.
 // The 5.72 "fix" drew a new OSM sidewalk directly OVER Nádražní's asphalt,
 // rather than removing the relevant strip from the parking surface.
 // The user confirmed the exact topology: existing road (UNTOUCHED),
@@ -71,7 +71,19 @@ function at(f,along,offset){
 // Each band cross-section lies WITHIN the OSM-safe island cells. Halfway
 // intersections connect adjacent rows with diagonal transitions; they never
 // claim ground outside the approved parking-island footprint.
-export function planContinuousOuterSidewalk(tiles,{rowStep=.76,overlap=.006}={}){
+// Version 5.76: an actual road-ALIGNED continuous sidewalk silhouette.
+// Previously the long mesh still used each tile's OUTERMOST offset for its
+// edge. Since parking cells are on a .74m grid, that produced the exact
+// Minecraft-like saw-tooth pattern visible in the user's 5.75 screenshot.
+// Now Nádražní's OSM centreline is the PRIMARY edge reference. A conservative
+// setback and smooth slope-limited inset keep every ribbon section fully
+// inside the ALREADY road-safe parking-island cells. The road itself is NOT
+// re-meshed, repainted, shifted, narrowed or covered.
+export function planContinuousOuterSidewalk(tiles,{
+ frame:roadFrame,roadCenterline,roadWidth=7.8,roadSetback=.40,
+ rowStep=.76,overlap=.006}={}){
+ if(!roadFrame||!Array.isArray(roadCenterline)||roadCenterline.length<2)
+  return null;
  const grouped=new Map();
  for(const p of tiles){
   if(!grouped.has(p.along))grouped.set(p.along,[]);
@@ -79,48 +91,98 @@ export function planContinuousOuterSidewalk(tiles,{rowStep=.76,overlap=.006}={})
  }
  const rows=[...grouped.entries()].sort((a,b)=>a[0]-b[0]).map(([along,cells])=>{
   const sorted=cells.slice().sort((a,b)=>a.offset-b.offset);
-  return {along,low:sorted[0].offset-sorted[0].depth/2-overlap,
-   high:sorted.at(-1).offset+sorted.at(-1).depth/2+overlap,
+  const world=at(roadFrame,along,0);
+  const road=closestPointToPolyline(world,roadCenterline);
+  if(!road)return null;
+  const roadOffset=(road.x-world.x)*roadFrame.nx+
+   (road.z-world.z)*roadFrame.nz;
+  return {along,lowSafe:sorted[0].offset-sorted[0].depth/2-overlap,
+   highSafe:sorted.at(-1).offset+sorted.at(-1).depth/2+overlap,
+   roadOffset,roadEdgeTarget:roadOffset-roadWidth/2-roadSetback,
    length:Math.min(...sorted.map(c=>c.length))};
  });
- const parts=[],minJoinWidth=.38;
+ if(rows.length<55||rows.some(x=>!x||x.roadOffset<=0))return null;
+ // A slope-limited inset of the ACTUAL road-aligned profile. When the road
+ // becomes narrower, the ribbon is allowed to shrink but NEVER to grow past
+ // an existing parking-cell outer edge. The first 6 metres can taper into
+ // the photographed station apron; the main road edge changes at <.14m/m.
+ const distance=[0];
+ for(let i=1;i<rows.length;i++){
+  const midpoint=(rows[i].along+rows[i-1].along)/2;
+  const limit=midpoint<6?.60:midpoint>64?.26:.14;
+  distance.push(distance.at(-1)+(rows[i].along-rows[i-1].along)*limit);
+ }
+ const metric=(i,j)=>Math.abs(distance[i]-distance[j]);
+ const limits=rows.map(r=>Math.min(r.highSafe,r.roadEdgeTarget));
+ const high=rows.map((row,i)=>
+  Math.min(...limits.map((v,j)=>v+metric(i,j))));
+ // Constrain the OUTER edge to follow the already monotonic Nádražní road,
+ // not any occasional one-column positive jump in the parking raster.
+ for(let i=1;i<high.length;i++)
+  if(rows[i].along>6&&rows[i].along<64)
+   high[i]=Math.min(high[i],high[i-1]);
+ const low=rows.map((row,i)=>Math.max(
+  high[i]-1.48,...rows.map((r,j)=>r.lowSafe-metric(i,j))));
+ const profiles=rows.map((row,i)=>({...row,low:low[i],high:high[i],
+  safe:high[i]-low[i]>=.38&&low[i]>=row.lowSafe-.00001&&
+   high[i]<=row.highSafe+.00001}));
+ const parts=[],minJoinWidth=.32;
  let active=null,joins=0;
- const cap=(row,side)=>({along:row.along+side*(row.length/2+overlap),
-  low:row.low,high:row.high});
- function add(p){
+ const cap=(r,side)=>({along:r.along+side*(r.length/2+overlap),
+  low:r.low,high:r.high});
+ function add(section){
   if(!active)active=[];
-  if(!active.length||p.along>active.at(-1).along+.000001)active.push(p);
+  if(!active.length||section.along>active.at(-1).along+.000001)
+   active.push(section);
  }
  function finish(row){
-  if(!active)return;
+  if(!active||!row)return;
   add(cap(row,1));
   if(active.length>=2)parts.push(active);
   active=null;
  }
- for(let i=0;i<rows.length;i++){
-  const current=rows[i],previous=rows[i-1];
+ let previous=null;
+ for(const row of profiles){
+  if(!row.safe){
+   finish(previous);previous=null;continue;
+  }
   if(!previous){
-   add(cap(current,-1));add({along:current.along,low:current.low,high:current.high});
-   continue;
+   add(cap(row,-1));add({along:row.along,low:row.low,high:row.high});
+   previous=row;continue;
   }
-  const gap=current.along-previous.along;
-  const low=Math.max(current.low,previous.low);
-  const high=Math.min(current.high,previous.high);
-  if(gap>rowStep+.045||high-low<minJoinWidth){
+  const gap=row.along-previous.along;
+  const midLow=Math.max(row.low,previous.low);
+  const midHigh=Math.min(row.high,previous.high);
+  if(gap>rowStep+.045||midHigh-midLow<minJoinWidth){
    finish(previous);
-   add(cap(current,-1));add({along:current.along,low:current.low,high:current.high});
-   continue;
+   add(cap(row,-1));add({along:row.along,low:row.low,high:row.high});
+   previous=row;continue;
   }
-  add({along:(current.along+previous.along)/2,low,high});
-  add({along:current.along,low:current.low,high:current.high});
-  joins++;
+  // Both adjoining road-safe row rectangles cover this half-way
+  // intersection. This creates genuinely diagonal/road-parallel edges,
+  // not another pair of tiles or sidewalk mesh painted over asphalt.
+  add({along:(previous.along+row.along)/2,low:midLow,high:midHigh});
+  add({along:row.along,low:row.low,high:row.high});
+  previous=row;joins++;
  }
- if(rows.length)finish(rows.at(-1));
+ finish(previous);
+ const body=profiles.filter(r=>r.safe&&r.along>=8&&r.along<=60);
+ let maxBodyEdgeStep=0,roadMarginMin=Infinity;
+ for(let i=1;i<body.length;i++){
+  if(body[i].along-body[i-1].along>rowStep+.045)continue;
+  maxBodyEdgeStep=Math.max(maxBodyEdgeStep,
+   Math.abs(body[i].high-body[i-1].high));
+ }
+ for(const row of profiles.filter(r=>r.safe))
+  roadMarginMin=Math.min(roadMarginMin,row.roadOffset-roadWidth/2-row.high);
  return {parts,rows:rows.length,joins,
   metres:parts.reduce((n,p)=>n+p.at(-1).along-p[0].along,0),
   triangles:parts.reduce((n,p)=>n+Math.max(0,p.length-1)*2,0),
   pavementPanels:0,continuous:parts.length===1,
-  roadFootprintExpansion:false,photoEstimatedWidth:true};
+  roadFootprintExpansion:false,photoEstimatedWidth:true,
+  roadAxisAligned:true,referenceRoadId:128308366,
+  roadMarginMin,maxBodyEdgeStep,profiles,
+  roadCenterlinePoints:roadCenterline.length};
 }
 export function planStationPhotoParking(elements,roadClearance){
  if(!Array.isArray(elements)||!roadClearance?.isClear)return null;
@@ -352,9 +414,13 @@ export function planStationPhotoParking(elements,roadClearance){
  }
  if(outerSidewalkCells.length<100||centralParkingCells.length<270)
   return null;
- const continuousRibbon=planContinuousOuterSidewalk(outerSidewalkCells);
- if(!continuousRibbon.parts.length||continuousRibbon.joins<60||
-    continuousRibbon.metres<45)return null;
+ const continuousRibbon=planContinuousOuterSidewalk(outerSidewalkCells,{
+  frame:f,roadCenterline:other,roadWidth:7.8,roadSetback:.40
+ });
+ if(!continuousRibbon||!continuousRibbon.parts.length||
+    !continuousRibbon.roadAxisAligned||continuousRibbon.roadMarginMin<.38||
+    continuousRibbon.maxBodyEdgeStep>.115||
+    continuousRibbon.joins<60||continuousRibbon.metres<45)return null;
  // Refuse any stranded road-side edge tile; no "floating fingers".
  for(const [station,row] of orderedRows){
   if(row.length>=2&&row.at(-1).offset-row.at(-2).offset>acrossStep+.035)
@@ -435,7 +501,7 @@ export function planStationPhotoParking(elements,roadClearance){
   centralParkingSurface:'remaining-inner-grid-parking-cells',
   pedestrianStripSide:'outer-east-facing-Nadrazni-128308366',
   pedestrianStripOsmAnchored:false,pedestrianStripPhotoEstimated:true,
-  outerFootwayRendering:'continuous-roadlike-terrain-ribbon-city-paving',
+  outerFootwayRendering:'road-axis-aligned-continuous-terrain-ribbon',
   originalRoadSurfaceUnmodified:true,
   mistakenParkingAsSidewalkRemoved:true,
   mappedFootwayIdPreserved:centralFootway.id,
@@ -475,6 +541,10 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   continuousSidewalkJoins:planned?.continuousRibbon.joins||0,
   continuousSidewalkMetres:planned?.continuousRibbon.metres||0,
   continuousSidewalkTriangles:planned?.continuousRibbon.triangles||0,
+  sidewalkRoadAxisAligned:planned?.continuousRibbon.roadAxisAligned||false,
+  sidewalkRoadReferenceId:planned?.continuousRibbon.referenceRoadId||null,
+  sidewalkRoadMargin:planned?.continuousRibbon.roadMarginMin??null,
+  sidewalkMaxRoadEdgeStep:planned?.continuousRibbon.maxBodyEdgeStep??null,
   sidewalkPanelCount:planned?.continuousRibbon.pavementPanels??null,
   continuousKerb:true,
   maxOuterFootwayOsmDistance:planned?.outerSidewalkMaxOsmDistance??null,
