@@ -87,7 +87,15 @@ assert.equal(smooth.roadSafeCellsOnly,true);
 assert.equal(smooth.areaExpanded,false);
 assert.equal(smooth.sourceCells,plan.outerSidewalkCells.length);
 assert.equal(smooth.maxSlope,.12);
-assert(smooth.maxEdgeStep<.22,'Roadside transitions must not jump by entire .74m grid blocks');
+const smoothSpikes=smooth.rows.slice(1).map((r,i)=>{
+ const prev=smooth.rows[i];
+ return {along:+r.along.toFixed(2),gap:+(r.along-prev.along).toFixed(2),
+  step:+Math.abs(r.edge-prev.edge).toFixed(3),
+  low:+r.low.toFixed(2),high:+r.high.toFixed(2),
+  previousLow:+prev.low.toFixed(2),previousHigh:+prev.high.toFixed(2)};
+}).filter(r=>r.gap<=.81).sort((a,b)=>b.step-a.step).slice(0,6);
+assert(smooth.maxEdgeStep<.22,
+ 'Roadside envelope unexpectedly stepped: '+JSON.stringify(smoothSpikes));
 for(const r of smooth.rows){
  assert(r.edge<=r.high+.00001,'Smooth roadside envelope must stay inside approved cell edge');
  assert(r.edge>=r.low+.279,'No narrow or inverted sidewalk strips');
