@@ -408,7 +408,7 @@ assert.equal(planStationPhotoParking(ways.map(e=>e.id===675778842?{
  ...e,geometry:e.geometry.map(p=>({...p,lon:p.lon+.001}))
 }:e),occupied),null);
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(game.includes("from './scripts/station-photo-parking.js?v=58120'"));
+assert(game.includes("from './scripts/station-photo-parking.js?v=58121'"));
 assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})'),
  'The island sidewalk must receive the exact city paving material');
 assert(game.includes('stationPhotoParking.reset()'));
@@ -421,9 +421,9 @@ assert(!game.includes('osmStrip(points[i-1],points[i],1.8,osmSidewalkMat,.235);'
  'The 5.72 forced sidewalk directly on Nádražní asphalt MUST be disabled');
 assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})'),
  'Carved sidewalk must reuse the same existing city paving material');
-assert(game.includes("from './scripts/station-photo-parking.js?v=58120'"),
+assert(game.includes("from './scripts/station-photo-parking.js?v=58121'"),
  'The reviewed 5.76 parking geometry must now load safe gap filler, not a stale 5.76 module');
-assert(game.includes("const BUILD_ID='20261115-parking-infill-continuity-58120'"),
+assert(game.includes("const BUILD_ID='20261115-road-safe-rail-apron-gap-58121'"),
  'New game version must retain 5.76 parking with the added ticket-machine scene');
 assert(game.includes("from './scripts/bike-tower-interior.js?v=5640'"));
 assert(game.includes("from './scripts/station-forecourt-pass.js?v=5650'"));
