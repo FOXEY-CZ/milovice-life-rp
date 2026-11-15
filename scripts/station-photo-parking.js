@@ -1,4 +1,4 @@
-// Milovice RP 5.81.16 — close the false grassy roadside gap using verified OSM-clear paving, no asphalt overlays.
+// Milovice RP 5.81.17 — rail-facing apron kerbs and verified end returns; no road overlays.
 // The 5.72 "fix" drew a new OSM sidewalk directly OVER Nádražní's asphalt,
 // rather than removing the relevant strip from the parking surface.
 // The user confirmed the exact topology: existing road (UNTOUCHED),
@@ -574,6 +574,10 @@ export function planStationPhotoParking(elements,roadClearance){
  const bayMarkings=planSatelliteParkingMarkings(f,railSideParking,
   centralParkingCells,roadClearance);
  if(!bayMarkings)return null;
+ const railApronKerbs=planRailApronBoundaryKerbs(
+  [...railSideParking,...railSideJoiningSlabs],f,roadClearance);
+ if(!railApronKerbs||railApronKerbs.sections.length<30||
+    railApronKerbs.endCaps.length!==2)return null;
   // User's RIGHT-HAND curved sidewalk is the southern corner by this
  // photographed, mapped east-bound footway. Extend only its exterior edge,
  // never paint through the OSM footway or a roadway.
@@ -628,7 +632,7 @@ export function planStationPhotoParking(elements,roadClearance){
  }
  return {cells,curbs,rejected,rowStats,frame:f,cameras,
   railSideParking,railRejected,railSideJoiningSlabs,railSideJoinRejected,
-  bayMarkings,
+  bayMarkings,railApronKerbs,
   outerFootwaySegments,outerFootwayStations,outerSidewalkCells,
   outerSidewalkCurbs,outerSidewalkMaxOsmDistance,
   edgeSpursTrimmed:edgeSpursRemoved.size,continuousRibbon,
@@ -642,6 +646,8 @@ export function planStationPhotoParking(elements,roadClearance){
   railPavingVariableDepth:true,railPavingBaseDepth:railParkingDepth,
   railPavingRoadFacingOffset:railRoadFacingOffset,
   railPavingTrafficEdgeSafelyExtended:true,
+  railFacingKerbsLimitedToVerifiedPaving:true,
+  terminalPlantingBedsDeferred:true,
   railPavingSeamCells:railSideParking.filter(b=>b.roadsideSeamClosedMetres>.01).length,
   railPavingLargestSeamReduction:Math.max(0,...railSideParking.map(b=>b.roadsideSeamClosedMetres||0)),
   pedestrianCorridorWidth:1.48,pedestrianSeparation:0,
@@ -742,6 +748,46 @@ export function planRailApronProfiles(patches){
   originalRoadFacingOffset:profiles[0].roadSide,
   noFootprintExpansion:true};
 }
+// Photo-informed, low rail-facing kerb and short end returns. No guessed
+// flowerbeds or curb across the service access aisle. Every piece is inside
+// already validated rail parking slabs and independently clears mapped roads.
+export function planRailApronBoundaryKerbs(patches,roadFrame,roadClearance){
+ if(!roadFrame||!roadClearance?.isClear)return null;
+ const apron=planRailApronProfiles(patches);
+ if(!apron)return null;
+ const sections=[],endCaps=[],inset=.09,width=.09;
+ const emit=(a,b,source,endCap=false)=>{
+  const p=at(roadFrame,a.along,a.offset),q=at(roadFrame,b.along,b.offset);
+  const length=d2(p,q),x=(p.x+q.x)/2,z=(p.z+q.z)/2;
+  if(length<.12)return;
+  const yaw=Math.atan2(-(q.z-p.z),q.x-p.x);
+  if(!isRoadFreeRect(roadClearance,{x,z,length:length-.008,
+   depth:width,yaw,buffer:.035,step:.14}))return;
+  (endCap?endCaps:sections).push({x,z,length:length-.008,depth:width,yaw,
+   from:a,to:b,sourceAlong:source.along,sourceRectValidated:true,
+   endCap,photoApproximate:true});
+ };
+ for(const p of apron.profiles){
+  const span=Math.min(.018,p.length*.08);
+  const a={along:p.along-p.length/2+span,offset:p.startRail+inset};
+  const m={along:p.along,offset:p.railSide+inset};
+  const b={along:p.along+p.length/2-span,offset:p.endRail+inset};
+  emit(a,m,p);emit(m,b,p);
+ }
+ // Terminal returns stay on the OUTER metre only; cars still enter from
+ // the unaltered central access aisle. No unsurveyed planting is generated.
+ for(const [p,first] of [[apron.profiles[0],true],
+                        [apron.profiles.at(-1),false]]){
+  const along=p.along+(first?-1:1)*(p.length/2-.11);
+  const rail=(first?p.startRail:p.endRail)+inset;
+  const road=first?p.startRoad:p.endRoad;
+  const end=Math.min(road-.25,rail+.94);
+  if(end-rail>.35)emit({along,offset:rail},{along,offset:end},p,true);
+ }
+ return {sections,endCaps,sourceRects:apron.sourceRects,
+  roadClearanceVerified:true,railFacingOnly:true,
+  noNewParkingFootprint:true,plantingCoordinatesUnverified:true};
+}
 export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadClearance}={}){
  const roots=[],geo=new THREE.BoxGeometry(1,1,1);
  const material={
@@ -777,6 +823,10 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   railSideSurface:planned?.railParkingSurface||null,
   railGrassGridRemoved:planned?.railGrassGridRemoved||false,
   railBayLines:planned?.bayMarkings?.rail.length||0,
+  railFacingKerbSections:planned?.railApronKerbs?.sections.length||0,
+  railEndKerbReturns:planned?.railApronKerbs?.endCaps.length||0,
+  railKerbsNoNewFootprint:planned?.railApronKerbs?.noNewParkingFootprint||false,
+  terminalPlantingsDeferred:planned?.terminalPlantingBedsDeferred||false,
   centralBayLines:planned?.bayMarkings?.central.length||0,
   bayLinePositionsEstimated:planned?.bayMarkings?.measuredStallCount===false,
   satelliteReferenceDate:planned?.aerialReferenceDate||null,
@@ -952,6 +1002,11 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   }
   for(const p of planned.curbs)
    curb.push({...p,y:terrainAt(p.x,p.z)+.209,sx:.75,sy:.103,sz:.11});
+  // Existing curb batch / one draw call: the railway edge gains a low,
+  // smoothly directed boundary without new road surfaces or objects.
+  for(const p of [...planned.railApronKerbs.sections,...planned.railApronKerbs.endCaps])
+   curb.push({...p,y:terrainAt(p.x,p.z)+.248,
+    sx:p.length,sy:.110,sz:p.depth});
   // 5.81.15: contour the previously clearance-tested rail-side slabs
   // as a shared surface, with the west boundary smoothly joined at the
   // shallower adjacent profile. Keep a single drawcall and 0 road overlays.
