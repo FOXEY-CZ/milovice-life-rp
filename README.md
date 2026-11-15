@@ -1,3 +1,26 @@
+# Milovice RP 5.81.6 — kontrola skutečné viditelnosti spojení cyklověže
+
+**Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5816  
+**Detailní technický pohled na vstup a spojení:** https://foxey-cz.github.io/milovice-life-rp/?v=5816&forecourtAudit=tower&entryInspection=1  
+**Původní fotokamera u cyklověže:** https://foxey-cz.github.io/milovice-life-rp/?v=5816&forecourtAudit=tower  
+**Široký pohled:** https://foxey-cz.github.io/milovice-life-rp/?v=5816&forecourtAudit=wide  
+**Záloha 5.81.5:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/5815-before-entry-visibility-review
+
+## Problém
+
+Uživatelův Android screenshot 15. 11. 2026 16:52 ukazuje věž s velmi úzkým světlým prahem. Není z něj možné potvrdit, že přepracovaná dlážděná spojnice 5.81.5 opravdu **opticky** navazuje na mapovaný chodník 1165594426, protože původní fotoaparát stojí asi 24 metrů od věže a směr spojnice je pro tento pohled šikmý. Téměř 400 px vysoký auditní panel navíc zabíral horní polovinu mobilní scény.
+
+## Oprava uživatelské kontroly, nikoliv nepodložené geometrie
+
+- Mobilní fotoaudit včetně všech tří původních fotografických pohledů má nyní standardně **kompaktní panel** s tlačítkem `Rozbalit nabídku`. Na desktopu se panel otevírá rozbalený. Herní joystick je v kontrolním režimu stále skrytý; mimo fotoaudit se nemění.
+- Nové `&forecourtAudit=tower&entryInspection=1` je **TECHNICKÝ KONTROLNÍ POHLED, NIKOLI skutečná fotografie**. Pozice a sklon kamery se vypočtou ze stávajícího OSM ukotvení cyklověže a z existujícího plánu dláždění. Kamera stojí zhruba 7 m od vstupní plochy, výše nad zemí, a míří dolů na práh, spojovací klín i stávající mapovaný chodník. Oproti původní fotokameře z 30. 5. 2024 nevyužívá její GPS jako vlastní stanoviště.
+- V diagnostice `window.__miloviceForecourtAuditRendered.entryInspection.projectedPoints` se kontroluje zobrazení **tří bodů současně**: vstup, napojení a mapovaný chodník. Chromiový mobilní test ukládá zvláštní screenshot takového pohledu a ověřuje výchozí sbalení panelu.
+- **Žádná změna 3D geometrie, materiálů ani rozměrů** na cyklověži, přístupové dlažbě, chodníku, asfaltu, parkování, budovách a BUS zóně. Původní předpoklady o přesných okrajích dlažby zůstávají přibližné, a proto je třeba je hodnotit z blízkého pohledu.
+
+**Další rozhodnutí až po vizuálním ověření:** pokud je spojení stále fyzicky oddělené, posunuté nebo mizí do trávy, opravíme samotný 3D mesh či výšku podle diagnostických pohledů. Pokud je spojení skutečně souvislé, přejdeme ke zbývajícím částem celé Nádražní ulice.
+
+---
+
 # Milovice RP 5.81.5 — pěší propojení od cyklověže na skutečný chodník
 
 **Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5815  

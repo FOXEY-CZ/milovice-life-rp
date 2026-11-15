@@ -13,7 +13,7 @@ try{
  const page=await browser.newPage({viewport:{width:1280,height:760},deviceScaleFactor:1});
  const errors=[];
  page.on('pageerror',error=>errors.push(String(error.stack||error)));
- await page.goto('http://127.0.0.1:8080/?v=5815&ticketPhotoAudit=1',
+ await page.goto('http://127.0.0.1:8080/?v=5816&ticketPhotoAudit=1',
   {waitUntil:'domcontentloaded',timeout:30000});
  await page.waitForFunction(()=>window.__miloviceTicketPhotoAuditRendered?.active===true,
   null,{timeout:90000});
@@ -45,7 +45,7 @@ try{
  assert(report.audit.roadClearanceMin>1);
  assert.equal(report.panelVisible,true);
  assert.equal(report.spawnHidden,true);
- assert.equal(report.build,'20261115-biketower-connected-footway-5815');
+ assert.equal(report.build,'20261115-biketower-entry-inspection-5816');
  assert.equal(report.facade?.active,true);
  assert.deepEqual(report.facade.generatedFixtureTypes,['door','window']);
  assert.deepEqual(report.facade.observedOrder,['door','orange','yellow','window']);
@@ -56,7 +56,7 @@ try{
  assert.equal(report.facade.unchangedFixtureAnchors,true);
  assert.deepEqual(errors,[],'No page-side JavaScript errors allowed');
  await mkdir('browser-artifacts',{recursive:true});
- await page.screenshot({path:'browser-artifacts/milovice-ticket-photo-5815.png'});
+ await page.screenshot({path:'browser-artifacts/milovice-ticket-photo-5816.png'});
  // Two simultaneous SwiftShader 3D scenes exhaust GPU memory in CI.
  // Release desktop canvas before launching the separate portrait check.
  await page.close();
@@ -67,7 +67,7 @@ try{
  });
  const phoneErrors=[];
  phone.on('pageerror',e=>phoneErrors.push(String(e.stack||e)));
- await phone.goto('http://127.0.0.1:8080/?v=5815&ticketPhotoAudit=1',
+ await phone.goto('http://127.0.0.1:8080/?v=5816&ticketPhotoAudit=1',
   {waitUntil:'domcontentloaded',timeout:30000});
  await phone.waitForFunction(()=>window.__miloviceTicketPhotoAuditRendered?.active===true,
   null,{timeout:90000});
@@ -83,9 +83,9 @@ try{
   'Portrait phone diagnostic camera must not crop either station machine');
  assert.equal(mobile.status.panelDetailRevision,580);
  assert.equal(mobile.panelVisible,true);
- assert.equal(mobile.build,'20261115-biketower-connected-footway-5815');
+ assert.equal(mobile.build,'20261115-biketower-entry-inspection-5816');
  assert.deepEqual(phoneErrors,[]);
- await phone.screenshot({path:'browser-artifacts/milovice-ticket-photo-5815-mobile.png'});
+ await phone.screenshot({path:'browser-artifacts/milovice-ticket-photo-5816-mobile.png'});
  console.log('5.80 portrait mobile photo audit PASS',JSON.stringify({
   projections:mobile.audit.machineProjections,
   canvasWidth:mobile.canvasW,
