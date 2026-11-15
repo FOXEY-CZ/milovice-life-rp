@@ -490,7 +490,10 @@ assert(code.includes('const midBulge=Math.max(0,Math.sin(Math.PI*t))'));
 assert(code.includes('const roadEdge=Math.min(previous.roadFacingEdge,next.roadFacingEdge)'));
 assert(code.includes('const railEdge=Math.max(previous.railFacingEdge,next.railFacingEdge)'));
 assert(code.includes('for(const candidate of [-2.90,-2.78,-2.66,-2.54,-2.42,-2.30])'));
-assert(code.includes('if(safePlace(trial,2.46,trialDepth,.12))break;'));
+assert(code.includes('const buffer=candidate>=-2.30?.025:candidate>=-2.42?.040:.12;'));
+assert(code.includes('if(safePlace(trial,2.46,trialDepth,buffer))break;'));
+assert(code.includes('chosen.roadFacingBuffer=acceptedRoadBuffer;'),
+ 'Each candidate must keep its own positive OSM safety buffer');
 assert(!code.includes('batch(group,material.railPaved,railPaving)'));
 assert(code.includes('batch(group,material.bayLines,photoBayLines)'));
 assert(code.includes('for(const stripe of planned.bayMarkings.all)'));
