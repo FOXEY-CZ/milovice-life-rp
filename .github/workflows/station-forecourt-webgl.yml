@@ -32,6 +32,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: milovice-forecourt-58111-camera-evidence
-          path: browser-artifacts/milovice-forecourt-58111-*.png
+          name: milovice-forecourt-58112-camera-evidence
+          path: browser-artifacts/milovice-forecourt-58112-*.png
           if-no-files-found: ignore
