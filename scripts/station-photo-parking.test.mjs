@@ -143,7 +143,7 @@ assert(plan.railSideJoiningSlabs.length>10,
 for(const slab of plan.railSideJoiningSlabs){
  assert.equal(slab.railRoadVerified,true);
  assert(isRoadFreeRect(occupied,{x:slab.x,z:slab.z,
-  length:slab.length,depth:slab.depth,yaw:slab.yaw,buffer:.022,step:.36}),
+  length:slab.length,depth:slab.depth,yaw:slab.yaw,buffer:.022,step:.12}),
   'Every rail parking connector must retain clearance to OSM roads and footpaths');
 }
 assert.equal(plan.diagonalBayMarkingsPhotoApproximate,true);
