@@ -1,3 +1,30 @@
+# Milovice RP 5.80 — detailnější automaty bez posunu jediného půdorysu
+
+**Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5800  
+**Fotografické srovnání z místa fotoaparátu:** https://foxey-cz.github.io/milovice-life-rp/?v=5800&ticketPhotoAudit=1  
+**Záloha celé funkční 5.79:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/579-before-station-machine-detail
+
+## Foto a hranice přesnosti
+
+Zdroj původního umístění je ŠJů, 30. 5. 2024, CC BY 4.0:
+https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_automaty_na_j%C3%ADzdenky.jpg.
+Fotograficky doložené je **pořadí dveře – oranžový automat – žlutý automat – okno** a základní vzhled. Rozměry, poloha podél již ověřené stěny OSM 53865956, rozteče klávesnice a drobné konstrukční hrany jsou stále **modelářským odhadem**, nikoli zaměřeným 3D skenem. Fotografie není kopírována ani stažena do herní textury.
+
+## Co se změnilo
+
+- **Oranžový automat:** zachovaný 3D korpus i x/z; nově originálně nakreslená jemnější metalická plocha s větší černou konzolou, displejem, tmavým ovládacím blokem, výdejní štěrbinou, spodními servisními dvířky a bočním stínováním.
+- **Žlutý automat:** stále původní červený horní pás `JÍZDENKY/TICKETS`, ale zřetelněji oddělený panel, displej, 28 naznačených tlačítek, samostatný slot a spodní sokl. Není domyšlen jízdní řád, logo ani konkrétní platební legenda.
+- Obě čela mají nyní **320 × 768 px originální canvas textury** místo 256 × 512 px, stále jen **dva CanvasTexture objekty a přesně čtyři draw meshe** celkem. Zadní a boční plechy používají lehce kovový matný `MeshStandardMaterial`. Centrální čelní poloha a šířka obou strojů jsou beze změny. Dosazení patky k zemi se snížilo z 3,5 cm na 0,8 cm bez posunu po ulici.
+- **Bílé dveře:** zachovaný původní tvar, otvor a fotopolohový `t=0.66`; doplněná jemná příčka prosklení, spodní plech a malé panty pomocí **existujících společných materiálů**, bez vlastní textury.
+- **Obdélníkové okno:** zachované `t=0.14`, šířka a výška. Ztenčené členění a kamenný parapet z **0,34 m na 0,22 m do hloubky**; jeho délka a bezpečný odstup od žlutého automatu se nemění.
+- **Fotoaudit na telefonu na výšku:** pouze pro URL `ticketPhotoAudit=1` se rozšíří diagnostické zorné pole, aby se oba přístroje vešly do portrétního snímku. Kamera si ponechá polohu fotografujícího a skutečný směr 110°. Úhel 105° je **pomocná obrazovková volba**, nikoliv údaj o objektivu původní fotografie.
+
+**Nedotčené prvky:** OSM budova, skutečné geometrické kotvy dveří a okna, modelová šířka/střed strojů, střecha, průchozí vestibul, silnice, parkovací ostrov 5.76, vnější chodník, dopravní značení, cyklověž, autobusové sloupky a herní řízení. Nepřidáváme tmavý pás pod automaty ani další samolepky, dokud jejich přesnou plochu a text nebude možné potvrdit z fotografických podkladů.
+
+**Ověřování:** `scripts/station-detail-580.test.mjs` zmrazí souřadnice a renderovací rozpočet. Původní modelové i fasádní testy běží také. Samostatný skutečný Chromium WebGL test ověřuje obě zařízení z původní GPS kamery na desktopu i na telefonu na výšku a ukládá oba snímky do GitHub Actions.
+
+---
+
 # Milovice RP 5.79 — odstraněna okna a parapet skrz dva jízdenkové automaty
 
 **Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5790  

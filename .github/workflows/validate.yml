@@ -63,6 +63,8 @@ jobs:
         run: node scripts/station-ticket-machines.test.mjs
       - name: Verify 2024 door, orange machine, yellow machine and rectangular window do not overlap
         run: node scripts/station-photo-facade.test.mjs
+      - name: Preserve 5.79 station fixture positions while checking 5.80 visual detail and 4-draw budget
+        run: node scripts/station-detail-580.test.mjs
       - name: Verify opt-in photo camera agrees with actual machine source and keeps parking untouched
         run: node scripts/station-ticket-photo-audit.test.mjs
       - name: Verify photographed 2024 station parking pavers on actual OSM access aisle
