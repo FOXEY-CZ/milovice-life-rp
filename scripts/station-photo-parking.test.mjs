@@ -82,7 +82,7 @@ const apron=planRailApronProfiles([...plan.railSideParking,...plan.railSideJoini
 assert(apron&&apron.profiles.length>=plan.railSideParking.length);
 assert.equal(apron.variableDepth,true);
 assert.equal(apron.noFootprintExpansion,true);
-assert.equal(apron.originalRoadFacingOffset,-3.02);
+assert(Math.abs(apron.originalRoadFacingOffset+3.02)<1e-9);
 for(const p of apron.profiles){
  assert(p.validSafeRect);
  assert(p.startRail>=p.railSide&&p.endRail>=p.railSide);
