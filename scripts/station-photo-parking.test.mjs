@@ -71,20 +71,25 @@ assert.equal(plan.railPavingRoadFacingOffset,-3.02);
 assert(plan.railSideParking.some(b=>b.depth>4.37),
  'The aerial shows a wider rail-side apron through its middle, not a fixed long rectangle');
 assert.equal(plan.railPavingTrafficEdgeSafelyExtended,true);
+assert.equal(plan.railPavingNarrowRoadsideGapRetested,true);
+assert.equal(plan.railPavingMinRoadFacingBuffer,.025);
+
 assert(plan.railPavingSeamCells>=2,
  'At least some individually checked bays should reduce the unrealistic grassy road seam');
 assert(plan.railPavingLargestSeamReduction>.10&&
- plan.railPavingLargestSeamReduction<=.601,
- 'Never move road-facing paving more than separately OSM-checked 60cm toward service traffic');
+ plan.railPavingLargestSeamReduction<=.721,
+ 'Never move the traffic-facing edge beyond the separately OSM-cleared 72cm candidate');
 for(const bay of plan.railSideParking){
- assert(bay.depth>=4.02&&bay.depth<=6.01);
- assert(bay.roadFacingEdge>=-3.02000001&&bay.roadFacingEdge<=-2.41999999);
+ assert(bay.depth>=4.02&&bay.depth<=6.21);
+ assert(bay.roadFacingEdge>=-3.02000001&&bay.roadFacingEdge<=-2.29999999);
+  assert(bay.roadFacingBuffer>=.025&&bay.roadFacingBuffer<=.12,
+   'Each rail-side bay records independently checked road clearance');
  assert(Math.abs(bay.offset+bay.depth/2-bay.roadFacingEdge)<1e-9);
  assert(Math.abs(bay.offset-bay.depth/2-bay.railFacingEdge)<1e-9);
  assert(Math.abs(bay.roadFacingEdge+3.02-bay.roadsideSeamClosedMetres)<1e-9,
   'Paving may only narrow grass seam with independently road-safe testing');
  assert(isRoadFreeRect(occupied,{x:bay.x,z:bay.z,
-  length:bay.length,depth:bay.depth,yaw:bay.yaw,buffer:.12,step:.36}),
+  length:bay.length,depth:bay.depth,yaw:bay.yaw,buffer:bay.roadFacingBuffer,step:.36}),
   'Every widened rail-side bay must stay outside OSM roads and footways');
 }
 const apron=planRailApronProfiles([...plan.railSideParking,...plan.railSideJoiningSlabs]);
@@ -92,7 +97,7 @@ assert(apron&&apron.profiles.length>=plan.railSideParking.length);
 assert.equal(apron.variableDepth,true);
 assert.equal(apron.noFootprintExpansion,true);
 assert(apron.originalRoadFacingOffset>=-3.02000001&&
- apron.originalRoadFacingOffset<=-2.41999999);
+ apron.originalRoadFacingOffset<=-2.29999999);
 for(const p of apron.profiles){
  assert(p.validSafeRect);
  assert(p.startRail>=p.railSide&&p.endRail>=p.railSide);
@@ -383,7 +388,7 @@ for(const p of plan.cornerPaving)
  }), 'Right entrance apron must never cover mapped roads or walking paths');
 for(const bay of plan.railSideParking)
  assert(isRoadFreeRect(occupied,{x:bay.x,z:bay.z,length:bay.length,
-  depth:bay.depth,yaw:bay.yaw,buffer:.12,step:.36}),
+  depth:bay.depth,yaw:bay.yaw,buffer:bay.roadFacingBuffer,step:.36}),
   'Rail-side parking bays may not occupy any OSM road or footpath');
 for(const cell of plan.cells){
  assert(isRoadFreeRect(occupied,{
@@ -484,7 +489,7 @@ assert(code.includes('planRailApronProfiles([...planned.railSideParking,'));
 assert(code.includes('const midBulge=Math.max(0,Math.sin(Math.PI*t))'));
 assert(code.includes('const roadEdge=Math.min(previous.roadFacingEdge,next.roadFacingEdge)'));
 assert(code.includes('const railEdge=Math.max(previous.railFacingEdge,next.railFacingEdge)'));
-assert(code.includes('for(const candidate of [-2.90,-2.78,-2.66,-2.54,-2.42])'));
+assert(code.includes('for(const candidate of [-2.90,-2.78,-2.66,-2.54,-2.42,-2.30])'));
 assert(code.includes('if(safePlace(trial,2.46,trialDepth,.12))break;'));
 assert(!code.includes('batch(group,material.railPaved,railPaving)'));
 assert(code.includes('batch(group,material.bayLines,photoBayLines)'));
