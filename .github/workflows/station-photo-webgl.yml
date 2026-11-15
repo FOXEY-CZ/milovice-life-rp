@@ -33,5 +33,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: station-ticket-photo-580
-          path: browser-artifacts/milovice-ticket-photo-580.png
+          path: browser-artifacts/milovice-ticket-photo-580*.png
           if-no-files-found: ignore
