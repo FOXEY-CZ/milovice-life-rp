@@ -46,15 +46,31 @@ function nearestPointOnPolyline(point,points){
  }
  return result;
 }
-function nearOtherMappedWay(elements,skipId,point){
- let closest={clearance:Infinity,id:null};
+function nearbyProtectedSegments(elements,skipId,origin){
+ const segments=[];
  for(const way of elements){
   if(!way?.tags?.highway||Number(way.id)===skipId||way.geometry?.length<2)continue;
-  const path=way.geometry.map(stationGpsToWorld);
-  const nearest=nearestPointOnPolyline(point,path);
-  if(!nearest)continue;
-  const clearance=nearest.distance-roadWidth(way.tags.highway)/2;
-  if(clearance<closest.clearance)closest={clearance,id:way.id};
+  const path=way.geometry.map(stationGpsToWorld),width=roadWidth(way.tags.highway);
+  // This tiny 2 m connector cannot affect an OSM route >16m away.
+  const nearest=nearestPointOnPolyline(origin,path);
+  if(!nearest||nearest.distance>16+width/2)continue;
+  for(let i=1;i<path.length;i++){
+   const a=path[i-1],b=path[i],dx=b.x-a.x,dz=b.z-a.z;
+   const len2=dx*dx+dz*dz;
+   if(len2>.01)segments.push({a,dx,dz,len2,width,id:way.id});
+  }
+ }
+ return segments;
+}
+function nearOtherMappedWay(segments,point){
+ let closest={clearance:Infinity,id:null};
+ for(const segment of segments){
+  const {a,dx,dz,len2,width,id}=segment;
+  const t=Math.max(0,Math.min(1,
+   ((point.x-a.x)*dx+(point.z-a.z)*dz)/len2));
+  const clearance=Math.hypot(point.x-a.x-t*dx,
+   point.z-a.z-t*dz)-width/2;
+  if(clearance<closest.clearance)closest={clearance,id};
  }
  return closest;
 }
@@ -106,6 +122,8 @@ export function planBikeTowerEntryPaving(elements,roadClearance){
  const length=gcd(start,end);
  if(length<.65||length>4.0)return null;
  const side={x:-uz,z:ux};
+ const protectedSegments=nearbyProtectedSegments(elements,Number(footway.id),{x,z});
+ if(!protectedSegments.length)return null; // invalid street index
  let otherRoadMargin=Infinity;
  // Check every interpolated ribbon cross-section AND its physical edges.
  // Avoid painting a second path over the Nádražní roadway, particularly
@@ -116,7 +134,7 @@ export function planBikeTowerEntryPaving(elements,roadClearance){
   for(let j=-4;j<=4;j++){
    const p={x:cx+side.x*width*.5*j/4,
     z:cz+side.z*width*.5*j/4};
-   const other=nearOtherMappedWay(elements,Number(footway.id),p);
+   const other=nearOtherMappedWay(protectedSegments,p);
    otherRoadMargin=Math.min(otherRoadMargin,other.clearance);
    if(other.clearance<.17)return null;
   }
