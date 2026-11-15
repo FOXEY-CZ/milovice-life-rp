@@ -91,3 +91,13 @@
 - Metoda: `planRailApronBoundaryKerbs` skládá úseky podle `planRailApronProfiles`; ověření `isRoadFreeRect` chrání komunikace a chodníky. Obruba je uvnitř bezpečné parkovací plochy, nikoli nový okraj silnice.
 - **Zelené záhony / výsadbové ostrůvky dosud NEJSOU vytvořeny:** 2023 satelit naznačuje jejich přítomnost u zakončení, ale přesné hranice a polohy nebyly zaměřeny. Nevymýšlet zeleň ani neucpat průjezd.
 - Tento krok je geometricky ověřený, nikoliv finální vizuální schválení. Po nasazení porovnat letecký technický pohled a pohled z úrovně člověka, zejména zda koncové obrubníky správně navazují a nevytvářejí spáry.
+
+
+## Screenshot review Part 16 — 5.81.18 (15. 11. 2026)
+
+Uživatel přidal svislý snímek webového technického nadhledu 5.81.17 v 21:31. V modelu jsou zřetelné dvě **vizuální vady**, nikoli prokázané geodetické odchylky:
+
+1. Plocha šikmých stání u kolejí vypadá jako světlá samostatná deska s tenkým zeleným pásem k servisní komunikaci. Tuto spáru zužujeme zkusmým rozšířením **pouze již foto-podloženého povrchu** směrem k cestě v přírůstcích 0,12 m, max. do souřadnicové vzdálenosti 2,42 m od osy OSM service way 675778842. Každý celý kandidátní polygon je ještě před použitím zkontrolován na všechny cesty, chodníky, budovy a koleje, včetně bezpečnostního odstupu. Není to úprava asfaltové vozovky.
+2. Jižní konec vnějšího chodníku na středním ostrově vykazuje několik osamocených pravoúhlých výčnělků. Nově se překryvná texturovaná výplň vytváří **jen v řádcích, kde zároveň existuje schválená souvislá geometrie chodníku**, jinak by totiž překryv pokračoval za špičku ostrůvku.
+
+**Meze důkazů:** georeferencované jsou silnice a některé pěší trasy, přesná hranice parkoviště, typy a souřadnice výsadby nebo šíře zakončení nejsou změřeny. Tyto dvě úpravy jsou vizuální korekce již známého modelu; fotografické schválení nové celkové podoby a výsadba zůstávají otevřené. Nepřidává se nová cesta, strom ani záhon.
