@@ -103,7 +103,7 @@ html.rp-ticket-photo-audit #osm-inspect-toggle,
 html.rp-ticket-photo-audit #osm-inspect-result,
 html.rp-ticket-photo-audit #rp-joystick,
 html.rp-ticket-photo-audit #osmnotice-live,
-html.rp-ticket-photo-audit #osm-map-button-live{display:none!important}
+html.rp-ticket-photo-audit #osm3d{display:none!important}
 #forecourt-photo-audit[hidden]{display:none!important}
 #forecourt-photo-audit{position:fixed;top:10px;left:10px;z-index:130;
  display:flex;flex-direction:column;gap:5px;
@@ -1495,7 +1495,7 @@ function osmMessage(message){
  const status=document.getElementById('forecourt-audit-status');
  if(status)status.textContent=message;
 }
-osmBtn.id='osm-map-button-live';document.body.appendChild(osmBtn);
+document.body.appendChild(osmBtn);
 function osmPoint(p){const lat0=50.226,lon0=14.889;return new THREE.Vector2((p.lon-lon0)*111320*Math.cos(lat0*Math.PI/180),-(p.lat-lat0)*111320)}
 // Geographically limited architectural prototype: old-town houses around the
 // church and station. Generic window/door geometry is NOT an exact photo survey.
