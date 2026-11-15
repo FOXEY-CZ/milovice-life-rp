@@ -19,6 +19,13 @@ export const STATION_TICKET_MACHINE_PHOTO=Object.freeze({
  surveyedMachinePositions:false,machines:2
 });
 
+// One shared source of approximate machine widths and facade positions.
+// The photographed door/window planner uses exactly these intervals too.
+export const STATION_TICKET_MACHINE_LAYOUT=Object.freeze([
+ Object.freeze({id:'orange',t:.49,kind:'orange',bodyWidth:.68,bodyHeight:1.83}),
+ Object.freeze({id:'yellow',t:.34,kind:'yellow',bodyWidth:.68,bodyHeight:1.88})
+]);
+
 function nearestPointOnSegment(p,a,b){
  const dx=b.x-a.x,dz=b.z-a.z,ls=dx*dx+dz*dz;
  if(ls<.00001)return null;
@@ -72,10 +79,7 @@ export function planStationTicketMachines(elements){
  const yaw=Math.atan2(outside.x,outside.z);
  // PHOTO left-to-right: orange, yellow; from the camera the observed
  // doorway and window constrain this to station wall edge 4->5.
- const machines=[
-  {id:'orange',t:.49,kind:'orange',bodyWidth:.68,bodyHeight:1.83},
-  {id:'yellow',t:.34,kind:'yellow',bodyWidth:.68,bodyHeight:1.88}
- ].map(m=>{
+ const machines=STATION_TICKET_MACHINE_LAYOUT.map(m=>{
   const x=a.x+dx*m.t+outside.x*.205;
   const z=a.z+dz*m.t+outside.z*.205;
   return {...m,x,z,yaw,bodyDepth:.30,
