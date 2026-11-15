@@ -1,3 +1,26 @@
+# Milovice RP 5.81.7 — pěší napojení cyklověže na opravdu viditelný chodník
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5817  
+**Zblízka: dlažba, dlouhé napojení, navazující OSM chodník:** https://foxey-cz.github.io/milovice-life-rp/?v=5817&forecourtAudit=tower&entryInspection=1  
+**Původní fotokamera cyklověže:** https://foxey-cz.github.io/milovice-life-rp/?v=5817&forecourtAudit=tower  
+**Bezpečná záloha 5.81.6:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/5816-before-rendered-footway-fix
+
+## Proč 5.81.6 na telefonu stále ukazovala „šíp“ končící v trávě
+
+Snímek uživatele z **15. 11. 2026 17:03** dokládá úzké šikmé dláždění, jehož konec se nepropojuje s viditelným chodníkem. Po ověření konkrétního OSM 1165594426 jsme odhalili přesnou příčinu: přibližně **2m spoj z 5.81.5** mířil na nejbližší *matematickou čáru v OSM*, ale cílový úsek přímo u věže herní bezpečnostní filtr `safePedestrianPieces` z mapy **odstraní**, protože zasahuje do reálného jízdního pásu. Nelze se vizuálně napojit na něco, co se vůbec nevykreslí.
+
+## Oprava
+
+- Cílový bod se nyní vybírá jen z **opravdu kreslených částí footway 1165594426**, podle **přesně stejné funkce `safePedestrianPieces` a stejných šířek skutečných OSM vozovek**, jaké hra používá při stavbě ulic. Cíl leží uvnitř bezpečně vykreslitelného fragmentu, nikoli v jeho odstraněné části.
+- Nejbližší takto viditelný úsek začíná zhruba **8 metrů od vstupní dlažby** (není to fyzické geodetické měření dlažebních hran). V 3D je nyní jedna skoro rovná pěší propojka **šířky 1,60 až 1,55 m**, která se **nezužuje do špičky** a končí v geometricky viditelném 1,8m chodníku. Celý model, včetně již hotové 3,10 × 2,10m vstupní dlažby, pořád používá jeden sdílený materiál a **jeden draw call**.
+- Pro celé řešení platí kontrola všech okrajových bodů proti **ostatním skutečným vozovkám i jiným cestám**, kontrola nevnikání do skleněného pláště cyklověže a odmítnutí vložení, pokud by budoucí OSM data bezpečné spojení neumožnila. **Nijak se nemění samotný OSM chodník, silnice, nádraží, auta, parkování, vozidlové kolize či materiál asfaltu.**
+- Blízká kontrolní kamera se přizpůsobí prodlouženému propojení (vyšší, o něco dál, zamířená na celou délku). **Jde o technickou kameru z OSM výpočtu, nikoli reálnou fotku.** Původní fotoaudit a mobilní sbalovací panel zůstávají funkční. Běžná hra zachovává původní ovládání.
+- **Omezení důkazů:** fotografie potvrzují dlážděné okolí vstupu, ovšem nikoli přesnou geometrii této 8m spojnice. Tu považujeme za **opatrnou, vizuálně navazující herní aproximaci**, nikoli za dokonale ověřenou kopii reálného přednádraží. Po testech bude stále potřeba porovnat detail z mobilu a případně rozhodnout o souvislé ploše a hranách dle dalších pohledů.
+
+**Regresní kontrola:** `scripts/bike-tower-entry-paving.test.mjs` nově hlídá reálně vykreslitelný úsek, bezpečný cíl a správnou délkou spojení. `scripts/station-forecourt-webgl.mjs` kontroluje skutečnou přítomnost propojení na mobilu a současný záběr vstupu, spojovací plochy a cílového chodníku.
+
+---
+
 # Milovice RP 5.81.6 — kontrola skutečné viditelnosti spojení cyklověže
 
 **Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5816  
