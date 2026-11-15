@@ -1,9 +1,10 @@
-// Milovice RP 5.81.5 — photograph-informed connected pavement directly
+// Milovice RP 5.81.7 — safely connected pavement to ACTUALLY RENDERED OSM path
 // outside the existing blue Bike Tower entry. Not a new street or full plaza.
 // Photo evidence: user-shared Mapy.com panorama (2022-05-17) and ŠJů
 // Wikimedia Commons Bike Tower (2024-05-30, CC BY 4.0).
 // The photo shows paved access; the exact edge/width is still an estimate.
-import {isRoadFreeRect} from './road-clearance.js';
+import {isRoadFreeRect,createRoadClearance} from './road-clearance.js';
+import {isCarriageway,safePedestrianPieces} from './reality-walkways.js';
 import {stationGpsToWorld} from './station-forecourt-pass.js';
 
 export const BIKE_TOWER_ENTRY_PAVING_SOURCE=Object.freeze({
@@ -21,8 +22,9 @@ const DIST_TO_DOOR=.11;
 const PAD_WIDTH=3.10;
 const PAD_DEPTH=2.10;
 const HEIGHT_OFFSET=.15;
-const JOIN_WIDTH_AT_PAD=1.05,JOIN_WIDTH_AT_FOOTWAY=.68;
-const JOIN_FOOTWAY_EDGE_OFFSET=.75;
+const JOIN_WIDTH_AT_PAD=1.60,JOIN_WIDTH_AT_FOOTWAY=1.55;
+// A connection must terminate ON visible geometry (not an OSM centerline
+// that the game later clips from the road). Do not invent a pointed taper.
 const gcd=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
 // A route may be connected to its OWN mapped sidewalk. Only that intended
 // OSM footway is exempted from the clearance check; all other mapped roads
@@ -45,6 +47,32 @@ function nearestPointOnPolyline(point,points){
   if(!result||dist<result.distance)result={...candidate,distance:dist,segment:i-1};
  }
  return result;
+}
+function renderedSafeFootwayPieces(elements,footway){
+ // Use the SAME clearance/clipping algorithm as the game's osmRoadSegment.
+ // Its former chosen target was located on a fully clipped 0/22-chunk
+ // part of OSM 1165594426, hence the arrow-shaped path ended in grass.
+ const carriageway=createRoadClearance();
+ for(const way of elements){
+  if(!isCarriageway(way.tags?.highway)||way.geometry?.length<2)continue;
+  carriageway.addRoad({
+   id:way.id,points:way.geometry.map(stationGpsToWorld),
+   kind:way.tags.highway,width:roadWidth(way.tags.highway)
+  });
+ }
+ const route=footway.geometry.map(stationGpsToWorld);
+ const visible=[];
+ for(let i=1;i<route.length;i++){
+  const pieces=safePedestrianPieces(route[i-1],route[i],1.8,carriageway);
+  for(const piece of pieces){
+   const length=gcd(piece.a,piece.b);
+   if(length>=1.2)visible.push({
+    a:piece.a,b:piece.b,sourceSegment:i,
+    length,carriageway
+   });
+  }
+ }
+ return visible;
 }
 function nearbyProtectedSegments(elements,skipId,origin){
  const segments=[];
@@ -103,31 +131,40 @@ export function planBikeTowerEntryPaving(elements,roadClearance){
  if(!isRoadFreeRect(roadClearance,{x,z,length:PAD_WIDTH,depth:PAD_DEPTH,
   yaw,buffer:.18,step:.25}))return null;
 
- // A photographed entrance cannot end in an isolated tile island.
- // Join its near/front corner to the EXISTING OSM sidewalk 1165594426,
- // finishing only 0.75 m from its centreline, inside the 1.8 m mapped width.
- const route=footway.geometry.map(stationGpsToWorld);
- const mapped=nearestPointOnPolyline({x,z},route);
- if(!mapped||mapped.distance<2.5||mapped.distance>5.5)return null;
- const dx=mapped.x-x,dz=mapped.z-z;
- const distance=Math.hypot(dx,dz),ux=dx/distance,uz=dz/distance;
- const localU=dx*nz-dz*nx,localV=dx*nx+dz*nz;
- if(localU<1.5||localV<.5)return null;
- const tStart=Math.min((PAD_WIDTH/2-.42)/Math.abs(localU),
-  (PAD_DEPTH/2-.43)/Math.abs(localV));
- if(tStart<.15||tStart>.8)return null;
- const start={x:x+dx*tStart,z:z+dz*tStart};
- const end={x:mapped.x-ux*JOIN_FOOTWAY_EDGE_OFFSET,
-  z:mapped.z-uz*JOIN_FOOTWAY_EDGE_OFFSET};
+ // The OSM polyline itself is NOT necessarily physically rendered. Near the
+ // tower, the nearest section is clipped by the Nádražní carriageway. Only
+ // select points at least 12% inside a segment that actually SURVIVES the
+ // game's safePedestrianPieces clipping step. This fixes the grass dead-end.
+ const visible=renderedSafeFootwayPieces(elements,footway);
+ const candidates=visible.map(segment=>{
+  const dx=segment.b.x-segment.a.x,dz=segment.b.z-segment.a.z;
+  const t=Math.max(.12,Math.min(.88,
+   ((x-segment.a.x)*dx+(z-segment.a.z)*dz)/(dx*dx+dz*dz)));
+  const end={x:segment.a.x+dx*t,z:segment.a.z+dz*t};
+  return {end,segment,t,distance:gcd({x,z},end),
+   forward:(end.x-x)*nx+(end.z-z)*nz};
+ }).filter(candidate=>candidate.distance>4&&
+  candidate.distance<11&&candidate.forward>3)
+ .sort((a,b)=>a.distance-b.distance);
+ const selected=candidates[0];
+ if(!selected)return null;
+ const start={x:x+nx*(PAD_DEPTH/2-.12),
+  z:z+nz*(PAD_DEPTH/2-.12)};
+ const end=selected.end;
+ // Overlap the EXISTING pad by 12cm and end in the visible mapped path.
  const length=gcd(start,end);
- if(length<.65||length>4.0)return null;
+ if(length<4||length>10)return null;
+ const ux=(end.x-start.x)/length,uz=(end.z-start.z)/length;
  const side={x:-uz,z:ux};
+ if(!selected.segment.carriageway.isClear(end.x,end.z,.9,.08))
+  return null;
  const protectedSegments=nearbyProtectedSegments(elements,Number(footway.id),{x,z});
  if(!protectedSegments.length)return null; // invalid street index
  let otherRoadMargin=Infinity;
  // Check every interpolated ribbon cross-section AND its physical edges.
- // Avoid painting a second path over the Nádražní roadway, particularly
- // where the verified footway approaches way 1459294017.
+ // Reject the connector if it approaches any OSM street, other path, or the
+ // Bike Tower footprint. Even the new 8m route uses exactly one mesh.
+ // The mapped footway endpoint is EXEMPT because it already exists there.
  for(let i=0;i<=26;i++){
   const t=i/26,width=JOIN_WIDTH_AT_PAD*(1-t)+JOIN_WIDTH_AT_FOOTWAY*t;
   const cx=start.x+(end.x-start.x)*t,cz=start.z+(end.z-start.z)*t;
@@ -136,14 +173,19 @@ export function planBikeTowerEntryPaving(elements,roadClearance){
     z:cz+side.z*width*.5*j/4};
    const other=nearOtherMappedWay(protectedSegments,p);
    otherRoadMargin=Math.min(otherRoadMargin,other.clearance);
-   if(other.clearance<.17)return null;
+   if(other.clearance<.17||gcd(p,{x:cx,z:cz})<radius+.12)
+    return null;
   }
  }
  const connector={
   start,end,side,length,widthStart:JOIN_WIDTH_AT_PAD,
   widthEnd:JOIN_WIDTH_AT_FOOTWAY,
-  footwayOverlap:.9-JOIN_FOOTWAY_EDGE_OFFSET,
-  footwayWayId:footway.id,otherRoadMargin
+  footwayWayId:footway.id,otherRoadMargin,
+  targetInsideActuallyRenderedFootway:true,
+  sourceFootwaySegment:selected.segment.sourceSegment,
+  targetSafeDistanceMeters:gcd({x,z},end),
+  targetCarriagewayClearance:selected.segment.carriageway.nearest(
+   end.x,end.z)?.clearance??null
  };
  return {
   x,z,cx,cz,nx,nz,yaw,radius,
@@ -167,6 +209,9 @@ export function makeBikeTowerEntryPavingScene(THREE,{layer,terrainAt=()=>0,
    drawCalls:root?1:0,triangles:geometry?.index?.count/3||0,
    width:plan?.width||0,depth:plan?.depth||0,
    connectedToMappedFootway:!!root&&!!plan?.connectedToMappedFootway,
+   targetInsideActuallyRenderedFootway:!!root&&
+    !!plan?.connector?.targetInsideActuallyRenderedFootway,
+   mappedFootwaySegment:plan?.connector?.sourceFootwaySegment??null,
    connectorLength:plan?.connector?.length||0,
    connectorEndWidth:plan?.connector?.widthEnd||0,
    connectorRoadMargin:plan?.connector?.otherRoadMargin??null,
@@ -206,8 +251,8 @@ export function makeBikeTowerEntryPavingScene(THREE,{layer,terrainAt=()=>0,
    // Right-handed tangent/front orientation; these triangles face UP.
    indices.push(k,k+1,after,k+1,after+1,after);
   }
-  // Joined tapered ribbon to the documented OSM walkway.
-  // Offset the connector 4 mm above the pad to prevent coincident
+  // Straight, nearly constant-width corridor to the RENDERED (unclipped)
+  // mapped footway. Offset 4 mm above pad to prevent coincident
   // triangles flickering where the two pieces overlap at the entrance.
   const baseVertex=vertices.length/3,alongSteps=10,acrossSteps=4;
   const link=plan.connector;
