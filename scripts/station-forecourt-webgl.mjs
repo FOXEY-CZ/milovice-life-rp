@@ -24,12 +24,13 @@ try{
    viewport:{width:cfg.width,height:cfg.height},deviceScaleFactor:1,
    isMobile:cfg.mobile,hasTouch:cfg.mobile});
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=5810&forecourtAudit='+cfg.view,
+  await page.goto('http://127.0.0.1:8080/?v=5811&forecourtAudit='+cfg.view,
    {waitUntil:'domcontentloaded',timeout:30000});
   await page.waitForFunction(()=>window.__miloviceForecourtAuditRendered?.active===true,
    null,{timeout:120000});
   const state=await page.evaluate(()=>({
    review:window.__miloviceForecourtAuditRendered,
+   towerMaterials:window.__miloviceBikeTowerInterior,
    build:document.getElementById('build-label')?.textContent,
    panelVisible:!!document.getElementById('forecourt-photo-audit')?.offsetWidth,
    spawnHidden:getComputedStyle(document.getElementById('rp-spawn')).display==='none',
@@ -40,12 +41,18 @@ try{
    fov:(()=>window.__miloviceForecourtAuditRendered?.active?1:null)()
   }));
   const v=state.review;
-  assert.equal(state.build,'20261115-forecourt-photo-audit-5810');
+  assert.equal(state.build,'20261115-biketower-glass-photo-5811');
   assert.equal(state.panelVisible,true);
   assert.equal(state.spawnHidden,true);
   assert.equal(state.normalTicketPanelHidden,true);
   assert.equal(state.visibleCanvas,true);
   assert.equal(v.view,cfg.view);
+  assert.equal(state.towerMaterials?.glassAppearancePass,
+   '5811-silver-2022-2024-photo');
+  assert.equal(state.towerMaterials?.towerGlazingOpacity,.20);
+  assert.equal(state.towerMaterials?.photoGeometryUnchanged,true);
+  assert.equal(state.towerMaterials?.externalFootprintUnchanged,true);
+  assert.equal(state.towerMaterials?.addedStreetFurniture,0);
   assert.equal(v.photoDate,'2024-05-30');
   assert.equal(v.landmarks.length,2);
   assert.equal(v.stopCount,2);
@@ -64,7 +71,7 @@ try{
    cfg.view+': mapped '+id+' must be in real camera frame');
   assert.equal(state.sourceLink,v.source);
   assert.deepEqual(errors,[]);
-  const path='browser-artifacts/milovice-forecourt-581-'+cfg.view+
+  const path='browser-artifacts/milovice-forecourt-5811-'+cfg.view+
    (cfg.mobile?'-mobile':'')+'.png';
   await page.screenshot({path});
   console.log('5.81 FORECOURT WebGL PASS',JSON.stringify({
