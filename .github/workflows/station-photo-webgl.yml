@@ -32,6 +32,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: station-ticket-photo-5819
-          path: browser-artifacts/milovice-ticket-photo-5819*.png
+          name: station-ticket-photo-58110
+          path: browser-artifacts/milovice-ticket-photo-58110*.png
           if-no-files-found: ignore
