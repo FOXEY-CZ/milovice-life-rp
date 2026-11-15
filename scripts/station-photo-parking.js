@@ -1,4 +1,4 @@
-// Milovice RP 5.76 — true road-parallel walkway silhouette, not grid-aligned stair steps.
+// Milovice RP 5.81.11 — fill validated grass holes BELOW the original road-parallel sidewalk ribbon.
 // The 5.72 "fix" drew a new OSM sidewalk directly OVER Nádražní's asphalt,
 // rather than removing the relevant strip from the parking surface.
 // The user confirmed the exact topology: existing road (UNTOUCHED),
@@ -546,6 +546,11 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   sidewalkRoadMargin:planned?.continuousRibbon.roadMarginMin??null,
   sidewalkMaxRoadEdgeStep:planned?.continuousRibbon.maxBodyEdgeStep??null,
   sidewalkPanelCount:planned?.continuousRibbon.pavementPanels??null,
+  // 5.81.11: meshes are part of the existing single sidewalk drawcall,
+  // not new sidewalk rectangles on the OSM road or extra scene objects.
+  roadSafeInfillCells:planned?.outerSidewalkCells.length||0,
+  roadSafeInfillTriangles:(planned?.outerSidewalkCells.length||0)*2,
+  infillExtraDrawCalls:0,
   continuousKerb:true,
   maxOuterFootwayOsmDistance:planned?.outerSidewalkMaxOsmDistance??null,
   visibleOuterSidewalkTiles:0,
@@ -609,6 +614,29 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
      indices.push(k,k+1,k+2,k+1,k+3,k+2);
     }
    }
+   if(kind==='sidewalk'){
+    // 5.81.11: The 5.76 road-aligned ribbon is deliberately narrowed to
+    // avoid road-side tile-step edges. That can leave intermittent long
+    // green triangular holes INSIDE the two columns already reserved and
+    // road-checked for pedestrian use. Fill ONLY those exact safe cells.
+    // They are underneath the continuous ribbon (2.1cm lower) and share
+    // its material, road axis and UV phase; one merged drawcall remains.
+    // The 1.2cm overlap closes 0.01m gaps from the .76/.74m cell grid;
+    // road-clearance tests already check expanded dimensions of each cell.
+    for(const patch of planned.outerSidewalkCells){
+     const halfAlong=(patch.length+.012)/2;
+     const halfAcross=(patch.depth+.012)/2;
+     const start=vertices.length/3;
+     for(const along of [patch.along-halfAlong,patch.along+halfAlong]){
+      for(const offset of [patch.offset-halfAcross,patch.offset+halfAcross]){
+       const pt=at(planned.frame,along,offset);
+       vertices.push(pt.x,terrainAt(pt.x,pt.z)+.193,pt.z);
+       uvs.push(offset/1.8,along/8);
+      }
+     }
+     indices.push(start,start+1,start+2,start+1,start+3,start+2);
+    }
+   }
    const geometry=new THREE.BufferGeometry();
    geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));
    geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
@@ -617,6 +645,11 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
    const mesh=new THREE.Mesh(geometry,mat);
    mesh.receiveShadow=true;
    mesh.name=kind==='kerb'?'ContinuousOuterSidewalkKerb':'ContinuousOuterSidewalkPaving';
+   if(kind==='sidewalk'){
+    mesh.userData.roadSafeInfillCells=planned.outerSidewalkCells.length;
+    mesh.userData.infillExtraDrawCalls=0;
+    mesh.userData.infillHeightBelowRibbonMeters=.021;
+   }
    group.add(mesh);drawMeshes++;
   }
   meshFor('sidewalk',sidewalkMaterial);
