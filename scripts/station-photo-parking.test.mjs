@@ -232,7 +232,10 @@ assert(!game.includes('osmStrip(points[i-1],points[i],1.8,osmSidewalkMat,.235);'
  'The 5.72 forced sidewalk directly on Nádražní asphalt MUST be disabled');
 assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})'),
  'Carved sidewalk must reuse the same existing city paving material');
-assert(game.includes("const BUILD_ID='20261115-road-aligned-sidewalk-5760'"));
+assert(game.includes("from './scripts/station-photo-parking.js?v=5760'"),
+ 'Station parking remains frozen at reviewed 5.76 geometry');
+assert(game.includes("const BUILD_ID='20261115-station-photo-ticket-machines-5770'"),
+ 'New game version must retain 5.76 parking with the added ticket-machine scene');
 assert(game.includes("from './scripts/bike-tower-interior.js?v=5640'"));
 assert(game.includes("from './scripts/station-forecourt-pass.js?v=5650'"));
 const code=readFileSync(new URL('./station-photo-parking.js',import.meta.url),'utf8');
