@@ -820,14 +820,20 @@ export function planClippedRoadsideInfill(infill,ribbon,{overlap=.006}={}){
   const p=profiles.get(r.along);
   if(!p||!supported.some(part=>
     r.along>=part[0].along&&r.along<=part.at(-1).along))continue;
-  const low=Math.max(r.low,p.low);
+  // CRITICAL: keep the inner margin at the SAFE cell's ORIGINAL edge.
+  // 5.81.19 accidentally raised it to p.low, exposing repeated strips of
+  // grass between parking tiles and the narrow road-aligned outer ribbon.
+  // The outer edge alone is trimmed back against the verified road-facing
+  // ribbon, avoiding the former protrusions into the carriageway.
+  const low=r.low;
   const high=Math.min(r.high,p.high+overlap);
   const edge=Math.min(r.edge,high);
   const start=Math.min(r.start,high);
   const end=Math.min(r.end,high);
   if(Math.min(edge,start,end)-low<.16)continue;
   rows.push({...r,low,high,edge,start,end,
-   supportedRoadEdge:p.high,clippedToContinuousRibbon:true});
+   supportedRoadEdge:p.high,innerSafeFootprintPreserved:true,
+   clippedToContinuousRibbon:true});
  }
  return {rows,visibleRows:rows.length,trimmedRows:infill.rows.length-rows.length,
   roadSafeCellsOnly:true,clippedToContinuousRibbon:true,
@@ -899,6 +905,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   smoothInfillRows:infillProfile?.visibleRows||0,
   unsupportedTerminalInfillRowsTrimmed:infillProfile?.trimmedRows||0,
   infillRestrictedToSafeRibbon:true,
+  clippedInfillInnerFootprintPreserved:true,
   roadsideOverhangClipped:infillProfile?.roadsideOverhangClipped||false,
   shortDetachedSidewalkPartsTrimmed:planned?.continuousRibbon?.shortTerminalPartsTrimmed||0,
   smoothInfillJoins:infillProfile?.joins||0,
