@@ -208,6 +208,8 @@ assert(clippedInfill?.rows.length>55,'Keep the main paved pedestrian route intac
 assert.equal(clippedInfill.clippedToContinuousRibbon,true);
 assert.equal(clippedInfill.roadSafeCellsOnly,true);
 assert(clippedInfill.trimmedRows>=0&&clippedInfill.visibleRows<=smooth.rows.length);
+assert(clippedInfill.rows.filter(r=>r.along>=8&&r.along<=60).length>50,
+ 'The long parking-side walkway needs continuous safe-cell infill, not periodic gaps');
 assert.equal(planClippedRoadsideInfill(null,plan.continuousRibbon),null);
 assert.equal(planClippedRoadsideInfill(smooth,null),null);
 assert.equal(planClippedRoadsideInfill(smooth,plan.continuousRibbon,{overlap:.02}),null);
@@ -221,10 +223,14 @@ for(const r of clippedInfill.rows){
  assert(supportedParts.some(part=>
   r.along>=part[0].along&&r.along<=part.at(-1).along),
   'No unsupported islands of pavers can be drawn beyond the sidewalk');
- assert(r.low>=p.low-.00001);
+ const source=smooth.rows.find(q=>q.along===r.along);
+ assert(source,'Every infill row must originate from verified safe cells');
+ assert.equal(r.innerSafeFootprintPreserved,true);
+ assert(Math.abs(r.low-source.low)<1e-9,
+  'Do not narrow the inner walkway: it opens repeated green gaps near parking');
  assert(r.edge<=p.high+.00601&&r.start<=p.high+.00601&&
   r.end<=p.high+.00601,
-  'No 0.74m side ears or protrusions beyond the smooth sidewalk silhouette');
+  'Outer edge remains clipped to the safe road-aligned sidewalk');
  assert(Math.min(r.edge,r.start,r.end)-r.low>=.16);
 }
 
