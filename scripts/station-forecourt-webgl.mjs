@@ -15,6 +15,8 @@ try{
  for(const cfg of [
   {view:'wide',mobile:false,width:1280,height:760,
    expectedVisible:['station','tower']},
+  {view:'wide',overview:true,mobile:true,width:393,height:852,
+   expectedVisible:[]},
   {view:'tower',mobile:true,width:393,height:852,
    expectedVisible:['tower']},
   {view:'tower',flat:true,mobile:true,width:393,height:852,
@@ -30,7 +32,8 @@ try{
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
   await page.goto('http://127.0.0.1:8080/?v=58110&forecourtAudit='+cfg.view+
    (cfg.flat?'&roadSurfaceFlat=1':'')+
-   (cfg.inspection?'&entryInspection=1':''),
+   (cfg.inspection?'&entryInspection=1':'')+
+   (cfg.overview?'&parkingOverview=1':''),
    {waitUntil:'domcontentloaded',timeout:30000});
   await page.waitForFunction(()=>window.__miloviceForecourtAuditRendered?.active===true,
    null,{timeout:120000});
@@ -61,8 +64,26 @@ try{
   assert.equal(state.panelVisible,true);
   assert.equal(state.compact,cfg.mobile);
   assert.equal(state.expansionButton,cfg.mobile?'false':'true');
-  assert.equal(v.cameraMode,cfg.inspection?
+  assert.equal(v.cameraMode,(cfg.inspection||cfg.overview)?
    'technical-osm-derived':'documented-photo-gps');
+  assert.equal(v.parkingOverview.requested,Boolean(cfg.overview));
+  assert.equal(v.parkingOverview.enabled,Boolean(cfg.overview));
+  assert.equal(v.parkingOverview.noGeometryChanges,true);
+  if(cfg.overview){
+   assert.equal(v.parkingOverview.sourceIsPhotoCamera,false);
+   assert.equal(v.parkingOverview.cameraBasedOnMappedRoad,true);
+   assert.equal(v.parkingOverview.referenceServiceWayId,675778842);
+   assert.equal(v.parkingOverview.referenceEastRoadId,128308366);
+   assert.equal(v.parkingOverview.referencePedestrianWayId,1165594426);
+   assert(v.parkingOverview.centralParkingTiles>0);
+   assert(v.parkingOverview.oppositeParkingBays>0);
+   assert(v.parkingOverview.outerSidewalkPatches>0);
+   assert(v.parkingOverview.mappedOuterSidewalkSegments>0);
+   assert.equal(v.parkingOverview.underlyingRoadsUnchanged,true);
+   assert.equal(v.parkingOverview.modelledSurface,true);
+   assert(state.auditLabel.includes('technický OSM pohled'));
+   assert.equal(state.joystickHidden,true);
+  }
   assert.equal(v.entryInspection.enabled,Boolean(cfg.inspection));
   if(cfg.inspection){
    assert.equal(v.entryInspection.sourceIsPhotoCamera,false);
@@ -156,6 +177,7 @@ try{
   assert.deepEqual(errors,[]);
   const path='browser-artifacts/milovice-forecourt-58110-'+cfg.view+
    (cfg.flat?'-flat':'')+(cfg.inspection?'-entry':'')+
+   (cfg.overview?'-parking-overview':'')+
    (cfg.mobile?'-mobile':'')+'.png';
   await page.screenshot({path});
   console.log('5.81 FORECOURT WebGL PASS',JSON.stringify({
