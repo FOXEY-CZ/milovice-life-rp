@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createRoadClearance,isRoadFreeRect} from './road-clearance.js';
-import {STATION_PARKING_REFERENCE,planStationPhotoParking,planContinuousOuterSidewalk,planRoadSafeParkingEdgeChamfers} from './station-photo-parking.js';
+import {STATION_PARKING_REFERENCE,planStationPhotoParking,planContinuousOuterSidewalk,planRoadSafeParkingInfillProfiles} from './station-photo-parking.js';
 import {stationGpsToWorld} from './station-forecourt-pass.js';
 
 const data=JSON.parse(readFileSync(new URL('../data/milovice-osm.json',import.meta.url),'utf8'));
@@ -80,18 +80,24 @@ assert.equal(plan.originalRoadSurfaceUnmodified,true);
 assert.equal(plan.outerFootwayRendering,'road-axis-aligned-continuous-terrain-ribbon',
  'Sidewalk must follow Nádražní road centreline, not the grid-edge of every parking tile');
 assert(plan.outerSidewalkCells.length>=100,'A true long sidewalk needs many contiguous safe parking cells');
-const chamfers=planRoadSafeParkingEdgeChamfers(plan.outerSidewalkCells);
-assert(chamfers.size>0,'The step correction should act on real protruding road-edge cells');
-assert(chamfers.size<plan.outerSidewalkCells.length/2,
- 'Chamfer only changed road-facing step corners, not every paving tile');
-for(const [cell,cut] of chamfers){
- assert(plan.outerSidewalkCells.includes(cell));
- assert(cut.lead>=0&&cut.tail>=0&&cut.lead<=.22&&cut.tail<=.22);
- assert(cut.lead>0||cut.tail>0);
- assert(cut.lead<=cell.length/2&&cut.tail<=cell.depth/2);
+const smooth=planRoadSafeParkingInfillProfiles(plan.outerSidewalkCells);
+assert(smooth,'Only contiguous verified footway cells may feed the smooth underside');
+assert(smooth.rows.length>55&&smooth.joins>50);
+assert.equal(smooth.roadSafeCellsOnly,true);
+assert.equal(smooth.areaExpanded,false);
+assert.equal(smooth.sourceCells,plan.outerSidewalkCells.length);
+assert.equal(smooth.maxSlope,.12);
+assert(smooth.maxEdgeStep<.22,'Roadside transitions must not jump by entire .74m grid blocks');
+for(const r of smooth.rows){
+ assert(r.edge<=r.high+.00001,'Smooth roadside envelope must stay inside approved cell edge');
+ assert(r.edge>=r.low+.279,'No narrow or inverted sidewalk strips');
+ assert(r.start<=r.edge+.00001&&r.end<=r.edge+.00001);
+ assert(r.start>=r.low+.279&&r.end>=r.low+.279);
+ assert(r.high-r.low>=.7);
 }
-assert.equal(planRoadSafeParkingEdgeChamfers([]).size,0);
-assert.equal(planRoadSafeParkingEdgeChamfers(null).size,0);
+assert.equal(planRoadSafeParkingInfillProfiles([]),null);
+assert.equal(planRoadSafeParkingInfillProfiles(null),null);
+assert.equal(planRoadSafeParkingInfillProfiles(plan.outerSidewalkCells,{maxSlope:0}),null);
 assert(plan.centralParkingCells.length+plan.outerSidewalkCells.length===plan.cells.length,
  'No parking tile can be lost or painted twice when carving the sidewalk');
 assert(Number.isInteger(plan.edgeSpursTrimmed)&&plan.edgeSpursTrimmed>=0,
@@ -236,7 +242,7 @@ assert.equal(planStationPhotoParking(ways.map(e=>e.id===675778842?{
  ...e,geometry:e.geometry.map(p=>({...p,lon:p.lon+.001}))
 }:e),occupied),null);
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(game.includes("from './scripts/station-photo-parking.js?v=58112'"));
+assert(game.includes("from './scripts/station-photo-parking.js?v=58113'"));
 assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})'),
  'The island sidewalk must receive the exact city paving material');
 assert(game.includes('stationPhotoParking.reset()'));
@@ -244,9 +250,9 @@ assert(!game.includes('osmStrip(points[i-1],points[i],1.8,osmSidewalkMat,.235);'
  'The 5.72 forced sidewalk directly on Nádražní asphalt MUST be disabled');
 assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})'),
  'Carved sidewalk must reuse the same existing city paving material');
-assert(game.includes("from './scripts/station-photo-parking.js?v=58112'"),
+assert(game.includes("from './scripts/station-photo-parking.js?v=58113'"),
  'The reviewed 5.76 parking geometry must now load safe gap filler, not a stale 5.76 module');
-assert(game.includes("const BUILD_ID='20261115-roadside-beveled-infill-58112'"),
+assert(game.includes("const BUILD_ID='20261115-continuous-osm-safe-island-edge-58113'"),
  'New game version must retain 5.76 parking with the added ticket-machine scene');
 assert(game.includes("from './scripts/bike-tower-interior.js?v=5640'"));
 assert(game.includes("from './scripts/station-forecourt-pass.js?v=5650'"));
@@ -276,23 +282,20 @@ assert(!code.includes('const chamfers=planOuterSidewalkChamfers(tiles);'),
  'No separate 0.75m sidewalk quads may remain');
 assert(!code.includes('for(const p of planned.outerSidewalkCurbs)'),
  'No individual Minecraft-like kerbstone boxes along outer sidewalk');
-assert(code.includes('for(const patch of planned.outerSidewalkCells)'),
- 'Paving gap underlay must use only verified sidewalk cells');
+assert(code.includes('for(const row of infillProfile.rows)'),
+ 'Infill must use a full-length constrained roadside profile, not square tiles');
 assert(code.includes('vertices.push(pt.x,terrainAt(pt.x,pt.z)+.193,pt.z)'),
- 'Road-safe gap filler must be below the 0.214m top sidewalk strip');
-assert(code.includes('uvs.push(offset/1.8,along/8)'),
- 'Underlay must match continuous sidewalk UV units and rotation');
-assert(code.includes('mesh.userData.infillExtraDrawCalls=0'),
- 'Stitching keeps a single drawcall');
-assert(code.includes('planRoadSafeParkingEdgeChamfers(planned.outerSidewalkCells)'));
-assert(code.includes('for(let i=1;i<polygon.length-1;i++)'),
- 'Conservative bevel polygons triangulate inside the same road-safe patches');
-assert(code.includes('roadEdgeChamfersWithinSafeCells:true'));
-assert(code.includes('const polygon=['));
-assert(code.includes('Math.min(.22,current.length*.29,current.depth*.29)'));
-assert(code.includes('mesh.userData.infillExtraDrawCalls=0'),
- 'No hundreds of extra draw calls for patches');
-const safeInfillTriangles=plan.outerSidewalkCells.length*2;
+ 'The merged smooth infill must remain below the current sidewalk strip');
+assert(code.includes('uvs.push(offset/1.8,section.along/8)'),
+ 'Original sidewalk material must keep stable world-aligned UV');
+assert(code.includes('infillExtraDrawCalls:0'));
+assert(code.includes('planRoadSafeParkingInfillProfiles(planned.outerSidewalkCells)'));
+assert(code.includes('Math.min(...rows.map(other=>other.high+'));
+assert(!code.includes('planRoadSafeParkingEdgeChamfers('));
+assert(code.includes('smoothRoadsideWithinSafeCells:'));
+assert(code.includes('const sections=['));
+assert(code.includes('mesh.userData.smoothInfillRows=infillProfile.rows.length'));
+const safeInfillTriangles=smooth.rows.length*4;
 assert(safeInfillTriangles>200&&safeInfillTriangles<650);
 for(const patch of plan.outerSidewalkCells)
  assert(isRoadFreeRect(occupied,{
