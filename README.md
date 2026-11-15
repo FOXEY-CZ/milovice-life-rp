@@ -1,3 +1,19 @@
+# Milovice RP 5.81.15 — proměnlivý půdorys parkování u kolejí podle satelitního snímku 2023
+
+**Pohled na celé parkoviště shora:** https://foxey-cz.github.io/milovice-life-rp/?v=58115&forecourtAudit=wide&parkingOverview=1  
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=58115  
+**Záloha 5.81.14:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/58114-before-variable-rail-parking-outline
+
+## Kontrola screenshotu 5.81.14 (15. listopadu 2026, 20:35)
+
+Podle uživatelova porovnání se satelitním snímkem z **4. června 2023** už jsou obě parkovací plochy správně zpevněné a mají diagonální značení. Levá plocha směrem ke kolejím však pořád tvořila uniformní úzký obdélník, zatímco historický snímek ukazuje proměnlivý obrys a koncová zaoblení. Přesný tvar není geodeticky známý, proto nové úpravy zůstávají **foto-podloženým odhadem**.
+
+5.81.15 zachovává původní okraj příjezdové komunikace a usiluje o **mírné rozšíření směrem ke kolejím maximálně o 1,55 m** v prostřední části, směrem ke koncům plynule ubývající. Každá rozšířená parkovací deska prochází původním plnohodnotným bezpečnostním testem OSM komunikací, budov i železničních tratí; pokud nevyhovuje, zůstane původní rozměr. Nový povrch je tvořen **jedním 3D meshem** s konzervativními spoji mezi ověřenými deskami. Výplň mezery mezi dvěma stáními nesmí být širší než kterékoliv z nich. Koncové profily se zužují uvnitř platných geometrických obdélníků a nezabírají žádnou novou půdu. Bílé parkovací čáry zůstávají uvnitř ověřených stání a existující ostrůvek napravo ani vozovka se nemění.
+
+Další etapa: porovnání nového obrysu z mobilního nadhledu proti skutečné fotografii, poté samostatně doložit přesné konce parkovišť a výsadbu ostrůvků. Auta viditelná na satelitním snímku jsou dočasná a do mapy se z něho nepřenášejí.
+
+---
+
 # Milovice RP 5.81.14 — skutečné dvě parkovací plochy podle satelitního snímku 4. 6. 2023
 
 **Kontrola shora:** https://foxey-cz.github.io/milovice-life-rp/?v=58114&forecourtAudit=wide&parkingOverview=1  
