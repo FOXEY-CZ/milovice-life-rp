@@ -1,3 +1,15 @@
+# Milovice RP 5.81.10 — přirozenější napojení cyklověže na skutečný chodník
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=58110  
+**Detail přechodu na chodník:** https://foxey-cz.github.io/milovice-life-rp/?v=58110&forecourtAudit=tower&entryInspection=1  
+**Záloha 5.81.9:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/5819-before-sidewalk-seam
+
+Na mobilním záběru 5.81.9 z 15. 11. 2026 v 18:29 je vzor dlažby už sjednocený, ale na konci stále vzniká klín vůči existujícímu chodníku. Verze 5.81.10 proto v poslední třetině spojovacího pásu postupně otáčí příčné profily tak, aby jejich koncová hrana byla kolmá na *skutečně vykreslený* OSM chodník 1165594426. Jde o technickou korekci směru napojení a ne o nové odhadování fotografické hranice zeleně. Nemění se silnice, budovy, šířka rozšíření, materiál, výkonový budget ani uživatelská doprava. Dodatečné testy potvrzují geometrické zarovnání, nedegenerované trojúhelníky a bezpečný odstup od komunikací.
+
+Historické fotografie 2022 a 2024 dokazují existenci dlážděného přístupu, ne geodeticky přesné okraje. Proto je koncová plocha stále vedená jako aproximace a další úprava hran vyžaduje skutečnou oporu ve zdrojích.
+
+---
+
 # Milovice RP 5.81.9 — sladěná textura dlažby cyklověže a existujícího chodníku
 
 **Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5819  
