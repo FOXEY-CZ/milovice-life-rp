@@ -1,3 +1,20 @@
+# Milovice RP 5.81.1 — skleněná cyklověž světlejší podle fotografií
+
+**Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5811  
+**Kontrola celé stanice a cyklověže:** https://foxey-cz.github.io/milovice-life-rp/?v=5811&forecourtAudit=wide  
+**Detail cyklověže na telefonu:** https://foxey-cz.github.io/milovice-life-rp/?v=5811&forecourtAudit=tower  
+**BUS pohled:** https://foxey-cz.github.io/milovice-life-rp/?v=5811&forecourtAudit=bus  
+**Záloha funkční verze 5.81:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/581-before-bike-tower-glass-pass
+
+Reakce na uživatelský screenshot **15. 11. 2026**: oproti jeho vlastnímu panoramatu Mapy.com **17. 5. 2022** má náš Bike Tower příliš tmavé rámování a „černou klec“. Realita má opticky světlejší ocel a průhledné zasklení, viditelnou světlou vnitřní nosnou soustavu.
+
+- **Jen změna materiálů existujícího OSM 1011197691.** Rámy, horizontální prstence a vnitřní regály mají světlejší pozinkované odstíny, čiré zasklení má nižší krytí a lehčí `MeshStandardMaterial` namísto `MeshPhysicalMaterial`. Vrchní střechu ponecháváme tmavší. Půdorys, výška 11.4 m, počet 16 segmentů, 52 vnitřních nosníků, skleněný válec, modré dveře, spodní `BIKE TOWER` a horní cyklo-`P` znak zůstávají na stejných kotvách.
+- **Ani jeden nový objekt na chodníku nebo silnici** a žádná nová celoplošná dlažba přes vozovku. Na screenshotu je vidět tráva i asfalt, ale bez dostatečné identifikace správné plochy na OSM je přebarvování země nebezpečné. Otevřená přednádražní plocha, chodníky, obrubníky, BUS značení, strom, dvojramenná lampa a záhony se budou řešit teprve po přesném přiřazení fotografií k mapovým hranám.
+- **WebGL test a fotografie:** zachovaná kamera nádraží, samostatná kamera věže i BUS zóna. Nově se při skutečném vykreslení ověřuje i stav lehčích materiálů věže. Vizuální shodu po nasazení stále musí potvrdit fotografie ze hry; automatický test nedokáže sám rozhodnout, zda barva přesně odpovídá reálnému světlu.
+- **Zdroj barev:** fotografie cyklověže zaslané uživatelem, pořízené 17. 5. 2022 (Mapy.com); další nezávislý [snímek ŠJů, CC BY 4.0, z 30. 5. 2024](https://commons.wikimedia.org/wiki/File:Milovice,_N%C3%A1dra%C5%BEn%C3%AD,_cyklov%C4%9B%C5%BE.jpg). Žádný pixel z Mapy.com nebo Wikimedia Commons není kopírován do modelu.
+
+---
+
 # Milovice RP 5.81 — skutečné fotografické pohledy na celé přednádraží
 
 **Hra 5.81:** https://foxey-cz.github.io/milovice-life-rp/?v=5810  
