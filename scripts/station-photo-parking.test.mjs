@@ -70,10 +70,19 @@ assert.equal(plan.railPavingBaseDepth,4.02);
 assert.equal(plan.railPavingRoadFacingOffset,-3.02);
 assert(plan.railSideParking.some(b=>b.depth>4.37),
  'The aerial shows a wider rail-side apron through its middle, not a fixed long rectangle');
+assert.equal(plan.railPavingTrafficEdgeSafelyExtended,true);
+assert(plan.railPavingSeamCells>=2,
+ 'At least some individually checked bays should reduce the unrealistic grassy road seam');
+assert(plan.railPavingLargestSeamReduction>.10&&
+ plan.railPavingLargestSeamReduction<=.361,
+ 'Do not move road-facing paving more than tested 36cm toward service traffic');
 for(const bay of plan.railSideParking){
- assert(bay.depth>=4.02&&bay.depth<=5.63);
- assert(Math.abs(bay.offset+bay.depth/2+3.02)<1e-9,
-  'Road-facing parking edge must remain exactly unchanged at -3.02');
+ assert(bay.depth>=4.02&&bay.depth<=6.01);
+ assert(bay.roadFacingEdge>=-3.02000001&&bay.roadFacingEdge<=-2.65999999);
+ assert(Math.abs(bay.offset+bay.depth/2-bay.roadFacingEdge)<1e-9);
+ assert(Math.abs(bay.offset-bay.depth/2-bay.railFacingEdge)<1e-9);
+ assert(Math.abs(bay.roadFacingEdge+3.02-bay.roadsideSeamClosedMetres)<1e-9,
+  'Paving may only narrow grass seam with independently road-safe testing');
  assert(isRoadFreeRect(occupied,{x:bay.x,z:bay.z,
   length:bay.length,depth:bay.depth,yaw:bay.yaw,buffer:.12,step:.36}),
   'Every widened rail-side bay must stay outside OSM roads and footways');
@@ -82,7 +91,8 @@ const apron=planRailApronProfiles([...plan.railSideParking,...plan.railSideJoini
 assert(apron&&apron.profiles.length>=plan.railSideParking.length);
 assert.equal(apron.variableDepth,true);
 assert.equal(apron.noFootprintExpansion,true);
-assert(Math.abs(apron.originalRoadFacingOffset+3.02)<1e-9);
+assert(apron.originalRoadFacingOffset>=-3.02000001&&
+ apron.originalRoadFacingOffset<=-2.65999999);
 for(const p of apron.profiles){
  assert(p.validSafeRect);
  assert(p.startRail>=p.railSide&&p.endRail>=p.railSide);
@@ -332,7 +342,7 @@ assert.equal(planStationPhotoParking(ways.map(e=>e.id===675778842?{
  ...e,geometry:e.geometry.map(p=>({...p,lon:p.lon+.001}))
 }:e),occupied),null);
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(game.includes("from './scripts/station-photo-parking.js?v=58115'"));
+assert(game.includes("from './scripts/station-photo-parking.js?v=58116'"));
 assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})'),
  'The island sidewalk must receive the exact city paving material');
 assert(game.includes('stationPhotoParking.reset()'));
@@ -340,9 +350,9 @@ assert(!game.includes('osmStrip(points[i-1],points[i],1.8,osmSidewalkMat,.235);'
  'The 5.72 forced sidewalk directly on Nádražní asphalt MUST be disabled');
 assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})'),
  'Carved sidewalk must reuse the same existing city paving material');
-assert(game.includes("from './scripts/station-photo-parking.js?v=58115'"),
+assert(game.includes("from './scripts/station-photo-parking.js?v=58116'"),
  'The reviewed 5.76 parking geometry must now load safe gap filler, not a stale 5.76 module');
-assert(game.includes("const BUILD_ID='20261115-photo-2023-tapered-rail-apron-58115'"),
+assert(game.includes("const BUILD_ID='20261115-osm-safe-parking-roadside-seam-58116'"),
  'New game version must retain 5.76 parking with the added ticket-machine scene');
 assert(game.includes("from './scripts/bike-tower-interior.js?v=5640'"));
 assert(game.includes("from './scripts/station-forecourt-pass.js?v=5650'"));
@@ -404,7 +414,10 @@ assert(code.includes('renderRailApron();'));
 assert(code.includes("mesh.name='PhotoConfirmedContinuousRailSideAngledParking'"));
 assert(code.includes('planRailApronProfiles([...planned.railSideParking,'));
 assert(code.includes('const midBulge=Math.max(0,Math.sin(Math.PI*t))'));
-assert(code.includes('const depth=Math.min(previous.depth,next.depth)'));
+assert(code.includes('const roadEdge=Math.min(previous.roadFacingEdge,next.roadFacingEdge)'));
+assert(code.includes('const railEdge=Math.max(previous.railFacingEdge,next.railFacingEdge)'));
+assert(code.includes('for(const candidate of [-2.90,-2.78,-2.66])'));
+assert(code.includes('if(safePlace(trial,2.46,trialDepth,.12))break;'));
 assert(!code.includes('batch(group,material.railPaved,railPaving)'));
 assert(code.includes('batch(group,material.bayLines,photoBayLines)'));
 assert(code.includes('for(const stripe of planned.bayMarkings.all)'));
