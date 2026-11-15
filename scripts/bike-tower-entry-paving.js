@@ -1,4 +1,4 @@
-// Milovice RP 5.81.9 — source-safe continuous forecourt with mapped-footway UV matching between tower and rendered footway
+// Milovice RP 5.81.10 — align terminal forecourt cross-section with mapped OSM footway between tower and rendered footway
 // outside the existing blue Bike Tower entry. Not a new street or full plaza.
 // Photo evidence: user-shared Mapy.com panorama (2022-05-17) and ŠJů
 // Wikimedia Commons Bike Tower (2024-05-30, CC BY 4.0).
@@ -135,10 +135,18 @@ function buildForecourtRows({x,z,nx,nz,depth,connector}){
    z:padSide.z*(1-Math.min(1,t*4))+connector.side.z*Math.min(1,t*4)
   });
   const widths=forecourtHalfWidths(t);
+  // Rotate the final 30% into the actual OSM sidewalk normal instead of
+  // ending the paving at an oblique angle to the rendered sidewalk.
+  const phase=Math.max(0,Math.min(1,(t-.70)/.30));
+  const blend=phase*phase*(3-2*phase);
+  const endSide=normalize({
+   x:side.x*(1-blend)+connector.landingSide.x*blend,
+   z:side.z*(1-blend)+connector.landingSide.z*blend
+  });
   rows.push({
    x:connector.start.x+(connector.end.x-connector.start.x)*t,
    z:connector.start.z+(connector.end.z-connector.start.z)*t,
-   side,station:widths.station,road:widths.road,phase:'forecourt'
+   side:endSide,station:widths.station,road:widths.road,phase:'forecourt'
   });
  }
  return rows;
@@ -230,7 +238,16 @@ export function planBikeTowerEntryPaving(elements,roadClearance){
   return null;
  const protectedSegments=nearbyProtectedSegments(elements,Number(footway.id),{x,z});
  if(!protectedSegments.length)return null;
- const connectorBasic={start,end,side,length};
+ // Derive the landing orientation from the SAME clipped footway piece
+ // as the original road-safe target and UV frame.
+ const footwayDx=selected.segment.b.x-selected.segment.a.x;
+ const footwayDz=selected.segment.b.z-selected.segment.a.z;
+ const footwayLength=Math.hypot(footwayDx,footwayDz);
+ if(footwayLength<.01)return null;
+ const rawNormal={x:-footwayDz/footwayLength,z:footwayDx/footwayLength};
+ const sign=side.x*rawNormal.x+side.z*rawNormal.z>=0?1:-1;
+ const landingSide={x:sign*rawNormal.x,z:sign*rawNormal.z};
+ const connectorBasic={start,end,side,length,landingSide};
  const forecourtRows=buildForecourtRows({
   x,z,nx,nz,depth:PAD_DEPTH,connector:connectorBasic
  });
@@ -276,10 +293,6 @@ export function planBikeTowerEntryPaving(elements,roadClearance){
  // from the beginning of its rendered segment. Previously this forecourt
  // used localX/1.2 and localZ/1.2; the abrupt scale/angle change at the
  // landing looked like an attached patch in close mobile screenshots.
- const footwayDx=selected.segment.b.x-selected.segment.a.x;
- const footwayDz=selected.segment.b.z-selected.segment.a.z;
- const footwayLength=Math.hypot(footwayDx,footwayDz);
- if(footwayLength<.01)return null;
  const textureBasis={
   origin:{x:selected.segment.a.x,z:selected.segment.a.z},
   longitudinal:{x:footwayDx/footwayLength,z:footwayDz/footwayLength},
@@ -293,8 +306,8 @@ export function planBikeTowerEntryPaving(elements,roadClearance){
   widestWidth:widest,narrowestWidth:narrowest,
   estimatedAreaM2:expandedArea+PAD_WIDTH*PAD_DEPTH,
   stationSideExpanded:true,roadSideConstrained:true,
-  singleContinuousSurface:true,forecourtRows,textureBasis,
-  uvAlignedWithMappedFootway:true,
+  singleContinuousSurface:true,forecourtRows,textureBasis,landingSide,
+  uvAlignedWithMappedFootway:true,endAlignedWithMappedFootway:true,
   targetInsideActuallyRenderedFootway:true,
   sourceFootwaySegment:selected.segment.sourceSegment,
   targetSafeDistanceMeters:gcd({x,z},end),
@@ -336,6 +349,7 @@ export function makeBikeTowerEntryPavingScene(THREE,{layer,terrainAt=()=>0,
    estimatedPavedAreaM2:plan?.connector?.estimatedAreaM2??0,
    oneContinuousSurface:!!root&&!!plan?.singleContinuousSurface,
    uvAlignedWithMappedFootway:!!root&&!!plan?.connector?.uvAlignedWithMappedFootway,
+   endAlignedWithMappedFootway:!!root&&!!plan?.connector?.endAlignedWithMappedFootway,
    preservedGreenery:!!root&&!!plan?.sourceLandscapeVegetationPreserved,
    expectedFootwayId:BIKE_TOWER_ENTRY_PAVING_SOURCE.footwayWayId,
    source:BIKE_TOWER_ENTRY_PAVING_SOURCE.photo,
