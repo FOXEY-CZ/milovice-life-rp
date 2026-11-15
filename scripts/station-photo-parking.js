@@ -366,8 +366,8 @@ export function planStationPhotoParking(elements,roadClearance){
  // north. Widen conservatively toward rails ONLY after the old full-footprint
  // road, walkway, buildings and railway safety checks all pass.
  const southernLimit=8,northernLimit=Math.min(65,f.length-8);
- const safePlace=(p,length,depth,buffer=.12)=>{
-  if(!isRoadFreeRect(roadClearance,{...p,length,depth,yaw:f.yaw,buffer,step:.36}))
+ const safePlace=(p,length,depth,buffer=.12,step=.36)=>{
+  if(!isRoadFreeRect(roadClearance,{...p,length,depth,yaw:f.yaw,buffer,step}))
    return 'mapped-road-or-footway';
   for(let i=-3;i<=3;i++)for(let j=-4;j<=4;j++){
    const q=at(f,(p.x-f.a.x)*f.ux+(p.z-f.a.z)*f.uz+i*length/6,
@@ -412,13 +412,15 @@ export function planStationPhotoParking(elements,roadClearance){
    // The previous .12m buffer left a narrow green divider beside the
    // pale 2023-photo-informed rail parking bank. Try finer OSM-safe edges:
    // full slab, ALL streets/footways, buildings and tracks remain protected.
+   // Refining the conservative rectangle-cell circles from 36 to 12 cm
+   // avoids rejecting safe 5 cm roadside gaps; never touch the OSM road.
    let acceptedRoadBuffer=.12;
    for(const candidate of [-2.90,-2.78,-2.66,-2.54,-2.42,-2.30]){
     const trialDepth=candidate-originalRailEdge;
     const trialOffset=(originalRailEdge+candidate)/2;
     const trial=at(f,along,trialOffset);
     const buffer=candidate>=-2.30?.025:candidate>=-2.42?.040:.12;
-    if(safePlace(trial,2.46,trialDepth,buffer))break;
+    if(safePlace(trial,2.46,trialDepth,buffer,.12))break;
     acceptedRoadEdge=candidate;
     acceptedRoadBuffer=buffer;
     chosen={...chosen,...trial,offset:trialOffset,depth:trialDepth};
@@ -450,7 +452,7 @@ export function planStationPhotoParking(elements,roadClearance){
   const depth=roadEdge-railEdge;
   if(depth<=1.6){railSideJoinRejected.push({along:mid,reason:'no-safe-overlap'});continue;}
   const offset=(roadEdge+railEdge)/2,p=at(f,mid,offset);
-  const length=gap+.025,failed=safePlace(p,length,depth,.022);
+  const length=gap+.025,failed=safePlace(p,length,depth,.022,.12);
   if(failed){railSideJoinRejected.push({along:mid,reason:failed});continue;}
   railSideJoiningSlabs.push({...p,along:mid,offset,
    yaw:f.yaw,length,depth,railRoadVerified:true});
@@ -668,6 +670,7 @@ export function planStationPhotoParking(elements,roadClearance){
   railPavingTrafficEdgeSafelyExtended:true,
   railPavingNarrowRoadsideGapRetested:true,
   railPavingMinRoadFacingBuffer:.025,
+  railPavingRefinedSamplingMetres:.12,
   railFacingKerbsLimitedToVerifiedPaving:true,
   terminalPlantingBedsDeferred:true,
   railPavingSeamCells:railSideParking.filter(b=>b.roadsideSeamClosedMetres>.01).length,
@@ -881,6 +884,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   railPavingTrafficEdgeSafelyExtended:planned?.railPavingTrafficEdgeSafelyExtended||false,
   railPavingNarrowRoadsideGapRetested:planned?.railPavingNarrowRoadsideGapRetested||false,
   railPavingMinRoadFacingBuffer:planned?.railPavingMinRoadFacingBuffer??null,
+  railPavingRefinedSamplingMetres:planned?.railPavingRefinedSamplingMetres??null,
   railSideJoinRejected:planned?.railSideJoinRejected.length||0,
   railSideSurface:planned?.railParkingSurface||null,
   railGrassGridRemoved:planned?.railGrassGridRemoved||false,
