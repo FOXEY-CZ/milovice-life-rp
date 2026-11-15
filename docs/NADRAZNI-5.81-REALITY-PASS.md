@@ -101,3 +101,14 @@ Uživatel přidal svislý snímek webového technického nadhledu 5.81.17 v 21:3
 2. Jižní konec vnějšího chodníku na středním ostrově vykazuje několik osamocených pravoúhlých výčnělků. Nově se překryvná texturovaná výplň vytváří **jen v řádcích, kde zároveň existuje schválená souvislá geometrie chodníku**, jinak by totiž překryv pokračoval za špičku ostrůvku.
 
 **Meze důkazů:** georeferencované jsou silnice a některé pěší trasy, přesná hranice parkoviště, typy a souřadnice výsadby nebo šíře zakončení nejsou změřeny. Tyto dvě úpravy jsou vizuální korekce již známého modelu; fotografické schválení nové celkové podoby a výsadba zůstávají otevřené. Nepřidává se nová cesta, strom ani záhon.
+
+
+## 5.81.22 — audit zelené spáry mezi kolejovým parkovištěm a vozovkou (15. 11. 2026)
+
+Uživatel poslal pohled shora na 5.81.21 (22:20 SEČ). Na snímku už nejsou zelené výřezy **uvnitř** středního parkovacího ostrůvku, ale vlevo u kolejového parkoviště zůstával zelený proužek. Na spodním zakončení středního ostrůvku je pořád několik hranatých dílů. Tuto poslední vadu 5.81.22 **neřeší**.
+
+Na základě nezávislého testu 20 reálných přijatých parkovacích úseků: ve verzi 5.81.21 končila hrana u souřadnice `offset=-2.42` (nejbližší OSM service way 675778842, matematický odstup od modelované šířky 4,5 m = 0,17 m). Přísný hrubý test vymezoval obdélník 36cm vzorkovacími buňkami a zamítal i bezpečný detail `-2.30`.
+
+Pro 5.81.22 je zpřesněno **pouze vzorkování krajních kandidátů a spojovacích panelů** na 12 cm, při zachování stejné konzervativní kružnicové obálky a kladného 2,5cm bezpečnostního bufferu. Potvrzený geometrický audit: všech 20 úseků má nyní `offset=-2.30` a minimální teoretický odstup od OSM modelu vozovky 0,05 m. Nová mapová cesta se nevytváří, silnice ani jejich textury se neposunují.
+
+Fotografické hranice nejsou geodeticky ověřené. Vizuální výsledek na telefonu a konce obou parkovacích ostrovů musí být porovnány znovu. Výsadbu podle pouhého odhadu nadále nevytvářet.
