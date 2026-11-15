@@ -33,8 +33,29 @@ assert.equal(p.connectedToMappedFootway,true);
 assert.equal(p.connector.footwayWayId,1165594426);
 assert(p.connector.length>6&&p.connector.length<10,
  'Connection must reach the physically rendered footway, not a clipped line');
-assert.equal(p.connector.widthStart,1.60);
-assert.equal(p.connector.widthEnd,1.55);
+assert.equal(p.connector.widthStart,3.10);
+assert.equal(p.connector.widthEnd,1.64);
+assert.equal(p.singleContinuousSurface,true);
+assert.equal(p.connector.singleContinuousSurface,true);
+assert.equal(p.sourceLandscapeVegetationPreserved,true);
+assert.equal(p.connector.stationSideExpanded,true);
+assert.equal(p.connector.roadSideConstrained,true);
+assert(p.connector.widestWidth>4.3&&p.connector.widestWidth<5);
+assert(p.connector.narrowestWidth>=1.6&&p.connector.narrowestWidth<2);
+assert(p.connector.estimatedAreaM2>25&&p.connector.estimatedAreaM2<65);
+assert(p.connector.buildingMargin>.45);
+const rows=p.connector.forecourtRows;
+assert.equal(rows.length,31,'pad rows + one continuous connector; no double-front row');
+assert(rows.slice(0,7).every(r=>r.phase==='apron'));
+assert(rows.slice(7).every(r=>r.phase==='forecourt'));
+const front=rows[6],next=rows[7];
+assert(Math.hypot(next.x-front.x,next.z-front.z)>.01,
+ 'front apron row must join the next row without duplicate overlapping geometry');
+assert(Math.abs((front.station+front.road)-p.width)<.001);
+assert(rows[18].station>rows[18].road+1.5,
+ 'pedestrian forecourt must expand toward station, not into road');
+assert(rows.at(-1).station+rows.at(-1).road<1.9,
+ 'forecourt must gently narrow into the visible 1.8m OSM footway');
 assert.equal(p.connector.targetInsideActuallyRenderedFootway,true);
 assert.equal(p.connector.sourceFootwaySegment,3);
 assert(p.connector.targetCarriagewayClearance>1.04);
@@ -95,6 +116,39 @@ const otherWay={
  ]};
 assert.equal(planBikeTowerEntryPaving([...elements,otherWay],clearance),null,
  'Connector must reject ANY extra OSM footway/path even though its own target is exempt');
+// A new obstacle at the widened STATION-facing shoulder (not on the
+// old narrow 1.55m path) must make the entire proposed forecourt fail.
+const shoulder=rows[18],axis={x:p.connector.end.x-p.connector.start.x,
+ z:p.connector.end.z-p.connector.start.z};
+const axisLength=Math.hypot(axis.x,axis.z);
+const obstacle={x:shoulder.x+shoulder.side.x*3.0,
+ z:shoulder.z+shoulder.side.z*3.0};
+const toGps=q=>({
+ lat:50.226-q.z/111320,
+ lon:14.889+q.x/(111320*Math.cos(50.226*Math.PI/180))
+});
+const shoulderPath={
+ type:'way',id:987654322,tags:{highway:'path'},geometry:[
+  toGps({x:obstacle.x-axis.x/axisLength*2,
+   z:obstacle.z-axis.z/axisLength*2}),
+  toGps({x:obstacle.x+axis.x/axisLength*2,
+   z:obstacle.z+axis.z/axisLength*2})
+ ]
+};
+assert.equal(planBikeTowerEntryPaving([...elements,shoulderPath],clearance),null,
+ 'Station-side widening must reject a new real OSM footpath on its outer edge');
+const shoulderBuilding={
+ type:'way',id:987654323,tags:{building:'yes'},geometry:[
+  toGps({x:obstacle.x-.5,z:obstacle.z-.5}),
+  toGps({x:obstacle.x+.5,z:obstacle.z-.5}),
+  toGps({x:obstacle.x+.5,z:obstacle.z+.5}),
+  toGps({x:obstacle.x-.5,z:obstacle.z+.5}),
+  toGps({x:obstacle.x-.5,z:obstacle.z-.5})
+ ]
+};
+assert.equal(planBikeTowerEntryPaving([...elements,shoulderBuilding],clearance),null,
+ 'Forecourt must not cover an added OSM building');
+
 const source=readFileSync(new URL('bike-tower-entry-paving.js',import.meta.url),'utf8');
 assert(source.includes('isRoadFreeRect(roadClearance'));
 assert(source.includes('terrainAt(x,z)+plan.groundOffset'));
@@ -106,7 +160,15 @@ assert(source.includes('safePedestrianPieces('));
 assert(source.includes('targetInsideActuallyRenderedFootway:true'));
 assert(source.includes('createRoadClearance()'));
 assert(source.includes('connectedToMappedFootway:true'));
-assert(source.includes('const baseVertex=vertices.length/3'));
+assert(source.includes('const rows=plan.connector.forecourtRows;'));
+assert(source.includes('sampleRow(row,j/ACROSS_ROWS)'));
+assert(source.includes('const PAD_ROWS=6,CONNECTOR_ROWS=24,ACROSS_ROWS=12'));
+assert(source.includes('station:PAD_WIDTH/2+2.10*bulge-.60*ease'));
+assert(source.includes('road:PAD_WIDTH/2-.86*ease'));
+assert(source.includes('nearBuildingPolygons'));
+assert(source.includes('polygonGap(p,polygon)'));
+assert(!source.includes('const baseVertex=vertices.length/3'),
+ 'No second overlapping connector geometry permitted');
 assert(source.includes('indices.push(k,k+1,after,k+1,after+1,after)'));
 assert(source.includes('sharedMaterial=sidewalkMaterial'));
 assert(source.includes('geometry?.dispose()'));
@@ -115,14 +177,14 @@ assert(!source.includes('new THREE.CanvasTexture'));
 assert(!source.includes('new THREE.TextureLoader'));
 assert(!source.includes('fetch('));
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(html.includes("const BUILD_ID='20261115-biketower-rendered-footway-5817'"));
-assert(html.includes("from './scripts/bike-tower-entry-paving.js?v=5817'"));
+assert(html.includes("const BUILD_ID='20261115-biketower-continuous-forecourt-5818'"));
+assert(html.includes("from './scripts/bike-tower-entry-paving.js?v=5818'"));
 assert(html.includes("bikeTowerEntryPaving.create(elements,{sidewalkMaterial:osmSidewalkMat})"));
 assert(html.includes('bikeTowerEntryPaving.reset()'));
 assert(html.includes('bikeTowerEntryPaving:bikeTowerEntryPaving.status()'));
 assert(html.includes("stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})"));
 assert(html.includes('worldAlignedRoadUv:true'));
-console.log('5.81.7 PASS connected Bike Tower to RENDERED OSM footway',JSON.stringify({
+console.log('5.81.8 PASS continuous wide Bike Tower forecourt with actual OSM road and building exclusions',JSON.stringify({
  sourceIds:p.sourceWayIds,width:p.width,depth:p.depth,
  indexedStreetSegments:indexed,
  clearanceMeters:+clearance.nearest(p.x,p.z).clearance.toFixed(2),
