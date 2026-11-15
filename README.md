@@ -1,3 +1,21 @@
+# Milovice RP 5.81.16 — napojení parkování u kolejí na příjezdovou komunikaci
+
+**Kontrola parkoviště shora:** https://foxey-cz.github.io/milovice-life-rp/?v=58116&forecourtAudit=wide&parkingOverview=1  
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=58116  
+**Záloha před změnou:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/58115-before-roadside-parking-seam
+
+## Vizuální kontrola verze 5.81.15, 15. 11. 2026, 20:48
+
+Mobilní nadhled ukazuje lepší, mírně rozšířenou levostrannou parkovací plochu, ovšem mezi ní a příjezdovou komunikací stále zůstává nápadný úzký pruh trávy. Na doloženém satelitním snímku **4. června 2023** je parkovací plocha u asfaltu a nanejvýš oddělená obrubníkem. Stejně jako dříve neznáme geodeticky přesnou hranici a satelit z roku 2023 nepotvrzuje dnešní stav.
+
+Verze 5.81.16 proto zkouší **uzavřít část nesprávně vzniklého zeleného pruhu**: u každého již bezpečného parkovacího dílu samostatně otestuje tři drobná posunutí hrany k OSM příjezdové silnici, maximálně **36 cm**, při zachování vnější hrany směrem ke kolejím. Ověřuje celou novou obdélníkovou plochu vůči silnicím, pěšinám, budovám a kolejišti. Jakmile by rozšíření neprošlo testem, zůstává dosavadní bezpečná hranice.
+
+Spoje mezi sousedními parkovacími díly používají **pouze společný bezpečný průnik** obou sousedních povrchů. Nikdy se nedoplní dlažba přes asfalt ani přes nepřístupnou část kolejiště. Původní vozovky, chodník v pravém parkovacím ostrově, bílá parkovací značení, cyklověž i nádražní budova zůstávají beze změny. Počet drawcallů se nemění; jde o úpravu stávajícího 3D meshe.
+
+Zbylá zeleň mezi silnicí a parkovištěm se smí odstranit jen po ověření dalších podkladů. Tento build není náhradou za geodetický polygon celé parkovací plochy.
+
+---
+
 # Milovice RP 5.81.15 — proměnlivý půdorys parkování u kolejí podle satelitního snímku 2023
 
 **Pohled na celé parkoviště shora:** https://foxey-cz.github.io/milovice-life-rp/?v=58115&forecourtAudit=wide&parkingOverview=1  
