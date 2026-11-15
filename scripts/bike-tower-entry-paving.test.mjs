@@ -40,6 +40,11 @@ assert.equal(p.connector.singleContinuousSurface,true);
 assert.equal(p.sourceLandscapeVegetationPreserved,true);
 assert.equal(p.connector.stationSideExpanded,true);
 assert.equal(p.connector.uvAlignedWithMappedFootway,true);
+assert.equal(p.connector.endAlignedWithMappedFootway,true);
+const endNormal=p.connector.landingSide;
+const actualLastNormal=p.connector.forecourtRows.at(-1).side;
+assert(Math.abs(actualLastNormal.x*endNormal.x+actualLastNormal.z*endNormal.z-1)<1e-9,
+ 'Landing must end orthogonally to the actual OSM footway');
 assert.equal(p.connector.textureBasis.footwayWidthMeters,1.8);
 assert.equal(p.connector.textureBasis.repeatAlongMeters,8);
 assert.equal(p.connector.roadSideConstrained,true);
@@ -157,6 +162,7 @@ assert(source.includes('isRoadFreeRect(roadClearance'));
 assert(source.includes('terrainAt(pt.x,pt.z)+plan.groundOffset'));
 assert(source.includes('sharedMaterial=sidewalkMaterial'));
 assert(source.includes('basis.footwayWidthMeters'));
+assert(source.includes('const blend=phase*phase*(3-2*phase)'));
 assert(source.includes('basis.repeatAlongMeters'));
 assert(source.includes('layer.add(root)'));
 assert(source.includes('nearbyProtectedSegments'));
@@ -182,14 +188,14 @@ assert(!source.includes('new THREE.CanvasTexture'));
 assert(!source.includes('new THREE.TextureLoader'));
 assert(!source.includes('fetch('));
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(html.includes("const BUILD_ID='20261115-biketower-footway-uv-continuity-5819'"));
-assert(html.includes("from './scripts/bike-tower-entry-paving.js?v=5819'"));
+assert(html.includes("const BUILD_ID='20261115-biketower-aligned-landing-58110'"));
+assert(html.includes("from './scripts/bike-tower-entry-paving.js?v=58110'"));
 assert(html.includes("bikeTowerEntryPaving.create(elements,{sidewalkMaterial:osmSidewalkMat})"));
 assert(html.includes('bikeTowerEntryPaving.reset()'));
 assert(html.includes('bikeTowerEntryPaving:bikeTowerEntryPaving.status()'));
 assert(html.includes("stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})"));
 assert(html.includes('worldAlignedRoadUv:true'));
-console.log('5.81.9 PASS continuous wide Bike Tower forecourt with actual OSM road and building exclusions',JSON.stringify({
+console.log('5.81.10 PASS continuous wide Bike Tower forecourt with actual OSM road and building exclusions',JSON.stringify({
  sourceIds:p.sourceWayIds,width:p.width,depth:p.depth,
  indexedStreetSegments:indexed,
  clearanceMeters:+clearance.nearest(p.x,p.z).clearance.toFixed(2),
