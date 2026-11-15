@@ -95,6 +95,12 @@ try{
   assert.equal(v.bikeTowerEntryPaving?.active,true,
    'Photo-anchored tower entry must render its paved access, not grass');
   assert.equal(v.bikeTowerEntryPaving?.drawCalls,1);
+  assert.equal(v.bikeTowerEntryPaving?.connectedToMappedFootway,true);
+  assert.equal(v.bikeTowerEntryPaving?.expectedFootwayId,1165594426);
+  assert(v.bikeTowerEntryPaving?.connectorLength>1);
+  assert(v.bikeTowerEntryPaving?.connectorLength<3.5);
+  assert.equal(v.bikeTowerEntryPaving?.connectorEndWidth,.68);
+  assert(v.bikeTowerEntryPaving?.connectorRoadMargin>.17);
   assert.equal(v.bikeTowerEntryPaving?.width,3.1);
   assert.equal(v.bikeTowerEntryPaving?.depth,2.1);
   assert.equal(v.bikeTowerEntryPaving?.materialReused,true);
