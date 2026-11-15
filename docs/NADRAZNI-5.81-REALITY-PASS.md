@@ -83,3 +83,11 @@
 3. **Pozdější 5.82:** okolní domy a propojené přístupové ulice; to je stále jeden konzistentní uliční systém, ne samostatné objekty rozmístěné od oka.
 
 **Doporučená první implementační dávka:** diagnostická scéna / porovnávací inventář „pohled od Bike Tower na nádraží + opačný pohled“ s vyznačenými existujícími OSM kotvami a auditními značkami, nikoliv fyzické fiktivní lavičky či nová asfaltová vrstva.
+
+
+## Doplnění Part 16 — 5.81.17, 15. 11. 2026
+
+- Na opačné (kolejové) straně parkoviště byly z již potvrzených a OSM bezpečných parkovacích polygonů odvozeny **nízké zadní obruby** a **dvě krátká krajní zakončení**. Jsou vykreslovány ve stejné instancované sadě obrub, tedy bez dalšího draw callu. Dlažba 5.81.16, silniční síť, chodník směrem na Nádražní a čáry stání se nemění.
+- Metoda: `planRailApronBoundaryKerbs` skládá úseky podle `planRailApronProfiles`; ověření `isRoadFreeRect` chrání komunikace a chodníky. Obruba je uvnitř bezpečné parkovací plochy, nikoli nový okraj silnice.
+- **Zelené záhony / výsadbové ostrůvky dosud NEJSOU vytvořeny:** 2023 satelit naznačuje jejich přítomnost u zakončení, ale přesné hranice a polohy nebyly zaměřeny. Nevymýšlet zeleň ani neucpat průjezd.
+- Tento krok je geometricky ověřený, nikoliv finální vizuální schválení. Po nasazení porovnat letecký technický pohled a pohled z úrovně člověka, zejména zda koncové obrubníky správně navazují a nevytvářejí spáry.
