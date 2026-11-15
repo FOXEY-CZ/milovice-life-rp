@@ -234,7 +234,7 @@ assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmS
  'Carved sidewalk must reuse the same existing city paving material');
 assert(game.includes("from './scripts/station-photo-parking.js?v=5760'"),
  'Station parking remains frozen at reviewed 5.76 geometry');
-assert(game.includes("const BUILD_ID='20261115-biketower-rendered-footway-5817'"),
+assert(game.includes("const BUILD_ID='20261115-biketower-continuous-forecourt-5818'"),
  'New game version must retain 5.76 parking with the added ticket-machine scene');
 assert(game.includes("from './scripts/bike-tower-interior.js?v=5640'"));
 assert(game.includes("from './scripts/station-forecourt-pass.js?v=5650'"));
