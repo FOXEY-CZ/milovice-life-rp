@@ -82,6 +82,27 @@ assert(render.includes("parent.add(mesh)"));
 assert(render.includes("geometry.dispose();material.dispose();texture.dispose()"));
 assert(!render.includes("new THREE.TextureLoader("));
 assert(!render.includes("fetch("));
+// 5.81.2: visual evidence from the user showed the analog joystick and a
+// loading toast still visible over the photo review, plus a warped asphalt
+// pattern. Audit-only no-texture mode isolates MATERIAL from geometry causes.
+for(const id of ['#rp-joystick','#osmnotice-live','#osm3d'])
+ assert(html.includes('html.rp-ticket-photo-audit '+id),
+  'Audit must hide '+id+' independently of the mobile analog control CSS');
+assert(html.includes("const rpRoadSurfaceFlatAudit=Boolean(rpForecourtAuditView)"));
+assert(html.includes("new URLSearchParams(location.search).get('roadSurfaceFlat')==='1'"));
+assert(html.includes("if(rpRoadSurfaceFlatAudit){"));
+assert(html.includes('osmRoadMaterial.map=null;'));
+assert(html.includes('roadMaterialHasTexture:Boolean(osmRoadMaterial.map)'));
+assert(html.includes('roadMaterialOnly:true'));
+assert(html.includes('geometryModified:false'));
+assert(html.includes("if(status&&osmReady&&osmActive)status.textContent="));
+assert(html.includes("id=\"forecourt-audit-surface\""));
+assert(html.includes("id=\"forecourt-audit-status\""));
+assert(html.includes("osmNotice.id='osmnotice-live'"));
+assert(html.includes("osmBtn.id='osm3d'"));
+assert(!html.includes("osmBtn.id='osm-map-button-live'"));
+assert(html.includes("const cx=rpAuditCameraWorld?.x??(walking?px:x)"));
+assert(html.includes("const BUILD_ID='20261115-forecourt-surface-diagnostic-5812'"));
 console.log('5.81 anchored forecourt camera + existing upper Bike Tower sign PASS',JSON.stringify({
  views:views.map(id=>({id,heading:STATION_FORECOURT_AUDIT_VIEWS[id].camera.heading})),
  unmappedObjects:STATION_FORECOURT_PENDING,
