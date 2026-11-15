@@ -29,6 +29,8 @@ jobs:
         run: node scripts/bike-tower-glass-5811.test.mjs
       - name: Verify corrected asphalt is world-aligned with no moved OSM roads or sidewalks
         run: node scripts/road-asphalt-world-uv-5813.test.mjs
+      - name: Verify photo-documented Bike Tower entrance paving stays outside all mapped roads and footways
+        run: node scripts/bike-tower-entry-paving.test.mjs
       - name: Prohibit unverified Nádražní garage objects without direct photographic evidence
         run: node scripts/photo-verification-policy.test.mjs
       - name: Identify the exact clicked 3D building from its mapped OSM footprint

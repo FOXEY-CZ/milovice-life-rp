@@ -1,3 +1,24 @@
+# Milovice RP 5.81.4 — dlážděný vstup k cyklověži, bez asfaltu přes chodník
+
+**Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5814  
+**Fotografická kontrola cyklověže:** https://foxey-cz.github.io/milovice-life-rp/?v=5814&forecourtAudit=tower  
+**Široké přednádraží:** https://foxey-cz.github.io/milovice-life-rp/?v=5814&forecourtAudit=wide  
+**Předchozí záloha 5.81.3:** https://github.com/FOXEY-CZ/milovice-life-rp/tree/backup/5813-before-bike-tower-entry-paving
+
+## První fyzická oprava přednádraží po opravě asfaltu
+
+Před modrým vstupem do skutečné cyklověže je podle uživatelských panoramat Mapy.com ze **17. 5. 2022** a [fotografie ŠJů z 30. 5. 2024](https://commons.wikimedia.org/wiki/File:Milovice,_N%C3%A1dra%C5%BEn%C3%AD,_cyklov%C4%9B%C5%BE.jpg) dlážděný přístup. Původní model měl před vstupem souvislý travnatý pás. Nyní je tam **jedna přibližná, road-safe dlážděná vstupní plocha**:
+
+- **Kotva:** stávající OSM cyklověž 1011197691, v návaznosti na skutečný mapový pěší koridor OSM 1165594426. Směr vstupu je odvozen z již používané fotograficky doložené pozice fotoaparátu; GPS fotografa není GPS skutečného prahu.
+- **Rozměr aproximace:** 3,10 × 2,10 m bez nadbytečných okrajů. Jde o vizuální odhad, **ne zaměření přesné hranice dlažby**. Plocha začíná těsně před stávajícím vstupem, zbytek nevyměřeného přednádraží zůstává nezměněný.
+- **Bezpečnost:** `planBikeTowerEntryPaving` kontroluje *celou otočenou plochu* přes `isRoadFreeRect` proti indexu skutečných OSM silnic **včetně chodníků**. Je-li konflikt, nevytvoří se nic. Nové stání auta, autobusový pruh, náhodná zahrádka ani nová dopravní plocha se tím nepřidávají. Nejsou přemístěny žádné souřadnice OSM, kolize vozidel ani budovy.
+- **Výkon:** jediné spojité `BufferGeometry` s DEM-výškopisem, sdíleným původním materiálem městských chodníků, bez vlastní textury a pouze **1 draw call**. Obsah má vlastní reset/dispose při opakovaném načítání města a hlásí diagnostiku `window.__miloviceBikeTowerEntryPaving`.
+- **Kontroly:** `scripts/bike-tower-entry-paving.test.mjs` prokazuje původní kotvy, rozměry a odmítnutí geometrie v případě hypotetického průjezdu nové OSM silnice přímo přes vstup. Samostatný Chromium WebGL test ověřuje přítomnost v živé scéně a počet vykreslovaných objektů.
+
+**Co se zatím nemění:** dlouhé parkoviště a vnější chodník z 5.76, textura asfaltu z 5.81.3, střecha nádraží, dva automaty, celá cyklověž, sloupky A/B, vzdálené boční ulice, BUS pruhy a zatím neukotvená velká lampa/strom. Není ještě možné tvrdit, že okolní souvislá plocha odpovídá fotografii jako celek.
+
+---
+
 # Milovice RP 5.81.3 — klidnější asfalt bez roztažených šraf
 
 **Běžná hra:** https://foxey-cz.github.io/milovice-life-rp/?v=5813  
