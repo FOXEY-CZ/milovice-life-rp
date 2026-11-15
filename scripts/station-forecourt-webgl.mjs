@@ -46,6 +46,7 @@ try{
    roadDiagnostic:window.__miloviceRoadTextureDiagnostic,
    roadUv:window.__miloviceRoadUVValidation,
    stationParking:window.__miloviceStationParking,
+   streetGeometry:window.__miloviceStreetGeometryAudit,
    joystickHidden:getComputedStyle(document.getElementById('rp-joystick')).display==='none',
    liveLoadingPopupHidden:getComputedStyle(document.getElementById('osmnotice-live')).display==='none',
    mapSwitchHidden:getComputedStyle(document.getElementById('osm3d')).display==='none',
@@ -71,6 +72,10 @@ try{
   assert.equal(v.parkingOverview.enabled,Boolean(cfg.overview));
   assert.equal(v.parkingOverview.noGeometryChanges,true);
   assert.equal(state.stationParking.active,true);
+  assert.equal(state.streetGeometry?.photoOuterFootwaySegments,3,
+   'Exactly the three previously duplicate OSM island-footway segments are now custom-rendered');
+  assert(state.streetGeometry?.mappedFootwaySegments>0,
+   'Other mapped footways must remain visible');
   assert(state.stationParking.roadSafeInfillCells>100);
   assert.equal(state.stationParking.smoothRoadsideInfill,true);
   assert.equal(state.stationParking.infillRestrictedToSafeRibbon,true);
