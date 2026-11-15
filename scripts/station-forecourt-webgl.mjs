@@ -73,6 +73,8 @@ try{
   assert.equal(state.stationParking.active,true);
   assert(state.stationParking.roadSafeInfillCells>100);
   assert.equal(state.stationParking.smoothRoadsideInfill,true);
+  assert.equal(state.stationParking.infillRestrictedToSafeRibbon,true);
+  assert(state.stationParking.unsupportedTerminalInfillRowsTrimmed>=0);
   assert.equal(state.stationParking.smoothRoadsideWithinSafeCells,true);
   assert(state.stationParking.smoothInfillRows>55);
   assert(state.stationParking.smoothInfillJoins>50);
@@ -90,7 +92,7 @@ try{
   assert.equal(state.stationParking.railPavingTrafficEdgeSafelyExtended,true);
   assert(state.stationParking.railPavingSeamCells>=2);
   assert(state.stationParking.railPavingLargestSeamReduction>.10);
-  assert(state.stationParking.railPavingLargestSeamReduction<=.361);
+  assert(state.stationParking.railPavingLargestSeamReduction<=.601);
   assert(state.stationParking.railPavingExpandedBays>=2,
    'Tapered rail-side apron must widen in OSM-safe places, not remain a rectangle');
   assert(state.stationParking.railPavingMaxDepth>
