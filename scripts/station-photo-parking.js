@@ -409,14 +409,21 @@ export function planStationPhotoParking(elements,roadClearance){
    // conspicuous narrow green strip. Approach the mapped 4.5m OSM
    // service road in 12cm steps, never closer than road clearance permits.
    // The WHOLE slab is rechecked for roads, paths, rails and buildings.
-   for(const candidate of [-2.90,-2.78,-2.66,-2.54,-2.42]){
+   // The previous .12m buffer left a narrow green divider beside the
+   // pale 2023-photo-informed rail parking bank. Try finer OSM-safe edges:
+   // full slab, ALL streets/footways, buildings and tracks remain protected.
+   let acceptedRoadBuffer=.12;
+   for(const candidate of [-2.90,-2.78,-2.66,-2.54,-2.42,-2.30]){
     const trialDepth=candidate-originalRailEdge;
     const trialOffset=(originalRailEdge+candidate)/2;
     const trial=at(f,along,trialOffset);
-    if(safePlace(trial,2.46,trialDepth,.12))break;
+    const buffer=candidate>=-2.30?.025:candidate>=-2.42?.040:.12;
+    if(safePlace(trial,2.46,trialDepth,buffer))break;
     acceptedRoadEdge=candidate;
+    acceptedRoadBuffer=buffer;
     chosen={...chosen,...trial,offset:trialOffset,depth:trialDepth};
    }
+   chosen.roadFacingBuffer=acceptedRoadBuffer;
    chosen.roadFacingEdge=acceptedRoadEdge;
    chosen.railFacingEdge=originalRailEdge;
    chosen.roadsideSeamClosedMetres=acceptedRoadEdge-originalRoadEdge;
@@ -659,6 +666,8 @@ export function planStationPhotoParking(elements,roadClearance){
   railPavingVariableDepth:true,railPavingBaseDepth:railParkingDepth,
   railPavingRoadFacingOffset:railRoadFacingOffset,
   railPavingTrafficEdgeSafelyExtended:true,
+  railPavingNarrowRoadsideGapRetested:true,
+  railPavingMinRoadFacingBuffer:.025,
   railFacingKerbsLimitedToVerifiedPaving:true,
   terminalPlantingBedsDeferred:true,
   railPavingSeamCells:railSideParking.filter(b=>b.roadsideSeamClosedMetres>.01).length,
@@ -870,6 +879,8 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   railPavingSeamCells:planned?.railPavingSeamCells||0,
   railPavingLargestSeamReduction:planned?.railPavingLargestSeamReduction||0,
   railPavingTrafficEdgeSafelyExtended:planned?.railPavingTrafficEdgeSafelyExtended||false,
+  railPavingNarrowRoadsideGapRetested:planned?.railPavingNarrowRoadsideGapRetested||false,
+  railPavingMinRoadFacingBuffer:planned?.railPavingMinRoadFacingBuffer??null,
   railSideJoinRejected:planned?.railSideJoinRejected.length||0,
   railSideSurface:planned?.railParkingSurface||null,
   railGrassGridRemoved:planned?.railGrassGridRemoved||false,
