@@ -370,7 +370,7 @@ try{
  const ticketPhotoPage=await context.newPage();
  const photoJsErrors=[];
  ticketPhotoPage.on('pageerror',error=>photoJsErrors.push(String(error)));
- await ticketPhotoPage.goto('http://127.0.0.1:8080/?v=5817&ticketPhotoAudit=1',
+ await ticketPhotoPage.goto('http://127.0.0.1:8080/?v=5818&ticketPhotoAudit=1',
   {waitUntil:'domcontentloaded',timeout:30000});
  await ticketPhotoPage.waitForFunction(
   ()=>window.__miloviceTicketPhotoAuditRendered?.active===true,
@@ -393,7 +393,7 @@ try{
   throw new Error('5.78 station machine photo-view WebGL error: '+
    JSON.stringify({ticketPhotoAudit,photoJsErrors}));
  await mkdir('browser-artifacts',{recursive:true});
- await ticketPhotoPage.screenshot({path:'browser-artifacts/milovice-ticket-photo-5817.png'});
+ await ticketPhotoPage.screenshot({path:'browser-artifacts/milovice-ticket-photo-5818.png'});
  console.log('5.78 source-aligned ticket machine photograph viewpoint PASS',
   JSON.stringify(ticketPhotoAudit.audit));
  await ticketPhotoPage.close();
