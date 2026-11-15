@@ -275,7 +275,13 @@ if(rpStationTicketPhotoAudit){
  document.documentElement.classList.add('rp-ticket-photo-audit');
  document.getElementById('ticket-photo-audit').hidden=false;
 }
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x9bc8ec);scene.fog=new THREE.Fog(0x9bc8ec,280,850);const camera=new THREE.PerspectiveCamera(67,innerWidth/innerHeight,.1,1400);const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,matchMedia('(pointer:coarse)').matches?1.6:1.25));renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x65725a,1.6));const sun=new THREE.DirectionalLight(0xffefcc,1.7);sun.position.set(50,100,30);scene.add(sun);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x9bc8ec);scene.fog=new THREE.Fog(0x9bc8ec,280,850);const camera=new THREE.PerspectiveCamera(67,innerWidth/innerHeight,.1,1400);const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,matchMedia('(pointer:coarse)').matches?1.6:1.25));renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x65725a,1.6));
+// The source image is portrait. A landscape 67° photo audit view would crop
+// the orange machine on a narrow phone; widen ONLY the opt-in diagnostic
+// lens without touching the normal game camera, player or source heading.
+if(rpStationTicketPhotoAudit&&innerWidth<innerHeight){
+ camera.fov=105;camera.updateProjectionMatrix();
+}const sun=new THREE.DirectionalLight(0xffefcc,1.7);sun.position.set(50,100,30);scene.add(sun);
 
 // Visual pipeline 3.8: cinematic tonemapping, improved sky and material response.
 renderer.outputColorSpace=THREE.SRGBColorSpace;
@@ -5101,5 +5107,5 @@ if(rpStationTicketPhotoAudit&&rpStationTicketCameraWorld){
   (isMobileGPU?' · DPR '+renderer.getPixelRatio().toFixed(2):'')+' · JS '+(perfCpuMs/perfFrames).toFixed(1)+' ms · WebGL '+(perfWebGLMs/perfFrames).toFixed(1)+' ms</small>';
  perfEl.style.color=fps>=45?'#a6f3b9':fps>=25?'#ffe39b':'#ff9e9e';
  perfFrames=0;perfCpuMs=0;perfWebGLMs=0;perfSince=t
-}}requestAnimationFrame(animate);setTimeout(()=>osmBtn.click(),300);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+}}requestAnimationFrame(animate);setTimeout(()=>osmBtn.click(),300);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;if(rpStationTicketPhotoAudit)camera.fov=innerWidth<innerHeight?105:67;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 </script></body></html>
