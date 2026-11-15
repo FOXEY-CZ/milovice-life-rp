@@ -1,4 +1,4 @@
-// Milovice RP 5.81.13 — smooth the entire road-facing island profile INSIDE existing road-safe paving cells.
+// Milovice RP 5.81.14 — photo-supported TWO paved parking banks and diagonal bay lines from user-supplied 2023 aerial.
 // The 5.72 "fix" drew a new OSM sidewalk directly OVER Nádražní's asphalt,
 // rather than removing the relevant strip from the parking surface.
 // The user confirmed the exact topology: existing road (UNTOUCHED),
@@ -24,9 +24,17 @@ export const STATION_PARKING_REFERENCE=Object.freeze({
  ]),
  author:'ŠJů',license:'CC BY 4.0',
  userReference:'user-shared 2022-05-17 Mapy.com comparison, observation only, no image retained',
+ aerial2023:Object.freeze({
+  date:'2023-06-04',provider:'user-shared satellite screenshot',orientation:'tracks-west-Nadrazni-east',
+  confirmed:['continuous pale rail-side paved angled parking, not separate grass-grid boxes',
+   'diagonal white stall lines on BOTH sides of one-way central access aisle',
+   'broad pale right-side parking island with narrow road-facing pedestrian edge',
+   'small planting islands at ends of parking banks'],
+  limitations:'Parking-line count and exact outlines not surveyed; transient cars ignored; image pixels not redistributed.'
+ }),
  observed:['two dark asphalt routes bound a large pale paved parking island',
   'wide pale concrete-block paving rather than narrow detached strips',
-  'second grass-grid parking row across the western access road',
+  'second continuous PALE paved angled-parking row across western access road (2023 satellite replaces old grass-grid assumption)',
   'outer Nádražní-facing sidewalk CARVED FROM the safe parking-island footprint, aligned with nearby OSM 1165594426',
   'separate paved right corner at the road entrance, connected to mapped footway 1282187911',
   'rounded island tip and a low kerb','bike tower and rail-side vegetation'],
@@ -66,6 +74,69 @@ function frame(a,b){
 }
 function at(f,along,offset){
  return {x:f.a.x+f.ux*along+f.nx*offset,z:f.a.z+f.uz*along+f.nz*offset};
+}
+
+// Use only the previously validated parking footprints as source geometry.
+// Parking-line positions are approximations based on the user-supplied
+// 4 June 2023 aerial, NEVER copied imagery or invented new vehicle roads.
+export function planSatelliteParkingMarkings(frame,railBays,centralCells,roadClearance){
+ if(!frame||!Array.isArray(railBays)||!Array.isArray(centralCells)||
+    !roadClearance?.isClear)return null;
+ const safeLine=(along1,offset1,along2,offset2,bank)=>{
+  const a=at(frame,along1,offset1),b=at(frame,along2,offset2);
+  const length=d2(a,b),dx=b.x-a.x,dz=b.z-a.z;
+  if(length<1.85)return null;
+  const x=(a.x+b.x)/2,z=(a.z+b.z)/2;
+  const yaw=Math.atan2(-dz,dx);
+  if(!isRoadFreeRect(roadClearance,{x,z,length,depth:.075,yaw,
+     buffer:.025,step:.18}))return null;
+  return {bank,x,z,yaw,length,
+   start:{along:along1,offset:offset1},
+   end:{along:along2,offset:offset2},
+   width:.075,realMarkingMeasured:false,sourcePhotoDate:'2023-06-04'};
+ };
+ const rail=[];
+ for(const bay of railBays){
+  // Entire short diagonal lies INSIDE one OSM-cleared parking rectangle.
+  const mark=safeLine(bay.along-.98,bay.offset-bay.depth*.43,
+   bay.along+.98,bay.offset+bay.depth*.43,'rail');
+  if(mark)rail.push(mark);
+ }
+ const covered=(along,offset)=>centralCells.some(cell=>
+  Math.abs(cell.along-along)<=cell.length*.5+.018&&
+  Math.abs(cell.offset-offset)<=cell.depth*.5+.018);
+ const central=[];
+ for(let along=8;along<Math.min(63,frame.length-10);along+=2.85){
+  const atStation=centralCells.filter(c=>Math.abs(c.along-along)<.40)
+   .sort((a,b)=>a.offset-b.offset);
+  if(atStation.length<3)continue;
+  const min=atStation[0].offset-atStation[0].depth/2+.17;
+  const max=atStation.at(-1).offset+atStation.at(-1).depth/2-.17;
+  if(max-min<2.25)continue;
+  // Follow a single regular diagonal; trim both ends to the LONGEST
+  // consecutive run with all line samples strictly inside valid paving.
+  const samples=24,valid=[];
+  for(let i=0;i<=samples;i++){
+   const t=i/samples,offset=min+(max-min)*t;
+   const station=along+(t-.5)*1.55;
+   valid.push(covered(station,offset));
+  }
+  let bestStart=-1,bestEnd=-1,run=-1;
+  for(let i=0;i<=samples+1;i++){
+   if(i<=samples&&valid[i]){if(run<0)run=i;}
+   else if(run>=0){
+    if(i-run>bestEnd-bestStart){bestStart=run;bestEnd=i-1;}
+    run=-1;
+   }
+  }
+  if(bestStart<0||bestEnd-bestStart<9)continue;
+  const a=bestStart/samples,b=bestEnd/samples;
+  const mark=safeLine(along+(a-.5)*1.55,min+(max-min)*a,
+   along+(b-.5)*1.55,min+(max-min)*b,'central');
+  if(mark)central.push(mark);
+ }
+ return {rail,central,all:[...rail,...central],basedOnUnchangedRoads:true,
+  userAerialDate:'2023-06-04',measuredStallCount:false};
 }
 // The user requested a single road-like strip, not Minecraft-like squares.
 // Each band cross-section lies WITHIN the OSM-safe island cells. Halfway
@@ -299,6 +370,23 @@ export function planStationPhotoParking(elements,roadClearance){
   else railSideParking.push({...p,along,offset:railParkingOffset,yaw:f.yaw,
    length:2.46,depth:railParkingDepth});
  }
+ // The 2023 aerial shows ONE pale paved western bank, not separated
+ // grass-grid boxes. Bridge only the short 0.39m gaps BETWEEN two fully
+ // cleared bays; every small connecting rectangle must pass the same
+ // OSM road, railway and building clearance as its neighbours.
+ const railSideJoiningSlabs=[],railSideJoinRejected=[];
+ for(let i=1;i<railSideParking.length;i++){
+  const previous=railSideParking[i-1],next=railSideParking[i];
+  if(next.along-previous.along>3.05)continue;
+  const left=previous.along+previous.length/2;
+  const right=next.along-next.length/2,gap=right-left;
+  if(gap<=0||gap>.7)continue;
+  const mid=(left+right)/2,p=at(f,mid,railParkingOffset);
+  const length=gap+.025,failed=safePlace(p,length,railParkingDepth,.022);
+  if(failed){railSideJoinRejected.push({along:mid,reason:failed});continue;}
+  railSideJoiningSlabs.push({...p,along:mid,offset:railParkingOffset,
+   yaw:f.yaw,length,depth:railParkingDepth,railRoadVerified:true});
+ }
  // A central candidate cell must have EXACTLY ONE role. We partition
  // ALL validated OSM-safe island tiles into parking OR outer sidewalk.
  // No extra terrain is claimed, so no new path can overlay the road.
@@ -435,7 +523,10 @@ export function planStationPhotoParking(elements,roadClearance){
    return null;
  }
 
- // User's RIGHT-HAND curved sidewalk is the southern corner by this
+ const bayMarkings=planSatelliteParkingMarkings(f,railSideParking,
+  centralParkingCells,roadClearance);
+ if(!bayMarkings)return null;
+  // User's RIGHT-HAND curved sidewalk is the southern corner by this
  // photographed, mapped east-bound footway. Extend only its exterior edge,
  // never paint through the OSM footway or a roadway.
  const cornerPaving=[],cornerCurbs=[],cornerRejected=[];
@@ -488,7 +579,8 @@ export function planStationPhotoParking(elements,roadClearance){
    cornerCurbs.push({...kerb,along,yaw:cornerYaw});
  }
  return {cells,curbs,rejected,rowStats,frame:f,cameras,
-  railSideParking,railRejected,
+  railSideParking,railRejected,railSideJoiningSlabs,railSideJoinRejected,
+  bayMarkings,
   outerFootwaySegments,outerFootwayStations,outerSidewalkCells,
   outerSidewalkCurbs,outerSidewalkMaxOsmDistance,
   edgeSpursTrimmed:edgeSpursRemoved.size,continuousRibbon,
@@ -496,6 +588,9 @@ export function planStationPhotoParking(elements,roadClearance){
   rightCornerFootwayId:cornerWay.id,centralFootwayId:centralFootway.id,
   incorrectlyPlacedRailSidewalkRemoved:true,
   parkingBanks:['central-between-roads','opposite-rail-side'],
+  aerialReferenceDate:'2023-06-04',
+  railParkingSurface:'continuous-pale-concrete-with-safe-bridges',
+  railGrassGridRemoved:true,diagonalBayMarkingsPhotoApproximate:true,
   pedestrianCorridorWidth:1.48,pedestrianSeparation:0,
   centralPedestrianSurface:'carved-from-OSM-safe-outer-parking-cells',
   centralParkingSurface:'remaining-inner-grid-parking-cells',
@@ -568,8 +663,9 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   grout:new THREE.MeshLambertMaterial({color:0x92928a}),
   paver:new THREE.MeshLambertMaterial({color:0xc7c6bd}),
   curb:new THREE.MeshLambertMaterial({color:0xb9b9b3}),
-  railGrid:new THREE.MeshLambertMaterial({color:0x69794f}),
-  railPaver:new THREE.MeshLambertMaterial({color:0xc1c3b9}),
+  // Real 2023 aerial: pale continuous parking apron, NOT green-grid pads.
+  railPaved:new THREE.MeshLambertMaterial({color:0xbfbcb3,roughness:1}),
+  bayLines:new THREE.MeshLambertMaterial({color:0xf0eee7}),
   sidewalk:new THREE.MeshLambertMaterial({color:0xe0dcd1})
  };
  let planned=null,drawMeshes=0,instances=0,sharedSidewalkTexture=false,infillProfile=null;
@@ -581,6 +677,14 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   coveredRows:planned?.rowStats.filter(r=>r.accepted>0).length||0,
   parkingBanks:planned?.parkingBanks||[],
   oppositeParkingBays:planned?.railSideParking.length||0,
+  railSideJoiningSlabs:planned?.railSideJoiningSlabs.length||0,
+  railSideJoinRejected:planned?.railSideJoinRejected.length||0,
+  railSideSurface:planned?.railParkingSurface||null,
+  railGrassGridRemoved:planned?.railGrassGridRemoved||false,
+  railBayLines:planned?.bayMarkings?.rail.length||0,
+  centralBayLines:planned?.bayMarkings?.central.length||0,
+  bayLinePositionsEstimated:planned?.bayMarkings?.measuredStallCount===false,
+  satelliteReferenceDate:planned?.aerialReferenceDate||null,
   centralParkingTiles:planned?.centralParkingCells.length||0,
   centralMistakenSidewalkTiles:0,
   mappedOuterSidewalkSegments:planned?.outerFootwaySegments.length||0,
@@ -736,7 +840,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   group.userData.lodZ=planned.frame.a.z+planned.frame.uz*31;
   group.userData.lodDetail=true;
   const grout=[],stones=[],curb=[];
-  const oppositeGrass=[],oppositePavers=[],sidewalkPavers=[];
+  const railPaving=[],photoBayLines=[],sidewalkPavers=[];
   for(const p of planned.centralParkingCells){
    const y=terrainAt(p.x,p.z);
    // Nearly seamless backing slabs eliminate the old green pinstripes.
@@ -753,17 +857,19 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   }
   for(const p of planned.curbs)
    curb.push({...p,y:terrainAt(p.x,p.z)+.209,sx:.75,sy:.103,sz:.11});
-  // 5.69: keep the real opposite parking bank without a false footpath behind it.
-  // green-grid surface, NOT a duplicate of the broad central pale island.
-  for(const bay of planned.railSideParking){
-   const y=terrainAt(bay.x,bay.z);
-   oppositeGrass.push({...bay,y:y+.159,sx:bay.length,sy:.024,sz:bay.depth});
-   for(let i=0;i<4;i++)for(let j=0;j<7;j++){
-    const p=at(planned.frame,bay.along+(i-1.5)*.58,
-     bay.offset+(j-3)*.53);
-    oppositePavers.push({...p,y:terrainAt(p.x,p.z)+.181,
-     yaw:bay.yaw,sx:.49,sy:.026,sz:.40});
-   }
+  // June 2023 satellite: draw the west/rail bank as continuous light
+  // hardstanding, filling only safely validated micro-gaps between bays.
+  for(const patch of [...planned.railSideParking,...planned.railSideJoiningSlabs]){
+   railPaving.push({...patch,y:terrainAt(patch.x,patch.z)+.160,
+    sx:patch.length,sy:.040,sz:patch.depth});
+  }
+  // Both parking banks have diagonal white separators in the 2023 photo.
+  // This is a modest geometry-derived approximation of their footprints,
+  // not a surveyed count or a copy of the original aerial pixels.
+  for(const stripe of planned.bayMarkings.all){
+   photoBayLines.push({...stripe,y:terrainAt(stripe.x,stripe.z)+
+    (stripe.bank==='rail'?.191:.203),
+    sx:stripe.length,sy:.012,sz:stripe.width});
   }
   // Road edges stay EXACTLY as in 5.72, but the wrongly forced full-width
   // road-facing overlay is gone. A narrow pedestrian path is cut OUT of
@@ -780,9 +886,8 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
     sx:.65,sy:.135,sz:.12});
   batch(group,material.grout,grout);
   batch(group,material.paver,stones,[0xcac9c0,0xd4d1c8,0xc4c3bb,0xbdbeb6]);
-  batch(group,material.railGrid,oppositeGrass);
-  batch(group,material.railPaver,oppositePavers,
-   [0xbcbeb4,0xcacbc1,0xaeb4a8,0xd4d2c7]);
+  batch(group,material.railPaved,railPaving);
+  batch(group,material.bayLines,photoBayLines);
   batch(group,material.sidewalk,sidewalkPavers);
   batch(group,material.curb,curb);
   texturedOuterSidewalk(group,planned.continuousRibbon,
