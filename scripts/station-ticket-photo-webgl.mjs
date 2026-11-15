@@ -13,13 +13,14 @@ try{
  const page=await browser.newPage({viewport:{width:1280,height:760},deviceScaleFactor:1});
  const errors=[];
  page.on('pageerror',error=>errors.push(String(error.stack||error)));
- await page.goto('http://127.0.0.1:8080/?v=5780&ticketPhotoAudit=1',
+ await page.goto('http://127.0.0.1:8080/?v=5790&ticketPhotoAudit=1',
   {waitUntil:'domcontentloaded',timeout:30000});
  await page.waitForFunction(()=>window.__miloviceTicketPhotoAuditRendered?.active===true,
   null,{timeout:90000});
  const report=await page.evaluate(()=>({
   audit:window.__miloviceTicketPhotoAuditRendered,
   modelStatus:window.__miloviceStationTicketMachines,
+  facade:window.__miloviceStationPhotoFacade,
   loading:document.getElementById('milovice-loading')?.textContent||null,
   panelVisible:!!document.getElementById('ticket-photo-audit')?.offsetWidth,
   spawnHidden:getComputedStyle(document.getElementById('rp-spawn')).display==='none',
@@ -40,10 +41,15 @@ try{
  assert(report.audit.roadClearanceMin>1);
  assert.equal(report.panelVisible,true);
  assert.equal(report.spawnHidden,true);
- assert.equal(report.build,'20261115-station-photo-camera-audit-5780');
+ assert.equal(report.build,'20261115-station-photo-facade-clearance-5790');
+ assert.equal(report.facade?.active,true);
+ assert.deepEqual(report.facade.generatedFixtureTypes,['door','window']);
+ assert.deepEqual(report.facade.observedOrder,['door','orange','yellow','window']);
+ assert.equal(report.facade.removedInventedArchedWindowsOnPhotoWall,true);
+ assert(report.facade.minimumClearance>.16);
  assert.deepEqual(errors,[],'No page-side JavaScript errors allowed');
  await mkdir('browser-artifacts',{recursive:true});
- await page.screenshot({path:'browser-artifacts/milovice-ticket-photo-578.png'});
+ await page.screenshot({path:'browser-artifacts/milovice-ticket-photo-579.png'});
  console.log('5.78 station ticket camera real WebGL smoke PASS');
 }finally{
  await browser.close();
