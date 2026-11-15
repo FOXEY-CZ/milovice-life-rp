@@ -1,4 +1,4 @@
-// Milovice RP 5.81.14 — photo-supported TWO paved parking banks and diagonal bay lines from user-supplied 2023 aerial.
+// Milovice RP 5.81.15 — photo-bounded tapered rail-side parking apron, road and rail clearance preserved.
 // The 5.72 "fix" drew a new OSM sidewalk directly OVER Nádražní's asphalt,
 // rather than removing the relevant strip from the parking surface.
 // The user confirmed the exact topology: existing road (UNTOUCHED),
@@ -350,7 +350,13 @@ export function planStationPhotoParking(elements,roadClearance){
  // Reserve a FULL 1.54m pedestrian strip outside the parking; never assume
  // every untagged grassy patch belongs to the parking bay.
  const railSideParking=[],railRejected=[];
- const railParkingOffset=-5.03,railParkingDepth=4.02;
+ const railRoadFacingOffset=-3.02,railParkingDepth=4.02;
+ // In the 4 June 2023 aerial, the rail-side bank is wider through the
+ // middle of its length and tapered toward the two ends. The OSM rail
+ // clearance near its southern end is significantly tighter than further
+ // north. Widen conservatively toward rails ONLY after the old full-footprint
+ // road, walkway, buildings and railway safety checks all pass.
+ const southernLimit=8,northernLimit=Math.min(65,f.length-8);
  const safePlace=(p,length,depth,buffer=.12)=>{
   if(!isRoadFreeRect(roadClearance,{...p,length,depth,yaw:f.yaw,buffer,step:.36}))
    return 'mapped-road-or-footway';
@@ -363,12 +369,24 @@ export function planStationPhotoParking(elements,roadClearance){
   }
   return null;
  };
- for(let along=8;along<=Math.min(65,f.length-8);along+=2.85){
-  const p=at(f,along,railParkingOffset);
-  const failure=safePlace(p,2.46,railParkingDepth);
-  if(failure)railRejected.push({along,kind:'parking',reason:failure});
-  else railSideParking.push({...p,along,offset:railParkingOffset,yaw:f.yaw,
-   length:2.46,depth:railParkingDepth});
+ for(let along=southernLimit;along<=northernLimit;along+=2.85){
+  const t=(along-southernLimit)/(northernLimit-southernLimit);
+  const midBulge=Math.max(0,Math.sin(Math.PI*t));
+  const intended=railParkingDepth+1.55*midBulge;
+  const coreOffset=railRoadFacingOffset-railParkingDepth/2;
+  let chosen=null,failed='mapped-road-or-footway';
+  // Test wider footprints from narrow to broad, keeping EXACTLY the old
+  // road-facing boundary fixed at -3.02m. No new drivable asphalt is drawn.
+  for(let depth=railParkingDepth;depth<=intended+.001;depth+=.20){
+   const offset=railRoadFacingOffset-depth/2,p=at(f,along,offset);
+   const reason=safePlace(p,2.46,depth);
+   if(reason){failed=reason;break;}
+   chosen={...p,along,offset,yaw:f.yaw,length:2.46,depth};
+  }
+  if(!chosen){
+   const p=at(f,along,coreOffset);
+   railRejected.push({along,kind:'parking',reason:failed,position:p});
+  }else railSideParking.push(chosen);
  }
  // The 2023 aerial shows ONE pale paved western bank, not separated
  // grass-grid boxes. Bridge only the short 0.39m gaps BETWEEN two fully
@@ -381,11 +399,15 @@ export function planStationPhotoParking(elements,roadClearance){
   const left=previous.along+previous.length/2;
   const right=next.along-next.length/2,gap=right-left;
   if(gap<=0||gap>.7)continue;
-  const mid=(left+right)/2,p=at(f,mid,railParkingOffset);
-  const length=gap+.025,failed=safePlace(p,length,railParkingDepth,.022);
+  const mid=(left+right)/2;
+  // A bridge is never wider than EITHER accepted bay it connects.
+  // Its road-facing edge stays exactly on the old safe -3.02m line.
+  const depth=Math.min(previous.depth,next.depth);
+  const offset=railRoadFacingOffset-depth/2,p=at(f,mid,offset);
+  const length=gap+.025,failed=safePlace(p,length,depth,.022);
   if(failed){railSideJoinRejected.push({along:mid,reason:failed});continue;}
-  railSideJoiningSlabs.push({...p,along:mid,offset:railParkingOffset,
-   yaw:f.yaw,length,depth:railParkingDepth,railRoadVerified:true});
+  railSideJoiningSlabs.push({...p,along:mid,offset,
+   yaw:f.yaw,length,depth,railRoadVerified:true});
  }
  // A central candidate cell must have EXACTLY ONE role. We partition
  // ALL validated OSM-safe island tiles into parking OR outer sidewalk.
@@ -591,6 +613,8 @@ export function planStationPhotoParking(elements,roadClearance){
   aerialReferenceDate:'2023-06-04',
   railParkingSurface:'continuous-pale-concrete-with-safe-bridges',
   railGrassGridRemoved:true,diagonalBayMarkingsPhotoApproximate:true,
+  railPavingVariableDepth:true,railPavingBaseDepth:railParkingDepth,
+  railPavingRoadFacingOffset:railRoadFacingOffset,
   pedestrianCorridorWidth:1.48,pedestrianSeparation:0,
   centralPedestrianSurface:'carved-from-OSM-safe-outer-parking-cells',
   centralParkingSurface:'remaining-inner-grid-parking-cells',
@@ -657,6 +681,38 @@ export function planRoadSafeParkingInfillProfiles(patches,{maxSlope=.12}={}){
  return {rows,joins,maxSlope,maxEdgeStep,areaExpanded:false,
   sourceCells:patches.length,roadSafeCellsOnly:true};
 }
+// Convert already accepted OSM-clear parking rectangles into ONE continuous
+// mesh, instead of a long rectangular series of instanced boxes. The rail
+// outer edge is joined at the most conservative shared depth of neighbours.
+// Start/end are inset within first/last validated rectangles (not extended
+// into the railway). This modifies only silhouette, not vehicle access road.
+export function planRailApronProfiles(patches){
+ if(!Array.isArray(patches)||!patches.length)return null;
+ const ordered=[...patches].sort((a,b)=>a.along-b.along);
+ for(const p of ordered)
+  if(!(p.length>0&&p.depth>0&&Number.isFinite(p.offset)))return null;
+ const profiles=[];
+ for(let i=0;i<ordered.length;i++){
+  const cur=ordered[i],prev=ordered[i-1],next=ordered[i+1];
+  const rail=cur.offset-cur.depth/2,road=cur.offset+cur.depth/2;
+  const joinedPrev=!!prev&&cur.along-cur.length/2-(prev.along+prev.length/2)<.07;
+  const joinedNext=!!next&&next.along-next.length/2-(cur.along+cur.length/2)<.07;
+  const neighbourRailBefore=joinedPrev?Math.max(rail,prev.offset-prev.depth/2):rail;
+  const neighbourRailAfter=joinedNext?Math.max(rail,next.offset-next.depth/2):rail;
+  const startRail=joinedPrev?neighbourRailBefore:rail+Math.min(.72,cur.depth*.24);
+  const endRail=joinedNext?neighbourRailAfter:rail+Math.min(.72,cur.depth*.24);
+  const startRoad=joinedPrev?road:road-Math.min(.24,cur.depth*.07);
+  const endRoad=joinedNext?road:road-Math.min(.24,cur.depth*.07);
+  if(startRoad<=startRail||endRoad<=endRail)return null;
+  profiles.push({along:cur.along,length:cur.length,
+   railSide:rail,roadSide:road,startRail,endRail,startRoad,endRoad,
+   coreDepth:cur.depth,validSafeRect:true});
+ }
+ return {profiles,variableDepth:profiles.some(p=>p.coreDepth>
+   profiles[0].coreDepth+.35),sourceRects:patches.length,
+  originalRoadFacingOffset:profiles[0].roadSide,
+  noFootprintExpansion:true};
+}
 export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadClearance}={}){
  const roots=[],geo=new THREE.BoxGeometry(1,1,1);
  const material={
@@ -678,6 +734,13 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   parkingBanks:planned?.parkingBanks||[],
   oppositeParkingBays:planned?.railSideParking.length||0,
   railSideJoiningSlabs:planned?.railSideJoiningSlabs.length||0,
+  railPavingVariableDepth:planned?.railPavingVariableDepth||false,
+  railPavingExpandedBays:planned?.railSideParking.filter(b=>b.depth>4.37).length||0,
+  railPavingMinDepth:planned?.railSideParking.length?
+   Math.min(...planned.railSideParking.map(b=>b.depth)):null,
+  railPavingMaxDepth:planned?.railSideParking.length?
+   Math.max(...planned.railSideParking.map(b=>b.depth)):null,
+  railPavingTaperedMesh:planned?.railSideParking.length>0,
   railSideJoinRejected:planned?.railSideJoinRejected.length||0,
   railSideSurface:planned?.railParkingSurface||null,
   railGrassGridRemoved:planned?.railGrassGridRemoved||false,
@@ -840,7 +903,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   group.userData.lodZ=planned.frame.a.z+planned.frame.uz*31;
   group.userData.lodDetail=true;
   const grout=[],stones=[],curb=[];
-  const railPaving=[],photoBayLines=[],sidewalkPavers=[];
+  const photoBayLines=[],sidewalkPavers=[];
   for(const p of planned.centralParkingCells){
    const y=terrainAt(p.x,p.z);
    // Nearly seamless backing slabs eliminate the old green pinstripes.
@@ -857,11 +920,41 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   }
   for(const p of planned.curbs)
    curb.push({...p,y:terrainAt(p.x,p.z)+.209,sx:.75,sy:.103,sz:.11});
-  // June 2023 satellite: draw the west/rail bank as continuous light
-  // hardstanding, filling only safely validated micro-gaps between bays.
-  for(const patch of [...planned.railSideParking,...planned.railSideJoiningSlabs]){
-   railPaving.push({...patch,y:terrainAt(patch.x,patch.z)+.160,
-    sx:patch.length,sy:.040,sz:patch.depth});
+  // 5.81.15: contour the previously clearance-tested rail-side slabs
+  // as a shared surface, with the west boundary smoothly joined at the
+  // shallower adjacent profile. Keep a single drawcall and 0 road overlays.
+  function renderRailApron(){
+   const surface=planRailApronProfiles([...planned.railSideParking,
+    ...planned.railSideJoiningSlabs]);
+   if(!surface)throw Error('Rail apron needs checked OSM-clear slab profiles');
+   const verts=[],uvs=[],faces=[];
+   for(const p of surface.profiles){
+    const first=verts.length/3;
+    for(const [along,outer,inner] of [
+     [p.along-p.length/2,p.startRail,p.startRoad],
+     [p.along,p.railSide,p.roadSide],
+     [p.along+p.length/2,p.endRail,p.endRoad]
+    ]){
+     for(const offset of [outer,inner]){
+      const pt=at(planned.frame,along,offset);
+      verts.push(pt.x,terrainAt(pt.x,pt.z)+.174,pt.z);
+      uvs.push(offset/4.0,along/5.0);
+     }
+    }
+    faces.push(first,first+1,first+2,first+1,first+3,first+2,
+     first+2,first+3,first+4,first+3,first+5,first+4);
+   }
+   const geom=new THREE.BufferGeometry();
+   geom.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));
+   geom.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
+   geom.setIndex(faces);geom.computeVertexNormals();geom.computeBoundingSphere();
+   const mesh=new THREE.Mesh(geom,material.railPaved);
+   mesh.name='PhotoConfirmedContinuousRailSideAngledParking';
+   mesh.receiveShadow=true;
+   mesh.userData.sourceDate='2023-06-04';
+   mesh.userData.modelledTaperedOutline=true;
+   mesh.userData.sourceRects=surface.sourceRects;
+   group.add(mesh);drawMeshes++;
   }
   // Both parking banks have diagonal white separators in the 2023 photo.
   // This is a modest geometry-derived approximation of their footprints,
@@ -886,7 +979,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
     sx:.65,sy:.135,sz:.12});
   batch(group,material.grout,grout);
   batch(group,material.paver,stones,[0xcac9c0,0xd4d1c8,0xc4c3bb,0xbdbeb6]);
-  batch(group,material.railPaved,railPaving);
+  renderRailApron();
   batch(group,material.bayLines,photoBayLines);
   batch(group,material.sidewalk,sidewalkPavers);
   batch(group,material.curb,curb);
