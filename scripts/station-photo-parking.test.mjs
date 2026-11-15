@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createRoadClearance,isRoadFreeRect} from './road-clearance.js';
-import {STATION_PARKING_REFERENCE,planStationPhotoParking,planContinuousOuterSidewalk,planRoadSafeParkingInfillProfiles,planSatelliteParkingMarkings} from './station-photo-parking.js';
+import {STATION_PARKING_REFERENCE,planStationPhotoParking,planContinuousOuterSidewalk,planRoadSafeParkingInfillProfiles,planSatelliteParkingMarkings,planRailApronProfiles} from './station-photo-parking.js';
 import {stationGpsToWorld} from './station-forecourt-pass.js';
 
 const data=JSON.parse(readFileSync(new URL('../data/milovice-osm.json',import.meta.url),'utf8'));
@@ -65,6 +65,31 @@ assert(plan.railSideParking.length>=18&&plan.railSideParking.length<=24,
  'The other half of the car park cannot disappear again');
 assert.equal(plan.aerialReferenceDate,'2023-06-04');
 assert.equal(plan.railParkingSurface,'continuous-pale-concrete-with-safe-bridges');
+assert.equal(plan.railPavingVariableDepth,true);
+assert.equal(plan.railPavingBaseDepth,4.02);
+assert.equal(plan.railPavingRoadFacingOffset,-3.02);
+assert(plan.railSideParking.some(b=>b.depth>4.37),
+ 'The aerial shows a wider rail-side apron through its middle, not a fixed long rectangle');
+for(const bay of plan.railSideParking){
+ assert(bay.depth>=4.02&&bay.depth<=5.63);
+ assert(Math.abs(bay.offset+bay.depth/2+3.02)<1e-9,
+  'Road-facing parking edge must remain exactly unchanged at -3.02');
+ assert(isRoadFreeRect(occupied,{x:bay.x,z:bay.z,
+  length:bay.length,depth:bay.depth,yaw:bay.yaw,buffer:.12,step:.36}),
+  'Every widened rail-side bay must stay outside OSM roads and footways');
+}
+const apron=planRailApronProfiles([...plan.railSideParking,...plan.railSideJoiningSlabs]);
+assert(apron&&apron.profiles.length>=plan.railSideParking.length);
+assert.equal(apron.variableDepth,true);
+assert.equal(apron.noFootprintExpansion,true);
+assert.equal(apron.originalRoadFacingOffset,-3.02);
+for(const p of apron.profiles){
+ assert(p.validSafeRect);
+ assert(p.startRail>=p.railSide&&p.endRail>=p.railSide);
+ assert(p.startRoad<=p.roadSide&&p.endRoad<=p.roadSide);
+ assert(p.startRoad>p.startRail&&p.endRoad>p.endRail);
+}
+assert.equal(planRailApronProfiles([]),null);
 assert.equal(plan.railGrassGridRemoved,true,
  'User 2023 aerial requires paved bank, NOT separate concrete pads in grass');
 assert(plan.railSideJoiningSlabs.length>10,
@@ -307,7 +332,7 @@ assert.equal(planStationPhotoParking(ways.map(e=>e.id===675778842?{
  ...e,geometry:e.geometry.map(p=>({...p,lon:p.lon+.001}))
 }:e),occupied),null);
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(game.includes("from './scripts/station-photo-parking.js?v=58114'"));
+assert(game.includes("from './scripts/station-photo-parking.js?v=58115'"));
 assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})'),
  'The island sidewalk must receive the exact city paving material');
 assert(game.includes('stationPhotoParking.reset()'));
@@ -315,9 +340,9 @@ assert(!game.includes('osmStrip(points[i-1],points[i],1.8,osmSidewalkMat,.235);'
  'The 5.72 forced sidewalk directly on Nádražní asphalt MUST be disabled');
 assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})'),
  'Carved sidewalk must reuse the same existing city paving material');
-assert(game.includes("from './scripts/station-photo-parking.js?v=58114'"),
+assert(game.includes("from './scripts/station-photo-parking.js?v=58115'"),
  'The reviewed 5.76 parking geometry must now load safe gap filler, not a stale 5.76 module');
-assert(game.includes("const BUILD_ID='20261115-photo-2023-two-paved-parking-banks-58114'"),
+assert(game.includes("const BUILD_ID='20261115-photo-2023-tapered-rail-apron-58115'"),
  'New game version must retain 5.76 parking with the added ticket-machine scene');
 assert(game.includes("from './scripts/bike-tower-interior.js?v=5640'"));
 assert(game.includes("from './scripts/station-forecourt-pass.js?v=5650'"));
@@ -375,7 +400,12 @@ assert(code.includes('for(const p of planned.centralParkingCells)'),
  'Entire broad island surface must have real parking blocks');
 assert(code.includes('railSideJoiningSlabs.push('));
 assert(code.includes("railPaved:new THREE.MeshLambertMaterial"));
-assert(code.includes('batch(group,material.railPaved,railPaving)'));
+assert(code.includes('renderRailApron();'));
+assert(code.includes("mesh.name='PhotoConfirmedContinuousRailSideAngledParking'"));
+assert(code.includes('planRailApronProfiles([...planned.railSideParking,'));
+assert(code.includes('const midBulge=Math.max(0,Math.sin(Math.PI*t))'));
+assert(code.includes('const depth=Math.min(previous.depth,next.depth)'));
+assert(!code.includes('batch(group,material.railPaved,railPaving)'));
 assert(code.includes('batch(group,material.bayLines,photoBayLines)'));
 assert(code.includes('for(const stripe of planned.bayMarkings.all)'));
 assert(!code.includes('material.railGrid'));
