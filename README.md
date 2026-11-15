@@ -1,3 +1,15 @@
+## 15. 11. 2026 — mobilní kontrola 5.81.10: přednádraží z obou směrů
+
+**Nová technická kamera parkování shora:** https://foxey-cz.github.io/milovice-life-rp/?v=58110&forecourtAudit=wide&parkingOverview=1
+
+Dva mobilní snímky 5.81.10 ukázaly velkou asfaltovou plochu ze směru zastávek a pohled napříč před nádraží, ale z úrovně očí nelze bezpečně rozlišit existující parkovací ostrov od pozadí a skutečné plochy vozovek. Z modelu přitom vyplývá, že už existují fotodoložené/OSM bezpečné **dvě strany parkování, centrální ostrov a vnější chodník** (5.76). Plochu proto nerozmnožujeme.
+
+Přidaná opt-in kamera `parkingOverview=1` je umístěná přímo nad osou OSM jednosměrné příjezdové komunikace **675778842** a orientovaná podle její osy. Ukáže stávající parkovací dlažbu mezi ní a silnicí **128308366**, i navazující OSM chodník **1165594426**. Na mobilu je záměrně vysoká a dívá se dolů, aby široké přednádraží bylo viditelné místo nebe. Zobrazuje diagnostický přehled počtů vykreslených segmentů, nikoli nové dopravní značky nebo auta. Běžná 3D hra, původní fotografické kamery, chodníky i geometrie vozovek se nemění.
+
+Tato kamera **není snímek z reálného fotografického stanoviště**. Historické fotografické podklady 2022–2024 zatím nestačí k určení přesné polohy stromu, Y-lampy, záhonů nebo značení BUS; tyto objekty proto zůstávají označené jako nenaměřené a nejsou nově přidány.
+
+---
+
 # Milovice RP 5.81.10 — přirozenější napojení cyklověže na skutečný chodník
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=58110  
