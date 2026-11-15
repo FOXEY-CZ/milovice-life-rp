@@ -1,4 +1,4 @@
-// Milovice RP 5.81.9: test the generated REAL mesh topology, not only
+// Milovice RP 5.81.10: test the generated REAL mesh topology, not only
 // the OSM point planner. Prevent disconnected triangles, reversed faces,
 // duplicated overlapping apron+ribbon patches and accidental extra drawcalls.
 import assert from 'node:assert/strict';
@@ -57,6 +57,7 @@ assert.equal(first.oneContinuousSurface,true);
 assert.equal(first.preservedGreenery,true);
 assert.equal(first.materialReused,true);
 assert.equal(first.uvAlignedWithMappedFootway,true);
+assert.equal(first.endAlignedWithMappedFootway,true);
 assert.equal(first.estimatedPavedAreaM2>25,true);
 assert.equal(first.roadClearanceVerified,true);
 assert.equal(layers.length,1);
@@ -111,6 +112,9 @@ const padFront=rows[6],firstLink=rows[7];
 assert(Math.hypot(padFront.x-firstLink.x,padFront.z-firstLink.z)>.01);
 const final=rows.at(-1);
 assert(Math.hypot(final.x-p.connector.end.x,final.z-p.connector.end.z)<.00001);
+const footwayUnit=p.connector.textureBasis.longitudinal;
+assert(Math.abs(final.side.x*footwayUnit.x+final.side.z*footwayUnit.z)<1e-9,
+ 'Ending cross-section must be perpendicular to the actual mapped sidewalk');
 const again=scene.create(elements,{sidewalkMaterial:material});
 assert.deepEqual(again,first);
 assert.equal(layers.length,1,'Calling create twice must not add another surface');
@@ -123,7 +127,7 @@ scene.create(elements,{sidewalkMaterial:material});
 assert.equal(layers.length,1,'After reset exactly one mesh recreated');
 scene.reset();
 delete globalThis.window;
-console.log('5.81.9 MESH PASS',JSON.stringify({
+console.log('5.81.10 MESH PASS',JSON.stringify({
  vertices:n,triangles:first.triangles,meshComponents:1,
  areaM2:+projectedArea.toFixed(2),maxWidth:+p.connector.widestWidth.toFixed(2),
  nearestRoadMargin:+p.connector.otherRoadMargin.toFixed(3),
