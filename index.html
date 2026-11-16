@@ -374,6 +374,7 @@ import {clipRoofFacesForFeatures,planRoofFeatureBackClosures} from './scripts/ro
 import {planMassStreetBlock583,planPublicPhotoMirovaBlock586,planPublicPhotoSkolskaBlock587,planSkolskaWestBlock588} from './scripts/street-mass-build-pass.js?v=58800';
 import {makeChurchStreetscape2022} from './scripts/church-street-photo-pass.js?v=58530';
 import {makeMirovaPhotoStreet586} from './scripts/mirova-public-photo-street-586.js?v=58600';
+import {makeSkolskaWestGreen588} from './scripts/skolska-west-street-588.js?v=58800';
 import {makePhotoChurchSidewalk2022} from './scripts/photo-sidewalk-2022.js?v=58530';
 import {makePhotoStreetEnvironment} from './scripts/street-environment-reality.js?v=58530';
 import {makePionyru2023Verge} from './scripts/street-pionyru-photo-2023.js?v=58530';
@@ -1817,6 +1818,9 @@ function osmPoint(p){const lat0=50.226,lon0=14.889;return new THREE.Vector2((p.l
 const photoStreetBlock=makePhotoStreetBlock(THREE,{layer:osmLayer,osmPoint,mergeGeometries});
 const photoStreetEnvironment=makePhotoStreetEnvironment(THREE,{layer:osmLayer,terrainAt,roadClearance:osmRoadClearance});
 const mirovaPhotoStreet586=makeMirovaPhotoStreet586(THREE,{
+ layer:osmLayer,terrainAt,roadClearance:osmRoadClearance
+});
+const skolskaWestGreen588=makeSkolskaWestGreen588(THREE,{
  layer:osmLayer,terrainAt,roadClearance:osmRoadClearance
 });
 const photoPionyruVerge=makePionyru2023Verge(THREE,{layer:osmLayer,terrainAt,roadClearance:osmRoadClearance});
@@ -4683,6 +4687,7 @@ function rpAppendOSMElements(elements){
  // One inexpensive planted street pass for the WHOLE Mírová corridor;
  // only OSM road/building free parcels are eligible.
  if(mirovaPhotoBlock)mirovaPhotoStreet586.create([...roadWays,...buildingWays]);
+ if(skolskaWestBlock)skolskaWestGreen588.create([...roadWays,...buildingWays]);
  if(mirovaPhotoBlock){
   window.__miloviceMirovaPublicPhotoBlock586={
    ...mirovaPhotoBlock,
@@ -5055,7 +5060,7 @@ osmBtn.onclick=async()=>{
  if(osmLoading)return;
  osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';osmMessage('Načítám místní soubor mapy ze stejného GitHub Pages webu…');
  try{
- const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();legacyRealityAudit.reset();renderedPedestrianPieces.clear();collisionWorld.reset();heroBuildings.reset();photoStreetBlock.reset();photoStreetEnvironment.reset();mirovaPhotoStreet586.reset();photoPionyruVerge.reset();photoChurchSidewalk2022.reset();photoChurchStreet2022.reset();stationPhotoForecourt.reset();stationPhotoParking.reset();bikeTowerEntryPaving.reset();stationTicketMachines.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;landscapeZones.length=0;
+ const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();legacyRealityAudit.reset();renderedPedestrianPieces.clear();collisionWorld.reset();heroBuildings.reset();photoStreetBlock.reset();photoStreetEnvironment.reset();mirovaPhotoStreet586.reset();skolskaWestGreen588.reset();photoPionyruVerge.reset();photoChurchSidewalk2022.reset();photoChurchStreet2022.reset();stationPhotoForecourt.reset();stationPhotoParking.reset();bikeTowerEntryPaving.reset();stationTicketMachines.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;landscapeZones.length=0;
   if(trafficGroup.parent!==osmLayer)osmLayer.add(trafficGroup);
   if(visualDetails.parent!==osmLayer)osmLayer.add(visualDetails);for(const batch of facadeBatches)batch.clear();
  window.__miloviceMassStreetBlock583=null;
@@ -5772,6 +5777,11 @@ if(rpStreetAuditCameraWorld&&rpStreetAuditView){
   'Satelit 4. 6. 2023 · zeleň: '+photoPionyruVerge.status().plantedShrubPockets+
   ' · veřejné nájezdy: '+photoPionyruVerge.status().publicVergeAccesses+
   ' · přibližné polohy, soukromé brány neověřené':
+  (rpStreetAuditId==='skolska-west-2024')?
+  '📷 Školská západ · 2024 ŠJů · '+(window.__miloviceSkolskaWestBlock588?.actuallyDetailed||0)+
+  ' podrobnějších OSM domů · keře: '+(window.__miloviceSkolskaWestGreen588?.hedges||0)+
+  ' · stromy: '+(window.__miloviceSkolskaWestGreen588?.trees||0)+
+  ' · přesná výsadba i natočení této kamery jsou ODHAD':
   (rpStreetAuditId==='school-2024'||rpStreetAuditId==='school-detail-2024')?
   '📷 Školská · škola podle fotografie ŠJů z 30. 5. 2024 · nový blok: '+
     (window.__miloviceSkolskaPublicPhotoBlock587?.actuallyDetailed||0)+
