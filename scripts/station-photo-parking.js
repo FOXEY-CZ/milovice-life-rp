@@ -392,6 +392,30 @@ export function planStationPhotoParking(elements,roadClearance){
    }
   }
  }
+ // 5.81.26: THE remaining south-east tongue is the TWO original, fully
+ // instanced raster cells at along=1.08, not either curved ribbon or its
+ // underlay. The photo review showed their isolated rectangular footprint.
+ // Trim only a sparse terminal row, never the first full 7-cell parking row.
+ // All following rows and all photographed stripes remain untouched.
+ const firstPopulatedRow=rowStats.find(r=>r.accepted>0);
+ const nextPopulatedRow=rowStats.find(r=>r.along>firstPopulatedRow?.along&&r.accepted>0);
+ const sparseEnd=firstPopulatedRow&&nextPopulatedRow&&
+  firstPopulatedRow.along<2.2&&firstPopulatedRow.accepted<=2&&
+  nextPopulatedRow.accepted>=5;
+ let southLoosePavingRemoved=0;
+ if(sparseEnd){
+  for(let i=cells.length-1;i>=0;i--){
+   if(Math.abs(cells[i].along-firstPopulatedRow.along)<.001){
+    rejected.push({along:cells[i].along,offset:cells[i].offset,
+     reason:'sparse-photo-island-tip-paver'});
+    cells.splice(i,1);southLoosePavingRemoved++;
+   }
+  }
+  for(let i=curbs.length-1;i>=0;i--)
+   if(Math.abs(curbs[i].along-firstPopulatedRow.along)<.001)
+    curbs.splice(i,1);
+  firstPopulatedRow.accepted=0;
+ }
  if(!cells.length)return null;
  // 5.68: opposite (rail-side) parking is a SEPARATE row across the existing
  // western access asphalt. The screenshot shows grass-grid slabs there.
@@ -696,7 +720,7 @@ export function planStationPhotoParking(elements,roadClearance){
   bayMarkings,railApronKerbs,
   outerFootwaySegments,outerFootwayStations,outerSidewalkCells,
   outerSidewalkCurbs,outerSidewalkMaxOsmDistance,
-  edgeSpursTrimmed:edgeSpursRemoved.size,continuousRibbon,
+  edgeSpursTrimmed:edgeSpursRemoved.size,southLoosePavingRemoved,continuousRibbon,
   centralParkingCells,cornerPaving,cornerCurbs,cornerRejected,
   rightCornerFootwayId:cornerWay.id,centralFootwayId:centralFootway.id,
   incorrectlyPlacedRailSidewalkRemoved:true,
@@ -951,6 +975,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   outerSidewalkPatches:planned?.outerSidewalkCells.length||0,
   outerSidewalkCurbs:planned?.outerSidewalkCurbs.length||0,
   isolatedOuterSpursRemoved:planned?.edgeSpursTrimmed||0,
+  sparseSouthTipTilesRemoved:planned?.southLoosePavingRemoved||0,
   continuousSidewalkSegments:planned?.continuousRibbon.parts.length||0,
   continuousSidewalkJoins:planned?.continuousRibbon.joins||0,
   continuousSidewalkMetres:planned?.continuousRibbon.metres||0,

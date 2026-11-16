@@ -47,6 +47,15 @@ assert.equal(plan.groundType,'concrete-paving-island');
 assert.equal(plan.legacyDetachedStripsRemoved,true);
 assert.equal(plan.originalCarriagewaysUntouched,true);
 assert.equal(plan.modelledRoundedNose,true);
+assert.equal(plan.southLoosePavingRemoved,2,
+ 'The isolated two-cell southern raster row, not the ribbon cap, causes the dangling pale tongue');
+assert(plan.rowStats.some(r=>Math.abs(r.along-1.08)<.001&&r.accepted===0),
+ 'Pruned last two dangling south-tip pavers must not survive as parking or walking cells');
+assert(plan.cells.every(c=>c.along>1.1),
+ 'Do not render disconnected southern parking raster cells beyond the first full row');
+assert(plan.outerSidewalkCells.every(c=>c.along>1.1),
+ 'The road-facing sidewalk underlay must share the trimmed terminal footprint');
+
 assert(plan.cameras.every(p=>p.distance<3));
 assert(plan.cells.length>400&&plan.cells.length<700,
  'Central parking must regain its full width with OUTER sidewalk on OSM: '+plan.cells.length);
@@ -528,6 +537,9 @@ assert(code.includes('for(const p of planned.centralParkingCells)'),
 assert(code.includes('railSideJoiningSlabs.push('));
 assert(code.includes("railPaved:new THREE.MeshLambertMaterial"));
 assert(code.includes('renderRailApron();'));
+assert(code.includes("reason:'sparse-photo-island-tip-paver'"),
+ 'Retain the explicit documented terminal-cell trim; shortening the cap alone cannot remove the tongue');
+
 assert(code.includes("mesh.name='PhotoConfirmedContinuousRailSideAngledParking'"));
 assert(code.includes('planRailApronProfiles([...planned.railSideParking,'));
 assert(code.includes('const midBulge=Math.max(0,Math.sin(Math.PI*t))'));
