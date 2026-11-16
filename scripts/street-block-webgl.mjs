@@ -22,7 +22,7 @@ try{
    isMobile:cfg.mobile,hasTouch:cfg.mobile
   });
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=58270&streetAudit='+cfg.id,
+  await page.goto('http://127.0.0.1:8080/?v=58300&streetAudit='+cfg.id,
    {waitUntil:'domcontentloaded',timeout:30000});
   await page.waitForFunction(()=>
    window.__miloviceStreetAuditRendered?.active===true&&
@@ -38,9 +38,25 @@ try{
    compact:document.getElementById('street-block-audit')?.classList.contains('audit-compact'),
    playerHudHidden:getComputedStyle(document.getElementById('hud')).display==='none',
    visibleCanvas:!!document.querySelector('canvas')?.clientWidth,
+   mass:window.__miloviceMassStreetBlock583,
+   hero:window.__miloviceHeroArchitecture,
    build:document.getElementById('build-label')?.textContent
   }));
-  assert.equal(info.build,'20261116-2022-lamp-osm-church-direction-58270');
+  assert.equal(info.build,'20261116-church-block-mass-facades-58300');
+  assert.equal(info.mass?.prioritizedBuildings,24,
+   'A WHOLE 24-house street block, not an isolated prop, must be planned');
+  assert.equal(info.mass?.actuallyDetailed,24,
+   'All 24 prioritized OSM homes must really use the enhanced 3D facade shell');
+  assert.equal(info.mass?.photoApprovedBuildings,0);
+  assert.equal(info.mass?.newBuildingFootprints,0);
+  assert.equal(info.mass?.roadAndFootwayGeometryModified,false);
+  assert.equal(info.mass?.unknownFacadesStillUnverified,true);
+  assert.equal(info.hero?.priorityBuilt,24);
+  assert.equal(info.hero?.massBlockPriorityBuilt,24);
+  assert.equal(info.hero?.massBlockReservedPlaces,24);
+  assert.equal(info.hero?.maxBuildings,68,
+   'Retain the old maxBuildings capacity for mobile performance');
+  assert.equal(info.hero?.massBlockNoPhotoApproval,true);
   assert.equal(info.audit.view,cfg.id);
   assert.equal(info.audit.cameraMode,cfg.streetLevel?'technical-osm-street-axis':cfg.technical?
    'technical-osm-overhead':'documented-photo-gps-and-heading');
@@ -102,7 +118,7 @@ try{
   assert.equal(info.playerHudHidden,true);
   assert.equal(info.visibleCanvas,true);
   assert.deepEqual(errors,[]);
-  await page.screenshot({path:'browser-artifacts/milovice-street-58270-'+cfg.id+'.png'});
+  await page.screenshot({path:'browser-artifacts/milovice-street-58300-'+cfg.id+'.png'});
   console.log('STREET_BLOCK_WEBGL_OK',JSON.stringify({
    mode:cfg.id,scenes:info.audit.generatedSceneCount,source:info.source,
    cameraMode:info.audit.cameraMode,roadClearance:info.scene?.minRoadClearance,
