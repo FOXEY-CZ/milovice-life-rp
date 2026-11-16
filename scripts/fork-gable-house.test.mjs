@@ -44,7 +44,7 @@ for(const points of [p,[...p].reverse()]){
 }
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert(html.includes('(isForkPhotoGable||isPionyru2022PhotoGable)?'));
-assert(html.includes("isPionyru2022PhotoGable?2.45:2.20,'gable'"));
+assert(html.includes("isPionyru2022PhotoGable?1.95:2.20,'gable'"));
 assert(html.includes('window.__miloviceForkHouse='));
 const manifest=JSON.parse(readFileSync(new URL('../data/architecture/verified-buildings.json',import.meta.url),'utf8'));
 assert.equal(manifest.buildings['202298939']?.roofKind,'gable');
