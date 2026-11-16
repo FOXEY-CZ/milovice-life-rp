@@ -30,7 +30,7 @@ try{
    viewport:{width:cfg.width,height:cfg.height},deviceScaleFactor:1,
    isMobile:cfg.mobile,hasTouch:cfg.mobile});
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=58124&forecourtAudit='+cfg.view+
+  await page.goto('http://127.0.0.1:8080/?v=58125&forecourtAudit='+cfg.view+
    (cfg.flat?'&roadSurfaceFlat=1':'')+
    (cfg.inspection?'&entryInspection=1':'')+
    (cfg.overview?'&parkingOverview=1':''),
@@ -62,7 +62,7 @@ try{
    fov:(()=>window.__miloviceForecourtAuditRendered?.active?1:null)()
   }));
   const v=state.review;
-  assert.equal(state.build,'20261116-clipped-island-tip-58124');
+  assert.equal(state.build,'20261116-three-row-safe-island-nose-58125');
   assert.equal(state.panelVisible,true);
   assert.equal(state.compact,cfg.mobile);
   assert.equal(state.expansionButton,cfg.mobile?'false':'true');
@@ -82,6 +82,8 @@ try{
   assert.equal(state.stationParking.infillRestrictedToSafeRibbon,true);
   assert.equal(state.stationParking.southernNoseCurvedInsideSafeCells,true);
   assert(state.stationParking.southernNoseTrimMetres>.20&&state.stationParking.southernNoseTrimMetres<.24);
+  assert.equal(state.stationParking.southernRoadsideTaperMetres,2.28);
+  assert.equal(state.stationParking.southernRoadsideTaperedRows,3);
   assert(state.stationParking.southernOuterPaverEarsClipped>=2);
   assert(state.stationParking.unsupportedTerminalInfillRowsTrimmed>=0);
   assert.equal(state.stationParking.smoothRoadsideWithinSafeCells,true);
@@ -226,7 +228,7 @@ try{
    cfg.view+': mapped '+id+' must be in real camera frame');
   assert.equal(state.sourceLink,v.source);
   assert.deepEqual(errors,[]);
-  const path='browser-artifacts/milovice-forecourt-58124-'+cfg.view+
+  const path='browser-artifacts/milovice-forecourt-58125-'+cfg.view+
    (cfg.flat?'-flat':'')+(cfg.inspection?'-entry':'')+
    (cfg.overview?'-parking-overview':'')+
    (cfg.mobile?'-mobile':'')+'.png';

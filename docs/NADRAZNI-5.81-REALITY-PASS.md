@@ -126,3 +126,11 @@ Při kontrole 5.81.22 už byla levá kolejová parkovací řada spojena s vozovk
 Uživatelův nadhled 5.81.23 (01:07) potvrdil, že velký čtvercový přesah na jižní špičce byl menší, ale vpravo stále zůstával úzký svislý jazýček asi jednoho dlažebního dílku. V nové úpravě je terminální průřez chodníku stále **uvnitř první již schválené buňky**. Zkrátil se o cca 0,2175 metru po směru osy a šířka jeho koncové hrany je 0,32 m (zbytek se rozevírá do standardní šířky). **Důležité:** spodní výplň je nyní ukončena na *témže* souřadnicovém začátku `startAlong`, jako viditelný chodník a obrubník; dříve používala původní obdélníkový počátek buňky.
 
 Nezměnily se banky parkování, přístupové cesty, OSM silnice, vnitřní dlažební buňky ani kolejový parking. Jde o cílené odstranění vizuálního přečnívání, nikoli skutečně zaměřený oblouk; ověření proti fotografii a screenshotu 5.81.24 stále otevřené.
+
+## 5.81.25 — tři příčné řady spodního zakončení (16. 11. 2026)
+
+Po mobilním screenshotu verze 5.81.24 (01:15) přetrvává úzký světlý jazyk na jižním konci chodníku na vnější (silniční) straně prostředního parkovacího ostrůvku. Zkracování pouze samotného koncového průřezu v předchozích verzích neřešilo rovný boční pruh: první tři **celé příčné řady** pořád měly stejnou vnější souřadnici 9,551 m, ačkoliv zbytek parkovacího ostrůvku se zužoval.
+
+Geometrie 5.81.25 zúží vnější hranu pouze u prvních tří bezpečných řad po úseku 2,28 m: první hrana jde zhruba o 0,35 m dovnitř, druhá o 0,23 m, třetí o 0,12 m, od čtvrté řady je původní souřadnice. Každá řada zůstává **uvnitř již validované parkovací/pěší plochy** a drží minimální šířku 0,38 m. Podkladová vrstva je nadále oříznuta přesně podle stejné viditelné vnější hrany, takže se nemají vrátit zelené pruhy. Silnice, obě banky parkovacích míst, bílé čáry ani severní konec se touto opravou nemění.
+
+**Nejde o geodeticky zaměřený obrys.** Testy potvrzují dodržení již známého bezpečného tvaru, nikoli vizuální shodu s terénem. Účinek na svislý „jazýček“ je třeba potvrdit screenshotem 5.81.25; teprve potom řešit drobné horní schody.
