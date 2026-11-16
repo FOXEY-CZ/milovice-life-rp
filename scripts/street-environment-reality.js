@@ -3,12 +3,83 @@
 // The only precisely known spatial datum is the photo-camera GPS position.
 // Street-furniture positions relative to the road are approximate and tracked.
 import {isRoadFreeRect} from './road-clearance.js';
+import {isBuildingFreeRect} from './street-pionyru-photo-2023.js';
 // 5.82: historical-photo feature limits: NEVER multiply a unique object.
 export const STREET_PASS_03_FEATURE_POLICY=Object.freeze({
  sourceDate:'2014-07-26',photoObservedTrees:1,photoObservedUtilityPoles:1,
  extraTreesDisabled:true,unmappedSecondUtilityPoleDisabled:true,
  unverifiedPowerLineSpanDisabled:true,exactPlacementsSurveyed:false
 });
+// The user-supplied 9 May 2022 Mapy panorama shows ONE distinctly
+// grey bent-arm streetlight on the LEFT when looking toward the church.
+// The screenshot does not contain a surveyed camera location, so the
+// 3D base position remains a photo-informed approximation, NEVER a
+// geodetic claim. The source pixels are not embedded in the game.
+export const KVETNA_STREETLAMP_2022=Object.freeze({
+ roadId:'219273174',junctionId:'118488006',
+ referenceLandmarkId:'118487991',sourceDate:'2022-05-09',
+ photoSource:'User-provided Mapy.com Panorama screenshot',
+ observedCount:1,positionSurveyed:false,
+ surfaceClaim:'roadside verge model; parcel limits unknown',
+ modelledDistanceFromJunctionM:132,modelledRoadOffsetM:-6.3
+});
+export function planKvetnaStreetlamp2022(roads,{roadClearance=null,buildingFootprints=[]}={}){
+ if(!Array.isArray(roads)||!roadClearance||
+  typeof roadClearance.isClear!=='function'||!Array.isArray(buildingFootprints))return null;
+ const way=roads.find(r=>String(r.osmId)===KVETNA_STREETLAMP_2022.roadId);
+ const junction=roads.find(r=>String(r.osmId)===KVETNA_STREETLAMP_2022.junctionId);
+ if(!way?.points?.length||!junction?.points?.length)return null;
+ const X=p=>p.x,Z=p=>p.z??p.y;
+ let intersect=null;
+ for(let i=0;i<way.points.length;i++)for(const cp of junction.points){
+  const p=way.points[i],d=Math.hypot(X(p)-X(cp),Z(p)-Z(cp));
+  if(!intersect||d<intersect.d)intersect={index:i,d,p};
+ }
+ if(!intersect||intersect.d>.75)return null;
+ const origin=intersect.p,ix=intersect.index;
+ // Along the OSM side toward St Catherine's church (north-east), not the
+ // opposite branch used by the older Pionýrů satellite verge pockets.
+ const dir=[-1,1].find(step=>{
+  const n=way.points[ix+step];
+  return n&&Z(n)>Z(origin)+2;
+ });
+ if(!dir)return null;
+ let remaining=KVETNA_STREETLAMP_2022.modelledDistanceFromJunctionM;
+ let previous=origin,tangent=null,point=null;
+ for(let i=ix+dir;i>=0&&i<way.points.length;i+=dir){
+  const next=way.points[i],dx=X(next)-X(previous),dz=Z(next)-Z(previous);
+  const segment=Math.hypot(dx,dz);
+  if(segment>.01){
+   if(remaining<=segment){
+    const ux=dx/segment,uz=dz/segment;
+    tangent={ux,uz};
+    point={x:X(previous)+ux*remaining,z:Z(previous)+uz*remaining};
+    break;
+   }
+   remaining-=segment;
+  }
+  previous=next;
+ }
+ if(!point||!tangent)return null;
+ const offset=KVETNA_STREETLAMP_2022.modelledRoadOffsetM;
+ const x=point.x-tangent.uz*offset,z=point.z+tangent.ux*offset;
+ const yaw=Math.atan2(-tangent.uz,tangent.ux);
+ const foot={x,z,length:.58,depth:.58,yaw,buffer:.26,step:.10};
+ // Whole footprint + safety buffer; never silently shift into the road
+ // or delete a confirmed footway to make room for the lamp.
+ if(!isRoadFreeRect(roadClearance,foot)||
+  !isBuildingFreeRect(foot,buildingFootprints,.25))return null;
+ const nearest=roadClearance.nearest(x,z);
+ return {x,z,ux:tangent.ux,uz:tangent.uz,yaw,along:132,offset,
+  observedCount:1,sourceDate:KVETNA_STREETLAMP_2022.sourceDate,
+  referenceLandmarkId:KVETNA_STREETLAMP_2022.referenceLandmarkId,
+  source:KVETNA_STREETLAMP_2022.photoSource,
+  nearestMappedSurfaceId:nearest?.id??null,
+  nearestMappedSurfaceClearance:nearest?.clearance??null,
+  positionSurveyed:false,buildingFootprintSafe:true,roadAndFootwaySafe:true,
+  changedRoadGeometry:false,changedBuildingGeometry:false,
+  createsNewFootway:false};
+}
 export const PHOTO_STREET_ENVIRONMENT=[
  {
   id:'street-5-kvetna-2014',
@@ -47,6 +118,7 @@ export function nearestPhotoRoadSegment(road,latitude,longitude){
 }
 export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClearance=null}={}){
  const entries=new Set(),groups=new Set(),data=[];
+ let streetlamp2022=null,streetlamp2022Root=null;
  let lastDecision={reason:'not-loaded',roads:0,anchorDistance:null,candidates:null};
  const colors={
   bark:new THREE.MeshLambertMaterial({color:0x69503d}),
@@ -89,6 +161,12 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
   duplicatedPhotoTreeDisabled:true,duplicatedPhotoPoleDisabled:true,
   unverifiedOverheadSpanDisabled:true,
   drawMeshes,instances,featureCount,ids:[...entries],spatiallyApproximate:true,
+  streetlamp2022:{active:!!streetlamp2022,observedCount:1,modelCount:streetlamp2022?1:0,
+   sourceDate:KVETNA_STREETLAMP_2022.sourceDate,positionSurveyed:false,
+   mappedClearanceM:streetlamp2022?.nearestMappedSurfaceClearance??null,
+   landmarkId:KVETNA_STREETLAMP_2022.referenceLandmarkId,
+   mappedRoadId:KVETNA_STREETLAMP_2022.roadId,
+   duplicateOrSpeculativeLamps:0,sourcePixelsUsed:false},
   scope:'Photo-informed street environments, not exact surveyed positions'});
  function report(){if(typeof window!=='undefined')window.__miloviceStreetEnvironment=emptyStats()}
  function placeOnRoad(anchor,along,sideDistance){
@@ -246,7 +324,40 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
   ]);
   featureCount+=2;
  }
- function addFromRoads(roads){
+ function createPhotoStreetlamp2022(roads,buildingFootprints){
+  if(streetlamp2022Root)return;
+  const plan=planKvetnaStreetlamp2022(roads,{roadClearance,buildingFootprints});
+  if(!plan)return;
+  const root=new THREE.Group(),poleMetal=new THREE.MeshLambertMaterial({
+   color:0x808b8e,metalness:0,roughness:.92
+  });
+  const luminaire=new THREE.MeshLambertMaterial({color:0x6c777b});
+  const lensMat=new THREE.MeshLambertMaterial({color:0xbfc7c1});
+  const normal=new THREE.Vector3(-plan.uz,0,plan.ux);
+  // Gentle bent arm, a SINGLE photographed street lamp. Tube geometry
+  // instead of stacked disconnected bars; no lights/shadows added at night.
+  const at=(across,y)=>new THREE.Vector3(normal.x*across,y,normal.z*across);
+  const curve=new THREE.CatmullRomCurve3([
+   at(0,.02),at(0,2.6),at(0,5.4),at(.10,6.52),
+   at(.50,7.05),at(1.02,7.18),at(1.38,7.18)
+  ]);
+  const shaft=new THREE.Mesh(new THREE.TubeGeometry(curve,18,.072,7,false),poleMetal);
+  const head=new THREE.Mesh(new THREE.BoxGeometry(.69,.14,.25),luminaire);
+  head.position.copy(at(1.53,7.15));
+  head.rotation.y=plan.yaw;
+  const glass=new THREE.Mesh(new THREE.BoxGeometry(.59,.018,.20),lensMat);
+  glass.position.copy(at(1.53,7.068));
+  glass.rotation.y=plan.yaw;
+  root.add(shaft,head,glass);
+  root.position.set(plan.x,terrainAt(plan.x,plan.z),plan.z);
+  root.userData.lodX=plan.x;root.userData.lodZ=plan.z;
+  root.userData.lodDetail=true;
+  root.userData.photoSource='user-2022-05-09-5kvetna';
+  root.userData.approximatePlacement=true;
+  layer?.add(root);groups.add(root);streetlamp2022Root=root;
+  streetlamp2022=plan;drawMeshes+=3;instances+=3;featureCount++;
+ }
+ function addFromRoads(roads,buildingFootprints=[]){
   if(!Array.isArray(roads))return 0;
   lastDecision={reason:'evaluating',roads:roads.length,
    roadIds:roads.filter(r=>String(r.osmId)==='219273174').map(r=>String(r.osmId)),
@@ -316,6 +427,7 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
     sideSign,eligibleFeatureAnchors:choice.accepted,minimumRoadClearance,
     source:ref.source,photoDate:ref.photoDate});
   }
+  createPhotoStreetlamp2022(roads,buildingFootprints);
   report();return created;
  }
  function reset(){
@@ -329,6 +441,7 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
    });
   }
   entries.clear();groups.clear();data.length=0;
+  streetlamp2022=null;streetlamp2022Root=null;
   drawMeshes=instances=featureCount=pavementPieces=roadRejected=0;report();
  }
  report();
