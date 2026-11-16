@@ -47,6 +47,20 @@ assert.equal(plan.groundType,'concrete-paving-island');
 assert.equal(plan.legacyDetachedStripsRemoved,true);
 assert.equal(plan.originalCarriagewaysUntouched,true);
 assert.equal(plan.modelledRoundedNose,true);
+assert.equal(plan.northLoosePavingRemoved,4,
+ 'Top screenshot had four loose raster pavers above the true continuous walk');
+assert.equal(plan.northLooseRowsRemoved,3,
+ 'Remove precisely three north-end sparse rows, never middle parking rows');
+assert(plan.rowStats.slice(-3).every(row=>row.accepted===0),
+ 'All detached north-tip rows must stop generating instances');
+const lastContinuousAlong=Math.max(...plan.continuousRibbon.parts.map(p=>p.at(-1).along));
+assert(lastContinuousAlong>67&&lastContinuousAlong<68);
+assert(plan.cells.every(p=>p.along<=lastContinuousAlong+.001),
+ 'No raw parking or pedestrian tile may remain beyond the continuous ribbon');
+assert(plan.centralParkingCells.every(p=>p.along<=lastContinuousAlong+.001));
+assert(plan.outerSidewalkCells.every(p=>p.along<=lastContinuousAlong+.001));
+assert(plan.outerSidewalkCurbs.every(p=>p.along<=lastContinuousAlong+.001));
+assert.equal(plan.rejected.filter(p=>p.reason==='sparse-north-island-tip-paver').length,4);
 assert.equal(plan.southLoosePavingRemoved,2,
  'The isolated two-cell southern raster row, not the ribbon cap, causes the dangling pale tongue');
 assert(plan.rowStats.some(r=>Math.abs(r.along-1.08)<.001&&r.accepted===0),

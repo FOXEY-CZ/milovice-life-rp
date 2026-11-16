@@ -635,13 +635,56 @@ export function planStationPhotoParking(elements,roadClearance){
  }
  if(outerSidewalkCells.length<100||centralParkingCells.length<270)
   return null;
- const continuousRibbon=planContinuousOuterSidewalk(outerSidewalkCells,{
+ let continuousRibbon=planContinuousOuterSidewalk(outerSidewalkCells,{
   frame:f,roadCenterline:other,roadWidth:7.8,roadSetback:.40
  });
+
+ // 5.81.27: a real raster tail remains ABOVE the last *continuous* OSM-safe
+ // footway section. On 5.81.26 the safe ribbon ends at along=67.581,
+ // while rows 67.96, 68.72 and 69.48 still render 2+1+1 loose tiles.
+ // The ribbon-only guard cannot remove the original parking instances.
+ // Trim these strictly TERMINAL sparse rows from every affected render
+ // array. Never strip sparse rows in the body or manufacture new paving.
+ let northLoosePavingRemoved=0,northLooseRowsRemoved=0;
+ const northRibbonEnd=Math.max(...continuousRibbon.parts.map(part=>part.at(-1).along));
+ const danglingNorthRows=orderedRows.filter(([along,row])=>
+  along>northRibbonEnd+.005&&along>64&&row.length>0);
+ const northTailEligible=danglingNorthRows.length>0&&
+  danglingNorthRows.length<=4&&
+  danglingNorthRows.every(([,row])=>row.length<=2)&&
+  danglingNorthRows.reduce((sum,[,row])=>sum+row.length,0)<=6&&
+  danglingNorthRows.at(-1)[0]-danglingNorthRows[0][0]<3.2;
+ if(northTailEligible){
+  const northRemove=new Set(danglingNorthRows.map(([along])=>along));
+  const isNorthTerminal=along=>[...northRemove].some(v=>Math.abs(v-along)<.001);
+  for(let i=cells.length-1;i>=0;i--)if(isNorthTerminal(cells[i].along)){
+   const p=cells.splice(i,1)[0];
+   rejected.push({along:p.along,offset:p.offset,reason:'sparse-north-island-tip-paver'});
+   northLoosePavingRemoved++;
+  }
+  for(const arr of [centralParkingCells,outerSidewalkCells,outerSidewalkCurbs])
+   for(let i=arr.length-1;i>=0;i--)if(isNorthTerminal(arr[i].along))
+    arr.splice(i,1);
+  for(let i=curbs.length-1;i>=0;i--){
+   const curbAlong=(curbs[i].x-f.a.x)*f.ux+(curbs[i].z-f.a.z)*f.uz;
+   if(isNorthTerminal(curbAlong))curbs.splice(i,1);
+  }
+  for(const [along,row] of danglingNorthRows){
+   row.length=0;perRow.delete(along);
+   const stat=rowStats.find(r=>Math.abs(r.along-along)<.001);
+   if(stat)stat.accepted=0;
+   northLooseRowsRemoved++;
+  }
+  // The re-planned ribbon must match the very same retained safe cells.
+  continuousRibbon=planContinuousOuterSidewalk(outerSidewalkCells,{
+   frame:f,roadCenterline:other,roadWidth:7.8,roadSetback:.40
+  });
+ }
  if(!continuousRibbon||!continuousRibbon.parts.length||
     !continuousRibbon.roadAxisAligned||continuousRibbon.roadMarginMin<.38||
     continuousRibbon.maxBodyEdgeStep>.115||
     continuousRibbon.joins<60||continuousRibbon.metres<45)return null;
+
  // Refuse any stranded road-side edge tile; no "floating fingers".
  for(const [station,row] of orderedRows){
   if(row.length>=2&&row.at(-1).offset-row.at(-2).offset>acrossStep+.035)
@@ -720,7 +763,8 @@ export function planStationPhotoParking(elements,roadClearance){
   bayMarkings,railApronKerbs,
   outerFootwaySegments,outerFootwayStations,outerSidewalkCells,
   outerSidewalkCurbs,outerSidewalkMaxOsmDistance,
-  edgeSpursTrimmed:edgeSpursRemoved.size,southLoosePavingRemoved,continuousRibbon,
+  edgeSpursTrimmed:edgeSpursRemoved.size,southLoosePavingRemoved,
+  northLoosePavingRemoved,northLooseRowsRemoved,continuousRibbon,
   centralParkingCells,cornerPaving,cornerCurbs,cornerRejected,
   rightCornerFootwayId:cornerWay.id,centralFootwayId:centralFootway.id,
   incorrectlyPlacedRailSidewalkRemoved:true,
@@ -976,6 +1020,8 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   outerSidewalkCurbs:planned?.outerSidewalkCurbs.length||0,
   isolatedOuterSpursRemoved:planned?.edgeSpursTrimmed||0,
   sparseSouthTipTilesRemoved:planned?.southLoosePavingRemoved||0,
+  sparseNorthTipTilesRemoved:planned?.northLoosePavingRemoved||0,
+  sparseNorthTipRowsRemoved:planned?.northLooseRowsRemoved||0,
   continuousSidewalkSegments:planned?.continuousRibbon.parts.length||0,
   continuousSidewalkJoins:planned?.continuousRibbon.joins||0,
   continuousSidewalkMetres:planned?.continuousRibbon.metres||0,
