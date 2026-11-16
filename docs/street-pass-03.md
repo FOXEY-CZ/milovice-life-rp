@@ -118,3 +118,50 @@ Další skutečná 3D oprava má přijít **až po potvrzení na stejné histori
 satelitní fotografii / důvěryhodném novějším snímku**: průchod přes obrubník,
 směr a tvar příjezdu, návaznost na skutečnou bránu i případnou pěší trasu.
 Nedostatek detailu v současné hře není licence k vymyšlení objektu.
+
+
+## 5.82.6 — první 3D oprava podle panoramatu z roku 2022 (Part 17, 16. 11. 2026)
+
+Uživatel předal dvě **srovnávací fotografie** téhož přibližného směru:
+Mapy.com Panorama z **9. 5. 2022** a mobilní 3D snímek verze **5.82.5**.
+V panoramatu jsou zřejmé: kostelní věž po levé straně, první domy,
+šedá ocelová lampa se zalomeným/zakřiveným horním ramenem vlevo u silnice,
+úzké pěší plochy, opotřebený asfalt, ploty a zídky a členitější vegetace.
+Ve hře už existuje kostel a silnice, ale postrádá mnoho konkrétních
+prvků uličního prostředí. Jde o **pozorování z roku 2022**, nikoliv doklad
+jejich přesného aktuálního stavu v roce 2026. Panoramatický obrázek
+se nikam nekopíruje; používáme originální 3D síť.
+
+### V této verzi FYZICKY doplněno
+
+- **Přesně jeden 3D model šedé pouliční lampy** z ověřeného typu fotografie.
+  Má kovový štíhlý sloup s plynule zahnutým ramenem, samostatnou hlavici
+  a světlý spodní panel (bez přidaného dynamického světla a bez nočních
+  stínů). Vykresluje se jako **3 nízkonákladové mesh objekty**.
+- *Přibližná* OSM kotva: silnice 5. května `219273174`, směr od křižovatky
+  Pionýrů `118488006` **ke kostelu sv. Kateřiny `118487991`**;
+  testovací pozice 132 m po mapované ose od křižovatky, 6,3 m po levé
+  straně této osy. Není to zaměřený fyzický lampový sloup a poloha
+  bude revidována po přesném fotogeoreferencování.
+- Umístění prochází kontrolou **celého půdorysu lampy**, ochranným
+  odstupem od všech OSM vozovek a chodníků i od všech OSM budov;
+  v případě kolize systém objekt **nevykreslí** místo toho, aby
+  posunoval silnici, mazal chodník nebo hádal novou polohu.
+- Foto-doložená dřevěná sloupová konstrukce z jiné historické fotografie
+  z 26. 7. 2014 zůstává samostatná; nelze ji vydávat za tutéž ocelovou
+  lampu. Tuto 2022 lampu systém nevytváří opakovaně při streamingu mapy.
+- Kamera `?v=58260&streetAudit=pionyru-reverse` ukazuje směr ke kostelu,
+  ale **není kalibrovaná na GPS fotoaparátu Mapy.com**. Případnou změnu
+  polohy lampy je třeba podložit dalším úhlem nebo georeferencovaným zdrojem.
+
+### Nezměněné a stále otevřené
+
+OSM střechy/domovní půdorysy, silnice, pěší cesty, oba nájezdy,
+potvrzených pět vegetačních skupin, autobus, auta, nádraží a interakce
+zůstávají nedotčené. **Ploty, privátní vjezdy, hranice zahrad a
+nezmapované pěší trasy** se podle jediné panoramatické kamery
+nevytvářejí: zdejší export OSM jejich půdorysy nemá a obraz nedokládá
+přesnou délku/parcelu. Další práce: identifikovat první levý dům,
+získat kontrastní úhel na obě strany ulice a přiřadit skutečné
+hrany plotů a chodníků konkrétním OSM prvkům. Teprve pak další 3D
+hmoty, bez náhodného „zazelenění“ a bez posouvání domů.
