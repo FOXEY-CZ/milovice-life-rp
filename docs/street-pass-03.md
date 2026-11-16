@@ -86,3 +86,35 @@ a *míru jistoty*. Před opravou dvou panelů ověřit kontinuální trasu od
 příslušného skutečného vjezdu ke skutečné vozovce (včetně pěšího chodníku).
 Žádné rozšiřování na asfalt nebo soukromý pozemek podle pocitu. Nespoléhat
 jen na svislý nadhled; druhý test z chodníku a opačného konce ulice.
+
+
+## 5.82.4 — OSM diagnostika spojitosti dvou nájezdů (16. 11. 2026)
+
+Uživatelský screenshot 5.82.3 ukázal dva izolované béžové obdélníky přes
+veřejný zelený pás u Pionýrů. Místo neověřeného prodlužování 3D panelů
+vzniká **pouze diagnostika**, která vychází ze stejných OSM vozovek a
+pěších tras jako render hry.
+
+- **Západní nájezd** `2023-west-upper-verge`: začíná cca **0,23 m**
+  za modelovanou hranou 9m vozovky; u jeho vnějšího konce **není do 5 m
+  zmapovaná pěší trasa** (to neznamená, že tam ve skutečnosti neexistuje).
+- **Východní nájezd** `2023-east-upper-verge`: začíná rovněž cca **0,23 m**
+  od modelovaného asfaltu a končí přibližně **0,77 m** od modelovaného
+  půdorysu OSM pěší cesty `1282187908`. Jde o nejbližší místo
+  od středu vnějšího konce nájezdu k hraně modelované trasy.
+- Stav lze zkontrolovat v rozbaleném panelu technické kamery
+  `?v=58240&streetAudit=pionyru`; programová data jsou v
+  `window.__milovicePionyruSatellite2023.accessContinuityAudit`.
+- Výpočet vyžaduje skutečné uzly OSM, a přitom je **jen modelový**:
+  osa/mapová šířka nemusí odpovídat fyzické hraně obrubníku z roku 2026,
+  fotka z roku 2023 není geodetická. `continuousRealDrivewayVerified=false`
+  u obou objektů. Nikdy nespojovat plochu do vozovky nebo přes chodník
+  pouze na základě těchto vzdáleností.
+- Beze změny zůstává všech **5 keřových kapes**, **2 zpevněné přístupy**,
+  georeferencované OSM silnice, budovy i pěší trasy. Nepřidává se žádný
+  plot, brána ani soukromá příjezdová cesta.
+
+Další skutečná 3D oprava má přijít **až po potvrzení na stejné historické
+satelitní fotografii / důvěryhodném novějším snímku**: průchod přes obrubník,
+směr a tvar příjezdu, návaznost na skutečnou bránu i případnou pěší trasu.
+Nedostatek detailu v současné hře není licence k vymyšlení objektu.
