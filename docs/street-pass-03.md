@@ -49,3 +49,40 @@ Uživatelův satelit Mapy.com ze 4. 6. 2023 ukazuje dva zpevněné přístupy p�
 Testování odhalilo rozdíl mezi osmimetrovým předpokladem a skutečně použitou **devítimetrovou** modelovanou vozovkou. Nájezdy proto začínají 23 cm za hranou asfaltu, končí před OSM chodníkem 1282187908 a nezasahují do půdorysů domů. Celý obdélník kontroluje geometrická regrese s 12cm vzorkováním a 4cm kladným bezpečnostním odstupem. Dvě nové zpevněné části se instancují jediným draw callem, bez změny pěti dřívějších skupin zeleně. Nezměněné silnice, chodníky a parcely.
 
 Přesné brány, vnitřní příjezdy, hranice vlastnictví a aktuální vzhled z roku 2026 z tohoto jednoho snímku neověřujeme. Vizuální přezkum je nutný. Kontrolní kamera: ?v=58220&streetAudit=pionyru.
+
+
+## 5.82.3 — mobilní kontrola z Part 17 (16. 11. 2026)
+
+**Vstup:** uživatelský portrétní screenshot hry s panelem „Uliční blok · kontrola 5.82.3“;
+kamera `streetAudit=pionyru`. Na snímku je silnice 5. května, přilehlý chodník,
+oba úzké béžové panely přes zelený pás, existující objekty a několik tmavých
+keřových skupin. Přímý novější satelitní ani panoramatický obraz v této zprávě
+předán nebyl.
+
+**Výsledek konkrétní revize:**
+
+- Verze **5.82.3 se uživateli načetla**; na screenshotu není vidět přesun
+  silnice, přeložení chodníku ani změna počtu dvou zpevněných přístupů.
+  To je očekávané: změnou 5.82.3 je přesnější **polygonová** kontrola
+  kolizí s půdorysy budov, nikoliv nový 3D obsah.
+- Velké zelené plochy mezi budovami jsou stále převážně **prozatímní
+  schematický terén** bez dokázaných hranic parcel, plotů, zahrad a skutečných
+  různých povrchů. Nelze na ně genericky přidávat zahrady nebo vjezdy.
+- Dva světlé zpevněné obdélníky se v technickém nadhledu jeví vizuálně
+  **oddělené od okolního asfaltu a pěších tras**. V implementaci je kladný
+  ochranný odstup od modelované vozovky a chodníku záměrný. Samotný
+  screenshot **neprokazuje**, zda v realitě mezi nimi mezera je či není;
+  neprodlužovat je slepě přes existující komunikaci. Nutné výslovné
+  porovnání se zdrojovým satelitem 4. 6. 2023 a zaměřením u příslušné OSM hrany.
+- Pět keřových skupin má stále schematický kruhový vzhled z technického
+  nadhledu, ne ověřenou podobu konkrétních druhů/dimenzí.
+- Automatické WebGL a unit regresní testy 5.82.3 prošly; to není
+  důkaz fotografické přesnosti nebo naměřených mobilních FPS.
+
+**Následující evidence-first práce:** rozdělit úsek na parcelně/OSM
+ukotvené řádky a u každého zapsat *konkrétní doložený objekt*,
+*datum a směr fotografie*, *existující 3D reprezentaci*, *zjištěný rozdíl*
+a *míru jistoty*. Před opravou dvou panelů ověřit kontinuální trasu od
+příslušného skutečného vjezdu ke skutečné vozovce (včetně pěšího chodníku).
+Žádné rozšiřování na asfalt nebo soukromý pozemek podle pocitu. Nespoléhat
+jen na svislý nadhled; druhý test z chodníku a opačného konce ulice.
