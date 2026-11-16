@@ -38,6 +38,7 @@ try{
    scene:window.__miloviceStreetEnvironment,
    walkway:window.__miloviceChurchSidewalk2022,
    photoBlock:window.__miloviceChurchPhotoStreet,
+    panoFacade:window.__milovicePionyru2022Facade,
    label:document.getElementById('street-audit-label')?.textContent,
    source:document.getElementById('street-audit-source')?.href,
    panel:document.getElementById('street-block-audit')?.offsetWidth,
@@ -73,12 +74,14 @@ try{
   assert.equal(info.photoBlock.brownGateLeaves,4,
    'Photo-backed 4-panel brown gate must appear in the same 5. května street');
   assert.equal(info.photoBlock.photoGatePositionSurveyed,false);
+  assert.equal(info.photoBlock.photoBrickPavementRendered,true,
+   'The photographed paver frontage should render after road and building clearance');
   assert(info.photoBlock.rightTrees>=2,
    '2022 right-side trees must become real geometries');
   assert(info.photoBlock.asphaltWearPatches>=18,
    'Broad street road surface variation, not one isolated decoration');
-  assert(info.photoBlock.drawMeshes<=9,
-   'Keep photographed 2022 gate, fence, trees and asphalt within 9 draw calls');
+  assert(info.photoBlock.drawMeshes<=10,
+   'Keep photographed 2022 gate, fence, trees and asphalt within 10 draw calls');
   assert.equal(info.photoBlock.roadGeometryChanged,false);
   assert.equal(info.photoBlock.footwayGeometryChanged,false);
   assert.equal(info.photoBlock.inventedPrivateEntrances,0);
@@ -117,6 +120,9 @@ try{
     assert(Math.abs(info.gps.longitude-14.8849165)<.000002);
     assert(Math.abs(info.gps.bearingDegrees-220)<=1,
      'Camera must already look at the house at the source Panorama bearing');
+    assert.equal(info.panoFacade?.triangleWindow,true,
+     'Photo panorama gable must have its real triangular attic glass and frame');
+    assert.equal(info.panoFacade?.frameOnSameWall,true);
     assert(info.source.includes('pid=81190391'),
      'The same Mapy Panorama source must be one click away');
     assert.equal(info.audit.cameraMode,'documented-photo-gps-and-heading');
