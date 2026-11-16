@@ -210,11 +210,16 @@ export function planContinuousOuterSidewalk(tiles,{
  let active=null,joins=0;
  const cap=(r,side)=>{
   const along=r.along+side*(r.length/2+overlap);
-  // Narrow only the initial safe 0.75m-wide sidewalk cap to .38m,
-  // so the end is tapered rather than a floating full-width square.
+  // 5.81.24: The 5.81.23 taper left a narrow tile "tongue" extending
+  // below the parking apron. Retract only the SOUTH cap, inside its
+  // accepted OSM-safe first cell. Neither road nor body geometry moves.
   if(side<0&&r===profiles[0]){
-   const inset=Math.min(.18,Math.max(0,(r.high-r.low-.38)/2));
-   return {along,low:r.low+inset,high:r.high-inset,southNoseCap:true};
+   const longitudinalTrim=Math.min(.23,r.length*.29);
+   const capWidth=Math.min(.26,r.high-r.low);
+   const inset=Math.max(0,(r.high-r.low-capWidth)/2);
+   return {along:along+longitudinalTrim,low:r.low+inset,
+    high:r.high-inset,southNoseCap:true,
+    southNoseLongitudinalTrim:longitudinalTrim};
   }
   return {along,low:r.low,high:r.high};
  };
@@ -273,6 +278,7 @@ export function planContinuousOuterSidewalk(tiles,{
   roadMarginMin=Math.min(roadMarginMin,row.roadOffset-roadWidth/2-row.high);
  return {parts,rows:rows.length,joins,
   southNoseCap:parts[0]?.[0]?.southNoseCap===true,
+  southNoseLongitudinalTrim:parts[0]?.[0]?.southNoseLongitudinalTrim||0,
   southernOuterEarsClipped,
   shortTerminalPartsTrimmed:shortTerminalParts.length,
   metres:parts.reduce((n,p)=>n+p.at(-1).along-p[0].along,0),
@@ -869,6 +875,7 @@ export function planClippedRoadsideInfill(infill,ribbon,{overlap=.006}={}){
   const southCap=!!nose?.southNoseCap&&r.along===firstRibbonStation;
   rows.push({...r,low,high,edge,
    start:southCap?Math.min(start,nose.high):start,end,
+   startAlong:southCap?nose.along:r.along-r.halfAlong,
    startInner:southCap?nose.low:low,
    southCapMatched:southCap,
    supportedRoadEdge:p.high,innerSafeFootprintPreserved:true,
@@ -951,6 +958,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   roadsideOverhangClipped:infillProfile?.roadsideOverhangClipped||false,
   shortDetachedSidewalkPartsTrimmed:planned?.continuousRibbon?.shortTerminalPartsTrimmed||0,
   southernNoseCurvedInsideSafeCells:planned?.continuousRibbon?.southNoseCap||false,
+  southernNoseTrimMetres:planned?.continuousRibbon?.southNoseLongitudinalTrim||0,
   southernOuterPaverEarsClipped:planned?.continuousRibbon?.southernOuterEarsClipped||0,
   smoothInfillJoins:infillProfile?.joins||0,
   smoothInfillMaxEdgeStep:infillProfile?.maxEdgeStep??null,
@@ -1042,7 +1050,7 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
     infillProfile.roadsideOverhangClipped=clipped.clippedToContinuousRibbon;
     for(const row of clipped.rows){
      const sections=[
-      {along:row.along-row.halfAlong,inner:row.startInner,outer:row.start},
+      {along:row.startAlong,inner:row.startInner,outer:row.start},
       {along:row.along,inner:row.low,outer:row.edge},
       {along:row.along+row.halfAlong,inner:row.low,outer:row.end}
      ];
