@@ -392,7 +392,7 @@ export function planStationPhotoParking(elements,roadClearance){
    }
   }
  }
- // 5.81.26: THE remaining south-east tongue is the TWO original, fully
+ // 5.81.27: THE remaining south-east tongue is the TWO original, fully
  // instanced raster cells at along=1.08, not either curved ribbon or its
  // underlay. The photo review showed their isolated rectangular footprint.
  // Trim only a sparse terminal row, never the first full 7-cell parking row.
@@ -640,7 +640,7 @@ export function planStationPhotoParking(elements,roadClearance){
  });
 
  // 5.81.27: a real raster tail remains ABOVE the last *continuous* OSM-safe
- // footway section. On 5.81.26 the safe ribbon ends at along=67.581,
+ // footway section. On 5.81.27 the safe ribbon ends at along=67.581,
  // while rows 67.96, 68.72 and 69.48 still render 2+1+1 loose tiles.
  // The ribbon-only guard cannot remove the original parking instances.
  // Trim these strictly TERMINAL sparse rows from every affected render

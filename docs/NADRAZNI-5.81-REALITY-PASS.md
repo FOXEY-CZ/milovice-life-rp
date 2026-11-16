@@ -142,3 +142,11 @@ Screenshot 5.81.25 v 01:20 stále zobrazoval malý světlý obdélníkový výb�
 Ve verzi 5.81.26 se pouze v případě odpovídajícího vzoru **první řada má nejvýše dvě buňky a následující nejméně pět** odstraní tyto dva nespojité koncové díly a označí se jako odstraněné terminální rasterové zbytky. Sousední plná řada, obě banky parkování, jejich bílé čáry, kolejová krajní obruba, střední chodník mimo nos i OSM komunikace zůstávají zachované. Test kontroluje přesně dva odstraněné pavery a nepřítomnost starých buněk pod 1,1 m. Žádná nová plocha se negeneruje.
 
 Přesný skutečný obrys zůstává foto-informovaným odhadem, nikoli zaměřením; k vizuálnímu schválení je potřeba další nadhled po nasazení.
+
+## 5.81.27 — horní konec prostředního ostrůvku (16. 11. 2026)
+
+Na přiloženém horním nadhledu 5.81.26 (01:26) je spodní „jazýček“ odstraněn. Stále jsou viditelné schodovité izolované světlé části na **horním konci** středního parkovacího ostrůvku. V diagnostice skutečně vygenerované geometrie hlavní bezpečný chodník končil na `along=67.581`, ale původní čtvercová mřížka pokračovala dalšími třemi řadami na `along=67.96,68.72,69.48`, o celkem **čtyři buněčné dlažební díly** (2+1+1). Dvě závěrečné jedno-buněčné řady již byly dříve odmítnuté samostatným ribbon rendererem, ale to neodstranilo původní dlaždice a obruby.
+
+V 5.81.27 se odstraňují pouze řídké terminální řady **za posledním schváleným souvislým chodníkem**, nikoliv všechna řídká parkovací místa nebo tělo chodníku. Podmínka je omezená na nejvýše čtyři sousední koncové řady nad 64 m, každou nejvýše se dvěma již OSM schválenými buňkami. Odstranění se promítá do parkovací a pěší vrstvy, původních obrub, statistik řádků i kompletně nově přepočteného souvislého chodníku. Výsledek testu: odebrány přesně 4 izolované buňky ve 3 řadách, první zachovaná souvislá špička leží před koncem cca 67.58 m. Silnice, levý parking i hlavní parkovací pruh a podklady mimo tyto čtyři buňky zůstaly nedotčené. Další nové dlaždice se nevytvářejí.
+
+**Fotografické omezení:** Mapové referenční trasy jsou ověřené, skutečná hrana dlažby není geodeticky zaměřena. Opravu je potřeba vizuálně potvrdit screenshotem verze 5.81.27. Pokud horní konec stále neodpovídá realitě, nesmí se naslepo posouvat do silnice; je nutné porovnání s ověřenou fotografií.
