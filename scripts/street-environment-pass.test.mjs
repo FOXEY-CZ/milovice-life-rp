@@ -1,9 +1,15 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {PHOTO_STREET_ENVIRONMENT,gpsToStreetWorld,nearestPhotoRoadSegment} from './street-environment-reality.js';
+import {PHOTO_STREET_ENVIRONMENT,STREET_PASS_03_FEATURE_POLICY,gpsToStreetWorld,nearestPhotoRoadSegment} from './street-environment-reality.js';
 const ref=PHOTO_STREET_ENVIRONMENT[0];
 assert.equal(PHOTO_STREET_ENVIRONMENT.length,1);
 assert.equal(ref.photoLicense,'CC BY-SA 4.0');
+assert.equal(STREET_PASS_03_FEATURE_POLICY.photoObservedTrees,1);
+assert.equal(STREET_PASS_03_FEATURE_POLICY.photoObservedUtilityPoles,1);
+assert.equal(STREET_PASS_03_FEATURE_POLICY.extraTreesDisabled,true);
+assert.equal(STREET_PASS_03_FEATURE_POLICY.unmappedSecondUtilityPoleDisabled,true);
+assert.equal(STREET_PASS_03_FEATURE_POLICY.unverifiedPowerLineSpanDisabled,true);
+assert.equal(STREET_PASS_03_FEATURE_POLICY.exactPlacementsSurveyed,false);
 assert.equal(ref.osmRoadId,'219273174');
 assert.equal(ref.latitude,50.227797);
 assert(ref.source.includes('commons.wikimedia.org'));
@@ -38,6 +44,13 @@ assert(runtime.includes('photoRectClearance(anchor,gateAlong,gateOffset,3.5,.35)
  'A 3.5m wooden gate may not be cleared solely at its centre');
 assert(!runtime.includes('function paving('),
  'Keep old speculative 5. května paving removed, not merely disabled');
+assert(runtime.includes('for(const [along,size] of [[-17,1]])'));
+assert(!runtime.includes('[-4,.79]'));
+assert(runtime.includes('for(let i=0;i<2;i++)'));
+assert(runtime.includes('for(let i=0;i<8;i++)'));
+assert(!runtime.includes('const poles=[a,b]'));
+assert(!runtime.includes('for(const lateral of [-.14,.14])'));
+assert(runtime.includes("['Městská policie','Sběrný dvůr','Mirakulum']"));
 assert(runtime.includes('photoGroundClearance(anchor,along,side,.8*size)'),
  'Stem positions cannot be inferred without physical OSM road-clearance test');
 
@@ -76,5 +89,11 @@ assert(streetHTML.includes('osmStrip(a,b,width,osmRoadMaterial,.17)'),
 const cameraHTML=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert(cameraHTML.includes('let cameraSnapPending=false'));
 assert(cameraHTML.includes('cameraSnapPending=true'));
+assert(cameraHTML.includes("get('streetAudit')"));
+assert(cameraHTML.includes("if(rpStreetAuditCameraWorld&&rpStreetAuditView)"));
+assert(cameraHTML.includes("cameraMode:rpStreetAuditView.technical?'technical-osm-overhead'"));
+assert(cameraHTML.includes("document.getElementById('street-audit-source').href=rpStreetAuditView.source"));
+assert(cameraHTML.includes('camera.up.set(mapped?.ux??0,0,mapped?.uz??-1)'));
+
 assert(cameraHTML.includes('camera.position.copy(desired)'));
 assert(cameraHTML.includes('window.__miloviceCameraSpawnAudit='));
