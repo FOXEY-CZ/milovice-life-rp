@@ -91,7 +91,12 @@ assert(cameraHTML.includes('let cameraSnapPending=false'));
 assert(cameraHTML.includes('cameraSnapPending=true'));
 assert(cameraHTML.includes("get('streetAudit')"));
 assert(cameraHTML.includes("if(rpStreetAuditCameraWorld&&rpStreetAuditView)"));
-assert(cameraHTML.includes("cameraMode:rpStreetAuditView.technical?'technical-osm-overhead'"));
+assert(cameraHTML.includes("cameraMode:rpStreetAuditView.streetLevel?'technical-osm-street-axis'"),
+ 'Street-level OSM cameras must not masquerade as photographs');
+assert(cameraHTML.includes("rpStreetAuditId.startsWith('pionyru')"));
+assert(cameraHTML.includes('camera.position.set(x,terrainAt(x,z)+1.68,z)'));
+assert(cameraHTML.includes("streetAudit=pionyru-forward"));
+assert(cameraHTML.includes("streetAudit=pionyru-reverse"));
 assert(cameraHTML.includes("document.getElementById('street-audit-source').href=rpStreetAuditView.source"));
 assert(cameraHTML.includes('camera.up.set(pionyru?.ux??mapped?.ux??0,0,pionyru?.uz??mapped?.uz??-1)'),
  'Technical street view uses mapped direction, never fabricated 2014 heading');
