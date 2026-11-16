@@ -123,7 +123,7 @@ assert(html.includes('delete pitchedSurface.userData.roofRuntimePlan;'));
 assert(html.includes('queueCityWall(geo,wallSeam,centerX,0,centerZ)'));
 assert(html.includes('roofPlan&&!isSkolskaRoof&&(!(heroFacade&&pitched)||isForkPhotoGable||isPionyru2022PhotoGable)'),
  'Do not double-cap generic hero gables; source-backed irregular fork gable needs physical end-wall infill');
-assert(html.includes("isPionyru2022PhotoGable?2.45:2.20,'gable'"),
+assert(html.includes("isPionyru2022PhotoGable?1.95:2.20,'gable'"),
  'Only independently photographed nonrectangular gables may bypass the generic rectangle-only gate');
 assert(!html.includes('if(pitched||hip)osmLayer.add(pitched||hip);'),
  'The old branch overlaid a flat roof on every pitched house');
