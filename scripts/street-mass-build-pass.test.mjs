@@ -4,6 +4,7 @@ import {MASS_STREET_583,planMassStreetBlock583,MIROVA_PUBLIC_PHOTO_586,planPubli
  SKOLSKA_PUBLIC_PHOTO_587,planPublicPhotoSkolskaBlock587,
  SKOLSKA_WEST_588,planSkolskaWestBlock588} from './street-mass-build-pass.js';
 import {MIROVA_PHOTO_STREET_586,planMirovaPhotoStreet586} from './mirova-public-photo-street-586.js';
+import {SKOLSKA_WEST_GREEN_588,planSkolskaWestGreen588} from './skolska-west-street-588.js';
 import {createRoadClearance} from './road-clearance.js';
 
 const {elements}=JSON.parse(readFileSync(
@@ -168,6 +169,21 @@ assert.deepEqual(augmented.priorityIds,plan.priorityIds);
  assert.deepEqual(greenAgain.hedges,green.hedges);
  assert.deepEqual(greenAgain.trees,green.trees);
  assert.equal(planMirovaPhotoStreet586([],{}),null);
+ const westGreen=planSkolskaWestGreen588(elements,{roadClearance});
+ assert(westGreen&&westGreen.plantedObjects>=2,
+  'A real street-wide, road-safe green scene must be planned, not just documented');
+ assert.equal(westGreen.plantedObjects,westGreen.hedges.length+westGreen.trees.length);
+ assert.equal(westGreen.photoVerifiedPlantCount,0);
+ assert.equal(westGreen.estimatedPlanting,true);
+ assert.equal(westGreen.roadGeometryChanges,0);
+ assert.equal(westGreen.sidewalkChanges,0);
+ assert.equal(westGreen.newDriveways,0);
+ assert.equal(westGreen.parcelBoundariesClaimed,0);
+ assert.equal(westGreen.knownCameraHeadingRequired,false);
+ assert.equal(SKOLSKA_WEST_GREEN_588.roadIds.length,2);
+ assert.deepEqual(planSkolskaWestGreen588([...elements].reverse(),{roadClearance}).hedges,
+  westGreen.hedges,'Reversing input must not move estimated street greenery');
+ assert.equal(planSkolskaWestGreen588([],{}),null);
  
  const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const hero=readFileSync(new URL('./hero-architecture.js',import.meta.url),'utf8');
