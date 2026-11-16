@@ -13,7 +13,7 @@ import {planSourceObservedFacade} from './source-observed-facades.js?v=5520';
 export function makeMiloviceHeroArchitecture(THREE,{
   sites=[],radius=240,maxBuildings=68,terrainAt=()=>0
 }={}){
- const chunks=new Map(),selected=new Set(),priorityIds=new Set(),photoFocusIds=new Set();
+ const chunks=new Map(),selected=new Set(),priorityIds=new Set(),photoFocusIds=new Set(),builtPhotoFocusIds=new Set();
  let selectedPriority=0,selectedNormal=0,selectedPhotoFocus=0;
  const appliedFaces=[];
  const state={buildings:0,verifiedOverrides:0,verifiedFaces:0,photoMappedFaces:0,
@@ -113,7 +113,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
  function publish(){
   if(typeof window!=='undefined')window.__miloviceHeroArchitecture={...state,
    selectedIds:[...selected].slice(0,8),faceAudits:appliedFaces.slice(0,32),radius,maxBuildings,
-   priorityIds:[...priorityIds],photoFocusIds:[...photoFocusIds],
+   priorityIds:[...priorityIds],photoFocusIds:[...photoFocusIds],photoFocusBuiltIds:[...builtPhotoFocusIds],
     normalBuilt:selectedNormal,priorityBuilt:selectedPriority,photoFocusCompleted:selectedPhotoFocus};
  }
  function supports({points,height,floors,type,index,id,excluded=false,override=null}){
@@ -145,6 +145,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
   if(massPriority){selectedPriority++;state.massBlockPriorityBuilt++}
   else if(photoFocusIds.has(String(identity))){
    selectedPhotoFocus++;state.photoFocusBuilt++;
+   builtPhotoFocusIds.add(String(identity));
   }else selectedNormal++;
   const pts=[...points];
   if(pts.length>4&&pts[0].distanceTo(pts[pts.length-1])<.10)pts.pop();
@@ -443,7 +444,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
   state.chunkCount+=batches;publish();
  }
  function reset(){
-  chunks.clear();selected.clear();priorityIds.clear();photoFocusIds.clear();
+  chunks.clear();selected.clear();priorityIds.clear();photoFocusIds.clear();builtPhotoFocusIds.clear();
   selectedPriority=0;selectedNormal=0;selectedPhotoFocus=0;appliedFaces.length=0;
   for(const key of Object.keys(state))state[key]=0;
   // Geometry counters reset between district loads, but the shared
@@ -455,5 +456,6 @@ export function makeMiloviceHeroArchitecture(THREE,{
   publish();
  }
  publish();
- return {addBuilding,flush,reset,setPriorityIds,setPhotoFocusIds,stats:()=>({...state})};
+ return {addBuilding,flush,reset,setPriorityIds,setPhotoFocusIds,
+   stats:()=>({...state,photoFocusBuiltIds:[...builtPhotoFocusIds]})};
 }
