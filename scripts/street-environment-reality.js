@@ -289,7 +289,8 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
    if(layer)layer.add(root);
    groups.add(root);entries.add(ref.id);created++;
    data.push({id:ref.id,osmRoadId:ref.osmRoadId,anchorDistance:anchor.distance,
-    x:anchor.x,z:anchor.z,sideSign,minimumRoadClearance,source:ref.source,photoDate:ref.photoDate});
+    x:anchor.x,z:anchor.z,ux:anchor.ux,uz:anchor.uz,
+    sideSign,minimumRoadClearance,source:ref.source,photoDate:ref.photoDate});
   }
   report();return created;
  }
