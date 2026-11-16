@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {MASS_STREET_583,planMassStreetBlock583,MIROVA_PUBLIC_PHOTO_586,planPublicPhotoMirovaBlock586} from './street-mass-build-pass.js';
+import {MIROVA_PHOTO_STREET_586,planMirovaPhotoStreet586} from './mirova-public-photo-street-586.js';
+import {createRoadClearance} from './road-clearance.js';
 
 const {elements}=JSON.parse(readFileSync(
  new URL('../data/milovice-osm.json',import.meta.url),'utf8'));
@@ -78,6 +80,35 @@ assert.deepEqual(augmented.priorityIds,plan.priorityIds);
   mirova.priorityIds,'Digitizing direction must not change the chosen photographed street');
  assert.equal(planPublicPhotoMirovaBlock586([],plan.priorityIds),null);
  assert.equal(MIROVA_PUBLIC_PHOTO_586.maxBuildings,12);
+ const C=Math.cos(50.226*Math.PI/180);
+ const project=p=>({x:(p.lon-14.889)*111320*C,z:-(p.lat-50.226)*111320});
+ const surfaceWidth={secondary:9,primary:11,tertiary:8,residential:7,
+  living_street:5,footway:1.8,path:1.65,cycleway:2,service:4.5};
+ const roadClearance=createRoadClearance();
+ for(const way of elements.filter(e=>e.tags?.highway&&e.geometry?.length>=2)){
+  const kind=way.tags.highway;
+  roadClearance.addRoad({id:way.id,kind,
+   points:way.geometry.map(project),width:surfaceWidth[kind]??7.8});
+ }
+ const green=planMirovaPhotoStreet586(elements,{roadClearance});
+ assert(green&&green.roadId==='1331897651');
+ assert.equal(green.source,MIROVA_PHOTO_STREET_586.source);
+ assert.equal(green.roadsOrFootwaysChanged,false);
+ assert.equal(green.OSMBuildingsChanged,false);
+ assert.equal(green.newCrossings,0);
+ assert.equal(green.newPrivateEntrances,0);
+ assert.equal(green.newPavements,0);
+ assert.equal(green.vegetationPositionsSurveyed,false);
+ assert.equal(green.plantedElements,green.hedges.length+green.trees.length);
+ assert(green.plantedElements>=2,
+  'The street should receive more than one road-safe green element');
+ assert(green.hedges.every(v=>v.photoObservedKind==='trimmed-hedge'&&
+  v.placementSurveyed===false));
+ const greenAgain=planMirovaPhotoStreet586([...elements].reverse(),{roadClearance});
+ assert.deepEqual(greenAgain.hedges,green.hedges);
+ assert.deepEqual(greenAgain.trees,green.trees);
+ assert.equal(planMirovaPhotoStreet586([],{}),null);
+ 
  const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const hero=readFileSync(new URL('./hero-architecture.js',import.meta.url),'utf8');
 assert(game.includes('planMassStreetBlock583([...roadWays,...buildingWays])'));
