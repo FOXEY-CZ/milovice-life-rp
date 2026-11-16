@@ -47,6 +47,7 @@ export function nearestPhotoRoadSegment(road,latitude,longitude){
 }
 export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClearance=null}={}){
  const entries=new Set(),groups=new Set(),data=[];
+ let lastDecision={reason:'not-loaded',roads:0,anchorDistance:null,candidates:null};
  const colors={
   bark:new THREE.MeshLambertMaterial({color:0x69503d}),
   leaf:new THREE.MeshLambertMaterial({color:0x46683c,flatShading:true}),
@@ -82,7 +83,7 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
   minRoadClearance:data.length?Math.min(...data.map(v=>v.minimumRoadClearance)):null,
   chosenSides:data.map(v=>v.sideSign),
   pavementPieces,roadRejected,unverifiedPhotoPavingDisabled:true,checkedGreeneryAgainstRoads:true,
-  fullFootprintChecked:true,
+  fullFootprintChecked:true,photoSceneDecision:lastDecision,
   photoObservedTrees:STREET_PASS_03_FEATURE_POLICY.photoObservedTrees,
   photoObservedUtilityPoles:STREET_PASS_03_FEATURE_POLICY.photoObservedUtilityPoles,
   duplicatedPhotoTreeDisabled:true,duplicatedPhotoPoleDisabled:true,
@@ -247,13 +248,17 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
  }
  function addFromRoads(roads){
   if(!Array.isArray(roads))return 0;
+  lastDecision={reason:'evaluating',roads:roads.length,
+   roadIds:roads.filter(r=>String(r.osmId)==='219273174').map(r=>String(r.osmId)),
+   anchorDistance:null,candidates:null};
   let created=0;
   for(const ref of PHOTO_STREET_ENVIRONMENT){
    if(entries.has(ref.id))continue;
    const road=roads.find(r=>String(r.osmId)===ref.osmRoadId);
-   if(!road)continue;
+   if(!road){lastDecision.reason='missing-mapped-road';continue;}
    const anchor=nearestPhotoRoadSegment(road,ref.latitude,ref.longitude);
-   if(!anchor||anchor.distance>18)continue;
+   lastDecision.anchorDistance=anchor?.distance??null;
+   if(!anchor||anchor.distance>18){lastDecision.reason='gps-too-far-from-road';continue;}
    // 5.82: The old GLOBAL min-clearance gate included -35m and another
    // unphotographed end, so one mapped side path hid this entire street
    // scene. Never discard a supported tree/sign merely because a different
@@ -287,7 +292,9 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
    const choice=sideSign>0?leftScore:rightScore;
    // At least one independent feature must be placed off OSM road.
    // Otherwise adding a photo-inspired scene would be unjustified.
-   if(choice.accepted===0)continue;
+   lastDecision.candidates={left:leftScore,right:rightScore,chosen:sideSign};
+   if(choice.accepted===0){lastDecision.reason='no-road-clear-ground';continue;}
+   lastDecision.reason='accepted-photo-scene';
    const minimumRoadClearance=choice.minimum;
    const side=sideSign*halfWidth;
    const root=new THREE.Group();
