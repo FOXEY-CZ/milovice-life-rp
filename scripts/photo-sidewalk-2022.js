@@ -129,9 +129,13 @@ export function makePhotoChurchSidewalk2022(THREE,{
   color:0xbebdb4,side:THREE.DoubleSide
  });
  function create(roads,buildingFootprints=[],churchFootprint=[]){
-  reset();
-  plan=planPhotoChurchSidewalk2022(roads,{
+  // Preserve the existing street meshes when a streamed region has no
+  // church/road source evidence. Explicit reset() still clears on full reload.
+  const nextPlan=planPhotoChurchSidewalk2022(roads,{
    roadClearance,buildingFootprints,churchFootprint});
+  if(!nextPlan)return plan;
+  reset();
+  plan=nextPlan;
   if(plan?.acceptedSegments){
    root=new THREE.Group();
    const positions=[],uv=[],indices=[],curbPos=[],curbIdx=[];
