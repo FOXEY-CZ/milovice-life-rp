@@ -242,3 +242,60 @@ hromadně domyslet. Další důležitý krok je vzít `church-2024` pohled
 a porovnat s přesným veřejným fotografickým zdrojem, poté v jednom bloku
 opravit několik OSM fasád se skutečnými rozdíly místo zvyšování
 počtu generických dekorací.
+
+
+## 5.85.0 — panoramatická rekonstrukce uličního profilu 5. května (16. 11. 2026)
+
+Uživatel nahrál mobilní screenshot **Mapy.com Panorama 9. 5. 2022**
+`Screenshot_2026-11-16-13-57-24-351_cz.seznam.mapy.jpg`. Záběr
+ve směru ke kostelu sv. Kateřiny: po levé straně oplocení, nízké
+zídky, chodník a sousední omítnuté domy; po pravé výrazné stromy,
+vyšší obytné fasády, modrá směrová značka; vozovka má viditelně
+různě opravený asfalt bez pravidelných přidaných pruhů. Fotografie
+dokládá **existenci tříd prvků ve zvoleném úseku k roku 2022**,
+nikoliv geodeticky přesné jednotlivé souřadnice.
+
+Veřejné doplňující zdroje:
+- Wikimedia Commons [5. května (Milovice)](https://commons.wikimedia.org/wiki/Category:5._kv%C4%9Btna_(Milovice)),
+  cca 10 samostatných fotografií s různými úhly a daty.
+- [Tiia Monto, Milovice – 5. května (26. 7. 2014)](https://commons.wikimedia.org/wiki/File:Milovice_-_5._kv%C4%9Btna.jpg),
+  CC BY-SA 4.0, GPS 50.227797 N, 14.884813 E.
+- [Wikimedia Commons – kostel sv. Kateřiny](https://commons.wikimedia.org/wiki/Category:Church_of_Saint_Catherine_in_Milovice):
+  další veřejné fotografie bočních stran a průčelí.
+- Licence a podmínky zůstávají na originálních stránkách; do hry se
+  nevkládají žádné kopie fotografických pixelů ani screenshoty Panoramata.
+
+Změny:
+- `scripts/church-street-photo-pass.js` hromadně osazuje bezpečně
+  kandidátní nízké **plotové úseky podél levé strany** modelovaného
+  chodníku, **listnaté stromy za pravým chodníkem** a **nepravidelné
+  barevné plochy existující vozovky**. Nejde o dopravní vodicí čáry
+  ani o skutečná zaměřená místa oprav asfaltu.
+- Všechna konkrétní místa plotů a kmenů procházejí kontrolou
+  **orientovaného obdélníku proti všem OSM komunikacím a domům**.
+  Kolizní místa se zahodí. V kontrolním datasetu jich prošlo
+  10 plotových segmentů, 3 stromy; 1 strom zamítnut.
+  Délka a odstupy plotů jsou **odhad pro vizuální rekonstrukci**,
+  nikoliv vyznačení soukromých parcel. Ploty nelze považovat za
+  geodetické hranice ani ověřené jednotlivé zahrady.
+- Vyrobena jedna sloučená 3D geometrie tónů asfaltu (22 jemných
+  nepravidelných záplat), fyzická průjezdnost a mapované OSM
+  silnice/okolní budovy se nemění.
+- Všechno je batched: méně než 8 draw calls pro výše uvedené
+  objekty dohromady. Mobilní WebGL test ověřuje vytvořenou
+  scénu, nejen počítadlo deklarovaných kandidátů.
+- Připravené technické foto-matching kamery, **stejná výška 1,68 m**
+  ze středové osy 5. května přibližně 68 m od Pionýrů:
+  `?v=58500&streetAudit=pionyru-left` a
+  `?v=58500&streetAudit=pionyru-right`. Kamera se dívá po
+  okolních fasádách z jedné pozice; **není to přesná kamera Mapy
+  ani ověřené GPS pozorovatele**. Uživatel podle ní může pořídit
+  navazující Panorama bez dlouhého popisu potřebného úhlu.
+
+Neopravené nejistoty: přesná strana/typ a délka plotů pro jednotlivé
+parcely, barevné nápisy modré směrové tabule, skutečné stáří/výška
+stromů, výška konkrétních fasád a detaily bočních vstupů.
+U jednotlivých objektů se neodvozují pozice nebo texty z barevné
+skvrny v jediném panoramatu. Vyžádat boční Panorama dle
+připravených herních kamer; potom současně opravit příslušné
+OSM domy, nikoliv přidávat náhodnou kulisu.
