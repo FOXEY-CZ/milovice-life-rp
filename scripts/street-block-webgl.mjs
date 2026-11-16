@@ -101,7 +101,7 @@ try{
    assert.equal(info.skolskaWestGreen.changedRoads,0);
    assert.equal(info.skolskaWestGreen.changedSidewalks,0);
    assert.equal(info.skolskaWestGreen.guessedPrivateEntrances,0);
-   assert.equal(info.hero?.photoFocusReservedPlaces,32);
+   assert.equal(info.hero?.photoFocusReservedPlaces,33);
    assert.equal(info.hero?.photoFocusBuilt,32);
    assert.equal(info.hero.photoFocusBuiltIds.length,32);
    assert.equal(info.mirovaGreen?.active,true,
