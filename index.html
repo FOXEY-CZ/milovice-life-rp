@@ -141,6 +141,8 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <a href="?v=58500&streetAudit=pionyru">Pionýrů × 5. května · satelit 2023</a>
 <a href="?v=58500&streetAudit=pionyru-forward">🚶 Pohled z ulice · ke kostelu</a>
 <a href="?v=58500&streetAudit=pionyru-reverse">🚶 Pohled z ulice · zpět ke křižovatce</a>
+<a href="?v=58500&streetAudit=pionyru-left">📷 Levá strana · ploty a domy</a>
+<a href="?v=58500&streetAudit=pionyru-right">📷 Pravá strana · domy a stromy</a>
 <a href="?v=58500&streetAudit=church-2024">📷 Kostel · stejné GPS a směr jako foto z roku 2024</a>
 <a href="?v=58500&streetAudit=mirova">Mírová · fotopohled</a></nav>
 <span id="street-audit-status">GPS označuje místo fotografa, ne přesnou polohu stromu, lampy či brány.</span>
@@ -364,6 +366,14 @@ const rpStreetAuditViews={
   label:'5. května · pohled zpět ke křižovatce podle OSM (NENÍ fotografický úhel)',
   camera:{lat:50.227699,lon:14.885002},heading:null,source:'https://mapy.com',
   date:'2023-06-04',author:'OSM technická kamera',technical:true,streetLevel:true,streetDirection:'inbound'},
+ 'pionyru-left':{
+  label:'5. května · levá strana, ploty a domy · TECHNICKÁ OSM kamera, ne stejný úhel Mapy.com',
+  camera:{lat:50.227699,lon:14.885002},heading:null,source:'https://mapy.com',
+  date:'2022-05-09',author:'OSM technická kamera pro porovnání s Panoramatem',technical:true,streetLevel:true,streetDirection:'left'},
+ 'pionyru-right':{
+  label:'5. května · pravá strana, fasády a stromy · TECHNICKÁ OSM kamera, ne stejný úhel Mapy.com',
+  camera:{lat:50.227699,lon:14.885002},heading:null,source:'https://mapy.com',
+  date:'2022-05-09',author:'OSM technická kamera pro porovnání s Panoramatem',technical:true,streetLevel:true,streetDirection:'right'},
  '5kv':{label:'5. května · technický nadhled od GPS 2014, nikoli původní fotografický úhel',
   camera:{lat:50.227797,lon:14.884813},heading:null,
   source:'https://commons.wikimedia.org/wiki/File:Milovice_-_5._kv%C4%9Btna.jpg',
@@ -5329,12 +5339,14 @@ if(rpStreetAuditCameraWorld&&rpStreetAuditView){
    // Map-derived technical camera only, not a reconstructed photo viewpoint.
    // No new scene object or road geometry is created.
    const outbound=rpStreetAuditView.streetDirection==='outbound';
-   const eyeAlong=outbound?15:Math.min(pionyru.segmentLength-14,105);
-   const targetAlong=outbound?Math.min(pionyru.segmentLength-8,112):10;
+   const sideView=['left','right'].includes(rpStreetAuditView.streetDirection);
+   const eyeAlong=sideView?68:outbound?15:Math.min(pionyru.segmentLength-14,105);
+   const targetAlong=sideView?70:outbound?Math.min(pionyru.segmentLength-8,112):10;
+   const targetSide=sideView?(rpStreetAuditView.streetDirection==='left'?-20:20):0;
    const x=pionyru.junction.x+pionyru.ux*eyeAlong;
    const z=pionyru.junction.z+pionyru.uz*eyeAlong;
-   const tx=pionyru.junction.x+pionyru.ux*targetAlong;
-   const tz=pionyru.junction.z+pionyru.uz*targetAlong;
+   const tx=pionyru.junction.x+pionyru.ux*targetAlong-pionyru.uz*targetSide;
+   const tz=pionyru.junction.z+pionyru.uz*targetAlong+pionyru.ux*targetSide;
    camera.up.set(0,1,0);
    camera.position.set(x,terrainAt(x,z)+1.68,z);
    camera.lookAt(tx,terrainAt(tx,tz)+1.70,tz);
