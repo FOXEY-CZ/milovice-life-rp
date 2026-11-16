@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {MASS_STREET_583,planMassStreetBlock583,MIROVA_PUBLIC_PHOTO_586,planPublicPhotoMirovaBlock586} from './street-mass-build-pass.js';
+import {MASS_STREET_583,planMassStreetBlock583,MIROVA_PUBLIC_PHOTO_586,planPublicPhotoMirovaBlock586,
+ SKOLSKA_PUBLIC_PHOTO_587,planPublicPhotoSkolskaBlock587} from './street-mass-build-pass.js';
 import {MIROVA_PHOTO_STREET_586,planMirovaPhotoStreet586} from './mirova-public-photo-street-586.js';
 import {createRoadClearance} from './road-clearance.js';
 
@@ -80,6 +81,36 @@ assert.deepEqual(augmented.priorityIds,plan.priorityIds);
   mirova.priorityIds,'Digitizing direction must not change the chosen photographed street');
  assert.equal(planPublicPhotoMirovaBlock586([],plan.priorityIds),null);
  assert.equal(MIROVA_PUBLIC_PHOTO_586.maxBuildings,12);
+ const skolska=planPublicPhotoSkolskaBlock587(elements,
+  [...plan.priorityIds,...mirova.priorityIds]);
+ assert(skolska&&skolska.prioritizedBuildings===8,
+  'Eight additional school-neighborhood OSM homes, not generic duplicates');
+ assert.equal(skolska.photographedSchoolOSMId,'118487979');
+ assert.equal(skolska.corridorLengthM,211.8);
+ assert.equal(skolska.photoApprovedNeighborBuildings,0);
+ assert.equal(skolska.schoolLandmarkPreserved,true);
+ assert.equal(skolska.inferredHousesAreNotPhotoVerified,true);
+ assert.equal(skolska.newBuildingFootprints,0);
+ assert.equal(skolska.newRoads,0);
+ assert.equal(skolska.newCrossings,0);
+ assert.equal(skolska.newDriveways,0);
+ assert.equal(skolska.roadOrFootwayGeometryChanged,false);
+ assert.equal(new Set([...plan.priorityIds,...mirova.priorityIds,
+  ...skolska.priorityIds]).size,40);
+ assert.equal(plan.prioritizedBuildings+mirova.prioritizedBuildings+
+  skolska.prioritizedBuildings,40);
+ assert.deepEqual(skolska.priorityIds,
+  planPublicPhotoSkolskaBlock587([...elements].reverse(),
+   [...mirova.priorityIds,...plan.priorityIds]).priorityIds,
+  'Input order may not reshuffle photographed street');
+ const reversedSchoolWays=elements.map(e=>
+  SKOLSKA_PUBLIC_PHOTO_587.roadIds.includes(String(e.id))?
+   {...e,geometry:e.geometry.slice().reverse()}:e);
+ assert.deepEqual(planPublicPhotoSkolskaBlock587(reversedSchoolWays,
+  [...plan.priorityIds,...mirova.priorityIds]).priorityIds,skolska.priorityIds,
+  'OSM road vertex direction may not reshuffle photographed street');
+ assert.equal(planPublicPhotoSkolskaBlock587([],[]),null);
+ assert.deepEqual(SKOLSKA_PUBLIC_PHOTO_587.cameraSchool,[50.2286983,14.8859519,85]);
  const C=Math.cos(50.226*Math.PI/180);
  const project=p=>({x:(p.lon-14.889)*111320*C,z:-(p.lat-50.226)*111320});
  const surfaceWidth={secondary:9,primary:11,tertiary:8,residential:7,
@@ -115,6 +146,8 @@ assert(game.includes('planMassStreetBlock583([...roadWays,...buildingWays])'));
 assert(game.includes('heroBuildings.setPriorityIds(massBlock.priorityIds)'));
  assert(game.includes('heroBuildings.setPhotoFocusIds(mirovaPhotoBlock.priorityIds)'));
  assert(game.includes('planPublicPhotoMirovaBlock586('));
+ assert(game.includes('planPublicPhotoSkolskaBlock587('));
+ assert(game.includes('window.__miloviceSkolskaPublicPhotoBlock587'));
 assert(game.includes('massBlockPriority||type'));
 assert(hero.includes('selectedNormal>=genericBudget'));
  assert(hero.includes('photoFocus?selectedPhotoFocus>=photoReserved'));
@@ -125,4 +158,4 @@ assert(hero.includes('massBlockNoPhotoApproval:true'));
 console.log('MASS_STREET_583_OK',JSON.stringify({
  prioritized:plan.prioritizedBuildings,candidates:plan.buildingsConsidered,
  road:'5. května',corridorM:plan.corridorLengthM,ids:plan.priorityIds,
- photoApproved:plan.photoApprovedBuildings,mirova:mirova.prioritizedBuildings,mirovaIds:mirova.priorityIds}));
+ photoApproved:plan.photoApprovedBuildings,mirova:mirova.prioritizedBuildings,mirovaIds:mirova.priorityIds,skolska:skolska.priorityIds}));
