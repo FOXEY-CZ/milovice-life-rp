@@ -50,7 +50,7 @@ assert(html.includes('removedInventedArchedWindowsOnPhotoWall:true'));
 assert(html.includes("from './scripts/station-photo-facade.js?v=5790'"));
 assert(html.includes("from './scripts/station-ticket-machines.js?v=5800'"));
 assert(html.includes("stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})"));
-assert(html.includes("const BUILD_ID='20261116-photo-2022-church-streetlamp-58260'"));
+assert(html.includes("const BUILD_ID='20261116-2022-lamp-osm-church-direction-58270'"));
 console.log('5.79 station photo-façade clean intervals and real source wall PASS',
  JSON.stringify({observedOrder:plan.observedOrder,
   minimumGap:+plan.minFixtureMachineGap.toFixed(3),
