@@ -5689,7 +5689,9 @@ if(rpStreetAuditCameraWorld&&rpStreetAuditView){
   ' · veřejné nájezdy: '+photoPionyruVerge.status().publicVergeAccesses+
   ' · přibližné polohy, soukromé brány neověřené':
   'Modelované scény: '+status.sceneCount+
-  ' · stromy v důkazech: 1 · sloupy v důkazech: 1 · přesné polohy nejsou zaměřené';
+  ' · prokazatelné fotoobjekty: ano · odhadnuté fasády: '+
+  (window.__miloviceHeroArchitecture?.inferredFacades||0)+
+  ' · orientační vzhled domů z OSM; nezaměřené detaily jsou provizorní';
 }else if(rpForecourtCameraWorld&&rpForecourtAuditView){
  const eye=rpForecourtCameraWorld;
  const heading=rpForecourtAuditView.camera.heading*Math.PI/180;
