@@ -113,7 +113,7 @@ try{
   }
   if(cfg.id==='pionyru-panorama-2022'){
     assert(Math.abs(info.gps.latitude-50.2277105)<.000002,
-     'Camera starts at the provided Panorama GPS, not the game's old procedural viewpoint');
+     'Camera starts at provided Panorama GPS, not the previous procedural viewpoint');
     assert(Math.abs(info.gps.longitude-14.8849165)<.000002);
     assert(Math.abs(info.gps.bearingDegrees-220)<=1,
      'Camera must already look at the house at the source Panorama bearing');
