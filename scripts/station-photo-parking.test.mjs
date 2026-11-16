@@ -226,13 +226,27 @@ assert(Math.abs(plan.continuousRibbon.southNoseLongitudinalTrim-.2175)<.0001,
 const firstSafe=plan.continuousRibbon.profiles.find(p=>p.safe);
 assert(southPart[0].along>firstSafe.along-firstSafe.length/2+.20,
  'Terminus must not extend into the first tile outside the intended island');
-const initialHigh=plan.continuousRibbon.profiles[0].high;
-for(const p of plan.continuousRibbon.profiles.filter(q=>q.along<=6))
- assert(p.high<=initialHigh+.000001,
-  'No road-side rectangular lobe may protrude from first 5m of island');
+const south=plan.continuousRibbon.profiles;
+const initialHigh=south[0].high;
+assert.equal(plan.continuousRibbon.southRoadsideTaperMetres,2.28);
+assert.equal(plan.continuousRibbon.southRoadsideTaperedRows,3);
+assert(initialHigh<=south[0].highSafe-.34,
+ 'The FIRST full paver row must retract from the road; cap-only repair was invisible');
+assert(south[1].high>south[0].high+.09&&south[2].high>south[1].high+.09,
+ 'Three cross sections create a smooth inward-outward nose, not a long thin tongue');
+assert(south[3].high>south[2].high+.09,
+ 'The tapered walkway must reconnect to the existing full-width safe ribbon');
+assert(south.every(p=>!p.safe||p.high-p.low>=.38),
+ 'The tapered nose must retain the safe visible width without blank green gaps');
+for(const p of south.filter(q=>q.along>3.36&&q.along<=6))
+ assert(p.high<=south[3].high+.000001,
+  'The previous roadside bump after the third section remains clipped');
 assert(clippedInfill.rows[0].southCapMatched,
  'Underlay must follow the SAME tapered initial cap');
 assert(Math.abs(clippedInfill.rows[0].startInner-southPart[0].low)<.000001);
+assert(clippedInfill.rows.slice(0,3).every((r,i)=>
+ r.edge<=south[i].high+.00601),
+ 'Underside cannot retain the full-height tongue behind the tapered ribbon');
 assert(Math.abs(clippedInfill.rows[0].start-southPart[0].high)<.000001,
  'An independent rectangular underlay must not poke out from south cap');
 assert.equal(clippedInfill.rows[0].startAlong,southPart[0].along,
