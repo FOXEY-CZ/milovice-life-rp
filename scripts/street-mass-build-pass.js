@@ -71,7 +71,7 @@ function eligibleBuilding(el,roadDistance,config){
     roadDistance>config.maxRoadDistanceM)return null;
  const pts=el.geometry.map(project);
  if(pts.length>4&&close(pts[0],pts.at(-1))<.10)pts.pop();
- if(pts.length<3||pts.length>10)return null;
+ if(pts.length<3||pts.length>(config.maxFootprintPoints??10))return null;
  const xs=pts.map(p=>p.x),zs=pts.map(p=>p.z);
  const width=Math.max(...xs)-Math.min(...xs),depth=Math.max(...zs)-Math.min(...zs);
  const levelsRaw=Number(t['building:levels']);
@@ -163,7 +163,12 @@ export function planPublicPhotoMirovaBlock586(elements,excludeIds=[],config=MIRO
   if(!el?.tags?.building||!Array.isArray(el.geometry)||el.geometry.length<4)continue;
   const center=centroid(el.geometry.map(project)),near=nearestAlong(center,path);
   if(!near||near.distance>config.maxDistanceM)continue;
-  const result=eligibleBuilding(el,near.distance,{maxRoadDistanceM:config.maxDistanceM});
+  const result=eligibleBuilding(el,near.distance,{
+   maxRoadDistanceM:config.maxDistanceM,
+   // Photo-corridor buildings may have real 12- to 16-corner OSM outlines.
+   // Retain those real perimeter corners instead of silently skipping them.
+   maxFootprintPoints:18
+  });
   if(!result||excluded.has(result.id))continue;
   candidates.push({...result,
    distanceFromRoadM:Math.round(near.distance*10)/10,
