@@ -12,6 +12,7 @@ try{
  await mkdir('browser-artifacts',{recursive:true});
  for(const cfg of [
   {id:'5kv',width:393,height:852,mobile:true,technical:true},
+  {id:'pionyru',width:393,height:852,mobile:true,technical:true},
   {id:'mirova',width:1280,height:760,mobile:false,technical:false}
  ]){
   const page=await browser.newPage({
@@ -57,7 +58,21 @@ try{
    'Historically depicted models must remain off all indexed OSM roads');
   assert(info.scene?.drawMeshes>0&&info.scene?.drawMeshes<=26,
    'Visible historical features must use compact mobile-friendly batched meshes');
-  assert(info.source.startsWith('https://commons.wikimedia.org/wiki/File:'));
+  assert(info.source.startsWith(cfg.id==='pionyru'?'https://mapy.com':
+   'https://commons.wikimedia.org/wiki/File:'));
+  if(cfg.id==='pionyru'){
+   const p=info.audit.pionyruSatelliteAudit;
+   assert.equal(p?.active,true,'Satellite vegetation must be built from OSM road and Pionýrů intersection');
+   assert.equal(p.roadId,'219273174');
+   assert.equal(p.junctionRoadId,'118488006');
+   assert.equal(p.imageDate,'2023-06-04');
+   assert(p.plantedShrubPockets>=2&&p.plantedShrubPockets<=5,
+    'A few satellite-confirmed hedge pockets must be visible in city model');
+   assert(p.instancedDrawCalls<=1);
+   assert.equal(p.roadSurfaceChanged,false);
+   assert.equal(p.sidewalkGeometryChanged,false);
+   assert.equal(p.modelledNotSurveyed,true);
+  }
   assert(info.panel>0);
   assert.equal(info.compact,cfg.mobile);
   assert.equal(info.playerHudHidden,true);
@@ -67,7 +82,8 @@ try{
   console.log('STREET_BLOCK_WEBGL_OK',JSON.stringify({
    mode:cfg.id,scenes:info.audit.generatedSceneCount,source:info.source,
    cameraMode:info.audit.cameraMode,roadClearance:info.scene?.minRoadClearance,
-   decision:info.scene?.photoSceneDecision
+   decision:info.scene?.photoSceneDecision,
+   pionyru:info.audit.pionyruSatelliteAudit
   }));
   await page.close();
  }
