@@ -209,22 +209,6 @@ assert(plan.outerSidewalkCells.length>=100,'A true long sidewalk needs many cont
 const smooth=planRoadSafeParkingInfillProfiles(plan.outerSidewalkCells);
 assert(smooth,'Only contiguous verified footway cells may feed the smooth underside');
 assert(smooth.rows.length>55&&smooth.joins>50);
-const bottomFirst=(r)=>+r.along.toFixed(3);
-console.log('ISLAND_TERMINAL_GEOMETRY_58122',JSON.stringify({
- parkingRows:[...new Set(plan.cells.map(p=>p.along))].sort((a,b)=>a-b).slice(0,14).map(along=>({
-  along:bottomFirst({along}),
-  cells:plan.cells.filter(p=>p.along===along).map(p=>+p.offset.toFixed(3)),
-  parking:plan.centralParkingCells.filter(p=>p.along===along).map(p=>+p.offset.toFixed(3)),
-  sidewalk:plan.outerSidewalkCells.filter(p=>p.along===along).map(p=>+p.offset.toFixed(3))
- })),
- ribbon:plan.continuousRibbon.parts[0].slice(0,28).map(r=>({
-  along:bottomFirst(r),low:+r.low.toFixed(3),high:+r.high.toFixed(3)})),
- smooth:smooth.rows.slice(0,14).map(r=>({
-  along:bottomFirst(r),low:+r.low.toFixed(3),start:+r.start.toFixed(3),
-  edge:+r.edge.toFixed(3),end:+r.end.toFixed(3),halfAlong:r.halfAlong})),
- oppositeEnd:{first:plan.continuousRibbon.parts[0][0],
-  last:plan.continuousRibbon.parts[0].at(-1)}
-}));
 const clippedInfill=planClippedRoadsideInfill(smooth,plan.continuousRibbon);
 assert(clippedInfill?.rows.length>55,'Keep the main paved pedestrian route intact');
 assert.equal(clippedInfill.clippedToContinuousRibbon,true);
@@ -447,7 +431,7 @@ assert.equal(planStationPhotoParking(ways.map(e=>e.id===675778842?{
  ...e,geometry:e.geometry.map(p=>({...p,lon:p.lon+.001}))
 }:e),occupied),null);
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(game.includes("from './scripts/station-photo-parking.js?v=58122'"));
+assert(game.includes("from './scripts/station-photo-parking.js?v=58123'"));
 assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})'),
  'The island sidewalk must receive the exact city paving material');
 assert(game.includes('stationPhotoParking.reset()'));
@@ -460,9 +444,9 @@ assert(!game.includes('osmStrip(points[i-1],points[i],1.8,osmSidewalkMat,.235);'
  'The 5.72 forced sidewalk directly on Nádražní asphalt MUST be disabled');
 assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})'),
  'Carved sidewalk must reuse the same existing city paving material');
-assert(game.includes("from './scripts/station-photo-parking.js?v=58122'"),
+assert(game.includes("from './scripts/station-photo-parking.js?v=58123'"),
  'The reviewed 5.76 parking geometry must now load safe gap filler, not a stale 5.76 module');
-assert(game.includes("const BUILD_ID='20261115-verified-parking-roadside-58122'"),
+assert(game.includes("const BUILD_ID='20261116-smooth-station-island-nose-58123'"),
  'New game version must retain 5.76 parking with the added ticket-machine scene');
 assert(game.includes("from './scripts/bike-tower-interior.js?v=5640'"));
 assert(game.includes("from './scripts/station-forecourt-pass.js?v=5650'"));
@@ -558,7 +542,7 @@ assert(railEdgeAudit.length>=18&&railEdgeAudit.filter(x=>x.edge>=-2.301).length>
  'Precise collision sampling should remove most visible rail-side green seam');
 assert(railEdgeAudit.every(x=>x.roadClearance>=.045),
  'No parking slab may touch the mapped OSM carriageway even after finer sampling');
-console.log('RAIL_EDGE_DIAGNOSTIC_58122',JSON.stringify({
+console.log('RAIL_EDGE_DIAGNOSTIC_58123',JSON.stringify({
  edgeHistogram:Object.fromEntries(
   [...new Set(railEdgeAudit.map(x=>x.edge))].map(edge=>
    [edge,railEdgeAudit.filter(x=>x.edge===edge).length])),

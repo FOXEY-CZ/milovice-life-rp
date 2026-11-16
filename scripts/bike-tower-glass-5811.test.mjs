@@ -7,7 +7,7 @@ import {planBikeTowerSteelwork} from './bike-tower-interior.js';
 import {planUpperBiketowerSign} from './bike-tower-photo-sign.js';
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const interior=readFileSync(new URL('bike-tower-interior.js',import.meta.url),'utf8');
-assert(html.includes("const BUILD_ID='20261115-verified-parking-roadside-58122'"));
+assert(html.includes("const BUILD_ID='20261116-smooth-station-island-nose-58123'"));
 const begin=html.indexOf('function miloviceBikeTower(pts,base){');
 const end=html.indexOf('// 5.1.2',begin);
 assert(begin>0&&end>begin);

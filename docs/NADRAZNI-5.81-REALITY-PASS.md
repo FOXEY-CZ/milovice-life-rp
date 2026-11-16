@@ -112,3 +112,11 @@ Na základě nezávislého testu 20 reálných přijatých parkovacích úseků:
 Pro 5.81.22 je zpřesněno **pouze vzorkování krajních kandidátů a spojovacích panelů** na 12 cm, při zachování stejné konzervativní kružnicové obálky a kladného 2,5cm bezpečnostního bufferu. Potvrzený geometrický audit: všech 20 úseků má nyní `offset=-2.30` a minimální teoretický odstup od OSM modelu vozovky 0,05 m. Nová mapová cesta se nevytváří, silnice ani jejich textury se neposunují.
 
 Fotografické hranice nejsou geodeticky ověřené. Vizuální výsledek na telefonu a konce obou parkovacích ostrovů musí být porovnány znovu. Výsadbu podle pouhého odhadu nadále nevytvářet.
+
+## 5.81.23 — tvar jižního zakončení prostředního ostrůvku (16. 11. 2026)
+
+Při kontrole 5.81.22 už byla levá kolejová parkovací řada spojena s vozovkou do 5 cm (výhradně v modelovaném OSM smyslu). Zůstával však viditelný pravoúhlý výstupek na **vnější/east** straně jižního zakončení prostředního ostrůvku, a několik malých dílků při obou koncích. V testovacích datech prvních 6 metrů chodník přecházel z offsetu `9.551` ven až k `10.013`, potom se vracel: vznikla příčná hrana cca 46 cm.
+
+5.81.23 **nenavyšuje žádný povrch a nemění OSM silnice**. U prvních ~5 metrů ukončí vnější hranu nejvýše tam, kde ležela první celá bezpečná řada. První ukončení souvislého chodníku se zužuje z ~0.74 m na ~0.38 m, uvnitř stejného ověřeného rasterového políčka. Spodní doplňková vrstva sdílí přesně stejný zakončovací profil, aby na špičce nepřečníval samostatný obdélníkový přesah. Celá délka parkovacích stání, silniční asfalt, zaparkovaná vozidla, venkovní obruby u kolejí i vnitřní výplň pěšího pásu zůstaly nedotčené.
+
+**Míra jistoty:** OSM bezpečnost a soulad mezi dvěma vrstvami chodníku lze ověřit testy; kulaté zakončení je *foto-informovaný model*, nikoli zaměřená skutečná geometrie. První vizuální ověření uživatelem je nutné, zejména u menších pravoúhlých prvků na první řadě parkovacích dlaždic, které nejsou součástí této úpravy.
