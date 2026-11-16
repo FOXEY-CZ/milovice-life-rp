@@ -45,7 +45,7 @@ try{
  assert(report.audit.roadClearanceMin>1);
  assert.equal(report.panelVisible,true);
  assert.equal(report.spawnHidden,true);
- assert.equal(report.build,'20261116-church-block-mass-facades-58300');
+ assert.equal(report.build,'20261116-photo-sidewalk-and-public-church-camera-58400');
  assert.equal(report.facade?.active,true);
  assert.deepEqual(report.facade.generatedFixtureTypes,['door','window']);
  assert.deepEqual(report.facade.observedOrder,['door','orange','yellow','window']);
@@ -83,7 +83,7 @@ try{
   'Portrait phone diagnostic camera must not crop either station machine');
  assert.equal(mobile.status.panelDetailRevision,580);
  assert.equal(mobile.panelVisible,true);
- assert.equal(mobile.build,'20261116-church-block-mass-facades-58300');
+ assert.equal(mobile.build,'20261116-photo-sidewalk-and-public-church-camera-58400');
  assert.deepEqual(phoneErrors,[]);
  await phone.screenshot({path:'browser-artifacts/milovice-ticket-photo-58116-mobile.png'});
  console.log('5.80 portrait mobile photo audit PASS',JSON.stringify({
