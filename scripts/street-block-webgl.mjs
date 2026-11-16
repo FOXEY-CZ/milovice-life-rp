@@ -43,17 +43,17 @@ try{
    build:document.getElementById('build-label')?.textContent
   }));
   assert.equal(info.build,'20261116-church-block-mass-facades-58300');
-  assert.equal(info.mass?.prioritizedBuildings,24,
-   'A WHOLE 24-house street block, not an isolated prop, must be planned');
-  assert.equal(info.mass?.actuallyDetailed,24,
-   'All 24 prioritized OSM homes must really use the enhanced 3D facade shell');
+  assert.equal(info.mass?.prioritizedBuildings,20,
+   'A WHOLE 20-house neighborhood block, not an isolated prop, must be planned');
+  assert.equal(info.mass?.actuallyDetailed,20,
+   'All 20 prioritized OSM homes must really use the enhanced 3D facade shell');
   assert.equal(info.mass?.photoApprovedBuildings,0);
   assert.equal(info.mass?.newBuildingFootprints,0);
   assert.equal(info.mass?.roadAndFootwayGeometryModified,false);
   assert.equal(info.mass?.unknownFacadesStillUnverified,true);
-  assert.equal(info.hero?.priorityBuilt,24);
-  assert.equal(info.hero?.massBlockPriorityBuilt,24);
-  assert.equal(info.hero?.massBlockReservedPlaces,24);
+  assert.equal(info.hero?.priorityBuilt,20);
+  assert.equal(info.hero?.massBlockPriorityBuilt,20);
+  assert.equal(info.hero?.massBlockReservedPlaces,20);
   assert.equal(info.hero?.maxBuildings,68,
    'Retain the old maxBuildings capacity for mobile performance');
   assert.equal(info.hero?.massBlockNoPhotoApproval,true);
