@@ -2,7 +2,7 @@
 // Public OSM footprints anchor the buildings. Window/door placement is a game
 // approximation and not a surveyed record of each individual house.
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
-import {selectFacadeEdges,planFaceOpenings} from './facade-model.js';
+import {selectFacadeEdges,planFaceOpenings,inferUnverifiedFacade} from './facade-model.js';
 import {analyzeGableFootprint} from './city-roof-geometry.js';
 import {classifyFacadeEdgeLength,planFacadePerimeterTrims,planPhotographedEaveCornice,buildPhotographedEaveCorniceGeometry,PHOTO_EAVE_PROFILE_COLOR} from './facade-perimeter.js?v=5430';
 import {makeSharedFacadeSurfaceMaps} from './facade-surface-kit.js';
@@ -18,6 +18,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
  const appliedFaces=[];
  const state={buildings:0,verifiedOverrides:0,verifiedFaces:0,photoMappedFaces:0,
   photoMappedWindows:0,sourceObservedFacades:0,sourceObservedWindows:0,
+   inferredFacades:0,inferredWindows:0,
   sourceInventedDoorsPrevented:0,solidWalls:0,cutoutWindows:0,cutoutDoors:0,gables:0,
   detailInstances:0,drawMeshes:0,chunkCount:0,
   suppressedArbitraryChimneys:0,skippedUnverifiedGables:0,
@@ -205,7 +206,12 @@ export function makeMiloviceHeroArchitecture(THREE,{
    // Reviewed per-wall layouts take priority. One dated photograph must
    // never be extrapolated to the unseen rear and courtyard walls.
    const observed=!sideLayout?planSourceObservedFacade(String(identity),edgeFrame):null;
-   const actualSide=sideLayout||observed?.side||null;
+   // Reviewed facades always outrank artistic reconstruction. This inferred
+   // design is ONLY for missing sides and never inherits a photo approval.
+   const inferred=!sideLayout&&!observed?inferUnverifiedFacade({
+    osmId:identity,wallIndex:sideIndex,length:len,height,levels
+   }):null;
+   const actualSide=sideLayout||observed?.side||inferred||null;
    // Unknown entrances on 202298939 stay unknown, not automatic doors.
    const autoEntrance=!massPriority&&!observed&&String(identity)!=='202298939'&&
     sideIndex===entrySide&&len>5&&
@@ -213,6 +219,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
    const planned=planFaceOpenings({length:len,height,levels,side:actualSide,
     legacyWindows:override?.windowsPerWall||Math.min(6,Math.max(1,Math.floor((len-1.4)/3.0))),
     autoEntrance});
+   if(inferred){state.inferredFacades++;state.inferredWindows+=planned.windows.length;}
    if(observed){
     state.sourceObservedFacades++;
     state.sourceObservedWindows+=planned.windows.length;
