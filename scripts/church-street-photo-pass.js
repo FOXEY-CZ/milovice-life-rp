@@ -161,10 +161,12 @@ export function makeChurchStreetscape2022(THREE,{
   root.add(mesh);
  }
  function create(roads,buildingFootprints=[],churchFootprint=[]){
-  reset();
-  plan=planChurchStreetscape2022(roads,{roadClearance,
+  // A regional import is not grounds to delete an existing PHOTO scene.
+  const nextPlan=planChurchStreetscape2022(roads,{roadClearance,
    buildingFootprints,churchFootprint});
-  if(!plan)return null;
+  if(!nextPlan)return plan;
+  reset();
+  plan=nextPlan;
   root=new THREE.Group();root.name='ChurchStreetscapePhotoMay2022';
   const bases=[],posts=[],rails=[],trunks=[],crowns=[],crowns2=[];
   for(const f of plan.fence){
