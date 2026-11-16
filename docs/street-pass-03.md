@@ -41,3 +41,11 @@ Uživatel dodal čtyři srovnávací snímky: 3D nadhled 5. května, satelit z *
 **Limitace:** Není to geodetické ani pixelové navázání ke konkrétním stromům ze screenshotu; přesný druh rostlin, počet stromů a hranice soukromých pozemků z dostupného satelitu neurčujeme. Staré cesty i parkoviště ponecháváme nedotčené. **Chybějící příjezdové plochy, chodníky na opačné straně, reálné ploty a současné fasády** zůstávají cíleně v pořadníku do doby dalšího víceúhlového ověření.
 
 **Nová fotokamera:** `?v=58210&streetAudit=pionyru` zobrazuje uliční blok od skutečného OSM křížení v technickém nadhledu se správně natočenou orientací a zdrojem *uživatelský Mapy.com satelit 4. 6. 2023*. Není to původní satelitní snímek promítnutý na 3D mesh. Původní kameru `streetAudit=5kv` ani `streetAudit=mirova` nepřepisujeme. Vstupní pravidlo nadále platí: fotografická identita před přesným modelem, uliční systém před kosmetickými pixely.
+
+## 5.82.2 — dva fotograficky doložené nájezdy přes zelený pás (16. 11. 2026)
+
+Uživatelův satelit Mapy.com ze 4. 6. 2023 ukazuje dva zpevněné přístupy přes okrajový pás 5. května poblíž Pionýrů. Pro herní přiblížení jsou umístěny podél OSM cesty 219273174 ve vzdálenosti 92 m na východ a 94 m na západ od křížení s Pionýrů 118488006. Jedná se o **odhad podložený snímkem**, nikoli přesné zaměření. Přidávají se pouze veřejné okrajové nájezdy, nikoli soukromé dvory, garáže nebo domy.
+
+Testování odhalilo rozdíl mezi osmimetrovým předpokladem a skutečně použitou **devítimetrovou** modelovanou vozovkou. Nájezdy proto začínají 23 cm za hranou asfaltu, končí před OSM chodníkem 1282187908 a nezasahují do půdorysů domů. Celý obdélník kontroluje geometrická regrese s 12cm vzorkováním a 4cm kladným bezpečnostním odstupem. Dvě nové zpevněné části se instancují jediným draw callem, bez změny pěti dřívějších skupin zeleně. Nezměněné silnice, chodníky a parcely.
+
+Přesné brány, vnitřní příjezdy, hranice vlastnictví a aktuální vzhled z roku 2026 z tohoto jednoho snímku neověřujeme. Vizuální přezkum je nutný. Kontrolní kamera: ?v=58220&streetAudit=pionyru.

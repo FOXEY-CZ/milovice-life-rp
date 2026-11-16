@@ -52,7 +52,7 @@ for(const p of plan.accessAccepted){
   depth:p.depth,yaw:p.yaw,buffer:.04,step:.12}),
  'Every centimetre of the photo-supported access apron must remain off mapped roads and footways');
  assert(plan.accepted.every(q=>Math.hypot(q.x-p.x,q.z-p.z)>q.radius+1),
- 'Keep the 5.82.1 planting clusters off the documented property access');
+ 'Keep the 5.82.2 planting clusters off the documented property access');
 }
 assert.equal(plan.accessAccepted.filter(x=>x.side===-1).length,1);
 assert.equal(plan.accessAccepted.filter(x=>x.side===1).length,1);
@@ -65,7 +65,7 @@ const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert(game.includes("streetAudit=pionyru"));
 assert(game.includes("photoPionyruVerge.create(osmDriveRoads,buildingWays.map(w=>w.geometry.map(osmPoint)))"));
 assert(game.includes("pionyru?.center?.x??eye.x"));
-console.log('5.82.1 PIONYRU_SATELLITE_OK',JSON.stringify({
+console.log('5.82.2 PIONYRU_PUBLIC_VERGE_ACCESS_OK',JSON.stringify({
  accepted:plan.accepted.length,rejected:plan.rejected.length,
  accesses:plan.accessAccepted.map(a=>({id:a.id,along:a.along,side:a.side})),
  length:+plan.segmentLength.toFixed(1),junction:plan.junction,
