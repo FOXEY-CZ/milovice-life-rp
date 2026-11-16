@@ -173,7 +173,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <div class="actions"><a id="rp-camera-gps-map" href="https://mapy.com/" target="_blank" rel="noopener noreferrer">🗺️ Mapy.com</a>
 <button id="rp-camera-gps-copy" type="button">📋 Kopírovat GPS + směr</button>
 <button id="rp-camera-gps-close" type="button">✕ Zavřít</button></div></aside><aside id="street-block-audit" hidden aria-label="Fotoaudit 5. května Mírová Školská">
-<strong>📸 Uliční blok · kontrola 5.85.3</strong>
+<strong>📸 Uliční blok · Mírová 5.86 + fotoaudit</strong>
 <button id="street-audit-toggle" type="button" aria-expanded="true">Sbalit nabídku</button>
 <span id="street-audit-label"></span>
 <nav><a href="?v=58530&streetAudit=5kv">5. května shora</a>
@@ -5714,6 +5714,13 @@ if(rpStreetAuditCameraWorld&&rpStreetAuditView){
   'Satelit 4. 6. 2023 · zeleň: '+photoPionyruVerge.status().plantedShrubPockets+
   ' · veřejné nájezdy: '+photoPionyruVerge.status().publicVergeAccesses+
   ' · přibližné polohy, soukromé brány neověřené':
+  (rpStreetAuditId==='mirova'||rpStreetAuditId==='mirova36-2024')?
+  '📷 Mírová · veřejné fotografie ŠJů, 30. 5. 2024 · celý blok: '+
+    (window.__miloviceMirovaPublicPhotoBlock586?.actuallyDetailed||0)+
+    ' detailních domů · nízké živé ploty: '+
+    (window.__miloviceMirovaPhotoStreet586?.hedgeSegments||0)+
+    ' · stromy: '+(window.__miloviceMirovaPhotoStreet586?.plantedTrees||0)+
+    ' · umístění zeleně odhadované, půdorysy dle OSM':
   'Modelované scény: '+status.sceneCount+
   ' · prokazatelné fotoobjekty: ano · odhadnuté fasády: '+
   (window.__miloviceHeroArchitecture?.inferredFacades||0)+
