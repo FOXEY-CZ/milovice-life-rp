@@ -362,14 +362,14 @@ import {addLanduseFeature,forestInstancePlacements} from './scripts/landscapes.j
 import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
-import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=5450';
+import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=58600';
 import {planSchoolStreetFrontage,schoolFacadeFixture,planSchoolPhotographedRoof,schoolPhotoCameraWorld,SCHOOL_PHOTO_WAY_ID,SCHOOL_ROOF_DETAIL_PROFILE} from './scripts/school-street-pass.js?v=5500';
 import {planSourceAnchoredRoofFixtures} from './scripts/roof-source-details.js?v=5500';
 import {planGroundedEntrance} from './scripts/entrance-grade.js?v=5450';
 import {exteriorFacadeFrame,selectExteriorFacadeToward,splitFacadeStripForOpening,facadePoint,flushBoxOffset,FACE_PLANE,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './scripts/facade-anchors.js?v=5400';
 import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5410';
 import {clipRoofFacesForFeatures,planRoofFeatureBackClosures} from './scripts/roof-opening-geometry.js?v=5320';
-import {planMassStreetBlock583} from './scripts/street-mass-build-pass.js?v=58530';
+import {planMassStreetBlock583,planPublicPhotoMirovaBlock586} from './scripts/street-mass-build-pass.js?v=58600';
 import {makeChurchStreetscape2022} from './scripts/church-street-photo-pass.js?v=58530';
 import {makePhotoChurchSidewalk2022} from './scripts/photo-sidewalk-2022.js?v=58530';
 import {makePhotoStreetEnvironment} from './scripts/street-environment-reality.js?v=58530';
@@ -4634,7 +4634,25 @@ function rpAppendOSMElements(elements){
   heroBuildings.setPriorityIds(massBlock.priorityIds);
   window.__miloviceMassStreetBlock583=massBlock;
  }
+ // 5.86: choose twelve more real OSM house footprints along Mírová from
+ // two public 2024 photographs. No cadastral boundaries or side entrances
+ // are invented; facades without direct evidence remain marked inferred.
+ const mirovaPhotoBlock=planPublicPhotoMirovaBlock586(
+  [...roadWays,...buildingWays],massBlock?.priorityIds||[]);
+ if(mirovaPhotoBlock){
+  heroBuildings.setPhotoFocusIds(mirovaPhotoBlock.priorityIds);
+  window.__miloviceMirovaPublicPhotoBlock586=mirovaPhotoBlock;
+ }
  for(const el of buildingWays){osmBuilding(el.geometry,el.tags,osmBuildings,el.id);osmAddLandmark(el)}
+ if(mirovaPhotoBlock){
+  window.__miloviceMirovaPublicPhotoBlock586={
+   ...mirovaPhotoBlock,
+   actuallyDetailed:heroBuildings.stats().photoFocusBuilt,
+   reservedBudget:heroBuildings.stats().photoFocusReservedPlaces,
+   sourceBuildingsChanged:0,existingRoadOrFootwayModified:false,
+   detailedBuildingLimit:68,photoApprovalsInvented:0
+  };
+ }
  if(massBlock){
   window.__miloviceMassStreetBlock583={
    ...massBlock,actuallyDetailed:heroBuildings.stats().massBlockPriorityBuilt,
@@ -4979,6 +4997,7 @@ osmBtn.onclick=async()=>{
   if(trafficGroup.parent!==osmLayer)osmLayer.add(trafficGroup);
   if(visualDetails.parent!==osmLayer)osmLayer.add(visualDetails);for(const batch of facadeBatches)batch.clear();
  window.__miloviceMassStreetBlock583=null;
+ window.__miloviceMirovaPublicPhotoBlock586=null;
  if(terrainGrid)rpTerrainMesh();else cube(2200,.16,2200,osmParkMaterial,0,-.18,0,osmLayer);
  rpAppendOSMElements(elements);
  if(!osmRoads.length)throw Error('Žádné silnice v odpovědi');finalizeRoadStrips();finalizeCityWalls();finalizeFoundations();finalizeFacades();finalizeArchitecture();heroBuildings.flush(osmLayer);osmStreetLabels();chunkMilovice();improveMiloviceVisuals();publishLegacyRealityAudit();rpPopulate();rpInitRailTraffic();
