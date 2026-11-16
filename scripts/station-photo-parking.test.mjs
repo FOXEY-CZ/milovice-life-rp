@@ -63,6 +63,17 @@ assert(plan.rowStats.filter(r=>r.accepted>0).length>=55,
  'The median must be a continuous length of forecourt, not tiny separated strips');
 assert(plan.rowStats.slice(12,25).every(r=>r.accepted>=6),
  'The inner parking cells must be full-width, not sacrificed to a false walkway');
+const northEndRows=plan.rowStats.slice(-18).map(row=>({
+ along:+row.along.toFixed(3),accepted:row.accepted,
+ central:plan.centralParkingCells.filter(c=>Math.abs(c.along-row.along)<.001).map(c=>+c.offset.toFixed(3)),
+ sidewalk:plan.outerSidewalkCells.filter(c=>Math.abs(c.along-row.along)<.001).map(c=>+c.offset.toFixed(3))
+}));
+console.log('NORTH_END_RASTER_DIAG',JSON.stringify({
+ northEndRows,shortRibbon:plan.continuousRibbon.shortTerminalPartsTrimmed,
+ ribbonEnd:plan.continuousRibbon.parts.at(-1)?.at(-1),
+ ribbonProfiles:plan.continuousRibbon.profiles.slice(-13).map(r=>({
+ along:+r.along.toFixed(3),safe:r.safe,low:+r.low.toFixed(3),high:+r.high.toFixed(3)}))
+}));
 assert(plan.rowStats.at(-1).accepted<=3,
  'Photo-informed far-end taper must narrow to a rounded tip');
 assert.equal(plan.protectedRoadsAndPaths,true);
