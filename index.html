@@ -4677,7 +4677,8 @@ function rpAppendOSMElements(elements){
  const publicPhotoFocusIds=[
   ...(mirovaPhotoBlock?.priorityIds||[]),
   ...(skolskaPhotoBlock?.priorityIds||[]),
-  ...(skolskaWestBlock?.priorityIds||[])
+  ...(skolskaWestBlock?.priorityIds||[]),
+  '202298939' // Already source-verified fork gable needs a reserved, NOT extra, hero slot.
  ];
  if(publicPhotoFocusIds.length)heroBuildings.setPhotoFocusIds(publicPhotoFocusIds);
  if(mirovaPhotoBlock)window.__miloviceMirovaPublicPhotoBlock586=mirovaPhotoBlock;
