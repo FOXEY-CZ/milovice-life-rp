@@ -267,3 +267,77 @@ export function planPublicPhotoSkolskaBlock587(elements,excludeIds=[],config=SKO
   newRoads:0,newCrossings:0,newDriveways:0,roadOrFootwayGeometryChanged:false
  };
 }
+
+
+/**
+ * Milovice RP 5.88 — Školská WEST, joining the station and 5. května.
+ * Two 2024 public street photos of Školská × 5. května and a geotagged
+ * image of Školská 220/1 document the area, but NOT every private home.
+ * Buildings come only from existing OSM footprints; their unphotographed
+ * facades are explicitly "inferred" and can later be corrected in bulk.
+ */
+export const SKOLSKA_WEST_588=Object.freeze({
+ roadIds:['22880480','1331897639'],maxBuildings:8,
+ maxDistanceM:56,fromM:0,toM:112,maxFootprintPoints:18,
+ protectedHouseIds:['202298939'], // dedicated photographed fork gable
+ photoHouseId:'118487980',
+ photoHouse:'https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_1.jpg',
+ streetPhotos:[
+  'https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_a_5._kv%C4%9Btna.jpg',
+  'https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_a_5._kv%C4%9Btna_(01).jpg'
+ ],
+ photoDate:'2024-05-30',author:'ŠJů',license:'CC BY 4.0',
+ knownPhotoCamera:[50.2290672,14.8822619]
+});
+export function planSkolskaWestBlock588(elements,excludeIds=[],config=SKOLSKA_WEST_588){
+ if(!Array.isArray(elements)||!(Array.isArray(excludeIds)||excludeIds instanceof Set)||
+   !config||!Array.isArray(config.roadIds)||config.roadIds.length<1||
+   !Number.isInteger(config.maxBuildings)||config.maxBuildings<1||config.maxBuildings>20||
+   !finite(config.fromM)||!finite(config.toM)||config.fromM<0||
+   config.toM<=config.fromM||!finite(config.maxDistanceM)||
+   config.maxDistanceM<15||config.maxDistanceM>100)return null;
+ const path=[];
+ for(const id of config.roadIds){
+  const road=elements.find(e=>String(e.id)===id&&e.tags?.name==='Školská'&&
+   e.tags?.highway&&Array.isArray(e.geometry)&&e.geometry.length>=2);
+  if(!road)return null;
+  const vertices=road.geometry[0].lon<=road.geometry.at(-1).lon?
+   road.geometry:road.geometry.slice().reverse();
+  const pts=vertices.map(project);
+  if(path.length&&close(path.at(-1),pts[0])>1.0)return null;
+  path.push(...pts.slice(path.length?1:0));
+ }
+ const excluded=new Set([...excludeIds,...config.protectedHouseIds].map(String));
+ const entries=[];
+ for(const e of elements){
+  if(!['house','residential','detached','semidetached_house','terrace']
+    .includes(e?.tags?.building)||!Array.isArray(e.geometry)||e.geometry.length<4)continue;
+  const center=centroid(e.geometry.map(project)),near=nearestAlong(center,path);
+  if(!near||near.along<config.fromM||near.along>config.toM||
+   near.distance>config.maxDistanceM)continue;
+  const candidate=eligibleBuilding(e,near.distance,{
+   maxRoadDistanceM:config.maxDistanceM,
+   maxFootprintPoints:config.maxFootprintPoints
+  });
+  if(!candidate||excluded.has(candidate.id))continue;
+  entries.push({...candidate,alongM:Math.round(near.along*10)/10,
+   distanceFromRoadM:Math.round(near.distance*10)/10});
+ }
+ entries.sort((a,b)=>a.alongM-b.alongM||
+  a.distanceFromRoadM-b.distanceFromRoadM||a.id.localeCompare(b.id,'en'));
+ const selected=entries.slice(0,config.maxBuildings);
+ return {
+  version:'5.88.0',street:'Školská — západní spojka k nádraží',
+  roadIds:[...config.roadIds],prioritizedBuildings:selected.length,
+  priorityIds:selected.map(e=>e.id),buildingsConsidered:entries.length,
+  reviewQueue:entries,documentedHouseId:config.photoHouseId,
+  sourceHouse:config.photoHouse,sourceStreetViews:[...config.streetPhotos],
+  dated:config.photoDate,author:config.author,license:config.license,
+  publicCameraGPS:[...config.knownPhotoCamera],
+  photographedHouseAppearsInBatch:selected.some(e=>e.id===config.photoHouseId),
+  protectedExistingPhotographedGable:'202298939',
+  actualFootprintsOnly:true,publicPhotoDoesNotCertifyAllNeighbors:true,
+  newFootprints:0,roadsChanged:false,pavementsChanged:false,
+  privateDrivewaysInvented:0,crossingsInvented:0,exactTreeLocationsInvented:0
+ };
+}
