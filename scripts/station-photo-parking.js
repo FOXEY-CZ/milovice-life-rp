@@ -215,7 +215,7 @@ export function planContinuousOuterSidewalk(tiles,{
   // accepted OSM-safe first cell. Neither road nor body geometry moves.
   if(side<0&&r===profiles[0]){
    const longitudinalTrim=Math.min(.23,r.length*.29);
-   const capWidth=Math.min(.26,r.high-r.low);
+   const capWidth=Math.min(.32,r.high-r.low);
    const inset=Math.max(0,(r.high-r.low-capWidth)/2);
    return {along:along+longitudinalTrim,low:r.low+inset,
     high:r.high-inset,southNoseCap:true,
