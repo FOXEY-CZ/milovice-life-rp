@@ -144,7 +144,8 @@ assert.deepEqual(augmented.priorityIds,plan.priorityIds);
 const hero=readFileSync(new URL('./hero-architecture.js',import.meta.url),'utf8');
 assert(game.includes('planMassStreetBlock583([...roadWays,...buildingWays])'));
 assert(game.includes('heroBuildings.setPriorityIds(massBlock.priorityIds)'));
- assert(game.includes('heroBuildings.setPhotoFocusIds(mirovaPhotoBlock.priorityIds)'));
+ assert(game.includes('heroBuildings.setPhotoFocusIds(publicPhotoFocusIds)'),
+ 'Mírová and Školská must share the original 20-house focus budget');
  assert(game.includes('planPublicPhotoMirovaBlock586('));
  assert(game.includes('planPublicPhotoSkolskaBlock587('));
  assert(game.includes('window.__miloviceSkolskaPublicPhotoBlock587'));
