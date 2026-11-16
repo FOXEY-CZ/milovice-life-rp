@@ -151,6 +151,19 @@ try{
   assert.equal(info.playerHudHidden,true);
   assert.equal(info.visibleCanvas,true);
   assert.deepEqual(errors,[]);
+  // Regression case: the user's Android screenshot shows the NEW sidewalk,
+  // fence, trees and asphalt vanish ~5 sec AFTER first load. Recheck
+  // actual object visibility after multiple adaptive performance samples.
+  if(cfg.id==='pionyru-forward'){
+   const before=await page.evaluate(()=>window.__milovicePhotoRuntime?.());
+   await page.screenshot({path:'browser-artifacts/milovice-street-58500-before-delay.png'});
+   await page.waitForTimeout(7300);
+   const after=await page.evaluate(()=>window.__milovicePhotoRuntime?.());
+   await page.screenshot({path:'browser-artifacts/milovice-street-58500-after-delay.png'});
+   console.log('FIVE_SECOND_PHOTO_SCENE_AUDIT',JSON.stringify({before,after}));
+   assert(after?.groups?.every(g=>g.exists&&g.visible&&g.childrenVisible>0),
+    'PHOTO_SCENE_5SEC_DISAPPEARANCE: mapped photo scene turned invisible after adaptive LOD');
+  }
   await page.screenshot({path:'browser-artifacts/milovice-street-58500-'+cfg.id+'.png'});
   console.log('STREET_BLOCK_WEBGL_OK',JSON.stringify({
    mode:cfg.id,scenes:info.audit.generatedSceneCount,source:info.source,
