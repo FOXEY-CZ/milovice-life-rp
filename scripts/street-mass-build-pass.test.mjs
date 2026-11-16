@@ -83,8 +83,8 @@ assert.deepEqual(augmented.priorityIds,plan.priorityIds);
  assert.equal(MIROVA_PUBLIC_PHOTO_586.maxBuildings,12);
  const skolska=planPublicPhotoSkolskaBlock587(elements,
   [...plan.priorityIds,...mirova.priorityIds]);
- assert(skolska&&skolska.prioritizedBuildings===8,
-  'Eight additional school-neighborhood OSM homes, not generic duplicates');
+ assert(skolska&&skolska.prioritizedBuildings===12,
+  'Twelve actual school-neighborhood OSM homes, not generic buildings');
  assert.equal(skolska.photographedSchoolOSMId,'118487979');
  assert.equal(skolska.corridorLengthM,211.8);
  assert.equal(skolska.photoApprovedNeighborBuildings,0);
@@ -96,9 +96,9 @@ assert.deepEqual(augmented.priorityIds,plan.priorityIds);
  assert.equal(skolska.newDriveways,0);
  assert.equal(skolska.roadOrFootwayGeometryChanged,false);
  assert.equal(new Set([...plan.priorityIds,...mirova.priorityIds,
-  ...skolska.priorityIds]).size,40);
+  ...skolska.priorityIds]).size,44);
  assert.equal(plan.prioritizedBuildings+mirova.prioritizedBuildings+
-  skolska.prioritizedBuildings,40);
+  skolska.prioritizedBuildings,44);
  assert.deepEqual(skolska.priorityIds,
   planPublicPhotoSkolskaBlock587([...elements].reverse(),
    [...mirova.priorityIds,...plan.priorityIds]).priorityIds,
