@@ -196,6 +196,20 @@ export function planContinuousOuterSidewalk(tiles,{
   if(high[i]>terminalHigh+.000001)southernOuterEarsClipped++;
   high[i]=Math.min(high[i],terminalHigh);
  }
+ // 5.81.25: The terminal tongue is not just the cap. The FIRST 3 sidewalk
+ // rows all kept the full roadside coordinate, forming a long thin stripe
+ // beyond the shorter parking nose. Taper these WHOLE cross sections
+ // inward over 2.28m; this only removes already drawn paving, not adds it.
+ // Respect the 0.38m minimum safe walking width at each source row.
+ const southRoadsideTaperMetres=2.28;
+ let southRoadsideTaperedRows=0;
+ for(let i=0;i<rows.length;i++){
+  const progress=(rows[i].along-rows[0].along)/southRoadsideTaperMetres;
+  if(progress>=1)break;
+  const inset=.35*(1-Math.max(0,progress));
+  const capped=Math.max(rows[i].lowSafe+.39,high[i]-inset);
+  if(capped<high[i]-.000001){high[i]=capped;southRoadsideTaperedRows++;}
+ }
  // Constrain the OUTER edge to follow the already monotonic Nádražní road,
  // not any occasional one-column positive jump in the parking raster.
  for(let i=1;i<high.length;i++)
@@ -279,7 +293,7 @@ export function planContinuousOuterSidewalk(tiles,{
  return {parts,rows:rows.length,joins,
   southNoseCap:parts[0]?.[0]?.southNoseCap===true,
   southNoseLongitudinalTrim:parts[0]?.[0]?.southNoseLongitudinalTrim||0,
-  southernOuterEarsClipped,
+  southernOuterEarsClipped,southRoadsideTaperMetres,southRoadsideTaperedRows,
   shortTerminalPartsTrimmed:shortTerminalParts.length,
   metres:parts.reduce((n,p)=>n+p.at(-1).along-p[0].along,0),
   triangles:parts.reduce((n,p)=>n+Math.max(0,p.length-1)*2,0),
@@ -959,6 +973,8 @@ export function makeStationPhotoParkingScene(THREE,{layer,terrainAt=()=>0,roadCl
   shortDetachedSidewalkPartsTrimmed:planned?.continuousRibbon?.shortTerminalPartsTrimmed||0,
   southernNoseCurvedInsideSafeCells:planned?.continuousRibbon?.southNoseCap||false,
   southernNoseTrimMetres:planned?.continuousRibbon?.southNoseLongitudinalTrim||0,
+  southernRoadsideTaperMetres:planned?.continuousRibbon?.southRoadsideTaperMetres||0,
+  southernRoadsideTaperedRows:planned?.continuousRibbon?.southRoadsideTaperedRows||0,
   southernOuterPaverEarsClipped:planned?.continuousRibbon?.southernOuterEarsClipped||0,
   smoothInfillJoins:infillProfile?.joins||0,
   smoothInfillMaxEdgeStep:infillProfile?.maxEdgeStep??null,
