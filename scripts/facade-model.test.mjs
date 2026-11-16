@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {normalizeVerifiedFacades,selectFacadeEdges,planFaceOpenings} from './facade-model.js';
+import {normalizeVerifiedFacades,selectFacadeEdges,planFaceOpenings,inferUnverifiedFacade} from './facade-model.js';
 const base={status:'seen',source:'https://commons.wikimedia.org/wiki/Test',notes:'photo inspection',
  layout:{rows:'2,3',windowWidth:'1.2',windowHeight:'1.25',doorAt:'left',doorWidth:'1.04',wallColor:'#C1A075'}};
 const result=normalizeVerifiedFacades({N:base,S:{...base,status:'unreviewed'},
@@ -56,4 +56,20 @@ assert.equal(normalizeVerifiedFacades({N:{status:'seen',notes:'test',
  photoEvidence:{...photoEvidence,rightsConfirmed:false},
  layout:{photoConfirmed:true,openings:[{type:'window',x:.1,y:.1,w:.1,h:.1}]}}}).N,undefined,
  'photo annotations without license attestation must not become game assets');
+const inferred=inferUnverifiedFacade({osmId:202385912,wallIndex:2,length:13,height:6.2,levels:2});
+assert.equal(inferred?.evidenceTier,'inferred');
+assert.equal(inferred?.positionSurveyed,false);
+assert.equal(inferred?.source,null,'Estimated walls may NOT impersonate photo proof');
+assert(inferred.rows.length===2&&inferred.rows.every(v=>v>=1&&v<=5));
+assert.deepEqual(inferred,inferUnverifiedFacade({osmId:202385912,wallIndex:2,length:13,height:6.2,levels:2}),
+ 'Rebuild must be stable, not random per reload');
+assert.notDeepEqual(inferred,inferUnverifiedFacade({osmId:202385916,wallIndex:2,length:13,height:6.2,levels:2}),
+ 'Different unknown OSM buildings should not receive identical hardcoded facade layout');
+const estimatedGeometry=planFaceOpenings({
+ length:13,height:6.2,levels:2,side:inferred,autoEntrance:false
+});
+assert(estimatedGeometry.windows.length>0);
+assert.equal(estimatedGeometry.door,null,'Unknown facades cannot claim proven entrances');
+assert.equal(inferUnverifiedFacade({osmId:'fake',wallIndex:0,length:13,height:6.2,levels:2}),null);
+assert.equal(inferUnverifiedFacade({osmId:202385912,wallIndex:0,length:1,height:6.2,levels:2}),null);
 console.log('Verified per-facade 3D contract OK: evidence, cardinal wall matching, per-floor windows, door placement and geometry');
