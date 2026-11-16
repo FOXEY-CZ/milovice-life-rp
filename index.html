@@ -184,7 +184,9 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <a href="?v=58530&streetAudit=pionyru-left">📷 Starší technický pohled vlevo</a>
 <a href="?v=58530&streetAudit=pionyru-right">📷 Pravá strana · domy a stromy</a>
 <a href="?v=58530&streetAudit=church-2024">📷 Kostel · stejné GPS a směr jako foto z roku 2024</a>
-<a href="?v=58530&streetAudit=mirova">Mírová · fotopohled</a></nav>
+<a href="?v=58530&streetAudit=mirova">Mírová · ulice 2024</a>
+<a href="?v=58530&streetAudit=mirova36-2024">📷 Mírová 243/36 · veřejné foto</a>
+<a href="?v=58530&streetAudit=school-2024">📷 Školská · škola 2024</a></nav>
 <span id="street-audit-status">GPS označuje místo fotografa, ne přesnou polohu stromu, lampy či brány.</span>
 <span id="street-audit-camera-gps" aria-live="polite">📍 GPS a směr kamery se zobrazí po načtení 3D scény.</span>
 <div><a id="street-audit-map-gps" target="_blank" rel="noopener noreferrer">🗺️ Otevřít pozici herní kamery v Mapy.com</a></div>
@@ -466,6 +468,20 @@ const rpStreetAuditViews={
   source:'https://commons.wikimedia.org/wiki/File:Milovice,_kostel_sv._Kate%C5%99iny_(05).jpg',
   date:'2024-05-30',author:'ŠJů · CC BY 4.0',
   technical:false,publicPhotoCamera:true},
+ 'mirova36-2024':{
+  label:'Mírová 243/36 · veřejné foto ŠJů 30. 5. 2024, GPS + 65°',
+  camera:{lat:50.2280572,lon:14.8840981},heading:65,
+  source:'https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_36.jpg',
+  date:'2024-05-30',author:'ŠJů · CC BY 4.0',technical:false,
+  publicPhotoCamera:true,photographedOSMId:'202367254',
+ },
+ 'school-2024':{
+  label:'Školská · ZŠ T. G. Masaryka · veřejné foto ŠJů 30. 5. 2024, GPS + 85°',
+  camera:{lat:50.2286983,lon:14.8859519},heading:85,
+  source:'https://commons.wikimedia.org/wiki/File:Milovice,_Z%C5%A0_T._G._Masaryka_(01).jpg',
+  date:'2024-05-30',author:'ŠJů · CC BY 4.0',technical:false,
+  publicPhotoCamera:true,photographedOSMId:'118487979',
+ },
  'mirova':{label:'Mírová · GPS a směr fotografie 30. 5. 2024 · rozměry modelů odhadnuté',
   camera:{lat:50.2286667,lon:14.8847222},heading:30,
   source:'https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_(01).jpg',
