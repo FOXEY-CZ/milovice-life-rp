@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {MASS_STREET_583,planMassStreetBlock583} from './street-mass-build-pass.js';
+import {MASS_STREET_583,planMassStreetBlock583,MIROVA_PUBLIC_PHOTO_586,planPublicPhotoMirovaBlock586} from './street-mass-build-pass.js';
 
 const {elements}=JSON.parse(readFileSync(
  new URL('../data/milovice-osm.json',import.meta.url),'utf8'));
@@ -53,16 +53,45 @@ const augmented=planMassStreetBlock583([...elements,{
  id:888889,tags:{building:'garage'},geometry:elements.find(e=>e.id===539003462).geometry
 }]);
 assert.deepEqual(augmented.priorityIds,plan.priorityIds);
-const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+// Second 2024 public-photo anchored corridor has its OWN reserved slots,
+ // with all already prioritized church street buildings excluded.
+ const mirova=planPublicPhotoMirovaBlock586(elements,plan.priorityIds);
+ assert(mirova&&mirova.prioritizedBuildings===12,
+  'A meaningful 12-house Mírová city block must be rebuilt in one batch');
+ assert.equal(mirova.roadId,'1331897651');
+ assert.equal(mirova.photoApprovedBuildings,0);
+ assert.equal(mirova.unknownFacadesStillUnverified,true);
+ assert.equal(mirova.streetGeometryModified,false);
+ assert.equal(mirova.guessedParcelBoundaries,0);
+ assert.equal(mirova.guessedDriveways,0);
+ assert(mirova.publishedStreetSource.includes('commons.wikimedia.org'));
+ assert(mirova.publishedBuildingSource.includes('M%C3%ADrov%C3%A1_36'));
+ assert.equal(new Set(mirova.priorityIds).size,12);
+ assert(mirova.priorityIds.every(id=>!plan.priorityIds.includes(id)));
+ assert.equal(mirova.prioritizedBuildings+plan.prioritizedBuildings,32);
+ const mirovaReversed=planPublicPhotoMirovaBlock586([...elements].reverse(),plan.priorityIds);
+ assert.deepEqual(mirovaReversed.priorityIds,mirova.priorityIds,
+  'Reordering OSM export must never shuffle façade reservations');
+ const flippedMirova=elements.map(el=>String(el.id)==='1331897651'?
+  {...el,geometry:[...el.geometry].reverse()}:el);
+ assert.deepEqual(planPublicPhotoMirovaBlock586(flippedMirova,plan.priorityIds).priorityIds,
+  mirova.priorityIds,'Digitizing direction must not change the chosen photographed street');
+ assert.equal(planPublicPhotoMirovaBlock586([],plan.priorityIds),null);
+ assert.equal(MIROVA_PUBLIC_PHOTO_586.maxBuildings,12);
+ const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const hero=readFileSync(new URL('./hero-architecture.js',import.meta.url),'utf8');
 assert(game.includes('planMassStreetBlock583([...roadWays,...buildingWays])'));
 assert(game.includes('heroBuildings.setPriorityIds(massBlock.priorityIds)'));
+ assert(game.includes('heroBuildings.setPhotoFocusIds(mirovaPhotoBlock.priorityIds)'));
+ assert(game.includes('planPublicPhotoMirovaBlock586('));
 assert(game.includes('massBlockPriority||type'));
-assert(hero.includes('selectedNormal>=maxBuildings-reserved'));
+assert(hero.includes('selectedNormal>=genericBudget'));
+ assert(hero.includes('photoFocus?selectedPhotoFocus>=photoReserved'));
+ assert(hero.includes('maxBuildings-reserved-photoReserved'));
 assert(hero.includes('!massPriority&&!observed'));
 assert(hero.includes('priorityIds.has(String(id))'));
 assert(hero.includes('massBlockNoPhotoApproval:true'));
 console.log('MASS_STREET_583_OK',JSON.stringify({
  prioritized:plan.prioritizedBuildings,candidates:plan.buildingsConsidered,
  road:'5. května',corridorM:plan.corridorLengthM,ids:plan.priorityIds,
- photoApproved:plan.photoApprovedBuildings}));
+ photoApproved:plan.photoApprovedBuildings,mirova:mirova.prioritizedBuildings,mirovaIds:mirova.priorityIds}));
