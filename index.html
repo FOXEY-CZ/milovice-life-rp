@@ -180,7 +180,8 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <a href="?v=58530&streetAudit=pionyru">Pionýrů × 5. května · satelit 2023</a>
 <a href="?v=58530&streetAudit=pionyru-forward">🚶 Pohled z ulice · ke kostelu</a>
 <a href="?v=58530&streetAudit=pionyru-reverse">🚶 Pohled z ulice · zpět ke křižovatce</a>
-<a href="?v=58530&streetAudit=pionyru-left">📷 Levá strana · ploty a domy</a>
+<a href="?v=58530&streetAudit=pionyru-panorama-2022">📷 Fotozáběr 2022 · dům a brána</a>
+<a href="?v=58530&streetAudit=pionyru-left">📷 Starší technický pohled vlevo</a>
 <a href="?v=58530&streetAudit=pionyru-right">📷 Pravá strana · domy a stromy</a>
 <a href="?v=58530&streetAudit=church-2024">📷 Kostel · stejné GPS a směr jako foto z roku 2024</a>
 <a href="?v=58530&streetAudit=mirova">Mírová · fotopohled</a></nav>
@@ -439,6 +440,14 @@ const rpStreetAuditViews={
   label:'5. května · pohled zpět ke křižovatce podle OSM (NENÍ fotografický úhel)',
   camera:{lat:50.227699,lon:14.885002},heading:null,source:'https://mapy.com',
   date:'2023-06-04',author:'OSM technická kamera',technical:true,streetLevel:true,streetDirection:'inbound'},
+ 'pionyru-panorama-2022':{
+  label:'5. května · dům s hnědou bránou · kamera podle Mapy.com Panorama 9. 5. 2022',
+  camera:{lat:50.2277105,lon:14.8849165},heading:220,
+  source:'https://mapy.com/cs/letecka?pid=81190391&newest=1&yaw=3.834&fov=1.257&pitch=-0.032&x=14.8849165&y=50.2277105&z=18.748&ovl=8',date:'2022-05-09',author:'Mapy.com Panorama · dodal uživatel',
+  technical:false,publicPhotoCamera:true,photoEvidence:'user-supplied-81190391',
+  photographedOSMId:'202385910',
+  // GPS from Panorama x/y, heading from yaw 3.834 radians; approximate, not surveying.
+ },
  'pionyru-left':{
   label:'5. května · levá strana, ploty a domy · TECHNICKÁ OSM kamera, ne stejný úhel Mapy.com',
   camera:{lat:50.227699,lon:14.885002},heading:null,source:'https://mapy.com',
