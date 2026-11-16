@@ -46,6 +46,7 @@ try{
    playerHudHidden:getComputedStyle(document.getElementById('hud')).display==='none',
    visibleCanvas:!!document.querySelector('canvas')?.clientWidth,
    mass:window.__miloviceMassStreetBlock583,
+    mirovaBatch:window.__miloviceMirovaPublicPhotoBlock586,
    hero:window.__miloviceHeroArchitecture,
    gps:window.__miloviceAuditCameraGPS,
    gpsLabel:document.getElementById('street-audit-camera-gps')?.textContent,
@@ -64,6 +65,18 @@ try{
   assert.equal(info.hero?.priorityBuilt,20);
   assert.equal(info.hero?.massBlockPriorityBuilt,20);
   assert.equal(info.hero?.massBlockReservedPlaces,20);
+   // Additional 12 houses on Mírová must be rendered, not just selected.
+   assert.equal(info.mirovaBatch?.prioritizedBuildings,12);
+   assert.equal(info.mirovaBatch?.actuallyDetailed,12);
+   assert.equal(info.mirovaBatch?.reservedBudget,12);
+   assert.equal(info.mirovaBatch?.photoApprovedBuildings,0);
+   assert.equal(info.mirovaBatch?.existingRoadOrFootwayModified,false);
+   assert.equal(info.hero?.photoFocusReservedPlaces,12);
+   assert.equal(info.hero?.photoFocusBuilt,12);
+   assert.equal(info.hero?.normalBuilt+info.hero?.photoFocusBuilt+
+    info.hero?.priorityBuilt,68,'Keep whole 68-house budget stable');
+   assert.equal(new Set([...info.hero.priorityIds,...info.hero.photoFocusIds]).size,32,
+    'No selected house may be counted in both city blocks');
   assert.equal(info.hero?.maxBuildings,68,
    'Retain the old maxBuildings capacity for mobile performance');
   assert.equal(info.hero?.massBlockNoPhotoApproval,true);
