@@ -165,3 +165,30 @@ přesnou délku/parcelu. Další práce: identifikovat první levý dům,
 získat kontrastní úhel na obě strany ulice a přiřadit skutečné
 hrany plotů a chodníků konkrétním OSM prvkům. Teprve pak další 3D
 hmoty, bez náhodného „zazelenění“ a bez posouvání domů.
+
+
+## 5.82.7 — oprava směru ke kostelu po mobilním screenshotu (16. 11. 2026)
+
+Uživatel potvrdil načtení 5.82.6 screenshotem z technické kamery
+`streetAudit=pionyru-reverse`: ve výsledku **není kostel ani fotografovaná
+šedá lampa v záběru**. Odkaz v poslední odpovědi byl chybně popsán jako
+„směrem ke kostelu“, ačkoliv kamera **reverse je směrem zpět ke křižovatce**.
+Skutečný pohled ke kostelu je `streetAudit=pionyru-forward`.
+
+Současně byl nalezen funkční problém: dřívější algoritmus 5.82.6
+volil pokračování silnice `219273174` od křižovatky Pionýrů
+podle kladné světové souřadnice Z. V tomto úseku je to **opačná strana
+než OSM kostel sv. Kateřiny Alexandrijské `118487991`**. Test tehdy
+ověřoval čistě kolize, takže chybný směr nezachytil.
+
+**Oprava 5.82.7:** výběr větve je nově odvozen od skutečného
+**půdorysu kostela OSM 118487991**, přiřazeného k modelu budovy, nikoli
+od znaménka osy Z. Test kontroluje, že nová lampa je podstatně blíže
+kostelu než původní křižovatka, a funguje při obou pořadích uzlů OSM.
+Chybějící/nevhodný půdorys kostela znamená **žádné umístění**, ne
+náhodný odhad. Zachován je pouze **jeden** původní model lampy a
+osazení podléhá stejným kontrolám kolize s vozovkami, chodníky a domy.
+
+**Přesná geodetická poloha lampy stále není ověřená.** Technický pohled
+ke kostelu používá herní OSM kameru, ne stejné ohnisko a stanoviště jako
+fotografie Mapy.com z 9. 5. 2022. Ostatní ulice a budovy zůstaly beze změny.
