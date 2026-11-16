@@ -20,7 +20,8 @@ try{
    {id:'pionyru-panorama-2022',width:1280,height:760,mobile:false,technical:false},
   {id:'church-2024',width:393,height:852,mobile:true,technical:false,sourcePhoto:true},
   {id:'mirova',width:1280,height:760,mobile:false,technical:false},
-   {id:'school-detail-2024',width:1280,height:760,mobile:false,technical:false}
+   {id:'school-detail-2024',width:1280,height:760,mobile:false,technical:false},
+   {id:'skolska-west-2024',width:1280,height:760,mobile:false,technical:false}
  ]){
   const page=await browser.newPage({
    viewport:{width:cfg.width,height:cfg.height},deviceScaleFactor:1,
@@ -49,6 +50,7 @@ try{
    mass:window.__miloviceMassStreetBlock583,
     mirovaBatch:window.__miloviceMirovaPublicPhotoBlock586,
     skolskaBatch:window.__miloviceSkolskaPublicPhotoBlock587,
+    skolskaWestBatch:window.__miloviceSkolskaWestBlock588,
     mirovaGreen:window.__miloviceMirovaPhotoStreet586,
    hero:window.__miloviceHeroArchitecture,
    gps:window.__miloviceAuditCameraGPS,
@@ -82,9 +84,16 @@ try{
    assert.equal(info.skolskaBatch?.alteredRoadOrFootway,false);
    assert.equal(info.skolskaBatch?.schoolLandmarkPreserved,true);
    assert.equal(info.skolskaBatch?.totalPublicPhotoContextHouses,24);
-   assert.equal(info.hero?.photoFocusReservedPlaces,24);
-   assert.equal(info.hero?.photoFocusBuilt,24);
-   assert.equal(info.hero.photoFocusBuiltIds.length,24);
+   assert.equal(info.skolskaWestBatch?.prioritizedBuildings,8);
+   assert.equal(info.skolskaWestBatch?.actuallyDetailed,8);
+   assert.equal(info.skolskaWestBatch?.reservedBudget,8);
+   assert.equal(info.skolskaWestBatch?.photographedHouseAppearsInBatch,true);
+   assert.equal(info.skolskaWestBatch?.roadsChanged,false);
+   assert.equal(info.skolskaWestBatch?.newFootprints,0);
+   assert.equal(info.skolskaWestBatch?.detailedBuildingLimit,68);
+   assert.equal(info.hero?.photoFocusReservedPlaces,32);
+   assert.equal(info.hero?.photoFocusBuilt,32);
+   assert.equal(info.hero.photoFocusBuiltIds.length,32);
    assert.equal(info.mirovaGreen?.active,true,
     'Actual Mírová clipped-hedge/trees must render after city OSM load');
    assert(info.mirovaGreen.hedgeSegments+info.mirovaGreen.plantedTrees>=2);
@@ -94,7 +103,7 @@ try{
    assert.equal(info.mirovaGreen.positionsEstimated,true);
    assert.equal(info.hero?.normalBuilt+info.hero?.photoFocusBuilt+
     info.hero?.priorityBuilt,68,'Keep whole 68-house budget stable');
-   assert.equal(new Set([...info.hero.priorityIds,...info.hero.photoFocusIds]).size,44,
+   assert.equal(new Set([...info.hero.priorityIds,...info.hero.photoFocusIds]).size,52,
     'No selected house may be counted in two of the three OSM street blocks');
   assert.equal(info.hero?.maxBuildings,68,
    'Retain the old maxBuildings capacity for mobile performance');
@@ -219,6 +228,15 @@ try{
   assert.equal(info.compact,cfg.mobile);
   assert.equal(info.playerHudHidden,true);
   assert.equal(info.visibleCanvas,true);
+   if(cfg.id==='skolska-west-2024'){
+    assert.equal(info.audit.cameraMode,'public-photo-gps-inferred-osm-direction');
+    assert.equal(info.audit.publicPhotoHeadingEstimated,true);
+    assert(Math.abs(info.gps.latitude-50.2290672)<.000002);
+    assert(Math.abs(info.gps.longitude-14.8822619)<.000002);
+    assert(Math.abs(info.gps.bearingDegrees-57)<=1);
+    assert(info.source.includes('kolsk%C3%A1_1.jpg'),
+     'Link directly to the actual Commons Školská 1 photograph');
+   }
   assert.deepEqual(errors,[]);
   // Regression case: the user's Android screenshot shows the NEW sidewalk,
   // fence, trees and asphalt vanish ~5 sec AFTER first load. Recheck
