@@ -4459,25 +4459,34 @@ function rpAppendOSMElements(elements){
      measuredDimensions:false,sharedStationFoundation:true,modelStatus:'photo-informed OSM-constrained'
    };
  }
- photoStreetEnvironment.addFromRoads(osmDriveRoads,buildingWays.map(w=>w.geometry.map(osmPoint)),
-  buildingWays.find(w=>String(w.id)==='118487991')?.geometry.map(osmPoint)||[]);
- // Historical 2023 Mapy.com overhead from user — just the Pionýrů junction's
- // small verge pockets, never speculative property driveways or building doors.
- photoPionyruVerge.create(osmDriveRoads,buildingWays.map(w=>w.geometry.map(osmPoint)));
- // User's May 2022 Panorama: photo-confirmed left-side pavement toward church.
- // Check the ENTIRE OSM road/footway index, not just the drivable subset.
- photoChurchSidewalk2022.create(osmDriveRoads,
-  buildingWays.map(w=>w.geometry.map(osmPoint)),
-  buildingWays.find(w=>String(w.id)==='118487991')?.geometry.map(osmPoint)||[]);
- photoChurchStreet2022.create(osmDriveRoads,
-  buildingWays.map(w=>w.geometry.map(osmPoint)),
-  buildingWays.find(w=>String(w.id)==='118487991')?.geometry.map(osmPoint)||[]);
- stationPhotoForecourt.create(elements);
- rpForecourtAuditPlan=rpForecourtAuditView?
-  planStationForecourtAudit(elements,rpForecourtAuditId):null;
- stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat});
- bikeTowerEntryPaving.create(elements,{sidewalkMaterial:osmSidewalkMat});
- stationTicketMachines.create(elements);
+ // 5.85.1: Regional map streaming calls rpAppendOSMElements() again
+ // with PARTIAL OSM ways. Previously photoScene.create() erased the old
+ // meshes before discovering that the NEW region contained no St Catherine
+ // church footprint. That is exactly the five-second disappearance.
+ // Build a photographic scene ONLY when its source OSM cluster is loaded.
+ const churchSource=buildingWays.find(w=>String(w.id)==='118487991');
+ const churchStreetSourceComplete=!!churchSource&&
+  roadWays.some(w=>String(w.id)==='219273174')&&
+  roadWays.some(w=>String(w.id)==='118488006');
+ if(churchStreetSourceComplete){
+  const footprints=buildingWays.map(w=>w.geometry.map(osmPoint));
+  const churchFootprint=churchSource.geometry.map(osmPoint);
+  photoStreetEnvironment.addFromRoads(osmDriveRoads,footprints,churchFootprint);
+  photoPionyruVerge.create(osmDriveRoads,footprints);
+  photoChurchSidewalk2022.create(osmDriveRoads,footprints,churchFootprint);
+  photoChurchStreet2022.create(osmDriveRoads,footprints,churchFootprint);
+ }
+ // Likewise never reset photographic station models with unrelated
+ // geographical chunks; independent upgrades stay present after streaming.
+ if(trainStation&&railPlatform&&mappedStationPassage){
+  stationPhotoForecourt.create(elements);
+  rpForecourtAuditPlan=rpForecourtAuditView?
+   planStationForecourtAudit(elements,rpForecourtAuditId):null;
+  stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat});
+  bikeTowerEntryPaving.create(elements,{sidewalkMaterial:osmSidewalkMat});
+  stationTicketMachines.create(elements);
+ }
+ if(buildingWays.some(w=>String(w.id)==='118634917'))
   schoolGrounds.create(elements);
 }
 // 4.8: Incremental geographic streaming; only the current area is meshed on phone.
