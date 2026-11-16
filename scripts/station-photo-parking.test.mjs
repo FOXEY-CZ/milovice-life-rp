@@ -218,9 +218,14 @@ assert(plan.continuousRibbon.southernOuterEarsClipped>=2,
  'Remove the photographed .46m outward ear at the first island end');
 const southPart=plan.continuousRibbon.parts[0];
 assert.equal(southPart[0].southNoseCap,true);
-assert(southPart[0].high-southPart[0].low>=.37&&
- southPart[0].high-southPart[0].low<.75,
- 'South nose must taper INSIDE the already approved tile');
+assert(southPart[0].high-southPart[0].low>=.25&&
+ southPart[0].high-southPart[0].low<=.261,
+ 'South nose must form one narrow safe wedge, not a hanging square');
+assert(Math.abs(plan.continuousRibbon.southNoseLongitudinalTrim-.2175)<.0001,
+ 'Retract terminal end longitudinally while staying inside validated cell');
+const firstSafe=plan.continuousRibbon.profiles.find(p=>p.safe);
+assert(southPart[0].along>firstSafe.along-firstSafe.length/2+.20,
+ 'Terminus must not extend into the first tile outside the intended island');
 const initialHigh=plan.continuousRibbon.profiles[0].high;
 for(const p of plan.continuousRibbon.profiles.filter(q=>q.along<=6))
  assert(p.high<=initialHigh+.000001,
@@ -230,6 +235,8 @@ assert(clippedInfill.rows[0].southCapMatched,
 assert(Math.abs(clippedInfill.rows[0].startInner-southPart[0].low)<.000001);
 assert(Math.abs(clippedInfill.rows[0].start-southPart[0].high)<.000001,
  'An independent rectangular underlay must not poke out from south cap');
+assert.equal(clippedInfill.rows[0].startAlong,southPart[0].along,
+ 'Footway underlay must share the shortened longitudinal cap, not extend south');
 assert(clippedInfill.rows.slice(1).every(q=>
  q.startInner===q.low&&!q.southCapMatched),
  'The 5.81.20 inner sidewalk gap fix must stay intact outside the nose');
