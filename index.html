@@ -173,7 +173,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <div class="actions"><a id="rp-camera-gps-map" href="https://mapy.com/" target="_blank" rel="noopener noreferrer">🗺️ Mapy.com</a>
 <button id="rp-camera-gps-copy" type="button">📋 Kopírovat GPS + směr</button>
 <button id="rp-camera-gps-close" type="button">✕ Zavřít</button></div></aside><aside id="street-block-audit" hidden aria-label="Fotoaudit 5. května Mírová Školská">
-<strong>📸 Uliční blok · Mírová 5.86 + fotoaudit</strong>
+<strong>📸 Uliční bloky · Školská 5.87 + Mírová</strong>
 <button id="street-audit-toggle" type="button" aria-expanded="true">Sbalit nabídku</button>
 <span id="street-audit-label"></span>
 <nav><a href="?v=58530&streetAudit=5kv">5. května shora</a>
@@ -5744,6 +5744,12 @@ if(rpStreetAuditCameraWorld&&rpStreetAuditView){
   'Satelit 4. 6. 2023 · zeleň: '+photoPionyruVerge.status().plantedShrubPockets+
   ' · veřejné nájezdy: '+photoPionyruVerge.status().publicVergeAccesses+
   ' · přibližné polohy, soukromé brány neověřené':
+  (rpStreetAuditId==='school-2024'||rpStreetAuditId==='school-detail-2024')?
+  '📷 Školská · škola podle fotografie ŠJů z 30. 5. 2024 · nový blok: '+
+    (window.__miloviceSkolskaPublicPhotoBlock587?.actuallyDetailed||0)+
+    ' skutečných OSM domů · škola: OSM 118487979 · stávající oplocení: '+
+    (window.__miloviceSchoolGrounds?.fencePanels||0)+' dílů'+
+    ' · fasády ostatních domů jsou uvěřitelná rekonstrukce':
   (rpStreetAuditId==='mirova'||rpStreetAuditId==='mirova36-2024')?
   '📷 Mírová · veřejné fotografie ŠJů, 30. 5. 2024 · celý blok: '+
     (window.__miloviceMirovaPublicPhotoBlock586?.actuallyDetailed||0)+
