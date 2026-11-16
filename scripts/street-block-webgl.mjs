@@ -182,9 +182,10 @@ try{
    }
    assert.equal(info.audit.view,cfg.id);
   assert.equal(info.audit.cameraMode,cfg.streetLevel?'technical-osm-street-axis':cfg.technical?
-   'technical-osm-overhead':'documented-photo-gps-and-heading');
+   'technical-osm-overhead':cfg.id==='skolska-west-2024'?
+   'public-photo-gps-inferred-osm-direction':'documented-photo-gps-and-heading');
   assert.equal(info.audit.technicalStreetLevel,cfg.streetLevel===true);
-  assert.equal(info.audit.legacyPhotoHeadingUnavailable,cfg.technical);
+  assert.equal(info.audit.legacyPhotoHeadingUnavailable,cfg.technical||cfg.id==='skolska-west-2024');
   assert.equal(info.audit.estimatedObjectLocations,true);
   assert.equal(info.audit.photoCameraIsObjectSurvey,false);
   assert.equal(info.audit.treeEvidenceCount,1);
