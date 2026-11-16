@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const index=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const art=readFileSync(new URL('./visual-overhaul.js',import.meta.url),'utf8');
-assert(index.includes("const BUILD_ID='20261116-smooth-station-island-nose-58123'"));
+assert(index.includes("const BUILD_ID='20261116-clipped-island-tip-58124'"));
 assert(index.includes("const ROAD_ASPHALT_TILE_METERS=7"));
 const p=index.indexOf('function osmStrip(a,b,width,material,y=.15){');
 const q=index.indexOf('// 5.2.1:',p);

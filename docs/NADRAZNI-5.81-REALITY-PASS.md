@@ -120,3 +120,9 @@ Při kontrole 5.81.22 už byla levá kolejová parkovací řada spojena s vozovk
 5.81.23 **nenavyšuje žádný povrch a nemění OSM silnice**. U prvních ~5 metrů ukončí vnější hranu nejvýše tam, kde ležela první celá bezpečná řada. První ukončení souvislého chodníku se zužuje z ~0.74 m na ~0.38 m, uvnitř stejného ověřeného rasterového políčka. Spodní doplňková vrstva sdílí přesně stejný zakončovací profil, aby na špičce nepřečníval samostatný obdélníkový přesah. Celá délka parkovacích stání, silniční asfalt, zaparkovaná vozidla, venkovní obruby u kolejí i vnitřní výplň pěšího pásu zůstaly nedotčené.
 
 **Míra jistoty:** OSM bezpečnost a soulad mezi dvěma vrstvami chodníku lze ověřit testy; kulaté zakončení je *foto-informovaný model*, nikoli zaměřená skutečná geometrie. První vizuální ověření uživatelem je nutné, zejména u menších pravoúhlých prvků na první řadě parkovacích dlaždic, které nejsou součástí této úpravy.
+
+## 5.81.24 — zkrácení zbylého koncového jazýčku (16. 11. 2026)
+
+Uživatelův nadhled 5.81.23 (01:07) potvrdil, že velký čtvercový přesah na jižní špičce byl menší, ale vpravo stále zůstával úzký svislý jazýček asi jednoho dlažebního dílku. V nové úpravě je terminální průřez chodníku stále **uvnitř první již schválené buňky**. Zkrátil se o cca 0,2175 metru po směru osy a šířka jeho koncové hrany je 0,32 m (zbytek se rozevírá do standardní šířky). **Důležité:** spodní výplň je nyní ukončena na *témže* souřadnicovém začátku `startAlong`, jako viditelný chodník a obrubník; dříve používala původní obdélníkový počátek buňky.
+
+Nezměnily se banky parkování, přístupové cesty, OSM silnice, vnitřní dlažební buňky ani kolejový parking. Jde o cílené odstranění vizuálního přečnívání, nikoli skutečně zaměřený oblouk; ověření proti fotografii a screenshotu 5.81.24 stále otevřené.
