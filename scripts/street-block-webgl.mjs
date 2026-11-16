@@ -22,7 +22,7 @@ try{
    isMobile:cfg.mobile,hasTouch:cfg.mobile
   });
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=58250&streetAudit='+cfg.id,
+  await page.goto('http://127.0.0.1:8080/?v=58260&streetAudit='+cfg.id,
    {waitUntil:'domcontentloaded',timeout:30000});
   await page.waitForFunction(()=>
    window.__miloviceStreetAuditRendered?.active===true&&
@@ -40,7 +40,7 @@ try{
    visibleCanvas:!!document.querySelector('canvas')?.clientWidth,
    build:document.getElementById('build-label')?.textContent
   }));
-  assert.equal(info.build,'20261116-pionyru-two-way-street-inspection-58250');
+  assert.equal(info.build,'20261116-photo-2022-church-streetlamp-58260');
   assert.equal(info.audit.view,cfg.id);
   assert.equal(info.audit.cameraMode,cfg.streetLevel?'technical-osm-street-axis':cfg.technical?
    'technical-osm-overhead':'documented-photo-gps-and-heading');
@@ -59,8 +59,15 @@ try{
   assert.equal(info.scene?.photoSceneDecision?.roadIds?.[0],'219273174');
   assert(info.scene?.minRoadClearance>=2,
    'Historically depicted models must remain off all indexed OSM roads');
-  assert(info.scene?.drawMeshes>0&&info.scene?.drawMeshes<=26,
-   'Visible historical features must use compact mobile-friendly batched meshes');
+  assert(info.scene?.drawMeshes>0&&info.scene?.drawMeshes<=29,
+   'Visible historical features including the single streetlight remain mobile-friendly');
+  assert.equal(info.scene?.streetlamp2022?.modelCount,1,
+   'The photographed May 2022 grey streetlight must be rendered in 3D');
+  assert.equal(info.scene?.streetlamp2022?.observedCount,1);
+  assert.equal(info.scene?.streetlamp2022?.positionSurveyed,false);
+  assert.equal(info.scene?.streetlamp2022?.sourceDate,'2022-05-09');
+  assert.equal(info.scene?.streetlamp2022?.duplicateOrSpeculativeLamps,0);
+  assert.equal(info.scene?.streetlamp2022?.sourcePixelsUsed,false);
   assert(info.source.startsWith(cfg.id.startsWith('pionyru')?'https://mapy.com':
    'https://commons.wikimedia.org/wiki/File:'));
   if(cfg.id.startsWith('pionyru')){
@@ -90,7 +97,7 @@ try{
   assert.equal(info.playerHudHidden,true);
   assert.equal(info.visibleCanvas,true);
   assert.deepEqual(errors,[]);
-  await page.screenshot({path:'browser-artifacts/milovice-street-58250-'+cfg.id+'.png'});
+  await page.screenshot({path:'browser-artifacts/milovice-street-58260-'+cfg.id+'.png'});
   console.log('STREET_BLOCK_WEBGL_OK',JSON.stringify({
    mode:cfg.id,scenes:info.audit.generatedSceneCount,source:info.source,
    cameraMode:info.audit.cameraMode,roadClearance:info.scene?.minRoadClearance,
