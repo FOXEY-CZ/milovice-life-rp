@@ -56,7 +56,8 @@ try{
   await page.screenshot({path:'browser-artifacts/milovice-street-58200-'+cfg.id+'.png'});
   console.log('STREET_BLOCK_WEBGL_OK',JSON.stringify({
    mode:cfg.id,scenes:info.audit.generatedSceneCount,source:info.source,
-   cameraMode:info.audit.cameraMode,roadClearance:info.scene?.minRoadClearance
+   cameraMode:info.audit.cameraMode,roadClearance:info.scene?.minRoadClearance,
+   decision:info.scene?.photoSceneDecision
   }));
   await page.close();
  }
