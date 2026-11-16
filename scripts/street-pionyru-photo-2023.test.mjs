@@ -1,7 +1,37 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {PIONYRU_2023,planPionyru2023Verge} from './street-pionyru-photo-2023.js';
+import {PIONYRU_2023,planPionyru2023Verge,isBuildingFreeRect} from './street-pionyru-photo-2023.js';
 import {createRoadClearance,isRoadFreeRect} from './road-clearance.js';
+// 5.82.3: Whole-rectangle building guard. The old 25/28 cm sampling
+// could miss a thin wall fragment even though the apron intersected it.
+const accessRect={x:0,z:0,length:2,depth:2,yaw:Math.PI/5};
+const NARROW_SLIVER=[{x:-.015,z:-3},{x:.015,z:-3},
+ {x:.015,z:3},{x:-.015,z:3}];
+const enclosing=[{x:-5,z:-5},{x:5,z:-5},{x:5,z:5},{x:-5,z:5}];
+const contained=[{x:-.04,z:-.04},{x:.04,z:-.04},
+ {x:.04,z:.04},{x:-.04,z:.04}];
+const clear=[{x:5,z:5},{x:6,z:5},{x:6,z:6},{x:5,z:6}];
+assert.equal(isBuildingFreeRect(accessRect,[NARROW_SLIVER]),false,
+ 'NARROW_SLIVER must intersect even between sparse sample points');
+assert.equal(isBuildingFreeRect(accessRect,[[...NARROW_SLIVER].reverse()]),false,
+ 'Winding reversal must not change footprint collision');
+assert.equal(isBuildingFreeRect(accessRect,[enclosing]),false,
+ 'Do not pave inside a building that entirely encloses the rectangle');
+assert.equal(isBuildingFreeRect(accessRect,[contained]),false,
+ 'Small building polygon entirely inside an apron must be rejected');
+assert.equal(isBuildingFreeRect(accessRect,[clear]),true);
+assert.equal(isBuildingFreeRect(accessRect,{x:0,z:0}),false,
+ 'Malformed footprint list fails closed');
+assert.equal(isBuildingFreeRect({...accessRect,length:NaN},[]),false,
+ 'Invalid geometry fails closed');
+// Even without an edge intersection, the 13cm conservative building
+// clearance around a straight apron is mandatory.
+const straight={x:0,z:0,length:2,depth:2,yaw:0};
+const grazing=[{x:1.08,z:-.1},{x:1.1,z:-.1},
+ {x:1.1,z:.1},{x:1.08,z:.1}];
+const distant=grazing.map(p=>({x:p.x+.4,z:p.z}));
+assert.equal(isBuildingFreeRect(straight,[grazing]),false);
+assert.equal(isBuildingFreeRect(straight,[distant]),true);
 const world=JSON.parse(readFileSync(new URL('../data/milovice-osm.json',import.meta.url),'utf8')).elements;
 const cos=Math.cos(50.226*Math.PI/180);
 const to=p=>({x:(p.lon-14.889)*111320*cos,z:-(p.lat-50.226)*111320});
@@ -65,7 +95,7 @@ const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert(game.includes("streetAudit=pionyru"));
 assert(game.includes("photoPionyruVerge.create(osmDriveRoads,buildingWays.map(w=>w.geometry.map(osmPoint)))"));
 assert(game.includes("pionyru?.center?.x??eye.x"));
-console.log('5.82.2 PIONYRU_PUBLIC_VERGE_ACCESS_OK',JSON.stringify({
+console.log('5.82.3 PIONYRU_BUILDING_POLYGON_GUARD_OK',JSON.stringify({
  accepted:plan.accepted.length,rejected:plan.rejected.length,
  accesses:plan.accessAccepted.map(a=>({id:a.id,along:a.along,side:a.side})),
  length:+plan.segmentLength.toFixed(1),junction:plan.junction,
