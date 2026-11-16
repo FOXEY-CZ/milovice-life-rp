@@ -83,7 +83,7 @@ try{
    assert.equal(info.skolskaBatch?.newBuildingFootprints,0);
    assert.equal(info.skolskaBatch?.alteredRoadOrFootway,false);
    assert.equal(info.skolskaBatch?.schoolLandmarkPreserved,true);
-   assert.equal(info.skolskaBatch?.totalPublicPhotoContextHouses,24);
+   assert.equal(info.skolskaBatch?.totalPublicPhotoContextHouses,32);
    assert.equal(info.skolskaWestBatch?.prioritizedBuildings,8);
    assert.equal(info.skolskaWestBatch?.actuallyDetailed,8);
    assert.equal(info.skolskaWestBatch?.reservedBudget,8);
@@ -104,7 +104,7 @@ try{
    assert.equal(info.hero?.normalBuilt+info.hero?.photoFocusBuilt+
     info.hero?.priorityBuilt,68,'Keep whole 68-house budget stable');
    assert.equal(new Set([...info.hero.priorityIds,...info.hero.photoFocusIds]).size,52,
-    'No selected house may be counted in two of the three OSM street blocks');
+    'No selected house may be counted in two of the four OSM street blocks');
   assert.equal(info.hero?.maxBuildings,68,
    'Retain the old maxBuildings capacity for mobile performance');
   assert.equal(info.hero?.massBlockNoPhotoApproval,true);
