@@ -22,7 +22,9 @@ export const PIONYRU_GATE_PANORAMA_2022=Object.freeze({
  photographedOSMHouseId:'202385910',date:'2022-05-09',
  observed:['brown diamond-panel gate','pale masonry piers','block boundary wall',
   'low mesh fence','paved sidewalk','grass verge'],
- approximateAlongFromPionyruM:62,positionSurveyed:false,
+ // Screenshot-framed estimate, never a surveyed parcel boundary.
+ approximateGateCenter:{lat:50.2276030,lon:14.8848450},
+ approximateWidthM:4.8,positionSurveyed:false,
  privateOwnershipUnverified:true,roadOrFootwayChanged:false
 });
 const X=p=>p.x,Z=p=>p.z??p.y;
@@ -104,9 +106,27 @@ export function planChurchStreetscape2022(roads,{roadClearance=null,
   if(roadOk&&buildingOk)fence.push(item);
   else rejectedFence.push({along,reason:!roadOk?'mapped-road-or-footway':'building'});
  }
- const photoGate=fence.find(f=>Math.abs(f.along-
-   PIONYRU_GATE_PANORAMA_2022.approximateAlongFromPionyruM)<.4)||null;
-  // Reuse ONLY a photo-informed, whole-footprint collision-cleared fence slot.
+ // Recenter the photographed gate on an approximate house frontage, not on
+ // a generic fence run dangerously close to the camera.
+ const gateGPS=PIONYRU_GATE_PANORAMA_2022.approximateGateCenter;
+ const gateX=(gateGPS.lon-14.889)*111320*Math.cos(50.226*Math.PI/180);
+ const gateZ=-(gateGPS.lat-50.226)*111320;
+ const gateAxis=sample(route,62),gateWidth=PIONYRU_GATE_PANORAMA_2022.approximateWidthM;
+ const gateYaw=gateAxis?Math.atan2(-gateAxis.uz,gateAxis.ux):0;
+ const gateRect={x:gateX,z:gateZ,length:gateWidth,depth:.20,
+  yaw:gateYaw,buffer:.22,step:.18};
+ const photoGate=gateAxis&&isRoadFreeRect(roadClearance,gateRect)&&
+  isBuildingFreeRect(gateRect,buildingFootprints,.22)?{
+   x:gateX,z:gateZ,length:gateWidth,yaw:gateYaw,
+   ax:{x:gateX-gateAxis.ux*gateWidth*.5,z:gateZ-gateAxis.uz*gateWidth*.5},
+   bx:{x:gateX+gateAxis.ux*gateWidth*.5,z:gateZ+gateAxis.uz*gateWidth*.5},
+   photographedHouseId:'202385910',positionSurveyed:false
+  }:null;
+ // The old 7.25m gate was in the camera foreground; do not double it.
+ if(photoGate){
+  const oldIndex=fence.findIndex(f=>Math.abs(f.along-62)<.4);
+  if(oldIndex>=0)fence.splice(oldIndex,1);
+ }
   const trees=[],rejectedTrees=[];
  for(const [along,side,height,crown] of [
   [34,12.0,7.5,3.4],[61,12.3,8.6,4.0],[88,12.2,9.1,4.2],
@@ -184,7 +204,7 @@ export function makeChurchStreetscape2022(THREE,{
   plan=nextPlan;
   root=new THREE.Group();root.name='ChurchStreetscapePhotoMay2022';
   const bases=[],posts=[],rails=[],gatePanels=[],gateDiamonds=[],trunks=[],crowns=[],crowns2=[];
-  for(const f of plan.fence){
+  for(const f of [...plan.fence,...(plan.photoGate?[plan.photoGate]:[])]){
    const ground=terrainAt(f.x,f.z);
    if(plan.photoGate===f){
     // Photo confirms gate design, NOT its cadastral location. Four original
@@ -195,8 +215,8 @@ export function makeChurchStreetscape2022(THREE,{
      const gx=f.ax.x+(f.bx.x-f.ax.x)*t,gz=f.ax.z+(f.bx.z-f.ax.z)*t;
      const y=terrainAt(gx,gz)+.89;
      gatePanels.push({x:gx,y,z:gz,w:leaf-.035,h:1.70,d:.09,yaw:f.yaw});
-     for(const roll of [-.62,.62])
-      gateDiamonds.push({x:gx,y,z:gz,w:1.88,h:.045,d:.105,yaw:f.yaw,roll});
+     for(const roll of [-.68,.68])
+      gateDiamonds.push({x:gx,y,z:gz,w:1.16,h:.04,d:.105,yaw:f.yaw,roll});
     }
     for(const t of [0,1]){
      const gx=f.ax.x+(f.bx.x-f.ax.x)*t,gz=f.ax.z+(f.bx.z-f.ax.z)*t;
