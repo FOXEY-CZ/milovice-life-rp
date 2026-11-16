@@ -1,10 +1,10 @@
-## Nový pracovní postup od 16. 11. 2026: veřejné fotografie bez žádání screenshotů
+## Nový pracovní postup od 16. 11. 2026: veřejné fotografie + uvěřitelná rekonstrukce
 
 Milovice RP se odteď rozvíjí **po celých uličních úsecích podle veřejně dostupných, ověřitelných fotografií**. Fotografie z Wikimedia Commons (zejména ŠJů, 30. 5. 2024, CC BY 4.0; a Tiia Monto, 26. 7. 2014, CC BY-SA 4.0) se párují k přesné budově nebo místu pouze na základě názvu, ověřené polohy/úhlu a OSM půdorysu. **Uživatel nemusí posílat nové Panorama ani screenshoty po každé úpravě.** Jeho dřívější snímky jsou historický podklad, nikoliv požadavek pro další postup.
 
 - Pracuj v dávkách: celé ulice a jejich domy, střechy, okna, vstupy, ploty, chodníky, přechody, zeleň a drobné objekty. Přednost dostávají části s více ověřenými veřejnými zdroji.
 - Podklady: [kategorie 5. května](https://commons.wikimedia.org/wiki/Category:5._kv%C4%9Btna_(Milovice)), [Mírová 243/36](https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_36.jpg) (GPS 50.2280572, 14.8840981, heading 65°), [Školská – škola](https://commons.wikimedia.org/wiki/File:Milovice,_Z%C5%A0_T._G._Masaryka_(01).jpg) (GPS 50.2286983, 14.8859519, heading 85°). Kompletní registry: `scripts/street-photo-evidence.js`.
-- Jeden snímek dokládá jen **viditelné fasády a objekty**. Neodvozuj zadní stěny, přesnou hranici pozemku, výšku oken, nepřítomné vstupy ani současný stav (2026). Tato data zůstávají provizorní, dokud není další nezávislá evidence.
+- Jeden snímek dokládá jen **viditelné fasády a objekty**. Na základě výslovného přání autora lze **umělecky dopočítat nedoložené fasády, okna, odstíny, střešní detaily a běžné uliční prvky** z OSM půdorysů a sousedních domů. Nikdy z nich ale nedělej údajně fotograficky ověřené objekty, netvrď přesné hranice parcel, polohy soukromých bran, podzemní průchody, dopravní značení ani stav v roce 2026. Odhady jsou označené jako `inferred`/provizorní a mají nižší prioritu než nové fotky. `scripts/facade-model.js` používá pro nejistá okna deterministické rozvržení podle OSM ID a rozměru konkrétní stěny; `scripts/hero-architecture.js` ho použije jen u nedoložených stran.
 - Nezačleňuj proprietární snímky Panoramata jako textury; veřejné Commons fotografie mají vlastní atribuci a podmínky licencí. Vytvářej originální geometrii.
 - Nabízej hotové veřejně podložené celky a odkazy na **přednastavenou herní kameru**, např. `?streetAudit=mirova36-2024` a `?streetAudit=school-2024`. Nevyžaduj po uživateli další opakované sladění záběru.
 
