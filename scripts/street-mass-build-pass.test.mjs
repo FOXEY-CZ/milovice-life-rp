@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {MASS_STREET_583,planMassStreetBlock583,MIROVA_PUBLIC_PHOTO_586,planPublicPhotoMirovaBlock586,
- SKOLSKA_PUBLIC_PHOTO_587,planPublicPhotoSkolskaBlock587} from './street-mass-build-pass.js';
+ SKOLSKA_PUBLIC_PHOTO_587,planPublicPhotoSkolskaBlock587,
+ SKOLSKA_WEST_588,planSkolskaWestBlock588} from './street-mass-build-pass.js';
 import {MIROVA_PHOTO_STREET_586,planMirovaPhotoStreet586} from './mirova-public-photo-street-586.js';
 import {createRoadClearance} from './road-clearance.js';
 
@@ -111,6 +112,34 @@ assert.deepEqual(augmented.priorityIds,plan.priorityIds);
   'OSM road vertex direction may not reshuffle photographed street');
  assert.equal(planPublicPhotoSkolskaBlock587([],[]),null);
  assert.deepEqual(SKOLSKA_PUBLIC_PHOTO_587.cameraSchool,[50.2286983,14.8859519,85]);
+ const west=planSkolskaWestBlock588(elements,
+  [...plan.priorityIds,...mirova.priorityIds,...skolska.priorityIds]);
+ assert.equal(west?.prioritizedBuildings,8,'Western Školská must prioritize 8 real OSM residential houses');
+ assert.equal(west.roadIds.join(','),'22880480,1331897639');
+ assert.equal(west.documentedHouseId,'118487980');
+ assert.equal(west.photographedHouseAppearsInBatch,true);
+ assert(west.priorityIds.includes('118487980'),'Photographed Školská 1 must be included');
+ assert(!west.priorityIds.includes('202298939'),'Preserve dedicated fork gable at 5. května');
+ assert.equal(west.newFootprints,0);
+ assert.equal(west.roadsChanged,false);
+ assert.equal(west.pavementsChanged,false);
+ assert.equal(west.privateDrivewaysInvented,0);
+ assert.equal(west.crossingsInvented,0);
+ assert.equal(west.publicPhotoDoesNotCertifyAllNeighbors,true);
+ assert(west.sourceStreetViews.every(u=>u.startsWith('https://commons.wikimedia.org/wiki/File:')));
+ const joined=[...plan.priorityIds,...mirova.priorityIds,
+  ...skolska.priorityIds,...west.priorityIds];
+ assert.equal(new Set(joined).size,52,'Fourth street may not reuse earlier house IDs');
+ assert.equal(joined.length,52);
+ assert.deepEqual(planSkolskaWestBlock588([...elements].reverse(),
+  [...mirova.priorityIds,...plan.priorityIds,...skolska.priorityIds]).priorityIds,
+  west.priorityIds,'OSM input order must not shuffle this street');
+ const westReversed=elements.map(e=>SKOLSKA_WEST_588.roadIds.includes(String(e.id))?
+  {...e,geometry:e.geometry.slice().reverse()}:e);
+ assert.deepEqual(planSkolskaWestBlock588(westReversed,
+  [...plan.priorityIds,...mirova.priorityIds,...skolska.priorityIds]).priorityIds,
+  west.priorityIds,'Reversed digitization must not alter modeled houses');
+ assert.equal(planSkolskaWestBlock588([],[]),null);
  const C=Math.cos(50.226*Math.PI/180);
  const project=p=>({x:(p.lon-14.889)*111320*C,z:-(p.lat-50.226)*111320});
  const surfaceWidth={secondary:9,primary:11,tertiary:8,residential:7,
@@ -148,6 +177,11 @@ assert(game.includes('heroBuildings.setPriorityIds(massBlock.priorityIds)'));
  'Mírová and Školská must share the original 20-house focus budget');
  assert(game.includes('planPublicPhotoMirovaBlock586('));
  assert(game.includes('planPublicPhotoSkolskaBlock587('));
+ assert(game.includes('planSkolskaWestBlock588('));
+ assert(game.includes('window.__miloviceSkolskaWestBlock588'));
+ assert(game.includes('public-photo-gps-inferred-osm-direction'));
+ assert(hero.includes('photoFocusIds.size>=32'));
+ assert.equal(SKOLSKA_WEST_588.maxBuildings,8);
  assert(game.includes('window.__miloviceSkolskaPublicPhotoBlock587'));
 assert(game.includes('massBlockPriority||type'));
 assert(hero.includes('selectedNormal>=genericBudget'));
@@ -159,4 +193,4 @@ assert(hero.includes('massBlockNoPhotoApproval:true'));
 console.log('MASS_STREET_583_OK',JSON.stringify({
  prioritized:plan.prioritizedBuildings,candidates:plan.buildingsConsidered,
  road:'5. května',corridorM:plan.corridorLengthM,ids:plan.priorityIds,
- photoApproved:plan.photoApprovedBuildings,mirova:mirova.prioritizedBuildings,mirovaIds:mirova.priorityIds,skolska:skolska.priorityIds}));
+ photoApproved:plan.photoApprovedBuildings,mirova:mirova.prioritizedBuildings,mirovaIds:mirova.priorityIds,skolska:skolska.priorityIds,west:west.priorityIds}));
