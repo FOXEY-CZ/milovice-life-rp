@@ -53,3 +53,41 @@ fronts. It never extends photo claims to unseen sides or fabricates an
 entrance location. Shapes and sizes remain approximations, and 360 review
 is pending. Matching works with reversed OSM winding, suitable as a shared
 method for future photo-annotated buildings.
+
+
+### 12. Hromadná výstavba obytného bloku – 5.83 (16. 11. 2026)
+
+**Nová jednotka práce: souvislý blok, nikoli jednotlivý dům či lampa.**
+`scripts/street-mass-build-pass.js` vybírá existující obytné budovy poblíž
+skutečné trasy 5. května od křižovatky Pionýrů k doloženému OSM půdorysu
+kostela sv. Kateřiny. Směr se určuje **vůči kostelu**, ne podle světové osy
+ani pořadí uzlů OSM. Výběr bere do 70 m od mapované osy také navazující
+domy stejného obytného bloku; ne všechny nutně přímo lemují 5. května.
+Do detailnějšího renderování je zapsáno **20 nehotových obytných budov**,
+zatímco dvě fotograficky samostatně zpracované stavby (Modrá hvězda a
+Mírová 36) zůstávají ve svém specializovaném modelu.
+
+**Skutečná změna hry:** 20 vybraných budov automaticky dostane přednost
+v původním rozpočtu nejvýše 68 „hero“ fasádních modelů. Ten umí fyzicky
+otevřené okenní otvory, okenní rámy ve stejném OSM polygonu a lepší
+napojení zdí/soklů. Jde o **vylepšení geometrie a renderování stávajících
+objektů**; prohlášení `photoApprovedBuildings=0` se nezmění a neověřené
+strany fasád nadále mají **prozatímní** okenní rytmus a barvu. Pro 5.83
+se na nich nepřidávají automaticky vymyšlené dveře. Žádná nová stavba,
+plot, parkovací místo, soukromá brána, chodník nebo střešní doplněk nebyl
+odvozen z chybějící fotografie.
+
+**Kontrola:** `scripts/street-mass-build-pass.test.mjs` a mobilní WebGL
+`scripts/street-block-webgl.mjs` musejí prokázat shodný OSM výběr,
+stejný směr při převrácené OSM linii, 20 skutečně detailnějších domů,
+nulová tvrzení o schválených fotofasádách a zachování GPU kapacity.
+Stav ve hře: `window.__miloviceMassStreetBlock583`,
+`window.__miloviceHeroArchitecture.priorityBuilt`.
+Tyto automatické testy **neprokazují fotografickou věrnost**.
+
+**Opakovatelný postup na dalších ulicích:** výběr OSM koridoru a
+rezervace omezeného renderovacího rozpočtu → jedna společná úprava
+fasádního/roof generátoru → hromadný unit + WebGL průchod → celá
+ulice ze dvou směrů proti fotografiím → specializované source-only
+opravy odchylek. Neměnit směr, zahrady a rozhraní vozovky pouze podle
+generické heuristiky.
