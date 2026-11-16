@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {PHOTO_STREET_ENVIRONMENT,STREET_PASS_03_FEATURE_POLICY,gpsToStreetWorld,nearestPhotoRoadSegment} from './street-environment-reality.js';
+import {PHOTO_STREET_ENVIRONMENT,STREET_PASS_03_FEATURE_POLICY,KVETNA_STREETLAMP_2022,planKvetnaStreetlamp2022,gpsToStreetWorld,nearestPhotoRoadSegment} from './street-environment-reality.js';
 const ref=PHOTO_STREET_ENVIRONMENT[0];
 assert.equal(PHOTO_STREET_ENVIRONMENT.length,1);
 assert.equal(ref.photoLicense,'CC BY-SA 4.0');
@@ -31,6 +31,48 @@ assert.equal(anchor.osmRoadId,ref.osmRoadId);
 assert(Math.hypot(anchor.ux,anchor.uz)>.99);
 assert(Math.hypot(anchor.nx,anchor.nz)>.99);
 assert.equal(nearestPhotoRoadSegment(null,50.22,14.88),null);
+// Part 17: one real May 2022 grey bent-arm lamp, LEFT when looking
+// toward St Catherine's church. Its base is an OSM-safe visual estimate.
+const roadClearanceModule=await import('./road-clearance.js');
+const index=roadClearanceModule.createRoadClearance();
+const widths={primary:11,secondary:9,tertiary:8,pedestrian:4,
+ footway:1.8,path:1.65,cycleway:2,service:4.5};
+const allRoads=data.elements.filter(e=>e.tags?.highway&&e.geometry?.length>=2)
+ .map(e=>({osmId:e.id,kind:e.tags.highway,
+  width:widths[e.tags.highway]??7.8,
+  points:e.geometry.map(p=>({x:(p.lon-14.889)*111320*cos,
+   y:-(p.lat-50.226)*111320}))}));
+for(const r of allRoads)index.addRoad({id:r.osmId,points:r.points,
+ width:r.width,kind:r.kind});
+const footprints=data.elements.filter(e=>e.tags?.building&&e.geometry?.length>=4)
+ .map(e=>e.geometry.map(p=>({x:(p.lon-14.889)*111320*cos,
+  y:-(p.lat-50.226)*111320})));
+const lamp=planKvetnaStreetlamp2022(allRoads,{roadClearance:index,
+ buildingFootprints:footprints});
+assert(lamp,'The photo-backed lamppost base must safely fit on mapped roadside ground');
+assert.equal(KVETNA_STREETLAMP_2022.sourceDate,'2022-05-09');
+assert.equal(KVETNA_STREETLAMP_2022.observedCount,1);
+assert.equal(KVETNA_STREETLAMP_2022.referenceLandmarkId,'118487991');
+assert.equal(lamp.observedCount,1);
+assert.equal(lamp.positionSurveyed,false);
+assert.equal(lamp.roadAndFootwaySafe,true);
+assert.equal(lamp.buildingFootprintSafe,true);
+assert.equal(lamp.changedRoadGeometry,false);
+assert.equal(lamp.changedBuildingGeometry,false);
+assert.equal(lamp.createsNewFootway,false);
+assert(lamp.along===132&&lamp.offset===-6.3);
+assert(lamp.nearestMappedSurfaceClearance>=1,'Lamp must stand outside modelled road and mapped footways');
+assert.equal(planKvetnaStreetlamp2022([],{roadClearance:index,
+ buildingFootprints:footprints}),null);
+assert.equal(planKvetnaStreetlamp2022(allRoads,{roadClearance:null,
+ buildingFootprints:footprints}),null);
+// Force a footprint collision and verify fail-closed rather than guessing
+// a neighbouring parcel location or silently erasing a building.
+const blocked=[{x:lamp.x-1,y:lamp.z-1},{x:lamp.x+1,y:lamp.z-1},
+ {x:lamp.x+1,y:lamp.z+1},{x:lamp.x-1,y:lamp.z+1}];
+assert.equal(planKvetnaStreetlamp2022(allRoads,{roadClearance:index,
+ buildingFootprints:[...footprints,blocked]}),null);
+
 const runtime=readFileSync(new URL('./street-environment-reality.js',import.meta.url),'utf8');
 assert(!runtime.includes('   paving(root,anchor,side);'),
  'Old photo paving slab generator must not run in strict reality mode');
@@ -97,6 +139,8 @@ assert(cameraHTML.includes("rpStreetAuditId.startsWith('pionyru')"));
 assert(cameraHTML.includes('camera.position.set(x,terrainAt(x,z)+1.68,z)'));
 assert(cameraHTML.includes("streetAudit=pionyru-forward"));
 assert(cameraHTML.includes("streetAudit=pionyru-reverse"));
+assert(cameraHTML.includes('photoStreetEnvironment.addFromRoads(osmDriveRoads,buildingWays.map(w=>w.geometry.map(osmPoint)))'));
+assert(cameraHTML.includes('streetlamp2022.modelCount'));
 assert(cameraHTML.includes("document.getElementById('street-audit-source').href=rpStreetAuditView.source"));
 assert(cameraHTML.includes('camera.up.set(pionyru?.ux??mapped?.ux??0,0,pionyru?.uz??mapped?.uz??-1)'),
  'Technical street view uses mapped direction, never fabricated 2014 heading');
