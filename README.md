@@ -1,3 +1,16 @@
+## Školská západ 5.88 — čtvrtý uliční blok (2026-11-17)
+
+**Přímá kamera — Školská 220/1:** https://foxey-cz.github.io/milovice-life-rp/?v=58800&streetAudit=skolska-west-2024  
+**Hra v plném městě:** https://foxey-cz.github.io/milovice-life-rp/?v=58800
+
+- **8 nových prioritních OSM obytných domů** podél západní části Školské (ways `22880480`, `1331897639`), přičemž dříve fotograficky vyřešený dům `202298939` zůstává vyhrazený a není přepsán obecným modelem.
+- Veřejný zdroj: [Školská 220/1](https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_1.jpg) (ŠJů, CC BY 4.0; souřadnice fotoaparátu 50.2290672, 14.8822619) a [Školská × 5. května](https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_a_5._kv%C4%9Btna.jpg). Přednastavená kamera se dívá přibližně pod azimutem **57° podle OSM středu domu**, což **není** ověřený úhel původního snímku. Herní panel tento rozdíl výslovně označuje.
+- **Nová uliční zeleň:** `scripts/skolska-west-street-588.js` navrhuje dávkově nízké keře a stromy s kontrolou celých půdorysů vůči OSM budovám i silnicím/chodníkům; nejvýše 4 instancované draw calls. Přesné polohy jsou **výtvarné odhady**, ne fotograficky zaměřené výsadby.
+- Fixní globální limit **68 detailních obytných budov:** 20 kostelní blok + 12 Mírová + 12 východní Školská + 8 západní Školská + 1 dříve dokumentovaný štít `202298939` + 15 ostatních domů. Kontrola `hero-architecture.js` navíc zastaví jakýkoli pokus o další detailní dům nad limit.
+- Žádné nové OSM půdorysy, předstírané silnice, přechody, soukromé vjezdy nebo pozemkové hranice. Porovnávací testy v `scripts/street-mass-build-pass.test.mjs` a `scripts/street-block-webgl.mjs` měří skutečný stav a rozdělení budov.
+
+---
+
 ## Školská 5.87 — třetí uliční blok, 12 nových OSM domů (16. 11. 2026)
 
 **Přímý fotoúhel školy:** https://foxey-cz.github.io/milovice-life-rp/?v=58700&streetAudit=school-2024  
