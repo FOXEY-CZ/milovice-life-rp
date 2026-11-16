@@ -193,3 +193,74 @@ export function planPublicPhotoMirovaBlock586(elements,excludeIds=[],config=MIRO
   guessedParcelBoundaries:0,streetGeometryModified:false
  };
 }
+
+
+/**
+ * 5.87: Školská school/eastward neighborhood, third photographed street.
+ * Public 2024 Commons photos prove the recognizable SCHOOL and its frontage;
+ * house layouts outside those views are plausible OSM-grounded estimates.
+ */
+export const SKOLSKA_PUBLIC_PHOTO_587=Object.freeze({
+ roadIds:['1331897640','1331897641','1331897642'],
+ maxBuildings:8,minAlongM:55,maxRoadDistanceM:80,maxFootprintPoints:18,
+ schoolId:'118487979',
+ schoolPhoto:'https://commons.wikimedia.org/wiki/File:Milovice,_Z%C5%A0_T._G._Masaryka_(01).jpg',
+ schoolDetailPhoto:'https://commons.wikimedia.org/wiki/File:Milovice,_Z%C5%A0_T._G._Masaryka,_Masaryk%C5%AFv_cit%C3%A1t.jpg',
+ photoDate:'2024-05-30',photoAuthor:'ŠJů',license:'CC BY 4.0',
+ cameraSchool:[50.2286983,14.8859519,85],
+ cameraDetail:[50.2283594,14.8866253,50]
+});
+export function planPublicPhotoSkolskaBlock587(elements,excludeIds=[],config=SKOLSKA_PUBLIC_PHOTO_587){
+ if(!Array.isArray(elements)||(!Array.isArray(excludeIds)&&!(excludeIds instanceof Set))||
+   !config||!Array.isArray(config.roadIds)||config.roadIds.length<2||
+   !Number.isInteger(config.maxBuildings)||config.maxBuildings<1||
+   config.maxBuildings>20||!finite(config.minAlongM)||config.minAlongM<0||
+   !finite(config.maxRoadDistanceM)||config.maxRoadDistanceM<20||
+   config.maxRoadDistanceM>100)return null;
+ const paths=[];
+ for(const id of config.roadIds){
+  const road=elements.find(e=>String(e.id)===id&&e.tags?.highway&&
+    e.tags?.name==='Školská'&&Array.isArray(e.geometry)&&e.geometry.length>=2);
+  if(!road)return null;
+  // Latitude decreases along this observed 2024 school corridor;
+  // reversing OSM digitization cannot reverse our photo-batch ordering.
+  const vertices=road.geometry[0].lat>=road.geometry.at(-1).lat?
+   road.geometry:road.geometry.slice().reverse();
+  const projected=vertices.map(project);
+  if(paths.length&&close(paths.at(-1),projected[0])>1.0)return null;
+  paths.push(...projected.slice(paths.length?1:0));
+ }
+ if(paths.length<4)return null;
+ const excluded=new Set([...excludeIds].map(String));
+ const candidates=[];
+ for(const e of elements){
+  if(!e?.tags?.building||!Array.isArray(e.geometry)||e.geometry.length<4)continue;
+  const center=centroid(e.geometry.map(project)),near=nearestAlong(center,paths);
+  if(!near||near.along<config.minAlongM||near.distance>config.maxRoadDistanceM)continue;
+  const house=eligibleBuilding(e,near.distance,{
+   maxRoadDistanceM:config.maxRoadDistanceM,
+   maxFootprintPoints:config.maxFootprintPoints
+  });
+  if(!house||excluded.has(house.id))continue;
+  candidates.push({...house,
+   alongM:Math.round(near.along*10)/10,
+   roadDistanceM:Math.round(near.distance*10)/10});
+ }
+ candidates.sort((a,b)=>a.alongM-b.alongM||
+  a.roadDistanceM-b.roadDistanceM||a.id.localeCompare(b.id,'en'));
+ const selected=candidates.slice(0,config.maxBuildings);
+ return {
+  version:'5.87.0',street:'Školská – okolí ZŠ T. G. Masaryka',
+  roadIds:[...config.roadIds],photographedSchoolOSMId:config.schoolId,
+  publishedSchoolSource:config.schoolPhoto,publishedDetailSource:config.schoolDetailPhoto,
+  photoDate:config.photoDate,photoAuthor:config.photoAuthor,photoLicense:config.license,
+  documentedCameras:[config.cameraSchool,config.cameraDetail],
+  buildingsConsidered:candidates.length,prioritizedBuildings:selected.length,
+  priorityIds:selected.map(x=>x.id),reviewQueue:candidates,
+  corridorLengthM:Math.round(paths.slice(1).reduce((a,p,i)=>a+close(paths[i],p),0)*10)/10,
+  photoApprovedNeighborBuildings:0,
+  allExistingOSMFootprints:true,schoolLandmarkPreserved:true,
+  inferredHousesAreNotPhotoVerified:true,newBuildingFootprints:0,
+  newRoads:0,newCrossings:0,newDriveways:0,roadOrFootwayGeometryChanged:false
+ };
+}
