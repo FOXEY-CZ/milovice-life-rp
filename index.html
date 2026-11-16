@@ -137,7 +137,8 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <strong>📸 Uliční blok · kontrola 5.82.0</strong>
 <button id="street-audit-toggle" type="button" aria-expanded="true">Sbalit nabídku</button>
 <span id="street-audit-label"></span>
-<nav><a href="?v=58200&streetAudit=5kv">5. května shora</a>
+<nav><a href="?v=58210&streetAudit=5kv">5. května shora</a>
+<a href="?v=58210&streetAudit=pionyru">Pionýrů × 5. května · satelit 2023</a>
 <a href="?v=58200&streetAudit=mirova">Mírová · fotopohled</a></nav>
 <span id="street-audit-status">GPS označuje místo fotografa, ne přesnou polohu stromu, lampy či brány.</span>
 <div><a id="street-audit-source" target="_blank" rel="noopener noreferrer">Původní fotografie</a>
@@ -287,6 +288,7 @@ import {exteriorFacadeFrame,selectExteriorFacadeToward,splitFacadeStripForOpenin
 import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5410';
 import {clipRoofFacesForFeatures,planRoofFeatureBackClosures} from './scripts/roof-opening-geometry.js?v=5320';
 import {makePhotoStreetEnvironment} from './scripts/street-environment-reality.js?v=5262';
+import {makePionyru2023Verge} from './scripts/street-pionyru-photo-2023.js?v=58210';
 import {createRoadClearance} from './scripts/road-clearance.js?v=5262';
 import {isCarriageway,isPedestrianWay,safePedestrianPieces,pedestrianPieceKey,markedCrossing,planZebraPieces,planStationPassage} from './scripts/reality-walkways.js?v=5270';
 import {makeStationForecourtScene,stationGpsToWorld} from './scripts/station-forecourt-pass.js?v=5650';
@@ -343,6 +345,10 @@ const rpForecourtCameraWorld=rpForecourtAuditView?
 // overhead is allowed. Mírová 2024 records 30 degrees in source EXIF.
 const rpStreetAuditId=new URLSearchParams(location.search).get('streetAudit');
 const rpStreetAuditViews={
+ 'pionyru':{label:'5. května × Pionýrů · technický nadhled podle OSM a satelitu 4. 6. 2023',
+  camera:{lat:50.227699,lon:14.885002},heading:null,
+  source:'https://mapy.com',
+  date:'2023-06-04',author:'Uživatelský snímek Mapy.com',technical:true},
  '5kv':{label:'5. května · technický nadhled od GPS 2014, nikoli původní fotografický úhel',
   camera:{lat:50.227797,lon:14.884813},heading:null,
   source:'https://commons.wikimedia.org/wiki/File:Milovice_-_5._kv%C4%9Btna.jpg',
@@ -427,7 +433,7 @@ const scene=new THREE.Scene();scene.background=new THREE.Color(0x9bc8ec);scene.f
 // the orange machine on a narrow phone; widen ONLY the opt-in diagnostic
 // lens without touching the normal game camera, player or source heading.
 if(rpAuditCameraWorld&&innerWidth<innerHeight){
- camera.fov=rpStreetAuditView?(rpStreetAuditView.technical?62:88):
+ camera.fov=rpStreetAuditView?(rpStreetAuditId==='pionyru'?65:rpStreetAuditView.technical?62:88):
   rpForecourtParkingOverview?64:rpForecourtEntryInspection?76:105;
  camera.updateProjectionMatrix();
 }const sun=new THREE.DirectionalLight(0xffefcc,1.7);sun.position.set(50,100,30);scene.add(sun);
@@ -1595,6 +1601,7 @@ function osmPoint(p){const lat0=50.226,lon0=14.889;return new THREE.Vector2((p.l
 // church and station. Generic window/door geometry is NOT an exact photo survey.
 const photoStreetBlock=makePhotoStreetBlock(THREE,{layer:osmLayer,osmPoint,mergeGeometries});
 const photoStreetEnvironment=makePhotoStreetEnvironment(THREE,{layer:osmLayer,terrainAt,roadClearance:osmRoadClearance});
+const photoPionyruVerge=makePionyru2023Verge(THREE,{layer:osmLayer,terrainAt,roadClearance:osmRoadClearance});
 const stationPhotoForecourt=makeStationForecourtScene(THREE,{layer:osmLayer,terrainAt,roadClearance:osmRoadClearance});
 const stationPhotoParking=makeStationPhotoParkingScene(THREE,{layer:osmLayer,terrainAt,roadClearance:osmRoadClearance});
 const bikeTowerEntryPaving=makeBikeTowerEntryPavingScene(THREE,{layer:osmLayer,terrainAt,roadClearance:osmRoadClearance});
@@ -4379,6 +4386,9 @@ function rpAppendOSMElements(elements){
    };
  }
  photoStreetEnvironment.addFromRoads(osmDriveRoads);
+ // Historical 2023 Mapy.com overhead from user — just the Pionýrů junction's
+ // small verge pockets, never speculative property driveways or building doors.
+ photoPionyruVerge.create(osmDriveRoads,buildingWays.map(w=>w.geometry.map(osmPoint)));
  stationPhotoForecourt.create(elements);
  rpForecourtAuditPlan=rpForecourtAuditView?
   planStationForecourtAudit(elements,rpForecourtAuditId):null;
@@ -4656,7 +4666,7 @@ osmBtn.onclick=async()=>{
  if(osmLoading)return;
  osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';osmMessage('Načítám místní soubor mapy ze stejného GitHub Pages webu…');
  try{
- const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();legacyRealityAudit.reset();renderedPedestrianPieces.clear();collisionWorld.reset();heroBuildings.reset();photoStreetBlock.reset();photoStreetEnvironment.reset();stationPhotoForecourt.reset();stationPhotoParking.reset();bikeTowerEntryPaving.reset();stationTicketMachines.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;landscapeZones.length=0;
+ const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();legacyRealityAudit.reset();renderedPedestrianPieces.clear();collisionWorld.reset();heroBuildings.reset();photoStreetBlock.reset();photoStreetEnvironment.reset();photoPionyruVerge.reset();stationPhotoForecourt.reset();stationPhotoParking.reset();bikeTowerEntryPaving.reset();stationTicketMachines.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;landscapeZones.length=0;
   if(trafficGroup.parent!==osmLayer)osmLayer.add(trafficGroup);
   if(visualDetails.parent!==osmLayer)osmLayer.add(visualDetails);for(const batch of facadeBatches)batch.clear();
  if(terrainGrid)rpTerrainMesh();else cube(2200,.16,2200,osmParkMaterial,0,-.18,0,osmLayer);
@@ -5261,9 +5271,14 @@ if(rpStreetAuditCameraWorld&&rpStreetAuditView){
  if(rpStreetAuditView.technical){
   // This is a technical OSM orientation, never an invented 2014 heading.
   const mapped=photoStreetEnvironment.anchors()[0];
-  camera.up.set(mapped?.ux??0,0,mapped?.uz??-1);
-  camera.position.set(eye.x,ground+74,eye.z);
-  camera.lookAt(eye.x,ground+.1,eye.z);
+  const pionyru=rpStreetAuditId==='pionyru'?photoPionyruVerge.plan():null;
+  // Source snapshot covers the mapped Pionýrů junction, rather than the
+  // different 2014 camera about 80m away.
+  const cx=pionyru?.center?.x??eye.x,cz=pionyru?.center?.z??eye.z;
+  const cy=terrainAt(cx,cz);
+  camera.up.set(pionyru?.ux??mapped?.ux??0,0,pionyru?.uz??mapped?.uz??-1);
+  camera.position.set(cx,cy+(pionyru?112:74),cz);
+  camera.lookAt(cx,cy+.1,cz);
  }else{
   camera.up.set(0,1,0);
   const heading=rpStreetAuditView.heading*Math.PI/180;
@@ -5285,10 +5300,15 @@ if(rpStreetAuditCameraWorld&&rpStreetAuditView){
   duplicatedTreeDisabled:status.duplicatedPhotoTreeDisabled,
   duplicatedPoleDisabled:status.duplicatedPhotoPoleDisabled,
   unverifiedOverheadSpanDisabled:status.unverifiedOverheadSpanDisabled,
-  generatedSceneCount:status.sceneCount
+  generatedSceneCount:status.sceneCount,
+  pionyruSatelliteAudit:rpStreetAuditId==='pionyru'?photoPionyruVerge.status():null
  };
  const statusText=document.getElementById('street-audit-status');
- if(statusText)statusText.textContent='Modelované scény: '+status.sceneCount+
+ if(statusText)statusText.textContent=rpStreetAuditId==='pionyru'?
+  'Satelit 4. 6. 2023 · modelované zelené ostrůvky: '+
+  photoPionyruVerge.status().plantedShrubPockets+
+  ' · poloha přibližná, vjezdy zatím neověřené':
+  'Modelované scény: '+status.sceneCount+
   ' · stromy v důkazech: 1 · sloupy v důkazech: 1 · přesné polohy nejsou zaměřené';
 }else if(rpForecourtCameraWorld&&rpForecourtAuditView){
  const eye=rpForecourtCameraWorld;
@@ -5479,7 +5499,7 @@ if(rpStreetAuditCameraWorld&&rpStreetAuditView){
  perfEl.style.color=fps>=45?'#a6f3b9':fps>=25?'#ffe39b':'#ff9e9e';
  perfFrames=0;perfCpuMs=0;perfWebGLMs=0;perfSince=t
 }}requestAnimationFrame(animate);setTimeout(()=>osmBtn.click(),300);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;if(rpAuditCameraWorld)camera.fov=innerWidth<innerHeight?
- (rpStreetAuditView?(rpStreetAuditView.technical?62:88):rpForecourtParkingOverview?64:rpForecourtEntryInspection?76:105):
- (rpStreetAuditView?(rpStreetAuditView.technical?55:67):rpForecourtParkingOverview?55:67);
+ (rpStreetAuditView?(rpStreetAuditId==='pionyru'?65:rpStreetAuditView.technical?62:88):rpForecourtParkingOverview?64:rpForecourtEntryInspection?76:105):
+ (rpStreetAuditView?(rpStreetAuditId==='pionyru'?59:rpStreetAuditView.technical?55:67):rpForecourtParkingOverview?55:67);
  camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 </script></body></html>
