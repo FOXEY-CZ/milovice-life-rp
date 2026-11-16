@@ -3,7 +3,7 @@
 // Never infer fences, private drives, rooflights, shop signs or property edges.
 export const MASS_STREET_583=Object.freeze({
   roadId:'219273174',junctionRoadId:'118488006',landmarkId:'118487991',
-  maxBuildings:24,maxAlongM:240,maxRoadDistanceM:48,
+  maxBuildings:24,maxAlongM:240,maxRoadDistanceM:70,
   photoSource:'User-supplied 9 May 2022 Mapy panorama, contextual ONLY',
   evidence:'OSM footprint + building type/levels, NOT a per-building facade survey',
   photoApprovedBuildings:0
@@ -64,6 +64,9 @@ function nearestAlong(p,axis){
 }
 function eligibleBuilding(el,roadDistance,config){
  const t=el.tags||{},type=t.building;
+ // Already independently photographed, bespoke-built 2024 landmarks:
+ // do not spend the 5.83 generic-house quota on or override them.
+ if(['202367194','202367254'].includes(String(el.id)))return null;
  if(!['house','residential','yes','detached','semidetached_house','terrace'].includes(type)||
     roadDistance>config.maxRoadDistanceM)return null;
  const pts=el.geometry.map(project);
@@ -84,7 +87,8 @@ function eligibleBuilding(el,roadDistance,config){
 }
 /**
  * Takes the same imported OSM ways as the game; chooses a contiguous corridor
- * from Pionýrů toward the real church, then 24 render-eligible nearby houses.
+ * from Pionýrů toward the real church, then up to 24 nearby homes
+ * including adjacent residential blocks, not just exact frontages.
  * No invented position, building or object is inserted.
  */
 export function planMassStreetBlock583(elements,config=MASS_STREET_583){
@@ -107,7 +111,7 @@ export function planMassStreetBlock583(elements,config=MASS_STREET_583){
   candidates.push({...detail,alongM:Math.round(near.along*10)/10,
    roadDistanceM:Math.round(near.distance*10)/10});
  }
- // Stable deterministic order along the street even if the OSM export shuffles.
+ // Stable deterministic order along the corridor even if the OSM export shuffles.
  candidates.sort((a,b)=>a.alongM-b.alongM||a.roadDistanceM-b.roadDistanceM||
   a.id.localeCompare(b.id,'en'));
  const prioritized=candidates.slice(0,config.maxBuildings);
