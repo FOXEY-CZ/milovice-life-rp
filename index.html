@@ -445,7 +445,7 @@ const rpStreetAuditViews={
   camera:{lat:50.2277105,lon:14.8849165},heading:220,
   source:'https://mapy.com/cs/letecka?pid=81190391&newest=1&yaw=3.834&fov=1.257&pitch=-0.032&x=14.8849165&y=50.2277105&z=18.748&ovl=8',date:'2022-05-09',author:'Mapy.com Panorama · dodal uživatel',
   technical:false,publicPhotoCamera:true,photoEvidence:'user-supplied-81190391',
-  photographedOSMId:'202385910',
+  photographedOSMId:'202385910',panoramaHorizontalFovRadians:1.257,
   // GPS from Panorama x/y, heading from yaw 3.834 radians; approximate, not surveying.
  },
  'pionyru-left':{
@@ -551,6 +551,13 @@ if(rpAuditCameraWorld&&innerWidth<innerHeight){
  camera.updateProjectionMatrix();
 }const sun=new THREE.DirectionalLight(0xffefcc,1.7);sun.position.set(50,100,30);scene.add(sun);
 
+// Match Mapy Panorama's horizontal FOV using Three's vertical FOV.
+if(rpStreetAuditView?.panoramaHorizontalFovRadians){
+ const horizontal=rpStreetAuditView.panoramaHorizontalFovRadians;
+ camera.fov=Math.min(110,Math.max(35,2*Math.atan(
+  Math.tan(horizontal*.5)/(innerWidth/innerHeight))*180/Math.PI));
+ camera.updateProjectionMatrix();
+}
 // 5.85.3: map-based position of the actual THREE camera, even in free exploration.
 const rpCameraGpsPanel=document.getElementById('rp-camera-gps-panel');
 const rpCameraGpsToggle=document.getElementById('rp-camera-gps-toggle');
@@ -3568,6 +3575,7 @@ function osmBuilding(points,tags,index,osmId=null){
  const isSkolskaRoof=osmId===SKOLSKA_WAY_ID;
  // Licensed 2024 fork photos: blank grey gable on irregular 8-wall house.
  const isForkPhotoGable=osmId===202298939;
+const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panorama
  const isBikeTower=osmId===1011197691; // mapped round 118-bike automated storage near station.
  const isEditableHouse=['house','residential','yes','detached','terrace','semidetached_house'].includes(type)&&
   !isSchool&&!isChurch&&!isStation&&!isGrocer74&&!isBikeTower;
@@ -3666,10 +3674,10 @@ function osmBuilding(points,tags,index,osmId=null){
  const roofPreference=modelCard?.roofKind||'auto';
  const pitched=tags.name==='Penny'&&tags.shop==='supermarket'?
   miloviceGableRoof(pts,baseHeight,h,pennyRoof):
-  isForkPhotoGable?
+  (isForkPhotoGable||isPionyru2022PhotoGable)?
   // The photographed main gable is source-backed despite a side notch.
   // Planar faces are clipped to the real OSM triangles, not a fake box.
-  miloviceRoofOfKind(pts,baseHeight,h,roofMat,2.20,'gable'):
+  miloviceRoofOfKind(pts,baseHeight,h,roofMat,isPionyru2022PhotoGable?2.45:2.20,'gable'):
   isHouse&&roofPreference!=='flat'&&roofPreference!=='hip'?
   miloviceGableRoof(pts,baseHeight,h,roofMat,roofPreference==='gable'):null;
  const fallbackFromGable=roofPreference==='gable'&&!pitched;
@@ -5809,5 +5817,10 @@ if(rpStreetAuditCameraWorld&&rpStreetAuditView){
 }}requestAnimationFrame(animate);setTimeout(()=>osmBtn.click(),300);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;if(rpAuditCameraWorld)camera.fov=innerWidth<innerHeight?
  (rpStreetAuditView?(rpStreetAuditId==='pionyru'?65:rpStreetAuditView.technical?62:88):rpForecourtParkingOverview?64:rpForecourtEntryInspection?76:105):
  (rpStreetAuditView?(rpStreetAuditId==='pionyru'?59:rpStreetAuditView.technical?55:67):rpForecourtParkingOverview?55:67);
- camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+ if(rpStreetAuditView?.panoramaHorizontalFovRadians){
+ camera.fov=Math.min(110,Math.max(35,2*Math.atan(
+  Math.tan(rpStreetAuditView.panoramaHorizontalFovRadians*.5)/
+  (innerWidth/innerHeight))*180/Math.PI));
+}
+camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 </script></body></html>
