@@ -400,7 +400,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
   for(const id of ids){
    const key=String(id);
    if(!/^\d+$/.test(key)||priorityIds.has(key)||photoFocusIds.has(key))continue;
-   if(photoFocusIds.size>=24||photoFocusIds.size+priorityIds.size>=maxBuildings)break;
+   if(photoFocusIds.size>=32||photoFocusIds.size+priorityIds.size>=maxBuildings)break;
    photoFocusIds.add(key);
   }
   state.photoFocusReservedPlaces=photoFocusIds.size;
