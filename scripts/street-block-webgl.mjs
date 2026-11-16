@@ -51,6 +51,7 @@ try{
     mirovaBatch:window.__miloviceMirovaPublicPhotoBlock586,
     skolskaBatch:window.__miloviceSkolskaPublicPhotoBlock587,
     skolskaWestBatch:window.__miloviceSkolskaWestBlock588,
+    skolskaWestGreen:window.__miloviceSkolskaWestGreen588,
     mirovaGreen:window.__miloviceMirovaPhotoStreet586,
    hero:window.__miloviceHeroArchitecture,
    gps:window.__miloviceAuditCameraGPS,
@@ -91,6 +92,15 @@ try{
    assert.equal(info.skolskaWestBatch?.roadsChanged,false);
    assert.equal(info.skolskaWestBatch?.newFootprints,0);
    assert.equal(info.skolskaWestBatch?.detailedBuildingLimit,68);
+   assert.equal(info.skolskaWestGreen?.rendered,true,
+    'Western Školská street should contain visible inferred planting geometry');
+   assert(info.skolskaWestGreen.hedges+info.skolskaWestGreen.trees>=2);
+   assert(info.skolskaWestGreen.drawMeshes<=4,
+    'Entire school-west greenery must use at most four InstancedMesh calls');
+   assert.equal(info.skolskaWestGreen.positionsEstimated,true);
+   assert.equal(info.skolskaWestGreen.changedRoads,0);
+   assert.equal(info.skolskaWestGreen.changedSidewalks,0);
+   assert.equal(info.skolskaWestGreen.guessedPrivateEntrances,0);
    assert.equal(info.hero?.photoFocusReservedPlaces,32);
    assert.equal(info.hero?.photoFocusBuilt,32);
    assert.equal(info.hero.photoFocusBuiltIds.length,32);
