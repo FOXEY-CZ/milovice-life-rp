@@ -74,6 +74,38 @@ export function selectFacadeEdges(points){
  }
  return new Map([...longest].map(([id,v])=>[v.index,id]));
 }
+/**
+ * Artistically reconstructed facade for an OSM house with NO identifiable photo.
+ * Deliberately NOT a verified facade: this only affects windows on a wall which
+ * has neither photographed annotations nor a source-observed arrangement.
+ * Deterministic by real building ID and wall index: changes do not flicker or
+ * randomly reshuffle at every load. Nothing else gets a fabricated photo source.
+ */
+export function inferUnverifiedFacade({osmId,wallIndex=0,length,height,levels=1}={}){
+ if(!Number.isFinite(length)||length<4||length>45||
+    !Number.isFinite(height)||height<2.5||height>16||
+    !Number.isInteger(wallIndex)||wallIndex<0||wallIndex>30||
+    !Number.isInteger(levels)||levels<1||levels>4)return null;
+ const numericId=String(osmId??'');
+ if(!/^[0-9]{5,16}$/.test(numericId))return null;
+ let hash=2166136261;
+ for(const char of numericId+':'+wallIndex){
+  hash^=char.charCodeAt(0);hash=Math.imul(hash,16777619);
+ }
+ const variant=hash>>>0;
+ const spacing=[2.65,3.05,3.35,2.95][variant%4];
+ const count=Math.min(5,Math.max(1,Math.floor((length-.9)/spacing)));
+ const rows=Array(levels).fill(count);
+ const width=[1.02,1.18,1.26,1.38][(variant>>>3)%4];
+ const winHeight=[1.08,1.16,1.21][(variant>>>6)%3];
+ return {
+  rows,windowWidth:width,windowHeight:winHeight,doorAt:null,
+  evidenceTier:'inferred',positionSurveyed:false,
+  method:'OSM-footprint-plus-local-architectural-pattern',
+  // A window pattern is an artistic estimate, not a verified wall or entrance.
+  source:null
+ };
+}
 export function planFaceOpenings({length,height,levels,side=null,legacyWindows=3,autoEntrance=false}={}){
  if(!Number.isFinite(length)||length<3||!Number.isFinite(height)||height<2.5)return {windows:[],door:null};
  // Verified photo annotations take precedence over uniform fallback windows.
