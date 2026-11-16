@@ -3677,7 +3677,7 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
   (isForkPhotoGable||isPionyru2022PhotoGable)?
   // The photographed main gable is source-backed despite a side notch.
   // Planar faces are clipped to the real OSM triangles, not a fake box.
-  miloviceRoofOfKind(pts,baseHeight,h,roofMat,isPionyru2022PhotoGable?2.45:2.20,'gable'):
+  miloviceRoofOfKind(pts,baseHeight,h,roofMat,isPionyru2022PhotoGable?1.95:2.20,'gable'):
   isHouse&&roofPreference!=='flat'&&roofPreference!=='hip'?
   miloviceGableRoof(pts,baseHeight,h,roofMat,roofPreference==='gable'):null;
  const fallbackFromGable=roofPreference==='gable'&&!pitched;
