@@ -56,7 +56,7 @@ assert(game.includes("if(rpAuditCameraWorld&&innerWidth<innerHeight)"));
 assert(game.includes("rpForecourtParkingOverview?64:rpForecourtEntryInspection?76:105;"));
 assert(game.includes("from './scripts/station-ticket-machines.js?v=5800'"));
 assert(game.includes("from './scripts/station-photo-facade.js?v=5790'"));
-assert(game.includes("const BUILD_ID='20261116-street-block-evidence-58200'"));
+assert(game.includes("const BUILD_ID='20261116-pionyru-satellite-verge-58210'"));
 assert(game.includes("stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})"));
 assert(game.includes("stationTicketMachines.reset()"));
 console.log('5.80 safe visual detail PASS',JSON.stringify({

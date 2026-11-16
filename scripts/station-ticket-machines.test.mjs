@@ -73,7 +73,7 @@ const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert(game.includes("from './scripts/station-ticket-machines.js?v=5800'"));
 assert(game.includes("stationTicketMachines.create(elements);"));
 assert(game.includes("stationTicketMachines.reset();"));
-assert(game.includes("const BUILD_ID='20261116-street-block-evidence-58200'"));
+assert(game.includes("const BUILD_ID='20261116-pionyru-satellite-verge-58210'"));
 assert(game.includes("stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})"),
  'Do not remove or modify the user-confirmed road-aligned sidewalk or parking');
 console.log('5.77 two photo-observed station ticket machines anchored to real wall PASS',

@@ -20,7 +20,7 @@ try{
    isMobile:cfg.mobile,hasTouch:cfg.mobile
   });
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=58200&streetAudit='+cfg.id,
+  await page.goto('http://127.0.0.1:8080/?v=58210&streetAudit='+cfg.id,
    {waitUntil:'domcontentloaded',timeout:30000});
   await page.waitForFunction(()=>
    window.__miloviceStreetAuditRendered?.active===true&&
@@ -38,7 +38,7 @@ try{
    visibleCanvas:!!document.querySelector('canvas')?.clientWidth,
    build:document.getElementById('build-label')?.textContent
   }));
-  assert.equal(info.build,'20261116-street-block-evidence-58200');
+  assert.equal(info.build,'20261116-pionyru-satellite-verge-58210');
   assert.equal(info.audit.view,cfg.id);
   assert.equal(info.audit.cameraMode,cfg.technical?
    'technical-osm-overhead':'documented-photo-gps-and-heading');
@@ -78,7 +78,7 @@ try{
   assert.equal(info.playerHudHidden,true);
   assert.equal(info.visibleCanvas,true);
   assert.deepEqual(errors,[]);
-  await page.screenshot({path:'browser-artifacts/milovice-street-58200-'+cfg.id+'.png'});
+  await page.screenshot({path:'browser-artifacts/milovice-street-58210-'+cfg.id+'.png'});
   console.log('STREET_BLOCK_WEBGL_OK',JSON.stringify({
    mode:cfg.id,scenes:info.audit.generatedSceneCount,source:info.source,
    cameraMode:info.audit.cameraMode,roadClearance:info.scene?.minRoadClearance,
