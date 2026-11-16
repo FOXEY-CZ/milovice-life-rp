@@ -68,7 +68,13 @@ try{
    assert.equal(p.imageDate,'2023-06-04');
    assert(p.plantedShrubPockets>=2&&p.plantedShrubPockets<=5,
     'A few satellite-confirmed hedge pockets must be visible in city model');
-   assert(p.instancedDrawCalls<=1);
+   assert.equal(p.publicVergeAccesses,2,
+    'Both photo-observed accesses must be visible, not guessed private driveways');
+   assert.equal(p.rejectedUnsafeAccesses,0);
+   assert.equal(p.privateDrivewaysInvented,false);
+   assert.equal(p.footwaysModified,false);
+   assert.equal(p.instancedDrawCalls,2,
+    'Five shrubs and two safe paved verge aprons use only two batched draw calls');
    assert.equal(p.roadSurfaceChanged,false);
    assert.equal(p.sidewalkGeometryChanged,false);
    assert.equal(p.modelledNotSurveyed,true);
