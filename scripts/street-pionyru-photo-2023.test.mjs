@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {PIONYRU_2023,planPionyru2023Verge} from './street-pionyru-photo-2023.js';
-import {createRoadClearance} from './road-clearance.js';
+import {createRoadClearance,isRoadFreeRect} from './road-clearance.js';
 const world=JSON.parse(readFileSync(new URL('../data/milovice-osm.json',import.meta.url),'utf8')).elements;
 const cos=Math.cos(50.226*Math.PI/180);
 const to=p=>({x:(p.lon-14.889)*111320*cos,z:-(p.lat-50.226)*111320});
@@ -33,6 +33,25 @@ for(const p of plan.accepted){
 }
 assert(plan.rejected.every(p=>p.reason==='mapped-road-or-footway'||
  p.reason==='mapped-building-footprint'));
+assert.equal(plan.accessAccepted.length,2,
+ 'Both explicitly pictured 2023 public-verge entrances must be located safely');
+assert.equal(plan.accessRejected.length,0);
+for(const p of plan.accessAccepted){
+ assert.equal(p.onlyPublicVerge,true);
+ assert.equal(p.noPrivateDrivewayOwnershipClaim,true);
+ assert.equal(p.screenshotMatchedNotSurveyed,true);
+ assert.equal(p.sourceDate,'2023-06-04');
+ assert(p.along>=90&&p.along<=96);
+ assert(p.nearSide>4&&p.farSide<7.5);
+ assert(isRoadFreeRect(index,{x:p.x,z:p.z,length:p.widthAlong,
+  depth:p.depth,yaw:p.yaw,buffer:.04,step:.12}),
+ 'Every centimetre of the photo-supported access apron must remain off mapped roads and footways');
+ assert(plan.accepted.every(q=>Math.hypot(q.x-p.x,q.z-p.z)>q.radius+1),
+ 'Keep the 5.82.1 planting clusters off the documented property access');
+}
+assert.equal(plan.accessAccepted.filter(x=>x.side===-1).length,1);
+assert.equal(plan.accessAccepted.filter(x=>x.side===1).length,1);
+
 assert.equal(plan.modelledNotSurveyed,true);
 assert.equal(plan.roadSurfaceChanged,false);
 assert.equal(plan.sidewalkGeometryChanged,false);
@@ -43,6 +62,7 @@ assert(game.includes("photoPionyruVerge.create(osmDriveRoads,buildingWays.map(w=
 assert(game.includes("pionyru?.center?.x??eye.x"));
 console.log('5.82.1 PIONYRU_SATELLITE_OK',JSON.stringify({
  accepted:plan.accepted.length,rejected:plan.rejected.length,
+ accesses:plan.accessAccepted.map(a=>({id:a.id,along:a.along,side:a.side})),
  length:+plan.segmentLength.toFixed(1),junction:plan.junction,
  placements:plan.accepted.map(p=>({along:p.along,across:p.across}))
 }));
