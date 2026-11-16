@@ -127,7 +127,17 @@ export function planChurchStreetscape2022(roads,{roadClearance=null,
   const oldIndex=fence.findIndex(f=>Math.abs(f.along-62)<.4);
   if(oldIndex>=0)fence.splice(oldIndex,1);
  }
-  const trees=[],rejectedTrees=[];
+  // Pavers are visibly present in the supplied Panorama. Register an
+ // approximate *surface only*, never a new road, path or private driveway.
+ const panoPavement=photoGate?(()=>{
+  const px=photoGate.x-gateAxis.uz*3.25;
+  const pz=photoGate.z+gateAxis.ux*3.25;
+  const rect={x:px,z:pz,length:8,depth:1.8,yaw:gateYaw,
+   buffer:.12,step:.16};
+  return isRoadFreeRect(roadClearance,rect)&&
+   isBuildingFreeRect(rect,buildingFootprints,.13)?rect:null;
+ })():null;
+ const trees=[],rejectedTrees=[];
  for(const [along,side,height,crown] of [
   [34,12.0,7.5,3.4],[61,12.3,8.6,4.0],[88,12.2,9.1,4.2],
   [112,12.4,7.8,3.3]
@@ -159,7 +169,8 @@ export function planChurchStreetscape2022(roads,{roadClearance=null,
   fenceCandidates:fence.length+rejectedFence.length,
   fenceSegments:fence.length,rejectedFence,trees,rejectedTrees,fence,
   photoTrees:trees.length,roadTonePatches:asphaltWear.length,asphaltWear,
-  photoGate,photoGatePositionSurveyed:false,photographedHouseId:'202385910',
+  photoGate,panoPavement,photoGatePositionSurveyed:false,
+  photoPavementPositionSurveyed:false,photographedHouseId:'202385910',
   mappedRoadsChanged:false,footwaysChanged:false,
   buildingFootprintsChanged:false,privatePropertyLinesVerified:false,
   inventedPrivateDriveways:0,paintedRoadLines:0,
@@ -169,7 +180,7 @@ export function makeChurchStreetscape2022(THREE,{
  layer,terrainAt=()=>0,roadClearance=null
 }={}){
  let root=null,plan=null,geometry=[];
- const mutedConcrete=new THREE.MeshLambertMaterial({color:0x938d80});
+ const mutedConcrete=new THREE.MeshLambertMaterial({color:0xbab2a4});
  const railMetal=new THREE.MeshLambertMaterial({color:0x787c70});
  const gateBrown=new THREE.MeshLambertMaterial({color:0x542b23});
  const gateEmboss=new THREE.MeshLambertMaterial({color:0x794032});
@@ -225,7 +236,22 @@ export function makeChurchStreetscape2022(THREE,{
     }
     continue;
    }
-   // Low textured concrete plinth with slim metal rail posts above.
+   // Near the photographed house: low pale wall with dark tight mesh rather
+    // than long, wide horizontal rail bars. Mapped fence layout approximate.
+    const photoMeshWall=f.along>=69&&f.along<=86;
+    if(photoMeshWall){
+     bases.push({x:f.x,y:ground+.36,z:f.z,w:f.length,h:.72,d:.22,yaw:f.yaw});
+     const count=Math.ceil(f.length/.42);
+     for(let i=0;i<=count;i++){
+      const t=i/count,x=f.ax.x+(f.bx.x-f.ax.x)*t,
+       z=f.ax.z+(f.bx.z-f.ax.z)*t;
+      posts.push({x,y:terrainAt(x,z)+1.01,z,w:.027,h:.62,d:.029,yaw:0});
+     }
+     for(const h of [.76,1.04,1.30])
+      rails.push({x:f.x,y:ground+h,z:f.z,w:f.length,h:.026,d:.04,yaw:f.yaw});
+     continue;
+    }
+    // Other photo-era estimated fences retain the conservative old shapes.
    bases.push({x:f.x,y:ground+.18,z:f.z,w:f.length,h:.36,d:.19,yaw:f.yaw});
    for(let i=0;i<=4;i++){
     const t=i/4,p={x:f.ax.x+(f.bx.x-f.ax.x)*t,
@@ -291,7 +317,31 @@ export function makeChurchStreetscape2022(THREE,{
    mesh.receiveShadow=false;mesh.renderOrder=2;
    root.add(mesh);geometry.push(geo);
   }
-  root.userData.sourceDate='2022-05-09';
+  if(plan.panoPavement&&typeof document!=='undefined'){
+    const q=plan.panoPavement,canvas=document.createElement('canvas');
+    canvas.width=256;canvas.height=256;
+    const ctx=canvas.getContext('2d');
+    ctx.fillStyle='#9d9283';ctx.fillRect(0,0,256,256);
+    const colors=['#b8aa99','#a99a88','#baad99','#aca18f'];
+    for(let row=0;row<16;row++){
+     for(let col=-1;col<17;col++){
+      const xx=col*16+(row%2?8:0),yy=row*16;
+      ctx.fillStyle=colors[(row*7+col*3+40)%colors.length];
+      ctx.fillRect(xx+1,yy+1,14,14);
+     }
+    }
+    const tex=new THREE.CanvasTexture(canvas);
+    tex.wrapS=tex.wrapT=THREE.RepeatWrapping;
+    tex.repeat.set(q.length*.32,q.depth*.32);
+    tex.colorSpace=THREE.SRGBColorSpace;
+    const mesh=new THREE.Mesh(new THREE.BoxGeometry(q.length,.045,q.depth),
+     new THREE.MeshLambertMaterial({map:tex}));
+    mesh.position.set(q.x,terrainAt(q.x,q.z)+.035,q.z);
+    mesh.rotation.y=q.yaw;
+    mesh.name='Pionyru2022_Panorama_original_brick_paving_safe';
+    root.add(mesh);
+   }
+   root.userData.sourceDate='2022-05-09';
   root.userData.photoPlacementApproximate=true;
   root.userData.lodX=plan.fence[0]?.x??plan.trees[0]?.x??0;
   root.userData.lodZ=plan.fence[0]?.z??plan.trees[0]?.z??0;
@@ -305,6 +355,7 @@ export function makeChurchStreetscape2022(THREE,{
    fenceSegments:plan?.fenceSegments||0,
     brownGateLeaves:plan?.photoGate?4:0,
     photoGateSource:PIONYRU_GATE_PANORAMA_2022.source,
+    photoBrickPavementRendered:!!plan?.panoPavement,
     photoGatePositionSurveyed:false,
    rejectedFenceSegments:plan?.rejectedFence.length||0,
    rightTrees:plan?.photoTrees||0,
