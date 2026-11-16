@@ -4486,8 +4486,10 @@ function rpAppendOSMElements(elements){
   bikeTowerEntryPaving.create(elements,{sidewalkMaterial:osmSidewalkMat});
   stationTicketMachines.create(elements);
  }
- if(buildingWays.some(w=>String(w.id)==='118634917'))
-  schoolGrounds.create(elements);
+ // School site 118634917 is amenity=school, NOT a building way.
+ // The ground creator is already idempotent (created guard), and it
+ // needs the amenity, school-building and access way in ONE source set.
+ schoolGrounds.create(elements);
 }
 // 4.8: Incremental geographic streaming; only the current area is meshed on phone.
 // Connected, overlapping OSM exports are deduplicated by their official way IDs.
