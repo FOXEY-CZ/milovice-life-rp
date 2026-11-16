@@ -202,7 +202,7 @@ export function planPublicPhotoMirovaBlock586(elements,excludeIds=[],config=MIRO
  */
 export const SKOLSKA_PUBLIC_PHOTO_587=Object.freeze({
  roadIds:['1331897640','1331897641','1331897642'],
- maxBuildings:8,minAlongM:55,maxRoadDistanceM:80,maxFootprintPoints:18,
+ maxBuildings:12,minAlongM:55,maxRoadDistanceM:80,maxFootprintPoints:18,
  schoolId:'118487979',
  schoolPhoto:'https://commons.wikimedia.org/wiki/File:Milovice,_Z%C5%A0_T._G._Masaryka_(01).jpg',
  schoolDetailPhoto:'https://commons.wikimedia.org/wiki/File:Milovice,_Z%C5%A0_T._G._Masaryka,_Masaryk%C5%AFv_cit%C3%A1t.jpg',
