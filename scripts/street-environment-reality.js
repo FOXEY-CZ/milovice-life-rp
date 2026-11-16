@@ -23,9 +23,10 @@ export const KVETNA_STREETLAMP_2022=Object.freeze({
  surfaceClaim:'roadside verge model; parcel limits unknown',
  modelledDistanceFromJunctionM:132,modelledRoadOffsetM:-6.3
 });
-export function planKvetnaStreetlamp2022(roads,{roadClearance=null,buildingFootprints=[]}={}){
+export function planKvetnaStreetlamp2022(roads,{roadClearance=null,buildingFootprints=[],churchFootprint=[]}={}){
  if(!Array.isArray(roads)||!roadClearance||
-  typeof roadClearance.isClear!=='function'||!Array.isArray(buildingFootprints))return null;
+  typeof roadClearance.isClear!=='function'||!Array.isArray(buildingFootprints)||
+  !Array.isArray(churchFootprint)||churchFootprint.length<3)return null;
  const way=roads.find(r=>String(r.osmId)===KVETNA_STREETLAMP_2022.roadId);
  const junction=roads.find(r=>String(r.osmId)===KVETNA_STREETLAMP_2022.junctionId);
  if(!way?.points?.length||!junction?.points?.length)return null;
@@ -37,12 +38,22 @@ export function planKvetnaStreetlamp2022(roads,{roadClearance=null,buildingFootp
  }
  if(!intersect||intersect.d>.75)return null;
  const origin=intersect.p,ix=intersect.index;
- // Along the OSM side toward St Catherine's church (north-east), not the
- // opposite branch used by the older Pionýrů satellite verge pockets.
- const dir=[-1,1].find(step=>{
+ // v5.82.6 accidentally selected increasing world-Z: that is AWAY from
+ // the actual church. Never infer compass direction from world-Z sign.
+ // Choose the branch that approaches the true OSM 118487991 footprint.
+ const church={
+  x:churchFootprint.reduce((sum,p)=>sum+X(p),0)/churchFootprint.length,
+  z:churchFootprint.reduce((sum,p)=>sum+Z(p),0)/churchFootprint.length
+ };
+ if(!Number.isFinite(church.x)||!Number.isFinite(church.z))return null;
+ const churchDistanceFromJunction=Math.hypot(
+  church.x-X(origin),church.z-Z(origin));
+ const candidates=[-1,1].map(step=>{
   const n=way.points[ix+step];
-  return n&&Z(n)>Z(origin)+2;
- });
+  return n?{step,distance:Math.hypot(church.x-X(n),church.z-Z(n))}:null;
+ }).filter(Boolean).sort((a,b)=>a.distance-b.distance);
+ const dir=candidates[0]?.distance<churchDistanceFromJunction-2?
+  candidates[0].step:null;
  if(!dir)return null;
  let remaining=KVETNA_STREETLAMP_2022.modelledDistanceFromJunctionM;
  let previous=origin,tangent=null,point=null;
@@ -73,6 +84,9 @@ export function planKvetnaStreetlamp2022(roads,{roadClearance=null,buildingFootp
  return {x,z,ux:tangent.ux,uz:tangent.uz,yaw,along:132,offset,
   observedCount:1,sourceDate:KVETNA_STREETLAMP_2022.sourceDate,
   referenceLandmarkId:KVETNA_STREETLAMP_2022.referenceLandmarkId,
+  osmDirectionTowardChurch:dir,
+  churchDistanceFromLampM:Math.hypot(x-church.x,z-church.z),
+  churchDistanceFromJunctionM:churchDistanceFromJunction,
   source:KVETNA_STREETLAMP_2022.photoSource,
   nearestMappedSurfaceId:nearest?.id??null,
   nearestMappedSurfaceClearance:nearest?.clearance??null,
@@ -166,6 +180,9 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
    mappedClearanceM:streetlamp2022?.nearestMappedSurfaceClearance??null,
    landmarkId:KVETNA_STREETLAMP_2022.referenceLandmarkId,
    mappedRoadId:KVETNA_STREETLAMP_2022.roadId,
+   churchDistanceFromLampM:streetlamp2022?.churchDistanceFromLampM??null,
+   churchDistanceFromJunctionM:streetlamp2022?.churchDistanceFromJunctionM??null,
+   osmDirectionTowardChurch:streetlamp2022?.osmDirectionTowardChurch??null,
    duplicateOrSpeculativeLamps:0,sourcePixelsUsed:false},
   scope:'Photo-informed street environments, not exact surveyed positions'});
  function report(){if(typeof window!=='undefined')window.__miloviceStreetEnvironment=emptyStats()}
@@ -324,9 +341,9 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
   ]);
   featureCount+=2;
  }
- function createPhotoStreetlamp2022(roads,buildingFootprints){
+ function createPhotoStreetlamp2022(roads,buildingFootprints,churchFootprint){
   if(streetlamp2022Root)return;
-  const plan=planKvetnaStreetlamp2022(roads,{roadClearance,buildingFootprints});
+  const plan=planKvetnaStreetlamp2022(roads,{roadClearance,buildingFootprints,churchFootprint});
   if(!plan)return;
   const root=new THREE.Group(),poleMetal=new THREE.MeshLambertMaterial({
    color:0x808b8e,metalness:0,roughness:.92
@@ -357,7 +374,7 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
   layer?.add(root);groups.add(root);streetlamp2022Root=root;
   streetlamp2022=plan;drawMeshes+=3;instances+=3;featureCount++;
  }
- function addFromRoads(roads,buildingFootprints=[]){
+ function addFromRoads(roads,buildingFootprints=[],churchFootprint=[]){
   if(!Array.isArray(roads))return 0;
   lastDecision={reason:'evaluating',roads:roads.length,
    roadIds:roads.filter(r=>String(r.osmId)==='219273174').map(r=>String(r.osmId)),
@@ -427,7 +444,7 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
     sideSign,eligibleFeatureAnchors:choice.accepted,minimumRoadClearance,
     source:ref.source,photoDate:ref.photoDate});
   }
-  createPhotoStreetlamp2022(roads,buildingFootprints);
+  createPhotoStreetlamp2022(roads,buildingFootprints,churchFootprint);
   report();return created;
  }
  function reset(){
