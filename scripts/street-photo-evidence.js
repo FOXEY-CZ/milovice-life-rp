@@ -11,7 +11,7 @@ export const STREET_PHOTO_EVIDENCE=Object.freeze([
  {id:'mirova-36-2024',title:'Mírová 243/36 · dokumentovaný dům',
   url:'https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_36.jpg',
   author:'ŠJů',license:'CC BY 4.0',taken:'2024-05-30',
-  buildingIds:['202367254'],camera:[50.2280572,14.8840981],
+  buildingIds:['202367254'],camera:[50.2280572,14.8840981],heading:65,
   street:'Mírová',scope:'building'},
  {id:'modra-hvezda-2024',title:'Mírová 134/11 · Modrá hvězda',
   url:'https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_11,_hotel_Modr%C3%A1_hv%C4%9Bzda.jpg',
