@@ -86,9 +86,9 @@ export function planPionyru2023Verge(roads,{roadClearance=null,buildingFootprint
  // and are NOT added. Longitudinal image registration is approximate.
  const accessCandidates=[
   {id:'2023-west-upper-verge',along:94,side:-1,
-   nearSide:4.18,farSide:7.45,widthAlong:2.65,photoObserved:true},
+   nearSide:halfWidth+.23,farSide:7.45,widthAlong:2.65,photoObserved:true},
   {id:'2023-east-upper-verge',along:92,side:1,
-   nearSide:4.18,farSide:6.72,widthAlong:2.65,photoObserved:true}
+   nearSide:halfWidth+.23,farSide:6.72,widthAlong:2.65,photoObserved:true}
  ];
  const accessAccepted=[],accessRejected=[];
  const yaw=Math.atan2(-uz,ux);
