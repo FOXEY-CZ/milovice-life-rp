@@ -134,7 +134,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
   const width=Math.max(...xs)-Math.min(...xs),depth=Math.max(...zs)-Math.min(...zs);
   if(width<4||depth<4||width>44||depth>44||width*depth>850)return false;
   const identity=id??('local-'+index);
-  if(selected.has(identity))return false;
+  if(selected.has(identity)||selected.size>=maxBuildings)return false;
   return true;
  }
  function addBuilding({points,base,height,floors,type,index,id,excluded=false,override=null}){
