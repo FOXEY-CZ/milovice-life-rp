@@ -3806,7 +3806,7 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
   const roofPlan=pitchedSurface.userData.roofRuntimePlan;
   // Hero facades already create their own exact gable-end masonry.
   // Never overlap that material with a second coplanar closure.
-  if(roofPlan&&!isSkolskaRoof&&(!(heroFacade&&pitched)||isForkPhotoGable)){
+  if(roofPlan&&!isSkolskaRoof&&(!(heroFacade&&pitched)||isForkPhotoGable||isPionyru2022PhotoGable)){
    const closure=planRoofPerimeterClosure({
     outline:pts,roof:roofPlan,origin:roofPlan.origin,
     wallTopY:baseHeight+h
