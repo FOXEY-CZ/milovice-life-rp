@@ -17,6 +17,7 @@ try{
   {id:'pionyru-reverse',width:393,height:852,mobile:true,technical:true,streetLevel:true},
   {id:'pionyru-left',width:393,height:852,mobile:true,technical:true,streetLevel:true},
   {id:'pionyru-right',width:393,height:852,mobile:true,technical:true,streetLevel:true},
+   {id:'pionyru-panorama-2022',width:1280,height:760,mobile:false,technical:false},
   {id:'church-2024',width:393,height:852,mobile:true,technical:false,sourcePhoto:true},
   {id:'mirova',width:1280,height:760,mobile:false,technical:false}
  ]){
@@ -107,7 +108,17 @@ try{
    const error=Math.abs(((info.gps.bearingDegrees-expectedBearing+540)%360)-180);
    assert(error<=1,`Street photo heading differs by ${error}°, tolerance 1°`);
   }
-  assert.equal(info.audit.view,cfg.id);
+  if(cfg.id==='pionyru-panorama-2022'){
+    assert(Math.abs(info.gps.latitude-50.2277105)<.000002,
+     'Camera starts at the provided Panorama GPS, not the game's old procedural viewpoint');
+    assert(Math.abs(info.gps.longitude-14.8849165)<.000002);
+    assert(Math.abs(info.gps.bearingDegrees-220)<=1,
+     'Camera must already look at the house at the source Panorama bearing');
+    assert(info.source.includes('pid=81190391'),
+     'The same Mapy Panorama source must be one click away');
+    assert.equal(info.audit.cameraMode,'documented-photo-gps-and-heading');
+   }
+   assert.equal(info.audit.view,cfg.id);
   assert.equal(info.audit.cameraMode,cfg.streetLevel?'technical-osm-street-axis':cfg.technical?
    'technical-osm-overhead':'documented-photo-gps-and-heading');
   assert.equal(info.audit.technicalStreetLevel,cfg.streetLevel===true);
