@@ -371,6 +371,7 @@ import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo
 import {clipRoofFacesForFeatures,planRoofFeatureBackClosures} from './scripts/roof-opening-geometry.js?v=5320';
 import {planMassStreetBlock583,planPublicPhotoMirovaBlock586} from './scripts/street-mass-build-pass.js?v=58600';
 import {makeChurchStreetscape2022} from './scripts/church-street-photo-pass.js?v=58530';
+import {makeMirovaPhotoStreet586} from './scripts/mirova-public-photo-street-586.js?v=58600';
 import {makePhotoChurchSidewalk2022} from './scripts/photo-sidewalk-2022.js?v=58530';
 import {makePhotoStreetEnvironment} from './scripts/street-environment-reality.js?v=58530';
 import {makePionyru2023Verge} from './scripts/street-pionyru-photo-2023.js?v=58530';
@@ -1798,6 +1799,9 @@ function osmPoint(p){const lat0=50.226,lon0=14.889;return new THREE.Vector2((p.l
 // church and station. Generic window/door geometry is NOT an exact photo survey.
 const photoStreetBlock=makePhotoStreetBlock(THREE,{layer:osmLayer,osmPoint,mergeGeometries});
 const photoStreetEnvironment=makePhotoStreetEnvironment(THREE,{layer:osmLayer,terrainAt,roadClearance:osmRoadClearance});
+const mirovaPhotoStreet586=makeMirovaPhotoStreet586(THREE,{
+ layer:osmLayer,terrainAt,roadClearance:osmRoadClearance
+});
 const photoPionyruVerge=makePionyru2023Verge(THREE,{layer:osmLayer,terrainAt,roadClearance:osmRoadClearance});
 const stationPhotoForecourt=makeStationForecourtScene(THREE,{layer:osmLayer,terrainAt,roadClearance:osmRoadClearance});
 const stationPhotoParking=makeStationPhotoParkingScene(THREE,{layer:osmLayer,terrainAt,roadClearance:osmRoadClearance});
@@ -4644,6 +4648,9 @@ function rpAppendOSMElements(elements){
   window.__miloviceMirovaPublicPhotoBlock586=mirovaPhotoBlock;
  }
  for(const el of buildingWays){osmBuilding(el.geometry,el.tags,osmBuildings,el.id);osmAddLandmark(el)}
+ // One inexpensive planted street pass for the WHOLE Mírová corridor;
+ // only OSM road/building free parcels are eligible.
+ if(mirovaPhotoBlock)mirovaPhotoStreet586.create([...roadWays,...buildingWays]);
  if(mirovaPhotoBlock){
   window.__miloviceMirovaPublicPhotoBlock586={
    ...mirovaPhotoBlock,
@@ -4993,7 +5000,7 @@ osmBtn.onclick=async()=>{
  if(osmLoading)return;
  osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';osmMessage('Načítám místní soubor mapy ze stejného GitHub Pages webu…');
  try{
- const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();legacyRealityAudit.reset();renderedPedestrianPieces.clear();collisionWorld.reset();heroBuildings.reset();photoStreetBlock.reset();photoStreetEnvironment.reset();photoPionyruVerge.reset();photoChurchSidewalk2022.reset();photoChurchStreet2022.reset();stationPhotoForecourt.reset();stationPhotoParking.reset();bikeTowerEntryPaving.reset();stationTicketMachines.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;landscapeZones.length=0;
+ const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();legacyRealityAudit.reset();renderedPedestrianPieces.clear();collisionWorld.reset();heroBuildings.reset();photoStreetBlock.reset();photoStreetEnvironment.reset();mirovaPhotoStreet586.reset();photoPionyruVerge.reset();photoChurchSidewalk2022.reset();photoChurchStreet2022.reset();stationPhotoForecourt.reset();stationPhotoParking.reset();bikeTowerEntryPaving.reset();stationTicketMachines.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;landscapeZones.length=0;
   if(trafficGroup.parent!==osmLayer)osmLayer.add(trafficGroup);
   if(visualDetails.parent!==osmLayer)osmLayer.add(visualDetails);for(const batch of facadeBatches)batch.clear();
  window.__miloviceMassStreetBlock583=null;
