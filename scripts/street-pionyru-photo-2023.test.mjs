@@ -33,6 +33,11 @@ for(const p of plan.accepted){
 }
 assert(plan.rejected.every(p=>p.reason==='mapped-road-or-footway'||
  p.reason==='mapped-building-footprint'));
+console.log('PIONYRU_ACCESS_DIAG',JSON.stringify({
+ rejected:plan.accessRejected.map(p=>({id:p.id,reason:p.reason,
+ near:index.nearest(p.x,p.z),along:p.along,side:p.side,depth:p.depth})),
+ accepted:plan.accessAccepted.map(p=>({id:p.id,x:p.x,z:p.z}))
+}));
 assert.equal(plan.accessAccepted.length,2,
  'Both explicitly pictured 2023 public-verge entrances must be located safely');
 assert.equal(plan.accessRejected.length,0);
