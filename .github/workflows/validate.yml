@@ -61,6 +61,8 @@ jobs:
         run: node scripts/street-photo-evidence.test.mjs
       - name: Validate photo-referenced whole-street environment and OSM alignment
         run: node scripts/street-environment-pass.test.mjs
+      - name: Verify OSM-safe Pionýrů 2023 photo verge and junction reference
+        run: node scripts/street-pionyru-photo-2023.test.mjs
       - name: Prevent roadside trees, lamps and fences from occupying OSM roads
         run: node scripts/road-clearance.test.mjs
       - name: Verify 360 reality audit OSM footway, station portals and actual crossings
