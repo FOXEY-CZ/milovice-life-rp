@@ -21,7 +21,10 @@ try{
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
   await page.goto('http://127.0.0.1:8080/?v=58200&streetAudit='+cfg.id,
    {waitUntil:'domcontentloaded',timeout:30000});
-  await page.waitForFunction(()=>window.__miloviceStreetAuditRendered?.active===true,
+  await page.waitForFunction(()=>
+   window.__miloviceStreetAuditRendered?.active===true&&
+   window.__miloviceStreetEnvironment?.photoSceneDecision?.reason!=='not-loaded'&&
+   window.__miloviceStreetEnvironment?.photoSceneDecision?.reason!=='evaluating',
    null,{timeout:120000});
   const info=await page.evaluate(()=>({
    audit:window.__miloviceStreetAuditRendered,
