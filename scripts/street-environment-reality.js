@@ -3,6 +3,12 @@
 // The only precisely known spatial datum is the photo-camera GPS position.
 // Street-furniture positions relative to the road are approximate and tracked.
 import {isRoadFreeRect} from './road-clearance.js';
+// 5.82: historical-photo feature limits: NEVER multiply a unique object.
+export const STREET_PASS_03_FEATURE_POLICY=Object.freeze({
+ sourceDate:'2014-07-26',photoObservedTrees:1,photoObservedUtilityPoles:1,
+ extraTreesDisabled:true,unmappedSecondUtilityPoleDisabled:true,
+ unverifiedPowerLineSpanDisabled:true,exactPlacementsSurveyed:false
+});
 export const PHOTO_STREET_ENVIRONMENT=[
  {
   id:'street-5-kvetna-2014',
@@ -77,6 +83,10 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
   chosenSides:data.map(v=>v.sideSign),
   pavementPieces,roadRejected,unverifiedPhotoPavingDisabled:true,checkedGreeneryAgainstRoads:true,
   fullFootprintChecked:true,
+  photoObservedTrees:STREET_PASS_03_FEATURE_POLICY.photoObservedTrees,
+  photoObservedUtilityPoles:STREET_PASS_03_FEATURE_POLICY.photoObservedUtilityPoles,
+  duplicatedPhotoTreeDisabled:true,duplicatedPhotoPoleDisabled:true,
+  unverifiedOverheadSpanDisabled:true,
   drawMeshes,instances,featureCount,ids:[...entries],spatiallyApproximate:true,
   scope:'Photo-informed street environments, not exact surveyed positions'});
  function report(){if(typeof window!=='undefined')window.__miloviceStreetEnvironment=emptyStats()}
@@ -124,10 +134,9 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
  }
  function treeRow(group,anchor,side){
   // Y rotation aligns a local box X-axis with the real OSM street tangent.
-  // One dense, pruned street tree is clearly visible in the 2014 image;
-  // the second smaller crown gives the adjacent planted frontage depth.
+  // One documented tree; two crown meshes create one canopy, not two trees.
   const trunks=[],crowns=[],smallCrowns=[],hedges=[],beds=[],soil=[],flowers=[],stems=[];
-  for(const [along,size] of [[-17,1],[-4,.79]]){
+  for(const [along,size] of [[-17,1]]){
    if(!photoGroundClearance(anchor,along,side,.8*size))continue;
    const pos=itemAt(anchor,along,side,0);
    const y=terrainAt(pos.x,pos.z);
@@ -135,16 +144,18 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
    crowns.push({...pos,y:y+3.16*size,sx:1.52*size,sy:1.34*size,sz:1.48*size});
    smallCrowns.push({...pos,x:pos.x+.21*size,y:y+3.31*size,z:pos.z-.14*size,sx:1.15*size,sy:.93*size,sz:1.1*size});
   }
-  for(let i=0;i<6;i++){
+  // One short photographed hedge, not an invented hedge row up the road.
+  for(let i=0;i<2;i++){
    const a=-26+i*2.05,offset=side+Math.sign(side)*.76;
    if(!photoRectClearance(anchor,a,offset,2.0,1.05))continue;
    const at=itemAt(anchor,a,offset,0);
    beds.push({...at,y:at.y+.015,sx:2.00,sy:.06,sz:1.05,ry:Math.atan2(-anchor.uz,anchor.ux)});
    hedges.push({...at,y:at.y+.43,sx:1.68,sy:.79,sz:.6,ry:Math.atan2(-anchor.uz,anchor.ux)});
   }
-  for(let i=0;i<23;i++){
-   const along=-24+(i%12)*1.1;
-   const out=side+Math.sign(side)*(.1+(Math.floor(i/12))*.4);
+  // Compact observed planted patch; positions remain photo-estimated.
+  for(let i=0;i<8;i++){
+   const along=-24+(i%4)*.55;
+   const out=side+Math.sign(side)*(.1+Math.floor(i/4)*.4);
    if(!photoGroundClearance(anchor,along,out,.25))continue;
    const at=itemAt(anchor,along,out,.1);
    stems.push({...at,y:at.y+.16});
@@ -219,26 +230,20 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
   featureCount+=stone.length+timber.length+caps.length+joints.length+slats.length;
  }
  function utility(group,anchor,side){
-  // 2014 source clearly shows a timber utility pole and overhead lines;
-  // wire routes are schematic, not a survey of the electricity grid.
-  if(!photoGroundClearance(anchor,28,side+Math.sign(side)*3.6,.52)||
-     !photoGroundClearance(anchor,-35,side+Math.sign(side)*3.6,.52))return;
-  const a=itemAt(anchor,28,side+Math.sign(side)*3.6,0),b=itemAt(anchor,-35,side+Math.sign(side)*3.6,0);
-  const poles=[a,b].map(p=>({...p,y:p.y+3.4,sx:1.1,sy:5.2/2.8,sz:1.1}));
-  addParts(group,geometries.trunk,colors.pole,poles);
-  // Keeping overhead cable segments within the local group prevents a city-wide draw.
-  for(const lateral of [-.14,.14]){
-   const p1=new THREE.Vector3(a.x,a.y+6.15+lateral,a.z);
-   const p2=new THREE.Vector3(b.x,b.y+6.15+lateral,b.z);
-   const mid=p1.clone().add(p2).multiplyScalar(.5);
-   const dir=p2.clone().sub(p1),len=dir.length();
-   if(len<.001)continue;
-   const mesh=new THREE.Mesh(geometries.wire,colors.metal);
-   mesh.position.copy(mid);mesh.scale.set(1,len,1);
-   mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());
-   group.add(mesh);drawMeshes++;
-  }
-  featureCount+=4;
+  // 2014 photo visibly contains ONE timber pole with a crossbar.
+  // The second pole and its 63m cable span previously extrapolated from
+  // a single image were not grounded in mapped pole endpoints.
+  const poleOffset=side+Math.sign(side)*3.6;
+  if(!photoGroundClearance(anchor,28,poleOffset,.52))return;
+  const at=itemAt(anchor,28,poleOffset,0);
+  addParts(group,geometries.trunk,colors.pole,[
+   {...at,y:at.y+3.4,sx:1.1,sy:5.2/2.8,sz:1.1}
+  ]);
+  const yaw=Math.atan2(-anchor.uz,anchor.ux);
+  addParts(group,geometries.box,colors.timber,[
+   {...at,y:at.y+6.10,sx:2.8,sy:.13,sz:.16,ry:yaw}
+  ]);
+  featureCount+=2;
  }
  function addFromRoads(roads){
   if(!Array.isArray(roads))return 0;
