@@ -113,7 +113,9 @@ assert.equal(plan.sidewalkGeometryChanged,false);
 assert.equal(planPionyru2023Verge([]),null);
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert(game.includes("streetAudit=pionyru"));
-assert(game.includes("photoPionyruVerge.create(osmDriveRoads,buildingWays.map(w=>w.geometry.map(osmPoint)))"));
+assert(game.includes('photoPionyruVerge.create(osmDriveRoads,footprints)'));
+assert(game.includes('if(churchStreetSourceComplete){'),
+ 'Regional OSM streaming must not remove the photographed Pionýrů scene');
 assert(game.includes("pionyru?.center?.x??eye.x"));
 console.log('5.82.4 PIONYRU_ACCESS_CONTINUITY_DIAG_OK',JSON.stringify({
  accepted:plan.accepted.length,rejected:plan.rejected.length,
