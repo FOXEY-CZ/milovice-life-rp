@@ -74,17 +74,17 @@ try{
    assert.equal(info.mirovaBatch?.reservedBudget,12);
    assert.equal(info.mirovaBatch?.photoApprovedBuildings,0);
    assert.equal(info.mirovaBatch?.existingRoadOrFootwayModified,false);
-   assert.equal(info.skolskaBatch?.prioritizedBuildings,8);
-   assert.equal(info.skolskaBatch?.actuallyDetailed,8);
-   assert.equal(info.skolskaBatch?.reservedBudget,8);
+   assert.equal(info.skolskaBatch?.prioritizedBuildings,12);
+   assert.equal(info.skolskaBatch?.actuallyDetailed,12);
+   assert.equal(info.skolskaBatch?.reservedBudget,12);
    assert.equal(info.skolskaBatch?.photoApprovedNeighborBuildings,0);
    assert.equal(info.skolskaBatch?.newBuildingFootprints,0);
    assert.equal(info.skolskaBatch?.alteredRoadOrFootway,false);
    assert.equal(info.skolskaBatch?.schoolLandmarkPreserved,true);
-   assert.equal(info.skolskaBatch?.totalPublicPhotoContextHouses,20);
-   assert.equal(info.hero?.photoFocusReservedPlaces,20);
-   assert.equal(info.hero?.photoFocusBuilt,20);
-   assert.equal(info.hero.photoFocusBuiltIds.length,20);
+   assert.equal(info.skolskaBatch?.totalPublicPhotoContextHouses,24);
+   assert.equal(info.hero?.photoFocusReservedPlaces,24);
+   assert.equal(info.hero?.photoFocusBuilt,24);
+   assert.equal(info.hero.photoFocusBuiltIds.length,24);
    assert.equal(info.mirovaGreen?.active,true,
     'Actual Mírová clipped-hedge/trees must render after city OSM load');
    assert(info.mirovaGreen.hedgeSegments+info.mirovaGreen.plantedTrees>=2);
@@ -94,7 +94,7 @@ try{
    assert.equal(info.mirovaGreen.positionsEstimated,true);
    assert.equal(info.hero?.normalBuilt+info.hero?.photoFocusBuilt+
     info.hero?.priorityBuilt,68,'Keep whole 68-house budget stable');
-   assert.equal(new Set([...info.hero.priorityIds,...info.hero.photoFocusIds]).size,40,
+   assert.equal(new Set([...info.hero.priorityIds,...info.hero.photoFocusIds]).size,44,
     'No selected house may be counted in two of the three OSM street blocks');
   assert.equal(info.hero?.maxBuildings,68,
    'Retain the old maxBuildings capacity for mobile performance');
