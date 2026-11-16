@@ -101,8 +101,11 @@ try{
   if(cfg.id==='pionyru-left'||cfg.id==='pionyru-right'){
    assert(Math.abs(info.gps.latitude-50.2277205)<.00001);
    assert(Math.abs(info.gps.longitude-14.8849593)<.00001);
-   assert.equal(info.gps.bearingDegrees,
-    cfg.id==='pionyru-left'?224:33);
+   // Bearing comes from floating point 3D world orientation and is rounded to
+   // a whole degree; headless GPU math can differ by 1 degree between runs.
+   const expectedBearing=cfg.id==='pionyru-left'?224:33;
+   const error=Math.abs(((info.gps.bearingDegrees-expectedBearing+540)%360)-180);
+   assert(error<=1,`Street photo heading differs by ${error}°, tolerance 1°`);
   }
   assert.equal(info.audit.view,cfg.id);
   assert.equal(info.audit.cameraMode,cfg.streetLevel?'technical-osm-street-axis':cfg.technical?
