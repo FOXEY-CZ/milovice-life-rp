@@ -84,7 +84,7 @@ try{
    assert.equal(info.skolskaBatch?.newBuildingFootprints,0);
    assert.equal(info.skolskaBatch?.alteredRoadOrFootway,false);
    assert.equal(info.skolskaBatch?.schoolLandmarkPreserved,true);
-   assert.equal(info.skolskaBatch?.totalPublicPhotoContextHouses,32);
+   assert.equal(info.skolskaBatch?.totalPublicPhotoContextHouses,33);
    assert.equal(info.skolskaWestBatch?.prioritizedBuildings,8);
    assert.equal(info.skolskaWestBatch?.actuallyDetailed,8);
    assert.equal(info.skolskaWestBatch?.reservedBudget,8);
@@ -92,6 +92,8 @@ try{
    assert.equal(info.skolskaWestBatch?.roadsChanged,false);
    assert.equal(info.skolskaWestBatch?.newFootprints,0);
    assert.equal(info.skolskaWestBatch?.detailedBuildingLimit,68);
+   assert(info.hero?.photoFocusBuiltIds.includes('202298939'),
+    'Keep the separately documented fork-gable among the 68 high-detail houses');
    assert.equal(info.skolskaWestGreen?.rendered,true,
     'Western Školská street should contain visible inferred planting geometry');
    assert(info.skolskaWestGreen.hedges+info.skolskaWestGreen.trees>=2);
@@ -102,8 +104,8 @@ try{
    assert.equal(info.skolskaWestGreen.changedSidewalks,0);
    assert.equal(info.skolskaWestGreen.guessedPrivateEntrances,0);
    assert.equal(info.hero?.photoFocusReservedPlaces,33);
-   assert.equal(info.hero?.photoFocusBuilt,32);
-   assert.equal(info.hero.photoFocusBuiltIds.length,32);
+   assert.equal(info.hero?.photoFocusBuilt,33);
+   assert.equal(info.hero.photoFocusBuiltIds.length,33);
    assert.equal(info.mirovaGreen?.active,true,
     'Actual Mírová clipped-hedge/trees must render after city OSM load');
    assert(info.mirovaGreen.hedgeSegments+info.mirovaGreen.plantedTrees>=2);
@@ -113,7 +115,7 @@ try{
    assert.equal(info.mirovaGreen.positionsEstimated,true);
    assert.equal(info.hero?.normalBuilt+info.hero?.photoFocusBuilt+
     info.hero?.priorityBuilt,68,'Keep whole 68-house budget stable');
-   assert.equal(new Set([...info.hero.priorityIds,...info.hero.photoFocusIds]).size,52,
+   assert.equal(new Set([...info.hero.priorityIds,...info.hero.photoFocusIds]).size,53,
     'No selected house may be counted in two of the four OSM street blocks');
   assert.equal(info.hero?.maxBuildings,68,
    'Retain the old maxBuildings capacity for mobile performance');
