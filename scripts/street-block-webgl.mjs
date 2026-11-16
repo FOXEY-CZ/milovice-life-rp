@@ -70,12 +70,15 @@ try{
    '2022 panorama batch must actually render, not just plan');
   assert(info.photoBlock.fenceSegments>=3,
    'Mapped-safe low fence lines must be placed on photo-observed left verge');
+  assert.equal(info.photoBlock.brownGateLeaves,4,
+   'Photo-backed 4-panel brown gate must appear in the same 5. května street');
+  assert.equal(info.photoBlock.photoGatePositionSurveyed,false);
   assert(info.photoBlock.rightTrees>=2,
    '2022 right-side trees must become real geometries');
   assert(info.photoBlock.asphaltWearPatches>=18,
    'Broad street road surface variation, not one isolated decoration');
-  assert(info.photoBlock.drawMeshes<=7,
-   'Keep 2022 fence, tree and asphalt scene to at most 7 draw calls');
+  assert(info.photoBlock.drawMeshes<=9,
+   'Keep photographed 2022 gate, fence, trees and asphalt within 9 draw calls');
   assert.equal(info.photoBlock.roadGeometryChanged,false);
   assert.equal(info.photoBlock.footwayGeometryChanged,false);
   assert.equal(info.photoBlock.inventedPrivateEntrances,0);
