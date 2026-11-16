@@ -49,7 +49,14 @@ try{
   assert.equal(info.audit.duplicatedTreeDisabled,true);
   assert.equal(info.audit.duplicatedPoleDisabled,true);
   assert.equal(info.audit.unverifiedOverheadSpanDisabled,true);
-  assert(info.audit.generatedSceneCount>=0);
+  assert.equal(info.audit.generatedSceneCount,1,
+   'Photo-backed 5. května streetscape must actually load in real 3D, not only its camera');
+  assert.equal(info.scene?.photoSceneDecision?.reason,'accepted-photo-scene');
+  assert.equal(info.scene?.photoSceneDecision?.roadIds?.[0],'219273174');
+  assert(info.scene?.minRoadClearance>=2,
+   'Historically depicted models must remain off all indexed OSM roads');
+  assert(info.scene?.drawMeshes>0&&info.scene?.drawMeshes<=26,
+   'Visible historical features must use compact mobile-friendly batched meshes');
   assert(info.source.startsWith('https://commons.wikimedia.org/wiki/File:'));
   assert(info.panel>0);
   assert.equal(info.compact,cfg.mobile);
