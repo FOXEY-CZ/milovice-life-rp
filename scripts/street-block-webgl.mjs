@@ -23,7 +23,7 @@ try{
    isMobile:cfg.mobile,hasTouch:cfg.mobile
   });
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=58400&streetAudit='+cfg.id,
+  await page.goto('http://127.0.0.1:8080/?v=58500&streetAudit='+cfg.id,
    {waitUntil:'domcontentloaded',timeout:30000});
   await page.waitForFunction(()=>
    window.__miloviceStreetAuditRendered?.active===true&&
@@ -34,6 +34,7 @@ try{
    audit:window.__miloviceStreetAuditRendered,
    scene:window.__miloviceStreetEnvironment,
    walkway:window.__miloviceChurchSidewalk2022,
+   photoBlock:window.__miloviceChurchPhotoStreet,
    label:document.getElementById('street-audit-label')?.textContent,
    source:document.getElementById('street-audit-source')?.href,
    panel:document.getElementById('street-block-audit')?.offsetWidth,
@@ -44,7 +45,7 @@ try{
    hero:window.__miloviceHeroArchitecture,
    build:document.getElementById('build-label')?.textContent
   }));
-  assert.equal(info.build,'20261116-photo-sidewalk-and-public-church-camera-58400');
+  assert.equal(info.build,'20261116-church-photo-streetscape-batch-58500');
   assert.equal(info.mass?.prioritizedBuildings,20,
    'A WHOLE 20-house neighborhood block, not an isolated prop, must be planned');
   assert.equal(info.mass?.actuallyDetailed,20,
@@ -59,6 +60,20 @@ try{
   assert.equal(info.hero?.maxBuildings,68,
    'Retain the old maxBuildings capacity for mobile performance');
   assert.equal(info.hero?.massBlockNoPhotoApproval,true);
+  assert.equal(info.photoBlock?.rendered,true,
+   '2022 panorama batch must actually render, not just plan');
+  assert(info.photoBlock.fenceSegments>=3,
+   'Mapped-safe low fence lines must be placed on photo-observed left verge');
+  assert(info.photoBlock.rightTrees>=2,
+   '2022 right-side trees must become real geometries');
+  assert(info.photoBlock.asphaltWearPatches>=18,
+   'Broad street road surface variation, not one isolated decoration');
+  assert(info.photoBlock.drawMeshes<=7,
+   'Keep 2022 fence, tree and asphalt scene to at most 7 draw calls');
+  assert.equal(info.photoBlock.roadGeometryChanged,false);
+  assert.equal(info.photoBlock.footwayGeometryChanged,false);
+  assert.equal(info.photoBlock.inventedPrivateEntrances,0);
+  assert.equal(info.photoBlock.inventedRoadPaint,0);
   assert.equal(info.walkway?.rendered,true,
    'Photo-informed left-sidewalk and curb must ACTUALLY render in mobile 3D');
   assert(info.walkway.modelledLengthM>=62,
@@ -134,7 +149,7 @@ try{
   assert.equal(info.playerHudHidden,true);
   assert.equal(info.visibleCanvas,true);
   assert.deepEqual(errors,[]);
-  await page.screenshot({path:'browser-artifacts/milovice-street-58400-'+cfg.id+'.png'});
+  await page.screenshot({path:'browser-artifacts/milovice-street-58500-'+cfg.id+'.png'});
   console.log('STREET_BLOCK_WEBGL_OK',JSON.stringify({
    mode:cfg.id,scenes:info.audit.generatedSceneCount,source:info.source,
    cameraMode:info.audit.cameraMode,roadClearance:info.scene?.minRoadClearance,
