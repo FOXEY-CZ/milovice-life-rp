@@ -254,25 +254,41 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
    if(!road)continue;
    const anchor=nearestPhotoRoadSegment(road,ref.latitude,ref.longitude);
    if(!anchor||anchor.distance>18)continue;
-   // A photo GPS position alone cannot prove which side contains each prop.
-   // Test both possible frontages against ALL OSM roads and footpaths.
-   // The +normal side of this segment crosses a mapped footpath; prefer a
-   // side with a wide enough empty verge rather than inventing sidewalk trees.
+   // 5.82: The old GLOBAL min-clearance gate included -35m and another
+   // unphotographed end, so one mapped side path hid this entire street
+   // scene. Never discard a supported tree/sign merely because a different
+   // object 50m away is unsafe. Individual props keep their OWN conservative
+   // road/footway checks in treeRow/signs/wallAndGate/utility.
+   // GPS of a photographer still does NOT establish which side contains
+   // each particular item; keep this scored side choice provisional.
    const halfWidth=anchor.width*.5+2.65;
+   const sideCandidates=[
+    {along:-17,out:0,radius:.8}, // one visible pruned tree
+    {along:-26,out:.76,radius:1.1}, // one short hedge/bed
+    {along:6,out:.08,radius:.4}, // named historical signpost
+    {along:16,out:4.3,radius:1.3}, // house-boundary wall (approximate)
+    {along:28,out:3.6,radius:.52} // one photographed utility pole
+   ];
    function clearanceScore(sign){
-    if(!roadClearance)return Infinity;
-    let minimum=Infinity;
-    for(const along of [-35,-26,-17,-4,6,12,20,28]){
-     const p=placeOnRoad(anchor,along,sign*halfWidth);
+    if(!roadClearance)return {accepted:0,minimum:-Infinity};
+    let accepted=0,minimum=Infinity;
+    for(const sample of sideCandidates){
+     const offset=sign*(halfWidth+sample.out);
+     const p=placeOnRoad(anchor,sample.along,offset);
      const match=roadClearance.nearest(p.x,p.z);
-     minimum=Math.min(minimum,match?.clearance??Infinity);
+     const available=match?.clearance??Infinity;
+     if(available>=sample.radius+.2){accepted++;
+      minimum=Math.min(minimum,available);}
     }
-    return minimum;
+    return {accepted,minimum:accepted?minimum:null};
    }
    const leftScore=clearanceScore(1),rightScore=clearanceScore(-1);
-   const sideSign=leftScore>=rightScore?1:-1;
-   const minimumRoadClearance=Math.max(leftScore,rightScore);
-   if(minimumRoadClearance<1.9)continue;
+   const sideSign=leftScore.accepted>=rightScore.accepted?1:-1;
+   const choice=sideSign>0?leftScore:rightScore;
+   // At least one independent feature must be placed off OSM road.
+   // Otherwise adding a photo-inspired scene would be unjustified.
+   if(choice.accepted===0)continue;
+   const minimumRoadClearance=choice.minimum;
    const side=sideSign*halfWidth;
    const root=new THREE.Group();
    root.userData.lodX=anchor.x;root.userData.lodZ=anchor.z;
@@ -290,7 +306,8 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
    groups.add(root);entries.add(ref.id);created++;
    data.push({id:ref.id,osmRoadId:ref.osmRoadId,anchorDistance:anchor.distance,
     x:anchor.x,z:anchor.z,ux:anchor.ux,uz:anchor.uz,
-    sideSign,minimumRoadClearance,source:ref.source,photoDate:ref.photoDate});
+    sideSign,eligibleFeatureAnchors:choice.accepted,minimumRoadClearance,
+    source:ref.source,photoDate:ref.photoDate});
   }
   report();return created;
  }
