@@ -47,8 +47,13 @@ for(const r of allRoads)index.addRoad({id:r.osmId,points:r.points,
 const footprints=data.elements.filter(e=>e.tags?.building&&e.geometry?.length>=4)
  .map(e=>e.geometry.map(p=>({x:(p.lon-14.889)*111320*cos,
   y:-(p.lat-50.226)*111320})));
+const churchWay=data.elements.find(e=>e.id===118487991);
+assert(churchWay?.tags?.building==='church');
+const churchFootprint=churchWay.geometry.map(p=>({
+ x:(p.lon-14.889)*111320*cos,y:-(p.lat-50.226)*111320
+}));
 const lamp=planKvetnaStreetlamp2022(allRoads,{roadClearance:index,
- buildingFootprints:footprints});
+ buildingFootprints:footprints,churchFootprint});
 assert(lamp,'The photo-backed lamppost base must safely fit on mapped roadside ground');
 assert.equal(KVETNA_STREETLAMP_2022.sourceDate,'2022-05-09');
 assert.equal(KVETNA_STREETLAMP_2022.observedCount,1);
@@ -61,17 +66,32 @@ assert.equal(lamp.changedRoadGeometry,false);
 assert.equal(lamp.changedBuildingGeometry,false);
 assert.equal(lamp.createsNewFootway,false);
 assert(lamp.along===132&&lamp.offset===-6.3);
+assert.equal(lamp.osmDirectionTowardChurch,1,
+ 'On actual OSM, the church lies on the positive-index branch from Pionýrů');
+assert(lamp.churchDistanceFromLampM+50<lamp.churchDistanceFromJunctionM,
+ 'Lamp MUST be along street TOWARD the real OSM church, not on the opposite branch');
+const reversed=allRoads.map(r=>String(r.osmId)==='219273174'?
+ {...r,points:[...r.points].reverse()}:r);
+const reversedLamp=planKvetnaStreetlamp2022(reversed,{
+ roadClearance:index,buildingFootprints:footprints,churchFootprint});
+assert(reversedLamp);
+assert.equal(reversedLamp.osmDirectionTowardChurch,-1,
+ 'The direction should reverse with OSM node order without moving the real-world lamp');
+assert(Math.hypot(lamp.x-reversedLamp.x,lamp.z-reversedLamp.z)<.01);
+assert.equal(planKvetnaStreetlamp2022(allRoads,{
+ roadClearance:index,buildingFootprints:footprints,churchFootprint:[]}),null,
+ 'No church polygon means no invented lamp placement');
 assert(lamp.nearestMappedSurfaceClearance>=1,'Lamp must stand outside modelled road and mapped footways');
 assert.equal(planKvetnaStreetlamp2022([],{roadClearance:index,
- buildingFootprints:footprints}),null);
+ buildingFootprints:footprints,churchFootprint}),null);
 assert.equal(planKvetnaStreetlamp2022(allRoads,{roadClearance:null,
- buildingFootprints:footprints}),null);
+ buildingFootprints:footprints,churchFootprint}),null);
 // Force a footprint collision and verify fail-closed rather than guessing
 // a neighbouring parcel location or silently erasing a building.
 const blocked=[{x:lamp.x-1,y:lamp.z-1},{x:lamp.x+1,y:lamp.z-1},
  {x:lamp.x+1,y:lamp.z+1},{x:lamp.x-1,y:lamp.z+1}];
 assert.equal(planKvetnaStreetlamp2022(allRoads,{roadClearance:index,
- buildingFootprints:[...footprints,blocked]}),null);
+ buildingFootprints:[...footprints,blocked],churchFootprint}),null);
 
 const runtime=readFileSync(new URL('./street-environment-reality.js',import.meta.url),'utf8');
 assert(!runtime.includes('   paving(root,anchor,side);'),
@@ -139,7 +159,7 @@ assert(cameraHTML.includes("rpStreetAuditId.startsWith('pionyru')"));
 assert(cameraHTML.includes('camera.position.set(x,terrainAt(x,z)+1.68,z)'));
 assert(cameraHTML.includes("streetAudit=pionyru-forward"));
 assert(cameraHTML.includes("streetAudit=pionyru-reverse"));
-assert(cameraHTML.includes('photoStreetEnvironment.addFromRoads(osmDriveRoads,buildingWays.map(w=>w.geometry.map(osmPoint)))'));
+assert(cameraHTML.includes("buildingWays.find(w=>String(w.id)==='118487991')?.geometry.map(osmPoint)||[]"));
 assert(cameraHTML.includes('streetlamp2022.modelCount'));
 assert(cameraHTML.includes("document.getElementById('street-audit-source').href=rpStreetAuditView.source"));
 assert(cameraHTML.includes('camera.up.set(pionyru?.ux??mapped?.ux??0,0,pionyru?.uz??mapped?.uz??-1)'),
