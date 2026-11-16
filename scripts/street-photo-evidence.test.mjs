@@ -45,6 +45,11 @@ assert(stats.withNearbyPhotos>=3&&stats.withNearbyPhotos<stats.buildings,
  'Only a minority of houses have locally discovered photo candidates');
 assert.equal(stats.allFacadesVerified,false);
 assert(photos.some(x=>x.taken==='2014-07-26'&&x.scope==='historical-streetscape'));
+const historicStreet=photos.find(p=>p.id==='5kv-2014');
+assert.deepEqual(historicStreet?.camera,[50.227797,14.884813]);
+assert.equal(historicStreet?.heading,null,'2014 source heading is unknown; never invent photo orientation');
+assert.deepEqual(historicStreet?.buildingIds,[],'Streetscape is NOT direct facade identity');
+
 assert(photos.some(x=>x.id==='nadrazi-rail-platform-2013'&&
  x.scope==='historical-rail-platform'&&x.camera===null&&x.buildingIds.length===0),
  'A historical platform photo can justify canopy type, not measured layout or 2026 status');
