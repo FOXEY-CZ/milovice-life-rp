@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const s=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const paving=readFileSync(new URL('./bike-tower-entry-paving.js',import.meta.url),'utf8');
-assert(s.includes("const BUILD_ID='20261116-church-block-mass-facades-58300'"));
+assert(s.includes("const BUILD_ID='20261116-photo-sidewalk-and-public-church-camera-58400'"));
 assert(s.includes("rpForecourtAuditId==='tower'"));
 assert(s.includes("get('entryInspection')==='1'"));
 assert(s.includes("NENÍ fotografická kamera"));
