@@ -25,7 +25,7 @@ try{
    isMobile:cfg.mobile,hasTouch:cfg.mobile
   });
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=58520&streetAudit='+cfg.id,
+  await page.goto('http://127.0.0.1:8080/?v=58530&streetAudit='+cfg.id,
    {waitUntil:'domcontentloaded',timeout:30000});
   await page.waitForFunction(()=>
    window.__miloviceStreetAuditRendered?.active===true&&
@@ -50,7 +50,7 @@ try{
    gpsHref:document.getElementById('street-audit-map-gps')?.href,
    build:document.getElementById('build-label')?.textContent
   }));
-  assert.equal(info.build,'20261116-camera-real-gps-and-panorama-azimuth-58520');
+  assert.equal(info.build,'20261116-live-camera-gps-share-58530');
   assert.equal(info.mass?.prioritizedBuildings,20,
    'A WHOLE 20-house neighborhood block, not an isolated prop, must be planned');
   assert.equal(info.mass?.actuallyDetailed,20,
@@ -170,15 +170,15 @@ try{
   // actual object visibility after multiple adaptive performance samples.
   if(cfg.id==='pionyru-forward'){
    const before=await page.evaluate(()=>window.__milovicePhotoRuntime?.());
-   await page.screenshot({path:'browser-artifacts/milovice-street-58520-before-delay.png'});
+   await page.screenshot({path:'browser-artifacts/milovice-street-58530-before-delay.png'});
    await page.waitForTimeout(7300);
    const after=await page.evaluate(()=>window.__milovicePhotoRuntime?.());
-   await page.screenshot({path:'browser-artifacts/milovice-street-58520-after-delay.png'});
+   await page.screenshot({path:'browser-artifacts/milovice-street-58530-after-delay.png'});
    console.log('FIVE_SECOND_PHOTO_SCENE_AUDIT',JSON.stringify({before,after}));
    assert(after?.groups?.every(g=>g.exists&&g.visible&&g.childrenVisible>0),
     'PHOTO_SCENE_5SEC_DISAPPEARANCE: mapped photo scene turned invisible after adaptive LOD');
   }
-  await page.screenshot({path:'browser-artifacts/milovice-street-58520-'+cfg.id+'.png'});
+  await page.screenshot({path:'browser-artifacts/milovice-street-58530-'+cfg.id+'.png'});
   console.log('STREET_BLOCK_WEBGL_OK',JSON.stringify({
    mode:cfg.id,scenes:info.audit.generatedSceneCount,source:info.source,
    cameraMode:info.audit.cameraMode,roadClearance:info.scene?.minRoadClearance,
