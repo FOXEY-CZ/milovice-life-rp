@@ -55,6 +55,8 @@ jobs:
         run: node scripts/source-observed-facades.test.mjs
       - name: Validate photographed street block and mapped building IDs
         run: node scripts/street-photo-block.test.mjs
+      - name: Verify 5.83 mass reconstruction prioritizes 24 real OSM homes within current mobile budget
+        run: node scripts/street-mass-build-pass.test.mjs
       - name: Verify shared facade textures stay deterministic and phone-friendly
         run: node scripts/facade-surface-kit.test.mjs
       - name: Review whole-street Wikimedia photo provenance and coverage without false matches
