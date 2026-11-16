@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {PIONYRU_2023,planPionyru2023Verge,isBuildingFreeRect} from './street-pionyru-photo-2023.js';
+import {PIONYRU_2023,planPionyru2023Verge,isBuildingFreeRect,auditPionyruAccessContinuity} from './street-pionyru-photo-2023.js';
 import {createRoadClearance,isRoadFreeRect} from './road-clearance.js';
 // 5.82.3: Whole-rectangle building guard. The old 25/28 cm sampling
 // could miss a thin wall fragment even though the apron intersected it.
@@ -68,6 +68,26 @@ console.log('PIONYRU_ACCESS_DIAG',JSON.stringify({
  near:index.nearest(p.x,p.z),along:p.along,side:p.side,depth:p.depth})),
  accepted:plan.accessAccepted.map(p=>({id:p.id,x:p.x,z:p.z}))
 }));
+// Read-only access continuity checks use modelled OSM widths, not
+// a guess that a photographed access fully connects to a private gate.
+assert.equal(plan.accessContinuityAudit.length,2);
+for(const a of plan.accessContinuityAudit){
+ assert(Math.abs(a.roadEdgeGapM-.23)<.00001,
+  'Both partial verge panels intentionally stop 23cm short of modelled carriageway');
+ assert.equal(a.continuousRealDrivewayVerified,false);
+ assert.equal(a.needsFullPhotoParcelMatch,true);
+ assert.equal(a.distancesAreModelOnly,true);
+ assert.equal(a.roadOrFootwayChanged,false);
+}
+const west=plan.accessContinuityAudit.find(x=>x.side===-1);
+const east=plan.accessContinuityAudit.find(x=>x.side===1);
+assert(west&&!west.walkwayWithin5m&&west.outerEdgeWalkwayGapM===null,
+ 'Do not fabricate a mapped west-side footway connection');
+assert(east&&east.walkwayId==='1282187908'&&east.walkwayWithin5m,
+ 'Use real east-side OSM footway, not an invented path');
+assert(east.outerEdgeWalkwayGapM>.6&&east.outerEdgeWalkwayGapM<.95,
+ 'East apron ends about 77 cm before the MODELLED pedestrian edge');
+assert.deepEqual(auditPionyruAccessContinuity([],null),[]);
 assert.equal(plan.accessAccepted.length,2,
  'Both explicitly pictured 2023 public-verge entrances must be located safely');
 assert.equal(plan.accessRejected.length,0);
@@ -95,7 +115,7 @@ const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert(game.includes("streetAudit=pionyru"));
 assert(game.includes("photoPionyruVerge.create(osmDriveRoads,buildingWays.map(w=>w.geometry.map(osmPoint)))"));
 assert(game.includes("pionyru?.center?.x??eye.x"));
-console.log('5.82.3 PIONYRU_BUILDING_POLYGON_GUARD_OK',JSON.stringify({
+console.log('5.82.4 PIONYRU_ACCESS_CONTINUITY_DIAG_OK',JSON.stringify({
  accepted:plan.accepted.length,rejected:plan.rejected.length,
  accesses:plan.accessAccepted.map(a=>({id:a.id,along:a.along,side:a.side})),
  length:+plan.segmentLength.toFixed(1),junction:plan.junction,
