@@ -134,3 +134,11 @@ Po mobilním screenshotu verze 5.81.24 (01:15) přetrvává úzký světlý jazy
 Geometrie 5.81.25 zúží vnější hranu pouze u prvních tří bezpečných řad po úseku 2,28 m: první hrana jde zhruba o 0,35 m dovnitř, druhá o 0,23 m, třetí o 0,12 m, od čtvrté řady je původní souřadnice. Každá řada zůstává **uvnitř již validované parkovací/pěší plochy** a drží minimální šířku 0,38 m. Podkladová vrstva je nadále oříznuta přesně podle stejné viditelné vnější hrany, takže se nemají vrátit zelené pruhy. Silnice, obě banky parkovacích míst, bílé čáry ani severní konec se touto opravou nemění.
 
 **Nejde o geodeticky zaměřený obrys.** Testy potvrzují dodržení již známého bezpečného tvaru, nikoli vizuální shodu s terénem. Účinek na svislý „jazýček“ je třeba potvrdit screenshotem 5.81.25; teprve potom řešit drobné horní schody.
+
+## 5.81.26 — odstranění dvou skutečně přečnívajících jihozápadních rasterových buněk (16. 11. 2026)
+
+Screenshot 5.81.25 v 01:20 stále zobrazoval malý světlý obdélníkový výběžek pod spodním pravým zakončením chodníku. Geometrický audit prokázal, že ve zcela první řadě na podélné souřadnici 1,08 m byly jen dvě bezpečné dlažební buňky (offsety 8,44 a 9,18 m). Další řada na 1,84 m má již 7 buněk v souvislé ploše. Dřívější úpravy křivky, samotného cap a podkladové vrstvy nezměnily tyto původní instancované buňky, které se nadále zobrazovaly jako dva kvádry na konci.
+
+Ve verzi 5.81.26 se pouze v případě odpovídajícího vzoru **první řada má nejvýše dvě buňky a následující nejméně pět** odstraní tyto dva nespojité koncové díly a označí se jako odstraněné terminální rasterové zbytky. Sousední plná řada, obě banky parkování, jejich bílé čáry, kolejová krajní obruba, střední chodník mimo nos i OSM komunikace zůstávají zachované. Test kontroluje přesně dva odstraněné pavery a nepřítomnost starých buněk pod 1,1 m. Žádná nová plocha se negeneruje.
+
+Přesný skutečný obrys zůstává foto-informovaným odhadem, nikoli zaměřením; k vizuálnímu schválení je potřeba další nadhled po nasazení.

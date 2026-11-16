@@ -58,14 +58,14 @@ assert.equal(planUpperBiketowerSign({radius:9,nx:1,nz:0}),null);
 assert.equal(planUpperBiketowerSign({radius:3.8,nx:0,nz:0}),null);
 assert.equal(planUpperBiketowerSign({wayId:53865956,radius:3.8,nx:1,nz:0}),null);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(html.includes("const BUILD_ID='20261116-three-row-safe-island-nose-58125'"));
+assert(html.includes("const BUILD_ID='20261116-trim-sparse-terminal-pavers-58126'"));
 assert(html.includes("new URLSearchParams(location.search).get('parkingOverview')==='1'"));
 assert(html.includes("const parkingPlan=rpForecourtParkingOverview?stationPhotoParking.plan():null;"));
 assert(html.includes("camera.up.set(f.ux,0,f.uz);"));
 assert(html.includes("parkingOverview:{"));
 assert(html.includes("cameraBasedOnMappedRoad:technicalParkingCamera"));
 assert(html.includes('noGeometryChanges:true'));
-assert(html.includes('?v=58125&forecourtAudit=wide&parkingOverview=1'));
+assert(html.includes('?v=58126&forecourtAudit=wide&parkingOverview=1'));
 assert(html.includes("from './scripts/station-forecourt-photo-audit.js?v=5810'"));
 assert(html.includes("from './scripts/bike-tower-photo-sign.js?v=5810'"));
 assert(html.includes("new URLSearchParams(location.search).get('forecourtAudit')"));
@@ -111,7 +111,7 @@ assert(html.includes("osmNotice.id='osmnotice-live'"));
 assert(html.includes("osmBtn.id='osm3d'"));
 assert(!html.includes("osmBtn.id='osm-map-button-live'"));
 assert(html.includes("const cx=rpAuditCameraWorld?.x??(walking?px:x)"));
-assert(html.includes("const BUILD_ID='20261116-three-row-safe-island-nose-58125'"));
+assert(html.includes("const BUILD_ID='20261116-trim-sparse-terminal-pavers-58126'"));
 console.log('5.81 anchored forecourt camera + existing upper Bike Tower sign PASS',JSON.stringify({
  views:views.map(id=>({id,heading:STATION_FORECOURT_AUDIT_VIEWS[id].camera.heading})),
  unmappedObjects:STATION_FORECOURT_PENDING,
