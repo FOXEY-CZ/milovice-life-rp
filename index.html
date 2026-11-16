@@ -173,7 +173,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <div class="actions"><a id="rp-camera-gps-map" href="https://mapy.com/" target="_blank" rel="noopener noreferrer">🗺️ Mapy.com</a>
 <button id="rp-camera-gps-copy" type="button">📋 Kopírovat GPS + směr</button>
 <button id="rp-camera-gps-close" type="button">✕ Zavřít</button></div></aside><aside id="street-block-audit" hidden aria-label="Fotoaudit 5. května Mírová Školská">
-<strong>📸 Uliční bloky · Školská 5.87 + Mírová</strong>
+<strong>📸 Čtyři uliční bloky · Školská západ 5.88</strong>
 <button id="street-audit-toggle" type="button" aria-expanded="true">Sbalit nabídku</button>
 <span id="street-audit-label"></span>
 <nav><a href="?v=58530&streetAudit=5kv">5. května shora</a>
@@ -4667,7 +4667,7 @@ function rpAppendOSMElements(elements){
  const skolskaPhotoBlock=planPublicPhotoSkolskaBlock587(
   [...roadWays,...buildingWays],
   [...(massBlock?.priorityIds||[]),...(mirovaPhotoBlock?.priorityIds||[])]);
- // 20 church + 12 Mírová + 12 Školská + 8 west + 16 other = the same 68
+ // 20 church + 12 Mírová + 12 Školská + 8 west + 1 fork-gable + 15 other = 68
  // high-detail shells as before. Photographs of the school are NOT
  // treated as proof of unidentified neighboring private houses.
  const skolskaWestBlock=planSkolskaWestBlock588(
