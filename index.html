@@ -1678,6 +1678,27 @@ const photoChurchSidewalk2022=makePhotoChurchSidewalk2022(THREE,{
 const photoChurchStreet2022=makeChurchStreetscape2022(THREE,{
  layer:osmLayer,terrainAt,roadClearance:osmRoadClearance
 });
+ // 5.85.1: Diagnostic reads ACTUAL scene visibility after adaptive LOD.
+ // The old smoke test only counted objects once at creation, missing the
+ // five-second disappearance on physical Android devices.
+ window.__milovicePhotoRuntime=()=>{
+  const types=[
+   {name:'photo-sidewalk',match:o=>o.children?.some(c=>c.name==='Milovice_5kv_photo2022_left_pavement_continuous')},
+   {name:'photo-street',match:o=>o.name==='ChurchStreetscapePhotoMay2022'}
+  ];
+  return {elapsed,osmActive,
+   camera:{x:camera.position.x,z:camera.position.z},
+   anchor:rpAuditCameraWorld?{x:rpAuditCameraWorld.x,z:rpAuditCameraWorld.z}:null,
+   budget:rpRenderBudget(),view:rpEffectiveView(),
+   lastChunk:{x:lastChunkX,z:lastChunkZ},
+   groups:types.map(t=>{
+    const obj=osmLayer.children.find(t.match);
+    return {name:t.name,exists:!!obj,visible:obj?.visible??false,
+     lodX:obj?.userData?.lodX??null,lodZ:obj?.userData?.lodZ??null,
+     isDetail:obj?.userData?.lodDetail??false,
+     childCount:obj?.children?.length||0,childrenVisible:obj?.children?.filter(c=>c.visible).length||0};
+   })};
+ };
 window.__miloviceGPUProfile={
  diffuseMobile:isMobileGPU,
  roadDiffuse:osmRoadMaterial.isMeshLambertMaterial,
