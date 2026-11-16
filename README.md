@@ -1,3 +1,16 @@
+## Mírová 5.86 — druhý celý uliční blok (16. 11. 2026)
+
+**Přímý kontrolní pohled:** https://foxey-cz.github.io/milovice-life-rp/?v=58600&streetAudit=mirova  
+**Detail podle veřejné fotografie domu:** https://foxey-cz.github.io/milovice-life-rp/?v=58600&streetAudit=mirova36-2024
+
+- Zdrojové snímky: [Mírová (01), 30. 5. 2024](https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_(01).jpg) (GPS 50.2286667 / 14.8847222; azimut 30°), [Mírová 243/36, 30. 5. 2024](https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_36.jpg) (GPS 50.2280572 / 14.8840981; azimut 65°). Autor obou: **ŠJů**, licence **CC BY 4.0**. Fotografie dokládají charakter ulice, nikoli přesnou parcelní polohu jednotlivých plotů, stromů či dveří.
+- `scripts/street-mass-build-pass.js` / `planPublicPhotoMirovaBlock586`: nový skutečný OSM koridor `1331897651`, **12 okolních domů**, včetně reálných nepravidelných půdorysů. Rezervovaná místa jsou **oddělená** od původních 20 domů na 5. května; nevzniká jediná nová budova.
+- `scripts/hero-architecture.js`: **20 původních + 12 Mírová + 36 běžných = 68** nejvýše plánovaných detailních domů. Nedoložené fasády dostávají stabilní odhadované uspořádání, doložené stěny fotografické údaje. Žádná automatická fotoaproba.
+- `scripts/mirova-public-photo-street-586.js`: nízké živé ploty a řídká zeleň podle typů pozorovaných na foto, **polohy pouze orientační**. Každý kandidát musí projít testem proti OSM komunikacím, chodníkům i domům. Přírůstek nejvýše **4 draw calls** díky InstancedMesh; žádné falešné přechody, nájezdy či soukromé parcelní hranice.
+- Funkční kontrola: `scripts/street-mass-build-pass.test.mjs` (výběr/zdroje/kolize) a `scripts/street-block-webgl.mjs` (skutečné vykreslení po načtení 3D).
+
+---
+
 ## Nový pracovní postup od 16. 11. 2026: veřejné fotografie + uvěřitelná rekonstrukce
 
 Milovice RP se odteď rozvíjí **po celých uličních úsecích podle veřejně dostupných, ověřitelných fotografií**. Fotografie z Wikimedia Commons (zejména ŠJů, 30. 5. 2024, CC BY 4.0; a Tiia Monto, 26. 7. 2014, CC BY-SA 4.0) se párují k přesné budově nebo místu pouze na základě názvu, ověřené polohy/úhlu a OSM půdorysu. **Uživatel nemusí posílat nové Panorama ani screenshoty po každé úpravě.** Jeho dřívější snímky jsou historický podklad, nikoliv požadavek pro další postup.
