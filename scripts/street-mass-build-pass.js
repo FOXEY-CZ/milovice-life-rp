@@ -234,7 +234,10 @@ export function planPublicPhotoSkolskaBlock587(elements,excludeIds=[],config=SKO
  const excluded=new Set([...excludeIds].map(String));
  const candidates=[];
  for(const e of elements){
-  if(!e?.tags?.building||!Array.isArray(e.geometry)||e.geometry.length<4)continue;
+  // OSM building=yes could be a shed or utility structure, not a home.
+  // Use specific house/residential tags rather than false-promoting these.
+  if(!e?.tags?.building||!['house','residential','detached','semidetached_house','terrace'].includes(e.tags.building)||
+     !Array.isArray(e.geometry)||e.geometry.length<4)continue;
   const center=centroid(e.geometry.map(project)),near=nearestAlong(center,paths);
   if(!near||near.along<config.minAlongM||near.distance>config.maxRoadDistanceM)continue;
   const house=eligibleBuilding(e,near.distance,{
