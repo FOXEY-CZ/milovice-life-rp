@@ -93,7 +93,8 @@ assert(cameraHTML.includes("get('streetAudit')"));
 assert(cameraHTML.includes("if(rpStreetAuditCameraWorld&&rpStreetAuditView)"));
 assert(cameraHTML.includes("cameraMode:rpStreetAuditView.technical?'technical-osm-overhead'"));
 assert(cameraHTML.includes("document.getElementById('street-audit-source').href=rpStreetAuditView.source"));
-assert(cameraHTML.includes('camera.up.set(mapped?.ux??0,0,mapped?.uz??-1)'));
+assert(cameraHTML.includes('camera.up.set(pionyru?.ux??mapped?.ux??0,0,pionyru?.uz??mapped?.uz??-1)'),
+ 'Technical street view uses mapped direction, never fabricated 2014 heading');
 
 assert(cameraHTML.includes('camera.position.copy(desired)'));
 assert(cameraHTML.includes('window.__miloviceCameraSpawnAudit='));
