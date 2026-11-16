@@ -129,3 +129,62 @@ export function planMassStreetBlock583(elements,config=MASS_STREET_583){
   roadAndFootwayGeometryModified:false,
   facadesAreProvisional:true};
 }
+
+
+/**
+ * Mírová street 5.86: SECOND contiguous block, chosen automatically from the
+ * same OSM geometry. A pair of published 2024 Wikimedia photos establishes
+ * the appearance of the STREET and one exact building (202367254).
+ * It does NOT verify each neighboring house or a private fence.
+ */
+export const MIROVA_PUBLIC_PHOTO_586=Object.freeze({
+ roadId:'1331897651',maxBuildings:12,maxDistanceM:65,
+ streetPhoto:'https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_(01).jpg',
+ buildingPhoto:'https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_36.jpg',
+ photoDate:'2024-05-30',photoAuthor:'ŠJů',license:'CC BY 4.0',
+ cameraStreet:[50.2286667,14.8847222,30],
+ cameraHouse:[50.2280572,14.8840981,65]
+});
+export function planPublicPhotoMirovaBlock586(elements,excludeIds=[],config=MIROVA_PUBLIC_PHOTO_586){
+ if(!Array.isArray(elements)||(!Array.isArray(excludeIds)&&!(excludeIds instanceof Set))||
+    !config||!Number.isInteger(config.maxBuildings)||
+    config.maxBuildings<1||config.maxBuildings>25||
+    !finite(config.maxDistanceM)||config.maxDistanceM<15||config.maxDistanceM>100)return null;
+ const road=elements.find(el=>String(el.id)===config.roadId&&
+  el.tags?.name==='Mírová'&&Array.isArray(el.geometry)&&el.geometry.length>=2);
+ if(!road)return null;
+ // Normalize from the north end, so reverse digitizing the OSM way
+ // will NOT reorder the houses or cause a different next batch.
+ const nodes=road.geometry[0].lat>=road.geometry.at(-1).lat?
+  road.geometry:road.geometry.slice().reverse();
+ const path=nodes.map(project),excluded=new Set([...excludeIds].map(String));
+ const candidates=[];
+ for(const el of elements){
+  if(!el?.tags?.building||!Array.isArray(el.geometry)||el.geometry.length<4)continue;
+  const center=centroid(el.geometry.map(project)),near=nearestAlong(center,path);
+  if(!near||near.distance>config.maxDistanceM)continue;
+  const result=eligibleBuilding(el,near.distance,{maxRoadDistanceM:config.maxDistanceM});
+  if(!result||excluded.has(result.id))continue;
+  candidates.push({...result,
+   distanceFromRoadM:Math.round(near.distance*10)/10,
+   alongM:Math.round(near.along*10)/10});
+ }
+ candidates.sort((a,b)=>a.alongM-b.alongM||
+  a.distanceFromRoadM-b.distanceFromRoadM||a.id.localeCompare(b.id,'en'));
+ const priority=candidates.slice(0,config.maxBuildings);
+ return {
+  version:'5.86.0',street:'Mírová – úsek k 5. května',
+  roadId:config.roadId,sourceDate:config.photoDate,sourceAuthor:config.photoAuthor,
+  publishedStreetSource:config.streetPhoto,
+  publishedBuildingSource:config.buildingPhoto,
+  cameraStreet:config.cameraStreet,cameraHouse:config.cameraHouse,
+  prioritizedBuildings:priority.length,buildingsConsidered:candidates.length,
+  priorityIds:priority.map(x=>x.id),reviewQueue:candidates,
+  roadPolylineLengthM:Math.round(path.slice(1).reduce((sum,p,i)=>sum+close(p,path[i]),0)*10)/10,
+  // Observed at street level is not the same as surveyed per-building geometry.
+  photoApprovedBuildings:0,unknownFacadesStillUnverified:true,
+  generatedDetailTier:'OSM-plus-neighborhood-estimate',
+  allExistingOSMFootprints:true,guessedRoadSegments:0,guessedDriveways:0,
+  guessedParcelBoundaries:0,streetGeometryModified:false
+ };
+}
