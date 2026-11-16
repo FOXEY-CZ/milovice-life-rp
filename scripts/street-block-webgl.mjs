@@ -47,6 +47,7 @@ try{
    visibleCanvas:!!document.querySelector('canvas')?.clientWidth,
    mass:window.__miloviceMassStreetBlock583,
     mirovaBatch:window.__miloviceMirovaPublicPhotoBlock586,
+    mirovaGreen:window.__miloviceMirovaPhotoStreet586,
    hero:window.__miloviceHeroArchitecture,
    gps:window.__miloviceAuditCameraGPS,
    gpsLabel:document.getElementById('street-audit-camera-gps')?.textContent,
@@ -73,6 +74,13 @@ try{
    assert.equal(info.mirovaBatch?.existingRoadOrFootwayModified,false);
    assert.equal(info.hero?.photoFocusReservedPlaces,12);
    assert.equal(info.hero?.photoFocusBuilt,12);
+   assert.equal(info.mirovaGreen?.active,true,
+    'Actual Mírová clipped-hedge/trees must render after city OSM load');
+   assert(info.mirovaGreen.hedgeSegments+info.mirovaGreen.plantedTrees>=2);
+   assert(info.mirovaGreen.drawMeshes<=4,'Keep new whole-street green pass under four draw calls');
+   assert.equal(info.mirovaGreen.alteredRoadGeometry,false);
+   assert.equal(info.mirovaGreen.alteredBuildingGeometry,false);
+   assert.equal(info.mirovaGreen.positionsEstimated,true);
    assert.equal(info.hero?.normalBuilt+info.hero?.photoFocusBuilt+
     info.hero?.priorityBuilt,68,'Keep whole 68-house budget stable');
    assert.equal(new Set([...info.hero.priorityIds,...info.hero.photoFocusIds]).size,32,
