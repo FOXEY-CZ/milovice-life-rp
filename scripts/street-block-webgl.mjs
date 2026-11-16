@@ -15,6 +15,8 @@ try{
   {id:'pionyru',width:393,height:852,mobile:true,technical:true},
   {id:'pionyru-forward',width:393,height:852,mobile:true,technical:true,streetLevel:true},
   {id:'pionyru-reverse',width:393,height:852,mobile:true,technical:true,streetLevel:true},
+  {id:'pionyru-left',width:393,height:852,mobile:true,technical:true,streetLevel:true},
+  {id:'pionyru-right',width:393,height:852,mobile:true,technical:true,streetLevel:true},
   {id:'church-2024',width:393,height:852,mobile:true,technical:false,sourcePhoto:true},
   {id:'mirova',width:1280,height:760,mobile:false,technical:false}
  ]){
