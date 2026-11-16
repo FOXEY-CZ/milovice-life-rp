@@ -1,3 +1,16 @@
+## Školská 5.87 — třetí uliční blok, 12 nových OSM domů (16. 11. 2026)
+
+**Přímý fotoúhel školy:** https://foxey-cz.github.io/milovice-life-rp/?v=58700&streetAudit=school-2024  
+**Druhý veřejný úhel:** https://foxey-cz.github.io/milovice-life-rp/?v=58700&streetAudit=school-detail-2024
+
+- Fotografie: [ZŠ T. G. Masaryka, snímek (01)](https://commons.wikimedia.org/wiki/File:Milovice,_Z%C5%A0_T._G._Masaryka_(01).jpg), poloha kamery **50.2286983, 14.8859519**, směr **85°**; [ZŠ T. G. Masaryka, Masarykův citát](https://commons.wikimedia.org/wiki/File:Milovice,_Z%C5%A0_T._G._Masaryka,_Masaryk%C5%AFv_cit%C3%A1t.jpg), **50.2283594, 14.8866253**, směr **50°**. Obě fotografie: ŠJů, 30. 5. 2024, **CC BY 4.0**.
+- Plán `planPublicPhotoSkolskaBlock587` z `scripts/street-mass-build-pass.js` vybírá pouze skutečné obytné OSM budovy v úseku Školské (way `1331897640`, `1331897641`, `1331897642`). Nereklasifikuje libovolné `building=yes` na rodinný dům. Řazení zůstává deterministické při obráceném pořadí OSM uzlů a bez kolize s předchozími bloky.
+- **20 detailních domů 5. května + 12 Mírová + 12 Školská + 24 obecně vybraných = max. 68**, bez zvýšení grafického rozpočtu. ZŠ `118487979`, její doložené průčelí a stávající školní pozemky zůstávají samostatným objektem.
+- Fotografie školy **nedokládají podobu okolních soukromých domů**. Jejich odhadovaná okna a běžné architektonické prvky jsou označené `inferred` a nikdy nemají status fotografického ověření. Žádný nový parcelní obvod, přechod, komunikace ani soukromý vjezd.
+- Rozdíly po vykreslení kontroluje browser WebGL test v `scripts/street-block-webgl.mjs`; lokální výběr a obrácené OSM trasy kontroluje `scripts/street-mass-build-pass.test.mjs`.
+
+---
+
 ## Mírová 5.86 — druhý celý uliční blok (16. 11. 2026)
 
 **Přímý kontrolní pohled:** https://foxey-cz.github.io/milovice-life-rp/?v=58600&streetAudit=mirova  
