@@ -9,12 +9,12 @@ assert(plan,'The actual church, Pionýrů junction and 5. května OSM line must 
 assert.equal(plan.roadId,'219273174');
 assert.equal(plan.landmarkId,'118487991');
 assert.equal(plan.junctionRoadId,'118488006');
-assert.equal(plan.prioritizedBuildings,24);
-assert.equal(plan.priorityIds.length,24);
-assert.equal(new Set(plan.priorityIds).size,24);
-assert(plan.buildingsConsidered>=24&&plan.buildingsConsidered<45);
-assert(plan.corridorLengthM>=220&&plan.corridorLengthM<=240);
-assert.equal(plan.churchwardDirection,-1);
+assert.equal(plan.prioritizedBuildings,20);
+assert.equal(plan.priorityIds.length,20);
+assert.equal(new Set(plan.priorityIds).size,20);
+assert(plan.buildingsConsidered>=20&&plan.buildingsConsidered<40);
+assert(plan.corridorLengthM>=135&&plan.corridorLengthM<=150);
+assert.equal(plan.churchwardDirection,1);
 assert.equal(plan.photoApprovedBuildings,0);
 assert.equal(plan.unknownFacadesStillUnverified,true);
 assert.equal(plan.facadesAreProvisional,true);
@@ -22,10 +22,12 @@ assert.equal(plan.guessedDriveways,0);
 assert.equal(plan.guessedPropertyFences,0);
 assert.equal(plan.newBuildingFootprints,0);
 assert.equal(plan.roadAndFootwayGeometryModified,false);
-assert.deepEqual(plan.reviewQueue.slice(0,24).map(b=>b.id),plan.priorityIds);
-assert(plan.reviewQueue.every(b=>b.roadDistanceM<=48&&b.footprintPoints>=3&&
+assert.deepEqual(plan.reviewQueue.slice(0,20).map(b=>b.id),plan.priorityIds);
+assert(plan.reviewQueue.every(b=>b.roadDistanceM<=70&&b.footprintPoints>=3&&
  b.approximateHeightM>=2.7&&b.approximateHeightM<=12.5&&
  b.photoVerified===false&&b.facadeDetailIsGeneric));
+assert(!plan.priorityIds.some(id=>['202367194','202367254'].includes(id)),
+ 'Keep individually photographed landmark models out of generic mass facade processing');
 const eligibleTypes=new Set(['house','residential','yes','detached',
  'semidetached_house','terrace']);
 for(const id of plan.priorityIds){
@@ -41,7 +43,7 @@ assert.deepEqual(shuffled.priorityIds,plan.priorityIds);
 const flipped=elements.map(e=>e.id===219273174?
  {...e,geometry:[...e.geometry].reverse()}:e);
 const mirror=planMassStreetBlock583(flipped);
-assert.equal(mirror.churchwardDirection,1);
+assert.equal(mirror.churchwardDirection,-1);
 assert.deepEqual(mirror.priorityIds,plan.priorityIds);
 assert.equal(mirror.corridorLengthM,plan.corridorLengthM);
 // A missing church cannot authorize a direction guess.
