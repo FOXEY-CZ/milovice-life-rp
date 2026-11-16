@@ -218,8 +218,8 @@ assert(plan.continuousRibbon.southernOuterEarsClipped>=2,
  'Remove the photographed .46m outward ear at the first island end');
 const southPart=plan.continuousRibbon.parts[0];
 assert.equal(southPart[0].southNoseCap,true);
-assert(southPart[0].high-southPart[0].low>=.25&&
- southPart[0].high-southPart[0].low<=.261,
+assert(southPart[0].high-southPart[0].low>=.31&&
+ southPart[0].high-southPart[0].low<=.321,
  'South nose must form one narrow safe wedge, not a hanging square');
 assert(Math.abs(plan.continuousRibbon.southNoseLongitudinalTrim-.2175)<.0001,
  'Retract terminal end longitudinally while staying inside validated cell');
