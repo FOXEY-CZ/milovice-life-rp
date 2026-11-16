@@ -1,4 +1,4 @@
-// Milovice RP 5.82.3 — polygon-safe photo-confirmed verge paving near Pionýrů.
+// Milovice RP 5.82.4 — connection-audited photo-confirmed verge paving near Pionýrů.
 // Only vegetation POCKETS are presently supported for this short stretch.
 // This does not assume the road/sidewalk widths or property entrances are
 // geodetically surveyed; photographic satellite positions are approximate.
@@ -102,6 +102,51 @@ export function isBuildingFreeRect(rect,buildingFootprints=[],buffer=.13){
  }
  return true;
 }
+// 5.82.4: read-only endpoint audit. This is an OSM MODEL distance
+// calculation, not a photographed curb or geodetically measured driveway.
+// Never use these diagnostics to auto-extend either paving panel.
+export function auditPionyruAccessContinuity(roads,plan,{maxRelevantFootwayGap=5}={}){
+ if(!plan||!Array.isArray(roads)||!Array.isArray(plan.accessAccepted)||
+   !Number.isFinite(maxRelevantFootwayGap)||maxRelevantFootwayGap<0)return [];
+ const road=roads.find(r=>String(r.osmId)===plan.roadId);
+ if(!road)return [];
+ const halfWidth=Math.max(3,Number(road.width||9)*.5);
+ const walkways=roads.filter(r=>['footway','pedestrian','path'].includes(r.kind)&&
+  Array.isArray(r.points)&&r.points.length>=2);
+ const edgeGap=(r,p)=>{
+  let closest=Infinity;
+  for(let i=1;i<r.points.length;i++){
+   const a=r.points[i-1],b=r.points[i],dx=X(b)-X(a),dz=Z(b)-Z(a);
+   const den=dx*dx+dz*dz;
+   if(!(den>0))continue;
+   const t=clamp(((p.x-X(a))*dx+(p.z-Z(a))*dz)/den,0,1);
+   closest=Math.min(closest,Math.hypot(p.x-X(a)-dx*t,p.z-Z(a)-dz*t));
+  }
+  return closest-Number(r.width||1.8)*.5;
+ };
+ return plan.accessAccepted.map(p=>{
+  const far={x:plan.junction.x+plan.ux*p.along-plan.uz*p.side*p.farSide,
+   z:plan.junction.z+plan.uz*p.along+plan.ux*p.side*p.farSide};
+  let nearest=null;
+  for(const path of walkways){
+   const gap=edgeGap(path,far);
+   if(!Number.isFinite(gap))continue;
+   if(!nearest||gap<nearest.gap)
+    nearest={id:String(path.osmId),kind:path.kind,gap};
+  }
+  const farGap=nearest&&nearest.gap<=maxRelevantFootwayGap?
+   Math.max(0,nearest.gap):null;
+  return {id:p.id,side:p.side,sourceDate:p.sourceDate,
+   roadEdgeGapM:Math.max(0,p.nearSide-halfWidth),
+   walkwayId:farGap===null?null:nearest.id,
+   outerEdgeWalkwayGapM:farGap,
+   walkwayWithin5m:farGap!==null,
+   continuousRealDrivewayVerified:false,
+   distancesAreModelOnly:true,
+   needsFullPhotoParcelMatch:true,
+   roadOrFootwayChanged:false};
+ });
+}
 export function planPionyru2023Verge(roads,{roadClearance=null,buildingFootprints=[]}={}){
  const road=roads?.find(r=>String(r.osmId)===PIONYRU_2023.roadId);
  const cross=roads?.find(r=>String(r.osmId)===PIONYRU_2023.junctionRoadId);
@@ -168,7 +213,7 @@ export function planPionyru2023Verge(roads,{roadClearance=null,buildingFootprint
   if(roadSafe&&buildingSafe)accessAccepted.push(item);
   else accessRejected.push({...item,reason:!roadSafe?'mapped-road-or-footway':'mapped-building-footprint'});
  }
- return {
+ const geometry={
   accessAccepted,accessRejected,
   center:{x:X(j)+ux*length*.43,z:Z(j)+uz*length*.43},
   junction:{x:X(j),z:Z(j)},ux,uz,segmentLength:length,
@@ -177,6 +222,7 @@ export function planPionyru2023Verge(roads,{roadClearance=null,buildingFootprint
   imageDate:PIONYRU_2023.imageDate,modelledNotSurveyed:true,
   sourceIsUserSatellite:true,roadSurfaceChanged:false,sidewalkGeometryChanged:false
  };
+ return {...geometry,accessContinuityAudit:auditPionyruAccessContinuity(roads,geometry)};
 }
 export function makePionyru2023Verge(THREE,{layer,terrainAt=()=>0,roadClearance=null}={}){
  let root=null,plan=null;
@@ -232,6 +278,8 @@ export function makePionyru2023Verge(THREE,{layer,terrainAt=()=>0,roadClearance=
    plantedShrubPockets:plan?.accepted.length||0,
    rejectedUnsafeLocations:plan?.rejected.length||0,
    publicVergeAccesses:plan?.accessAccepted.length||0,
+   accessContinuityAudit:plan?.accessContinuityAudit||[],
+   actualDrivewayConnectionsVerified:0,
    rejectedUnsafeAccesses:plan?.accessRejected.length||0,
    privateDrivewaysInvented:false,footwaysModified:false,
    instancedDrawCalls:root?root.children.length:0,
