@@ -15,6 +15,7 @@ try{
   {id:'pionyru',width:393,height:852,mobile:true,technical:true},
   {id:'pionyru-forward',width:393,height:852,mobile:true,technical:true,streetLevel:true},
   {id:'pionyru-reverse',width:393,height:852,mobile:true,technical:true,streetLevel:true},
+  {id:'church-2024',width:393,height:852,mobile:true,technical:false,sourcePhoto:true},
   {id:'mirova',width:1280,height:760,mobile:false,technical:false}
  ]){
   const page=await browser.newPage({
@@ -22,7 +23,7 @@ try{
    isMobile:cfg.mobile,hasTouch:cfg.mobile
   });
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=58300&streetAudit='+cfg.id,
+  await page.goto('http://127.0.0.1:8080/?v=58400&streetAudit='+cfg.id,
    {waitUntil:'domcontentloaded',timeout:30000});
   await page.waitForFunction(()=>
    window.__miloviceStreetAuditRendered?.active===true&&
@@ -32,6 +33,7 @@ try{
   const info=await page.evaluate(()=>({
    audit:window.__miloviceStreetAuditRendered,
    scene:window.__miloviceStreetEnvironment,
+   walkway:window.__miloviceChurchSidewalk2022,
    label:document.getElementById('street-audit-label')?.textContent,
    source:document.getElementById('street-audit-source')?.href,
    panel:document.getElementById('street-block-audit')?.offsetWidth,
@@ -42,7 +44,7 @@ try{
    hero:window.__miloviceHeroArchitecture,
    build:document.getElementById('build-label')?.textContent
   }));
-  assert.equal(info.build,'20261116-church-block-mass-facades-58300');
+  assert.equal(info.build,'20261116-photo-sidewalk-and-public-church-camera-58400');
   assert.equal(info.mass?.prioritizedBuildings,20,
    'A WHOLE 20-house neighborhood block, not an isolated prop, must be planned');
   assert.equal(info.mass?.actuallyDetailed,20,
@@ -57,6 +59,20 @@ try{
   assert.equal(info.hero?.maxBuildings,68,
    'Retain the old maxBuildings capacity for mobile performance');
   assert.equal(info.hero?.massBlockNoPhotoApproval,true);
+  assert.equal(info.walkway?.rendered,true,
+   'Photo-informed left-sidewalk and curb must ACTUALLY render in mobile 3D');
+  assert(info.walkway.modelledLengthM>=62,
+   'Continuous pavement should cover a meaningful street block');
+  assert.equal(info.walkway.drawMeshes,2,
+   'The full modelled pavement and curb must use only TWO batched draw calls');
+  assert.equal(info.walkway.privateDrivewaysInvented,0);
+  assert.equal(info.walkway.createsMappedFootway,false);
+  assert.equal(info.walkway.positionSurveyed,false);
+  if(cfg.sourcePhoto){
+   assert.equal(info.audit.sourceDate,'2024-05-30');
+   assert.equal(info.audit.cameraMode,'documented-photo-gps-and-heading');
+   assert(info.source.includes('kostel_sv.'));
+  }
   assert.equal(info.audit.view,cfg.id);
   assert.equal(info.audit.cameraMode,cfg.streetLevel?'technical-osm-street-axis':cfg.technical?
    'technical-osm-overhead':'documented-photo-gps-and-heading');
@@ -118,7 +134,7 @@ try{
   assert.equal(info.playerHudHidden,true);
   assert.equal(info.visibleCanvas,true);
   assert.deepEqual(errors,[]);
-  await page.screenshot({path:'browser-artifacts/milovice-street-58300-'+cfg.id+'.png'});
+  await page.screenshot({path:'browser-artifacts/milovice-street-58400-'+cfg.id+'.png'});
   console.log('STREET_BLOCK_WEBGL_OK',JSON.stringify({
    mode:cfg.id,scenes:info.audit.generatedSceneCount,source:info.source,
    cameraMode:info.audit.cameraMode,roadClearance:info.scene?.minRoadClearance,
