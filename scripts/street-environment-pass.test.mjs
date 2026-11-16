@@ -159,7 +159,14 @@ assert(cameraHTML.includes("rpStreetAuditId.startsWith('pionyru')"));
 assert(cameraHTML.includes('camera.position.set(x,terrainAt(x,z)+1.68,z)'));
 assert(cameraHTML.includes("streetAudit=pionyru-forward"));
 assert(cameraHTML.includes("streetAudit=pionyru-reverse"));
-assert(cameraHTML.includes("buildingWays.find(w=>String(w.id)==='118487991')?.geometry.map(osmPoint)||[]"));
+assert(cameraHTML.includes("const churchSource=buildingWays.find(w=>String(w.id)==='118487991')"));
+assert(cameraHTML.includes('if(churchStreetSourceComplete){'));
+assert(cameraHTML.includes("roadWays.some(w=>String(w.id)==='219273174')"));
+assert(cameraHTML.includes("roadWays.some(w=>String(w.id)==='118488006')"));
+assert(cameraHTML.includes('photoChurchStreet2022.create(osmDriveRoads,footprints,churchFootprint)'),
+ 'The 5-second regional stream must NOT recreate photo scene with missing church');
+assert(cameraHTML.includes('if(trainStation&&railPlatform&&mappedStationPassage){'),
+ 'Unrelated regional data must not reset photographed station models');
 assert(cameraHTML.includes('streetlamp2022.modelCount'));
 assert(cameraHTML.includes("document.getElementById('street-audit-source').href=rpStreetAuditView.source"));
 assert(cameraHTML.includes('camera.up.set(pionyru?.ux??mapped?.ux??0,0,pionyru?.uz??mapped?.uz??-1)'),
