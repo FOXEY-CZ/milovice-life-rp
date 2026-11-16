@@ -16,6 +16,15 @@ export const CHURCH_STREET_PHOTO_PASS=Object.freeze({
  roadTagsChanged:false,buildingFootprintsChanged:false,
  unverifiedTrafficMarkings:0,unverifiedPrivateDriveways:0
 });
+export const PIONYRU_GATE_PANORAMA_2022=Object.freeze({
+ source:'https://mapy.com/cs/letecka?pid=81190391&newest=1&yaw=3.834&fov=1.257&pitch=-0.032&x=14.8849165&y=50.2277105&z=18.748&ovl=8',
+ camera:{lat:50.2277105,lon:14.8849165,yawRadians:3.834},
+ photographedOSMHouseId:'202385910',date:'2022-05-09',
+ observed:['brown diamond-panel gate','pale masonry piers','block boundary wall',
+  'low mesh fence','paved sidewalk','grass verge'],
+ approximateAlongFromPionyruM:62,positionSurveyed:false,
+ privateOwnershipUnverified:true,roadOrFootwayChanged:false
+});
 const X=p=>p.x,Z=p=>p.z??p.y;
 const dist=(a,b)=>Math.hypot(X(a)-X(b),Z(a)-Z(b));
 function axis(roads,churchFootprint){
@@ -95,7 +104,10 @@ export function planChurchStreetscape2022(roads,{roadClearance=null,
   if(roadOk&&buildingOk)fence.push(item);
   else rejectedFence.push({along,reason:!roadOk?'mapped-road-or-footway':'building'});
  }
- const trees=[],rejectedTrees=[];
+ const photoGate=fence.find(f=>Math.abs(f.along-
+   PIONYRU_GATE_PANORAMA_2022.approximateAlongFromPionyruM)<.4)||null;
+  // Reuse ONLY a photo-informed, whole-footprint collision-cleared fence slot.
+  const trees=[],rejectedTrees=[];
  for(const [along,side,height,crown] of [
   [34,12.0,7.5,3.4],[61,12.3,8.6,4.0],[88,12.2,9.1,4.2],
   [112,12.4,7.8,3.3]
@@ -127,6 +139,7 @@ export function planChurchStreetscape2022(roads,{roadClearance=null,
   fenceCandidates:fence.length+rejectedFence.length,
   fenceSegments:fence.length,rejectedFence,trees,rejectedTrees,fence,
   photoTrees:trees.length,roadTonePatches:asphaltWear.length,asphaltWear,
+  photoGate,photoGatePositionSurveyed:false,photographedHouseId:'202385910',
   mappedRoadsChanged:false,footwaysChanged:false,
   buildingFootprintsChanged:false,privatePropertyLinesVerified:false,
   inventedPrivateDriveways:0,paintedRoadLines:0,
@@ -138,6 +151,8 @@ export function makeChurchStreetscape2022(THREE,{
  let root=null,plan=null,geometry=[];
  const mutedConcrete=new THREE.MeshLambertMaterial({color:0x938d80});
  const railMetal=new THREE.MeshLambertMaterial({color:0x787c70});
+ const gateBrown=new THREE.MeshLambertMaterial({color:0x542b23});
+ const gateEmboss=new THREE.MeshLambertMaterial({color:0x794032});
  const bark=new THREE.MeshLambertMaterial({color:0x544536});
  const leaves=new THREE.MeshLambertMaterial({color:0x426745,flatShading:true});
  const leavesAlt=new THREE.MeshLambertMaterial({color:0x66864d,flatShading:true});
@@ -153,7 +168,7 @@ export function makeChurchStreetscape2022(THREE,{
   const obj=new THREE.Object3D();
   items.forEach((p,i)=>{
    obj.position.set(p.x,p.y,p.z);
-   obj.rotation.set(0,p.yaw||0,0);
+   obj.rotation.set(0,p.yaw||0,p.roll||0,'YXZ');
    obj.scale.set(p.w,p.h,p.d);obj.updateMatrix();
    mesh.setMatrixAt(i,obj.matrix);
   });
@@ -168,9 +183,28 @@ export function makeChurchStreetscape2022(THREE,{
   reset();
   plan=nextPlan;
   root=new THREE.Group();root.name='ChurchStreetscapePhotoMay2022';
-  const bases=[],posts=[],rails=[],trunks=[],crowns=[],crowns2=[];
+  const bases=[],posts=[],rails=[],gatePanels=[],gateDiamonds=[],trunks=[],crowns=[],crowns2=[];
   for(const f of plan.fence){
    const ground=terrainAt(f.x,f.z);
+   if(plan.photoGate===f){
+    // Photo confirms gate design, NOT its cadastral location. Four original
+    // mesh panels replace a safe generic fence section; no invented driveway.
+    const n=4,leaf=f.length/n;
+    for(let i=0;i<n;i++){
+     const t=(i+.5)/n;
+     const gx=f.ax.x+(f.bx.x-f.ax.x)*t,gz=f.ax.z+(f.bx.z-f.ax.z)*t;
+     const y=terrainAt(gx,gz)+.89;
+     gatePanels.push({x:gx,y,z:gz,w:leaf-.035,h:1.70,d:.09,yaw:f.yaw});
+     for(const roll of [-.62,.62])
+      gateDiamonds.push({x:gx,y,z:gz,w:1.88,h:.045,d:.105,yaw:f.yaw,roll});
+    }
+    for(const t of [0,1]){
+     const gx=f.ax.x+(f.bx.x-f.ax.x)*t,gz=f.ax.z+(f.bx.z-f.ax.z)*t;
+     bases.push({x:gx,y:terrainAt(gx,gz)+.92,z:gz,
+      w:.28,h:1.84,d:.31,yaw:f.yaw});
+    }
+    continue;
+   }
    // Low textured concrete plinth with slim metal rail posts above.
    bases.push({x:f.x,y:ground+.18,z:f.z,w:f.length,h:.36,d:.19,yaw:f.yaw});
    for(let i=0;i<=4;i++){
@@ -201,6 +235,8 @@ export function makeChurchStreetscape2022(THREE,{
   batch(bases,boxGeo,mutedConcrete);
   batch(posts,boxGeo,railMetal);
   batch(rails,boxGeo,railMetal);
+   batch(gatePanels,boxGeo,gateBrown);
+   batch(gateDiamonds,boxGeo,gateEmboss);
   batch(trunks,trunkGeo,bark);
   batch(crowns,crownGeo,leaves);
   batch(crowns2,crownGeo,leavesAlt);
@@ -247,6 +283,9 @@ export function makeChurchStreetscape2022(THREE,{
   return {active:!!plan,rendered:!!root,sourceDate:'2022-05-09',
    photoPlacementSurveyed:false,
    fenceSegments:plan?.fenceSegments||0,
+    brownGateLeaves:plan?.photoGate?4:0,
+    photoGateSource:PIONYRU_GATE_PANORAMA_2022.source,
+    photoGatePositionSurveyed:false,
    rejectedFenceSegments:plan?.rejectedFence.length||0,
    rightTrees:plan?.photoTrees||0,
    rejectedTrees:plan?.rejectedTrees.length||0,
