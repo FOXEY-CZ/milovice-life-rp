@@ -30,7 +30,7 @@ try{
    viewport:{width:cfg.width,height:cfg.height},deviceScaleFactor:1,
    isMobile:cfg.mobile,hasTouch:cfg.mobile});
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=58400&forecourtAudit='+cfg.view+
+  await page.goto('http://127.0.0.1:8080/?v=58500&forecourtAudit='+cfg.view+
    (cfg.flat?'&roadSurfaceFlat=1':'')+
    (cfg.inspection?'&entryInspection=1':'')+
    (cfg.overview?'&parkingOverview=1':''),
@@ -62,7 +62,7 @@ try{
    fov:(()=>window.__miloviceForecourtAuditRendered?.active?1:null)()
   }));
   const v=state.review;
-  assert.equal(state.build,'20261116-photo-sidewalk-and-public-church-camera-58400');
+  assert.equal(state.build,'20261116-church-photo-streetscape-batch-58500');
   assert.equal(state.panelVisible,true);
   assert.equal(state.compact,cfg.mobile);
   assert.equal(state.expansionButton,cfg.mobile?'false':'true');
@@ -234,7 +234,7 @@ try{
    cfg.view+': mapped '+id+' must be in real camera frame');
   assert.equal(state.sourceLink,v.source);
   assert.deepEqual(errors,[]);
-  const path='browser-artifacts/milovice-forecourt-58400-'+cfg.view+
+  const path='browser-artifacts/milovice-forecourt-58500-'+cfg.view+
    (cfg.flat?'-flat':'')+(cfg.inspection?'-entry':'')+
    (cfg.overview?'-parking-overview':'')+
    (cfg.mobile?'-mobile':'')+'.png';
