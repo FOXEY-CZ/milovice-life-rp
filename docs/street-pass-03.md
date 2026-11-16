@@ -192,3 +192,53 @@ osazení podléhá stejným kontrolám kolize s vozovkami, chodníky a domy.
 **Přesná geodetická poloha lampy stále není ověřená.** Technický pohled
 ke kostelu používá herní OSM kameru, ne stejné ohnisko a stanoviště jako
 fotografie Mapy.com z 9. 5. 2022. Ostatní ulice a budovy zůstaly beze změny.
+
+
+## 5.84.0 — společná foto-rekonstrukce 5. května: levý chodník + veřejná 2024 kamera
+
+**Nové vstupy, 16. 11. 2026:**
+- Uživatelův screenshot Mapy.com Panorama **9. 5. 2022**: ve směru ke kostelu je
+  na LEVÉ straně ulice vidět úzký veřejný chodník s obrubou. Datum 2022 je
+  historický stav; z panoramatu neznáme souřadnice hran dlažby.
+- Wikimedia Commons, **ŠJů, 30. 5. 2024, CC BY 4.0**:
+  [Milovice, kostel sv. Kateřiny (05)](https://commons.wikimedia.org/wiki/File:Milovice,_kostel_sv._Kate%C5%99iny_(05).jpg).
+  Fotograf uvedl **50.2278239 N, 14.8837536 E, heading 320°**.
+  Používáme tento ověřený bod a heading přímo pro pohled
+  `?v=58400&streetAudit=church-2024`. FOV herní kamery a terén
+  se neodvozují přímo z fotodokumentace: shoda snímků není pixel-perfect.
+- Veřejný přehled dalších souvisejících fotografií:
+  [Wikimedia Commons – 5. května (Milovice)](https://commons.wikimedia.org/wiki/Category:5._kv%C4%9Btna_(Milovice)).
+  Zejména [Tiia Monto 26. 7. 2014](https://commons.wikimedia.org/wiki/File:Milovice_-_5._kv%C4%9Btna.jpg)
+  a [ŠJů Mírová 36, 30. 5. 2024](https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_36.jpg)
+  už měly jiné, zdrojově samostatně přiznané modelové zásahy.
+  **Nespojovat objekty z odlišných úseků jen podle názvu ulice.**
+
+**Skutečně vytvořená 3D geometrie:**
+- Nový sdílený plánovač `scripts/photo-sidewalk-2022.js` zkouší
+  celé chodníkové pásmo na **5. května od Pionýrů směrem ke kostelu**.
+  Zvolený konzervativní vizuální odhad: od 9 do 117 m od mapované
+  křižovatky, levý středový odstup -5,53 m od OSM osy, šířka 1,45 m,
+  vzorkování po 2,25 m. Tyto hodnoty nejsou zaměřené GPS ani neplynou
+  přímo ze čtení pixelů chráněného Panoramata. Jsou přiznané v konfiguraci
+  a budou revidovány s přesnějším úhlem.
+- Před každým úsekem probíhá **kontrola celého orientovaného obdélníku**
+  s bezpečnostní rezervou vůči původní OSM silnici, VŠEM ostatním
+  zmapovaným cestám a budovám. Neplatné segmenty se přeskočí;
+  nepřemosťují se novou vymyšlenou cestou. Plocha ani silnice nepoužívají
+  nové uzly OSM.
+- Přijaté segmenty se dávkově vykreslí v pouhých **dvou meshích**
+  (chodník se stávající dlažební texturou a souvislá nízká obruba).
+  Vertex-height vychází ze stejné funkce terénu jako silnice.
+  Nevytváří se žádný soukromý vjezd, plot nebo nové fyzické domy.
+  Měřitelný skutečně vykreslený součet uvádí
+  `window.__miloviceChurchSidewalk2022.modelledLengthM`.
+- Reprodukční a kolizní test:
+  `scripts/photo-sidewalk-2022.test.mjs`, společná mobilní WebGL
+  kontrola `scripts/street-block-webgl.mjs`.
+
+**Není hotovo:** Reality-match konkrétních plotů, fasád, výsadeb a
+parcelních vjezdů je stále otevřený; bez dalších fotoúhlů se nesmějí
+hromadně domyslet. Další důležitý krok je vzít `church-2024` pohled
+a porovnat s přesným veřejným fotografickým zdrojem, poté v jednom bloku
+opravit několik OSM fasád se skutečnými rozdíly místo zvyšování
+počtu generických dekorací.
