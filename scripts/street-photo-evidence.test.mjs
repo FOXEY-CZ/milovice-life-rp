@@ -45,6 +45,12 @@ assert(stats.withNearbyPhotos>=3&&stats.withNearbyPhotos<stats.buildings,
  'Only a minority of houses have locally discovered photo candidates');
 assert.equal(stats.allFacadesVerified,false);
 assert(photos.some(x=>x.taken==='2014-07-26'&&x.scope==='historical-streetscape'));
+const mirovaHousePhoto=photos.find(p=>p.id==='mirova-36-2024');
+assert.equal(mirovaHousePhoto?.heading,65,'Use photographer heading from Wikimedia metadata');
+const publicCameraMarkup=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+assert(publicCameraMarkup.includes("'mirova36-2024':")&&
+ publicCameraMarkup.includes("'school-2024':"),
+ 'Public image cameras must open directly, without user Panorama screenshots');
 const historicStreet=photos.find(p=>p.id==='5kv-2014');
 assert.deepEqual(historicStreet?.camera,[50.227797,14.884813]);
 assert.equal(historicStreet?.heading,null,'2014 source heading is unknown; never invent photo orientation');
