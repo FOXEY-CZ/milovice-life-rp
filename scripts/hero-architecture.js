@@ -125,7 +125,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
   const genericBudget=Math.max(0,maxBuildings-reserved-photoReserved);
   if(excluded||(!override&&(preferred?selectedPriority>=reserved:
      photoFocus?selectedPhotoFocus>=photoReserved:selectedNormal>=genericBudget))||
-     points?.length<4||points.length>10||
+     points?.length<4||points.length>(photoFocus?19:10)||
     !(height>=2.7&&height<=(override?25:12.5))||floors>(override?6:3))return false;
   if(!['house','residential','yes','detached','semidetached_house','terrace'].includes(type))return false;
   const center=points.reduce((a,p)=>({x:a.x+p.x/points.length,z:a.z+p.y/points.length}),{x:0,z:0});
