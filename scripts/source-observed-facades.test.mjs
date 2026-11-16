@@ -47,7 +47,9 @@ for(const poly of [fork,[...fork].reverse()]){
 }
 const html=readFileSync(new URL('./hero-architecture.js',import.meta.url),'utf8');
 assert(html.includes('planSourceObservedFacade(String(identity),edgeFrame)'));
-assert(html.includes('const actualSide=sideLayout||observed?.side||null;'));
+assert(html.includes('const actualSide=sideLayout||observed?.side||inferred||null;'));
+assert(html.includes('const inferred=!sideLayout&&!observed?inferUnverifiedFacade('),
+ 'Only walls without verified photos or source-observed facade patterns can be reconstructed');
 assert(html.includes("String(identity)!=='202298939'")&&
  html.includes('sideIndex===entrySide'),
  'No photo-confirmed fork entry may be invented on an unseen wall');
