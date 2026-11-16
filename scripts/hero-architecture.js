@@ -13,8 +13,8 @@ import {planSourceObservedFacade} from './source-observed-facades.js?v=5520';
 export function makeMiloviceHeroArchitecture(THREE,{
   sites=[],radius=240,maxBuildings=68,terrainAt=()=>0
 }={}){
- const chunks=new Map(),selected=new Set(),priorityIds=new Set();
- let selectedPriority=0,selectedNormal=0;
+ const chunks=new Map(),selected=new Set(),priorityIds=new Set(),photoFocusIds=new Set();
+ let selectedPriority=0,selectedNormal=0,selectedPhotoFocus=0;
  const appliedFaces=[];
  const state={buildings:0,verifiedOverrides:0,verifiedFaces:0,photoMappedFaces:0,
   photoMappedWindows:0,sourceObservedFacades:0,sourceObservedWindows:0,
@@ -31,6 +31,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
   anchoredOpenings:0,maxFrameDetachment:0,wallPlaneSource:'OSM exterior polygon',
   groundedDoors:0,maxDoorGroundStep:0,maxFormerDoorGap:0,
   massBlockPriorityBuilt:0,massBlockReservedPlaces:0,
+   photoFocusReservedPlaces:0,photoFocusBuilt:0,
   massBlockNoPhotoApproval:true,
   doorPlinthOpenings:0,groundedDoorWallHoles:0};
  const box=new THREE.BoxGeometry(1,1,1),glassPlane=new THREE.PlaneGeometry(1,1);
@@ -112,19 +113,23 @@ export function makeMiloviceHeroArchitecture(THREE,{
  function publish(){
   if(typeof window!=='undefined')window.__miloviceHeroArchitecture={...state,
    selectedIds:[...selected].slice(0,8),faceAudits:appliedFaces.slice(0,32),radius,maxBuildings,
-   priorityIds:[...priorityIds],normalBuilt:selectedNormal,priorityBuilt:selectedPriority};
+   priorityIds:[...priorityIds],photoFocusIds:[...photoFocusIds],
+    normalBuilt:selectedNormal,priorityBuilt:selectedPriority,photoFocusCompleted:selectedPhotoFocus};
  }
  function supports({points,height,floors,type,index,id,excluded=false,override=null}){
   const preferred=priorityIds.has(String(id));
+  const photoFocus=photoFocusIds.has(String(id));
   // Guarantee mapped church-street houses a share of the existing
   // 68-building budget, independent of OSM import order.
-  const reserved=priorityIds.size;
+  const reserved=priorityIds.size,photoReserved=photoFocusIds.size;
+  const genericBudget=Math.max(0,maxBuildings-reserved-photoReserved);
   if(excluded||(!override&&(preferred?selectedPriority>=reserved:
-     selectedNormal>=maxBuildings-reserved))||points?.length<4||points.length>10||
+     photoFocus?selectedPhotoFocus>=photoReserved:selectedNormal>=genericBudget))||
+     points?.length<4||points.length>10||
     !(height>=2.7&&height<=(override?25:12.5))||floors>(override?6:3))return false;
   if(!['house','residential','yes','detached','semidetached_house','terrace'].includes(type))return false;
   const center=points.reduce((a,p)=>({x:a.x+p.x/points.length,z:a.z+p.y/points.length}),{x:0,z:0});
-  if(!override&&!preferred&&!sites.some(p=>Math.hypot(p.x-center.x,p.z-center.z)<radius))return false;
+  if(!override&&!preferred&&!photoFocus&&!sites.some(p=>Math.hypot(p.x-center.x,p.z-center.z)<radius))return false;
   const xs=points.map(p=>p.x),zs=points.map(p=>p.y);
   const width=Math.max(...xs)-Math.min(...xs),depth=Math.max(...zs)-Math.min(...zs);
   if(width<4||depth<4||width>44||depth>44||width*depth>850)return false;
@@ -138,7 +143,9 @@ export function makeMiloviceHeroArchitecture(THREE,{
   selected.add(identity);
   const massPriority=priorityIds.has(String(identity));
   if(massPriority){selectedPriority++;state.massBlockPriorityBuilt++}
-  else selectedNormal++;
+  else if(photoFocusIds.has(String(identity))){
+   selectedPhotoFocus++;state.photoFocusBuilt++;
+  }else selectedNormal++;
   const pts=[...points];
   if(pts.length>4&&pts[0].distanceTo(pts[pts.length-1])<.10)pts.pop();
   const centroid=pts.reduce((a,p)=>({x:a.x+p.x/pts.length,z:a.z+p.y/pts.length}),{x:0,z:0});
@@ -385,6 +392,19 @@ export function makeMiloviceHeroArchitecture(THREE,{
   state.massBlockReservedPlaces=priorityIds.size;
   publish();
  }
+ function setPhotoFocusIds(ids=[]){
+  // 20 church street + 12 Mírová + 36 remaining = unchanged max 68.
+  if(selected.size)throw Error('Photo street focus must precede construction');
+  photoFocusIds.clear();
+  for(const id of ids){
+   const key=String(id);
+   if(!/^\d+$/.test(key)||priorityIds.has(key)||photoFocusIds.has(key))continue;
+   if(photoFocusIds.size>=20||photoFocusIds.size+priorityIds.size>=maxBuildings)break;
+   photoFocusIds.add(key);
+  }
+  state.photoFocusReservedPlaces=photoFocusIds.size;
+  publish();
+ }
  function flush(parent){
   let batches=0;
   for(const [key,chunk] of [...chunks]){
@@ -423,7 +443,8 @@ export function makeMiloviceHeroArchitecture(THREE,{
   state.chunkCount+=batches;publish();
  }
  function reset(){
-  chunks.clear();selected.clear();priorityIds.clear();selectedPriority=0;selectedNormal=0;appliedFaces.length=0;
+  chunks.clear();selected.clear();priorityIds.clear();photoFocusIds.clear();
+  selectedPriority=0;selectedNormal=0;selectedPhotoFocus=0;appliedFaces.length=0;
   for(const key of Object.keys(state))state[key]=0;
   // Geometry counters reset between district loads, but the shared
   // GPU material kit is permanent. Do not misreport it as discarded.
@@ -434,5 +455,5 @@ export function makeMiloviceHeroArchitecture(THREE,{
   publish();
  }
  publish();
- return {addBuilding,flush,reset,setPriorityIds,stats:()=>({...state})};
+ return {addBuilding,flush,reset,setPriorityIds,setPhotoFocusIds,stats:()=>({...state})};
 }
