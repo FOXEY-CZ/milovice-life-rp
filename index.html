@@ -3947,6 +3947,54 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
     id:osmId,points:pts,base:baseHeight,height:h,
     roofPlan:photoHostRoofPlan
    });
+   // 2022 user Panorama: one white triangular window in the actual
+   // NE-facing gable. It shares OSM way 202385910's real front edge.
+   if(isPionyru2022PhotoGable){
+    const a=pts[0],b=pts[1],len=Math.hypot(b.x-a.x,b.y-a.y);
+    if(len>4){
+     const ux=(b.x-a.x)/len,uz=(b.y-a.y)/len;
+     const mx=(a.x+b.x)*.5,mz=(a.y+b.y)*.5;
+     const eye=stationGpsToWorld({lat:50.2277105,lon:14.8849165});
+     const sign=((eye.x-mx)*uz-(eye.z-mz)*ux)>=0?1:-1;
+     const nx=uz*sign,nz=-ux*sign;
+     const xyz=(along,rise,offset)=>[
+      mx+ux*along+nx*offset,baseHeight+h+rise,mz+uz*along+nz*offset
+     ];
+     const triangle=[[-.53,.57],[.53,.57],[0,1.21]];
+     const glassGeo=new THREE.BufferGeometry();
+     glassGeo.setAttribute('position',new THREE.Float32BufferAttribute(
+      triangle.flatMap(p=>xyz(...p,.105)),3));
+     glassGeo.computeVertexNormals();
+     const glass=new THREE.Mesh(glassGeo,new THREE.MeshStandardMaterial({
+      color:0x354851,roughness:.29,metalness:.12,side:THREE.DoubleSide
+     }));
+     glass.name='Pionyru2022_OSM202385910_attic_triangle_glass';
+     const frameVertices=[];
+     for(let i=0;i<3;i++){
+      const u=triangle[i],v=triangle[(i+1)%3],dx=v[0]-u[0],dy=v[1]-u[1],
+       l=Math.hypot(dx,dy),tx=-dy/l*.095,ty=dx/l*.095;
+      const A=xyz(u[0]+tx,u[1]+ty,.131),B=xyz(v[0]+tx,v[1]+ty,.131);
+      const C=xyz(v[0]-tx,v[1]-ty,.131),D=xyz(u[0]-tx,u[1]-ty,.131);
+      frameVertices.push(...A,...B,...C,...A,...C,...D);
+     }
+     const frameGeo=new THREE.BufferGeometry();
+     frameGeo.setAttribute('position',new THREE.Float32BufferAttribute(frameVertices,3));
+     frameGeo.computeVertexNormals();
+     const frame=new THREE.Mesh(frameGeo,new THREE.MeshLambertMaterial({
+      color:0xe6e8de,side:THREE.DoubleSide
+     }));
+     frame.name='Pionyru2022_OSM202385910_attic_triangle_frame';
+     for(const mesh of [glass,frame]){
+      mesh.userData.lodX=mx;mesh.userData.lodZ=mz;
+      mesh.userData.lodDetail=true;osmLayer.add(mesh);
+     }
+     window.__milovicePionyru2022Facade={
+      osmId:'202385910',photo:'mapy-pid-81190391',
+      frontEdgeIndex:0,triangleWindow:true,frameOnSameWall:true,
+      photoDimensionsEstimated:true,sourcePixelsCopied:false
+     };
+    }
+   }
     miloviceBusinessFront(pts,tags,baseHeight,h,centerX,centerZ,osmId);
  // Every fifth unreviewed building used to receive a giant 4×3m invented
  // rooftop box. Nothing in OSM or photos supports those. Remove across the
