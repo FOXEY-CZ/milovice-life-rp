@@ -237,7 +237,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
   <div class="rp-job-card"><strong>🚌 Autobusová směna</strong><p>Testovací trasa přes pojmenované silnice z OSM. Kontrolní body nejsou ověřenými skutečnými zastávkami.</p><button id="rp-job-start" type="button">▶ Zahájit směnu</button><button id="rp-job-end" type="button" hidden>■ Ukončit směnu</button></div>
  </div>
 </section>
-<section id="realmap" aria-label="Skutečná mapa Milovic"><div id="maphead"><strong>🗺️ Milovice – skutečná mapa</strong><div class="mapactions"><button id="mapfollow" type="button" title="Vycentrovat mapu na postavu">🎯 Kde jsem?</button><button id="closemap" type="button">✕ Zpět do hry</button></div></div><div id="osmmap"></div><div id="mapfoot">Silnice a půdorysy: © přispěvatelé OpenStreetMap (ODbL). Výškopis: © ČÚZK / Zeměměřický úřad, DMR 4G (CC BY 4.0), nadmořské výšky jsou interpolovány na herní síť 10 m. Fasády a barvy jsou herní aproximací podle veřejných fotografií, nikoli přesnou kopií každého objektu. · <a href="./survey.html?id=old%3AN%C3%A1dra%C5%BEn%C3%AD" target="_blank" rel="noopener noreferrer">🧭 Průzkum Nádražní (REBUILD 2.0)</a></div></section><script>
+<section id="realmap" aria-label="Skutečná mapa Milovic"><div id="maphead"><strong>🗺️ Milovice – skutečná mapa</strong><div class="mapactions"><button id="mapfollow" type="button" title="Vycentrovat mapu na postavu">🎯 Kde jsem?</button><button id="mapfollow-camera" type="button" title="Zobrazit polohu a směr kamery">📷 Kamera + směr</button><button id="closemap" type="button">✕ Zpět do hry</button></div></div><div id="osmmap"></div><div id="mapfoot">Silnice a půdorysy: © přispěvatelé OpenStreetMap (ODbL). Výškopis: © ČÚZK / Zeměměřický úřad, DMR 4G (CC BY 4.0), nadmořské výšky jsou interpolovány na herní síť 10 m. Fasády a barvy jsou herní aproximací podle veřejných fotografií, nikoli přesnou kopií každého objektu. · <a href="./survey.html?id=old%3AN%C3%A1dra%C5%BEn%C3%AD" target="_blank" rel="noopener noreferrer">🧭 Průzkum Nádražní (REBUILD 2.0)</a></div></section><script>
 (function(){
  const hud=document.getElementById('hud'),toggle=document.getElementById('rp-hud-toggle');
  if(!hud||!toggle)return;
@@ -263,6 +263,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <script type="module">
 const mapLaunch=document.getElementById('maplaunch'),mapPanel=document.getElementById('realmap');
 let leafletMap=null,leafletPlayer=null,leafletHalo=null,leafletMarks=[],fullMapFollow=true,lastFullMapPoint=null;
+let leafletCameraMarker=null,leafletCameraRay=null,leafletCameraTip=null,fullMapFollowCamera=false;
 const GAME_ORIGIN_LAT=50.226,GAME_ORIGIN_LON=14.889;
 function gameToLatLng(xx,zz){return [GAME_ORIGIN_LAT-zz/111320,GAME_ORIGIN_LON+xx/(111320*Math.cos(GAME_ORIGIN_LAT*Math.PI/180))]}
 function liveMapPlayer(){
@@ -279,12 +280,42 @@ function updateRealMapPlayer(forceCenter=false){
   })}).addTo(leafletMap).bindPopup('🧍 Tvoje poloha ve hře');
   leafletHalo=window.L.circle(coords,{radius:9,weight:1,color:'#3f9fff',fillColor:'#459eff',fillOpacity:.12,interactive:false}).addTo(leafletMap);
  }else{leafletPlayer.setLatLng(coords);leafletHalo.setLatLng(coords)}
- const arrow=leafletPlayer.getElement()?.querySelector('.milovice-player-arrow');
+ // 3D camera GPS and its true forward vector, separate from vehicle heading.
+  // 85 m map arrow is illustrative and does not imply a cleared line of sight.
+  const gps=rpGetLiveCameraGps(),camCoords=[gps.latitude,gps.longitude];
+  const horizontal=Math.hypot(rpCameraGpsDirection.x,rpCameraGpsDirection.z);
+  const tipCoords=gps.bearingDegrees===null?camCoords:
+   gameToLatLng(camera.position.x+rpCameraGpsDirection.x/horizontal*85,
+    camera.position.z+rpCameraGpsDirection.z/horizontal*85);
+  if(!leafletCameraMarker){
+   leafletCameraRay=window.L.polyline([camCoords,tipCoords],{
+    color:'#f5a623',weight:5,opacity:.95,interactive:false}).addTo(leafletMap);
+   leafletCameraMarker=window.L.marker(camCoords,{keyboard:false,zIndexOffset:1700,
+    icon:window.L.divIcon({className:'milovice-camera-marker',iconSize:[32,32],
+     iconAnchor:[16,16],html:'<span class="milovice-camera-dot">📷</span>'})
+   }).addTo(leafletMap).bindTooltip('Místo herní kamery');
+   leafletCameraTip=window.L.marker(tipCoords,{keyboard:false,zIndexOffset:1650,
+    icon:window.L.divIcon({className:'milovice-camera-direction-tip',iconSize:[28,28],
+     iconAnchor:[14,14],html:'<span class="milovice-camera-tip-arrow">▲</span>'})
+   }).addTo(leafletMap).bindTooltip('Směr pohledu');
+  }else{
+   leafletCameraMarker.setLatLng(camCoords);
+   leafletCameraRay.setLatLngs([camCoords,tipCoords]);
+   leafletCameraTip.setLatLng(tipCoords);
+  }
+  if(gps.bearingDegrees===null){
+   if(leafletMap.hasLayer(leafletCameraTip))leafletMap.removeLayer(leafletCameraTip);
+  }else{
+   if(!leafletMap.hasLayer(leafletCameraTip))leafletCameraTip.addTo(leafletMap);
+   const tip=leafletCameraTip.getElement()?.querySelector('.milovice-camera-tip-arrow');
+   if(tip)tip.style.transform='rotate('+gps.bearingDegrees+'deg)';
+  }
+  const arrow=leafletPlayer.getElement()?.querySelector('.milovice-player-arrow');
  if(arrow)arrow.style.transform='rotate('+(-heading*180/Math.PI)+'deg)';
- if(forceCenter||(fullMapFollow&&(!lastFullMapPoint||leafletMap.distance(lastFullMapPoint,coords)>12))){
-  leafletMap.panTo(coords,{animate:false});
+ if(forceCenter||((fullMapFollow||fullMapFollowCamera)&&(!lastFullMapPoint||leafletMap.distance(lastFullMapPoint,fullMapFollowCamera?camCoords:coords)>12))){
+  leafletMap.panTo(fullMapFollowCamera?camCoords:coords,{animate:false});
  }
- lastFullMapPoint=coords;
+ lastFullMapPoint=fullMapFollowCamera?camCoords:coords;
 }
 function addRealMapLandmarks(){
  if(!leafletMap||leafletMarks.length)return;
@@ -301,7 +332,8 @@ function addRealMapLandmarks(){
   radius:6,color:'#173e59',weight:2,fillColor:'#efb84a',fillOpacity:.96
  }).bindTooltip(p.name).addTo(leafletMap));
 }
-document.getElementById('mapfollow').onclick=()=>{fullMapFollow=true;updateRealMapPlayer(true)};
+document.getElementById('mapfollow').onclick=()=>{fullMapFollow=true;fullMapFollowCamera=false;updateRealMapPlayer(true)};
+document.getElementById('mapfollow-camera').onclick=()=>{fullMapFollowCamera=true;fullMapFollow=false;updateRealMapPlayer(true)};
 setInterval(()=>{if(mapPanel.classList.contains('open'))updateRealMapPlayer()},280);
 function loadStyle(href){if(document.querySelector('link[data-osm-leaflet]'))return;const l=document.createElement('link');l.rel='stylesheet';l.href=href;l.dataset.osmLeaflet='1';document.head.append(l)}
 async function openRealMap(){
@@ -312,7 +344,7 @@ async function openRealMap(){
   loadStyle('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
   if(!window.L)await new Promise((resolve,reject)=>{const t=document.createElement('script');t.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';t.onload=resolve;t.onerror=()=>reject(Error('Mapovou knihovnu se nepodařilo načíst'));document.head.append(t)});
   mapEl.textContent='';
-  leafletMap=window.L.map(mapEl,{zoomControl:true}).setView(liveMapPlayer(),16);leafletMap.on('dragstart',()=>{fullMapFollow=false});
+  leafletMap=window.L.map(mapEl,{zoomControl:true}).setView(liveMapPlayer(),16);leafletMap.on('dragstart',()=>{fullMapFollow=false;fullMapFollowCamera=false});
   window.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'}).addTo(leafletMap);
   addRealMapLandmarks();updateRealMapPlayer(true);setTimeout(()=>{leafletMap.invalidateSize();updateRealMapPlayer(true)},100);
  }catch(e){mapEl.textContent='Mapu se nepodařilo načíst. Zkontroluj internetové připojení. '+e.message}
