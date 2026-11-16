@@ -423,6 +423,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
   state.sharedSurfaceTextures=3;
   state.surfaceResolution=128;
   state.extraMaterialDrawCalls=0;
+  state.massBlockNoPhotoApproval=true;
   publish();
  }
  publish();
