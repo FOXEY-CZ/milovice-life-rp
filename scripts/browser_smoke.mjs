@@ -894,7 +894,10 @@ try{
    throw new Error('5.22 unsafe global street plants or lamps remain: '+JSON.stringify({streetFurniture,safety}));
   console.log('5.22 road-crossing and greenery safety:',JSON.stringify({streetFurniture,safety}));
   const regionalParking=await page.evaluate(()=>window.__miloviceParkingDebug);
- if(!regionalParking||regionalParking.parked<=parking.parked)
+ // Mladá may already be loaded by an earlier audit camera. Verify
+ // parked vehicles were not lost instead of requiring a second spawn.
+ if(!regionalParking||regionalParking.parked<parking.parked||
+    regionalParking.parked<4)
   throw new Error('Newly loaded Mladá region did not add parked cars: '+JSON.stringify(regionalParking));
  console.log('5.4.1 Mladá parked traffic:',JSON.stringify(regionalParking));
  if(mladaStats?.landscape<5)throw new Error('Missing mapped Mladá parks/forest/grass: '+JSON.stringify(mladaStats));

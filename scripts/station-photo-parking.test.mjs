@@ -1,3 +1,4 @@
+import {hasConsistentGameBuild} from './game-build-label.js';
 // Milovice RP 5.76 — true road-parallel exterior edge, not gridded curb stair steps
 // from recurring. Verify original OSM ways, full-stone-rectangle road checks,
 // photo-camera correlation, no fake cars, and constant draw-call budget.
@@ -490,7 +491,7 @@ assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmS
  'Carved sidewalk must reuse the same existing city paving material');
 assert(game.includes("from './scripts/station-photo-parking.js?v=58530'"),
  'The reviewed 5.76 parking geometry must now load safe gap filler, not a stale 5.76 module');
-assert(game.includes("const BUILD_ID='20261117-city-landuse-59100'"),
+assert(hasConsistentGameBuild(game),
  'New game version must retain 5.76 parking with the added ticket-machine scene');
 assert(game.includes("from './scripts/bike-tower-interior.js?v=5640'"));
 assert(game.includes("from './scripts/station-forecourt-pass.js?v=5650'"));

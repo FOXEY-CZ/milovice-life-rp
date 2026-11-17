@@ -1,3 +1,4 @@
+import {hasConsistentGameBuild} from './game-build-label.js';
 // Milovice RP 5.81.1: visually lighter glass and SILVER support from the
 // user's 17 May 2022 panorama and independent 30 May 2024 ŠJů photograph.
 // Critically: no new street furniture, no moved road/sidewalk, no new tower.
@@ -7,7 +8,7 @@ import {planBikeTowerSteelwork} from './bike-tower-interior.js';
 import {planUpperBiketowerSign} from './bike-tower-photo-sign.js';
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const interior=readFileSync(new URL('bike-tower-interior.js',import.meta.url),'utf8');
-assert(html.includes("const BUILD_ID='20261117-city-landuse-59100'"));
+assert(hasConsistentGameBuild(html));
 const begin=html.indexOf('function miloviceBikeTower(pts,base){');
 const end=html.indexOf('// 5.1.2',begin);
 assert(begin>0&&end>begin);

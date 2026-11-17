@@ -1,3 +1,4 @@
+import {hasConsistentGameBuild} from './game-build-label.js';
 // Milovice RP 5.81.4 — source-backed entry paving, not an invented
 // parking island or new path crossing Nádražní. Preserve road collision masks.
 import assert from 'node:assert/strict';
@@ -188,7 +189,7 @@ assert(!source.includes('new THREE.CanvasTexture'));
 assert(!source.includes('new THREE.TextureLoader'));
 assert(!source.includes('fetch('));
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(html.includes("const BUILD_ID='20261117-city-landuse-59100'"));
+assert(hasConsistentGameBuild(html));
 assert(html.includes("from './scripts/bike-tower-entry-paving.js?v=58530'"));
 assert(html.includes("bikeTowerEntryPaving.create(elements,{sidewalkMaterial:osmSidewalkMat})"));
 assert(html.includes('bikeTowerEntryPaving.reset()'));

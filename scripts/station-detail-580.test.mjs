@@ -1,3 +1,4 @@
+import {hasConsistentGameBuild} from './game-build-label.js';
 // Milovice RP 5.80 — details without moving photo-confirmed fixtures.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -56,7 +57,7 @@ assert(game.includes("if(rpAuditCameraWorld&&innerWidth<innerHeight)"));
 assert(game.includes("rpForecourtParkingOverview?64:rpForecourtEntryInspection?76:105;"));
 assert(game.includes("from './scripts/station-ticket-machines.js?v=5800'"));
 assert(game.includes("from './scripts/station-photo-facade.js?v=5790'"));
-assert(game.includes("const BUILD_ID='20261117-city-landuse-59100'"));
+assert(hasConsistentGameBuild(game));
 assert(game.includes("stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})"));
 assert(game.includes("stationTicketMachines.reset()"));
 console.log('5.80 safe visual detail PASS',JSON.stringify({

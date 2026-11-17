@@ -1,10 +1,11 @@
+import {hasConsistentGameBuild} from './game-build-label.js';
 // 5.81.6: screenshot reported an apparently disconnected entrance,
 // but current camera was too distant and its UI hid half the scene.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const s=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const paving=readFileSync(new URL('./bike-tower-entry-paving.js',import.meta.url),'utf8');
-assert(s.includes("const BUILD_ID='20261117-city-landuse-59100'"));
+assert(hasConsistentGameBuild(s));
 assert(s.includes("rpForecourtAuditId==='tower'"));
 assert(s.includes("get('entryInspection')==='1'"));
 assert(s.includes("NENÍ fotografická kamera"));

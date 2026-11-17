@@ -1,3 +1,4 @@
+import {hasConsistentGameBuild} from './game-build-label.js';
 // Milovice RP 5.79 — photo-observed station door → orange → yellow → window.
 // Detect real physical projections and reject the former generic windows that
 // passed tests despite the user's 2026-11-15 screenshot overlap.
@@ -50,7 +51,7 @@ assert(html.includes('removedInventedArchedWindowsOnPhotoWall:true'));
 assert(html.includes("from './scripts/station-photo-facade.js?v=5790'"));
 assert(html.includes("from './scripts/station-ticket-machines.js?v=5800'"));
 assert(html.includes("stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})"));
-assert(html.includes("const BUILD_ID='20261117-city-landuse-59100'"));
+assert(hasConsistentGameBuild(html));
 console.log('5.79 station photo-façade clean intervals and real source wall PASS',
  JSON.stringify({observedOrder:plan.observedOrder,
   minimumGap:+plan.minFixtureMachineGap.toFixed(3),
