@@ -9,7 +9,7 @@ const X=p=>p.x,Z=p=>p.z??p.y;
 const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
 export function isCarriageway(kind){
  return ['primary','secondary','tertiary','residential','unclassified',
-  'living_street','service','trunk','trunk_link','primary_link','secondary_link','road'].includes(kind);
+  'living_street','service','trunk','trunk_link','primary_link','secondary_link','road','track'].includes(kind);
 }
 export function isPedestrianWay(kind){
  return ['footway','path','pedestrian','steps','cycleway'].includes(kind);
