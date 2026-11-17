@@ -1,3 +1,15 @@
+## Milovice RP 5.91 — plynulejší přechody mezi městskými oblastmi (Part 20, 17. 11. 2026)
+
+**Spustit aktualizovaný web:** https://foxey-cz.github.io/milovice-life-rp/?v=59101
+
+- Na cestě mezi oblastmi se nyní může s předstihem stáhnout **jedna nejbližší dosud nenačtená oblast** v dosahu 1 140 m od jejího OSM obdélníku (620m standardní dohled + 520m rezervy). Dosavadní skutečné sestavení 3D oblasti proběhne na původní hranici 860 m; k vykreslování mimo dohled nedochází.
+- Přednačtené soubory **OSM budov/cest/zeleně a oficiálního výškového rastru ČÚZK DMR 4G** se při vstupu do oblasti použijí znovu, bez druhého síťového stahování. Soubory i jejich kontroly integrity zůstávají stejné.
+- Omezena paměť mobilních zařízení: nanejvýš jedna spekulativní oblast, při změně směru se nepotřebná uvolní a neúspěšný požadavek neblokuje další pokus. Diagnostika je v `window.__miloviceAreaPrefetch` a `window.__miloviceRegionHandoff`.
+- Kontrola průběhu: `scripts/city-region-prefetch.test.mjs` ověřuje duplicitní načítání, opětovné použití dat, chybové stavy a podmínky přechodu. Příprava oblasti nesmí vytvářet nové domy ani měnit jejich polohy.
+- Toto je **optimalizace stávajících šesti oblastí**, nikoliv nová sada fotograficky ověřených domů. FPS ani konkrétní čas načtení zatím nebyly změřeny na cílovém telefonu.
+
+---
+
 ## Milovice RP 5.91 — celé město: podklady zeleně a hřišť (17. 11. 2026)
 
 **Spustit:** https://foxey-cz.github.io/milovice-life-rp/?v=59100
