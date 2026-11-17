@@ -18,6 +18,8 @@ try{
    mobile:true,width:393,height:852},
   {id:'estate-mlada-5105',cat:'streets',quick:2,
    mobile:true,width:393,height:852},
+  {id:'slepa-houses-5112',cat:'streets',quick:2,
+   mobile:true,width:393,height:852},
   {id:'road-slepa-5108',cat:'streets',quick:2,
    mobile:true,width:393,height:852},
   {id:'play-mlada-5103',cat:'playgrounds',quick:1,
@@ -53,7 +55,7 @@ try{
   assert.equal(initial.category,view.cat);
   assert.equal(initial.openSections,view.mobile?0:1,
    'Mobile must not load all 21 street links open');
-  assert.equal(initial.allLinks,33);
+  assert.equal(initial.allLinks,34);
   assert.equal(initial.categories,7);
   assert.equal(initial.current,1);
   assert(await page.locator('#street-audit-exit').count()===1,
