@@ -2720,6 +2720,48 @@ window.__miloviceSlepaResidentialRuntime=()=>{
   visibleSeamInstances:visible.reduce((n,o)=>n+o.count,0),
   verifiedFullParentChain:true};
 };
+// 5.112: query REAL post-LOD Three.js instanced door geometry at the
+// model's own entrance positions. Never infer "visible" from a queued
+// architectural part or from a DOM counter. On-demand only, no frame work.
+window.__miloviceSlepaHouseRuntime=()=>{
+ const audit=window.__miloviceSlepaHouseAudit;
+ const rows=audit?.byOsmId||{};
+ const doors=Object.entries(rows).filter(([,r])=>r.modelDoorPosition);
+ const meshes=osmLayer.children.filter(o=>o.isInstancedMesh&&
+  o.material===architectureMaterials.darkWood);
+ const visible=m=>{
+  for(let p=m;p;p=p.parent){
+   if(!p.visible)return false;
+   if(p===scene)return true;
+  }
+  return false;
+ };
+ const matrix=new THREE.Matrix4(),world=new THREE.Vector3();
+ const placedDoorIds=[],visibleDoorIds=[];
+ for(const [id,row] of doors){
+  const [x,y,z]=row.modelDoorPosition;
+  let found=false,shown=false;
+  for(const mesh of meshes){
+   for(let i=0;i<mesh.count;i++){
+    mesh.getMatrixAt(i,matrix);
+    world.setFromMatrixPosition(matrix);
+    if(Math.hypot(world.x-x,world.y-y,world.z-z)<.07){
+     found=true;if(visible(mesh))shown=true;break;
+    }
+   }
+   if(found&&shown)break;
+  }
+  if(found)placedDoorIds.push(id);
+  if(shown)visibleDoorIds.push(id);
+ }
+ return {ready:audit.eligibleTwoStoreyHouses>0,
+  expectedMappedHouses:audit.eligibleTwoStoreyHouses,
+  frontageSelections:audit.frontageModelledByStreet,
+  plottedModelDoors:doors.length,realMeshDoors:placedDoorIds.length,
+  visibleMeshDoors:visibleDoorIds.length,verifiedSourceDoorIds:placedDoorIds,
+  visibleSourceDoorIds:visibleDoorIds,checkedSceneParentChain:true,
+  unverifiedAwningsSuppressed:audit.unverifiedGlassAwningsRemoved};
+};
 function schoolFacadeSign(text,x,y,z,orientation,width=3.7,height=.55){
  const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=176;const ctx=canvas.getContext('2d');
  ctx.fillStyle='#fff4d5';ctx.fillRect(0,0,1024,176);
@@ -4115,7 +4157,7 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
   audit.byOsmId[String(osmId)]={
    levels:2,flats:1,doorWindowsPrevented:0,
    genericGlassAwningsRemoved:0,modelFrontageSelected:false,
-   photographyConfirmed:false
+   modelDoorPosition:null,photographyConfirmed:false
   };
  }
  if(estatePlan){
@@ -4946,6 +4988,9 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
    }else{
     archPart('darkWood',doorx,grade.centerY,doorz,
      1.28,grade.doorHeight,.12,yaw);
+    if(slepaHousePlan)
+     window.__miloviceSlepaHouseAudit.byOsmId[
+      String(osmId)].modelDoorPosition=[doorx,grade.centerY,doorz];
     archPart('bronze',doorx+ux*.48+nx*.12,
      grade.floorY+grade.doorHeight*.52,
      doorz+uz*.48+nz*.12,.06,.14,.16,yaw);
