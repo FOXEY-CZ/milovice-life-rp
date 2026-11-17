@@ -4,11 +4,11 @@ import {STREET_AUDIT_SECTIONS,streetAuditCategory,shortStreetAuditLabel}
  from './street-audit-menu-5101.js';
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const nav=html.match(/<nav><a href="\?v=58530&streetAudit=5kv">([\s\S]*?)<\/nav>/)?.[0];
-assert(nav,'Keep the original 28 source URLs plus new playground links');
+assert(nav,'Keep the original review URLs, playgrounds and street width cameras');
 const ids=[...nav.matchAll(/streetAudit=([^"&]+)"/g)].map(m=>m[1]);
-assert.equal(ids.length,31);
-assert.equal(new Set(ids).size,31,'Do not lose or duplicate a review camera URL');
-const expected={streets:19,sidewalks:2,water:2,forests:2,sports:2,playgrounds:2,lighting:2};
+assert.equal(ids.length,33);
+assert.equal(new Set(ids).size,33,'Do not lose or duplicate a review camera URL');
+const expected={streets:21,sidewalks:2,water:2,forests:2,sports:2,playgrounds:2,lighting:2};
 assert.deepEqual(STREET_AUDIT_SECTIONS.map(s=>s.id),Object.keys(expected));
 for(const [group,count] of Object.entries(expected))
  assert.equal(ids.filter(id=>streetAuditCategory(id)===group).length,count,
@@ -18,6 +18,8 @@ assert.equal(streetAuditCategory('pitch-tennis-599'),'sports');
 assert.equal(streetAuditCategory('play-mlada-5103'),'playgrounds');
 assert.equal(streetAuditCategory('play-vrutice-5103'),'playgrounds');
 assert.equal(streetAuditCategory('estate-mlada-5105'),'streets');
+assert.equal(streetAuditCategory('road-slepa-5108'),'streets');
+assert.equal(streetAuditCategory('road-vruticka-5108'),'streets');
 assert.equal(streetAuditCategory('forest-mlada-597'),'forests');
 assert.equal(streetAuditCategory('water-svodnice-596'),'water');
 assert.equal(streetAuditCategory('topolova-sidewalk-595'),'sidewalks');
@@ -41,4 +43,4 @@ const id=html.match(/const BUILD_ID='([^']+)'/)?.[1];
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const hud=html.split('id="build-label">')[1]?.split('</strong>')[0];
 assert(id&&meta===id&&hud===id,'All three build labels must remain synchronized');
-console.log('PASS original 28 links, 2 playground views and estate camera, 7 categories');
+console.log('PASS 33 source cameras, including 2 width-tagged street views, 7 categories');
