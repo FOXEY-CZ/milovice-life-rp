@@ -1,0 +1,49 @@
+// Milovice RP 5.119 — photograph-grounded BILLA roof logo and single entrance canopy.
+// Static safety regression; live Chrome/WebGL visibility remains a separate smoke test.
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+const mlada=JSON.parse(readFileSync(
+ new URL('../data/regions/mlada.json',import.meta.url),'utf8')).elements;
+const billa=mlada.find(e=>e.type==='way'&&e.id===53865798);
+const clinic=mlada.find(e=>e.type==='way'&&e.id===1057548624);
+assert(billa&&clinic,'Both surveyed OSM footprints must still exist');
+assert.equal(billa.tags.name,'Billa');
+assert.equal(billa.tags.shop,'supermarket');
+assert.equal(billa.tags['building:levels'],'1');
+assert.equal(clinic.tags.amenity,'clinic');
+assert.equal(clinic.tags.name,'Poliklinika Milovice');
+assert.equal(html.match(/const BUILD_ID='([^']+)'/)?.[1],
+ '20261117-armadni-photo-sign-511900');
+assert(html.includes('<title>Milovice RP – 5.119'));
+assert(html.includes('Verze 5.119 · build'));
+assert(html.includes('href="./?v=511900"'));
+assert(html.includes('href="?v=511900&streetAudit=armadni-billa-5118"'));
+assert(html.includes('href="?v=511900&streetAudit=armadni-clinic-5118"'));
+// Photo evidence: individually yellow letters above the grey store entrance,
+// NOT a solid yellow/red retail banner or two coincident roof canopies.
+const photoBlockStart=html.indexOf("if(normalized==='billa'){\n  g.clearRect");
+const photoBlockEnd=html.indexOf("}else{\n  g.fillStyle=bg;",photoBlockStart);
+assert(photoBlockStart>=0&&photoBlockEnd>photoBlockStart);
+const drawing=html.slice(photoBlockStart,photoBlockEnd);
+assert(drawing.includes("g.fillStyle='#edc625'"));
+assert(!drawing.includes('fillRect('),'BILLA sign must have no opaque panel');
+assert(html.includes("if(normalized!=='billa'){\n  archPart(normalized==='penny'"));
+assert(html.includes("if(isPhotoBillaSign)window.__miloviceBillaSignAudit={"));
+assert(html.includes('transparent:isPhotoBillaSign'));
+assert(html.includes('sign.userData.lodDetail=!isPhotoBillaSign'));
+assert(html.includes('photoCanopyCount:1'));
+assert(html.includes('extraGenericCanopies:0,extraGenericFascias:0'));
+assert(html.includes('newUnmappedAccessPaths:0,newParkingSpots:0'));
+// An already-extruded mapped wall, clinic floor count, and emergency LOD code
+// must not be replaced to fix a photographic shop sign.
+for(const token of [
+ "if(osmId===53865798&&tags.shop==='supermarket'&&name==='Billa')",
+ "photoEntranceEdge?.index===4",
+ "const isArmClinic=armLandmark?.kind==='polyclinic'",
+ "const floors=modelCard?.floors??(armLandmark?.floors??",
+ "window.__miloviceArmLandmarksRuntime=()=>{",
+ "const isPhotoBillaSign=normalized==='billa'",
+ "roofLetters:'BILLA',letterColour:'yellow'"
+])assert(html.includes(token),'Missing protected integration: '+token);
+console.log('PASS 5.119: BILLA roof sign transparent yellow, one mapped canopy, preserved clinic, OSM and photo cameras');
