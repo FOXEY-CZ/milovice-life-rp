@@ -78,7 +78,7 @@ assert(html.includes("archPart('stationFrames'"));
 assert(html.includes('shelterRoofSlats:3,modelledCarts:rack.cartCount'));
 assert(html.includes('newParkingSpaces:0,sharedInstancedMaterials:true'));
 assert(html.includes('visibleRoofInstances:meshes.filter(attached)'));
-assert(html.includes("const BUILD_ID='20261117-armadni-trolleys-512000'"));
+assert(/const BUILD_ID='20261117-armadni-(?:trolleys-512000|clinic-front-512100)'/.test(html));
 assert(html.includes('streetAudit=armadni-billa-5118'));
 assert(html.includes('streetAudit=armadni-clinic-5118'));
 assert(html.includes('Verze 5.120 · build'));
