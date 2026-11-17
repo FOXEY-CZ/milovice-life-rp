@@ -1,3 +1,18 @@
+## Milovice RP 5.103 — přímé 3D kamery na veřejná dětská hřiště (Part 22, 17. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=510300
+
+**Přímé mapově odvozené kamerové pohledy, nikoli fotografie:**
+- [Mladá · hřiště – model skluzavky a houpačky](https://foxey-cz.github.io/milovice-life-rp/?v=510300&streetAudit=play-mlada-5103) – skutečný OSM polygon [1468803906](https://www.openstreetmap.org/way/1468803906).
+- [Benátecká Vrutice · hřiště s houpačkami](https://foxey-cz.github.io/milovice-life-rp/?v=510300&streetAudit=play-vrutice-5103) – skutečný OSM polygon [1303773811](https://www.openstreetmap.org/way/1303773811) s tagem `playground=swing`.
+
+- Původních 28 technických/fotografických pohledů zůstává dostupných. V kompaktní mobilní nabídce přibyla sedmá sekce **Dětská hřiště** se dvěma odkazy; celkem 30 kontrolních kamer.
+- Technická kamera se neřídí odhadnutým azimutem z adresy: **při načtení příslušného regionu se natočí na přímo vytvořený 3D herní prvek**, z bezpečné pěší pozice uvnitř mapovaného polygonu, mimo kolizní obálky OSM cest, silnic, budov a otevřených vodotečí. Když bezpečné místo nevznikne, pohled není falešně označený jako připravený.
+- Diagnostika v herní konzoli: `window.__milovicePlaygroundCameraAudit`, s cílem, polohou kamery, testem promítnutí cíle do obrazovky a výškou 1,68 m nad místním povrchem. Testy `scripts/osm-playground-equipment-5102.test.mjs` ověřují neměnné zdroje, zákazy soukromých/specializovaných atrakcí a bezpečné umístění; nový skutečný Chromium test `scripts/osm-playground-camera-webgl-5103.mjs` fotografuje obě herní scény.
+- Ani jeden pohled **nedokládá přesnou skutečnou polohu, podobu či barvu herních prvků**. OSM zde dokládá hřiště a u druhého také houpačky; konstrukce, poloha a směr fotoaparátu jsou herní odhady. Změna nezasahuje do vozovek, OSM půdorysů ani terénu.
+
+---
+
 ## Milovice RP 5.102 — veřejná dětská hřiště podle OSM (Part 22, 17. 11. 2026)
 
 **Spustit verzi:** https://foxey-cz.github.io/milovice-life-rp/?v=510200
