@@ -81,10 +81,10 @@ assert.equal(planMladaFootwayCorners([{id:'right-angle',
 
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const token of [
- "from './scripts/osm-mlada-footway-joins-5106.js?v=510600'",
+ "from './scripts/osm-mlada-footway-joins-5106.js?v=510700'",
  'const joins=planMladaFootwayCorners(sourceFootways,{',
  "mesh.name='Milovice_OSM_Mlada_FootwayCornerJoin_5106'",
- 'window.__miloviceMladaFootwayJoinAudit={',
+ 'window.__miloviceMladaFootwayJoinAudit=footwayAudit',
  'onlyMissingMiterWedges:true,estimatedPathWidths:true'
 ])assert(game.includes(token),'Missing actual render pass: '+token);
 const meta=game.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1],
