@@ -341,3 +341,69 @@ export function planSkolskaWestBlock588(elements,excludeIds=[],config=SKOLSKA_WE
   privateDrivewaysInvented:0,crossingsInvented:0,exactTreeLocationsInvented:0
  };
 }
+
+
+/**
+ * 5.89 — fifth contiguous neighborhood: Školská east of Pionýrů.
+ * Physical building outlines/road alignments are always imported OSM.
+ * A public photo of the school anchors AREA context only; it does not
+ * certify these private house colours, doors, fences or plant locations.
+ */
+export const SKOLSKA_EAST_589=Object.freeze({
+ roadIds:['1331897643','1331897644'],maxBuildings:8,
+ fromM:24,toM:190,maxDistanceM:58,maxFootprintPoints:18,
+ source:'https://commons.wikimedia.org/wiki/File:Milovice,_Z%C5%A0_T._G._Masaryka_(01).jpg',
+ schoolPhotoDate:'2024-05-30',photoAuthor:'ŠJů',license:'CC BY 4.0',
+ technicalCamera:{lat:50.2280951,lon:14.8875431,estimatedHeading:119},
+ verifiedIndividualHouseFacades:0
+});
+export function planSkolskaEastBlock589(elements,excludeIds=[],config=SKOLSKA_EAST_589){
+ if(!Array.isArray(elements)||
+    !(Array.isArray(excludeIds)||excludeIds instanceof Set)||
+    !Array.isArray(config?.roadIds)||config.roadIds.length<1||
+    !Number.isInteger(config.maxBuildings)||config.maxBuildings<1||config.maxBuildings>20||
+    !finite(config.fromM)||!finite(config.toM)||config.fromM<0||
+    config.toM<=config.fromM||!finite(config.maxDistanceM)||
+    config.maxDistanceM<15||config.maxDistanceM>100)return null;
+ const path=[];
+ for(const id of config.roadIds){
+  const road=elements.find(e=>String(e.id)===id&&e.tags?.name==='Školská'&&
+   e.tags?.highway&&Array.isArray(e.geometry)&&e.geometry.length>=2);
+  if(!road)return null;
+  const vertices=road.geometry[0].lon<=road.geometry.at(-1).lon?
+   road.geometry:road.geometry.slice().reverse();
+  const pts=vertices.map(project);
+  if(path.length&&close(path.at(-1),pts[0])>1)return null;
+  path.push(...pts.slice(path.length?1:0));
+ }
+ const excluded=new Set([...excludeIds].map(String));
+ const candidates=[];
+ for(const e of elements){
+  if(!['house','residential','detached','semidetached_house','terrace']
+    .includes(e?.tags?.building)||!Array.isArray(e.geometry)||e.geometry.length<4)continue;
+  const near=nearestAlong(centroid(e.geometry.map(project)),path);
+  if(!near||near.along<config.fromM||near.along>config.toM||
+   near.distance>config.maxDistanceM)continue;
+  const detail=eligibleBuilding(e,near.distance,{
+   maxRoadDistanceM:config.maxDistanceM,maxFootprintPoints:config.maxFootprintPoints
+  });
+  if(!detail||excluded.has(detail.id))continue;
+  candidates.push({...detail,alongM:Math.round(near.along*10)/10,
+   roadDistanceM:Math.round(near.distance*10)/10});
+ }
+ candidates.sort((a,b)=>a.alongM-b.alongM||
+  a.roadDistanceM-b.roadDistanceM||a.id.localeCompare(b.id,'en'));
+ const chosen=candidates.slice(0,config.maxBuildings);
+ return {
+  version:'5.89.0',street:'Školská — pokračování od Pionýrů na východ',
+  roadIds:[...config.roadIds],priorityIds:chosen.map(x=>x.id),
+  prioritizedBuildings:chosen.length,buildingsConsidered:candidates.length,
+  reviewQueue:candidates,contextualPublicPhoto:config.source,
+  contextualPhotoDate:config.schoolPhotoDate,photoAuthor:config.photoAuthor,
+  photoLicense:config.license,photoVerifiedHouseFacades:0,
+  technicalCamera:{...config.technicalCamera},technicalCameraIsPhotoAngle:false,
+  existingOSMFootprintsOnly:true,streetObjectsAreEstimates:true,
+  newBuildingsInvented:0,roadsChanged:false,sidewalksChanged:false,
+  inventedCrossings:0,inventedPrivateDriveways:0,inventedPlotFences:0
+ };
+}
