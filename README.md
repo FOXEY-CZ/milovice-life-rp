@@ -1,3 +1,18 @@
+## Milovice RP 5.107 — navazující pěší cesty v Benátecké Vrutici (Part 23, 17. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=510700
+
+**Kontrolní 3D kamera v Benátecké Vrutici:** https://foxey-cz.github.io/milovice-life-rp/?v=510700&streetAudit=play-vrutice-5103
+
+- Pokračování stejného bezpečného OSM geometrického postupu z verze 5.106 také do **Benátecké Vrutice**, v docházkové vzdálenosti do 140 m od skutečného OSM polygonu veřejného hřiště [way/1303773811](https://www.openstreetmap.org/way/1303773811). Geografickým kotvícím bodem je aritmetický průměr jeho čtyř skutečných vrcholů, ne vymyšlená křižovatka.
+- Aktuálně uložený export `data/regions/vrutice.json` identifikuje **204 malých ohybových trojúhelníků na 34 mapovaných pěších trasách**. Skutečné souřadnice průběhů tras se nemění. Jde pouze o propojení chybějících vnitřních rohů již vykreslovaných pásů `highway=path/footway`. **28 přechodových cest** se vyřazuje; žádné nové zebry ani chodníky. Čísla jsou ze samostatného testu zdrojového exportu, nikoli fotografie.
+- Plánovač `scripts/osm-mlada-footway-joins-5106.js` nyní přijímá samostatně doložený regionální bod; původních 18 oprav v Mladé a jejich logika zůstaly zachovány. Společná geometrie kontroluje vozovky, stavby, soukromé komunikace a stav `footway=crossing`. Odhadované šířky a podoba povrchů se **nesmějí prezentovat jako fotometricky ověřené**.
+- Renderer nyní u každého ohybu používá skutečný mapový typ cesty (`footway/path`) a značku `surface`, namísto zobecnění všech rohů na `footway`. Trojúhelníky stejného materiálu se slučují do jediného `THREE.BufferGeometry` meshe pro nízký počet draw calls.
+- Diagnostika ve hře: `window.__miloviceVruticeFootwayJoinAudit`, skutečné objekty po načtení: `window.__miloviceVruticeFootwayJoinRuntime()`. Vylepšená kontrola viditelnosti sleduje i připojení do aktivní 3D scény, aby objekt nebyl mylně započten jako viditelný po streamování. Doplněn test `scripts/osm-vrutice-footway-joins-5107.test.mjs` a rozšířen mobilní Chromium WebGL test `scripts/osm-playground-camera-webgl-5103.mjs`.
+- **Fotografie nebyly v této změně použity k potvrzení přesné podoby obrubníků či povrchů**; cíl je celistvá mapově odvozená pěší síť v rámci stávající herní reprezentace, bez přidávání smyšlených objektů.
+
+---
+
 ## Milovice RP 5.106 — plynulé ohyby pěších cest v Mladé (Part 22, 17. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=510600
