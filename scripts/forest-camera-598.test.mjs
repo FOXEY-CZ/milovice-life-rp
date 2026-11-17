@@ -50,7 +50,7 @@ for(const t of [
  'rpStreetAuditCameraWorld.x=forestCameraPlan.x;',
  'rpStreetAuditView.heading=forestCameraPlan.heading;',
  'window.__miloviceForestCameraAudit=',
- 'forestCameraPlan.eyeInsideMappedPolygon',
+ '...forestCameraPlan,ready:true,regionLoaded:true',
  'window.__miloviceForestCameraAudit.targetInFrame=',
  "streetAudit=forest-mlada-597"
 ])assert(index.includes(t),'Forest camera runtime integration missing: '+t);
