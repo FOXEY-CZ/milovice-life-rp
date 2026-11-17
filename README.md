@@ -1,3 +1,18 @@
+## Milovice RP 5.115 — Slepá a Armádní: souvislejší povrch reálných zatáček (Part 24, 17. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=511500
+
+**Přímá technická kamera na mapovaný ohyb Slepé směrem k Armádní:** https://foxey-cz.github.io/milovice-life-rp/?v=511500&streetAudit=slepa-armadni-bends-5115
+
+- Dosavadní vykreslování skládá jednotlivé silnice z rovných OSM úseků. V místě lomu dvou sousedních úseků jedné komunikace může vzniknout drobná trojúhelníková mezera na **vnitřní** straně zatáčky. Nyní ji opravuje modul `scripts/osm-slepa-armadni-road-joins-5115.js` pro **`highway=residential` s názvem `Slepá` nebo `Armádní`** v mapových regionech Mladá/Vrutice.
+- Zapečetění rohu používá **pouze původní trojici bodů uvnitř stejného OSM `way`**, jeho existující zobrazovanou šířku z `roadWidths` (tedy stejnou pro silnici, navigaci a kolize), orientaci obou segmentů a odpovídající stávající OSM `surface=*` materiál. Smí vzniknout jen malý trojúhelník mezi původními koncovými průřezy sousedních obdélníkových silničních pruhů. Příliš ostré zatáčky, přímé úseky a příliš krátké segmenty se odmítají. Žádné propojování různých ulic, žádné domýšlení neexistujících křižovatek, přechodů či chodníků. Původní OSM střednice, šířky, terén, parky a budovy se nemění.
+- Obě existující OSM regionální kolekce obsahují desítky zatáček: přímé JS provedení modulu proti `mlada.json` našlo **31 vhodných rohů (27 Slepá + 4 Armádní)**, proti `vrutice.json` **29 rohů (20 Slepá + 9 Armádní)** při výchozích modelových šířkách 7,8 m. Toto jsou **překrývající se mapové oblasti, nikoliv 60 různých rohů**. V běžné hře se již použitá OSM ID při načtení další oblasti globálně deduplikují. Počty se mohou podle načtené oblasti, skutečných `width=*` tagů a filtrů změnit.
+- Plošky využívají `terrainAt`, přesně stejnou výšku `+.17` jako vozovka, souvislé UV pro asfalt a **indexované `THREE.BufferGeometry`** pro zachování existujícího `queueRoadStrip` / `finalizeRoadStrips` slučování, bez jednotlivých samostatných meshů. `window.__miloviceSlepaArmRoadJoinAudit` odděluje skutečně vložené trojúhelníky do renderovací fronty od neprokázané viditelnosti na mobilním WebGL.
+- Nová technická kamera `streetAudit=slepa-armadni-bends-5115` leží přesně na středu OSM úseku bod 3→4 komunikace **Slepá way/202375815**, GPS **50.22875565, 14.8593245** a směřuje **65,4°** k původnímu bodu spojení s **Armádní way/800846496**. Nejde o fotopohled z Panorama.
+- Test `scripts/osm-slepa-armadni-road-joins-5115.test.mjs` ověřuje skutečná ID, původní lomové body, geometrii a plochu trojúhelníků, zamítání privátních nebo nesouvisejících cest, konzistentní výsledek při změně pořadí vstupů, deduplikaci, limit počtu, existující renderovací integraci, kameru a neměnné build ID. Modul byl přímo vyzkoušen v JS na obou OSM exportech s opakovatelnými výsledky. **Plný mobilní Chromium/WebGL běh ani nasazení GitHub Pages však zatím nejsou potvrzené.**
+
+---
+
 ## Milovice RP 5.114 — Slepá: doložený park, šetrná zeleň a kontrolní kamera (Part 24, 17. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=511400
