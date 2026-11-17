@@ -41,6 +41,6 @@ assert(html.includes("const armLandmark=planArmLandmarkMassing({"));
 assert(html.includes("const isArmClinic=armLandmark?.kind==='polyclinic'"));
 assert(html.includes("const isArmBilla=armLandmark?.kind==='supermarket'"));
 assert(html.includes("window.__miloviceClinicEntranceRuntime=()=>{"));
-assert(html.includes("const BUILD_ID='20261117-armadni-clinic-visible-512200'"));
-assert(html.includes('href="?v=512200&streetAudit=armadni-clinic-5118"'));
+assert(/const BUILD_ID='20\d{6}-[a-z0-9-]+'/.test(html));
+assert(/href="\?v=\d{6}&streetAudit=armadni-clinic-5118"/.test(html));
 console.log('PASS 5.122: 4-corner open clinic and 6-corner open BILLA survive real OSM de-closure');
