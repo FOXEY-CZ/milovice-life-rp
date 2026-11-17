@@ -74,7 +74,7 @@ for(const text of [
  'court.cameraEye.x',
  "streetAudit=pitch-tennis-599",
  "streetAudit=pitch-multi-599",
- 'camera.lookAt(target.x,target.y,target.z);'
+ 'camera.lookAt(c.x,terrainAt(c.x,c.z)+.14,c.z);'
 ])assert(game.includes(text),'Sport pitch runtime integration missing: '+text);
 const meta=game.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const runtime=game.match(/const BUILD_ID='([^']+)'/)?.[1];
