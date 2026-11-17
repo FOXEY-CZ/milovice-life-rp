@@ -81,7 +81,9 @@ export function mountStreetAuditMenu(panel,{activeId='',label='',mobile=false}={
    items.append(a);
   }
   group.append(items);
-  group.open=section.id===selectedGroup;
+  // Mobile starts at SECTION HEADINGS only. 21 street links were opening
+  // at once and drawing dozens of tiny clipped bars over the road.
+  group.open=!mobile&&section.id===selectedGroup;
   nav.append(group);
   details.push(group);
  }
@@ -111,7 +113,7 @@ export function mountStreetAuditMenu(panel,{activeId='',label='',mobile=false}={
  name.textContent=shortStreetAuditLabel(label||name.textContent,activeId);
  name.insertAdjacentElement('afterend',quick);
  const state={
-  version:'5.101',activeId,category:selectedGroup,sourceLinks:sourceLinks.length,
+  version:'5.111',activeId,category:selectedGroup,sourceLinks:sourceLinks.length,
   sections:details.length,quickLinks:quick.children.length,
   get expanded(){return !panel.classList.contains('audit-compact')},
   get openSections(){return details.filter(d=>d.open).map(d=>d.dataset.category)}
@@ -130,12 +132,33 @@ export function mountStreetAuditMenu(panel,{activeId='',label='',mobile=false}={
    for(const other of details)if(other!==group)other.open=false;
   });
  }
+ // The source details are a separate optional drawer. GPS and photo
+ // notes must NOT occupy 400px under the navigation on every mobile tap.
+ const info=panel.querySelector('#street-audit-info-toggle');
+ const setInfoExpanded=expanded=>{
+  panel.classList.toggle('audit-info-open',expanded);
+  if(info){
+   info.setAttribute('aria-expanded',String(expanded));
+   info.textContent=expanded?'Skrýt GPS a zdroj':'📍 GPS a zdroj';
+  }
+ };
+ if(info)info.addEventListener('click',()=>
+  setInfoExpanded(!panel.classList.contains('audit-info-open')));
+ setInfoExpanded(false);
  const setExpanded=expanded=>{
   panel.classList.toggle('audit-compact',!expanded);
+  if(!expanded)setInfoExpanded(false);
   toggle.setAttribute('aria-expanded',String(expanded));
   toggle.setAttribute('aria-controls','street-audit-nav');
-  toggle.textContent=expanded?'Sbalit nabídku':'Zobrazit kategorie';
-  // Never open the full long review-link list by default on a phone.
+  toggle.textContent=expanded?'Skrýt výběr pohledů':'☰ Vybrat pohled';
+  // Never open the full street link list by default on a phone. Keep
+  // selected category discoverable; its 21 links require an explicit tap.
+  if(mobile&&!expanded){
+   for(const d of details)d.open=false;
+   showAll=false;
+   allButton.textContent='Zobrazit všechny sekce';
+   allButton.setAttribute('aria-expanded','false');
+  }
   panel.scrollTop=0;
  };
  toggle.addEventListener('click',()=>setExpanded(!state.expanded));
