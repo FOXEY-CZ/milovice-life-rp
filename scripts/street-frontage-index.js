@@ -107,9 +107,13 @@ export function makeStreetFrontageIndex({cellSize=96,maxDistance=38}={}){
   metrics.publicRoadFronts++;
   return best;
  }
+ function reset(){
+  buckets.clear();
+  for(const key of Object.keys(metrics))metrics[key]=0;
+ }
  function summary(){return {...metrics,spatialCells:buckets.size,
   source:'actual OSM highway geometry',
   entranceEvidence:'road-facing geometry estimate, NOT a photographed door',
   syntheticRoads:0,syntheticDriveways:0,privateEntrancesInferred:0};}
- return {addRoad,select,summary};
+ return {addRoad,select,summary,reset};
 }
