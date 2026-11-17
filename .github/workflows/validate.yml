@@ -21,6 +21,16 @@ jobs:
         run: node scripts/rebuild2-street-inventory.test.mjs
       - name: Validate 5.91 citywide OSM greenery and sports polygon batching
         run: node scripts/city-landscape-batch.test.mjs
+      - name: Validate 5.91 safe single-region OSM and ČÚZK data prefetch
+        run: node scripts/city-region-prefetch.test.mjs
+      - name: Validate public OSM street-facing entrances in Mladá and Vrutice
+        run: node scripts/street-frontage-index.test.mjs
+      - name: Validate 5.93 deterministic ordinary building styles across five real OSM areas
+        run: node scripts/regional-residential-style.test.mjs
+      - name: Validate three georeferenced technical road-view cameras and priority region loading
+        run: node scripts/city-region-street-audit.test.mjs
+      - name: Guard unique buildings and restart-safe index over overlapping OSM exports
+        run: node scripts/city-region-overlap.test.mjs
       - name: Verify first Nádražní all-object photo survey and junction context
         run: node scripts/rebuild2-survey.test.mjs
       - name: Validate physical railway-side platform canopy and zero floating supports
