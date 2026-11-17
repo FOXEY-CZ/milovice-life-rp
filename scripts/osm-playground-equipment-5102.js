@@ -43,7 +43,7 @@ export function ordinaryMappedPlayground(tags={}){
   tags.fee!=='yes' && !tags.building &&
   // A tagged attraction is a different geometry, not a generic public park.
   (tags.playground===undefined||tags.playground==='swing') &&
-  !tags.maxheight && !tags.indoor;
+  !tags.maxheight && !['yes','true'].includes(tags.indoor);
 }
 export function planMappedPlaygroundEquipment(ways,{
  roads,buildings,water,photoAllowed=()=>true,maxCity=32,maxPerArea=2
