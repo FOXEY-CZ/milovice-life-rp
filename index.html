@@ -835,10 +835,10 @@ const rpStreetAuditViews={
  // source OSM streets, directed to the building outline, not Panorama.
  'armadni-billa-5118':{
   label:'Armádní · Billa · technická kamera z OSM (NENÍ přesný fotoúhel)',
-  camera:{lat:50.2290424,lon:14.861864},heading:132.7,
+  camera:{lat:50.2289351,lon:14.86186245},heading:50.6,
   regionId:'mlada',osmLandmarkId:'53865798',
   source:'https://www.firmy.cz/detail/13214923-billa-milovice-mlada.html',
-  author:'OSM Billa way/53865798, servisní komunikace 1057548615; orientace k západnímu zalomení budovy technicky odvozená z OSM, nikoli poloha fotografa',
+  author:'OSM Billa way/53865798, servisní komunikace 1057548615; kamera přímo ve středu OSM servisní cesty a směrem k západnímu zalomení budovy; NENÍ pozice fotografa, nikoli poloha fotografa',
   technical:true,streetLevel:true,estimatedHeading:true
  },
  'armadni-clinic-5118':{
@@ -3956,6 +3956,30 @@ function miloviceBusinessFront(pts,tags,base,height,cx,cz,osmId){
   }
   const score=roadDistance+4/Math.max(len,1);
   if(!best||score<best.score)best={mx,mz,len,dx,dz,nx,nz,score,i};
+ }
+ // 5.118: real Billa frontage faces the documented mapped service access
+ // way/1057548615 at its midpoint. On this L-shaped 6-edge polygon
+ // selecting the globally closest road can wrongly put the photo canopy
+ // on the Armádní-facing exterior blank wall instead of the recessed side.
+ // Mapped road controls orientation, public photo proves type of canopy;
+ // actual door coordinate remains an informed approximation.
+ if(osmId===53865798&&tags.shop==='supermarket'&&name==='Billa'){
+  const serviceMidpoint=osmPoint({lat:50.2289351,lon:14.86186245});
+  const photoEntranceEdge=selectExteriorFacadeToward(pts,serviceMidpoint,{
+   minLength:15,maxLength:25
+  });
+  if(photoEntranceEdge?.index===4){
+   const f=photoEntranceEdge;
+   best={i:f.index,mx:f.mx,mz:f.mz,len:f.len,
+    dx:f.b.x-f.a.x,dz:f.b.z-f.a.z,nx:f.nx,nz:f.nz,
+    score:0};
+   const audit=window.__miloviceArmLandmarksAudit;
+   if(audit?.byOsmId?.['53865798']){
+    audit.byOsmId['53865798'].estimatedFrontEdge=f.index;
+    audit.byOsmId['53865798'].frontOrientationSource='OSM service way/1057548615';
+    audit.byOsmId['53865798'].exactEntrancePositionPhotoSurveyed=false;
+   }
+  }
  }
  if(!best)return;
  const {mx,mz,len,dx,dz,nx,nz}=best,
