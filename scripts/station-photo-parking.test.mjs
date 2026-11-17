@@ -490,7 +490,7 @@ assert(game.includes('stationPhotoParking.create(elements,{sidewalkMaterial:osmS
  'Carved sidewalk must reuse the same existing city paving material');
 assert(game.includes("from './scripts/station-photo-parking.js?v=58530'"),
  'The reviewed 5.76 parking geometry must now load safe gap filler, not a stale 5.76 module');
-assert(game.includes("const BUILD_ID='20261116-live-camera-gps-share-58530'"),
+assert(game.includes("const BUILD_ID='20261117-skolska-east-58900'"),
  'New game version must retain 5.76 parking with the added ticket-machine scene');
 assert(game.includes("from './scripts/bike-tower-interior.js?v=5640'"));
 assert(game.includes("from './scripts/station-forecourt-pass.js?v=5650'"));
