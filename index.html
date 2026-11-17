@@ -371,6 +371,7 @@ import {planSchoolStreetFrontage,schoolFacadeFixture,planSchoolPhotographedRoof,
 import {planSourceAnchoredRoofFixtures} from './scripts/roof-source-details.js?v=5500';
 import {planGroundedEntrance} from './scripts/entrance-grade.js?v=5450';
 import {exteriorFacadeFrame,selectExteriorFacadeToward,splitFacadeStripForOpening,facadePoint,flushBoxOffset,FACE_PLANE,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './scripts/facade-anchors.js?v=5400';
+import {makeStreetFrontageIndex} from './scripts/street-frontage-index.js?v=59102';
 import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5410';
 import {clipRoofFacesForFeatures,planRoofFeatureBackClosures} from './scripts/roof-opening-geometry.js?v=5320';
 import {planMassStreetBlock583,planPublicPhotoMirovaBlock586,planPublicPhotoSkolskaBlock587,planSkolskaWestBlock588,planSkolskaEastBlock589,planSkolskaTailBlock590} from './scripts/street-mass-build-pass.js?v=59000';
@@ -1777,6 +1778,7 @@ const osmParkMaterial=mat(0x769b65),osmStripeMaterial=mat(0xf5e8c8);
 let osmActive=false,osmReady=false,osmLoading=false,oldPosition=null,osmRoads=[],osmBuildings=0,osmNamedRoads=[],osmLandmarks=[];
 rpUpdateRenderBudget(); // All OSM and render-budget dependencies are initialized.
 const osmDriveRoads=[];
+const streetFrontage=makeStreetFrontageIndex();
 const osmRoadClearance=createRoadClearance();
 const osmCarriagewayClearance=createRoadClearance();
 const renderedPedestrianPieces=new Set();
@@ -4364,9 +4366,13 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
    // Photo-visible side: longest edge of the OSM footprint is at BACK.
    const f=schoolPhotoPlan.entrance;
    longest={a:pts[f.index],b:pts[(f.index+1)%pts.length],len:f.len,i:f.index};
-  }else if(!isSchool)for(let i=0;i<pts.length;i++){
-   const a=pts[i],b=pts[(i+1)%pts.length],len=a.distanceTo(b);
-   if(len>5&&(!longest||len>longest.len))longest={a,b,len,i};
+  }else if(!isSchool){
+   // Non-photo doors used to face the longest wall, often a back garden.
+   // Require an existing publicly accessible street oriented toward the
+   // real OSM wall. An unknown entrance stays unmodelled, not "verified".
+   const front=streetFrontage.select(pts);
+   if(front)longest={a:pts[front.index],
+    b:pts[(front.index+1)%pts.length],len:front.len,i:front.index};
   }
   if(longest){
    const a=longest.a,b=longest.b,dx=b.x-a.x,dz=b.y-a.y,len=longest.len;
@@ -4589,8 +4595,13 @@ function rpAppendOSMElements(elements){
   if(el.id===549346217 && kind==='footway')stationMappedFootway=points;
   if(el.id===1550920096 && kind==='footway')stationMappedIndoorFootway=points;
   const width=kind==='primary'?11:kind==='secondary'?9:kind==='tertiary'?8:kind==='pedestrian'?4:kind==='footway'?1.8:kind==='path'?1.65:kind==='service'?4.5:7.8;
-  if(['primary','secondary','tertiary','residential','unclassified','living_street','service'].includes(kind))
-   osmDriveRoads.push({points,width,kind,name:el.tags.name||'',oneway:el.tags.oneway==='yes'?1:el.tags.oneway==='-1'?-1:0,osmId:el.id,access:el.tags.access||'',serviceTag:el.tags.service||''});
+  if(['primary','secondary','tertiary','residential','unclassified','living_street','service'].includes(kind)){
+   const mappedRoad={points,width,kind,name:el.tags.name||'',
+    oneway:el.tags.oneway==='yes'?1:el.tags.oneway==='-1'?-1:0,
+    osmId:el.id,access:el.tags.access||'',serviceTag:el.tags.service||''};
+   osmDriveRoads.push(mappedRoad);
+   streetFrontage.addRoad(mappedRoad);
+  }
   for(let i=1;i<points.length;i++){
    // The three OSM footway segments [4->5,5->6,6->7] overlap the
    // already reconstructed Nádražní parking-island sidewalk. Painting
@@ -4746,6 +4757,7 @@ function rpAppendOSMElements(elements){
  if(skolskaEastBlock)window.__miloviceSkolskaEastBlock589=skolskaEastBlock;
  if(skolskaTailBlock)window.__miloviceSkolskaTailBlock590=skolskaTailBlock;
  for(const el of buildingWays){osmBuilding(el.geometry,el.tags,osmBuildings,el.id);osmAddLandmark(el)}
+ window.__miloviceStreetFronts=streetFrontage.summary();
  // One inexpensive planted street pass for the WHOLE Mírová corridor;
  // only OSM road/building free parcels are eligible.
  if(mirovaPhotoBlock)mirovaPhotoStreet586.create([...roadWays,...buildingWays]);
