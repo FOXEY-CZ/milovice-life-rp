@@ -372,6 +372,7 @@ import {planSourceAnchoredRoofFixtures} from './scripts/roof-source-details.js?v
 import {planGroundedEntrance} from './scripts/entrance-grade.js?v=5450';
 import {exteriorFacadeFrame,selectExteriorFacadeToward,splitFacadeStripForOpening,facadePoint,flushBoxOffset,FACE_PLANE,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './scripts/facade-anchors.js?v=5400';
 import {makeStreetFrontageIndex} from './scripts/street-frontage-index.js?v=59102';
+import {planRegionalBuildingStyle} from './scripts/regional-residential-style.js?v=59200';
 import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5410';
 import {clipRoofFacesForFeatures,planRoofFeatureBackClosures} from './scripts/roof-opening-geometry.js?v=5320';
 import {planMassStreetBlock583,planPublicPhotoMirovaBlock586,planPublicPhotoSkolskaBlock587,planSkolskaWestBlock588,planSkolskaEastBlock589,planSkolskaTailBlock590} from './scripts/street-mass-build-pass.js?v=59000';
@@ -3584,7 +3585,7 @@ window.__miloviceOsmInspection={count:0,selected:null,source:'mapped OSM footpri
  noPhotoInference:true,modelChanges:0};
 const legacyRealityAudit=makeRetrospectiveAuditTracker();
 function publishLegacyRealityAudit(){window.__miloviceLegacyRealityAudit=legacyRealityAudit.summary();}
-function osmBuilding(points,tags,index,osmId=null){
+function osmBuilding(points,tags,index,osmId=null,regionId='old'){
  // 5.61: The 17 ways hidden in 5.60 were the WRONG buildings. Restore
  // exactly their pre-5.59 legacy meshes and colliders, without treating
  // those OSM 'garage' tags as photographic evidence. Keep the per-ID audit.
@@ -3676,6 +3677,27 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
  geometry.rotateX(-Math.PI/2);
  const centerX=pts.reduce((v,p)=>v+p.x,0)/pts.length,centerZ=pts.reduce((v,p)=>v+p.y,0)/pts.length;
  const auditedCore=Boolean(legacyRealityAudit.building(osmId,centerX,centerZ));
+ // 5.92: optional inferred style in two data-backed outer districts.
+ // Original OSM outlines/roof geometry, historical photo models and
+ // the global 68-house hero budget remain authoritative.
+ const regionalStyle=planRegionalBuildingStyle({
+  regionId,id:osmId,tags,width:w,depth:d,floors,
+  photoReviewed:photoDecision.photographicApproval===true,
+  approvedArchitecture:Boolean(modelCard||massBlockPriority||auditedCore||
+   isPhotoGarage||isBlueStar||isMirova36||isGrocer74||
+   isSchool||isChurch||isStation||isSkolskaRoof||
+   isForkPhotoGable||isPionyru2022PhotoGable)
+ });
+ if(regionalStyle){
+  const stats=window.__miloviceRegionalBuildingPass ||= {
+   version:'5.92',inferredBuildings:0,byRegion:{},
+   inferredPlinthSegments:0,frontageDoorGaps:0,
+   changedOSMFootprints:0,changedOSMRoads:0,photographicApprovals:0,
+   extraMaterialKinds:0
+  };
+  stats.inferredBuildings++;
+  stats.byRegion[regionId]=(stats.byRegion[regionId]||0)+1;
+ }
  // Level the building foundation to the highest sampled point of its perimeter.
  // A light stone plinth fills gaps downhill instead of leaving houses floating.
  let baseHeight=-Infinity;
@@ -3703,7 +3725,7 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
    }
   }
  }
- const baseWallMat=tags.shop==='supermarket'?(tags.name==='Tesco'?tescoCorrugation:tags.name==='Penny'?pennyFacade:groceryCladding):isBlueStar?blueStarWalls:isMirova36?mirova36Walls:isGrocer74?grocerWalls:isSchool?schoolWalls:isChurch?churchWalls:isStation?stationWalls:isPhotoGarage?garagePhotoWalls:isGarage?garageWalls:isPanelBlock?panelFacadeMaterials[braniborska?1:rakouska?3:Math.abs(osmId||index)%panelFacadeMaterials.length]:isCommerce?commerceFacadeMaterials[Math.abs(osmId||index)%commerceFacadeMaterials.length]:isIndustrial?workWalls:osmBuildingMaterial[(oldCenter?index+3:index)%osmBuildingMaterial.length];
+ const baseWallMat=tags.shop==='supermarket'?(tags.name==='Tesco'?tescoCorrugation:tags.name==='Penny'?pennyFacade:groceryCladding):isBlueStar?blueStarWalls:isMirova36?mirova36Walls:isGrocer74?grocerWalls:isSchool?schoolWalls:isChurch?churchWalls:isStation?stationWalls:isPhotoGarage?garagePhotoWalls:isGarage?garageWalls:isPanelBlock?panelFacadeMaterials[braniborska?1:rakouska?3:(regionalStyle?.panelIndex??Math.abs(osmId||index)%panelFacadeMaterials.length)]:isCommerce?commerceFacadeMaterials[Math.abs(osmId||index)%commerceFacadeMaterials.length]:isIndustrial?workWalls:osmBuildingMaterial[regionalStyle?.facadeIndex??((oldCenter?index+3:index)%osmBuildingMaterial.length)];
  const wallMat=modelCard?.facadeColor?localArchitectureMaterial(baseWallMat,modelCard.facadeColor):baseWallMat;
  // Ordinary buildings are solid on the ground floor; the open station is handled
  // as separate wall segments so the real public passage never becomes blocked.
@@ -3734,9 +3756,9 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
  const photoRoofFeatures=isSkolskaRoof?planPhotoRoofFeatures(osmId,pts):[];
  if(isSkolskaRoof&&photoRoofFeatures.length!==2)
   throw Error('Školská: source-backed roof profile incomplete');
- const baseRoofMat=isPhotoGarage?garagePhotoRoof:isSchool?schoolRoofMetal:oldCenter?osmRoofPalette[0]:osmRoofPalette[index%osmRoofPalette.length];
+ const baseRoofMat=isPhotoGarage?garagePhotoRoof:isSchool?schoolRoofMetal:oldCenter?osmRoofPalette[0]:osmRoofPalette[regionalStyle?.roofIndex??(index%osmRoofPalette.length)];
  const roofMat=modelCard?.roofColor?localArchitectureMaterial(baseRoofMat,modelCard.roofColor):baseRoofMat;
- const roofPreference=modelCard?.roofKind||'auto';
+ const roofPreference=modelCard?.roofKind||regionalStyle?.mappedRoofKind||'auto';
  const pitched=tags.name==='Penny'&&tags.shop==='supermarket'?
   miloviceGableRoof(pts,baseHeight,h,pennyRoof):
   (isForkPhotoGable||isPionyru2022PhotoGable)?
@@ -4081,6 +4103,7 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
   largeFloatingFacadeOffsetsEliminated:true
  };
  if(!heroFacade){
+ const regionalEntrance=regionalStyle?.addPlinth?streetFrontage.select(pts):null;
  const facadeSourceAudit=window.__miloviceCityUnverifiedFeatures ||= {
   removedRandomRoofVents:0,removedRandomCommerceAwnings:0,
   inferredRoofShapePolicy:'quadrilateral-gable-else-hip-or-flat'
@@ -4192,6 +4215,24 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
    // duplicate panels on shared 5.85m partition walls.
    continue;
   }
+  // Shared, terrain-anchored base strip for inferred family houses.
+  // The exact same mapped street facade will carry its entrance.
+  if(regionalStyle?.addPlinth&&isHouse){
+   const pieces=regionalEntrance?.index===i?
+    splitFacadeStripForOpening(facade,{along:0,width:1.48,padding:.09}):
+    [{along:0,width:len}];
+   for(const piece of pieces){
+    const anchor=facadePoint(facade,piece.along,
+     flushBoxOffset(regionalStyle.plinthThickness));
+    archPart('foundationBand',anchor.x,
+     baseHeight+regionalStyle.plinthHeight*.5+.02,anchor.z,
+     piece.width,regionalStyle.plinthHeight,
+     regionalStyle.plinthThickness,rotation);
+    window.__miloviceRegionalBuildingPass.inferredPlinthSegments++;
+   }
+   if(regionalEntrance?.index===i)
+    window.__miloviceRegionalBuildingPass.frontageDoorGaps++;
+  }
   if(len<5){
    // Legacy non-hero buildings have their own material-specific trim kit.
    // Mirror ONLY the already-existing bands on short exterior returns;
@@ -4279,7 +4320,7 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
   }else if(isHouse&&oldCenter){
    archPart('foundationBand',mx+nx*flushBoxOffset(.10),baseHeight+.52,mz+nz*flushBoxOffset(.10),len,1.02,.1,rotation);
   }
-  const windows=Math.min(24,Math.max(1,Math.floor(len/(isPanelBlock?3.12:isBlueStar?3.6:isSchool?3.0:isHouse?4.2:3.5))));
+  const windows=Math.min(24,Math.max(1,Math.floor(len/(isPanelBlock?(regionalStyle?.baySpacing??3.12):isBlueStar?3.6:isSchool?3.0:isHouse?(regionalStyle?.baySpacing??4.2):(regionalStyle?.baySpacing??3.5)))));
   for(let floor=0;floor<visibleFloors;floor++){
    if((isStation||hasMappedShopfront)&&floor===0)continue;
    const y=(isSchool?1.84:1.85)+floor*(isSchool?3.15:3.05);
@@ -4370,7 +4411,7 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
    // Non-photo doors used to face the longest wall, often a back garden.
    // Require an existing publicly accessible street oriented toward the
    // real OSM wall. An unknown entrance stays unmodelled, not "verified".
-   const front=streetFrontage.select(pts);
+   const front=regionalStyle?.addPlinth?regionalEntrance:streetFrontage.select(pts);
    if(front)longest={a:pts[front.index],
     b:pts[(front.index+1)%pts.length],len:front.len,i:front.index};
   }
@@ -4521,7 +4562,7 @@ function osmAddLandmark(el){
 const landscapeZones=[];
 // Minimap AABBs are calculated once when OSM ways are loaded, not every HUD tick.
 const osmMiniRoadBounds=new WeakMap();
-function rpAppendOSMElements(elements){
+function rpAppendOSMElements(elements,regionId='old'){
  const roadWays=[],railWays=[],buildingWays=[],landscapeWays=[];
  for(const el of elements){
   if(!el.geometry?.length||seenCityOSMWays.has(el.id))continue;
@@ -4756,7 +4797,7 @@ function rpAppendOSMElements(elements){
  if(skolskaWestBlock)window.__miloviceSkolskaWestBlock588=skolskaWestBlock;
  if(skolskaEastBlock)window.__miloviceSkolskaEastBlock589=skolskaEastBlock;
  if(skolskaTailBlock)window.__miloviceSkolskaTailBlock590=skolskaTailBlock;
- for(const el of buildingWays){osmBuilding(el.geometry,el.tags,osmBuildings,el.id);osmAddLandmark(el)}
+ for(const el of buildingWays){osmBuilding(el.geometry,el.tags,osmBuildings,el.id,regionId);osmAddLandmark(el)}
  window.__miloviceStreetFronts=streetFrontage.summary();
  // One inexpensive planted street pass for the WHOLE Mírová corridor;
  // only OSM road/building free parcels are eligible.
@@ -4976,7 +5017,7 @@ async function rpLoadCityArea(id){
   regionGroundMesh(dem);
   cityRegionGrids.push(dem);
   
-  rpAppendOSMElements(osm.elements);
+  rpAppendOSMElements(osm.elements,id);
   finalizeRoadStrips();finalizeCityWalls();finalizeFoundations();finalizeFacades();finalizeArchitecture();heroBuildings.flush(osmLayer);
   chunkMilovice();rpBuildRoadGraph();rpPopulateRegionalTraffic(area);improveMiloviceVisuals();publishLegacyRealityAudit();rpInitRailTraffic();
   loadedCityAreas.add(id);
