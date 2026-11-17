@@ -55,7 +55,11 @@ export function createRoadClearance({cellSize=80}={}){
   // any known roadway. Other geospatial checks (buildings/private land) differ.
   return !closest||closest.clearance>=radius+buffer;
  }
- return {addRoad,nearest,isClear,stats:()=>({indexedRoutes:known.size,segments:segments.length,cells:cells.size})};
+ function reset(){
+  cells.clear();known.clear();segments.length=0;
+ }
+ return {addRoad,nearest,isClear,reset,
+  stats:()=>({indexedRoutes:known.size,segments:segments.length,cells:cells.size})};
 }
 
 // Strict 5.26.2 roadside geometry: verify the WHOLE projected rectangle,
