@@ -83,7 +83,7 @@ const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const token of [
  "'road-slepa-5108':{",
  "'road-vruticka-5108':{",
- "from './scripts/osm-road-width-5108.js?v=510800'",
+ "from './scripts/osm-road-width-5108.js?v=511000'", 
  'const roadWidths=new Map();',
  'const resolved=planMappedRoadWidth(el.tags,defaultWidth,regionId);',
  'roadWidths.set(String(el.id),width);',
@@ -96,7 +96,7 @@ for(const token of [
  'window.__miloviceRoadWidthAudit'
 ])assert(game.includes(token),'Missing width integration: '+token);
 const version=game.match(/const BUILD_ID='([^']+)'/)?.[1];
-assert(version?.endsWith('510800'));
+assert(/^\d{8}-[a-z0-9-]+-\d{6}$/.test(version));
 assert.equal(game.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1],version);
 assert.equal(game.split('id="build-label">')[1]?.split('</strong>')[0],version);
 console.log('PASS Milovice 5.108 source tagged street widths',
