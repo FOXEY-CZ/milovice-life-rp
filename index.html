@@ -5576,13 +5576,16 @@ const lampGlowMaterial=new THREE.MeshBasicMaterial({color:0xffe4a4});
 // Low-poly three-crossed-blade grass tuft (0.16–0.41 m). Shared geometry
 // and InstancedMesh, visible only near player, no shadow-casting lights.
 // This adds only tiny close-range modeled detail INSIDE source OSM lawns.
-const lawnBlades=new THREE.BufferGeometry();
-lawnBlades.setAttribute('position',new THREE.Float32BufferAttribute([
- -.5,0,0, .5,0,0, 0,1,0,
- 0,0,-.5, 0,0,.5, 0,1,0,
- -.34,0,-.34, .34,0,.34, 0,.86,0
-],3));
-lawnBlades.computeVertexNormals();
+function createLawnBlades(){
+ const blades=new THREE.BufferGeometry();
+ blades.setAttribute('position',new THREE.Float32BufferAttribute([
+  -.5,0,0, .5,0,0, 0,1,0,
+  0,0,-.5, 0,0,.5, 0,1,0,
+  -.34,0,-.34, .34,0,.34, 0,.86,0
+ ],3));
+ blades.computeVertexNormals();
+ return blades;
+}
 const lawnBladeMaterial=new THREE.MeshLambertMaterial({
  color:0x688b56,side:THREE.DoubleSide
 });
@@ -5673,7 +5676,7 @@ function improveMiloviceVisuals(){
  const lawnItems=lawnPlan.tufts.map(t=>[
   t.x,.065,t.z,t.spread,t.height,t.spread,t.yaw
  ]);
- const lawnDraws=visualBatch(lawnBlades,lawnBladeMaterial,lawnItems);
+ const lawnDraws=visualBatch(createLawnBlades(),lawnBladeMaterial,lawnItems);
  window.__milovicePlaygroundLawnAudit={
   version:'5.104',source:'OSM landuse=grass (actual polygons)',
   sourceLawnIds:lawnPlan.sourceLawnIds,
