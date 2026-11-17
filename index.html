@@ -432,7 +432,7 @@ import {planOSMPitchMarkings} from './scripts/osm-pitch-markings-599.js?v=59900'
 import {planMappedStreetLamps} from './scripts/osm-street-lighting-5100.js?v=510000';
 import {planMappedPlaygroundEquipment,planPlaygroundReviewCamera} from './scripts/osm-playground-equipment-5102.js?v=510300';
 import {planOSMPlaygroundLawns} from './scripts/osm-playground-verges-5104.js?v=510400';
-import {planSlepaStreetLawns,planSlepaDrivewayWidth,slepaParkingClearsGrass} from './scripts/osm-slepa-street-5110.js?v=511000';
+import {planSlepaStreetLawns,planSlepaDrivewayWidth,slepaParkingClearsGrass,slepaParkingClearsPeople} from './scripts/osm-slepa-street-5110.js?v=511000';
 import {planMladaFootwayCorners} from './scripts/osm-mlada-footway-joins-5106.js?v=511000';
 import {mountStreetAuditMenu} from './scripts/street-audit-menu-5101.js?v=510100';
 import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
@@ -6410,11 +6410,14 @@ function rpSeedParkedCars(center,max=12){
    if(!slepaParkingClearsGrass(spot,osmPlaygroundLawnWays)){
     slepaParkingAudit.rejectedMappedGrass++;return false;
    }
-   if(!osmPedestrianClearance.isClear(spot.x,spot.z,1.05,.35)){
-    slepaParkingAudit.rejectedFootways++;return false;
-   }
-   if(!taggedSidewalkBuildings.isClear(spot.x,spot.z,2.5)){
-    slepaParkingAudit.rejectedBuildings++;return false;
+   const safePeople=slepaParkingClearsPeople(spot,{
+    pedestrian:osmPedestrianClearance,buildings:taggedSidewalkBuildings
+   });
+   if(!safePeople.clear){
+    if(safePeople.reason==='mapped-building')
+     slepaParkingAudit.rejectedBuildings++;
+    else slepaParkingAudit.rejectedFootways++;
+    return false;
    }
    slepaParkingAudit.acceptedRoadsideCandidates++;return true;
   }
