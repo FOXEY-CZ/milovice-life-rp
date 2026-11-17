@@ -81,7 +81,7 @@ assert.equal(panelDoorWindowConflict(0,1,.5,4,0),false);
 // stats-only counter or five extra duplicate copies of the houses.
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const term of [
- "from './scripts/osm-slepa-residential-5109.js?v=511100'",
+ "from './scripts/osm-slepa-residential-5109.js?v=511200'",
  'const estatePlan=regionalStyle?planMladaResidentialPanel({',
  '})||planSlepaResidentialPanel({',
  "streetWayId:slepaStreet?.id,streetPoints:slepaStreet?.points,",
