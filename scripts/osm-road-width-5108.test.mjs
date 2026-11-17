@@ -52,10 +52,37 @@ for(const [tags,defaultVal,region,expectedWidth,reason] of [
  assert.equal(out.reason,reason,JSON.stringify({tags,region}));
 }
 assert.equal(planMappedRoadWidth({highway:'residential',width:'5'},NaN,'vrutice').width,null);
+// These are literal midpoints and headings derived from existing OSM
+// centreline segments, not camera positions copied from a real photograph.
+const streetCameras=[
+ {id:'road-slepa-5108',way:'202375817',lat:50.2272391,
+  lon:14.8589544,heading:269.3},
+ {id:'road-vruticka-5108',way:'523991122',lat:50.2251763,
+  lon:14.8601586,heading:303.4}
+];
+for(const {id,way,lat,lon,heading} of streetCameras){
+ const e=load('vrutice').find(x=>String(x.id)===way);
+ assert(e,'The camera must target a real OSM roadway');
+ const segments=e.geometry.slice(1).map((b,i)=>{
+  const a=e.geometry[i],x=(a.lon+b.lon)*.5,
+   y=(a.lat+b.lat)*.5;
+  const dist=Math.hypot((x-lon)*111320*Math.cos(50.226*Math.PI/180),
+   (y-lat)*111320);
+  const dx=(b.lon-a.lon)*Math.cos(50.226*Math.PI/180),
+   dy=b.lat-a.lat;
+  const az=(Math.atan2(dx,dy)*180/Math.PI+360)%360;
+  const headingDelta=Math.abs((az-heading+540)%360-180);
+  return {dist,headingDelta};
+ });
+ assert(segments.some(e=>e.dist<.15&&e.headingDelta<.6),
+  'Street-level camera must sit directly on source segment: '+id);
+}
 // Renderer must share this exact resolved width across ALL relevant systems,
 // never re-evaluate a different value for the draw pass.
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const token of [
+ "'road-slepa-5108':{",
+ "'road-vruticka-5108':{",
  "from './scripts/osm-road-width-5108.js?v=510800'",
  'const roadWidths=new Map();',
  'const resolved=planMappedRoadWidth(el.tags,defaultWidth,regionId);',
