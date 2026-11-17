@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {planArmLandmarkMassing,ARMADNI_LANDMARK_SOURCES}
  from './osm-armadni-landmarks-5118.js';
+import {selectExteriorFacadeToward} from './facade-anchors.js';
 const cos=Math.cos(50.226*Math.PI/180),k=111320;
 const world=p=>({x:(p.lon-14.889)*k*cos,z:-(p.lat-50.226)*k});
 function region(id){
@@ -73,12 +74,21 @@ function heading(eye,target){
  return (Math.atan2((target.lon-eye.lon)*cos,
    target.lat-eye.lat)*180/Math.PI+360)%360;
 }
-const eyeBilla=service.geometry[0];
+const eyeBilla={
+ lat:(service.geometry[0].lat+service.geometry[1].lat)/2,
+ lon:(service.geometry[0].lon+service.geometry[1].lon)/2
+};
+assert(Math.abs(eyeBilla.lat-50.2289351)<1e-7);
+assert(Math.abs(eyeBilla.lon-14.86186245)<1e-7);
+const facade=selectExteriorFacadeToward(
+ billa.geometry.slice(0,-1).map(p=>({x:world(p).x,y:world(p).z})),
+ world(eyeBilla),{minLength:15,maxLength:25});
+assert.equal(facade?.index,4,'Mapped service road must face recessed Billa entrance');
 const targetBilla={
  lat:(billa.geometry[4].lat+billa.geometry[5].lat)/2,
  lon:(billa.geometry[4].lon+billa.geometry[5].lon)/2
 };
-assert(Math.abs(heading(eyeBilla,targetBilla)-132.7)<.2);
+assert(Math.abs(heading(eyeBilla,targetBilla)-50.6)<.2);
 const eyeClinic={
  lat:(spojovaci.geometry[0].lat+spojovaci.geometry[1].lat)/2,
  lon:(spojovaci.geometry[0].lon+spojovaci.geometry[1].lon)/2
@@ -104,6 +114,7 @@ for(const token of [
  "else if(isCommerce&&!isBlueStar&&!auditedCore&&!isArmBilla){",
  "if(osmId===1057548624&&tags.amenity==='clinic')return;",
  "if(isArmClinic){",
+ "const inventedEntrance=!slepaUtility&&!isArmClinic&&!isArmBilla&&",
  "i===armLandmark.frontEdgeIndex&&len>30",
  "archPart('clinicTeal'",
  "archPart('clinicWindow'",
@@ -112,7 +123,9 @@ for(const token of [
  "window.__miloviceArmLandmarksAudit={",
  "streetAudit=armadni-billa-5118",
  "streetAudit=armadni-clinic-5118",
- "camera:{lat:50.2290424,lon:14.861864},heading:132.7,",
+ "camera:{lat:50.2289351,lon:14.86186245},heading:50.6,",
+ "const photoEntranceEdge=selectExteriorFacadeToward(pts,serviceMidpoint,",
+ "photoEntranceEdge?.index===4",
  "camera:{lat:50.2286697,lon:14.8643547},heading:287.3,"
  ])assert(html.includes(token),'Missing integration '+token);
 const build=html.match(/const BUILD_ID='([^']+)'/)?.[1];
