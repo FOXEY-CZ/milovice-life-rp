@@ -52,7 +52,7 @@ try{
  assert.equal(state.apartments.roofShapesChanged,0);
  assert.equal(state.apartments.photoConfirmedFacades,0);
  assert.equal(state.apartments.existingGrassPolygonsUntouched,true);
- assert.equal(state.navigationLinks,33);
+ assert.equal(state.navigationLinks,34);
  assert(state.canvasWidth>0&&state.build===state.meta);
  assert.deepEqual(errors,[],'No 3D startup JS errors');
  // Objects must remain in a mounted, visible Three.js InstancedMesh after
