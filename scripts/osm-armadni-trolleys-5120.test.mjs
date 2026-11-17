@@ -81,5 +81,5 @@ assert(html.includes('visibleRoofInstances:meshes.filter(attached)'));
 assert(/const BUILD_ID='20261117-armadni-(?:trolleys-512000|clinic-front-512100)'/.test(html));
 assert(html.includes('streetAudit=armadni-billa-5118'));
 assert(html.includes('streetAudit=armadni-clinic-5118'));
-assert(html.includes('Verze 5.120 · build'));
+assert(/Verze 5\.(?:120|121) · build/.test(html));
 console.log('PASS 5.120: BILLA photographed cart shelter beside real OSM service access, safe roof and six instanced carts');
