@@ -5410,12 +5410,13 @@ const nearFieldTrees=makeNearFieldTreeKit(THREE);
 const visualTemp=new THREE.Object3D();
 const lampGlowMaterial=new THREE.MeshBasicMaterial({color:0xffe4a4});
 function visualBatch(geo,material,items){
- if(!items.length){geo.dispose();return}
+ if(!items.length){geo.dispose();return 0}
  const buckets=new Map();
  for(const it of items){
   const key=Math.floor(it[0]/200)+','+Math.floor(it[2]/200);
   if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(it);
  }
+ let drawMeshes=0;
  for(const [key,batch] of buckets){
   const mesh=new THREE.InstancedMesh(geo,material,batch.length);
   mesh.instanceMatrix.setUsage(THREE.StaticDrawUsage);
@@ -5429,7 +5430,9 @@ function visualBatch(geo,material,items){
   const [gx,gz]=key.split(',').map(Number);
   mesh.userData.lodX=(gx+.5)*200;mesh.userData.lodZ=(gz+.5)*200;
   visualDetails.add(mesh);visualLodMeshes.push(mesh);
+  drawMeshes++;
  }
+ return drawMeshes;
 }
 function improveMiloviceVisuals(){
  for(const mesh of visualLodMeshes)if(mesh.geometry)mesh.geometry.dispose();
@@ -5488,9 +5491,12 @@ function improveMiloviceVisuals(){
   notes:'Generic procedural manholes, bollards, road wear and drains disabled'
  };
  window.__miloviceBigUpdate.streetDecor=0;
- visualBatch(new THREE.BoxGeometry(1,1,1),visualMaterials.bark,trunks);
- visualBatch(new THREE.IcosahedronGeometry(1,2),visualMaterials.foliage,crowns);
- visualBatch(new THREE.IcosahedronGeometry(1,2),visualMaterials.foliage2,crowns2);
+ const trunkMeshes=visualBatch(new THREE.BoxGeometry(1,1,1),visualMaterials.bark,trunks);
+ const crownMeshes=visualBatch(new THREE.IcosahedronGeometry(1,2),visualMaterials.foliage,crowns);
+ const secondaryCrownMeshes=visualBatch(new THREE.IcosahedronGeometry(1,2),visualMaterials.foliage2,crowns2);
+ window.__miloviceGreenTreeAudit.renderedTreePartInstances=trunks.length+crowns.length+crowns2.length;
+ window.__miloviceGreenTreeAudit.drawMeshes=trunkMeshes+crownMeshes+secondaryCrownMeshes;
+ window.__miloviceGreenTreeAudit.renderedWithExistingInstancing=true;
  visualBatch(new THREE.CylinderGeometry(.5,.5,1,6),visualMaterials.roof,poles);
  visualBatch(new THREE.SphereGeometry(1,8,6),lampGlowMaterial,lamps);
  nearFieldTrees.decorate(heroTrees,visualDetails,terrainAt);

@@ -10,7 +10,7 @@
 - 5 originálních OSM regionálních exportů obsahuje **18 jedinečných polygonů lesa/parku** (17 lesů, 1 park). Každý může mít nejvýše 34 instancí a stávající celoměstský limit 620 stromů zůstává. V rámci stávajících exportů je tedy teoretické maximum **612**, skutečný počet je menší podle plochy a kolizí.
 - Pravidla bezpečnosti výsadby kontrolují skutečná OSM silniční a pěší spojení, půdorysy budov a otevřené vodní trasy. Podzemní vodoteče se neberou jako povrchová překážka. Soukromé OSM zelené plochy se při explicitním `access=private/no` neosazují odhadovanými stromy.
 - Výsledný vzhled nadále používá původní **3 typy instancovaných částí stromů a sdílené materiály**. Nová geometrie silnic, dveří, domů ani OSM polygonů nevzniká, nezavádí se fyzika stromů.
-- Diagnostika ve hře: `window.__miloviceGreenTreeAudit` obsahuje počty skutečně vytvořených instancí, unikátní mapové ID a zamítnutí kvůli silnicím, budovám či vodě. Automatické testy `scripts/forest-placement-597.test.mjs` ověřují shodné výstupy bez ohledu na pořadí regionů, opakovaná ID, příklady kolizí a skutečných 18 polygonů. Test je přidaný do GitHub Actions.
+- Diagnostika ve hře: `window.__miloviceGreenTreeAudit` obsahuje počty skutečně vytvořených instancí a Meshů, unikátní mapové ID a zamítnutí kvůli silnicím, budovám či vodě. Automatické testy `scripts/forest-placement-597.test.mjs` ověřují shodné výstupy bez ohledu na pořadí regionů, opakovaná ID, příklady kolizí a skutečných 18 polygonů. Test je přidaný do GitHub Actions.
 - **Ověření výkonu:** stávající limit instancí a 200m vykreslovací dávky se nemění; skutečné FPS na cílovém mobilu musí potvrdit prohlížeč, nikoliv pouze unit test.
 
 ---

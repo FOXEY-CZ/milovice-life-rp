@@ -866,6 +866,15 @@ try{
  await page.waitForFunction(()=>window.__miloviceAreasLoaded?.includes('mlada'),null,{timeout:105000});
  const mladaStats=await page.evaluate(()=>window.__miloviceAreaStats);
  console.log('Mladá streamed:',JSON.stringify(mladaStats));
+ const mappedForest=await page.evaluate(()=>window.__miloviceGreenTreeAudit);
+ if(!mappedForest||mappedForest.version!=='5.97'||
+    !mappedForest.mappedPolygonIds?.includes('26023867')||
+    !mappedForest.stablePerOSMId||mappedForest.total<1||
+    mappedForest.renderedTreePartInstances!==mappedForest.total*3||
+    mappedForest.drawMeshes<3||mappedForest.renderedWithExistingInstancing!==true)
+  throw Error('5.97 mapped forest greenery failed real WebGL creation: '+
+   JSON.stringify(mappedForest));
+ console.log('5.97 source-mapped forest tree parts',JSON.stringify(mappedForest));
   const tiledGround=await page.evaluate(()=>window.__miloviceTerrainTiles);
   // A near-by region may have already streamed during the earlier camera
   // smoke stages. Require no loss of tiles and preserved triangles, while
