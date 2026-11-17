@@ -108,7 +108,7 @@ for(const str of [
 const build=game.match(/const BUILD_ID='([^']+)'/)?.[1];
 const meta=game.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const hud=game.split('id="build-label">')[1]?.split('</strong>')[0];
-assert(build&&build===meta&&meta===hud&&build.includes('510000'));
+assert(build&&build===meta&&meta===hud, 'Lit street regression uses current matching game build stamps');
 console.log('PASS 5.100 OSM-lit streets, collision-free estimated lamp instancing',{
  eligibleWays:eligible.length,lampPosts:all.placed,
  sourceMeters:Math.round(all.eligibleMeters)});

@@ -1,3 +1,18 @@
+## Milovice RP 5.101 — mobilní kontrolní nabídka už nezakrývá hru (Part 21, 17. 11. 2026)
+
+**Spustit aktuální verzi:** https://foxey-cz.github.io/milovice-life-rp/?v=510100
+
+Oprava podle uživatelského screenshotu z mobilu 17. 11. 2026: původní foto/OSM nabídka obsahovala **28 odkazů v jedné nekonečné mřížce**, po rozbalení zabírala celý výhled a dlouhé staré názvy jako „Šest uličních bloků · Školská jihovýchod 5.90“ matly uživatele.
+
+- **6 tematických sekcí**: Ulice a fotografie (18), Chodníky (2), Voda (2), Lesy (2), Sportoviště (2), Osvětlení (2). **Žádný z 28 kontrolních odkazů se neodstraňuje**.
+- Mobilní panel je při prvním otevření **sbalený**, ponechává stručný aktuální název, jedno tlačítko „Zobrazit kategorie“ a nejvýše 2 sousední kontrolní odkazy. Současné místo je i nadále dostupné po přechodu na jinou kategorii.
+- Po rozbalení se otevře právě kategorie aktuální kamery, ostatní jsou zavřené; přes „Zobrazit všechny sekce“ se mohou rozbalit všechny. Aktivní odkaz je označen pomocí `aria-current=page`, ikonou a zvýrazněním.
+- **Maximální výška 58 % výšky displeje** (dále omezena na 540 px), vnitřní scroll a zkrácené popisky řeší přesně přerostlou mobilní nabídku. Přístupné ovládání pomocí `<details>` a `<summary>`, větší dotykové plochy.
+- Původní mapová/provenienční metadata, zdrojové odkazy, přímé URL kamery i geometrie 3D scény zůstávají beze změn. Oprava nevyžaduje další efekty ani 3D geometrii.
+- Jednotkový test `scripts/street-audit-menu-5101.test.mjs` zachovává všech 28 ID, správné sekce a synchronizaci označení verze. Nový skutečný prohlížečový test `scripts/street-audit-menu-webgl-5101.mjs` kontroluje rozbalování na mobilu, výšku panelu, aktivní sekci a funkčnost „Zobrazit všechny sekce“ v Chromiu.
+
+---
+
 ## Milovice RP 5.100 — veřejné osvětlení jen u OSM lit=yes ulic (Part 21, 17. 11. 2026)
 
 **Aktuální verze:** https://foxey-cz.github.io/milovice-life-rp/?v=510000
