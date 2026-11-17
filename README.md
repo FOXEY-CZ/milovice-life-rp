@@ -1,3 +1,18 @@
+## Milovice RP 5.117 — Slepá a Armádní: čtyři další skutečné trafostanice, ne domy (Part 24, 17. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=511700
+
+**Nová technická kamera na Armádní u trafostanice NB 0459:** https://foxey-cz.github.io/milovice-life-rp/?v=511700&streetAudit=slepa-substations-5117
+
+- Další souvislý úsek Slepé a Armádní má ve skutečných OSM datech čtyři malé budovy s `power=substation`: **way/762867641** (RÚIAN typ 16, provozovatel ČEZ Distribuce; plocha půdorysu přibližně **12,27 m²**), **way/1082018176** (NB 0459, `substation=minor_distribution`; **8,31 m²**), **way/1272167313** (NB 1057, `substation=minor_distribution`; **6,90 m²**) a **way/1468803930** (`power=substation`, ČEZ Distribuce; **7,66 m²**). Všechny čtyři jsou v `data/regions/mlada.json`, poslední uvedená trafostanice je zároveň v překrývajícím se exportu `vrutice.json`; staré deduplikování OSM way ID platí i zde.
+- Nový přísný modul `scripts/osm-slepa-substations-5117.js` vyžaduje **přesné čtyři identifikátory, jejich technické tagy, půdorys v reálném rozsahu 5–20 m²** a nesmí přepsat dříve fotograficky prověřený nebo ručně schválený model. Odmítá záznamy s výslovným `height=*`, `building:levels=*`, `building:part=*` nebo soukromým přístupem. Neřeší nesouvisející objekty.
+- Tato čtveřice se nyní napojuje na **stejnou bezpečnou kreslicí větev** jako tři starší objekty z verze 5.113. Namísto automatické obytné fasády a dvou výškových podlaží má každá **střídmý jednopodlažní model odhadované výšky 2,65 m**, prozatím jednoduchou střechu a žádná nově procedurálně vymyšlená obytná okna, dveře a skleněné stříšky. **Tvar střechy, barva, výška a vnější detaily NEJSOU fotograficky ověřené**, zato přesná OSM poloha a půdorys zůstávají nezměněné. Do města se **nepřidává žádná smyšlená budova**.
+- Diagnostika `window.__miloviceSlepaDistrictSubstationAudit` rozlišuje čtyři nově rozpoznané OSM ID od starší trojice ve `window.__miloviceSlepaUtilityAudit`. Starší schválené modely, silnice, pěší napojení, parková zeleň, uživatelské menu a původní kamerové odkazy zůstávají zachované.
+- Nová kamera `streetAudit=slepa-substations-5117` je přesně na původním OSM bodu silnice **Armádní way/1331897680** na GPS **50.2293803, 14.8618211**, přibližně **13,8 m** od středu existující trafostanice **NB 0459 way/1082018176**, ve směru **172,9°** vypočteném ze zdrojové geometrie. Nejde o fotografický úhel z Panorama.
+- Test `scripts/osm-slepa-substations-5117.test.mjs` kontroluje oba reálné OSM exporty, odmítnutí změněných tagů a výšek, ochranu fotoověřených/ručních modelů, zachování 5.113, neexistenci vymyšlených vstupů a oken, přesnost kamery a jednotná build metadata. Skutečný testovaný modul a regresní test byly **vyhodnoceny v JS prostředí: 160 kontrol prošlo**. Skutečný Android/Chromium WebGL rendering a následné nasazení GitHub Pages **se zde neověřily**.
+
+---
+
 ## Milovice RP 5.116 — bezpečné napojení skutečných pěších cest u Slepé a Armádní (Part 24, 17. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=511600
