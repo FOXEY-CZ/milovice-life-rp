@@ -13,7 +13,7 @@ try{
  const page=await browser.newPage({viewport:{width:393,height:852},
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
- await page.goto('http://127.0.0.1:8080/?v=510500&streetAudit=estate-mlada-5105',
+ await page.goto('http://127.0.0.1:8080/?v=510600&streetAudit=estate-mlada-5105',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>
@@ -27,6 +27,7 @@ try{
    loaded:window.__miloviceAreasLoaded,
    camera:window.__miloviceMladaEstateCameraAudit,
    apartments:window.__miloviceMladaResidentialAudit,
+  footwayJoins:window.__miloviceMladaFootwayJoinAudit,
    street:window.__miloviceStreetAuditRendered
   }));
   throw Error('Mapped 5.105 estate review not available: '+
@@ -35,6 +36,7 @@ try{
  const result=await page.evaluate(()=>({
   camera:window.__miloviceMladaEstateCameraAudit,
   apartments:window.__miloviceMladaResidentialAudit,
+  footwayJoins:window.__miloviceMladaFootwayJoinAudit,
   street:window.__miloviceStreetAuditRendered,
   header:document.querySelector('#street-block-audit > strong')?.textContent,
   label:document.getElementById('street-audit-label')?.textContent,
@@ -64,6 +66,14 @@ try{
  assert.equal(result.apartments.roofShapesChanged,0);
  assert.equal(result.apartments.structuralFootprintsChanged,0);
  assert.equal(result.apartments.photoConfirmedFacades??0,0);
+ assert(result.footwayJoins,'Mapped Mladá pedestrian junction details must load');
+ assert(result.footwayJoins.sealedCorners>=12,'Existing OSM path bend gaps must be sealed');
+ assert(result.footwayJoins.drawMeshes>=1,'Merged original 3D triangles must render');
+ assert.equal(result.footwayJoins.renderedTriangles,result.footwayJoins.sealedCorners);
+ assert.equal(result.footwayJoins.originalWayNodesUnchanged,true);
+ assert.equal(result.footwayJoins.syntheticNewWalkways,0);
+ assert.equal(result.footwayJoins.inventedZebraStripes,0);
+ assert.equal(result.footwayJoins.paintedNewPathMeters,0);
  assert.equal(result.street.view,'estate-mlada-5105');
  assert(result.header.includes('Bytové domy'));
  assert(result.label.includes('Mladá'));
@@ -81,6 +91,7 @@ try{
   floorJoints:result.apartments.horizontalFloorJoints,
   bayJoints:result.apartments.verticalBayJoints,
   suppressedDuplicatedSeams:result.apartments.duplicateVerticalJointsRemoved,
+  sealedFootwayCorners:result.footwayJoins.sealedCorners,
   targetProjection:result.camera.targetProjection
  }));
  await page.close();
