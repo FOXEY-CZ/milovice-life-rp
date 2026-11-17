@@ -45,6 +45,7 @@ try{
    lawn:window.__milovicePlaygroundLawnAudit,
    residential:window.__miloviceMladaResidentialAudit,
    vruticeFootways:window.__miloviceVruticeFootwayJoinAudit,
+   roadWidth:window.__miloviceRoadWidthAudit,
    loaded:window.__miloviceAreasLoaded,
    header:document.querySelector('#street-block-audit > strong')?.textContent,
    label:document.getElementById('street-audit-label')?.textContent,
@@ -92,6 +93,13 @@ try{
 
   }
   if(region==='vrutice'){
+   assert(state.roadWidth,'5.108 road widths need a real runtime audit');
+   assert(state.roadWidth.explicitWidthWays>=10,
+    'Tagged OSM roadway widths from Vrutice should reach the live scene');
+   assert(state.roadWidth.byRegion.vrutice?.explicitWidthWays>=10,
+    'Vrutice OSM road widths must not be metadata-only');
+   assert.equal(state.roadWidth.changedMappedRoadCentrelines,0);
+   assert.equal(state.roadWidth.inventedFootways,0);
    assert(state.vruticeFootways,'5.107 Vrutice footway mesh audit must exist');
    assert(state.vruticeFootways.sealedCorners>=150,
     'Mapped Vrutice path corners should generate actual 3D wedges');
