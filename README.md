@@ -1,3 +1,27 @@
+## Milovice RP 5.111 — mobilní menu opravené podle screenshotu + Slepá pěší cesty (Part 23, 17. 11. 2026)
+
+**Ověření hry na mobilu:** https://foxey-cz.github.io/milovice-life-rp/?v=511100&streetAudit=road-slepa-5108
+
+**Slepá bez kontrolního režimu:** https://foxey-cz.github.io/milovice-life-rp/?v=511100
+
+### Oprava menu podle uživatelského screenshotu (mobil, Slepá)
+
+- Původní rozbalená nabídka obsazovala podstatnou část displeje; pod kategorií „Ulice a fotografie (21)“ byly vidět téměř nečitelné vodorovné proužky a pod nimi zcela nesouvisející popis lampy a kostela u 5. května, ačkoliv kamera ukazovala Slepou.
+- Mobilní panel nyní **standardně zůstává kompaktní** (max 112 CSS px), s jediným tlačítkem „☰ Vybrat pohled“, stručným názvem aktivního pohledu a křížkem **✕ pro návrat do hry**. Při rozbalení se zobrazí **7 názvů kategorií**, všechny původně zavřené; teprve dotykem konkrétního názvu se zpřístupní jednotlivé odkazy.
+- Nejvyšší panel na telefonu má nyní `max-height:min(44dvh,360px)`; vnitřní seznam kategorií a jednotlivých odkazů samostatně scrolluje. Důležité: opravená pravidla `flex:0 0 auto`, `flex-shrink:0` a `height:auto!important` zabraňují tomu, aby Chrome kvůli shrinkování stlačil text odkazů na úzké proužky. Odkazy se **zalamují**, nejsou skryté pomocí `white-space:nowrap`.
+- GPS, zdroj a kontext se odteď zobrazí **výhradně po kliknutí na „📍 GPS a zdroj“**; při sbalení se tento přídavný panel sám zavře. Nesouvisející obecný foto-popis kostela a lampy z roku 2022 je opraven — kontrolní pohledy u Slepé a Vrutické mají výslovně **OSM mapovou povahu, šířku 6 m a nikoli foto-dokumentaci**.
+- **Zachováno všech 33 odkazů** v 7 kategoriích, přesné geolokace technických kamer, příslušné OSM zdroje a fotografické odkazy staršího centra. Mobilní kontrolní test: `scripts/street-audit-menu-webgl-5101.mjs`, statický regresní test `scripts/street-audit-menu-5101.test.mjs`.
+
+### Pokračování celé Slepé: napojení skutečných pěších tras
+
+- Nově se vykreslují **drobné vyplňující trojúhelníky v ohybech už existujících OSM `highway=footway/path`**, do 145 m od střednice doložené komunikace **Slepá way/202375817** (souřadnice kotvy jsou vypočteny přímo ze zdrojové OSM cesty, nikoliv posunutím kamerou). Využívá se auditovaný generátor `planMladaFootwayCorners` z předchozích 5.106/5.107; tyto dvě starší oblasti zůstávají zachované.
+- V každém bodě ohybu se ověřují střety s dopravními komunikacemi a mapovanými budovami. **Žádný nový chodník, žádný smyšlený přechod, žádné posuny oficiálních bodů tras nebo změny staveb.** Materiál odpovídá OSM `surface=*`, pokud jej zdroj uvádí; bez zdroje se používá stávající vzhled chodníku. Výplně z různých cest se slučují do nejmenšího možného množství 3D meshů podle materiálu.
+- Souběžné regionální exporty Mladá/Vrutice nepřidávají duplicitní zdrojový `way`, protože již funguje globální deduplikace OSM. Nový audit `window.__miloviceSlepaFootwayJoinAudit` a `window.__miloviceSlepaFootwayJoinRuntime()` rozlišují počty trojúhelníků od jejich skutečného napojení na renderovanou scénu po 5 sekundách.
+- `scripts/osm-slepa-footway-joins-5111.test.mjs` ověřuje geometrii z obou skutečných OSM exportů, reprodukovatelnost při otočení pořadí `way`, žádné duplicitní rohy a bezpečné odstupy od cest a budov. Testy 5.108 (šířky silnic), 5.109 (5 bytových domů), 5.110 (15 trávníků a 48 trsů) byly zachovány a **při izolovaném JS ověření všechny prošly**.
+- Vědomé omezení: plný test **Chromium/WebGL s reálným vykreslováním této online verze zde nebyl proveden**. Verze 5.111 je zapsaná v GitHub repozitáři a dostupnost nového nasazení závisí na aktualizaci GitHub Pages.
+
+---
+
 ## Milovice RP 5.110 — Slepá: skutečné travnaté plochy, příjezdy a parkování bez kolizí (Part 23, 17. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=511000
