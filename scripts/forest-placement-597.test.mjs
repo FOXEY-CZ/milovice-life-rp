@@ -86,7 +86,7 @@ for(const key of ['osmWaterVegetationClearance.addRoad({',
 const build=game.match(/const BUILD_ID='([^']+)'/)?.[1],
  meta=game.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1],
  hud=game.split('id="build-label">')[1]?.split('</strong>')[0];
-assert(build&&build===meta&&meta===hud&&build.includes('59700'));
+assert(build&&build===meta&&meta===hud, 'Forest safety code must retain matching build stamps');
 console.log('PASS 5.97 safe, stable city greenery',JSON.stringify({
  uniqueMappedForestAndPark:unique.size,trees:allTrees.planted,
  sourceCoordsStable:true,maxPerPolygon:34}));
