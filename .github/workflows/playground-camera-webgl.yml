@@ -5,6 +5,8 @@ on:
     paths:
       - index.html
       - scripts/osm-playground-equipment-5102.js
+      - scripts/osm-playground-verges-5104.js
+      - scripts/osm-playground-verges-5104.test.mjs
       - scripts/osm-playground-camera-webgl-5103.mjs
       - scripts/street-audit-menu-5101.js
       - data/regions/mlada.json
