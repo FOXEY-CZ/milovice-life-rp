@@ -1,3 +1,16 @@
+## Milovice RP — Part 20: uliční orientace běžných OSM domů (17. 11. 2026)
+
+**Nový build webu:** https://foxey-cz.github.io/milovice-life-rp/?v=59102
+
+- **V celé mapě:** běžné, fotograficky nedoložené budovy už automaticky nedostávají provizorní dveře na nejdelší zeď, která často mířila do zahrady. Modul `scripts/street-frontage-index.js` hledá skutečnou vnější stěnu orientovanou na **existující veřejnou OSM silnici**. Určuje stranu, ne skutečnou polohu historických dveří.
+- Rychlý prostorový index po 96m blocích omezuje práci při průběžném načítání dalších čtvrtí. Soukromé komunikace, parkovací uličky a příjezdové cesty nejsou veřejným podkladem pro vymyšlení nové brány.
+- Značení `inferred:true`, `photographicallyVerified:false` je záměrné; pokud vhodná silnice chybí, nevytvoří se vchod naslepo. Původní doložené vchody školy a speciální fotografické modely zůstávají nezměněné.
+- Reálné OSM zkoušky na obytných půdorysech s platným rozměrem: **Mladá 739/887 (83 %)**, **Benátecká Vrutice 373/467 (80 %)** mají použitelnou ulici podle geometrie. Zbývající stavby nejsou prohlášeny za chybu ani za zmapované skutečné vchody. Tato čísla jsou pokrytí plánovače na izolovaném regionálním exportu, nikoliv počet viditelných dveří po spuštění celé hry.
+- Diagnostika ve hře: `window.__miloviceStreetFronts` (počty analyzovaných a vybraných běžných vchodů a rozsah prostorového indexu).
+- Kontrolní soubor `scripts/street-frontage-index.test.mjs` porovnává oba skutečné regionální exporty i obrácené OSM pořadí uzlů, soukromý přístup a orientaci stěny. Konkrétní fotografie jednotlivých domů a přesné umístění dveří jsou nadále otevřená témata.
+
+---
+
 ## Milovice RP 5.91 — plynulejší přechody mezi městskými oblastmi (Part 20, 17. 11. 2026)
 
 **Spustit aktualizovaný web:** https://foxey-cz.github.io/milovice-life-rp/?v=59101
