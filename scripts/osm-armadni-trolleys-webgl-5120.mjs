@@ -48,7 +48,8 @@ try{
    ?.getBoundingClientRect().height
  }));
  assert.equal(state.meta,state.build);
- assert.equal(state.build,'20261117-armadni-trolleys-512000');
+ assert(/^20261117-armadni-(?:trolleys-512000|clinic-front-512100)$/.test(state.build),
+  'BILLA carts must remain valid in later clinic release');
  assert.equal(state.audit.sourceWayId,'53865798');
  assert.equal(state.audit.accessWayId,'1057548615');
  assert.equal(state.audit.newRoads,0);
