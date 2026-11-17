@@ -32,7 +32,7 @@ try{
    isMobile:view.mobile,hasTouch:view.mobile});
   const errors=[];
   page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=510100&streetAudit='+view.id,
+  await page.goto('http://127.0.0.1:8080/?v=511100&streetAudit='+view.id,
    {waitUntil:'domcontentloaded',timeout:30000});
   await page.waitForSelector('#street-audit-nav details',{
    state:'attached',timeout:30000}); // Mobile nav is intentionally hidden until tapped.
