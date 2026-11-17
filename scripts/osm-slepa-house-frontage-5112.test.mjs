@@ -115,7 +115,7 @@ for(const term of [
  'newBuildingsAdded:0',
  'window.__miloviceSlepaHouseRuntime=()=>{',
  'checkedSceneParentChain:true',
- 'modelDoorPosition:[doorx,grade.centerY,doorz]',
+ 'modelDoorPosition=[doorx,grade.centerY,doorz]',
  'unverifiedGardenFencesAdded:0',
 ])assert(game.includes(term),'5.112 3D integration not found: '+term);
 const build=game.match(/const BUILD_ID='([^']+)'/)?.[1];
