@@ -7,12 +7,14 @@ export const STREET_AUDIT_SECTIONS=Object.freeze([
  {id:'water',title:'Voda',icon:'💧'},
  {id:'forests',title:'Lesy',icon:'🌲'},
  {id:'sports',title:'Sportoviště',icon:'🏟️'},
+ {id:'playgrounds',title:'Dětská hřiště',icon:'🛝'},
  {id:'lighting',title:'Osvětlení',icon:'💡'}
 ]);
 export function streetAuditCategory(id=''){
  const name=String(id||'');
  if(name.startsWith('lit-'))return 'lighting';
  if(name.startsWith('pitch-'))return 'sports';
+ if(name.startsWith('play-'))return 'playgrounds';
  if(name.startsWith('forest-'))return 'forests';
  if(name.startsWith('water-'))return 'water';
  if(name.includes('sidewalk-'))return 'sidewalks';
@@ -23,6 +25,7 @@ export function shortStreetAuditLabel(label,id){
  const category=streetAuditCategory(id);
  if(category==='lighting')text=text.replace(/\s*·\s*OSM lit=yes.*$/i,'');
  if(category==='sports')text=text.replace(/\s*·\s*OSM model.*$/i,'');
+ if(category==='playgrounds')text=text.replace(/\s*·\s*3D model.*$/i,'');
  if(category==='forests')text=text.replace(/\s*·\s*technická kamera.*$/i,'');
  if(category==='water')text=text.replace(/\s*\((?:TECHNICKÁ kamera|NENÍ foto).*$/i,'');
  // Photo provenance stays in the title/underlying link, not silently lost.
@@ -132,7 +135,7 @@ export function mountStreetAuditMenu(panel,{activeId='',label='',mobile=false}={
   toggle.setAttribute('aria-expanded',String(expanded));
   toggle.setAttribute('aria-controls','street-audit-nav');
   toggle.textContent=expanded?'Sbalit nabídku':'Zobrazit kategorie';
-  // Never open 28 links by default on a phone.
+  // Never open the full long review-link list by default on a phone.
   panel.scrollTop=0;
  };
  toggle.addEventListener('click',()=>setExpanded(!state.expanded));
