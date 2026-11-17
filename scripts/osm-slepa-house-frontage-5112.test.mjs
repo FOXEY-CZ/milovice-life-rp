@@ -76,7 +76,7 @@ assert.equal(conflict(.50,1),false,
  'Second-floor windows may remain over the same entry');
 assert.equal(conflict(.50,0,4,5),false,
  'Windows on unrelated walls must remain unchanged');
-assert.equal(conflict(.50,0,undefined,4),false,
+assert.equal(conflict(.50,0,null,4),false,
  'No reliable street-facing door = never remove unknown windows');
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const term of [
