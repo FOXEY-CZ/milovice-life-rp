@@ -5,7 +5,12 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const index=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const art=readFileSync(new URL('./visual-overhaul.js',import.meta.url),'utf8');
-assert(index.includes("const BUILD_ID='20261117-city-landuse-59100'"));
+const build=index.match(/const BUILD_ID='([^']+)'/)?.[1];
+const meta=index.match(/<meta name="milovice-build" content="([^"]+)"\s*\/>/)?.[1]||
+ index.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
+const hud=index.match(/id="build-label">([^<]+)<\/strong>/)?.[1];
+assert(build&&meta===build&&hud===build,
+ 'Road UV test must accept a CURRENT coherent build, not pin a stale 5.91 stamp');
 assert(index.includes("const ROAD_ASPHALT_TILE_METERS=7"));
 const p=index.indexOf('function osmStrip(a,b,width,material,y=.15){');
 const q=index.indexOf('// 5.2.1:',p);
