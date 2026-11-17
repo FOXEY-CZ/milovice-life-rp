@@ -4593,9 +4593,22 @@ const landscapeZones=[];
 const osmMiniRoadBounds=new WeakMap();
 function rpAppendOSMElements(elements,regionId='old'){
  const roadWays=[],railWays=[],buildingWays=[],landscapeWays=[];
+ // Different region exports overlap: one official OSM way must be rendered
+ // only ONCE, regardless of which region the player reaches first.
+ const dedup=window.__miloviceRegionDedup ||= {
+  uniqueOsmFeatures:0,duplicateOsmIdsSkipped:0,
+  duplicateBuildingsSkipped:0,byRegion:{}
+ };
  for(const el of elements){
-  if(!el.geometry?.length||seenCityOSMWays.has(el.id))continue;
+  if(!el.geometry?.length)continue;
+  if(seenCityOSMWays.has(el.id)){
+   dedup.duplicateOsmIdsSkipped++;
+   if(el.tags?.building)dedup.duplicateBuildingsSkipped++;
+   dedup.byRegion[regionId]=(dedup.byRegion[regionId]||0)+1;
+   continue;
+  }
   seenCityOSMWays.add(el.id);
+  dedup.uniqueOsmFeatures++;
   if(el.tags?.highway)roadWays.push(el);
   else if(el.tags?.railway)railWays.push(el);
   else if(el.tags?.building){
@@ -5276,7 +5289,7 @@ osmBtn.onclick=async()=>{
  if(osmLoading)return;
  osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';osmMessage('Načítám místní soubor mapy ze stejného GitHub Pages webu…');
  try{
- const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();legacyRealityAudit.reset();renderedPedestrianPieces.clear();collisionWorld.reset();heroBuildings.reset();photoStreetBlock.reset();photoStreetEnvironment.reset();mirovaPhotoStreet586.reset();skolskaWestGreen588.reset();skolskaTailGreen590.reset();photoPionyruVerge.reset();photoChurchSidewalk2022.reset();photoChurchStreet2022.reset();stationPhotoForecourt.reset();stationPhotoParking.reset();bikeTowerEntryPaving.reset();stationTicketMachines.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;landscapeZones.length=0;
+ const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();streetFrontage.reset();cityAreaAhead=null;lastCityStreamingX=Infinity;lastCityStreamingZ=Infinity;legacyRealityAudit.reset();renderedPedestrianPieces.clear();collisionWorld.reset();heroBuildings.reset();photoStreetBlock.reset();photoStreetEnvironment.reset();mirovaPhotoStreet586.reset();skolskaWestGreen588.reset();skolskaTailGreen590.reset();photoPionyruVerge.reset();photoChurchSidewalk2022.reset();photoChurchStreet2022.reset();stationPhotoForecourt.reset();stationPhotoParking.reset();bikeTowerEntryPaving.reset();stationTicketMachines.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;landscapeZones.length=0;
   if(trafficGroup.parent!==osmLayer)osmLayer.add(trafficGroup);
   if(visualDetails.parent!==osmLayer)osmLayer.add(visualDetails);for(const batch of facadeBatches)batch.clear();
  window.__miloviceMassStreetBlock583=null;
@@ -5286,6 +5299,8 @@ osmBtn.onclick=async()=>{
  window.__miloviceSkolskaEastBlock589=null;
  window.__miloviceSkolskaTailBlock590=null;
  window.__miloviceCityGreenBatch=null;
+ window.__miloviceRegionalBuildingPass=null;
+ window.__miloviceRegionDedup=null;
  if(terrainGrid)rpTerrainMesh();else cube(2200,.16,2200,osmParkMaterial,0,-.18,0,osmLayer);
  rpAppendOSMElements(elements);
  if(!osmRoads.length)throw Error('Žádné silnice v odpovědi');finalizeRoadStrips();finalizeCityWalls();finalizeFoundations();finalizeFacades();finalizeArchitecture();heroBuildings.flush(osmLayer);osmStreetLabels();chunkMilovice();improveMiloviceVisuals();publishLegacyRealityAudit();rpPopulate();rpInitRailTraffic();
