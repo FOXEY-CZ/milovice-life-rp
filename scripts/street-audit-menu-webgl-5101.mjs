@@ -39,8 +39,8 @@ try{
   const initial=await page.evaluate(()=>({
    compact:document.querySelector('#street-block-audit')
     .classList.contains('audit-compact'),
-   category:document.querySelector('#street-audit-nav details[open]')
-    ?.dataset.category,
+   category:window.__miloviceStreetAuditMenu?.category,
+   openSections:document.querySelectorAll('#street-audit-nav details[open]').length,
    allLinks:document.querySelectorAll('#street-audit-nav a').length,
    categories:document.querySelectorAll('#street-audit-nav details').length,
    current:document.querySelectorAll('#street-audit-nav a[aria-current="page"]').length,
@@ -51,13 +51,21 @@ try{
   }));
   assert.equal(initial.compact,view.mobile);
   assert.equal(initial.category,view.cat);
+  assert.equal(initial.openSections,view.mobile?0:1,
+   'Mobile must not load all 21 street links open');
   assert.equal(initial.allLinks,33);
   assert.equal(initial.categories,7);
   assert.equal(initial.current,1);
+  assert(await page.locator('#street-audit-exit').count()===1,
+   'Visible X must exit technical camera mode');
   assert.equal(initial.quick,view.quick);
   assert(initial.label.length<90);
   assert(initial.panelHeight<view.height*.59);
-  if(view.mobile)await page.click('#street-audit-toggle');
+  if(view.mobile){
+   await page.click('#street-audit-toggle');
+   // Open ONLY the chosen category; all 7 headings start closed.
+   await page.click('#street-audit-nav details[data-category="'+view.cat+'"] summary');
+  }
   const expanded=await page.evaluate(()=>({
    compact:document.querySelector('#street-block-audit')
     .classList.contains('audit-compact'),
@@ -74,8 +82,17 @@ try{
   assert.equal(expanded.compact,false);
   assert.equal(expanded.expanded,'true');
   assert.equal(expanded.selectedVisible,true);
-  assert(expanded.height<view.height*.59,
-   'Expanded menu must not cover the entire game screen');
+  assert(expanded.height<view.height*(view.mobile?.47:.59),
+   'Expanded menu must preserve most of the 3D game scene');
+  if(view.mobile){
+   assert(await page.locator('#street-audit-status:visible').count()===0,
+    'Street source details must be optional, not cover the game');
+   await page.click('#street-audit-info-toggle');
+   assert(await page.locator('#street-audit-camera-gps:visible').count()===1,
+    'GPS must be available on demand');
+   await page.click('#street-audit-info-toggle');
+   assert(await page.locator('#street-audit-camera-gps:visible').count()===0);
+  }
   if(view.mobile){
    await page.click('#street-audit-show-all');
    const open=await page.locator('#street-audit-nav details[open]').count();
@@ -88,7 +105,7 @@ try{
    assert(await page.locator('#street-block-audit.audit-compact').count()===1);
   }
   assert.deepEqual(errors,[],'Audit menu introduced a page error');
-  console.log('PASS street menu 5.101',JSON.stringify({
+  console.log('PASS street menu 5.111',JSON.stringify({
    view:view.id,mobile:view.mobile,sections:initial.categories,
    quick:initial.quick,closedHeight:initial.panelHeight,
    expandedHeight:expanded.height,allLinks:initial.allLinks
