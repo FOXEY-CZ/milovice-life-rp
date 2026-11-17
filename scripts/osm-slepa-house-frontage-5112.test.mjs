@@ -78,8 +78,29 @@ assert.equal(conflict(.50,0,4,5),false,
  'Windows on unrelated walls must remain unchanged');
 assert.equal(conflict(.50,0,null,4),false,
  'No reliable street-facing door = never remove unknown windows');
+// The dedicated camera must be on the actual mapped Slepá centreline,
+// aimed at the centroid of these twelve sourced building polygons.
+const mappedCameraRoad=b.els.find(e=>e.id===1029234206);
+assert.equal(mappedCameraRoad?.tags?.name,'Slepá');
+const from=mappedCameraRoad.geometry[0],to=mappedCameraRoad.geometry[1];
+const eye={lat:(from.lat+to.lat)/2,lon:(from.lon+to.lon)/2};
+assert(Math.abs(eye.lat-50.22749795)<1e-8);
+assert(Math.abs(eye.lon-14.8595789)<1e-8);
+const targets=EXPECTED.map(id=>{
+ const e=b.els.find(x=>String(x.id)===id);
+ return {lat:e.geometry.reduce((n,p)=>n+p.lat,0)/e.geometry.length,
+  lon:e.geometry.reduce((n,p)=>n+p.lon,0)/e.geometry.length};
+});
+const average={lat:targets.reduce((n,p)=>n+p.lat,0)/targets.length,
+ lon:targets.reduce((n,p)=>n+p.lon,0)/targets.length};
+const direction=(Math.atan2(
+ (average.lon-eye.lon)*cos,average.lat-eye.lat)*180/Math.PI+360)%360;
+assert(Math.abs(direction-63.3)<.2,
+ 'Camera bearing must target mapped houses, not an invented street photo');
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const term of [
+ "'slepa-houses-5112':{",
+ "camera:{lat:50.22749795,lon:14.8595789},heading:63.3,",
  "from './scripts/osm-slepa-house-frontage-5112.js?v=511200'",
  'window.__miloviceSlepaHouseAudit={',
  'const slepaHousePlan=regionalStyle?planSlepaHouseFrontage({',
