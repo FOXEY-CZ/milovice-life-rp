@@ -83,7 +83,7 @@ for(const token of [
  'streetAudit=estate-mlada-5105',
  'window.__miloviceMladaEstateCameraAudit={',
  'if(!estatePlan)archPart(\'panelSeam\',',
- 'window.__miloviceMladaResidentialAudit.duplicateVerticalJointsRemoved++',
+ 'estateAudit.duplicateVerticalJointsRemoved++',
 ].filter(Boolean))
  assert(html.includes(token),'Missing actual 5.105 rendering integration: '+token);
 const id=html.match(/const BUILD_ID='([^']+)'/)?.[1],
