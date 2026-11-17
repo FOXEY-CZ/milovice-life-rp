@@ -1,3 +1,23 @@
+## Milovice RP 5.112 — dvanáct RÚIAN rodinných domů kolem Slepé, úprava fasád a přímý 3D pohled (Part 23, 17. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=511200
+
+**Nová přímá kamera na rodinné domy:** https://foxey-cz.github.io/milovice-life-rp/?v=511200&streetAudit=slepa-houses-5112
+
+**Starší pohled na Slepou:** https://foxey-cz.github.io/milovice-life-rp/?v=511200&streetAudit=road-slepa-5108
+
+- V reálných uložených OSM exportech `data/regions/mlada.json` a `data/regions/vrutice.json` je v okolí `Slepá way/202375817` **12 skutečných budov `building=house`**, které zároveň nesou `building:levels=2`, `building:flats=1`, `building:ruian:type=7` a `source=cuzk:ruian`. Zdrojová ID: **61977976, 61977982, 61977989, 61977993, 61977995, 61978001, 61978003, 61978005, 61978010, 61978012, 61978013, 61978015**. Nejbližší bod půdorysu má od modelované Slepé 29,5–96,6 m. Duplicity v překrývajících se regionálních datech se nemodelují znovu.
+- Přísně omezený plánovač `scripts/osm-slepa-house-frontage-5112.js` rozpoznává **jen tyto zdrojově doložené dvoupodlažní a jednobytové rodinné domy**. Chrání dřívější fotoaudit, domy s neznámým `building=yes`, schválené modely, soukromé přístupy, ostatní oblasti a příliš vzdálené budovy. NEMĚNÍ OSM půdorysy, výšku podlaží, výškový terén, polohu již modelovaných dveří ani tvar střech.
+- Při existujícím výpočtu veřejně přístupné uliční fasády `streetFrontage.select(pts)` se teď už **nevyrobí modelové přízemní okno přes osu dveří**. Konflikt se vyhodnocuje podle skutečné modelové šířky stěny, pozice okenního bay, šířky dveří 1,28 m a ochranného okraje. Druhé patro i nesouvisející stěny zůstávají nedotčené. Pokud model neumí doložit veřejně orientovanou fasádu, **nepředstírá znalost vstupu** a okna neskrývá.
+- Původní generický algoritmus dával celému bloku stejné velké **skleněné stříšky**. U těchto 12 budov se bez fotografické evidence **nezobrazují**; nová celková kresba je střídmější, konzistentnější a nevyvolává dojem, že každý dům má identickou stříšku. Barva zdí, okna jako individuální půdorysy, branky, ploty či stromy se neoznačují jako fotoověřené.
+- Nová auditní kamera `streetAudit=slepa-houses-5112` má výchozí GPS **50.22749795, 14.8595789**, tedy aritmetický střed **prvního OSM segmentu Slepá way/1029234206**, a směr **63,3°** vypočtený ze souhrnného středu 12 skutečných RÚIAN domovních půdorysů. Není to dokumentovaný záběr z Panorama, ale konkrétní hratelný zorný úhel pro vizuální porovnání. Původní pohledy a jejich metadata zůstávají.
+- Na mobilu zůstává opravené kompaktní menu z 5.111: nyní **34 odkazů v 7 kategoriích**, všechny kategorie lze rozbalit na vyžádání, detaily GPS a zdrojů jsou oddělené. Křížek vrací do běžné hry a odkazy se neshrnují do jednopixelových čárek.
+- Diagnostiky: `window.__miloviceSlepaHouseAudit` (zdrojové domy, případně potlačená okna a stříšky, modelová orientace vchodů); `window.__miloviceSlepaHouseRuntime()` po načtení a LOD projde **skutečné `THREE.InstancedMesh`** materiálu `darkWood` a ověří umístění modelovaných dveří na uložených 3D souřadnicích i viditelnost všech nadřazených objektů až do scény. Není to falešný kontrolní údaj bez geometrie.
+- Test `scripts/osm-slepa-house-frontage-5112.test.mjs` porovnává skutečné OSM exporty, 12 ID, dvě patra, jednu bytovou jednotku, bezpečnou ochranu soukromých nebo neznámých domů, skutečnou polohu nové kamery a odstraňování kolize oken s dveřmi jen v přízemí. Dále `scripts/osm-slepa-house-webgl-5112.mjs` poskytuje připravený **mobilní Chromium 3D test po 6,5 sekundách**. Izolované JS regresní kontroly verze 5.108–5.112 prošly; **Chromium/WebGL nebyl v tomto chatu prokazatelně spuštěn**.
+- Milovice RP zůstává vizuální procedurální rekonstrukcí na skutečné mapové geometrii. Nepodložené rozměry dveří, rozmístění oken, barvy a přístřešky nejsou vydávány za dokázané fyzické vlastnosti. Přímé porovnání s veřejnými fotografiemi zůstává dalším krokem.
+
+---
+
 ## Milovice RP 5.111 — mobilní menu opravené podle screenshotu + Slepá pěší cesty (Part 23, 17. 11. 2026)
 
 **Ověření hry na mobilu:** https://foxey-cz.github.io/milovice-life-rp/?v=511100&streetAudit=road-slepa-5108
