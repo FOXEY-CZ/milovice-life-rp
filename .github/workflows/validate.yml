@@ -19,6 +19,8 @@ jobs:
         run: node scripts/validate.cjs
       - name: Validate REBUILD 2.0 all-region, all-object street coverage
         run: node scripts/rebuild2-street-inventory.test.mjs
+      - name: Validate 5.105 mapped Mladá apartment facades and non-overlapping panel grid
+        run: node scripts/osm-mlada-residential-5105.test.mjs
       - name: Validate 5.104 Mladá mapped lawns and low grass detail without road collisions
         run: node scripts/osm-playground-verges-5104.test.mjs
       - name: Validate 5.102 OSM public playgrounds and safe modeled equipment
