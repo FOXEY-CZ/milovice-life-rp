@@ -5710,6 +5710,16 @@ if(rpStreetAuditCameraWorld&&rpStreetAuditView){
    camera.up.set(0,1,0);
    camera.position.set(x,terrainAt(x,z)+1.68,z);
    camera.lookAt(tx,terrainAt(tx,tz)+1.70,tz);
+  }else if(rpStreetAuditView.streetLevel&&Number.isFinite(rpStreetAuditView.heading)){
+   // 5.89: An OSM street-axis heading is an APPROXIMATION, but still needs
+   // a real eye-level camera. It must not fall into the satellite overhead
+   // fallback just because this district has no Pionýrů-specific planner.
+   const heading=rpStreetAuditView.heading*Math.PI/180;
+   const eyeHeight=ground+1.68;
+   camera.up.set(0,1,0);
+   camera.position.set(eye.x,eyeHeight,eye.z);
+   camera.lookAt(eye.x+Math.sin(heading)*18,eyeHeight-.04,
+    eye.z-Math.cos(heading)*18);
   }else{
    // Historic satellite is not an authenticated eye-level photo.
    const cx=pionyru?.center?.x??eye.x,cz=pionyru?.center?.z??eye.z;
