@@ -87,7 +87,7 @@ try{
     'No duplicate full-height joints once per floor');
    assert.equal(state.residential.structuralFootprintsChanged,0);
    assert.equal(state.residential.roofShapesChanged,0);
-   assert.equal(state.residential.photocConfirmedFacades??0,0);
+   assert.equal(state.residential.photoConfirmedFacades??0,0);
 
   }
   assert(state.header.includes('hřiště')||state.header.includes('hřiště'.toUpperCase()));
