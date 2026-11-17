@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {MASS_STREET_583,planMassStreetBlock583,MIROVA_PUBLIC_PHOTO_586,planPublicPhotoMirovaBlock586,
  SKOLSKA_PUBLIC_PHOTO_587,planPublicPhotoSkolskaBlock587,
- SKOLSKA_WEST_588,planSkolskaWestBlock588} from './street-mass-build-pass.js';
+ SKOLSKA_WEST_588,planSkolskaWestBlock588,SKOLSKA_EAST_589,planSkolskaEastBlock589} from './street-mass-build-pass.js';
 import {MIROVA_PHOTO_STREET_586,planMirovaPhotoStreet586} from './mirova-public-photo-street-586.js';
 import {SKOLSKA_WEST_GREEN_588,planSkolskaWestGreen588} from './skolska-west-street-588.js';
 import {createRoadClearance} from './road-clearance.js';
@@ -141,6 +141,30 @@ assert.deepEqual(augmented.priorityIds,plan.priorityIds);
   [...plan.priorityIds,...mirova.priorityIds,...skolska.priorityIds]).priorityIds,
   west.priorityIds,'Reversed digitization must not alter modeled houses');
  assert.equal(planSkolskaWestBlock588([],[]),null);
+
+ const east=planSkolskaEastBlock589(elements,[...joined,'202298939']);
+ assert(east&&east.prioritizedBuildings===8,'Fifth real OSM street needs 8 newly detailed houses');
+ assert.equal(east.roadIds.join(','),'1331897643,1331897644');
+ assert.equal(east.photoVerifiedHouseFacades,0);
+ assert.equal(east.technicalCameraIsPhotoAngle,false);
+ assert.equal(east.newBuildingsInvented,0);
+ assert.equal(east.roadsChanged,false);
+ assert.equal(east.sidewalksChanged,false);
+ assert.equal(east.inventedPlotFences,0);
+ assert.equal(east.inventedCrossings,0);
+ assert.equal(east.inventedPrivateDriveways,0);
+ assert.equal(east.prioritizedBuildings+joined.length,60);
+ assert.equal(new Set([...joined,...east.priorityIds,'202298939']).size,61);
+ assert(east.priorityIds.every(id=>!joined.includes(id)));
+ assert.deepEqual(planSkolskaEastBlock589([...elements].reverse(),
+  [...joined,'202298939']).priorityIds,east.priorityIds,
+  'Input shuffle must not change the photographed-context OSM corridor');
+ const reversedEast=elements.map(e=>SKOLSKA_EAST_589.roadIds.includes(String(e.id))?
+  {...e,geometry:e.geometry.slice().reverse()}:e);
+ assert.deepEqual(planSkolskaEastBlock589(reversedEast,[...joined,'202298939']).priorityIds,
+  east.priorityIds,'OSM way direction must not change selected houses');
+ assert.equal(planSkolskaEastBlock589([],[]),null);
+ 
  const C=Math.cos(50.226*Math.PI/180);
  const project=p=>({x:(p.lon-14.889)*111320*C,z:-(p.lat-50.226)*111320});
  const surfaceWidth={secondary:9,primary:11,tertiary:8,residential:7,
@@ -194,9 +218,11 @@ assert(game.includes('heroBuildings.setPriorityIds(massBlock.priorityIds)'));
  assert(game.includes('planPublicPhotoMirovaBlock586('));
  assert(game.includes('planPublicPhotoSkolskaBlock587('));
  assert(game.includes('planSkolskaWestBlock588('));
+ assert(game.includes('planSkolskaEastBlock589('));
+ assert(game.includes('window.__miloviceSkolskaEastBlock589'));
  assert(game.includes('window.__miloviceSkolskaWestBlock588'));
  assert(game.includes('public-photo-gps-inferred-osm-direction'));
- assert(hero.includes('photoFocusIds.size>=33'));
+ assert(hero.includes('photoFocusIds.size>=41'));
  assert(game.includes("'202298939' // Already source-verified fork gable"));
  assert.equal(SKOLSKA_WEST_588.maxBuildings,8);
  assert(game.includes('window.__miloviceSkolskaPublicPhotoBlock587'));
