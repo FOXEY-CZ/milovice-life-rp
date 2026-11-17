@@ -16,7 +16,7 @@ export function classifyVisibleWaterway(tags={}){
     tags.intermittent==='yes'||tags.seasonal==='yes'||
     tags.access==='private')return null;
  const exact=typeof tags.width==='string'&&
-  /^\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)\\s*(?:m)?\\s*$/.test(tags.width)?
+  /^\s*(?:\d+(?:\.\d+)?|\.\d+)\s*(?:m)?\s*$/.test(tags.width)?
   Number.parseFloat(tags.width):null;
  const measured=exact!==null&&Number.isFinite(exact)&&exact>=.5&&exact<=12;
  return {kind:tags.waterway,width:measured?exact:WIDTHS[tags.waterway],

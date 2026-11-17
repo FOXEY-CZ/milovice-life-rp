@@ -64,7 +64,9 @@ try{
    gpsHref:document.getElementById('street-audit-map-gps')?.href,
    build:document.getElementById('build-label')?.textContent
   }));
-  assert.equal(info.build,'20261117-city-landuse-59100');
+  assert.equal(info.build,await page.evaluate(()=>
+   document.querySelector('meta[name="milovice-build"]')?.getAttribute('content')),
+   'Street audit HUD and HTML build metadata must match');
   assert.equal(info.mass?.prioritizedBuildings,20,
    'A WHOLE 20-house neighborhood block, not an isolated prop, must be planned');
   assert.equal(info.mass?.actuallyDetailed,20,

@@ -62,7 +62,9 @@ try{
    fov:(()=>window.__miloviceForecourtAuditRendered?.active?1:null)()
   }));
   const v=state.review;
-  assert.equal(state.build,'20261117-city-landuse-59100');
+  assert.equal(state.build,await page.evaluate(()=>
+   document.querySelector('meta[name="milovice-build"]')?.getAttribute('content')),
+   'Review HUD and HTML build metadata must match');
   assert.equal(state.panelVisible,true);
   assert.equal(state.compact,cfg.mobile);
   assert.equal(state.expansionButton,cfg.mobile?'false':'true');

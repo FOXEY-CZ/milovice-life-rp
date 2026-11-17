@@ -224,11 +224,13 @@ try{
    JSON.stringify(roofTopology));
  console.log('5.31 roof masses and source-safe passages:',JSON.stringify(roofTopology));
 
+  // The enlarged 2026 town may load >55 terrain tiles; keep the triangle-preservation
+  // and GPU chunking checks instead of pinning the 2025 small-map tile count.
   // Terrain tiles copy every triangle, position, normal and UV from the original
   // DEM mesh. Foundation quads must be partitioned without losing geometry.
   const oldGround=await page.evaluate(()=>window.__miloviceTerrainTiles);
   const oldFoundation=await page.evaluate(()=>window.__miloviceFoundationChunks);
-  if(!oldGround||oldGround.tiles<20||oldGround.tiles>55||
+  if(!oldGround||oldGround.tiles<20||oldGround.tiles>96||
      oldGround.sourceTriangles!==oldGround.drawTriangles||
      !oldFoundation||oldFoundation.quads<50||oldFoundation.meshes<2)
     throw new Error('5.19 tiled terrain or spatial foundations missing: '+JSON.stringify({oldGround,oldFoundation}));
