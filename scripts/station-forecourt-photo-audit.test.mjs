@@ -58,7 +58,7 @@ assert.equal(planUpperBiketowerSign({radius:9,nx:1,nz:0}),null);
 assert.equal(planUpperBiketowerSign({radius:3.8,nx:0,nz:0}),null);
 assert.equal(planUpperBiketowerSign({wayId:53865956,radius:3.8,nx:1,nz:0}),null);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(html.includes("const BUILD_ID='20261116-live-camera-gps-share-58530'"));
+assert(html.includes("const BUILD_ID='20261117-skolska-east-58900'"));
 assert(html.includes("new URLSearchParams(location.search).get('parkingOverview')==='1'"));
 assert(html.includes("const parkingPlan=rpForecourtParkingOverview?stationPhotoParking.plan():null;"));
 assert(html.includes("camera.up.set(f.ux,0,f.uz);"));
@@ -111,7 +111,7 @@ assert(html.includes("osmNotice.id='osmnotice-live'"));
 assert(html.includes("osmBtn.id='osm3d'"));
 assert(!html.includes("osmBtn.id='osm-map-button-live'"));
 assert(html.includes("const cx=rpAuditCameraWorld?.x??(walking?px:x)"));
-assert(html.includes("const BUILD_ID='20261116-live-camera-gps-share-58530'"));
+assert(html.includes("const BUILD_ID='20261117-skolska-east-58900'"));
 console.log('5.81 anchored forecourt camera + existing upper Bike Tower sign PASS',JSON.stringify({
  views:views.map(id=>({id,heading:STATION_FORECOURT_AUDIT_VIEWS[id].camera.heading})),
  unmappedObjects:STATION_FORECOURT_PENDING,
