@@ -2783,8 +2783,16 @@ function finalizeArchitecture(){
    }
    instance.instanceMatrix.needsUpdate=true;instance.computeBoundingSphere();
    const [gx,gz]=key.split(',').map(Number);
-   instance.userData.lodX=(gx+.5)*160;instance.userData.lodZ=(gz+.5)*160;
-   instance.userData.lodDetail=true;
+   // Photo-fixed trolley rack must remain on the live mobile scene when
+   // the first 5s LOD/chunk update happens. Only four tiny material
+   // batches for this ONE shop; other city facades retain ordinary LOD.
+   const isBillaCart=kind.startsWith('billaCart');
+   instance.userData.lodX=isBillaCart?
+    batch.reduce((sum,part)=>sum+part[0],0)/batch.length:(gx+.5)*160;
+   instance.userData.lodZ=isBillaCart?
+    batch.reduce((sum,part)=>sum+part[2],0)/batch.length:(gz+.5)*160;
+   instance.userData.lodDetail=!isBillaCart;
+   instance.userData.photoFixtureLodProtected=isBillaCart;
    osmLayer.add(instance);
   }
   items.length=0;
@@ -3916,7 +3924,8 @@ const pennyFacade=new THREE.MeshStandardMaterial({color:0xc1c5c7,roughness:.83,s
 const pennyRoof=new THREE.MeshStandardMaterial({color:0x778087,metalness:.18,roughness:.73,side:THREE.DoubleSide});
 const photoShopColours={billaBlack:0x25292a,pennyRed:0xce2527,tescoWhite:0xe9e9e4,tescoShadow:0x9da3a8,
  clinicTeal:0x168a85,clinicWindow:0x3d6870,clinicFrame:0xe1e8e7,
- billaCartRoof:0xc9c3a7};
+ billaCartRoof:0xc9c3a7,billaCartFrame:0x9fa3a3,
+ billaCartHandle:0xc73138,billaCartWheel:0x26292c};
 for(const [key,color] of Object.entries(photoShopColours)){
  architectureQueues[key]=[];architectureMaterials[key]=new THREE.MeshStandardMaterial({color,roughness:.74,metalness:key==='billaBlack'?.2:.04});
 }
@@ -4122,7 +4131,7 @@ function miloviceBusinessFront(pts,tags,base,height,cx,cz,osmId,regionId='old'){
    for(const side of [-1,1]){
     const p=point(side*(rack.width*.5-.16),rack.depth*.5-.19);
     const ground=terrainAt(p.x,p.z);
-    archPart('stationFrames',p.x,ground+rack.frameHeight*.5,p.z,
+    archPart('billaCartFrame',p.x,ground+rack.frameHeight*.5,p.z,
      .065,rack.frameHeight,.065,yaw);
    }
    // The photo clearly contains nested wire carts and red grips.
@@ -4132,12 +4141,12 @@ function miloviceBusinessFront(pts,tags,base,height,cx,cz,osmId,regionId='old'){
     const offset=(i-(rack.cartCount-1)*.5)*.43;
     const p=point(offset,-.04);
     const y=terrainAt(p.x,p.z);
-    archPart('stationFrames',p.x,y+.77,p.z,.40,.33,.045,yaw);
-    archPart('stationFrames',p.x+nx*.21,y+.51,p.z+nz*.21,
+    archPart('billaCartFrame',p.x,y+.77,p.z,.40,.33,.045,yaw);
+    archPart('billaCartFrame',p.x+nx*.21,y+.51,p.z+nz*.21,
      .37,.04,.53,yaw);
-    archPart('pennyRed',p.x+nx*.19,y+.98,p.z+nz*.19,
+    archPart('billaCartHandle',p.x+nx*.19,y+.98,p.z+nz*.19,
      .48,.055,.055,yaw);
-    archPart('billaBlack',p.x+nx*.33,y+.17,p.z+nz*.33,
+    archPart('billaCartWheel',p.x+nx*.33,y+.17,p.z+nz*.33,
      .33,.12,.10,yaw);
    }
    window.__miloviceBillaTrolleyAudit={
@@ -4163,12 +4172,25 @@ function miloviceBusinessFront(pts,tags,base,height,cx,cz,osmId,regionId='old'){
      }
      return false;
     };
+    const families=['billaCartRoof','billaCartFrame',
+     'billaCartHandle','billaCartWheel'].map(kind=>{
+      const group=osmLayer.children.filter(obj=>
+       obj.isInstancedMesh&&obj.material===architectureMaterials[kind]);
+      const visible=group.filter(attached);
+      return {kind,meshCount:group.length,
+       sceneInstances:group.reduce((n,mesh)=>n+mesh.count,0),
+       visibleInstances:visible.reduce((n,mesh)=>n+mesh.count,0),
+       protectedFromDetailLOD:group.every(mesh=>
+        mesh.userData.photoFixtureLodProtected===true&&
+        mesh.userData.lodDetail===false)};
+     });
     return {ready:!!window.__miloviceBillaTrolleyAudit,
      roofMeshes:meshes.length,
      roofInstances:meshes.reduce((n,mesh)=>n+mesh.count,0),
      visibleRoofInstances:meshes.filter(attached)
       .reduce((n,mesh)=>n+mesh.count,0),
-     sourceCamera:'armadni-billa-5118',
+     allMaterialsVisible:families.every(f=>f.visibleInstances>0),
+     materials:families,sourceCamera:'armadni-billa-5118',
      noNewRoadsOrFootpaths:true};
    };
   }
