@@ -2659,6 +2659,33 @@ function finalizeArchitecture(){
   items.length=0;
  }
 }
+// 5.109: verify actual instanced facade meshes AFTER chunk/LOD settles.
+// A mere counter of calls to archPart is not evidence of visible 3D output.
+window.__miloviceSlepaResidentialRuntime=()=>{
+ const audit=window.__miloviceSlepaResidentialAudit;
+ const anchor=audit?.sourceStreetCenter;
+ if(!anchor)return {ready:false,reason:'source street not loaded'};
+ const candidate=osmLayer.children.filter(o=>o.isInstancedMesh&&
+  o.material===architectureMaterials.panelSeam&&
+  Number.isFinite(o.userData.lodX)&&Number.isFinite(o.userData.lodZ)&&
+  Math.hypot(o.userData.lodX-anchor.x,o.userData.lodZ-anchor.z)<240);
+ const isSceneVisible=o=>{
+  for(let p=o;p;p=p.parent){
+   if(!p.visible)return false;
+   if(p===scene)return true;
+  }
+  return false;
+ };
+ const visible=candidate.filter(isSceneVisible);
+ return {ready:true,
+  sourceStreetId:audit.sourceStreetId,mappedBuildings:audit.mappedApartmentBuildings,
+  queuedHorizontalJoints:audit.horizontalFloorJoints,
+  queuedVerticalJoints:audit.verticalBayJoints,
+  sceneSeamMeshes:candidate.length,visibleSeamMeshes:visible.length,
+  sceneSeamInstances:candidate.reduce((n,o)=>n+o.count,0),
+  visibleSeamInstances:visible.reduce((n,o)=>n+o.count,0),
+  verifiedFullParentChain:true};
+};
 function schoolFacadeSign(text,x,y,z,orientation,width=3.7,height=.55){
  const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=176;const ctx=canvas.getContext('2d');
  ctx.fillStyle='#fff4d5';ctx.fillRect(0,0,1024,176);
@@ -5459,6 +5486,11 @@ function rpAppendOSMElements(elements,regionId='old'){
  const slepaStreet=slepaWay?{
   id:String(slepaWay.id),points:slepaWay.geometry.map(osmPoint)
  }:null;
+ if(slepaStreet){
+  const a=slepaStreet.points[0],b=slepaStreet.points[1];
+  window.__miloviceSlepaResidentialAudit.sourceStreetCenter={
+   x:(a.x+b.x)*.5,z:(a.y+b.y)*.5};
+ }
  for(const el of buildingWays){
   osmBuilding(el.geometry,el.tags,osmBuildings,el.id,regionId,slepaStreet);
   osmAddLandmark(el);
