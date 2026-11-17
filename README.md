@@ -1,3 +1,17 @@
+## Milovice RP 5.104 — mapované travnaté vnitrobloky v Mladé (Part 22, 17. 11. 2026)
+
+**Spustit novou verzi:** https://foxey-cz.github.io/milovice-life-rp/?v=510400
+
+**Pohled do 3D okolí hřiště:** https://foxey-cz.github.io/milovice-life-rp/?v=510400&streetAudit=play-mlada-5103
+
+- V okolí čtyř existujících hřišť obytné části **Mladá** je v aktuálně uložených exportech OSM **15 označených `landuse=grass` polygonů** v dosahu. Z 14 se bezpečně umístilo **101 drobných 3D trsů trávy** o výšce přibližně 16–41 cm. Jde o původní nízkopolygonovou herní geometrii, renderovanou přes *InstancedMesh* a LOD. Tvar, rozmístění a výška jednotlivých trsů jsou **MODEL**, nikoliv skutečně zaměřená vegetace.
+- Výpočet hlídá původní OSM polygon, ochrannou vzdálenost od všech dosud načtených OSM silnic a chodníků, okolí budov, vodotečí i ploch herních prvků. Nevytváří nové zmapované trávníky, nové chodníky, stromy, křoví ani nepotvrzená dětská hřiště. Nezasahuje do chráněného fotoauditu u starého nádraží a kostela.
+- Ostatní geografické části včetně atrakční oblasti **Mirakulum** zůstávají v tomto kroku nedotčené. Původní mapové trasy a plochy už hra vykreslovala – neduplikujeme je dalšími překrývajícími se chodníky.
+- Trsy se deterministicky generují z OSM ID travnaté plochy. Je jedno, která z překrývajících se regionálních map se načte první: stejný zdroj vytváří stejnou polohu. Sdílená třícípá geometrie se instancuje do 200m renderovacích buněk, takže jednotlivé trsy nevytvářejí vlastní draw cally.
+- Diagnostika: `window.__milovicePlaygroundLawnAudit`. Nový jednotkový test `scripts/osm-playground-verges-5104.test.mjs` ověřuje 15 mapovaných a 14 vyplněných travnatých ploch, 101 bezpečně umístěných trsů, determinismus a nulový zásah do OSM půdorysů. Mobilní WebGL test hřišť rozšiřuje kontrolu o skutečně vykreslený 3D travní instancing.
+
+---
+
 ## Milovice RP 5.103 — přímé 3D kamery na veřejná dětská hřiště (Part 22, 17. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=510300
