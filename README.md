@@ -1,3 +1,20 @@
+## Milovice RP 5.124 — Spojovací 873: celá řada přízemních prosklených výloh a ověřené provozovny (Part 25, 18. 11. 2026)
+
+**Aktuální hra:** https://foxey-cz.github.io/milovice-life-rp/?v=512400
+
+**Kontrolní kamera na Polikliniku:** https://foxey-cz.github.io/milovice-life-rp/?v=512400&streetAudit=armadni-clinic-5118
+
+### Co je ověřené a co je modelový odhad
+
+- **Dvě veřejné fotografie dokončeného objektu** potvrzují dlouhou bílou fasádu, tyrkysová horní meziokenní pole, a hlavně **přízemní skleněné komerční moduly s úzkými světlými kovovými příčkami sahající až k chodníku**: [ABP Holding — po dokončení 2019–2023](https://www.abpholding.cz/en/project-detail/65/polyclinic-building-milovice), [SPADIA — novější reálná fotografie vstupu a parkovacího zálivu](https://www.spadia.cz/verejnost/odberova-mista/praha-a-stredocesky-kraj/milovice/). Starý model měl na této skutečné východní fasádě 7 přízemních skel začínajících asi 42 cm nad základem; to neodpovídalo exteriérům.
+- Pro přesné místo je potvrzen **OSM way/1057548624**, východní edge 2, délka cca **44,86 m**, historicky zavedený rastr **8 fasádních polí**. V 5.124 jeden již fotograficky doložený přibližný **hlavní vstup s tyrkysovou stříškou** zůstává, **zbylých 7 přízemních polí** je nově originálně modelováno jako skleněné plochy od výšky DEM+8 cm k přízemnímu nadpraží. Každé pole má **4 svislé a 3 vodorovné** úzké profily. Rozměry a počet příček jsou **aproximace fotografické podoby**, ne geodetický počet skleněných tabulí.
+- Zůstávají **3 horní řady × 8 prosklených polí = 24 oken**, 24 tyrkysových meziokenních panelů, skutečné 4 rohů půdorysu a 4 fotograficky doložená podlaží. Společná textura a instanční boxy šetří výkon: pouze **2 nové materiály** `clinicShopGlass`, `clinicShopFrame`. Na rozdíl od mnoha běžných detailů 3D modelů dostávají tyto dvě skupiny ochranu před ztrátou viditelnosti po mobilním LOD přepnutí.
+- **Provozovny potvrzené na adrese, ale bez předstírání přesné polohy nájemních jednotek:** [Lékárna LEMON na Spojovací 873 — oficiální provozovatel](https://www.lekarnalemon.cz/index.php/lekarny/lemon-lekarna-milovice-spojovaci-873), [potvrzení České lékárnické komory](https://lekarnici.cz/lekarna/lemon-spojovaci-873-milovice/) a [SPADIA, odběrové místo](https://www.spadia.cz/verejnost/odberova-mista/praha-a-stredocesky-kraj/milovice/). V rozbalené informační sekci přímé technické herní kamery jsou obě uvedeny s odkazy. **Nenakreslili jsme fyzický nápis LEMON na náhodné výloze**, protože na dostupných fotografiích nebylo potvrzeno, která konkrétní výloha lékárně náleží. Nespekulujeme o dalších vchodech, počtech lékařských ordinací na fasádě, o nových parkovacích čarách ani o silnici.
+- Zdrojový modul `scripts/osm-clinic-storefronts-5124.js` odmítne jinou budovu či orientaci fasády, nesprávné patro, geometrii, stávající vstup nebo předchozí fotograficky schválený model. `window.__miloviceClinicShopfrontAudit` dokumentuje transparentně neznámou polohu lékárny, sedm nahrazených původních přízemních oken, skutečnou výšku zasazení a nové sdílené instance; `window.__miloviceClinicShopfrontRuntime()` kontroluje na živé scéně sedm skleněných ploch a 49 rámových prvků.
+- Přidaný statický test `scripts/osm-clinic-storefronts-5124.test.mjs` se spouští v `validate.yml`. Reálný mobilní Chromium/WebGL smoke `scripts/osm-clinic-storefronts-webgl-5124.mjs` ověřuje po **6,8 sekundách** skutečnou přítomnost a viditelnost, navíc zajišťuje, že nepřestala fungovat předešlá tyrkysová vstupní stříška, nádvoří a kompaktní menu na mobilu. Úspěšné nasazení či WebGL je nutné potvrdit výsledkem Actions, ne jen existencí kódu.
+
+---
+
 ## Milovice RP 5.123 — Spojovací 873: celé fotograficky doložené dlážděné prostranství před Poliklinikou (Part 25, 18. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=512300
