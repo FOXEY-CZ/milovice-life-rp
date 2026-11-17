@@ -41,7 +41,7 @@ try{
    ?.getBoundingClientRect().height
  }));
  assert.equal(state.house.eligibleTwoStoreyHouses,12);
- assert.equal(state.menu?.sourceLinks,34);
+ assert.equal(state.menu?.sourceLinks,41);
  assert.deepEqual(state.house.sourceHouseIds.slice().sort(),[
   '61977976','61977982','61977989','61977993',
   '61977995','61978001','61978003','61978005',
