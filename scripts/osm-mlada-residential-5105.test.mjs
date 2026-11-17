@@ -81,9 +81,8 @@ for(const token of [
  'panelDoorWindowConflict(regionalEntrance?.index,',
  'window.__miloviceMladaResidentialAudit={',
  'if(!estatePlan)archPart(\'panelSeam\',',
- 'audit.duplicateVerticalJointsRemoved++',
- 'no'
-].filter(x=>x!=='no'))
+ 'window.__miloviceMladaResidentialAudit.duplicateVerticalJointsRemoved++',
+].filter(Boolean))
  assert(html.includes(token),'Missing actual 5.105 rendering integration: '+token);
 const id=html.match(/const BUILD_ID='([^']+)'/)?.[1],
  meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1],
