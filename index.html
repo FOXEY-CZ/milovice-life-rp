@@ -1,4 +1,4 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.102 veřejná dětská hřiště</title><meta name="milovice-build" content="20261117-public-playgrounds-510200"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
+<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.103 kamery dětských hřišť</title><meta name="milovice-build" content="20261117-playground-cameras-510300"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
 #realmap{position:fixed;inset:0;z-index:100;background:#101e2c;display:none;flex-direction:column;color:#fff;font-family:system-ui}#realmap.open{display:flex}#maphead{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#142c3e}#maphead button{flex:0 0 auto;min-height:40px}#osmmap{flex:1;min-height:0;touch-action:pan-x pan-y}#mapfoot{padding:8px 12px;background:#142c3e;font-size:12px;line-height:1.4}#maplaunch{position:fixed;right:12px;top:75px;z-index:45;background:#193d58;border:1px solid #93b4c7;box-shadow:0 2px 8px #0006}#realmap .leaflet-container{background:#d7e5da}#realmap a{color:#aedbff} @media(max-width:700px){#maplaunch{top:72px;right:8px;padding:7px 10px;font-size:12px;min-height:36px}#maphead{font-size:13px}}
 </style><style>#perf{position:fixed;top:10px;right:10px;z-index:42;background:#102437e8;border:1px solid #77a7b6;border-radius:10px;padding:7px 10px;color:#c8f6d4;font:600 12px system-ui;pointer-events:none;min-width:100px;text-align:center}#perf small{display:block;color:#c9d5dd;font-size:10px;font-weight:400}@media(max-width:700px){#perf{top:8px;right:8px;padding:5px 7px;font-size:11px}#maplaunch{top:100px!important}}</style><style id="milovice-modern-ui">
 #hud{background:linear-gradient(145deg,rgba(9,24,39,.88),rgba(20,44,61,.82));backdrop-filter:blur(12px);border:1px solid rgba(176,214,235,.3);box-shadow:0 10px 30px #061b2b33;border-radius:18px}
@@ -250,13 +250,15 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
  <a href="?v=59900&streetAudit=pitch-tennis-599">🎾 Mladá · antukové kurty</a>
  <a href="?v=59900&streetAudit=pitch-multi-599">🏀 Mladá · multifunkční hřiště</a>
  <a href="?v=510000&streetAudit=lit-italska-5100">💡 Italská · mapované osvětlení</a>
- <a href="?v=510000&streetAudit=lit-armadni-5100">💡 Armádní · mapované osvětlení</a></nav>
+ <a href="?v=510000&streetAudit=lit-armadni-5100">💡 Armádní · mapované osvětlení</a>
+<a href="?v=510300&streetAudit=play-mlada-5103">🛝 Mladá · veřejné dětské hřiště</a>
+<a href="?v=510300&streetAudit=play-vrutice-5103">🛝 Vrutice · mapované houpačky</a></nav>
 <span id="street-audit-status">GPS označuje místo fotografa, ne přesnou polohu stromu, lampy či brány.</span>
 <span id="street-audit-camera-gps" aria-live="polite">📍 GPS a směr kamery se zobrazí po načtení 3D scény.</span>
 <div><a id="street-audit-map-gps" target="_blank" rel="noopener noreferrer">🗺️ Otevřít pozici herní kamery v Mapy.com</a></div>
 <div id="street-audit-connections" role="status" aria-live="polite" hidden></div>
 <div id="street-audit-footer"><a id="street-audit-source" target="_blank" rel="noopener noreferrer">Zdrojový podklad</a>
- · <a href="./?v=510100">Zpět do hry</a></div>
+ · <a href="./?v=510300">Zpět do hry</a></div>
 </aside><aside id="forecourt-photo-audit" hidden aria-label="Fotoaudit celého přednádraží">
 <strong>📸 Přednádraží · kontrola 5.85.3</strong>
 <button id="forecourt-audit-toggle" type="button" aria-expanded="true">Sbalit nabídku</button>
@@ -276,7 +278,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <strong>📸 Milovice nádraží · fotoaudit 5.80</strong>
 <span>Pohled podle GPS a směru fotoaparátu z 30. 5. 2024. Velikost a poloha automatů jsou odhady, nikoliv geodetické zaměření.</span>
 <div><a href="https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_automaty_na_j%C3%ADzdenky.jpg" target="_blank" rel="noopener noreferrer">Původní fotografie · ŠJů · CC BY 4.0</a> · <a href="./?v=5800">Zpět do hry</a></div>
-</aside><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.102 · build <strong id="build-label">20261117-public-playgrounds-510200</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="rp-camera-gps-toggle" type="button" aria-expanded="false">📍 GPS kamery</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
+</aside><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.103 · build <strong id="build-label">20261117-public-playgrounds-510200</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="rp-camera-gps-toggle" type="button" aria-expanded="false">📍 GPS kamery</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
 <button id="osm-inspect-toggle" type="button" aria-pressed="false" title="Klepnutím na konkrétní budovu zjistíš její OSM identitu">🔎 Objekt</button>
 <section id="osm-inspect-result" role="status" aria-live="polite" hidden>
 <strong id="osm-inspect-title">Identifikace objektu</strong>
@@ -425,7 +427,7 @@ import {makeHumanRig,makeRoadCar,makePidBus,makeCityElefantStyleTrain} from './s
 import {addCityLanduseBatches,forestInstancePlacements} from './scripts/landscapes.js?v=59900';
 import {planOSMPitchMarkings} from './scripts/osm-pitch-markings-599.js?v=59900';
 import {planMappedStreetLamps} from './scripts/osm-street-lighting-5100.js?v=510000';
-import {planMappedPlaygroundEquipment} from './scripts/osm-playground-equipment-5102.js?v=510200';
+import {planMappedPlaygroundEquipment,planPlaygroundReviewCamera} from './scripts/osm-playground-equipment-5102.js?v=510300';
 import {mountStreetAuditMenu} from './scripts/street-audit-menu-5101.js?v=510100';
 import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=540';
@@ -680,6 +682,24 @@ const rpStreetAuditViews={
   author:'OSM sport=basketball;futsal, surface=asphalt; značení odhad',
   technical:true,streetLevel:true,estimatedHeading:true
  },
+ // 5.103: direct eye-level technical cameras at two mapped public play
+ // spaces. The OSM polygon is verified, NOT the illustrated equipment.
+ 'play-mlada-5103':{
+  label:'Mladá · veřejné dětské hřiště · 3D model (NENÍ foto)',
+  camera:{lat:50.2306063,lon:14.8573462},heading:90,
+  regionId:'mlada',osmPlaygroundId:'1468803906',
+  source:'https://www.openstreetmap.org/way/1468803906',
+  author:'OSM leisure=playground; pozice houpaček a skluzavky jsou odhad',
+  technical:true,streetLevel:true,estimatedHeading:true
+ },
+ 'play-vrutice-5103':{
+  label:'Benátecká Vrutice · hřiště s houpačkami · 3D model (NENÍ foto)',
+  camera:{lat:50.2403806,lon:14.8578163},heading:90,
+  regionId:'vrutice',osmPlaygroundId:'1303773811',
+  source:'https://www.openstreetmap.org/way/1303773811',
+  author:'OSM playground=swing; pozice a typ konstrukce jsou odhad',
+  technical:true,streetLevel:true,estimatedHeading:true
+ },
  // 5.100 technical snapshots of OSM lit=yes roads, not photographed poles.
  'lit-italska-5100':{
   label:'Italská · Mladá · OSM lit=yes (LAMPY JSOU MODEL)',
@@ -737,6 +757,8 @@ if(rpStreetAuditView){
   mainTitle.textContent='🏟️ Sportovní areály Milovic · mapová kontrola 5.99';
  else if(rpStreetAuditView.osmLampWayId)
   mainTitle.textContent='💡 Osvětlené ulice Milovic · technická kontrola 5.100';
+ else if(rpStreetAuditView.osmPlaygroundId)
+  mainTitle.textContent='🛝 Veřejná hřiště Milovic · 3D technická kamera 5.103';
  document.getElementById('street-audit-label').textContent=rpStreetAuditView.label;
  document.getElementById('street-audit-source').href=rpStreetAuditView.source;
  // 5.101: organize all existing audit URLs; active category opens on demand.
@@ -5684,6 +5706,31 @@ function improveMiloviceVisuals(){
   actualPlayDevicesNotPhotoVerified:true,mirakulumAttractionsModeled:false,
   publicRoadsOrFootpathsChanged:0,buildingOutlinesChanged:0
  };
+ // 5.103: direct camera is calculated from a REAL already-created piece
+ // of equipment, not a fictional camera bearing. The helper tests all
+ // 3D positions against the same OSM road/building/water constraints.
+ if(rpStreetAuditView?.osmPlaygroundId&&rpStreetAuditCameraWorld){
+  const sourceId=String(rpStreetAuditView.osmPlaygroundId);
+  const sourceWay=osmPlaygroundWays.find(w=>String(w.id)===sourceId);
+  const review=sourceWay?planPlaygroundReviewCamera(
+   sourceId,playgroundPlan.equipment,sourceWay,{
+    roads:osmRoadClearance,buildings:taggedSidewalkBuildings,
+    water:osmWaterVegetationClearance
+   }):null;
+  if(review){
+   rpStreetAuditCameraWorld.x=review.cameraEye.x;
+   rpStreetAuditCameraWorld.z=review.cameraEye.z;
+   window.__milovicePlaygroundCameraAudit={
+    ...review,regionLoaded:true,targetInFrame:false,
+    targetProjection:null,cameraHeightAboveTerrain:null
+   };
+  }else{
+   window.__milovicePlaygroundCameraAudit={
+    ready:false,sourceId,
+    reason:sourceWay?'safe-model-or-view-unavailable':'source-region-not-loaded'
+   };
+  }
+ }
  // 5.100: OSM proves these streets ARE LIT, but NOT individual poles.
  // All posts/arms/head positions below are visual estimates. Every post is
  // tested against the COMPLETE loaded road/path, building and water indices,
@@ -6429,7 +6476,15 @@ if(rpStreetAuditCameraWorld&&rpStreetAuditView){
   window.__miloviceSportPitchCameraAudit:null;
  const sourceLampCamera=rpStreetAuditView.osmLampWayId?
   window.__miloviceStreetLampCameraAudit:null;
- if(sourceLampCamera?.ready){
+ const playCamera=rpStreetAuditView.osmPlaygroundId?
+  window.__milovicePlaygroundCameraAudit:null;
+ if(playCamera?.ready){
+  camera.up.set(0,1,0);
+  camera.position.set(eye.x,ground+1.68,eye.z);
+  const target=playCamera.target;
+  camera.lookAt(target.x,
+   terrainAt(target.x,target.z)+target.height,target.z);
+ }else if(sourceLampCamera?.ready){
   camera.up.set(0,1,0);
   camera.position.set(eye.x,ground+1.68,eye.z);
   const target=sourceLampCamera.lamp;
@@ -6485,6 +6540,18 @@ if(rpStreetAuditCameraWorld&&rpStreetAuditView){
    eye.z-Math.cos(heading)*18);
  }
  camera.updateMatrixWorld();
+ if(rpStreetAuditView.osmPlaygroundId&&window.__milovicePlaygroundCameraAudit?.ready){
+  const check=window.__milovicePlaygroundCameraAudit;
+  const target=check.target;
+  const projected=new THREE.Vector3(target.x,
+   terrainAt(target.x,target.z)+target.height,target.z).project(camera);
+  check.targetProjection={x:+projected.x.toFixed(3),y:+projected.y.toFixed(3),
+   z:+projected.z.toFixed(3)};
+  check.targetInFrame=projected.z>=-1&&projected.z<=1&&
+   Math.abs(projected.x)<1&&Math.abs(projected.y)<1;
+  check.cameraHeightAboveTerrain=+(camera.position.y-
+   terrainAt(camera.position.x,camera.position.z)).toFixed(3);
+ }
  if(rpStreetAuditView.osmLampWayId&&window.__miloviceStreetLampCameraAudit?.ready){
   const sourceLamp=window.__miloviceStreetLampCameraAudit;
   const p=sourceLamp.lamp;
