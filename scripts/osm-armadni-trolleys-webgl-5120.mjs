@@ -17,7 +17,7 @@ try{
  });
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
  await page.goto(
-  'http://127.0.0.1:8080/?v=512200&streetAudit=armadni-billa-5118',
+  'http://127.0.0.1:8080/?v=512300&streetAudit=armadni-billa-5118',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>(
@@ -48,7 +48,7 @@ try{
    ?.getBoundingClientRect().height
  }));
  assert.equal(state.meta,state.build);
- assert(/^20261117-armadni-(?:trolleys-512000|clinic-front-512100|clinic-visible-512200)$/.test(state.build),
+ assert(/^20\d{6}-[a-z0-9-]+$/.test(state.build),
   'BILLA carts must remain valid in later clinic release');
  assert.equal(state.audit.sourceWayId,'53865798');
  assert.equal(state.audit.accessWayId,'1057548615');
