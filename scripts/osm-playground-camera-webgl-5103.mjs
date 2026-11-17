@@ -32,6 +32,7 @@ try{
     areas:window.__miloviceAreasLoaded,
     camera:window.__milovicePlaygroundCameraAudit,
     equipment:window.__milovicePlaygroundAudit,
+   lawn:window.__milovicePlaygroundLawnAudit,
     view:window.__miloviceStreetAuditRendered
    }));
    throw Error('Missing 5.103 3D playground camera: '+
@@ -65,6 +66,15 @@ try{
   assert(state.equipment.perArea[osmId]>=1,'Equipment must actually be modeled');
   assert(state.equipment.componentInstances>0);
   assert(state.equipment.drawMeshes>0,'Actual instanced 3D assets required');
+  if(region==='mlada'){
+   assert(state.lawn,'No lawn audit loaded in Mladá');
+   assert(state.lawn.mappedLawns>=10,'Mapped residential lawns unavailable');
+   assert(state.lawn.tuftInstances>=70,'Expected instanced short grass details');
+   assert(state.lawn.drawMeshes>0,'3D grass geometry must really be rendered');
+   assert.equal(state.lawn.sourcePolygonsUntouched,true);
+   assert.equal(state.lawn.walkwaysUntouched,true);
+   assert.equal(state.lawn.photoVerifiedIndividualGrass,false);
+  }
   assert(state.header.includes('hřiště')||state.header.includes('hřiště'.toUpperCase()));
   assert(state.label.length>0);
   assert.equal(state.links,30);
