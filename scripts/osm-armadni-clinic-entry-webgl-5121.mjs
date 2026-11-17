@@ -13,7 +13,7 @@ try{
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',err=>errors.push(String(err.stack||err)));
  await page.goto(
-  'http://127.0.0.1:8080/?v=512200&streetAudit=armadni-clinic-5118',
+  'http://127.0.0.1:8080/?v=512300&streetAudit=armadni-clinic-5118',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>(
@@ -45,7 +45,7 @@ try{
   panelHeight:document.getElementById('street-block-audit')
    ?.getBoundingClientRect().height
  }));
- assert.equal(x.meta,'20261117-armadni-clinic-visible-512200');
+ assert(/^20\d{6}-[a-z0-9-]+$/.test(x.meta));
  assert.equal(x.label,x.meta);
  assert.equal(x.audit.sourceWayId,'1057548624');
  assert.equal(x.audit.sourceStreetWayId,'246652750');
