@@ -407,3 +407,68 @@ export function planSkolskaEastBlock589(elements,excludeIds=[],config=SKOLSKA_EA
   inventedCrossings:0,inventedPrivateDriveways:0,inventedPlotFences:0
  };
 }
+
+
+/**
+ * 5.90 — Školská residential southeast continuation.
+ * Every selected home retains its existing mapped OSM footprint.
+ * Nearby public 2024 school photographs are neighborhood context ONLY.
+ * The seven newly prioritized detailed shells consume the LAST seven
+ * previously generic slots, retaining the 68-house mobile draw budget.
+ */
+export const SKOLSKA_TAIL_590=Object.freeze({
+ roadIds:['1331897645'],maxBuildings:7,fromM:6,toM:110,
+ maxRoadDistanceM:48,maxFootprintPoints:18,
+ publicContext:'https://commons.wikimedia.org/wiki/File:Milovice,_Z%C5%A0_T._G._Masaryka_(01).jpg',
+ contextDate:'2024-05-30',photoAuthor:'ŠJů',license:'CC BY 4.0',
+ technicalCamera:{lat:50.2271629,lon:14.8899405,heading:126},
+ perHousePhotographicApproval:0
+});
+export function planSkolskaTailBlock590(elements,excludeIds=[],config=SKOLSKA_TAIL_590){
+ if(!Array.isArray(elements)||!(Array.isArray(excludeIds)||excludeIds instanceof Set)||
+   !Array.isArray(config?.roadIds)||config.roadIds.length!==1||
+   !Number.isInteger(config.maxBuildings)||config.maxBuildings<1||config.maxBuildings>7||
+   !finite(config.fromM)||!finite(config.toM)||config.fromM<0||
+   config.toM<=config.fromM||!finite(config.maxRoadDistanceM)||
+   config.maxRoadDistanceM<15||config.maxRoadDistanceM>80)return null;
+ const road=elements.find(e=>String(e.id)===config.roadIds[0]&&
+   e.tags?.name==='Školská'&&e.tags?.highway&&
+   Array.isArray(e.geometry)&&e.geometry.length>=2);
+ if(!road)return null;
+ const direction=road.geometry[0].lon<=road.geometry.at(-1).lon?
+   road.geometry:road.geometry.slice().reverse();
+ const path=direction.map(project),excluded=new Set([...excludeIds].map(String));
+ const candidates=[];
+ for(const e of elements){
+  if(!['house','residential','detached','semidetached_house','terrace']
+    .includes(e?.tags?.building)||!Array.isArray(e.geometry)||e.geometry.length<4)continue;
+  const near=nearestAlong(centroid(e.geometry.map(project)),path);
+  if(!near||near.along<config.fromM||near.along>config.toM||
+    near.distance>config.maxRoadDistanceM)continue;
+  const detail=eligibleBuilding(e,near.distance,{
+   maxRoadDistanceM:config.maxRoadDistanceM,
+   maxFootprintPoints:config.maxFootprintPoints
+  });
+  if(!detail||excluded.has(detail.id))continue;
+  candidates.push({...detail,
+   alongM:Math.round(near.along*10)/10,
+   roadDistanceM:Math.round(near.distance*10)/10});
+ }
+ candidates.sort((a,b)=>a.alongM-b.alongM||
+  a.roadDistanceM-b.roadDistanceM||a.id.localeCompare(b.id,'en'));
+ const priority=candidates.slice(0,config.maxBuildings);
+ return {
+  version:'5.90.0',street:'Školská — jihovýchodní pokračování',
+  roadIds:[...config.roadIds],prioritizedBuildings:priority.length,
+  priorityIds:priority.map(p=>p.id),buildingsConsidered:candidates.length,
+  reviewQueue:candidates,
+  source:config.publicContext,sourceIsNeighborhoodContextOnly:true,
+  sourcePhotoDate:config.contextDate,photoAuthor:config.photoAuthor,
+  photoLicense:config.license,perHousePhotographicApproval:0,
+  technicalCamera:{...config.technicalCamera},
+  cameraIsTechnicalOSMNotActualPhoto:true,
+  allFootprintsFromOSM:true,facadesAreApproximate:true,
+  roadsModified:0,walkwaysModified:0,artificialBuildings:0,
+  inventedDriveways:0,inventedFences:0,inventedCrossings:0
+ };
+}
