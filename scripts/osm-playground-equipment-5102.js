@@ -90,7 +90,7 @@ export function planMappedPlaygroundEquipment(ways,{
    if(clearance<3.4)continue;
    if(!photoAllowed(x,z,way)){result.skippedPhotoZone++;continue;}
    if(!roads.isClear(x,z,3.15,.65)||
-      !buildings.isClear(x,z,3.8)||
+      !buildings.isClear(x,z,3.0)||
       !water.isClear(x,z,3.2,.75)){
     result.skippedClearance++;continue;
    }
