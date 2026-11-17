@@ -43,6 +43,7 @@ try{
    camera:window.__milovicePlaygroundCameraAudit,
    equipment:window.__milovicePlaygroundAudit,
    lawn:window.__milovicePlaygroundLawnAudit,
+   residential:window.__miloviceMladaResidentialAudit,
    loaded:window.__miloviceAreasLoaded,
    header:document.querySelector('#street-block-audit > strong')?.textContent,
    label:document.getElementById('street-audit-label')?.textContent,
@@ -75,6 +76,19 @@ try{
    assert.equal(state.lawn.sourcePolygonsUntouched,true);
    assert.equal(state.lawn.walkwaysUntouched,true);
    assert.equal(state.lawn.photoVerifiedIndividualGrass,false);
+   assert(state.residential,'The mapped estate facade audit is required');
+   assert.equal(state.residential.mappedApartmentBuildings,22,
+    'All 22 mapped 4–5-storey nearby apartment blocks should be loaded');
+   assert(state.residential.horizontalFloorJoints>=65,
+    'OSM floor-level panel courses must be physically generated');
+   assert(state.residential.verticalBayJoints>=22,
+    'Original panel bay seams must be physically generated');
+   assert(state.residential.duplicateVerticalJointsRemoved>0,
+    'No duplicate full-height joints once per floor');
+   assert.equal(state.residential.structuralFootprintsChanged,0);
+   assert.equal(state.residential.roofShapesChanged,0);
+   assert.equal(state.residential.photocConfirmedFacades??0,0);
+
   }
   assert(state.header.includes('hřiště')||state.header.includes('hřiště'.toUpperCase()));
   assert(state.label.length>0);
