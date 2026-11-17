@@ -1,3 +1,18 @@
+## Milovice RP 5.116 — bezpečné napojení skutečných pěších cest u Slepé a Armádní (Part 24, 17. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=511600
+
+**Kontrolní kamera přímo na OSM chodníku:** https://foxey-cz.github.io/milovice-life-rp/?v=511600&streetAudit=slepa-walk-5116
+
+- V OSM kolem Slepé a Armádní se některé chodníky skládají z **dvou samostatných `highway=footway` ways**, které však mají **přesně stejný mapovaný koncový bod**. Dosavadní výplně 5.106/5.111 opravovaly pouze ohyby uvnitř jednoho way. Nový **`scripts/osm-slepa-pedestrian-endpoints-5116.js`** doplňuje drobné trojúhelníkové rohy mezi dvěma takovými samostatnými mapovanými pěšími úseky.
+- **Žádné nově odvozené cesty mezi nespojenými objekty.** Algoritmus vyžaduje původní společný bod s tolerancí maximálně 3,5 cm, právě **dvě** incidentní geometrické hrany, dvě různá OSM ID, dva skutečné konce `highway=footway`, **shodný `surface=*`** (nebo oba bez údaje), shodnou již renderovanou šířku a rozumný úhel. Křižovatky s třetí větví, přechody (`footway=crossing`), soukromé či zákazové cesty, mosty, tunely a odlišné povrchy **nepřepojuje**.
+- Přípustná ploška se ještě kontroluje proti existujícímu OSM modelu vozovek, budov a chráněným fotografickým oblastem. Kopíruje současnou výšku terénu `terrainAt()+.13`; má indexovanou `THREE.BufferGeometry` a jde do už existující `queueRoadStrip` dávky. Nevznikají samostatné renderovací objekty pro každý kousek. Původní OSM cesty, chodníky, šířky, dopravní značení a přechody se nijak nepřepisují.
+- Ověření samotného plánovače proti skutečným regionálním exportům s **uvolněnými testovacími kolizními podmínkami** našlo v oblasti `mlada` **2 kandidátní koncové rohy**, v překrývající se oblasti `vrutice` **1 kandidátní roh**. Jedno společné napojení **way/1468803943 + way/1468803947** je v obou exportech stejné. Druhé napojení z oblastí `mlada` je **way/1108966068 + way/1316882865**. Není to počet nových chodníků: jen součty malých modelových plošek cca 0,405 m² a 0,137 m². Skutečné kolizní podmínky hry mohou některé vyřadit; regionální deduplikace brání dvojímu vykreslení stejných původních way.
+- Přímá kamera na první spoj je odvozena ze skutečného středu **prvního segmentu OSM `way/1468803943`**, souřadnice **50.23013545, 14.8582529**, směr **91,7°** k reálnému společnému koncovému bodu **50.230134, 14.8583307**. Jde o technický, nikoliv fotografický záběr.
+- Diagnostika `window.__miloviceSlepaPedestrianSeamAudit` vykazuje bezpečnostní důvody zamítnutí a skutečný počet trojúhelníků **zařazených do vykreslovací dávky**, nikoliv domněle ověřené viditelné pixely. Regresní test `scripts/osm-slepa-pedestrian-endpoints-5116.test.mjs` kontroluje původní souřadnice, shodné materiály, ochrany proti soukromým cestám/křižovatkám, determinismus a kameru. Přímé JS ověření na mapových datech proběhlo; **mobilní Chromium/WebGL běh ani aktualizace GitHub Pages zatím nejsou potvrzené**.
+
+---
+
 ## Milovice RP 5.115 — Slepá a Armádní: souvislejší povrch reálných zatáček (Part 24, 17. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=511500
