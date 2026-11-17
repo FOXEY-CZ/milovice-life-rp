@@ -1,0 +1,41 @@
+name: Milovice 5.103 public playground cameras WebGL
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - scripts/osm-playground-equipment-5102.js
+      - scripts/osm-playground-camera-webgl-5103.mjs
+      - scripts/street-audit-menu-5101.js
+      - data/regions/mlada.json
+      - data/regions/vrutice.json
+      - .github/workflows/playground-camera-webgl.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  playground-camera-webgl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install real browser test client
+        run: npm install --no-save --no-package-lock playwright-core@1.57.0
+      - name: Verify two mapped play areas and visible equipment in mobile Chromium
+        run: |
+          CHROME_BIN="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          export CHROME_BIN
+          python3 -m http.server 8080 >/tmp/milovice-playground-camera.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          node scripts/osm-playground-camera-webgl-5103.mjs
+      - name: Upload authentic 3D camera captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: milovice-playground-5103-camera-views
+          path: browser-artifacts/milovice-playground-5103-*.png
+          if-no-files-found: ignore
