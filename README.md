@@ -1,3 +1,16 @@
+## Milovice RP 5.122 — zásadní oprava skutečného čtyřrohého půdorysu Polikliniky (Part 25, 17. 11. 2026)
+
+**Aktuální hra:** https://foxey-cz.github.io/milovice-life-rp/?v=512200
+
+**Přímý herní pohled na Polikliniku:** https://foxey-cz.github.io/milovice-life-rp/?v=512200&streetAudit=armadni-clinic-5118
+
+- **Skutečně zjištěná chyba při mobilním Chromium/WebGL 5.121:** oblast `mlada` se načetla a technická kamera `armadni-clinic-5118` běžela, ale `window.__miloviceArmLandmarksAudit.mappedFourStoreyClinics` zůstávalo **0**. Nešlo o domnělé vynechání starým OSM exportem; kontrola `data/milovice-osm.json` potvrdila, že starý export **Polikliniku 1057548624 vůbec neobsahuje**. Skutečný problém byl v `scripts/osm-armadni-landmarks-5118.js`: plánovač vyžadoval **alespoň pět vstupních bodů**, přestože reálný `osmBuilding()` odstraňuje závěrečný bod polygonu identický s prvním. Poliklinika má po tomto správném odstranění jen **4 různé rohy**; Billa má **6** a proto dříve fungovala.
+- Nově se akceptuje otevřený i uzavřený OSM polygon, ovšem striktní kontrola **přesně 4 skutečných rohů** pro Polikliniku a **6 pro Billu** i původních mapovaných ploch zůstává. Není dovoleno změnit výšku a tvar budov podle neověřených dat; pouze se přestane odmítat skutečný čtyřrohý půdorys při správném běhu hry.
+- Opravena cache verze imporu plánovače na `?v=512200`; aktualizovány build ID, HUD a kontrolní kamerové odkazy. Nový test `scripts/osm-armadni-open-polygons-5122.test.mjs` čte skutečné mapové údaje a kontroluje **shodu otevřených a uzavřených polygonů** na obou budovách, odmítá poškozenou geometrii a ověřuje skutečnou integraci v `index.html`. Je součástí automatické validace; mobilní běh zůstává samostatně ověřován screenshotem a instancemi ve scéně.
+- Předchozí 5.121 již obsahuje fotograficky odvozený prosklený vstup a tyrkysový přístřešek, ale jeho prvky nebylo možné vidět, dokud nedošlo k opravě základního hmotového modelu Polikliniky. **V žádné části oprav nejsou přidána nedoložená parkovací stání, nová silnice, budova ani chodník.**
+
+---
+
 ## Milovice RP 5.121 — Poliklinika Spojovací: zdrojově doložený prosklený vstup a tyrkysová stříška (Part 25, 17. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=512100
