@@ -4860,6 +4860,52 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
   if(!facade)continue;
   const {nx,nz,mx,mz,ux,uz,yaw:rotation}=facade;
   attachmentAudit.legacyEdges++;
+  // 5.118: four storeys and teal infill rows are visible on the finished
+  // ABP exterior photograph. Apply that pattern only to the mapped
+  // LONG EAST (Spojovací/forecourt-facing) OSM facade. Do not clone an
+  // unverified entrance/canopy or wrap a photo onto all hidden walls.
+  if(isArmClinic){
+   if(i===armLandmark.frontEdgeIndex&&len>30&&len<65){
+    const bays=Math.min(10,Math.max(5,Math.round(len/5.5)));
+    const pitch=len/bays,windowWidth=Math.min(3.9,pitch*.78);
+    const floorGap=h/4;
+    for(let level=0;level<4;level++){
+     const upper=level>0;
+     const windowHeight=upper?1.43:2.32;
+     const windowY=baseHeight+level*floorGap+(upper?1.83:1.58);
+     for(let bay=0;bay<bays;bay++){
+      const along=(bay+.5-bays/2)*pitch;
+      const px=mx+ux*along,pz=mz+uz*along;
+      const glass=flushBoxOffset(.04);
+      archPart('clinicWindow',px+nx*glass,windowY,
+       pz+nz*glass,windowWidth,windowHeight,.04,rotation);
+      // The public photo shows white/silver window divisions, not
+      // perfect floor-to-ceiling blue glass across all outside walls.
+      archPart('clinicFrame',px+nx*flushBoxOffset(.06),
+       windowY,pz+nz*flushBoxOffset(.06),
+       .055,windowHeight+.025,.06,rotation);
+      archPart('clinicFrame',px+nx*flushBoxOffset(.068),
+       windowY-windowHeight*.5,pz+nz*flushBoxOffset(.068),
+       windowWidth+.05,.065,.068,rotation);
+      window.__miloviceArmLandmarksAudit.clinicPhotoFacadeWindows++;
+      if(upper){
+       archPart('clinicTeal',px+nx*flushBoxOffset(.043),
+        baseHeight+level*floorGap+.46,
+        pz+nz*flushBoxOffset(.043),
+        windowWidth,.72,.043,rotation);
+       window.__miloviceArmLandmarksAudit.clinicPhotoFacadeTealPanels++;
+      }
+     }
+    }
+    const audit=window.__miloviceArmLandmarksAudit;
+    audit.clinicPhotoFacadeBays=bays;
+    audit.byOsmId[String(osmId)].renderedMainFacadeEdge=i;
+    audit.byOsmId[String(osmId)].windowRows=4;
+    audit.byOsmId[String(osmId)].windowBayCount=bays;
+    audit.byOsmId[String(osmId)].photoFacadeFacing='approximate east-facing OSM edge near Spojovací';
+   }
+   continue; // Side/back windows are not photographically established.
+  }
   if(isPhotoGarage){
    // EXACTLY 17 OSM buildings, two source-photographed courtyard-facing rows.
    // Old generic shutters/blue windows must not survive on party walls.
