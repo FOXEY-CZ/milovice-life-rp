@@ -14,14 +14,14 @@ try{
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
  await page.goto(
-  'http://127.0.0.1:8080/?v=511200&streetAudit=road-slepa-5108',
+  'http://127.0.0.1:8080/?v=511200&streetAudit=slepa-houses-5112',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>
    (window.__miloviceAreasLoaded?.includes('mlada')||
     window.__miloviceAreasLoaded?.includes('vrutice'))&&
    window.__miloviceSlepaHouseAudit?.eligibleTwoStoreyHouses===12&&
-   window.__miloviceStreetAuditRendered?.view==='road-slepa-5108',
+   window.__miloviceStreetAuditRendered?.view==='slepa-houses-5112',
    null,{timeout:110000});
  }catch(e){
   const debug=await page.evaluate(()=>({
@@ -41,6 +41,7 @@ try{
    ?.getBoundingClientRect().height
  }));
  assert.equal(state.house.eligibleTwoStoreyHouses,12);
+ assert.equal(state.menu?.sourceLinks,34);
  assert.deepEqual(state.house.sourceHouseIds.slice().sort(),[
   '61977976','61977982','61977989','61977993',
   '61977995','61978001','61978003','61978005',
