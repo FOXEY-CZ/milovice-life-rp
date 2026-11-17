@@ -109,7 +109,7 @@ for(const s of [
  "slepaUtility?slepaUtility.modelHeightMeters:",
  "visibleFloors=slepaUtility?0:",
  "inventedEntrance=!slepaUtility",
- "glassAwnings:0",
+ "createdGlassAwnings:0",
  "'slepa-substations-5117':{",
  "camera:{lat:50.2293803,lon:14.8618211},heading:172.9,",
  "streetAudit=slepa-substations-5117",
