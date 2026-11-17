@@ -1,8 +1,8 @@
-// Milovice RP 5.92 — regional architectural upgrade test.
+// Milovice RP 5.93 — five-region architectural upgrade test.
 // Source data remain actual OSM exports. No screenshot can certify private facades.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {planRegionalBuildingStyle,stableOsmBuildingHash}
+import {planRegionalBuildingStyle,stableOsmBuildingHash,TARGET_REGIONS}
  from './regional-residential-style.js';
 import {exteriorFacadeFrame,facadePoint,flushBoxOffset,
  splitFacadeStripForOpening} from './facade-anchors.js';
@@ -18,6 +18,8 @@ assert.equal(a.addPlinth,true);
 assert.equal(planRegionalBuildingStyle({...baseline,photoReviewed:true}),null);
 assert.equal(planRegionalBuildingStyle({...baseline,approvedArchitecture:true}),null);
 assert.equal(planRegionalBuildingStyle({...baseline,regionId:'old'}),null);
+for(const regionId of ['westlink','centerlink','bozidar'])
+ assert(planRegionalBuildingStyle({...baseline,regionId}),regionId+' must be supported');
 assert.equal(planRegionalBuildingStyle({...baseline,tags:{building:'garage'}}),null);
 assert.equal(planRegionalBuildingStyle({...baseline,tags:{building:'warehouse'}}),null);
 assert.equal(planRegionalBuildingStyle({...baseline,tags:{building:'yes'}}).profile,'generic');
@@ -54,7 +56,11 @@ const cosine=Math.cos(50.226*Math.PI/180);
 const xy=p=>({x:(p.lon-14.889)*111320*cosine,
  y:-(p.lat-50.226)*111320});
 let totalStyled=0;
-for(const regionId of ['mlada','vrutice']){
+const regionThresholds={mlada:{models:800,plinth:400},vrutice:{models:400,plinth:200},
+ westlink:{models:620,plinth:300},centerlink:{models:165,plinth:45},
+ bozidar:{models:45,plinth:1}};
+assert.equal(TARGET_REGIONS.length,5);
+for(const regionId of TARGET_REGIONS){
  const data=JSON.parse(readFileSync(new URL('../data/regions/'+regionId+'.json',import.meta.url),'utf8'));
  let selected=0,palette=new Set(),plinth=0,declaredRoofs=0;
  for(const feature of data.elements){
@@ -80,13 +86,15 @@ for(const regionId of ['mlada','vrutice']){
   assert(!plan.footprintChanged&&!plan.roadGeometryChanged&&!plan.roofGeometryChanged);
   assert.equal(plan.extraMaterialKinds,0);
  }
- assert(selected>300,regionId+' must upgrade an entire city district, not a single house');
- assert(palette.size>=7,'Facade styles must vary across the mapped residential area');
- assert(plinth>100,'Street-level architecture must change across ordinary family homes');
+ assert(selected>=regionThresholds[regionId].models,
+  regionId+': the OSM region must gain the expected ordinary building coverage');
+ assert(palette.size>=7,'Facade styles must vary across the mapped area');
+ assert(plinth>=regionThresholds[regionId].plinth,
+  regionId+': mapped family homes must retain street-level details');
  console.log(regionId+' residential plan: '+selected+' OSM footprints, '+plinth+
   ' eligible masonry bases, '+declaredRoofs+' explicitly sourced roof tags');
 }
-assert(totalStyled>1100,'Both mapped regions must gain the broad architectural pass');
+assert(totalStyled>2250,'All five mapped districts must gain broad architectural styling');
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert(html.includes('planRegionalBuildingStyle({'),'The game must call the new planner');
 assert(html.includes('rpAppendOSMElements(osm.elements,id);'),'Region ID must be preserved when streaming');
@@ -96,4 +104,4 @@ assert(html.includes("archPart('foundationBand',anchor.x,"),
  'Architecture planner must actually produce geometry in the game');
 assert(html.includes('regionId,id:osmId,tags,width:w,depth:d,floors'),
  'Never extrapolate stylized building locations without a real OSM footprint');
-console.log('PASS Milovice RP 5.92: regional buildings, roof metadata, facade palettes, door-safe plinths');
+console.log('PASS Milovice RP 5.93: five-region buildings, roof tags, stable facades and door-safe plinths');
