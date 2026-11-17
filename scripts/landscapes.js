@@ -1,3 +1,4 @@
+import {planOSMForestTreeInstances} from './forest-placement-597.js';
 // Milovice 5.0 — open OSM landuse footprints, original procedural presentation.
 const landscapeMat=new WeakMap();
 function materials(T){
@@ -36,38 +37,21 @@ export function addLanduseFeature(T,el,convert,terrain,osmLayer,zones){
    pts.map(v=>new T.Vector3(v.x,terrain(v.x,v.y)+.14,v.y))),materials(T).pitchLine);
   osmLayer.add(line);
  }
- if(kind==='forest'||kind==='park')zones.push({points:pts,area,kind});
+ if(kind==='forest'||kind==='park')zones.push({id:String(el.id),points:pts,area,kind,
+  allowPlants:!['private','no'].includes(tags.access)});
 }
-function inArea(x,z,poly){
- let hit=false;
- for(let i=0,j=poly.length-1;i<poly.length;j=i++){
-  const a=poly[i],b=poly[j];
-  if((a.y>z)!==(b.y>z)&&x<(b.x-a.x)*(z-a.y)/(b.y-a.y)+a.x)hit=!hit;
+// Stable 5.97 source-limited forest placements. Preserve the old renderer's
+// three shared instanced geometry arrays; no extra draw-call families.
+export function forestInstancePlacements(zones,trunks,crowns,crowns2,_legacyRnd,allow=()=>true){
+ const plan=planOSMForestTreeInstances(zones,allow);
+ for(const tree of plan.trees){
+  const {x,z,height,spread,yaw}=tree;
+  trunks.push([x,height*.43,z,.29,height*.86,.29,0]);
+  crowns.push([x,height*.96,z,spread,spread*1.12,spread,yaw]);
+  crowns2.push([x+.4,height*1.06,z-.35,
+   spread*.70,spread*.80,spread*.75,yaw]);
  }
- return hit;
-}
-export function forestInstancePlacements(zones,trunks,crowns,crowns2,rnd,allow=()=>true){
- let max=620;
- for(const zone of zones){
-  if(max<=0)break;
-  const bounds={
-   minX:Math.min(...zone.points.map(p=>p.x)),maxX:Math.max(...zone.points.map(p=>p.x)),
-   minZ:Math.min(...zone.points.map(p=>p.y)),maxZ:Math.max(...zone.points.map(p=>p.y))
-  };
-  const density=zone.kind==='forest'?700:1500;
-  const target=Math.min(max,Math.min(70,Math.max(2,Math.floor(zone.area/density))));
-  let planted=0;
-  for(let k=0;k<target*6&&planted<target;k++){
-   const xx=bounds.minX+rnd()*(bounds.maxX-bounds.minX);
-   const zz=bounds.minZ+rnd()*(bounds.maxZ-bounds.minZ);
-   if(!inArea(xx,zz,zone.points)||!allow(xx,zz))continue;
-   const height=3.2+rnd()*2.6,spread=2+rnd()*1.4;
-   trunks.push([xx,height*.43,zz,.29,height*.86,.29,0]);
-   crowns.push([xx,height*.96,zz,spread,spread*1.12,spread,rnd()*6]);
-   crowns2.push([xx+.4,height*1.06,zz-.35,spread*.70,spread*.80,spread*.75,rnd()*6]);
-   max--;planted++;
-  }
- }
+ return plan;
 }
 
 
@@ -113,7 +97,8 @@ export function planCityLanduseBatches(elements,convert,{cellSize=180}={}){
   if(!groups.has(key))groups.set(key,{
    key,kind,gx,gz,oversized,centerX,centerZ,items:[]
   });
-  const entry={id:String(el.id),kind,pts,area,key,oversized};
+  const entry={id:String(el.id),kind,pts,area,key,oversized,
+   allowPlants:!['private','no'].includes(el.tags?.access)};
   groups.get(key).items.push(entry);
   entries.push(entry);
  }
@@ -164,7 +149,8 @@ export function addCityLanduseBatches(T,elements,convert,terrain,osmLayer,zones,
    geo.computeVertexNormals();
    parts.push(geo);
    if(['forest','park'].includes(entry.kind))
-    zones.push({points:pts,area:entry.area,kind:entry.kind});
+    zones.push({id:entry.id,points:pts,area:entry.area,kind:entry.kind,
+     allowPlants:entry.allowPlants});
    if(entry.kind==='pitch'){
     sourcePitchLines++;
     for(let i=0;i<pts.length;i++){
