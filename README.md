@@ -1,3 +1,17 @@
+## Školská jihovýchod 5.90 — šestý obytný úsek (17. 11. 2026)
+
+**Přímý technický úhel z ulice:** https://foxey-cz.github.io/milovice-life-rp/?v=59000&streetAudit=skolska-tail-590  
+**Celá hra:** https://foxey-cz.github.io/milovice-life-rp/?v=59000
+
+- Sedm dalších reálných OSM domů podél pokračování Školské (way `1331897645`): `539003529`, `202389206`, `202389205`, `469368736`, `202389176`, `539003536` a `202389202`. Nejde o nově vymyšlené stavební parcely. Ostatní městské budovy zůstávají v základní renderované vrstvě.
+- Součet priorit: 20 kostelní blok + 12 Mírová + 12 Školská u školy + 8 Školská západ + 8 Školská východ + 7 Školská jihovýchod + 1 dříve fotograficky doložený štít = **68**. Mobilní limit počtu detailních modelů se nezvýšil; původních sedm generických detailních míst se přesunulo k souvislému uličnímu úseku. Starší přednostní bloky se nezměnily.
+- OSM kamera `50.2271629, 14.8899405` má odhadovaný azimut **126° podle geometrie silnice**. Je to skutečná herní kamera v úrovni očí, ne náhrada doloženého fotografického úhlu.
+- Nová dávkovaná uliční zeleň `scripts/skolska-tail-street-590.js`: kandidátní keře/stromy kontrolované vůči půdorysům budov a povrchům komunikací včetně chodníků. Nejvýše čtyři InstancedMesh draw calls. Rozmístění rostlin je **výtvarný odhad**, nikoliv přesná poloha podle fotografie.
+- Kontextová veřejná fotografie [ZŠ T. G. Masaryka](https://commons.wikimedia.org/wiki/File:Milovice,_Z%C5%A0_T._G._Masaryka_(01).jpg) (ŠJů, 30. 5. 2024, CC BY 4.0) zachycuje **jiný úsek Školské**, nikoli všechny zdejší domy a stromy. Modely neoznačujeme za fotograficky ověřené.
+- Žádné nové OSM cesty, přechody, soukromé vjezdy ani nepodložené ploty. Testy kontrolují stabilitu výběru, silniční clearance, rozpočet 68 detailních domů, skutečné WebGL objekty a kamerový úhel.
+
+---
+
 ## Školská východ 5.89 — pátý obytný blok (2026-11-17)
 
 **Přímá OSM kamera od Pionýrů:** https://foxey-cz.github.io/milovice-life-rp/?v=58900&streetAudit=skolska-east-589  

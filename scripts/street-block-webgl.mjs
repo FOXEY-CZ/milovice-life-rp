@@ -22,7 +22,8 @@ try{
   {id:'mirova',width:1280,height:760,mobile:false,technical:false},
    {id:'school-detail-2024',width:1280,height:760,mobile:false,technical:false},
    {id:'skolska-west-2024',width:1280,height:760,mobile:false,technical:false},
-   {id:'skolska-east-589',width:1280,height:760,mobile:false,technical:true,streetLevel:true}
+   {id:'skolska-east-589',width:1280,height:760,mobile:false,technical:true,streetLevel:true},
+   {id:'skolska-tail-590',width:1280,height:760,mobile:false,technical:true,streetLevel:true}
  ]){
   const page=await browser.newPage({
    viewport:{width:cfg.width,height:cfg.height},deviceScaleFactor:1,
@@ -53,6 +54,8 @@ try{
     skolskaBatch:window.__miloviceSkolskaPublicPhotoBlock587,
     skolskaWestBatch:window.__miloviceSkolskaWestBlock588,
     skolskaEastBatch:window.__miloviceSkolskaEastBlock589,
+    skolskaTailBatch:window.__miloviceSkolskaTailBlock590,
+    skolskaTailGreen:window.__miloviceSkolskaTailGreen590,
     skolskaWestGreen:window.__miloviceSkolskaWestGreen588,
     mirovaGreen:window.__miloviceMirovaPhotoStreet586,
    hero:window.__miloviceHeroArchitecture,
@@ -86,7 +89,7 @@ try{
    assert.equal(info.skolskaBatch?.newBuildingFootprints,0);
    assert.equal(info.skolskaBatch?.alteredRoadOrFootway,false);
    assert.equal(info.skolskaBatch?.schoolLandmarkPreserved,true);
-   assert.equal(info.skolskaBatch?.totalPublicPhotoContextHouses,41);
+   assert.equal(info.skolskaBatch?.totalPublicPhotoContextHouses,48);
    assert.equal(info.skolskaWestBatch?.prioritizedBuildings,8);
    assert.equal(info.skolskaWestBatch?.actuallyDetailed,8);
    assert.equal(info.skolskaWestBatch?.reservedBudget,8);
@@ -110,9 +113,22 @@ try{
     assert.equal(info.skolskaEastBatch?.reservedBudget,8);
     assert.equal(info.skolskaEastBatch?.roadsChanged,false);
     assert.equal(info.skolskaEastBatch?.photoVerifiedHouseFacades,0);
-    assert.equal(info.hero?.photoFocusReservedPlaces,41);
-   assert.equal(info.hero?.photoFocusBuilt,41);
-   assert.equal(info.hero.photoFocusBuiltIds.length,41);
+    assert.equal(info.skolskaTailBatch?.prioritizedBuildings,7);
+    assert.equal(info.skolskaTailBatch?.actuallyDetailed,7);
+    assert.equal(info.skolskaTailBatch?.reservedBudget,7);
+    assert.equal(info.skolskaTailBatch?.artificialBuildings,0);
+    assert.equal(info.skolskaTailBatch?.perHousePhotographicApproval,0);
+    assert.equal(info.skolskaTailGreen?.rendered,true);
+    assert(info.skolskaTailGreen.hedges>=1&&info.skolskaTailGreen.trees>=1);
+    assert(info.skolskaTailGreen.drawMeshes<=4,
+     'One entire southeast Školská planting pass must stay batched');
+    assert.equal(info.skolskaTailGreen.positionsEstimated,true);
+    assert.equal(info.skolskaTailGreen.changedRoads,0);
+    assert.equal(info.skolskaTailGreen.changedSidewalks,0);
+    assert.equal(info.skolskaTailGreen.guessedPrivateEntrances,0);
+    assert.equal(info.hero?.photoFocusReservedPlaces,48);
+   assert.equal(info.hero?.photoFocusBuilt,48);
+   assert.equal(info.hero.photoFocusBuiltIds.length,48);
    assert.equal(info.mirovaGreen?.active,true,
     'Actual Mírová clipped-hedge/trees must render after city OSM load');
    assert(info.mirovaGreen.hedgeSegments+info.mirovaGreen.plantedTrees>=2);
@@ -122,7 +138,7 @@ try{
    assert.equal(info.mirovaGreen.positionsEstimated,true);
    assert.equal(info.hero?.normalBuilt+info.hero?.photoFocusBuilt+
     info.hero?.priorityBuilt,68,'Keep whole 68-house budget stable');
-   assert.equal(new Set([...info.hero.priorityIds,...info.hero.photoFocusIds]).size,61,
+   assert.equal(new Set([...info.hero.priorityIds,...info.hero.photoFocusIds]).size,68,
     'No selected house may be counted in two of the four OSM street blocks');
   assert.equal(info.hero?.maxBuildings,68,
    'Retain the old maxBuildings capacity for mobile performance');
@@ -173,6 +189,14 @@ try{
    const expectedBearing=cfg.id==='pionyru-left'?224:33;
    const error=Math.abs(((info.gps.bearingDegrees-expectedBearing+540)%360)-180);
    assert(error<=1,`Street photo heading differs by ${error}°, tolerance 1°`);
+  }
+  if(cfg.id==='skolska-tail-590'){
+   assert(Math.abs(info.gps.latitude-50.2271629)<.000002);
+   assert(Math.abs(info.gps.longitude-14.8899405)<.000002);
+   assert(Math.abs(info.gps.bearingDegrees-126)<=1);
+   assert.equal(info.audit.cameraMode,'technical-osm-street-axis');
+   assert.equal(info.audit.technicalStreetLevel,true);
+   assert(info.gpsLabel.includes('126°'));
   }
   if(cfg.id==='skolska-east-589'){
    // The real eye position is at the OSM junction; do not fall back to
