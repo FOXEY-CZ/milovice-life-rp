@@ -63,7 +63,7 @@ try{
  assert(result.apartments.duplicateVerticalJointsRemoved>0);
  assert.equal(result.apartments.roofShapesChanged,0);
  assert.equal(result.apartments.structuralFootprintsChanged,0);
- assert.equal(result.apartments.photocConfirmedFacades??0,0);
+ assert.equal(result.apartments.photoConfirmedFacades??0,0);
  assert.equal(result.street.view,'estate-mlada-5105');
  assert(result.header.includes('Bytové domy'));
  assert(result.label.includes('Mladá'));
