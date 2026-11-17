@@ -16,6 +16,8 @@ try{
    mobile:true,width:393,height:852},
   {id:'forest-mlada-597',cat:'forests',quick:1,
    mobile:true,width:393,height:852},
+  {id:'play-mlada-5103',cat:'playgrounds',quick:1,
+   mobile:true,width:393,height:852},
   {id:'pionyru-forward',cat:'streets',quick:2,
    mobile:true,width:393,height:852},
   {id:'lit-italska-5100',cat:'lighting',quick:1,
@@ -45,8 +47,8 @@ try{
   }));
   assert.equal(initial.compact,view.mobile);
   assert.equal(initial.category,view.cat);
-  assert.equal(initial.allLinks,28);
-  assert.equal(initial.categories,6);
+  assert.equal(initial.allLinks,30);
+  assert.equal(initial.categories,7);
   assert.equal(initial.current,1);
   assert.equal(initial.quick,view.quick);
   assert(initial.label.length<90);
@@ -73,7 +75,7 @@ try{
   if(view.mobile){
    await page.click('#street-audit-show-all');
    const open=await page.locator('#street-audit-nav details[open]').count();
-   assert.equal(open,6,'Show all categories must actually expand each section');
+   assert.equal(open,7,'Show all categories must actually expand each section');
    await page.click('#street-audit-show-all');
    const one=await page.locator('#street-audit-nav details[open]').count();
    assert.equal(one,1,'Collapse others retains only current section');
