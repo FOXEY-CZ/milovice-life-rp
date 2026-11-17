@@ -1,4 +1,4 @@
-// Milovice RP 5.106 — seal the *triangular gaps at corners* of
+// Milovice RP 5.106 / 5.107 — seal the *triangular gaps at corners* of
 // EXISTING OSM residential-estate footways, without adding paths.
 // Source way IDs and all original vertices remain unchanged.
 // Each patch is the tiny missing wedge of two rectangular path segments;
@@ -8,16 +8,18 @@ const ORIGIN={x:-2252.6848978163475,z:-508.2592900001275,
  sourceId:'1468803906'};
 function finite(p){return Number.isFinite(X(p))&&Number.isFinite(Z(p))}
 export function planMladaFootwayCorners(ways,{roads,buildings,
- maxDistance=140,maxTriangles=220}={}){
- const plan={version:'5.106',source:'OSM highway=footway/path',
-  sourceAnchorId:ORIGIN.sourceId,
+ maxDistance=140,maxTriangles=220,anchor=ORIGIN}={}){
+ const validAnchor=anchor&&finite(anchor)&&String(anchor.sourceId||'').length>0;
+ const plan={version:validAnchor&&anchor.sourceId!==ORIGIN.sourceId?'5.107':'5.106',
+  source:'OSM highway=footway/path',
+  sourceAnchorId:validAnchor?String(anchor.sourceId):null,
   mappedEligibleWays:0,sourceWayIds:[],sealedCorners:0,
   triangles:[],skippedNearCarriageway:0,
   skippedNearBuilding:0,skippedPhotoOrPrivate:0,
   skippedStraightOrSharp:0,skippedCrossings:0,
   originalWayNodesUnchanged:true,syntheticNewWalkways:0,
   inventedZebraStripes:0,estimatedPathWidths:true};
- if(!Array.isArray(ways)||!roads?.isClear||!buildings?.isClear||
+ if(!validAnchor||!Array.isArray(ways)||!roads?.isClear||!buildings?.isClear||
   !Number.isFinite(maxDistance)||maxDistance<50||maxDistance>250||
   !Number.isInteger(maxTriangles)||maxTriangles<0||maxTriangles>600)return plan;
  const used=new Set();
@@ -41,7 +43,7 @@ export function planMladaFootwayCorners(ways,{roads,buildings,
    const p=pts[i],before=pts[i-1],after=pts[i+1],
     px=X(p),pz=Z(p),ax=X(before),az=Z(before),
     bx=X(after),bz=Z(after);
-   if(Math.hypot(px-ORIGIN.x,pz-ORIGIN.z)>maxDistance)continue;
+   if(Math.hypot(px-X(anchor),pz-Z(anchor))>maxDistance)continue;
    const la=Math.hypot(px-ax,pz-az),
     lb=Math.hypot(bx-px,bz-pz);
    if(la<2||lb<2||la>600||lb>600)continue;
@@ -66,7 +68,7 @@ export function planMladaFootwayCorners(ways,{roads,buildings,
    if(![a,b,c,center].every(q=>buildings.isClear(q.x,q.z,.10))){
     plan.skippedNearBuilding++;continue;
    }
-   cornerTris.push({sourceWayId:id,atNode:i,
+   cornerTris.push({sourceWayId:id,atNode:i,kind,
     a,b,c,width,area:.5*half*half*Math.abs(cross),
     materialSource:tags.surface||null,
     estimatedWidth:true,onlyFillsExistingPathBend:true});
