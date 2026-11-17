@@ -174,6 +174,18 @@ try{
    const error=Math.abs(((info.gps.bearingDegrees-expectedBearing+540)%360)-180);
    assert(error<=1,`Street photo heading differs by ${error}°, tolerance 1°`);
   }
+  if(cfg.id==='skolska-east-589'){
+   // The real eye position is at the OSM junction; do not fall back to
+   // 74 m overhead because this district has no Pionýrů-only photo plan.
+   assert(Math.abs(info.gps.latitude-50.2280951)<.000002,
+    'The east Školská camera must stay at its published OSM road coordinate');
+   assert(Math.abs(info.gps.longitude-14.8875431)<.000002);
+   assert(Math.abs(info.gps.bearingDegrees-119)<=1,
+    'The inferred OSM street axis must face east, not the overhead fallback');
+   assert.equal(info.audit.technicalStreetLevel,true);
+   assert.equal(info.audit.cameraMode,'technical-osm-street-axis');
+   assert(info.gpsLabel?.includes('119°'));
+  }
   if(cfg.id==='pionyru-panorama-2022'){
     assert(Math.abs(info.gps.latitude-50.2277105)<.000002,
      'Camera starts at provided Panorama GPS, not the previous procedural viewpoint');
