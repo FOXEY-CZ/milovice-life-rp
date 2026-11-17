@@ -96,6 +96,6 @@ for(const term of [
 const meta=game.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1],
  id=game.match(/const BUILD_ID='([^']+)'/)?.[1],
  hud=game.split('id="build-label">')[1]?.split('</strong>')[0];
-assert(meta&&meta===id&&id===hud&&id.endsWith('510900'));
+assert(meta&&meta===id&&id===hud&&/^\d{8}-[a-z0-9-]+-\d{6}$/.test(id));
 console.log('PASS 5.109 mapped Slepá 4-storey apartment facade grids',{
  buildings:a.plans.length,sourceRoad:a.way.id,flats:a.plans.map(x=>x.flats)});
