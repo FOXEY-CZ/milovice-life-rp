@@ -16,6 +16,8 @@ try{
    mobile:true,width:393,height:852},
   {id:'forest-mlada-597',cat:'forests',quick:1,
    mobile:true,width:393,height:852},
+  {id:'estate-mlada-5105',cat:'streets',quick:2,
+   mobile:true,width:393,height:852},
   {id:'play-mlada-5103',cat:'playgrounds',quick:1,
    mobile:true,width:393,height:852},
   {id:'pionyru-forward',cat:'streets',quick:2,
@@ -47,7 +49,7 @@ try{
   }));
   assert.equal(initial.compact,view.mobile);
   assert.equal(initial.category,view.cat);
-  assert.equal(initial.allLinks,30);
+  assert.equal(initial.allLinks,31);
   assert.equal(initial.categories,7);
   assert.equal(initial.current,1);
   assert.equal(initial.quick,view.quick);
