@@ -128,15 +128,22 @@ export function planSlepaStreetLawns(lawns,{
  }
  return out;
 }
-// Protect a full procedural car footprint from mapped lawn polygons,
-// rather than only checking that the centre of its body is not on grass.
-export function slepaParkingClearsGrass(spot,lawns,{radius=2.35}={}){
- if(!spot||![spot.x,spot.z,spot.yaw].every(Number.isFinite)||
-  !Array.isArray(lawns)||!Number.isFinite(radius)||radius<0)return false;
+// A parked car occupies an estimated 4.7 x 1.92m rectangle.
+// Sample corners AND intermediate points, not only the car centre.
+export function slepaParkingSamples(spot){
+ if(!spot||![spot.x,spot.z,spot.yaw].every(Number.isFinite))return [];
+ const c=Math.cos(spot.yaw),s=Math.sin(spot.yaw),samples=[];
+ for(const dx of [-2.35,-1.175,0,1.175,2.35])
+  for(const dz of [-.96,0,.96])
+   samples.push({x:spot.x+c*dx+s*dz,z:spot.z-s*dx+c*dz});
+ return samples;
+}
+// Protect the full procedural car footprint from mapped lawn polygons.
+export function slepaParkingClearsGrass(spot,lawns){
+ if(!Array.isArray(lawns))return false;
+ const test=slepaParkingSamples(spot);
+ if(!test.length)return false;
  const c=Math.cos(spot.yaw),s=Math.sin(spot.yaw);
- const test=[{x:spot.x,z:spot.z}];
- for(const dx of [-2.35,0,2.35])for(const dz of [-.96,0,.96])
-  test.push({x:spot.x+c*dx+s*dz,z:spot.z-s*dx+c*dz});
  for(const lawn of lawns){
   if(lawn?.tags?.landuse!=='grass'||!Array.isArray(lawn.points)||
    lawn.points.length<4)continue;
@@ -153,4 +160,17 @@ export function slepaParkingClearsGrass(spot,lawns,{radius=2.35}={}){
   if(verts)return false;
  }
  return true;
+}
+
+export function slepaParkingClearsPeople(spot,{pedestrian,buildings}={}){
+ const samples=slepaParkingSamples(spot);
+ if(!samples.length||!pedestrian?.isClear||!buildings?.isClear)
+  return {clear:false,reason:'invalid-guard'};
+ for(const p of samples){
+  if(!pedestrian.isClear(p.x,p.z,.12,.16))
+   return {clear:false,reason:'mapped-footway'};
+  if(!buildings.isClear(p.x,p.z,.24))
+   return {clear:false,reason:'mapped-building'};
+ }
+ return {clear:true,reason:'source-clear'};
 }
