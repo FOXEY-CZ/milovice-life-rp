@@ -5159,6 +5159,16 @@ function rpAppendOSMElements(elements,regionId='old'){
    inventedZebraStripes:0,paintedNewPathMeters:0,
    onlyMissingMiterWedges:true,estimatedPathWidths:true
   };
+  // Live test also detects the historical "objects disappear 5 seconds
+  // after load" mobile regression; a creation count alone is not proof.
+  window.__miloviceMladaFootwayJoinRuntime=()=>{
+   const meshes=osmLayer.children.filter(o=>
+    o.name==='Milovice_OSM_Mlada_FootwayCornerJoin_5106');
+   return {meshes:meshes.length,visibleMeshes:meshes.filter(o=>o.visible).length,
+    visibleTriangles:meshes.filter(o=>o.visible).reduce((n,o)=>
+     n+(o.geometry?.getAttribute('position')?.count||0)/3,0),
+    originallyPlanned:joins.sealedCorners,renderedInRealScene:true};
+  };
  }
  // 5.96: Map-derived OPEN streams and drains, not invented blue ribbons.
  // The original OSM centerline is clipped to the region's streamed bounds
