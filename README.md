@@ -1,3 +1,17 @@
+## Milovice RP 5.119 — BILLA Armádní: fotograficky věrnější střešní nápis a jedna stříška (Part 25, 17. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=511900
+
+**Přímá kontrolní kamera (beze změny souřadnic z 5.118):** https://foxey-cz.github.io/milovice-life-rp/?v=511900&streetAudit=armadni-billa-5118
+
+- **Doloženo fotografií:** skutečný vstup Billy na [Firmy.cz, Armádní 874](https://www.firmy.cz/detail/13214923-billa-milovice-mlada.html) má nad šedou fasádou velká samostatná **žlutá písmena BILLA**, ne **červená písmena na souvislé žluté reklamní desce**, jak vykresloval generický canvas ve verzi 5.118. Na fotografii je také **jedna dominantní tmavá vstupní stříška**.
+- Úprava 5.119 vykresluje žluté písmo do **průhledného CanvasTexture**, bez krycího reklamního obdélníku. U této jediné Billy už nepřidává druhou generickou stříšku ani nepodložený barevný fasádní pás přes již fotograficky modelovaný vstup. Žlutý střešní nápis je pouze **jeden malý 3D objekt**, který není označen k odstranění běžným dálkovým detail LOD; zachováváme šetrné dávkování hlavní architektury. Přesné rozměry a uchycení jednotlivých písmen nejsou změřené.
+- Stávající **skutečný OSM půdorys way/53865798** a doložená vstupní vnitřní hrana, okolní komunikace, chodníky, parkování i budova **Polikliniky way/1057548624** zůstávají beze změny. Nepřidáváme nevyměřená parkovací místa, stojany košíků nebo další cesty. Stejné technické kamery Billa/Poliklinika z 5.118 zůstaly dostupné; aktualizované jsou odkazy a viditelný build 5.119.
+- Diagnostika **`window.__miloviceBillaSignAudit`** zaznamenává použitý veřejný fotozdroj, žlutý nápis, průhlednost, počet zamýšlených stříšek a ochranu před LOD. Jsou to **deklarace renderovací logiky**, nikoliv dokázaný skutečný pixelový výstup.
+- Nový regresní test `scripts/osm-armadni-photo-sign-5119.test.mjs` kontroluje skutečné OSM ID a tagy, ochranu Polikliniky a původního umístění Billy, verzi/build, odkazy, průhledný canvas a jedinou stříšku. Přidán do `.github/workflows/validate.yml`. Testy GitHub Actions a běh Android/Chromium/WebGL se potvrzují **až jejich skutečným výsledkem**; pouhé uložení commitu není potvrzení úspěchu.
+
+---
+
 ## Milovice RP 5.118 — Armádní: Billa a Poliklinika podle OSM a veřejných fotografií (Part 24, 17. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=511800
