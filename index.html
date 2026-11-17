@@ -387,7 +387,8 @@ import {makePhotoChurchSidewalk2022} from './scripts/photo-sidewalk-2022.js?v=58
 import {makePhotoStreetEnvironment} from './scripts/street-environment-reality.js?v=58530';
 import {makePionyru2023Verge} from './scripts/street-pionyru-photo-2023.js?v=58530';
 import {createRoadClearance} from './scripts/road-clearance.js?v=5262';
-import {isCarriageway,isPedestrianWay,safePedestrianPieces,pedestrianPieceKey,markedCrossing,planZebraPieces,planStationPassage} from './scripts/reality-walkways.js?v=5270';
+import {isCarriageway,isPedestrianWay,safePedestrianPieces,pedestrianPieceKey,markedCrossing,planZebraPieces,planStationPassage} from './scripts/reality-walkways.js?v=59400';
+import {classifyMappedRoadSurface,mappedRoadWidth} from './scripts/osm-road-surfaces.js?v=59400';
 import {makeStationForecourtScene,stationGpsToWorld} from './scripts/station-forecourt-pass.js?v=5650';
 import {STATION_FORECOURT_AUDIT_VIEWS,planStationForecourtAudit} from './scripts/station-forecourt-photo-audit.js?v=5810';
 import {planUpperBiketowerSign,createUpperBiketowerSign} from './scripts/bike-tower-photo-sign.js?v=5810';
@@ -1917,6 +1918,22 @@ function milovicePavingTexture(){
  return tex;
 }
 const osmSidewalkMat=cityMatte(0xffffff,citySurfaceKit.paving,.91),osmRoofMat=mat(0x666a68),osmWindowMat=mat(0x4b7683);
+// Share just THREE extra materials and the original procedural textures
+// across ALL roads/paths tagged by OSM. No per-way textures, geometry moves
+// or guessed sidewalk bands.
+const osmMappedSurfaceMaterials={
+ asphalt:osmRoadMaterial,
+ paving:osmSidewalkMat,
+ aggregate:cityMatte(0xc3c0b6,citySurfaceKit.ballast,.98,THREE.DoubleSide),
+ earth:cityMatte(0xb69a7e,citySurfaceKit.ballast,.99,THREE.DoubleSide),
+ grass:cityMatte(0xbccaaa,citySurfaceKit.grass,.98,THREE.DoubleSide)
+};
+const osmSurfaceAudit=window.__miloviceOSMSurfaceAudit={
+ version:'5.94',mappedSurfaceWays:0,explicitSurfaceWays:0,drawnSegments:0,
+ mappedTrackSegments:0,byMaterial:{},byRegion:{},newMaterialCount:3,
+ changedOSMWays:0,changedWidthMeters:0,syntheticPaths:0,
+ observedSurfaceNotPhotoVerified:true
+};
 const photoChurchSidewalk2022=makePhotoChurchSidewalk2022(THREE,{
  layer:osmLayer,terrainAt,roadClearance:osmRoadClearance,sidewalkMaterial:osmSidewalkMat
 });
@@ -2162,7 +2179,7 @@ const sidewalkGeometryStats={legacyUnderRoadBands:0,separatedSidewalks:0,
  crossingStripeSegments:0};
 window.__miloviceStreetGeometryAudit=sidewalkGeometryStats;
 window.__miloviceSidewalkDebug=sidewalkGeometryStats;
-function osmRoadSegment(a,b,width,kind){
+function osmRoadSegment(a,b,width,kind,surfacePlan=null){
  const dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);
  if(isPedestrianWay(kind)){
   // Only mapped walking ways, clipped before entering any other OSM road
@@ -2176,9 +2193,14 @@ function osmRoadSegment(a,b,width,kind){
     sidewalkGeometryStats.duplicateWaySegmentsSkipped++;continue;
    }
    renderedPedestrianPieces.add(key);
-   osmStrip(new THREE.Vector2(piece.a.x,piece.a.z),
+   const surfaceMat=osmMappedSurfaceMaterials[surfacePlan?.material]||osmSidewalkMat;
+   // Keep the original legacy mapped-pavement path unchanged.
+   if(surfaceMat===osmSidewalkMat)osmStrip(new THREE.Vector2(piece.a.x,piece.a.z),
     new THREE.Vector2(piece.b.x,piece.b.z),width,osmSidewalkMat,.13);
+   else osmStrip(new THREE.Vector2(piece.a.x,piece.a.z),
+    new THREE.Vector2(piece.b.x,piece.b.z),width,surfaceMat,.13);
    sidewalkGeometryStats.mappedFootwaySegments++;
+   osmSurfaceAudit.drawnSegments++;
   }
   return;
  }
@@ -2186,7 +2208,12 @@ function osmRoadSegment(a,b,width,kind){
  // Unverified flanking strips are DISABLED: official OSM way geometry decides
  // where sidewalk surfaces actually belong. This avoids duplicate surfaces.
  sidewalkGeometryStats.skippedShortSegments++;
- osmStrip(a,b,width,osmRoadMaterial,.17);
+ const surfaceMat=osmMappedSurfaceMaterials[surfacePlan?.material]||osmRoadMaterial;
+ // Retain world-aligned 7m asphalt UVs for the original untagged roads.
+ if(surfaceMat===osmRoadMaterial)osmStrip(a,b,width,osmRoadMaterial,.17);
+ else osmStrip(a,b,width,surfaceMat,.17);
+ osmSurfaceAudit.drawnSegments++;
+ if(kind==='track')osmSurfaceAudit.mappedTrackSegments++;
  // 5.28 photo-first road markings: the 2014 geotagged photograph of
  // 5. května (OSM secondary 219273174) shows NO continuous edge lines
  // and NO dashed centerline at the pictured section. Older versions
@@ -4661,7 +4688,7 @@ function rpAppendOSMElements(elements,regionId='old'){
   const width=kind==='primary'?11:kind==='secondary'?9:kind==='tertiary'?8:
    kind==='pedestrian'?4:kind==='footway'?1.8:
    kind==='path'||kind==='steps'?1.65:kind==='cycleway'?2:
-   kind==='service'?4.5:7.8;
+   kind==='service'?4.5:(mappedRoadWidth(kind)??7.8);
   const points=el.geometry.map(osmPoint);
   osmRoadClearance.addRoad({id:el.id,points,width,kind});
   if(isCarriageway(kind))
@@ -4675,9 +4702,20 @@ function rpAppendOSMElements(elements,regionId='old'){
   osmMiniRoadBounds.set(points,{minX,maxX,minZ,maxZ});
   if(el.tags.name)osmNamedRoads.push({name:el.tags.name,points});
   const kind=el.tags.highway;
+  const surfacePlan=classifyMappedRoadSurface(el.tags);
+  if(surfacePlan){
+   osmSurfaceAudit.mappedSurfaceWays++;
+   if(surfacePlan.tagged)osmSurfaceAudit.explicitSurfaceWays++;
+   const material=surfacePlan.material;
+   osmSurfaceAudit.byMaterial[material]=(osmSurfaceAudit.byMaterial[material]||0)+1;
+   const district=osmSurfaceAudit.byRegion[regionId] ||= {wayCount:0,explicit:0,track:0};
+   district.wayCount++;
+   if(surfacePlan.tagged)district.explicit++;
+   if(kind==='track')district.track++;
+  }
   if(el.id===549346217 && kind==='footway')stationMappedFootway=points;
   if(el.id===1550920096 && kind==='footway')stationMappedIndoorFootway=points;
-  const width=kind==='primary'?11:kind==='secondary'?9:kind==='tertiary'?8:kind==='pedestrian'?4:kind==='footway'?1.8:kind==='path'?1.65:kind==='service'?4.5:7.8;
+  const width=kind==='primary'?11:kind==='secondary'?9:kind==='tertiary'?8:kind==='pedestrian'?4:kind==='footway'?1.8:kind==='path'?1.65:kind==='service'?4.5:(mappedRoadWidth(kind)??7.8);
   if(['primary','secondary','tertiary','residential','unclassified','living_street','service'].includes(kind)){
    const mappedRoad={points,width,kind,name:el.tags.name||'',
     oneway:el.tags.oneway==='yes'?1:el.tags.oneway==='-1'?-1:0,
@@ -4696,7 +4734,7 @@ function rpAppendOSMElements(elements,regionId='old'){
     sidewalkGeometryStats.photoOuterFootwaySegmentsReplaced++;
     continue;
    }
-   osmRoadSegment(points[i-1],points[i],width,kind);
+   osmRoadSegment(points[i-1],points[i],width,kind,surfacePlan);
    // Unsafe per-segment roadside object generator is disabled.
   }
  }
@@ -5301,6 +5339,9 @@ osmBtn.onclick=async()=>{
  window.__miloviceCityGreenBatch=null;
  window.__miloviceRegionalBuildingPass=null;
  window.__miloviceRegionDedup=null;
+ osmSurfaceAudit.mappedSurfaceWays=0;osmSurfaceAudit.explicitSurfaceWays=0;
+ osmSurfaceAudit.drawnSegments=0;osmSurfaceAudit.mappedTrackSegments=0;
+ osmSurfaceAudit.byMaterial={};osmSurfaceAudit.byRegion={};
  if(terrainGrid)rpTerrainMesh();else cube(2200,.16,2200,osmParkMaterial,0,-.18,0,osmLayer);
  rpAppendOSMElements(elements);
  if(!osmRoads.length)throw Error('Žádné silnice v odpovědi');finalizeRoadStrips();finalizeCityWalls();finalizeFoundations();finalizeFacades();finalizeArchitecture();heroBuildings.flush(osmLayer);osmStreetLabels();chunkMilovice();improveMiloviceVisuals();publishLegacyRealityAudit();rpPopulate();rpInitRailTraffic();
