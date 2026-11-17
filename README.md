@@ -1,3 +1,18 @@
+## Milovice RP 5.113 — Slepá: pravdivější malé technické objekty + přímá kamera (Part 24, 17. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=511300
+
+**Technická kamera přímo z OSM u přístřešku:** https://foxey-cz.github.io/milovice-life-rp/?v=511300&streetAudit=slepa-utilities-5113
+
+- Pokračování celé ulice a jejího okolí: skutečné OSM way **1079135295** má `amenity=shelter`, `building=yes` a výslovnou poznámku **„Přístřešek pro kontejnery na směsný odpad.“**. Je to objekt pro nádoby na odpad, **ne zastávkový přístřešek ani obytný dům**. K němu patří dvě blízké přesně doložené elektrické trafostanice **1079135294** a **1283868024** (`power=substation`, `substation=minor_distribution`). Obě regionální kopie `mlada.json` a `vrutice.json` obsahují stejné ID; původní deduplikace OSM nadále platí.
+- Tyto **tři konkrétní budovy** už nemají automaticky dva obytné podlaží a procedurálně přidělená obytná okna, dveře a skleněné stříšky. Namísto toho mají střídmý model **jednoho podlaží, výšky 2,7 m a ploché střechy**. **Výška, materiál i tvar střechy jsou pouze modelový odhad, nikoliv fotoověřená podoba**. Žádné nové kontejnery, značení, vstupy, oplocení ani přístřešky nejsou vymyšlené. Půdorysy, geolokace, terén, okolní silnice a schválené fotografické modely se nepřepisují.
+- Nový planner `scripts/osm-slepa-utilities-5113.js` má přísný seznam tří ID, ověřuje skutečné typové tagy a plochu polygonu, odmítá soukromý přístup, ochrannou foto-výjimku, ruční model i později zdokumentovanou výšku/podlaží. Plánuje pouze stávající 3D objekty, nikoli nové budovy.
+- Přímá auditní kamera leží na uložené OSM linii **Slepá way/202398890** na **50.2282028213, 14.8607971450**, asi **5,6 m východně** od mapovaného přístřešku; zamíření **270,3°** je vypočtené k centroidu skutečného půdorysu. Nejde o fotograficky zaměřený pohled.
+- Diagnostika `window.__miloviceSlepaUtilityAudit` vypisuje použité ID, typ, odhadnutou výšku a plochu. **Nejde o živý WebGL důkaz**, ale o diagnostiku klasifikace při sestavování scény.
+- Regressní test `scripts/osm-slepa-utilities-5113.test.mjs` kontroluje oba skutečné OSM exporty, souhlas tří ID, ochrany před změnou tagů, obcházení procedurálních vstupů/oken, metadata buildu a skutečnou mapovou polohu kamery. Přímé spuštění klasifikátoru nad oběma OSM exporty v JS prostředí prošlo (**3/3 objekty v obou regionech**), pozice kamery i její úhel souhlasí. **Plný test mobilního Chromium/WebGL se zde neprovedl** a zveřejnění GitHub Pages se potvrzuje až po nasazení.
+
+---
+
 ## Milovice RP 5.112 — dvanáct RÚIAN rodinných domů kolem Slepé, úprava fasád a přímý 3D pohled (Part 23, 17. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=511200
