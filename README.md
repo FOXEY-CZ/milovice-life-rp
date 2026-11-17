@@ -1,3 +1,18 @@
+## Milovice RP 5.114 — Slepá: doložený park, šetrná zeleň a kontrolní kamera (Part 24, 17. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=511400
+
+**Přímá technická kamera z mapované ulice Slepá do parku:** https://foxey-cz.github.io/milovice-life-rp/?v=511400&streetAudit=slepa-park-5114
+
+- V již uložených oficiálně mapovaných OSM datech `data/regions/mlada.json` a `data/regions/vrutice.json` existuje veřejně zakreslený polygon **`leisure=park` way/891874829** o **9 777,7 m²**. Oblast má vlastní již vykreslovaný parkový povrch a navazuje na skutečné úseky Slepé, okolní pěší cesty a chodníky. Žádný nový park ani smyšlené chodníky se nevytvářejí.
+- Nový deterministický modul `scripts/osm-slepa-park-ground-5114.js` přidává do **přesně stejného polygonu** nejvýše **72 malých trojúhelníkových modelových travních trsů**. Všechny body procházejí testem bodu uvnitř zdrojového polygonu s ochranným odstupem od jeho hran. Následují skutečné 3D clearance kontroly vůči OSM silnicím včetně chodníků a pěších cest, budovám, vodním překážkám, starším fotoomezením a již vytvořeným procedurálním stromům.
+- Výška jednotlivých trsů přibližně 11–26 cm; **jejich přesná poloha ani botanický druh nejsou fotoověřené**. Původní stromový generátor, půdorysy, povrch terénu, parkové hranice a dopravní síť zůstávají nedotčené. Nepřidávají se nedoložené lavičky, stromy, oplocení, herní prvky ani cesty.
+- Render používá existující sdílenou geometrii `createLawnBlades()`, krátkodosahový `visualBatch()` a jeden samostatný instancovaný materiál pro audit. Nemění hlavní rozpočet modelů budov. `window.__miloviceSlepaParkAudit` ukazuje počet a důvody vynechaných pozic. `window.__miloviceSlepaParkRuntime()` prochází **opravdové `THREE.InstancedMesh`** a odděluje instancované prvky připojené ke scéně od těch, které jsou právě viditelné vzhledem k LOD.
+- Kamera `streetAudit=slepa-park-5114` stojí na **přesném aritmetickém středu prvních dvou OSM bodů silnice Slepá way/202375819**, **50.2280113, 14.8589063**, a směřuje přibližně na centroid půdorysu parku (**337,9°**). Jde o technický herní pohled, nikoli o fotograficky určený úhel z Panorama.
+- Test `scripts/osm-slepa-park-ground-5114.test.mjs` kontroluje oba reálné OSM exporty, přibližně **9 778 m²**, konzistentní polohu při změně pořadí regionů, nezdvojování trsů, privátní/změněné zdroje, ochrany před chodníky a domy, kameru i metadata buildu. Samostatné JS ověření plánovače nad oběma mapovými soubory prošlo: **72 plánovaných trsů v obou exportech při uvolněných testovacích clearance podmínkách**, shodně při opakovaném spuštění. Při skutečném běhu může být výsledný počet nižší podle překážek. Plný mobilní **Chromium/WebGL test nebyl prokazatelně spuštěn**; GitHub Pages je třeba po nasazení zkontrolovat.
+
+---
+
 ## Milovice RP 5.113 — Slepá: pravdivější malé technické objekty + přímá kamera (Part 24, 17. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=511300
