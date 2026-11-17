@@ -5352,6 +5352,93 @@ function rpAppendOSMElements(elements,regionId='old'){
    window.__miloviceMladaFootwayJoinRuntime=liveFootwayCorners;
   else window.__miloviceVruticeFootwayJoinRuntime=liveFootwayCorners;
  }
+ // 5.111: Join ONLY the tiny corner wedges of ALREADY mapped pedestrian
+ // paths along Slepá. The 5.106 Mladá playground and 5.107 Vrutice
+ // playground anchors are >300m away, so this cannot draw them twice.
+ if(regionId==='mlada'||regionId==='vrutice'){
+  const fromRegion=roadWays.find(e=>String(e.id)==='202375817'&&
+   e.tags?.highway==='residential'&&e.tags?.name==='Slepá');
+  const mappedStreet=fromRegion?{
+   id:String(fromRegion.id),points:fromRegion.geometry.map(osmPoint)
+  }:osmSlepaStreetWorld;
+  if(mappedStreet?.points?.length===2){
+   const [p,q]=mappedStreet.points;
+   const sourceAnchor={x:(p.x+q.x)*.5,z:(p.y+q.y)*.5,
+    sourceId:String(mappedStreet.id)};
+   const sourceFootways=roadWays.filter(e=>
+    ['footway','path'].includes(e.tags?.highway))
+    .map(e=>({id:e.id,tags:e.tags,points:e.geometry.map(osmPoint)}));
+   const joins=planMladaFootwayCorners(sourceFootways,{
+    anchor:sourceAnchor,maxDistance:145,maxTriangles:220,
+    roads:osmCarriagewayClearance,buildings:taggedSidewalkBuildings
+   });
+   const batches=new Map();
+   for(const tri of joins.triangles){
+    const surface=classifyMappedRoadSurface({
+     highway:tri.kind||'footway',surface:tri.materialSource||undefined
+    })?.material||'legacy-footway';
+    const material=osmMappedSurfaceMaterials[surface]||osmSidewalkMat;
+    if(!batches.has(material))batches.set(material,{vertices:[],uvs:[]});
+    const batch=batches.get(material);
+    const {a,b,c}=tri;
+    const signed=(a.x-c.x)*(b.z-c.z)-(a.z-c.z)*(b.x-c.x);
+    const vertices=signed>0?[c,b,a]:[c,a,b];
+    for(const v of vertices){
+     batch.vertices.push(v.x,terrainAt(v.x,v.z)+.137,v.z);
+     batch.uvs.push(v.x/8,v.z/8);
+    }
+   }
+   let drawMeshes=0;
+   for(const [mat,batch] of batches){
+    if(!batch.vertices.length)continue;
+    const geo=new THREE.BufferGeometry();
+    geo.setAttribute('position',
+     new THREE.Float32BufferAttribute(batch.vertices,3));
+    geo.setAttribute('uv',
+     new THREE.Float32BufferAttribute(batch.uvs,2));
+    geo.computeVertexNormals();geo.computeBoundingSphere();
+    const mesh=new THREE.Mesh(geo,mat);
+    mesh.name='Milovice_OSM_Slepa_FootwayCornerJoin_5111';
+    mesh.receiveShadow=true;osmLayer.add(mesh);drawMeshes++;
+   }
+   const prior=window.__miloviceSlepaFootwayJoinAudit||{
+    version:'5.111',sourceStreetId:'202375817',
+    sourceWayIds:[],mappedEligibleWays:0,sealedCorners:0,
+    drawnTriangles:0,drawMeshes:0,
+    avoidedRoadCollisions:0,avoidedBuildingCollisions:0,
+    skippedCrossings:0,sourceWayNodesChanged:0,
+    newPedestrianRoutes:0,newCrosswalks:0,
+    estimatedPathWidths:true,photoSurveyed:false
+   };
+   prior.sourceWayIds=[...new Set([
+    ...prior.sourceWayIds,...joins.sourceWayIds])];
+   prior.mappedEligibleWays=prior.sourceWayIds.length;
+   prior.sealedCorners+=joins.sealedCorners;
+   prior.drawnTriangles+=joins.triangles.length;
+   prior.drawMeshes+=drawMeshes;
+   prior.avoidedRoadCollisions+=joins.skippedNearCarriageway;
+   prior.avoidedBuildingCollisions+=joins.skippedNearBuilding;
+   prior.skippedCrossings+=joins.skippedCrossings;
+   window.__miloviceSlepaFootwayJoinAudit=prior;
+   window.__miloviceSlepaFootwayJoinRuntime=()=>{
+    const meshes=osmLayer.children.filter(o=>
+     o.name==='Milovice_OSM_Slepa_FootwayCornerJoin_5111');
+    const inScene=o=>{
+     for(let parent=o;parent;parent=parent.parent){
+      if(!parent.visible)return false;
+      if(parent===scene)return true;
+     }
+     return false;
+    };
+    const visible=meshes.filter(inScene);
+    return {ready:true,sceneMeshes:meshes.length,
+     visibleSceneMeshes:visible.length,
+     visibleTriangles:visible.reduce((n,o)=>
+      n+(o.geometry?.getAttribute('position')?.count||0)/3,0),
+     plannedTriangles:prior.sealedCorners,checkedSceneParentChain:true};
+   };
+  }
+ }
  // 5.96: Map-derived OPEN streams and drains, not invented blue ribbons.
  // The original OSM centerline is clipped to the region's streamed bounds
  // and only rendered on terrain outside mapped roads, paths and buildings.
