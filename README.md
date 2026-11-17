@@ -1,3 +1,17 @@
+## Milovice RP 5.121 — Poliklinika Spojovací: zdrojově doložený prosklený vstup a tyrkysová stříška (Part 25, 17. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=512100
+
+**Přímá technická kamera ze skutečné Spojovací:** https://foxey-cz.github.io/milovice-life-rp/?v=512100&streetAudit=armadni-clinic-5118
+
+- **Fotografické zdroje:** [ABP Holding – Polyclinic building Milovice, dokončeno 2023](https://www.abpholding.cz/en/project-detail/65/polyclinic-building-milovice) a [RE/MAX – prostor v Centru zdraví Milovice](https://www.remax-czech.cz/reality/detail/423323/pronajem-komercniho-prostoru-41-m2-milovice). Na dokončených exteriérových fotografiích jsou na bílé čtyřpodlažní fasádě tyrkysové meziokenní výplně, **prosklené přízemní vstupy a nízká tyrkysová stříška nad jedním výrazným vstupem**. Fotografie dokazují podobu, ne přesnou geodetickou polohu každého vchodu.
+- Verze 5.118 již kreslila 8 okenních modulů × 4 úrovně, ale **přízemí bylo pouze jednotná řada skel bez rozlišení hlavního vstupu**. V 5.121 jedna odhadnutá centrální pozice v dosavadním rastru přechází na **prosklený vstup s bílými štíhlými rámy a nízkou tyrkysovou stříškou**, použitím jen tří nových sdílených materiálů `clinicEntryGlass`, `clinicEntryFrame` a `clinicEntryCanopy`. Vchod je zatím **modelový vzhled na existující plné stěně, nikoli skutečně průchozí dveřní otvor**. Přesná poloha vybraného modulu, rozměry a tvar stříšky nejsou změřené. Ostatní okna/panely a zadní neověřené fasády zůstávají nedotčené.
+- Nový samostatný ověřovač `scripts/osm-armadni-clinic-entry-5121.js` vyžaduje **skutečný OSM way/1057548624, 4-hranný půdorys o ~827,58 m², východní fasádu edge 2 o ~44,86 m, 4 fotodoložená podlaží, skutečnou ulici Spojovací way/246652750 a odpovídající orientaci ulice před objektem**. Jakýkoliv odlišný/chráněný objekt odmítne. Pro výšku dveří se používá existující `planGroundedEntrance` s přístupovou výškou podle DEM a nízkým vizuálním prahem místo dveří visících nad chodníkem.
+- **Nejsou vytvořené žádné parkovací polygonové plochy, vodorovné značení, nové přechody ani propojení mezi známými chodníky**. Skutečná parkovací stání na fotografiích sice existují, ale samotná fotografie nestačí k bezpečnému vyměření jejich jednotlivých obrysů. OSM silnice, chodníky a obě budovy Billa a Poliklinika zůstávají beze změny.
+- Výsledné instancované skupiny jsou u tohoto jediného fotoověřeného vstupu chráněné před 5s mobilním LOD zmizením; zbytek standardních oken si zachová běžný LOD. `window.__miloviceClinicEntranceAudit` uvádí původ, nejistoty a výšku přístupu; `window.__miloviceClinicEntranceRuntime()` ověřuje skutečný počet instancovaných a viditelných objektů ve scéně. Statický test `scripts/osm-armadni-clinic-entry-5121.test.mjs` kontroluje původní OSM a ochrany, nově přidaný mobilní Chromium/WebGL test `scripts/osm-armadni-clinic-entry-webgl-5121.mjs` kontroluje viditelnost po **6,8 s** a ukládá snímek. Úspěch GitHub Actions je nutné ověřit po dokončení běhu, nestačí samotné uložení zdrojového kódu.
+
+---
+
 ## Milovice RP 5.120 — Armádní: zastřešené nákupní vozíky u skutečné Billy (Part 25, 17. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=512000
