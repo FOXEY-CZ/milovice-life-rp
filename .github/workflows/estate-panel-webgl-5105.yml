@@ -1,0 +1,41 @@
+name: Milovice 5.105 Mladá residential panel WebGL
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - scripts/osm-mlada-residential-5105.js
+      - scripts/osm-mlada-residential-webgl-5105.mjs
+      - scripts/regional-residential-style.js
+      - scripts/street-audit-menu-5101.js
+      - data/regions/mlada.json
+      - .github/workflows/estate-panel-webgl-5105.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mlada-estate-webgl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install mobile browser test client
+        run: npm install --no-save --no-package-lock playwright-core@1.57.0
+      - name: Verify 22 source-mapped apartment buildings and camera in Chromium
+        run: |
+          CHROME_BIN="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          export CHROME_BIN
+          python3 -m http.server 8080 >/tmp/milovice-estate-5105.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          node scripts/osm-mlada-residential-webgl-5105.mjs
+      - name: Upload actual Mladá housing scene screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: milovice-mlada-estate-5105-mobile
+          path: browser-artifacts/milovice-mlada-estate-5105-mobile.png
+          if-no-files-found: ignore
