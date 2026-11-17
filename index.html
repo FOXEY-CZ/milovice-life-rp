@@ -5090,14 +5090,19 @@ function maybeStreamCityAreas(){
  const nearby=cityAreaManifest.filter(r=>r.id!=='old'&&!loadedCityAreas.has(r.id)&&r.bbox)
   .map(r=>({r,dist:cityAreaDistance(cx,cz,r.bbox)}))
   .sort((a,b)=>a.dist-b.dist);
- const ahead=nearby.find(v=>v.dist<OSM_VIEW+520);
+ // Several regional OSM bounding boxes overlap around Tyršova. In an
+ // explicit technical audit, load that camera's intended data source FIRST
+ // instead of cycling through Mladá and Vrutice before western streets.
+ const auditTarget=rpStreetAuditView?.regionId?
+  nearby.find(v=>v.r.id===rpStreetAuditView.regionId&&v.dist<OSM_VIEW+240):null;
+ const ahead=auditTarget||nearby.find(v=>v.dist<OSM_VIEW+520);
  // If the player turns away, discard the old speculative payload: at most
  // one nearby district remains retained in memory on mobile.
  if(cityAreaAhead&&(!ahead||cityAreaAhead.id!==ahead.r.id)){
   window.__miloviceAreaPrefetch={areaId:cityAreaAhead.id,state:'discarded'};
   cityAreaAhead=null;
  }
- const candidate=nearby.find(v=>v.dist<OSM_VIEW+240);
+ const candidate=auditTarget||nearby.find(v=>v.dist<OSM_VIEW+240);
  if(candidate){rpLoadCityArea(candidate.r.id);return;}
  // Warm outside visible range; never pull every district into RAM at once.
  if(ahead)rpWarmCityArea(ahead.r);
