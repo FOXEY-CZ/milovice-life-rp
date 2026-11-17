@@ -122,7 +122,12 @@ for(const k of [
 ])assert(html.includes(k),'Missing source-backed actual 3D feature: '+k);
 assert(html.indexOf('if(isPhotoGarage){')<html.indexOf('const windows=Math.min(24'),
  'Photographed garage branch must preempt fake generic windows');
-assert(html.includes('continue;\n  }\n  if(len<5){'),
+// Additional ordinary-house plinth planning now separates the garage
+// branch from the short-wall branch. Guard actual control flow, not adjacency.
+const garageStart=html.indexOf('if(isPhotoGarage){');
+const garageEnd=html.indexOf('// Shared, terrain-anchored base strip',garageStart);
+assert(garageStart>=0&&garageEnd>garageStart&&
+ html.slice(garageStart,garageEnd).includes('continue;\\n  }'),
  'Photo-sourced garage fronts must bypass old generic facade loops');
 assert(!html.includes('garagePhotoNumber'),
  'No invented door number to OSM-ID correspondence permitted');
