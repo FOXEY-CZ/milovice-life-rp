@@ -13,7 +13,7 @@ try{
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',err=>errors.push(String(err.stack||err)));
  await page.goto(
-  'http://127.0.0.1:8080/?v=512300&streetAudit=armadni-clinic-5118',
+  'http://127.0.0.1:8080/?v=512400&streetAudit=armadni-clinic-5118',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>(
@@ -73,8 +73,10 @@ try{
  assert(x.main.ready,'Both photo-grounded BILLA and clinic must still exist');
  assert.equal(x.main.photoFacade.windowRows,4);
  assert.equal(x.main.photoFacade.bays,8);
- assert.equal(x.main.photoFacade.plannedWindows,31,
-  'Only one unverified generic glass window replaced with photo portal');
+ assert.equal(x.main.photoFacade.plannedWindows,24,
+  'Upper floors keep three photo-modelled rows of 8 windows');
+ assert.equal(x.main.photoFacade.groundGlazedBays,7,
+  'Old hovering ground windows replaced with photo-based shop glazing');
  assert.equal(x.main.photoFacade.plannedTealPanels,24);
  assert(x.panelHeight<150,'Phone menu must remain compact');
  assert.deepEqual(errors,[],'No JavaScript page errors');
