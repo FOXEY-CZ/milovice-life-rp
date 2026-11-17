@@ -96,7 +96,7 @@ for(const text of [
  "window.__miloviceClinicForecourtAudit={",
  "window.__miloviceClinicForecourtRuntime=()=>{",
  "existingFootwayAboveSurface:true,existingAsphaltAboveSurface:true",
- "const BUILD_ID='20261118-spojovaci-photo-forecourt-512300'",
- 'href="?v=512300&streetAudit=armadni-clinic-5118"'
+ "const BUILD_ID='20261118-spojovaci-clinic-shops-512400'",
+ 'href="?v=512400&streetAudit=armadni-clinic-5118"'
 ])assert(html.includes(text),'Missing render integration '+text);
 console.log('PASS 5.123 paved Poliklinika Spojovací forecourt: photo+real OSM road/sidewalk clipped, zero parking invention');
