@@ -4136,7 +4136,7 @@ window.__miloviceArmLandmarksAudit={
  mappedBillaBuildings:0,mappedFourStoreyClinics:0,
  clinicPhotoFacadeBays:0,clinicPhotoFacadeWindows:0,
  clinicPhotoFacadeTealPanels:0,unverifiedClinicCanopiesRemoved:0,
- billaNonFrontGlassStripsRemoved:0,
+ billaNonFrontGlassStripsRemoved:0,duplicatedAutoEntrancesRemoved:0,
  originalBuildingsMoved:0,newBuildings:0,roadsChanged:0,
  measuredBuildingHeights:false,sourceGeometryChanged:false,
  photoSources:[
@@ -4283,6 +4283,7 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
  if(armLandmark){
   const audit=window.__miloviceArmLandmarksAudit;
   audit.sourceBuildingIds.push(String(osmId));
+  audit.duplicatedAutoEntrancesRemoved++;
   if(isArmClinic){
    audit.mappedFourStoreyClinics++;
    audit.unverifiedClinicCanopiesRemoved++;
@@ -5202,7 +5203,8 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
  // Ground-floor entrance: a lightweight facade panel, placed on the longest building wall.
  // Hero buildings already have actual wall-cutout doors: don't paint
  // a second fake freestanding doorway on top of their real entrance.
- const inventedEntrance=!slepaUtility&&!heroFacade&&!isGarage&&!isChurch&&!isBlueStar&&
+ const inventedEntrance=!slepaUtility&&!isArmClinic&&!isArmBilla&&
+  !heroFacade&&!isGarage&&!isChurch&&!isBlueStar&&
   !isStation&&!isMirova36&&!isGrocer74;
   if(auditedCore&&inventedEntrance&&!isSchool)
    legacyRealityAudit.suppressed('suppressedDoors');
