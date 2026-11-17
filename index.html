@@ -188,7 +188,8 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <a href="?v=58530&streetAudit=mirova36-2024">📷 Mírová 243/36 · veřejné foto</a>
 <a href="?v=58700&streetAudit=school-2024">📷 Školská · škola 2024</a>
 <a href="?v=58700&streetAudit=school-detail-2024">📷 Školská · druhý úhel 2024</a>
-<a href="?v=58800&streetAudit=skolska-west-2024">📷 Školská západ · dům č. 1 (OSM směr)</a></nav>
+<a href="?v=58800&streetAudit=skolska-west-2024">📷 Školská západ · dům č. 1 (OSM směr)</a>
+ <a href="?v=58900&streetAudit=skolska-east-589">🏘️ Školská východ · technický pohled po ulici</a></nav>
 <span id="street-audit-status">GPS označuje místo fotografa, ne přesnou polohu stromu, lampy či brány.</span>
 <span id="street-audit-camera-gps" aria-live="polite">📍 GPS a směr kamery se zobrazí po načtení 3D scény.</span>
 <div><a id="street-audit-map-gps" target="_blank" rel="noopener noreferrer">🗺️ Otevřít pozici herní kamery v Mapy.com</a></div>
@@ -371,7 +372,7 @@ import {planGroundedEntrance} from './scripts/entrance-grade.js?v=5450';
 import {exteriorFacadeFrame,selectExteriorFacadeToward,splitFacadeStripForOpening,facadePoint,flushBoxOffset,FACE_PLANE,facadeGap,WINDOW_FRAME_DEPTH,WINDOW_SILL_DEPTH} from './scripts/facade-anchors.js?v=5400';
 import {makePhotoStreetBlock,planPhotoRoofFeatures} from './scripts/street-photo-block.js?v=5410';
 import {clipRoofFacesForFeatures,planRoofFeatureBackClosures} from './scripts/roof-opening-geometry.js?v=5320';
-import {planMassStreetBlock583,planPublicPhotoMirovaBlock586,planPublicPhotoSkolskaBlock587,planSkolskaWestBlock588} from './scripts/street-mass-build-pass.js?v=58800';
+import {planMassStreetBlock583,planPublicPhotoMirovaBlock586,planPublicPhotoSkolskaBlock587,planSkolskaWestBlock588,planSkolskaEastBlock589} from './scripts/street-mass-build-pass.js?v=58900';
 import {makeChurchStreetscape2022} from './scripts/church-street-photo-pass.js?v=58530';
 import {makeMirovaPhotoStreet586} from './scripts/mirova-public-photo-street-586.js?v=58600';
 import {makeSkolskaWestGreen588} from './scripts/skolska-west-street-588.js?v=58800';
@@ -493,6 +494,13 @@ const rpStreetAuditViews={
   date:'2024-05-30',author:'ŠJů · CC BY 4.0',technical:false,
   publicPhotoCamera:true,photographedOSMId:'118487980',
   estimatedHeading:true
+ },
+ 'skolska-east-589':{
+  label:'Školská východ od Pionýrů · OSM kamera, přibližný směr 119° (NENÍ fotografický úhel)',
+  camera:{lat:50.2280951,lon:14.8875431},heading:119,
+  source:'https://commons.wikimedia.org/wiki/File:Milovice,_Z%C5%A0_T._G._Masaryka_(01).jpg',
+  date:'2024-05-30',author:'ŠJů · pouze širší kontext',technical:true,
+  streetLevel:true,estimatedHeading:true
  },
  'school-2024':{
   label:'Školská · ZŠ T. G. Masaryka · veřejné foto ŠJů 30. 5. 2024, GPS + 85°',
@@ -4667,23 +4675,30 @@ function rpAppendOSMElements(elements){
  const skolskaPhotoBlock=planPublicPhotoSkolskaBlock587(
   [...roadWays,...buildingWays],
   [...(massBlock?.priorityIds||[]),...(mirovaPhotoBlock?.priorityIds||[])]);
- // 20 church + 12 Mírová + 12 Školská + 8 west + 1 fork-gable + 15 other = 68
- // high-detail shells as before. Photographs of the school are NOT
- // treated as proof of unidentified neighboring private houses.
+ // 20 church + 12 Mírová + 12 Školská + 8 west + 8 east +
+ // 1 photographed fork gable + 7 generic = 68 fixed high-detail shells.
+ // Public school photography does NOT certify the neighboring private homes.
  const skolskaWestBlock=planSkolskaWestBlock588(
   [...roadWays,...buildingWays],
   [...(massBlock?.priorityIds||[]),...(mirovaPhotoBlock?.priorityIds||[]),
    ...(skolskaPhotoBlock?.priorityIds||[])]);
+ const skolskaEastBlock=planSkolskaEastBlock589(
+  [...roadWays,...buildingWays],
+  [...(massBlock?.priorityIds||[]),...(mirovaPhotoBlock?.priorityIds||[]),
+   ...(skolskaPhotoBlock?.priorityIds||[]),...(skolskaWestBlock?.priorityIds||[]),
+   '202298939']);
  const publicPhotoFocusIds=[
   ...(mirovaPhotoBlock?.priorityIds||[]),
   ...(skolskaPhotoBlock?.priorityIds||[]),
   ...(skolskaWestBlock?.priorityIds||[]),
+  ...(skolskaEastBlock?.priorityIds||[]),
   '202298939' // Already source-verified fork gable needs a reserved, NOT extra, hero slot.
  ];
  if(publicPhotoFocusIds.length)heroBuildings.setPhotoFocusIds(publicPhotoFocusIds);
  if(mirovaPhotoBlock)window.__miloviceMirovaPublicPhotoBlock586=mirovaPhotoBlock;
  if(skolskaPhotoBlock)window.__miloviceSkolskaPublicPhotoBlock587=skolskaPhotoBlock;
  if(skolskaWestBlock)window.__miloviceSkolskaWestBlock588=skolskaWestBlock;
+ if(skolskaEastBlock)window.__miloviceSkolskaEastBlock589=skolskaEastBlock;
  for(const el of buildingWays){osmBuilding(el.geometry,el.tags,osmBuildings,el.id);osmAddLandmark(el)}
  // One inexpensive planted street pass for the WHOLE Mírová corridor;
  // only OSM road/building free parcels are eligible.
@@ -4719,6 +4734,15 @@ function rpAppendOSMElements(elements){
    previousDistrictsUnchanged:true,
    allPhotoFocusIds:publicPhotoFocusIds.length,
    detailedBuildingLimit:68
+  };
+ }
+ if(skolskaEastBlock){
+  window.__miloviceSkolskaEastBlock589={
+   ...skolskaEastBlock,
+   actuallyDetailed:skolskaEastBlock.priorityIds.filter(id=>
+    heroBuildings.stats().photoFocusBuiltIds.includes(id)).length,
+   reservedBudget:skolskaEastBlock.priorityIds.length,
+   previousDistrictsUnchanged:true,detailedBuildingLimit:68
   };
  }
  if(massBlock){
