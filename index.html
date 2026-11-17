@@ -6378,7 +6378,7 @@ function improveMiloviceVisuals(){
    }
    return false;
   };
-  return {ready:true,sourceParkId:'891874829',
+  return {ready:slepaPark.mappedPark===1,sourceParkId:'891874829',
    plannedTufts:slepaPark.tufts.length,
    actualSceneInstances:batches.filter(inScene)
     .reduce((sum,m)=>sum+m.count,0),
