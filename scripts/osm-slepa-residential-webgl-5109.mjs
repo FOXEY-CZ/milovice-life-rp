@@ -13,7 +13,7 @@ try{
  const page=await browser.newPage({viewport:{width:393,height:852},
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
- await page.goto('http://127.0.0.1:8080/?v=511100&streetAudit=road-slepa-5108',
+ await page.goto('http://127.0.0.1:8080/?v=511200&streetAudit=road-slepa-5108',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>
