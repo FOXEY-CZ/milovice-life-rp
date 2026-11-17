@@ -252,7 +252,8 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
  <a href="?v=510000&streetAudit=lit-italska-5100">💡 Italská · mapované osvětlení</a>
  <a href="?v=510000&streetAudit=lit-armadni-5100">💡 Armádní · mapované osvětlení</a>
 <a href="?v=510300&streetAudit=play-mlada-5103">🛝 Mladá · veřejné dětské hřiště</a>
-<a href="?v=510300&streetAudit=play-vrutice-5103">🛝 Vrutice · mapované houpačky</a></nav>
+<a href="?v=510300&streetAudit=play-vrutice-5103">🛝 Vrutice · mapované houpačky</a>
+<a href="?v=510500&streetAudit=estate-mlada-5105">🏢 Mladá · bytové domy vedle hřiště</a></nav>
 <span id="street-audit-status">GPS označuje místo fotografa, ne přesnou polohu stromu, lampy či brány.</span>
 <span id="street-audit-camera-gps" aria-live="polite">📍 GPS a směr kamery se zobrazí po načtení 3D scény.</span>
 <div><a id="street-audit-map-gps" target="_blank" rel="noopener noreferrer">🗺️ Otevřít pozici herní kamery v Mapy.com</a></div>
@@ -684,6 +685,18 @@ const rpStreetAuditViews={
   author:'OSM sport=basketball;futsal, surface=asphalt; značení odhad',
   technical:true,streetLevel:true,estimatedHeading:true
  },
+ // 5.105: Direct source-derived technical look from mapped footway
+ // 1468803907 to OSM apartment building 891874834 (5 floors, 20 flats).
+ // This is NOT a copied photograph or a surveyed entry position.
+ 'estate-mlada-5105':{
+  label:'Mladá · pěší cesta u hřiště · 5podlažní obytné domy (OSM, NENÍ foto)',
+  camera:{lat:50.2303648,lon:14.8572401},heading:172,
+  regionId:'mlada',osmEstateId:'891874834',
+  osmCameraFootwayId:'1468803907',
+  source:'https://www.openstreetmap.org/way/891874834',
+  author:'OSM půdorys, 5 podlaží a 20 bytů; vzhled fasád je model',
+  technical:true,streetLevel:true,estimatedHeading:true
+ },
  // 5.103: direct eye-level technical cameras at two mapped public play
  // spaces. The OSM polygon is verified, NOT the illustrated equipment.
  'play-mlada-5103':{
@@ -761,6 +774,8 @@ if(rpStreetAuditView){
   mainTitle.textContent='💡 Osvětlené ulice Milovic · technická kontrola 5.100';
  else if(rpStreetAuditView.osmPlaygroundId)
   mainTitle.textContent='🛝 Veřejná hřiště Milovic · 3D technická kamera 5.103';
+ else if(rpStreetAuditView.osmEstateId)
+  mainTitle.textContent='🏢 Bytové domy u hřiště Mladá · OSM kontrola 5.105';
  document.getElementById('street-audit-label').textContent=rpStreetAuditView.label;
  document.getElementById('street-audit-source').href=rpStreetAuditView.source;
  // 5.101: organize all existing audit URLs; active category opens on demand.
@@ -5823,6 +5838,35 @@ function improveMiloviceVisuals(){
   actualPlayDevicesNotPhotoVerified:true,mirakulumAttractionsModeled:false,
   publicRoadsOrFootpathsChanged:0,buildingOutlinesChanged:0
  };
+ // 5.105: one-click estate camera from the mapped footway endpoint.
+ // The look-at target comes from the actual 3D building's stored OSM
+ // footprint (not an assumed facade, entrance, roof or panorama heading).
+ if(rpStreetAuditView?.osmEstateId&&rpStreetAuditCameraWorld){
+  const sourceId=String(rpStreetAuditView.osmEstateId);
+  const building=osmInspectionBuildings.find(b=>String(b.id)===sourceId);
+  if(building){
+   const coords=building.points.slice();
+   if(coords.length>3&&Math.hypot(coords[0].x-coords.at(-1).x,
+    coords[0].z-coords.at(-1).z)<.05)coords.pop();
+   const tx=coords.reduce((v,p)=>v+p.x,0)/coords.length,
+    tz=coords.reduce((v,p)=>v+p.z,0)/coords.length;
+   const target={x:tx,z:tz,height:Math.min(7.2,building.height*.43)};
+   window.__miloviceMladaEstateCameraAudit={
+    ready:true,sourceBuildingId:sourceId,sourceOSMFootwayId:'1468803907',
+    eye:{x:rpStreetAuditCameraWorld.x,z:rpStreetAuditCameraWorld.z},
+    target,buildingHeight:building.height,
+    sourceLevels:5,sourceFlats:20,
+    coordinateSource:'actual OSM footway endpoint and building polygon',
+    eyeFromMappedFootway:true,sourcePolygonVerified:true,
+    exactFacadeNotPhotoVerified:true,notAPhoto:true,
+    targetInFrame:false,targetProjection:null,cameraHeightAboveTerrain:null
+   };
+  }else{
+   window.__miloviceMladaEstateCameraAudit={
+    ready:false,sourceBuildingId:sourceId,reason:'estate-region-not-yet-loaded'
+   };
+  }
+ }
  // 5.103: direct camera is calculated from a REAL already-created piece
  // of equipment, not a fictional camera bearing. The helper tests all
  // 3D positions against the same OSM road/building/water constraints.
@@ -6595,7 +6639,14 @@ if(rpStreetAuditCameraWorld&&rpStreetAuditView){
   window.__miloviceStreetLampCameraAudit:null;
  const playCamera=rpStreetAuditView.osmPlaygroundId?
   window.__milovicePlaygroundCameraAudit:null;
- if(playCamera?.ready){
+ const estateCamera=rpStreetAuditView.osmEstateId?
+  window.__miloviceMladaEstateCameraAudit:null;
+ if(estateCamera?.ready){
+  camera.up.set(0,1,0);
+  camera.position.set(eye.x,ground+1.68,eye.z);
+  const target=estateCamera.target;
+  camera.lookAt(target.x,terrainAt(target.x,target.z)+target.height,target.z);
+ }else if(playCamera?.ready){
   camera.up.set(0,1,0);
   camera.position.set(eye.x,ground+1.68,eye.z);
   const target=playCamera.target;
@@ -6657,6 +6708,18 @@ if(rpStreetAuditCameraWorld&&rpStreetAuditView){
    eye.z-Math.cos(heading)*18);
  }
  camera.updateMatrixWorld();
+ if(rpStreetAuditView.osmEstateId&&window.__miloviceMladaEstateCameraAudit?.ready){
+  const check=window.__miloviceMladaEstateCameraAudit;
+  const t=check.target;
+  const projected=new THREE.Vector3(t.x,
+   terrainAt(t.x,t.z)+t.height,t.z).project(camera);
+  check.targetProjection={x:+projected.x.toFixed(3),y:+projected.y.toFixed(3),
+   z:+projected.z.toFixed(3)};
+  check.targetInFrame=projected.z>=-1&&projected.z<=1&&
+   Math.abs(projected.x)<1&&Math.abs(projected.y)<1;
+  check.cameraHeightAboveTerrain=+(camera.position.y-
+   terrainAt(camera.position.x,camera.position.z)).toFixed(3);
+ }
  if(rpStreetAuditView.osmPlaygroundId&&window.__milovicePlaygroundCameraAudit?.ready){
   const check=window.__milovicePlaygroundCameraAudit;
   const target=check.target;
