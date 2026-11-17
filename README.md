@@ -1,3 +1,17 @@
+## Milovice RP 5.120 — Armádní: zastřešené nákupní vozíky u skutečné Billy (Part 25, 17. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=512000
+
+**Přímá kamera z OSM servisní komunikace k Billy:** https://foxey-cz.github.io/milovice-life-rp/?v=512000&streetAudit=armadni-billa-5118
+
+- **Zdroj přímé veřejné fotografie:** [Firmy.cz – BILLA, Armádní 874, Milovice](https://www.firmy.cz/detail/13214923-billa-milovice-mlada.html). Na fotografii je **na levé straně od vstupu krytý stojan s řadou nákupních vozíků**, vedle skutečné tmavé vstupní stříšky a žlutého střešního nápisu. Model proto doplňuje malou lehkou střechu s nenápadnými kovovými stojkami a **šesti nízkopolygonovými modelovými vozíky**. Počet vozíků, rozměry, oblouk střechy a přesná pozice **nejsou fotograficky/geodeticky změřené**.
+- Umístění není náhodné. Nový plánovač `scripts/osm-armadni-trolleys-5120.js` vyžaduje konkrétní **skutečný OSM polygon Billy way/53865798**, její západní zapuštěnou skutečnou stěnu index 4, mapovaný příjezd **way/1057548615** a jeho šířku 4,5 m v současném rendereru. Konkrétní model odhadem volí severní konec této stěny (vlevo v pohledu od příjezdu) a **kontroluje, zda všechny rohy krytu leží mimo půdorys budovy a mimo průjezdný pás mapované silnice**. Pokud zdrojové podmínky nesedí, nic nepřidá. Nenapojuje žádný nový chodník.
+- Výkres obsahuje jen **3 střešní pásy, 2 stojky a 6 zjednodušených vozíků** sestavených ze sdílených `THREE.InstancedMesh` materiálových skupin `billaCartRoof`, `billaCartFrame`, `billaCartHandle`, `billaCartWheel`. Nejsou to desítky samostatných kreslicích volání. Tyto čtyři malé skupiny jsou cíleně chráněné před detailovým LOD, aby kryt a vozíky **nezmizely po několika sekundách**; vzdálenější fasády zůstávají optimalizované původním způsobem.
+- **Všechny skutečné OSM budovy, cesty, šířky vozovek a pěší trasy zůstávají beze změny**, stejně jako Poliklinika, její čtyřpodlažní fotomodel, předchozí technické kamery a mapované křižovatky. Fotografie Polikliniky [ABP Holding, dokončeno 2023](https://www.abpholding.cz/en/project-detail/65/polyclinic-building-milovice) dokládá vydlážděné prostranství s parkováním. Protože však v současných uložených mapových datech **nemáme spolehlivý přesný plošný obrys těchto stání**, nový render zatím nepřidává odhadnuté parkovací polygonové pruhy ani nová stání.
+- Kontrola `window.__miloviceBillaTrolleyAudit` zveřejňuje skutečná zdrojová ID, odstup od mapované komunikace a odhadované rozměry. `window.__miloviceBillaTrolleyRuntime()` zjišťuje **skutečné připojené instancované objekty a jejich aktuální LOD viditelnost** (ne pouze plánované funkční volání). JS test `scripts/osm-armadni-trolleys-5120.test.mjs` čte skutečné uložené OSM exporty; `scripts/osm-armadni-trolleys-webgl-5120.mjs` zkouší reálné mobilní Chromium/WebGL **až po 6,5 sekundách** a případně uloží kontrolní screenshot. Výsledky CI a nasazení GitHub Pages je nutné ověřit v GitHub Actions, nikoli jen z existence kódu.
+
+---
+
 ## Milovice RP 5.119 — BILLA Armádní: fotograficky věrnější střešní nápis a jedna stříška (Part 25, 17. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=511900
