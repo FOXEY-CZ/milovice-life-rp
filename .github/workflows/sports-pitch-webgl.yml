@@ -1,0 +1,40 @@
+name: Milovice 5.99 mapped sports WebGL
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - scripts/landscapes.js
+      - scripts/osm-pitch-markings-599.js
+      - scripts/sports-pitch-webgl-599.mjs
+      - data/regions/mlada.json
+      - .github/workflows/sports-pitch-webgl.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mobile-sports:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium browser client
+        run: npm install --no-save --no-package-lock playwright-core@1.57.0
+      - name: Check two real OSM sports courts in mobile 3D camera
+        run: |
+          CHROME_BIN="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          export CHROME_BIN
+          python3 -m http.server 8080 >/tmp/milovice-sports-599-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          node scripts/sports-pitch-webgl-599.mjs
+      - name: Upload pitch review screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: milovice-sports-599-mobile
+          path: browser-artifacts/milovice-sports-599-*.png
+          if-no-files-found: ignore
