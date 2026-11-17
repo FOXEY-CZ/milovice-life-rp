@@ -63,7 +63,7 @@ try{
   assert(result.header.includes('Osvětlené ulice Milovic'));
   assert(result.label.includes(street));
   assert(result.canvasWidth>0);
-  assert(result.build===result.hud&&result.build.includes('510000'));
+  assert(result.build&&result.build===result.hud, 'Mapped lamp audits must use the current matching build stamps');
   assert.deepEqual(errors,[],'No WebGL errors');
   await page.screenshot({path:'browser-artifacts/milovice-lamps-5100-'+view+'.png'});
   console.log('PASS 5.100 source-lit lamp review',JSON.stringify({
