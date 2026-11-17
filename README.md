@@ -1,3 +1,20 @@
+## Milovice RP 5.100 — veřejné osvětlení jen u OSM lit=yes ulic (Part 21, 17. 11. 2026)
+
+**Aktuální verze:** https://foxey-cz.github.io/milovice-life-rp/?v=510000
+
+**Přímé technické kamery do hry (nejde o fotografii skutečných lamp):**
+- [Mladá, Italská — osvětlení ulice](https://foxey-cz.github.io/milovice-life-rp/?v=510000&streetAudit=lit-italska-5100), OSM way 8585601
+- [Benátecká Vrutice, Armádní — osvětlení ulice](https://foxey-cz.github.io/milovice-life-rp/?v=510000&streetAudit=lit-armadni-5100), OSM way 304756364
+
+- Z šesti původních regionálních OSM datasetů bylo identifikováno **57 unikátních pojmenovaných úseků** vozovky typu `residential/tertiary/unclassified` s výslovným `lit=yes` (celkem zhruba 7,2 km centerline). `lit=no`, chybějící/neurčitá hodnota, servisní příjezd, pěší cesta, soukromá cesta a mosty jsou z tohoto návrhu vyloučené.
+- `lit=yes` **dokládá osvětlení komunikace, nikoli rozmístění nebo podobu konkrétních sloupů.** Nové 3D lampy jsou tedy jednoznačně označeny jako odhady, které budeme později upravovat podle fotografií. Původní historicky fotograficky prověřené zóny u nádraží, kostela a 5. května zůstávají bez libovolně domyšlených lamp.
+- Dávkově vykreslené **jednoduché sloupy, krátká ramena a světelné hlavice** znovu používají existující sdílené materiály a Three.js InstancedMesh po 200m buňkách. Běžné 3D světlo bez nových PointLight zdrojů minimalizuje dopad na mobilní GPU. Přesné výšky 5,8 m a rozestupy okolo 42 m jsou herní předpoklady, ne průzkum reality.
+- Každá navržená poloha je kontrolována oproti **všem mapovaným silnicím, chodníkům, půdorysům domů a viditelným vodotečím**. Pokud bezpečné místo u silnice není, sloup nevznikne. Nepřesouvají se domy, silnice, dopravní pásy ani terén; nevznikají nedoložené chodníky nebo billboardy.
+- Původní náhodné objekty v celé mapě zůstávají vypnuté (`randomRoadLamps:0`). Nový explicitně zdrojově omezený systém má samostatnou diagnostiku `window.__miloviceStreetLightingAudit`, včetně počtů sloupů, OSM ID a příčin vynechání. Přímé kamery dle OSM cesty vyhledají existující modelovaný sloup, nikoliv přednastavený prázdný horizont.
+- Regresní test `scripts/osm-street-lighting-5100.test.mjs` ověřuje 57 existujících OSM zdrojových úseků, ochranu před kolizemi a opakovatelný plán. Připravena je i následná automatická kontrola 3D vykreslení na mobilu.
+
+---
+
 ## Milovice RP 5.99 — sportovní hřiště podle skutečných OSM značek (Part 21, 17. 11. 2026)
 
 **Spustit:** https://foxey-cz.github.io/milovice-life-rp/?v=59900
