@@ -92,6 +92,7 @@ for(const term of [
  'const material=osmMappedSurfaceMaterials[surface?.material]||osmRoadMaterial;',
  'geo.computeVertexNormals();geo.computeBoundingSphere();',
  'queueRoadStrip(geo,material,midX,midZ);',
+ 'geo.setIndex([0,1,2]);',
  'window.__miloviceSlepaArmRoadJoinAudit={',
  'createdNewRoads:0,createdCrossings:0,createdSidewalks:0'
  ])assert(html.includes(term),'Missing 5.115 integration: '+term);
