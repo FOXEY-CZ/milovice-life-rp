@@ -1,3 +1,22 @@
+## Milovice RP 5.93 — sjednocení všech pěti regionálních oblastí a technické uliční kamery (17. 11. 2026)
+
+**Spustit aktuální verzi:** https://foxey-cz.github.io/milovice-life-rp/?v=59300
+
+**Přímé OSM kontrolní pohledy:**
+- [Tyršova – západní propojení](https://foxey-cz.github.io/milovice-life-rp/?v=59300&streetAudit=tyrsova-west-593) · OSM way 202373467, GPS 50.2311495 / 14.8603708, technický směr cca 51,6°
+- [Ostravská – severní propojení](https://foxey-cz.github.io/milovice-life-rp/?v=59300&streetAudit=ostravska-north-593) · OSM way 1463667018, GPS 50.2307917 / 14.8927489, technický směr cca 104,3°
+- [Boží Dar – Krátká](https://foxey-cz.github.io/milovice-life-rp/?v=59300&streetAudit=bozidar-kratka-593) · OSM way 38900193, GPS 50.2482106 / 14.9171042, technický směr cca 132,3°
+
+Tyto kamery leží přímo na doložených OSM osách ulic. **Nejsou to fotografické ani Panorama záběry.** Základní 3D mapa si při jejich otevření přednostně načte potřebnou regionální oblast, i když se její bounding box překrývá s jinou.
+
+- Automatické rozložení výtvarně **odhadovaných** odstínů fasád, střešních materiálů, rytmu oken a nenápadných přízemních soklů nyní zahrnuje všech pět stávajících regionů: Mladá, Benátecká Vrutice, západní propojení, severní/střední propojení a Boží Dar. Původní historické jádro, přesné OSM půdorysy a předchozí fotograficky zpracované objekty zůstávají chráněné. Nejsou přidány nové silnice, budovy, vjezdy ani fotoověřená tvrzení.
+- Regresní kontrola nad zdrojovými exporty našla **2 298 regionálních výskytů vhodných stavebních půdorysů**, ale tyto soubory se geograficky překrývají: jde o **1 291 jedinečných OSM ID** napříč pěti regiony a **1 039 dosud neviděných vhodných ID oproti původní základní mapě**. To jsou počty kandidátů v datech, nikoliv přesný počet viditelných či detailních modelů po aplikování všech herních omezení.
+- Nová diagnostika `window.__miloviceRegionDedup` měří přeskočená duplicitní OSM ID včetně budov, `window.__miloviceRegionalBuildingPass` ukazuje skutečně stylované budovy při vykreslení. Full reload navíc resetuje prostorový index veřejných komunikací i statistiky, aby se hodnoty nenasčítávaly opakovaně.
+- **Výkon:** stávajících 8 omítkových, 7 panelových a 5 střešních materiálových variant, bez dalších typů materiálu; stejný limit 68 detailních obytných modelů. Nové sokly jsou instancované v již existujícím rozpočtu. Skutečné FPS a čas přechodu oblastmi na cílovém mobilu/PC nebyly změřeny.
+- **Kontroly:** `scripts/regional-residential-style.test.mjs` pro všech pět OSM souborů, `scripts/city-region-street-audit.test.mjs` pro polohu, osu ulice a přednost načítání, `scripts/city-region-overlap.test.mjs` pro duplicity a reset. Nové regresní testy jsou součástí `.github/workflows/validate.yml`.
+
+---
+
 ## Milovice RP 5.92 — hromadné obytné ulice v Mladé a Benátecké Vrutici (17. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=59200
