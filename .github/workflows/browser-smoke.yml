@@ -32,6 +32,9 @@ on:
       - scripts/osm-clinic-forecourt-5123.js
       - scripts/osm-clinic-forecourt-5123.test.mjs
       - scripts/osm-clinic-forecourt-webgl-5123.mjs
+      - scripts/osm-clinic-storefronts-5124.js
+      - scripts/osm-clinic-storefronts-5124.test.mjs
+      - scripts/osm-clinic-storefronts-webgl-5124.mjs
       - scripts/station-photo-parking.js
       - scripts/station-photo-parking.test.mjs
       - scripts/station-ticket-machines.js
@@ -79,6 +82,7 @@ jobs:
           node scripts/osm-armadni-trolleys-webgl-5120.mjs
           node scripts/osm-armadni-clinic-entry-webgl-5121.mjs
           node scripts/osm-clinic-forecourt-webgl-5123.mjs
+          node scripts/osm-clinic-storefronts-webgl-5124.mjs
           node scripts/editor_smoke.mjs
           node scripts/photo-pilot-smoke.mjs
       - name: Attach browser screenshot if available
