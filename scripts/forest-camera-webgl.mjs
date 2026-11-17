@@ -26,6 +26,7 @@ try{
   trees:window.__miloviceGreenTreeAudit,
   street:window.__miloviceStreetAuditRendered,
   label:document.querySelector('#street-block-audit > strong')?.textContent,
+  viewLabel:document.getElementById('street-audit-label')?.textContent,
   imageWidth:document.querySelector('canvas')?.clientWidth,
   loaded:window.__miloviceAreasLoaded,
   build:document.querySelector('meta[name="milovice-build"]')?.content
@@ -38,7 +39,8 @@ try{
  assert(state.forest.targetProjection?.x<1&&state.forest.targetProjection?.y<1);
  assert(Math.abs(state.forest.cameraHeightAboveTerrain-1.68)<.1);
  assert.equal(state.trees.perPolygon['26023867'],34);
- assert(state.label.includes('Juventský les'));
+ assert(state.label.includes('Lesy Milovic'));
+ assert(state.viewLabel.includes('Juventský les'));
  assert.equal(state.street.view,'forest-mlada-597');
  assert(state.imageWidth>0);
  assert.equal(state.build,'20261117-osm-forest-audit-59800');
