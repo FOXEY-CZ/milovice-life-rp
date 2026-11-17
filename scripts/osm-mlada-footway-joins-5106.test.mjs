@@ -48,8 +48,8 @@ assert(result.triangles.every(t=>
 ));
 assert(result.triangles.every(t=>t.onlyFillsExistingPathBend&&
  t.area>0&&t.area<.5&&[1.8,1.65].includes(t.width)));
-assert(result.triangles.every(t=>!ways.find(w=>
- String(w.id)===t.sourceWayId).tags.footway));
+assert(result.triangles.every(t=>ways.find(w=>
+ String(w.id)===t.sourceWayId).tags.footway!=='crossing'));
 assert.deepEqual(result,planMladaFootwayCorners(
  ways.slice().reverse(),input),'Source loading order must never alter joins');
 assert.deepEqual(result,planMladaFootwayCorners(
