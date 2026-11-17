@@ -5094,6 +5094,55 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
      terrainAt,baseHeight,topY:baseHeight+entryPlan.entrance.topAboveFoundation,
      along:entryPlan.along
     }):null;
+    // 5.124: actual ABP + SPADIA photos show near-ground-height
+    // white-framed storefront glass. LEMON's presence is official,
+    // but its exact physical unit is unknown: no invented brand sign.
+    const shopPlan=entryPlan?planClinicPhotoStorefronts({
+     id:osmId,regionId,tags,polygon:pts,front:facade,
+     floors,modelHeight:h,existingEntrance:entryPlan,
+     photoReviewed:photoDecision.photographicApproval===true,
+     approvedArchitecture:Boolean(modelCard)
+    }):null;
+    if(shopPlan){
+     const {groundGlass,...shopFacts}=shopPlan;
+     window.__miloviceClinicShopfrontAudit={
+      ...shopFacts,groundGlassRendered:0,groundFramePiecesRendered:0,
+      groundGlassAnchoredToDEM:0,missingGroundGrades:0,
+      actualPharmacyVerifiedInBuilding:true,
+      pharmacyPlacementOnFacadeVerified:false,
+      physicalPharmacySignAdded:false,
+      pavementUnchanged:true,roadUntouched:true,
+      extraMeshMaterials:2,sharedInstanceGeometry:true
+     };
+     window.__miloviceClinicShopfrontRuntime=()=>{
+      const attachedVisible=obj=>{
+       for(let node=obj;node;node=node.parent){
+        if(!node.visible)return false;
+        if(node===scene)return true;
+       }
+       return false;
+      };
+      const materials=['clinicShopGlass','clinicShopFrame'].map(kind=>{
+       const objects=osmLayer.children.filter(obj=>obj.isInstancedMesh&&
+        obj.material===architectureMaterials[kind]);
+       const visible=objects.filter(attachedVisible);
+       return {kind,meshCount:objects.length,
+        sceneInstances:objects.reduce((n,obj)=>n+obj.count,0),
+        visibleInstances:visible.reduce((n,obj)=>n+obj.count,0),
+        protectedFromDetailLOD:objects.every(obj=>
+         obj.userData.photoFixtureLodProtected===true&&
+         obj.userData.lodDetail===false)};
+      });
+      return {ready:window.__miloviceClinicShopfrontAudit?.
+       groundGlassRendered===7,materials,
+       glassInstances:materials.find(m=>m.kind==='clinicShopGlass')
+        ?.sceneInstances||0,
+       frameInstances:materials.find(m=>m.kind==='clinicShopFrame')
+        ?.sceneInstances||0,
+       allVisible:materials.every(m=>m.visibleInstances>0),
+       businessNameVerified:true,pharmacyExactBayVerified:false};
+     };
+    }
     if(entryPlan&&entryGrade){
      const audit=window.__miloviceClinicEntranceAudit={
       version:'5.121',sourceWayId:entryPlan.sourceWayId,
@@ -5176,6 +5225,42 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
         entryPlan.canopy.projection,rotation);
        window.__miloviceClinicEntranceAudit.renderedEntryBays++;
        continue;
+      }
+      if(level===0&&shopPlan&&entryGrade){
+       const shop=shopPlan.groundGlass.find(part=>part.bay===bay);
+       if(shop){
+        const grade=planGroundedEntrance(facade,{
+         terrainAt,baseHeight,along:shop.along,
+         topY:baseHeight+shop.topAboveFoundation,minDoorHeight:1.65
+        });
+        if(grade){
+         // Photo-confirmed, terrain-anchored whole-height storefront,
+         // NOT another presumed walkable portal in a solid OSM wall.
+         const glassDistance=flushBoxOffset(.05);
+         const frameDistance=flushBoxOffset(.09);
+         archPart('clinicShopGlass',px+nx*glassDistance,
+          grade.centerY,pz+nz*glassDistance,
+          shop.glassWidth,grade.doorHeight,.045,rotation);
+         for(const offset of shop.mullionAlong){
+          archPart('clinicShopFrame',
+           px+ux*offset+nx*frameDistance,grade.centerY,
+           pz+uz*offset+nz*frameDistance,
+           shop.frameThickness,grade.doorHeight+.035,.07,rotation);
+         }
+         for(const y of [grade.floorY+.04,
+           grade.floorY+shop.transomHeightFromGround,grade.topY]){
+          archPart('clinicShopFrame',
+           px+nx*frameDistance,y,pz+nz*frameDistance,
+           shop.glassWidth+.04,.06,.07,rotation);
+         }
+         window.__miloviceClinicShopfrontAudit.groundGlassRendered++;
+         window.__miloviceClinicShopfrontAudit.groundFramePiecesRendered+=7;
+         window.__miloviceClinicShopfrontAudit.groundGlassAnchoredToDEM++;
+         window.__miloviceArmLandmarksAudit.clinicPhotoGroundGlazedBays++;
+         continue;
+        }
+        window.__miloviceClinicShopfrontAudit.missingGroundGrades++;
+       }
       }
       const glass=flushBoxOffset(.04);
       archPart('clinicWindow',px+nx*glass,windowY,
