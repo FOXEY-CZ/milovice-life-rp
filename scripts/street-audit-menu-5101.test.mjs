@@ -34,13 +34,23 @@ assert.equal(shortStreetAuditLabel(
  'Mladá · antukové tenisové kurty · OSM model (NENÍ foto)',
  'pitch-tennis-599'),'Mladá · antukové tenisové kurty');
 assert(html.includes(
- "from './scripts/street-audit-menu-5101.js?v=510100'"));
+ "from './scripts/street-audit-menu-5101.js?v=511100'"));
 assert(html.includes("mountStreetAuditMenu(panel,"));
 assert(html.includes('#street-audit-nav'));
-assert(html.includes('max-height:min(58dvh,'));
+assert(html.includes('max-height:min(44dvh,'));
+assert(html.includes('max-height:112px'));
+assert(html.includes('#street-audit-exit'));
+assert(html.includes('#street-audit-info-toggle'));
+assert(html.includes('#street-block-audit .street-audit-links a{'));
+assert(html.includes('white-space:normal!important'));
+assert(html.includes("if(statusText)statusText.textContent=rpStreetAuditView.osmWidthWayId?"));
+const menuScript=readFileSync(new URL('./street-audit-menu-5101.js',import.meta.url),'utf8');
+assert(menuScript.includes("group.open=!mobile&&section.id===selectedGroup"));
+assert(menuScript.includes("setInfoExpanded(false)"));
+assert(menuScript.includes("if(!expanded)setInfoExpanded(false)"));
 assert(html.includes('street-audit-quicklinks'));
 const id=html.match(/const BUILD_ID='([^']+)'/)?.[1];
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const hud=html.split('id="build-label">')[1]?.split('</strong>')[0];
 assert(id&&meta===id&&hud===id,'All three build labels must remain synchronized');
-console.log('PASS 33 source cameras, including 2 width-tagged street views, 7 categories');
+console.log('PASS 5.111 mobile review menu and 33 source cameras in 7 categories');
