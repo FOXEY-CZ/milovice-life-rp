@@ -1,3 +1,18 @@
+## Milovice RP 5.91 — celé město: podklady zeleně a hřišť (17. 11. 2026)
+
+**Spustit:** https://foxey-cz.github.io/milovice-life-rp/?v=59100
+
+Priorita se přesouvá od ručního porovnávání jednotlivých fasád k **celoměstské uliční a krajinné mapě**. Ponechali jsme dokumentovaných 68 detailnějších obytných modelů bez dalšího navýšení rozpočtu, ale nadále máme skutečné OSM půdorysy běžných domů ve všech pěti dalších částech města.
+
+- Nový modul `planCityLanduseBatches / addCityLanduseBatches` v `scripts/landscapes.js`: zachovává **původní OSM půdorysy travnatých ploch, parků, lesů, dětských hřišť a sportovišť**, ale kombinuje stejné materiály v geografických blocích po 180 metrech. Velké lesy zůstávají samostatně, aby se jejich vzdálené části neztrácely při vykreslování.
+- Inventář pěti regionálních OSM souborů: **263 mapovaných polygonů** (Mladá 91, Benátecká Vrutice 64, západní propojení 86, střední propojení 12, Boží Dar 10); v původním režimu by vyžadovaly přibližně **299 samostatných draw calls** včetně čar hřišť, nově se plánují do **nejvýše 125 dávkových draw calls** při postupném načtení všech regionů. To je plánovací horní hranice, nikoliv změřené FPS konkrétního telefonu.
+- Jsou to existující plochy z mapových dat, nikoli namalované nové parky, stromy nebo soukromé zahrady. Fotografie ani Panorama nejsou vyžadovány a nedochází k vymyšlenému označování ověřených detailů.
+- Při načtení regionů publikuje `window.__miloviceCityGreenBatch` skutečný počet polygonů, vygenerovaných meshů a ušetřených vykreslovacích volání. `scripts/city-landscape-batch.test.mjs` prochází všechny pět oblastí, kontroluje jednoznačná OSM ID, přesné souřadnice polygonů, deterministické rozdělení do bloků a celoměstskou úsporu.
+
+**Další etapa:** průběžné načítání dalších ulic a budov při pohybu městem, bez nutnosti řešit každou fasádu z Panoramy.
+
+---
+
 ### Oprava 5.90.1 — streamování Mladé (17. 11. 2026)
 
 - Přidána jednorázová inicializace 68 prioritních obytných fasád. Překrývající se region Mladá nyní **nesmí opakovaně registrovat ID fotografovaného štítu `202298939`** při každém streamování dalších OSM souborů. Starší verze v této situaci volala `setPhotoFocusIds()` až po vykreslení budov, což vyvolalo výjimku.
