@@ -51,7 +51,7 @@ for(const t of [
  'rpStreetAuditView.heading=forestCameraPlan.heading;',
  'window.__miloviceForestCameraAudit=',
  '...forestCameraPlan,ready:true,regionLoaded:true',
- 'window.__miloviceForestCameraAudit.targetInFrame=',
+ 'check.targetInFrame=',
  "streetAudit=forest-mlada-597"
 ])assert(index.includes(t),'Forest camera runtime integration missing: '+t);
 const meta=index.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
