@@ -4907,6 +4907,41 @@ function cityAreaDistance(x,z,bbox){
  const top=-(bbox[3]-50.226)*111320,bottom=-(bbox[1]-50.226)*111320;
  return Math.hypot(Math.max(left-x,0,x-right),Math.max(top-z,0,z-bottom));
 }
+// 5.91 streaming refinement: warm only ONE adjacent area before the
+// player reaches its visible boundary. Prefetched assets remain the exact
+// official OSM and ČÚZK exports and are reused by the normal loader.
+let cityAreaAhead=null;
+async function rpReadCityAreaData(area){
+ const [osmRes,demRes]=await Promise.all([
+  fetch('./data/regions/'+area.file+'?v=48',{cache:'no-store'}),
+  fetch('./data/regions/'+area.terrain+'?v=48',{cache:'no-store'})
+ ]);
+ if(!osmRes.ok)throw Error('OSM HTTP '+osmRes.status);
+ if(!demRes.ok)throw Error('ČÚZK HTTP '+demRes.status);
+ const [osm,dem]=await Promise.all([osmRes.json(),demRes.json()]);
+ if(!Array.isArray(osm.elements)||osm.elements.length<10)throw Error('empty OSM area');
+ if(!Array.isArray(dem.values)||dem.values.length!==dem.nx*dem.nz||!dem.source?.includes('DMR 4G'))
+  throw Error('invalid official DEM tile');
+ return {osm,dem};
+}
+function rpWarmCityArea(area){
+ if(!area||loadedCityAreas.has(area.id)||loadingCityAreas.has(area.id)||cityAreaAhead)return;
+ const entry={id:area.id,ready:false,promise:null};
+ entry.promise=rpReadCityAreaData(area);
+ cityAreaAhead=entry;
+ window.__miloviceAreaPrefetch={areaId:area.id,state:'fetching'};
+ // Handle a failed speculative request without unhandled rejection.
+ // Real loading may retry independently when the player reaches the region.
+ entry.promise.then(()=>{
+  if(cityAreaAhead!==entry)return;
+  entry.ready=true;
+  window.__miloviceAreaPrefetch={areaId:area.id,state:'ready'};
+ },error=>{
+  if(cityAreaAhead!==entry)return;
+  cityAreaAhead=null;
+  window.__miloviceAreaPrefetch={areaId:area.id,state:'failed',reason:String(error)};
+ });
+}
 async function rpLoadCityArea(id){
  await approvedArchitectureReady;
  await loadCityAreaManifest();
@@ -4919,15 +4954,12 @@ async function rpLoadCityArea(id){
  }
  loadingCityAreas.add(id);osmMessage('🏙️ Načítám '+area.name+' ze skutečné mapy…');
  try{
-  const [osmRes,demRes]=await Promise.all([
-   fetch('./data/regions/'+area.file+'?v=48',{cache:'no-store'}),
-   fetch('./data/regions/'+area.terrain+'?v=48',{cache:'no-store'})
-  ]);
-  if(!osmRes.ok)throw Error('OSM HTTP '+osmRes.status);
-  if(!demRes.ok)throw Error('ČÚZK HTTP '+demRes.status);
-  const [osm,dem]=await Promise.all([osmRes.json(),demRes.json()]);
-  if(!Array.isArray(osm.elements)||osm.elements.length<10)throw Error('empty OSM area');
-  if(!Array.isArray(dem.values)||dem.values.length!==dem.nx*dem.nz||!dem.source?.includes('DMR 4G'))throw Error('invalid official DEM tile');
+  const warm=cityAreaAhead?.id===id?cityAreaAhead:null;
+  const warmReady=warm?.ready===true;
+  const {osm,dem}=await (warm?.promise||rpReadCityAreaData(area));
+  window.__miloviceRegionHandoff={areaId:id,
+   prefetchReused:!!warm,prefetchReadyBeforeLoad:warmReady};
+  if(warm&&cityAreaAhead===warm)cityAreaAhead=null;
   // First add the matching elevation patch. Buildings, rails and roads use this DEM immediately.
   regionGroundMesh(dem);
   cityRegionGrids.push(dem);
@@ -4946,7 +4978,10 @@ async function rpLoadCityArea(id){
   osmMessage('Oblast '+area.name+': '+e.message);
   notify('Oblast '+area.name+' zatím nejde načíst. Původní mapa zůstává funkční.');
   return false;
- }finally{loadingCityAreas.delete(id)}
+ }finally{
+  if(cityAreaAhead?.id===id)cityAreaAhead=null;
+  loadingCityAreas.delete(id);
+ }
 }
 function rpPopulateRegionalTraffic(area){
  if(trafficCars.length>=79)return;
@@ -4967,10 +5002,14 @@ function maybeStreamCityAreas(){
  const cx=walking?px:x,cz=walking?pz:z;
  if(Math.hypot(cx-lastCityStreamingX,cz-lastCityStreamingZ)<Math.max(75,OSM_VIEW*.20))return;
  lastCityStreamingX=cx;lastCityStreamingZ=cz;
- const candidate=cityAreaManifest.filter(r=>r.id!=='old'&&!loadedCityAreas.has(r.id)&&r.bbox)
+ const nearby=cityAreaManifest.filter(r=>r.id!=='old'&&!loadedCityAreas.has(r.id)&&r.bbox)
   .map(r=>({r,dist:cityAreaDistance(cx,cz,r.bbox)}))
-  .filter(v=>v.dist<OSM_VIEW+240).sort((a,b)=>a.dist-b.dist)[0];
- if(candidate)rpLoadCityArea(candidate.r.id);
+  .sort((a,b)=>a.dist-b.dist);
+ const candidate=nearby.find(v=>v.dist<OSM_VIEW+240);
+ if(candidate){rpLoadCityArea(candidate.r.id);return;}
+ // Warm outside visible range; never pull every district into RAM at once.
+ const ahead=nearby.find(v=>v.dist<OSM_VIEW+520);
+ if(ahead)rpWarmCityArea(ahead.r);
 }
 async function fetchMiloviceOSM(){
  await approvedArchitectureReady;
