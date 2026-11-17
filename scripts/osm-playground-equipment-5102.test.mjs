@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createRoadClearance} from './road-clearance.js';
 import {makeSidewalkBuildingGuard} from './osm-tagged-sidewalk.js';
-import {ordinaryMappedPlayground,planMappedPlaygroundEquipment}
+import {ordinaryMappedPlayground,planMappedPlaygroundEquipment,
+ planPlaygroundReviewCamera}
  from './osm-playground-equipment-5102.js';
 
 const fake={id:'public',tags:{leisure:'playground'},
@@ -94,19 +95,49 @@ for(const p of result.equipment){
 assert.deepEqual(result.equipment,planMappedPlaygroundEquipment(
  playAreas.slice().reverse(),{roads,buildings,water}).equipment,
  'Load order must not affect gameplay fixtures');
+for(const [id,kind] of [['1468803906','slide'],['1303773811','swing']]){
+ const way=playAreas.find(w=>String(w.id)===id);
+ const review=planPlaygroundReviewCamera(id,result.equipment,way,{
+  roads,buildings,water
+ });
+ assert(review?.ready,'Known source area and existing 3D part need camera');
+ assert.equal(review.target.type,kind);
+ assert.equal(review.target.osmId,id);
+ assert.equal(review.cameraInsideMappedPlayground,true);
+ assert.equal(review.notAPhoto,true);
+ assert(roads.isClear(review.cameraEye.x,review.cameraEye.z,.55,.5),
+  'Camera must not spawn on roads or mapped paths');
+ assert(buildings.isClear(review.cameraEye.x,review.cameraEye.z,.85));
+ assert(water.isClear(review.cameraEye.x,review.cameraEye.z,.7,.5));
+ assert(review.metersFromTarget>=5.7&&review.metersFromTarget<=11.2);
+ assert.deepEqual(review,planPlaygroundReviewCamera(id,result.equipment,way,{
+  roads,buildings,water
+ }),'Camera viewpoint is repeatable across reloads');
+}
+assert.equal(planPlaygroundReviewCamera('435054544',result.equipment,
+ playAreas.find(w=>String(w.id)==='435054544'),{
+  roads,buildings,water
+ }),null,'Never manufacture a water attraction review');
+assert.equal(planPlaygroundReviewCamera('1468803906',result.equipment,
+ playAreas.find(w=>String(w.id)==='1468803906'),{
+  roads:{isClear:()=>false},buildings,water
+ }),null,'No audit camera on a mapped road');
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const token of [
- "import {planMappedPlaygroundEquipment} from './scripts/osm-playground-equipment-5102.js?v=510200'",
+ "import {planMappedPlaygroundEquipment,planPlaygroundReviewCamera} from './scripts/osm-playground-equipment-5102.js?v=510300'",
  'const osmPlaygroundWays=[];',
  'osmPlaygroundWays.push({id:el.id,tags:el.tags,',
  'const playgroundPlan=planMappedPlaygroundEquipment(osmPlaygroundWays,',
  'window.__milovicePlaygroundAudit={',
- 'playDraws.reduce((a,b)=>a+b,0)'
+ 'playDraws.reduce((a,b)=>a+b,0)',
+ 'window.__milovicePlaygroundCameraAudit={',
+ 'streetAudit=play-mlada-5103',
+ 'streetAudit=play-vrutice-5103'
 ])assert(game.includes(token),'Missing in-game playground integration: '+token);
 const meta=game.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1],
  id=game.match(/const BUILD_ID='([^']+)'/)?.[1],
  hud=game.split('id="build-label">')[1]?.split('</strong>')[0];
 assert(meta&&meta===id&&id===hud,'All game build stamps must match');
-console.log('PASS 5.102 mapped public playgrounds, safe original swing/slide art',{
+console.log('PASS 5.102/5.103 public playgrounds and sourced review cameras',{
  eligibleAreas:result.eligibleAreas,modeledAreas:result.modeledAreas,
  equipment:result.equipment.length,restrictedSkipped:result.skippedRestricted});
