@@ -1,7 +1,9 @@
-// Milovice RP 5.92 — generic street-by-street residential infill.
+// Milovice RP 5.93 — city-wide street-by-street residential infill.
 // All styling is PROVISIONAL unless backed by a separately reviewed photo.
 // Actual buildings, OSM footprints, roads and DEM elevations are immutable.
-const TARGET_REGIONS=new Set(['mlada','vrutice']);
+// Five interconnected OSM city regions; the historic 'old' base remains protected.
+export const TARGET_REGIONS=Object.freeze(['mlada','vrutice','westlink','centerlink','bozidar']);
+const targetRegionSet=new Set(TARGET_REGIONS);
 const HOUSE_TYPES=new Set(['house','detached','semidetached_house','terrace']);
 const GENERIC_TYPES=new Set(['yes','residential']);
 const ROOF_TAGS={flat:'flat',gabled:'gable',hipped:'hip'};
@@ -17,7 +19,7 @@ export function planRegionalBuildingStyle({
  regionId,id,tags={},width,depth,floors,
  photoReviewed=false,approvedArchitecture=false
 }={}){
- if(!TARGET_REGIONS.has(regionId)||id===null||id===undefined||
+ if(!targetRegionSet.has(regionId)||id===null||id===undefined||
     photoReviewed||approvedArchitecture||!Number.isFinite(width)||
     !Number.isFinite(depth)||width<2||depth<2||
     !Number.isFinite(floors)||floors<1||floors>16)return null;
@@ -37,6 +39,8 @@ export function planRegionalBuildingStyle({
   profile==='house'?[3.8,4.05,4.3][(hash>>>16)%3]:
   [3.55,3.75,3.95][(hash>>>16)%3];
  const declaredRoof=ROOF_TAGS[tags['roof:shape']]||null;
+ // Partial OSM exports overlap. A building's appearance is a function of
+ // its stable ID and mapped tags, never which district finished loading first.
  return {
   regionId,id:String(id),profile,facadeIndex,panelIndex,roofIndex,
   baySpacing,mappedRoofKind:declaredRoof,
