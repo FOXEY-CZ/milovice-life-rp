@@ -77,7 +77,7 @@ try{
  assert.equal(result.street.view,'estate-mlada-5105');
  assert(result.header.includes('Bytové domy'));
  assert(result.label.includes('Mladá'));
- assert.equal(result.navLinks,33);
+ assert.equal(result.navLinks,34);
  assert.equal(result.navSections,7);
  assert.equal(result.chosen,'estate-mlada-5105');
  assert.equal(result.compact,true);
