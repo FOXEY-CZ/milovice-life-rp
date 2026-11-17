@@ -230,7 +230,8 @@ try{
  const applied=await page.evaluate(()=>({
   bridge:window.__miloviceArchitectureBridge,hero:window.__miloviceHeroArchitecture
  }));
- assert(applied.bridge?.publishedVerified===4&&applied.bridge?.previewVerified===1&&
+ assert(applied.bridge?.publishedVerified===expectedPublished&&
+   applied.bridge?.previewVerified===1&&
    applied.bridge?.sourceMap?.['118487963']==='local',
   'Personal editor draft must not be mislabelled as a publicly published house');
  if(!(applied.bridge.loadedVerified>=1&&applied.bridge.loadedFacadeLayouts>=1&&
