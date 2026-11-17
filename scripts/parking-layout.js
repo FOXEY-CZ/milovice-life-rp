@@ -12,12 +12,13 @@ function contained(p,poly){
  }
  return inside;
 }
-export function planMiloviceParking(segments,lots,{center,limit=12,seed=41,occupied=[]}={}){
+export function planMiloviceParking(segments,lots,{center,limit=12,seed=41,occupied=[],acceptSpot=()=>true}={}){
  const random=rng((seed^Math.floor((center?.x||0)*171)^Math.floor((center?.z||0)*1337))>>>0);
  const out=[],blocked=[...occupied];
  const near=(x,z)=>!center||Math.hypot(x-center.x,z-center.z)<740;
  function available(spot){
-  return near(spot.x,spot.z)&&blocked.every(p=>Math.hypot(p.x-spot.x,p.z-spot.z)>8.2);
+  return near(spot.x,spot.z)&&acceptSpot(spot)&&
+   blocked.every(p=>Math.hypot(p.x-spot.x,p.z-spot.z)>8.2);
  }
  function push(spot){
   if(!available(spot))return false;
