@@ -1,3 +1,20 @@
+## Milovice RP 5.108 — skutečné mapované šířky ulic v Mladé a Benátecké Vrutici (Part 23, 17. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=510800
+
+**Přímé 3D kamery v reálné mapové poloze, technické, NIKOLI fotografické:**
+- [Slepá, úsek way/202375817 (OSM width=6 m)](https://foxey-cz.github.io/milovice-life-rp/?v=510800&streetAudit=road-slepa-5108)
+- [Vrutická, úsek way/523991122 (OSM width=6 m)](https://foxey-cz.github.io/milovice-life-rp/?v=510800&streetAudit=road-vruticka-5108)
+
+- Opraven dosavadní rozpor: šířka silnice pro rendering/vozidla a kolizní index byla jen výchozí šířka podle OSM `highway`. Nový bezpečný resolver `scripts/osm-road-width-5108.js` využívá **pouze explicitní číselné OSM `width=*` v metrech**, pokud se jedná o skutečnou komunikaci v regionech `mlada`, `vrutice` nebo `westlink`. Všechny netagované komunikace a původní fotoauditované staré Milovice používají dosavadní modelové hodnoty.
+- V uložených OSM exportech je **18 označených úseků ve Vrutici a 6 v Mladé** (některé stejné zdrojové way se přes regiony překrývají). Konkrétní změny zahrnují **Slepá (way/202375817, 6 m; way/1029541305, 5 m)**, **Vrutická (way/523991122, 6 m; way/612386894, 5 m)**, ČSA (way/8618262, 6 m) a Pod Lesem (way/128087258, 6 m). Nejde o 24 nutně jedinečných ulic ani o přesné geodetické zaměření hran obrubníků.
+- Pro každý OSM way se šířka vyhodnotí právě jednou, ještě před vytvořením ochranného indexu vozovek. Tato **jediná hodnota** je sdílená pro 3D pás asfaltu, `osmRoadClearance`, `osmCarriagewayClearance`, `osmDriveRoads`, `streetFrontage` a podklady pro volitelné OSM `sidewalk=left/right/both`. Tím se zabrání rozporným šířkám mezi jízdní stopou, asfaltovým povrchem a chodníkem.
+- Neplatné, nepřiměřené nebo nejednoznačné tagy (`5;6`, `5 m`, `6,5`, záporné či velmi vysoké hodnoty) se **ignorují**, nic se neodhaduje. Žádné nové silnice, průchody, přechody, obrubníky či náhodné dekorace. Není zasaženo do OSM střednic, půdorysů domů, výškopisu ani fotograficky auditovaného starého centra.
+- Dvě nové uživatelsky dostupné 3D kamery mají pozici a azimut vypočtený z konkrétního OSM segmentu, nikoli vymyšlenou polohu fotografa. Počet odkazů na auditní pohledy je nově **33**. Regresní testy menu a mobilních scén aktualizované.
+- Audit: `window.__miloviceRoadWidthAudit`. Jednotkový test `scripts/osm-road-width-5108.test.mjs` kontroluje konkrétní mapované šířky, odmítané tagy, ochranu starého centra, konzistentní napojení rendereru a přesnost obou kamer. Chromium WebGL test `scripts/osm-playground-camera-webgl-5103.mjs` navíc ověřuje napojení nové šířky na skutečnou běžící 3D oblast Vrutice. **Samotný live WebGL test dosud není touto dokumentací prohlašován za spuštěný či úspěšný**.
+
+---
+
 ## Milovice RP 5.107 — navazující pěší cesty v Benátecké Vrutici (Part 23, 17. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=510700
