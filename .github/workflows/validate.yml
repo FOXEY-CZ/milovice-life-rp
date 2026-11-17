@@ -181,5 +181,7 @@ jobs:
         run: node scripts/osm-armadni-trolleys-5120.test.mjs
       - name: Validate 5.121 OSM clinic photo entrance, teal canopy and unchanged street geometry
         run: node scripts/osm-armadni-clinic-entry-5121.test.mjs
+      - name: Validate 5.122 four-corner unclosed Poliklinika footprint in real renderer
+        run: node scripts/osm-armadni-open-polygons-5122.test.mjs
       - name: Validate expanded Milovice districts and real elevation data
         run: python3 scripts/validate_regions.py
