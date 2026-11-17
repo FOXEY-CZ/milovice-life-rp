@@ -1,12 +1,17 @@
 import {planOSMForestTreeInstances} from './forest-placement-597.js';
+import {classifyOSMPitch,planOSMPitchMarkings} from './osm-pitch-markings-599.js';
 // Milovice 5.0 — open OSM landuse footprints, original procedural presentation.
 const landscapeMat=new WeakMap();
 function materials(T){
  let m=landscapeMat.get(T);
  if(!m){
-  const color={forest:0x4e7042,grass:0x759963,park:0x81a76c,playground:0xbea987,pitch:0x4c8a60};
+  const color={forest:0x4e7042,grass:0x759963,park:0x81a76c,playground:0xbea987,
+   pitch:0x4c8a60,pitchClay:0xb96a49,pitchAsphalt:0x485058,
+   pitchTurf:0x3d7b52,pitchSand:0xc5aa78};
   m=Object.fromEntries(Object.entries(color).map(([k,v])=>[k,new T.MeshLambertMaterial({color:v,side:T.DoubleSide})]));
-  m.pitchLine=new T.LineBasicMaterial({color:0xe5e8dd});landscapeMat.set(T,m);
+  m.pitchLine=new T.LineBasicMaterial({color:0xe5e8dd});
+  m.pitchPaint=new T.MeshBasicMaterial({color:0xf4eee1,side:T.DoubleSide});
+  landscapeMat.set(T,m);
  }
  return m;
 }
@@ -92,13 +97,16 @@ export function planCityLanduseBatches(elements,convert,{cellSize=180}={}){
   // Large polygons remain separate and never use the cell's fake zero-radius
   // draw-distance rule; they may cross many city chunks.
   const gx=Math.floor(centerX/cellSize),gz=Math.floor(centerZ/cellSize);
+  const pitch=kind==='pitch'?classifyOSMPitch(el.tags):null;
+  const renderMaterial=pitch?.material||kind;
+  // Clay and asphalt cannot share a single merged mesh/material.
   const key=oversized?'oversized:'+String(el.id):
-   kind+':'+gx+':'+gz;
+   renderMaterial+':'+gx+':'+gz;
   if(!groups.has(key))groups.set(key,{
-   key,kind,gx,gz,oversized,centerX,centerZ,items:[]
+   key,kind,renderMaterial,gx,gz,oversized,centerX,centerZ,items:[]
   });
-  const entry={id:String(el.id),kind,pts,area,key,oversized,
-   allowPlants:!['private','no'].includes(el.tags?.access)};
+  const entry={id:String(el.id),kind,renderMaterial,pts,area,key,oversized,
+   tags:el.tags||{},allowPlants:!['private','no'].includes(el.tags?.access)};
   groups.get(key).items.push(entry);
   entries.push(entry);
  }
@@ -123,6 +131,8 @@ export function addCityLanduseBatches(T,elements,convert,terrain,osmLayer,zones,
   !Array.isArray(zones)||typeof mergeGeometries!=='function')return null;
  const materialsForCity=materials(T);
  let surfaceDrawMeshes=0,outlineDrawMeshes=0,sourcePitchLines=0;
+ let courtMarkSegments=0,surfaceTaggedPitches=0,sportTaggedPitches=0;
+ const sportPitchIds=[];
  let failedMerges=0;
  const batchMeshes=[];
  function annotate(object,g){
@@ -132,8 +142,17 @@ export function addCityLanduseBatches(T,elements,convert,terrain,osmLayer,zones,
   object.userData.lodX=(g.gx+.5)*cellSize;
   object.userData.lodZ=(g.gz+.5)*cellSize;
  }
+ function addMark(vertices,a,b,thickness=.12){
+  const dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz);
+  if(!Number.isFinite(len)||len<.15)return;
+  const ox=dz/len*thickness*.5,oz=-dx/len*thickness*.5;
+  const p=(x,z)=>[x,terrain(x,z)+.14,z];
+  const v1=p(a.x-ox,a.z-oz),v2=p(b.x-ox,b.z-oz),
+   v3=p(a.x+ox,a.z+oz),v4=p(b.x+ox,b.z+oz);
+  vertices.push(...v1,...v2,...v3,...v2,...v4,...v3);
+ }
  for(const group of plan.groups){
-  const parts=[],outlinePoints=[];
+  const parts=[],pitchPaintVertices=[];
   for(const entry of group.items){
    const pts=entry.pts;
    const shape=new T.Shape();
@@ -153,11 +172,19 @@ export function addCityLanduseBatches(T,elements,convert,terrain,osmLayer,zones,
      allowPlants:entry.allowPlants});
    if(entry.kind==='pitch'){
     sourcePitchLines++;
+    if(entry.tags.surface)surfaceTaggedPitches++;
+    if(classifyOSMPitch(entry.tags)?.sportSourceConfirmed)sportTaggedPitches++;
+    if(sportPitchIds.length<40)sportPitchIds.push(entry.id);
+    // Preserve every OSM perimeter; draw source-only polygon edges.
     for(let i=0;i<pts.length;i++){
      const a=pts[i],b=pts[(i+1)%pts.length];
-     outlinePoints.push(a.x,terrain(a.x,a.y)+.14,a.y,
-      b.x,terrain(b.x,b.y)+.14,b.y);
+     addMark(pitchPaintVertices,{x:a.x,z:a.y},{x:b.x,z:b.y},.10);
     }
+    // These interior lines are SCHEMATIC, not verified photographed paint.
+    const court=planOSMPitchMarkings(entry.tags,pts);
+    courtMarkSegments+=court.segments.length;
+    for(const segment of court.segments)
+     addMark(pitchPaintVertices,segment.a,segment.b,.13);
    }
   }
   let combined=null;
@@ -168,7 +195,7 @@ export function addCityLanduseBatches(T,elements,convert,terrain,osmLayer,zones,
   }
   if(combined){
    if(parts.length>1)for(const p of parts)p.dispose();
-   const mesh=new T.Mesh(combined,materialsForCity[group.kind]);
+   const mesh=new T.Mesh(combined,materialsForCity[group.renderMaterial]);
    annotate(mesh,group);
    mesh.name='OSM_city_green_591_'+group.kind;
    osmLayer.add(mesh);
@@ -176,19 +203,22 @@ export function addCityLanduseBatches(T,elements,convert,terrain,osmLayer,zones,
   }else{
    failedMerges++;
    for(const geo of parts){
-    const mesh=new T.Mesh(geo,materialsForCity[group.kind]);
+    const mesh=new T.Mesh(geo,materialsForCity[group.renderMaterial]);
     annotate(mesh,group);
     osmLayer.add(mesh);batchMeshes.push(mesh);surfaceDrawMeshes++;
    }
   }
-  if(outlinePoints.length){
+  if(pitchPaintVertices.length){
+   // Polygon outline + marked sport lines share the SAME draw call per
+   // pitch material/spatial cell, preserving the old 5.91 draw-call budget.
    const geometry=new T.BufferGeometry();
    geometry.setAttribute('position',
-    new T.Float32BufferAttribute(outlinePoints,3));
-   const line=new T.LineSegments(geometry,materialsForCity.pitchLine);
-   annotate(line,group);
-   line.name='OSM_city_pitch_outline_591';
-   osmLayer.add(line);batchMeshes.push(line);outlineDrawMeshes++;
+    new T.Float32BufferAttribute(pitchPaintVertices,3));
+   geometry.computeBoundingSphere();
+   const paint=new T.Mesh(geometry,materialsForCity.pitchPaint);
+   annotate(paint,group);
+   paint.name='OSM_city_pitch_markings_599';
+   osmLayer.add(paint);batchMeshes.push(paint);outlineDrawMeshes++;
   }
  }
  return {
@@ -202,7 +232,10 @@ export function addCityLanduseBatches(T,elements,convert,terrain,osmLayer,zones,
   drawMeshes:surfaceDrawMeshes+outlineDrawMeshes,
   meshesSaved:plan.sourcePolygons+plan.pitchOutlines-
    (surfaceDrawMeshes+outlineDrawMeshes),
-  sourcePitchLines,failedMerges,
+  sourcePitchLines,courtMarkSegments,sportTaggedPitches,surfaceTaggedPitches,
+  sportPitchIds,failedMerges,
+  pitchColorsFromOSMSurface:true,inferredLineLayouts:true,
+  noUndocumentedSportEquipment:true,
   oversizedPolygons:plan.entries.filter(e=>e.oversized).length,
   geometryFromOSMOnly:true,treesInvented:0,
   newRoads:0,newFootways:0,newPrivatePlots:0,

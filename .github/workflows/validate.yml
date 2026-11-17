@@ -19,6 +19,8 @@ jobs:
         run: node scripts/validate.cjs
       - name: Validate REBUILD 2.0 all-region, all-object street coverage
         run: node scripts/rebuild2-street-inventory.test.mjs
+      - name: Validate 5.99 real sports field materials and approximate court lines
+        run: node scripts/osm-pitch-markings-599.test.mjs
       - name: Validate 5.91 citywide OSM greenery and sports polygon batching
         run: node scripts/city-landscape-batch.test.mjs
       - name: Validate mapped OSM road, track and footpath surface materials without invented geometry

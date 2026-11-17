@@ -29,7 +29,8 @@ try{
   viewLabel:document.getElementById('street-audit-label')?.textContent,
   imageWidth:document.querySelector('canvas')?.clientWidth,
   loaded:window.__miloviceAreasLoaded,
-  build:document.querySelector('meta[name="milovice-build"]')?.content
+  build:document.querySelector('meta[name="milovice-build"]')?.content,
+  hudBuild:document.getElementById('build-label')?.textContent
  }));
  assert.equal(state.forest.mappedForest,true);
  assert.equal(state.forest.eyeInsideMappedPolygon,true);
@@ -43,7 +44,7 @@ try{
  assert(state.viewLabel.includes('Juventský les'));
  assert.equal(state.street.view,'forest-mlada-597');
  assert(state.imageWidth>0);
- assert.equal(state.build,'20261117-osm-forest-audit-59800');
+ assert(state.build&&state.build===state.hudBuild,'Forest camera build HUD must match metadata');
  assert.deepEqual(errors,[],'No page errors in forest camera mode');
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/milovice-forest-598-mobile.png'});

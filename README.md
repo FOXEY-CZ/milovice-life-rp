@@ -1,3 +1,20 @@
+## Milovice RP 5.99 — sportovní hřiště podle skutečných OSM značek (Part 21, 17. 11. 2026)
+
+**Spustit:** https://foxey-cz.github.io/milovice-life-rp/?v=59900
+
+**Kontrolní kamery (technické, nejsou to fotografie):**
+- [Mladá — tenisové kurty, OSM way 612386900](https://foxey-cz.github.io/milovice-life-rp/?v=59900&streetAudit=pitch-tennis-599)
+- [Mladá — multifunkční hřiště, OSM way 1327246355](https://foxey-cz.github.io/milovice-life-rp/?v=59900&streetAudit=pitch-multi-599)
+
+- V pěti dostupných regionálních OSM exportech je **20 jedinečných `leisure=pitch` ploch**. Jen **8** má výslovně známý a podporovaný sport (4× tenis, 2× fotbal, 1× basketbal, 1× basketbal + futsal). Na zbývajících 12 plochách zůstává pouze podložený obrys, nevymýšlí se sport ani vybavení.
+- Povrchy se nově rozlišují podle zdrojové OSM značky `surface=*`: tři antukové tenisové plochy z oranžové hmoty, multifunkční hřiště z tmavého asfaltu, fotbalová tráva a další deklarované typy. Pokud povrch není zaznamenaný, ponechává se starý výchozí vzhled, který **není potvrzením reálné barvy**.
+- Na označených hřištích se vykreslí přehledné čáry (tenis, basketbal, fotbal). **Orientační značení, jeho rozměry, barva i orientace jsou modelové odhady**, nejsou potvrzené fotografiemi. Nevznikají žádné nedoložené branky, koše, sítě, ploty nebo šatny.
+- Nové čáry se umisťují pouze dovnitř původních OSM polygonů, následují DMR terén a zachovávají dřívější počet vykreslovacích skupin: ve stejné dávce je obrys i vnitřní značení. Díky dělení podle materiálu se antuka nemíchá s asfaltem v jednom Mesh.
+- Dvě přímé kamery po načtení čtvrti zaujmou pozici vypočtenou z obrysu skutečného hřiště a shora míří na jeho střed. Diagnostika `window.__miloviceSportPitchAudit` a `window.__miloviceSportPitchCameraAudit` umožňuje kontrolovat počty a viditelnost. Testy kontrolují 20 konkrétních OSM way, barvy, bezpečné čáry a absenci smyšleného vybavení.
+- Původní úpravy nádraží, ulic, lesů a vody ani celkové městské rozměry se nemění. Reálné FPS na konkrétním mobilu je potřeba zkontrolovat v zařízení.
+
+---
+
 ## Milovice RP 5.98 — skutečný les v kontrolní kameře (Part 21, 17. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=59800

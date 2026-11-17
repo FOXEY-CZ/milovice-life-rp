@@ -57,5 +57,5 @@ for(const t of [
 const meta=index.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const runtime=index.match(/const BUILD_ID='([^']+)'/)?.[1];
 const hud=index.split('id="build-label">')[1]?.split('</strong>')[0];
-assert(meta&&meta===runtime&&runtime===hud&&meta.includes('59800'));
+assert(meta&&meta===runtime&&runtime===hud, 'Forest review build stamps must remain consistent');
 console.log('PASS 5.98 mapped Juventský les camera is inside forest, aimed at crown');
