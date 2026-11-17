@@ -90,7 +90,7 @@ for(const term of [
  'const estateAudit=estatePlan?.sourceStreetId?',
  'planMladaPanelEdge(\n   estatePlan,len,regionalStyle?.baySpacing??3.12)',
  "archPart('panelSeam',mx+nx*flushBoxOffset(.11),",
- 'estateAudit.verticalBayJoints++;row.verticalJoints++;',
+ 'audit.verticalBayJoints++;row.verticalJoints++;',
  'estateAudit.groundFloorWindowsSkippedForDoors++;'
 ])assert(game.includes(term),'Missing 3D integration: '+term);
 const meta=game.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1],
