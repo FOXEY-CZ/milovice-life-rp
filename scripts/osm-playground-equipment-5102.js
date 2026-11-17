@@ -118,3 +118,46 @@ export function planMappedPlaygroundEquipment(ways,{
  }
  return result;
 }
+
+/**
+ * 5.103 direct 3D inspection camera of an EXISTING modeled item.
+ * No manufactured survey bearings: pick a safe eye WITHIN the mapped
+ * public polygon so the model is in view at walking height.
+ * Geometry and object positions are never changed by this planner.
+ */
+export function planPlaygroundReviewCamera(sourceId,equipment,way,{
+ roads,buildings,water
+}={}){
+ const id=String(sourceId??''),items=Array.isArray(equipment)?
+  equipment.filter(p=>p.osmId===id&&finite(p)):[];
+ const pts=way?.points?.slice()||[];
+ if(!id||!items.length||String(way?.id)!==id||
+  !ordinaryMappedPlayground(way.tags)||pts.length<4||
+  pts.some(p=>!finite(p))||!roads?.isClear||
+  !buildings?.isClear||!water?.isClear)return null;
+ if(Math.hypot(X(pts[0])-X(pts.at(-1)),Z(pts[0])-Z(pts.at(-1)))<.05)
+  pts.pop();
+ const main=items[0],angles=[-90,90,0,180,-45,45,135,-135];
+ const base=main.yaw||0;
+ const target={x:main.x,z:main.z,height:main.type==='swing'?1.55:1.20,
+  type:main.type,osmId:id};
+ // Prefer a photographically useful 6–10 m view and avoid other modeled
+ // equipment. Never place the camera on a road or inside a building.
+ for(const radius of [8.4,9.8,7.0,5.7,11.2]){
+  for(const turn of angles){
+   const theta=base+turn*Math.PI/180;
+   const x=main.x+Math.cos(theta)*radius,
+    z=main.z+Math.sin(theta)*radius;
+   if(!inside(x,z,pts)||edgeDistance(x,z,pts)<.75||
+    !roads.isClear(x,z,.55,.50)||
+    !buildings.isClear(x,z,.85)||
+    !water.isClear(x,z,.7,.50)||
+    items.some(p=>Math.hypot(p.x-x,p.z-z)<3.0))continue;
+   return {sourceId:id,ready:true,cameraEye:{x,z},
+    target,metersFromTarget:radius,sourceOSMPolygon:true,
+    cameraInsideMappedPlayground:true,notAPhoto:true,
+    estimatedCamera:true,estimatedEquipment:true};
+  }
+ }
+ return null;
+}
