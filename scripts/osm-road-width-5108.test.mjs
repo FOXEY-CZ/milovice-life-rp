@@ -83,7 +83,7 @@ const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const token of [
  "'road-slepa-5108':{",
  "'road-vruticka-5108':{",
- "from './scripts/osm-road-width-5108.js?v=511000'", 
+ "from './scripts/osm-road-width-5108.js?v=511100'", 
  'const roadWidths=new Map();',
  'const resolved=planMappedRoadWidth(el.tags,defaultWidth,regionId);',
  'roadWidths.set(String(el.id),width);',
