@@ -1,4 +1,4 @@
-// Milovice RP 5.93: verify all new review cameras against original OSM
+// Milovice RP 5.95: verify all regional review cameras against original OSM
 // highway vertices, not freehand latitude/longitude or invented panoramas.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -12,7 +12,9 @@ const config=runInNewContext(html.slice(start,end)+'\nrpStreetAuditViews;');
 const required=[
  ['tyrsova-west-593','westlink','202373467','Tyršova'],
  ['ostravska-north-593','centerlink','1463667018','Ostravská'],
- ['bozidar-kratka-593','bozidar','38900193','Krátká']
+ ['bozidar-kratka-593','bozidar','38900193','Krátká'],
+ ['armadni-sidewalk-595','mlada','1395041609','Armádní'],
+ ['topolova-sidewalk-595','vrutice','309581823','Topolová']
 ];
 const cosine=Math.cos(50.226*Math.PI/180);
 const xy=p=>({x:(p.lon-14.889)*111320*cosine,z:-(p.lat-50.226)*111320});
@@ -31,6 +33,11 @@ for(const [key,region,wayId,name] of required){
  const road=osm.elements.find(e=>String(e.id)===wayId);
  assert(road&&road.tags?.highway&&road.tags.name===name,
   'Camera road ID/name must exist in the exact regional source');
+ if(key.includes('sidewalk-595')){
+  const expectedSide=key.startsWith('armadni')?'left':'right';
+  assert.equal(road.tags.sidewalk,expectedSide,
+   'Camera must point to an actual OSM sidewalk=left/right way');
+ }
  const p=xy({lat:cam.camera.lat,lon:cam.camera.lon});
  let best=null;
  for(let i=1;i<road.geometry.length;i++){
@@ -61,5 +68,5 @@ assert(html.includes('const auditTarget=rpStreetAuditView?.regionId?'),
  'The intended source region must be preferred over overlapping map files');
 assert(html.includes('const candidate=auditTarget||nearby.find('),
  'Overlap of Mladá, Vrutice and Westlink must not delay a selected audit camera');
-assert.equal(required.length,3);
+assert.equal(required.length,5);
 console.log('PASS remote regional cameras: exact OSM road and heading, honest audit, region stream');
