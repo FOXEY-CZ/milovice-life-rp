@@ -121,7 +121,7 @@ try{
   }
   assert(state.header.includes('hřiště')||state.header.includes('hřiště'.toUpperCase()));
   assert(state.label.length>0);
-  assert.equal(state.links,33);
+  assert.equal(state.links,34);
   assert.equal(state.sections,7);
   assert.equal(state.selected,view);
   assert.equal(state.compact,true);
