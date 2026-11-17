@@ -137,7 +137,7 @@ for(const snippet of [
 ])assert(game.includes(snippet),'Missing game integration '+snippet);
 const build=game.match(/const BUILD_ID='([^']+)'/)?.[1];
 const meta=game.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
-const hud=game.match(/id="build-label">([^<]+)<\\/strong>/)?.[1];
+const hud=game.split('id="build-label">')[1]?.split('</strong>')[0];
 assert(build&&build===meta&&meta===hud,
  'Future game releases must retain consistent build stamps without pinning 5.95');
 console.log('PASS Milovice 5.95: '+JSON.stringify({byRegion,byWay,buildings:guardWayIds.size}));
