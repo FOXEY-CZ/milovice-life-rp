@@ -34,7 +34,7 @@ assert.equal(shortStreetAuditLabel(
  'Mladá · antukové tenisové kurty · OSM model (NENÍ foto)',
  'pitch-tennis-599'),'Mladá · antukové tenisové kurty');
 assert(html.includes(
- "from './scripts/street-audit-menu-5101.js?v=511100'"));
+ "from './scripts/street-audit-menu-5101.js?v=511200'"));
 assert(html.includes("mountStreetAuditMenu(panel,"));
 assert(html.includes('#street-audit-nav'));
 assert(html.includes('max-height:min(44dvh,'));
