@@ -84,6 +84,16 @@ try{
  assert(result.canvasWidth>0);
  assert(result.meta&&result.meta===result.hud);
  assert.deepEqual(errors,[],'No JS errors in WebGL estate mode');
+ // One-time visual creation is not enough: ensure the city chunk/LOD pass
+ // has not hidden all new path pieces after the mobile scene settles.
+ await page.waitForTimeout(5800);
+ const live=await page.evaluate(()=>
+  window.__miloviceMladaFootwayJoinRuntime?.());
+ assert(live,'5.106 must expose actual THREE.Mesh visibility, not metadata only');
+ assert(live.meshes>=1,'Mladá OSM pedestrian geometry must be in 3D scene');
+ assert(live.visibleMeshes>=1,'No disappearing sidewalk corners after 5 seconds');
+ assert(live.visibleTriangles>=12,'The mapped path corner triangles must still render');
+ assert.deepEqual(errors,[],'No delayed browser JS errors');
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/milovice-mlada-estate-5105-mobile.png'});
  console.log('PASS 5.105 3D Mladá apartment estate',JSON.stringify({
@@ -92,6 +102,7 @@ try{
   bayJoints:result.apartments.verticalBayJoints,
   suppressedDuplicatedSeams:result.apartments.duplicateVerticalJointsRemoved,
   sealedFootwayCorners:result.footwayJoins.sealedCorners,
+  stillVisibleAfterSixSeconds:live.visibleTriangles,
   targetProjection:result.camera.targetProjection
  }));
  await page.close();
