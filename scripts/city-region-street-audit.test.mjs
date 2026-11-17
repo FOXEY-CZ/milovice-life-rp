@@ -57,5 +57,9 @@ assert(html.includes('const cx=rpAuditCameraWorld?.x??(walking?px:x)'),
  'Audits in another city region must stream data around CAMERA, not spawn player');
 assert(html.includes('osmSetActive(true);maybeStreamCityAreas();'),
  'Remote region must start loading on initial OSM boot, not after the player drives there');
+assert(html.includes('const auditTarget=rpStreetAuditView?.regionId?'),
+ 'The intended source region must be preferred over overlapping map files');
+assert(html.includes('const candidate=auditTarget||nearby.find('),
+ 'Overlap of Mladá, Vrutice and Westlink must not delay a selected audit camera');
 assert.equal(required.length,3);
 console.log('PASS remote regional cameras: exact OSM road and heading, honest audit, region stream');
