@@ -193,7 +193,9 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
  <a href="?v=59000&streetAudit=skolska-tail-590">🌳 Školská jihovýchod · nové domy a zeleň</a>
  <a href="?v=59300&streetAudit=tyrsova-west-593">🏘️ Tyršova · západní propojení</a>
  <a href="?v=59300&streetAudit=ostravska-north-593">🏘️ Ostravská · severní propojení</a>
- <a href="?v=59300&streetAudit=bozidar-kratka-593">🏘️ Boží Dar · Krátká</a></nav>
+ <a href="?v=59300&streetAudit=bozidar-kratka-593">🏘️ Boží Dar · Krátká</a>
+ <a href="?v=59500&streetAudit=armadni-sidewalk-595">🚶 Armádní · OSM chodník vlevo</a>
+ <a href="?v=59500&streetAudit=topolova-sidewalk-595">🚶 Topolová · OSM chodník vpravo</a></nav>
 <span id="street-audit-status">GPS označuje místo fotografa, ne přesnou polohu stromu, lampy či brány.</span>
 <span id="street-audit-camera-gps" aria-live="polite">📍 GPS a směr kamery se zobrazí po načtení 3D scény.</span>
 <div><a id="street-audit-map-gps" target="_blank" rel="noopener noreferrer">🗺️ Otevřít pozici herní kamery v Mapy.com</a></div>
@@ -545,6 +547,24 @@ const rpStreetAuditViews={
   source:'https://www.openstreetmap.org/way/38900193',
   author:'OSM export · technický pohled',technical:true,streetLevel:true,
   estimatedHeading:true
+ },
+ // 5.95: explicit sidewalk=left/right OSM ways. The actual mapped way
+ // establishes the road axis; curb offset and width remain estimates.
+ 'armadni-sidewalk-595':{
+  label:'Armádní · OSM sidewalk=left · technický pohled (NENÍ foto)',
+  camera:{lat:50.2310945,lon:14.8510071},heading:119.8,
+  regionId:'mlada',osmRoadId:'1395041609',
+  source:'https://www.openstreetmap.org/way/1395041609',
+  author:'OSM export · sidewalk=left, poloha obrubníku odhad',
+  technical:true,streetLevel:true,estimatedHeading:true
+ },
+ 'topolova-sidewalk-595':{
+  label:'Topolová · OSM sidewalk=right · technický pohled (NENÍ foto)',
+  camera:{lat:50.2326139,lon:14.8449130},heading:195.47,
+  regionId:'vrutice',osmRoadId:'309581823',
+  source:'https://www.openstreetmap.org/way/309581823',
+  author:'OSM export · sidewalk=right, poloha obrubníku odhad',
+  technical:true,streetLevel:true,estimatedHeading:true
  },
  'school-2024':{
   label:'Školská · ZŠ T. G. Masaryka · veřejné foto ŠJů 30. 5. 2024, GPS + 85°',
