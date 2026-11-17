@@ -6,9 +6,9 @@ const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const nav=html.match(/<nav><a href="\?v=58530&streetAudit=5kv">([\s\S]*?)<\/nav>/)?.[0];
 assert(nav,'Keep the original review URLs, playgrounds and street width cameras');
 const ids=[...nav.matchAll(/streetAudit=([^"&]+)"/g)].map(m=>m[1]);
-assert.equal(ids.length,33);
-assert.equal(new Set(ids).size,33,'Do not lose or duplicate a review camera URL');
-const expected={streets:21,sidewalks:2,water:2,forests:2,sports:2,playgrounds:2,lighting:2};
+assert.equal(ids.length,34);
+assert.equal(new Set(ids).size,34,'Do not lose or duplicate a review camera URL');
+const expected={streets:22,sidewalks:2,water:2,forests:2,sports:2,playgrounds:2,lighting:2};
 assert.deepEqual(STREET_AUDIT_SECTIONS.map(s=>s.id),Object.keys(expected));
 for(const [group,count] of Object.entries(expected))
  assert.equal(ids.filter(id=>streetAuditCategory(id)===group).length,count,
@@ -19,6 +19,7 @@ assert.equal(streetAuditCategory('play-mlada-5103'),'playgrounds');
 assert.equal(streetAuditCategory('play-vrutice-5103'),'playgrounds');
 assert.equal(streetAuditCategory('estate-mlada-5105'),'streets');
 assert.equal(streetAuditCategory('road-slepa-5108'),'streets');
+assert.equal(streetAuditCategory('slepa-houses-5112'),'streets');
 assert.equal(streetAuditCategory('road-vruticka-5108'),'streets');
 assert.equal(streetAuditCategory('forest-mlada-597'),'forests');
 assert.equal(streetAuditCategory('water-svodnice-596'),'water');
@@ -57,4 +58,4 @@ const id=html.match(/const BUILD_ID='([^']+)'/)?.[1];
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const hud=html.split('id="build-label">')[1]?.split('</strong>')[0];
 assert(id&&meta===id&&hud===id,'All three build labels must remain synchronized');
-console.log('PASS 5.111 mobile review menu and 33 source cameras in 7 categories');
+console.log('PASS 5.111 mobile review menu and 34 source cameras in 7 categories');
