@@ -1,3 +1,18 @@
+## Milovice RP 5.92 — hromadné obytné ulice v Mladé a Benátecké Vrutici (17. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=59200
+
+- Nový modul `scripts/regional-residential-style.js` uplatňuje jednotná pravidla na běžné OSM domy při načtení regionů **Mladá** a **Benátecká Vrutice**. Nejvyšší prioritou zůstávají skutečné OSM půdorysy a již doložené modely. Není přidána žádná budova ani silnice.
+- **Fasády** běžných domů a bytových domů vybírají odstín z již existujících osmi omítkových a sedmi panelových materiálů **stabilně podle OSM ID**, nikoli podle pořadí streamování. Jejich rozestupy generických oken jsou mírně odstupňované, aby se nekopíroval identický rytmus na všech domech. Jde o výtvarné odhady, ne nově ověřená okna.
+- **Střechy:** pět původních materiálů se vybírá stabilně podle OSM ID; jen pokud OSM explicitně obsahuje `roof:shape` (například `flat`), má tento údaj přednost. Většina zdejších OSM objektů tvar střechy **nemá zmapovaný**, proto se nepředstírá skutečná orientace hřebene ani nevyrábějí nové komíny. Dosavadní bezpečné řešení sklonu a kontrola napojení zůstávají.
+- **Uliční přízemí:** u vhodných menších rodinných domů vznikne nízký sokl z existující sdílené instancované geometrie. V místě bezpečně odhadnutého uličního vstupu se přesně na skutečné stěně přeruší, aby nezakrýval práh. Domy bez spolehlivé uliční strany zůstávají bez vymyšleného vchodu.
+- **Rozpočet výkonu:** bez nového typu materiálu a bez navýšení limitu 68 detailních domů. Nové soklové segmenty využívají již existující `foundationBand` instancing po 160m blocích. Dodatečná skutečná GPU zátěž / FPS se musí změřit v prohlížeči.
+- Ověření plánovače na originálních regionálních exportech: **886 vhodných OSM půdorysů v Mladé**, **467 v Benátecké Vrutici**, z nich **452 + 236** splňuje podmínky pro odhadovaný sokl. Nejde o počet definitivně upravených fotoověřených domů: herní vykreslování nadále vynechává výslovně chráněné historické objekty.
+- Diagnostika po streamování: `window.__miloviceRegionalBuildingPass`. Test: `scripts/regional-residential-style.test.mjs`, včetně ochrany historických fotomodelů, stálého výběru materiálů a přerušení soklu u dveří.
+- Důležité: základní mapované silnice, chodníky a veřejná zeleň (5.91) se nemění. Je to práce na **celých obytných koridorech**, nikoli tvrzení, že každé okno, barva či střecha je doložena fotografií.
+
+---
+
 ## Milovice RP — Part 20: uliční orientace běžných OSM domů (17. 11. 2026)
 
 **Nový build webu:** https://foxey-cz.github.io/milovice-life-rp/?v=59102
