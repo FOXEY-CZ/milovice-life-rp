@@ -127,7 +127,8 @@ assert(html.indexOf('if(isPhotoGarage){')<html.indexOf('const windows=Math.min(2
 const garageStart=html.indexOf('if(isPhotoGarage){');
 const garageEnd=html.indexOf('// Shared, terrain-anchored base strip',garageStart);
 assert(garageStart>=0&&garageEnd>garageStart&&
- html.slice(garageStart,garageEnd).includes('continue;\\n  }'),
+ html.slice(garageStart,garageEnd).includes('continue;')&&
+ html.slice(garageStart,garageEnd).includes('oldUnverifiedFacadeGeneratorsBypassed++'),
  'Photo-sourced garage fronts must bypass old generic facade loops');
 assert(!html.includes('garagePhotoNumber'),
  'No invented door number to OSM-ID correspondence permitted');
