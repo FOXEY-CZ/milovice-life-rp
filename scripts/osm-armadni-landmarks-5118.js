@@ -34,7 +34,7 @@ export function planArmLandmarkMassing({
   key===ARMADNI_LANDMARK_SOURCES.clinic.osmId?
   ARMADNI_LANDMARK_SOURCES.clinic:null;
  if(!source||regionId!=='mlada'||photoReviewed||approvedArchitecture||
-  !Array.isArray(points)||points.length<5||points.length>12||
+  !Array.isArray(points)||points.length<4||points.length>12||
   !points.every(p=>Number.isFinite(X(p))&&Number.isFinite(Z(p)))||
   tags.name!==source.name||
   (isBilla?
@@ -47,6 +47,11 @@ export function planArmLandmarkMassing({
  const ring=points.slice();
  if(Math.hypot(X(ring[0])-X(ring.at(-1)),Z(ring[0])-Z(ring.at(-1)))<.1)
   ring.pop();
+ // 5.122: osmBuilding() strips the closing duplicate before planning.
+ // Clinic is a TRUE four-corner OSM rectangle (4 open/5 closed points),
+ // while BILLA has six distinct corners. Old minimum of five input
+ // points rejected the clinic only in real WebGL, not in offline tests.
+ if(ring.length!==(isBilla?6:4))return null;
  const a=area(ring);
  if(!(a>(isBilla?1050:760)&&a<(isBilla?1200:900)))return null;
  let photoFrontEdgeIndex=null,photoFrontEdgeLength=null;
