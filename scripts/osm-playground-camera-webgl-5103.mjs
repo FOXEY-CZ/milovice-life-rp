@@ -18,7 +18,7 @@ try{
   const page=await browser.newPage({viewport:{width:393,height:852},
    deviceScaleFactor:1,isMobile:true,hasTouch:true});
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=510300&streetAudit='+view,
+  await page.goto('http://127.0.0.1:8080/?v=510400&streetAudit='+view,
    {waitUntil:'domcontentloaded',timeout:35000});
   try{
    await page.waitForFunction(({region,view})=>
@@ -42,6 +42,7 @@ try{
   const state=await page.evaluate(()=>({
    camera:window.__milovicePlaygroundCameraAudit,
    equipment:window.__milovicePlaygroundAudit,
+   lawn:window.__milovicePlaygroundLawnAudit,
    loaded:window.__miloviceAreasLoaded,
    header:document.querySelector('#street-block-audit > strong')?.textContent,
    label:document.getElementById('street-audit-label')?.textContent,
