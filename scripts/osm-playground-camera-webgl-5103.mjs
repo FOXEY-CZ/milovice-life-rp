@@ -18,7 +18,7 @@ try{
   const page=await browser.newPage({viewport:{width:393,height:852},
    deviceScaleFactor:1,isMobile:true,hasTouch:true});
   const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await page.goto('http://127.0.0.1:8080/?v=510400&streetAudit='+view,
+  await page.goto('http://127.0.0.1:8080/?v=510700&streetAudit='+view,
    {waitUntil:'domcontentloaded',timeout:35000});
   try{
    await page.waitForFunction(({region,view})=>
@@ -44,6 +44,7 @@ try{
    equipment:window.__milovicePlaygroundAudit,
    lawn:window.__milovicePlaygroundLawnAudit,
    residential:window.__miloviceMladaResidentialAudit,
+   vruticeFootways:window.__miloviceVruticeFootwayJoinAudit,
    loaded:window.__miloviceAreasLoaded,
    header:document.querySelector('#street-block-audit > strong')?.textContent,
    label:document.getElementById('street-audit-label')?.textContent,
@@ -89,6 +90,26 @@ try{
    assert.equal(state.residential.roofShapesChanged,0);
    assert.equal(state.residential.photoConfirmedFacades??0,0);
 
+  }
+  if(region==='vrutice'){
+   assert(state.vruticeFootways,'5.107 Vrutice footway mesh audit must exist');
+   assert(state.vruticeFootways.sealedCorners>=150,
+    'Mapped Vrutice path corners should generate actual 3D wedges');
+   assert(state.vruticeFootways.drawMeshes>=1,
+    'Batch the Vrutice missing-corner geometry into real meshes');
+   assert.equal(state.vruticeFootways.sourceAnchorId,'1303773811');
+   assert.equal(state.vruticeFootways.syntheticNewWalkways,0);
+   assert.equal(state.vruticeFootways.inventedZebraStripes,0);
+   await page.waitForTimeout(5800);
+   const visible=await page.evaluate(()=>
+    window.__miloviceVruticeFootwayJoinRuntime?.());
+   assert(visible?.checkedSceneParentChain,
+    'Visibility must verify scene attachment, not a stale mesh flag');
+   assert(visible.visibleMeshes>=1,
+    'Vrutice pedestrian corner meshes disappeared after loading');
+   assert(visible.visibleTriangles>=150,
+    'No delayed visibility regression in Vrutice');
+   assert.deepEqual(errors,[],'No delayed Vrutice JS errors');
   }
   assert(state.header.includes('hřiště')||state.header.includes('hřiště'.toUpperCase()));
   assert(state.label.length>0);
