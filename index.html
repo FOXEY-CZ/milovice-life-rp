@@ -6040,12 +6040,21 @@ function improveMiloviceVisuals(){
  };
  window.__miloviceSlepaLawnRuntime=()=>{
   const c=window.__miloviceSlepaResidentialAudit?.sourceStreetCenter;
-  const visible=visualLodMeshes.filter(m=>m.material===lawnBladeMaterial&&
-   m.visible&&c&&Math.hypot(m.userData.lodX-c.x,m.userData.lodZ-c.z)<230);
-  return {ready:!!c,mappedLawns:slepaLawn.mappedLawns,
+  const isVisibleInScene=m=>{
+  for(let o=m;o;o=o.parent){
+   if(!o.visible)return false;
+   if(o===scene)return true;
+  }
+  return false;
+ };
+ const visible=visualLodMeshes.filter(m=>m.material===lawnBladeMaterial&&
+  c&&Math.hypot(m.userData.lodX-c.x,m.userData.lodZ-c.z)<230&&
+  isVisibleInScene(m));
+ return {ready:!!c,mappedLawns:slepaLawn.mappedLawns,
    plannedTufts:slepaLawn.tufts.length,
    visibleLawnBatchMeshes:visible.length,
-   visibleLawnBatchInstances:visible.reduce((n,m)=>n+m.count,0)};
+   visibleLawnBatchInstances:visible.reduce((n,m)=>n+m.count,0),
+   verifiedSceneParentChain:true};
  };
  // 5.102: Mapped ordinary public playgrounds, modeled with real-size
  // instanced swings/slides. ALL individual structures are explicitly estimates,
