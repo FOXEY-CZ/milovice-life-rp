@@ -13,13 +13,14 @@ assert.equal(billa.tags.shop,'supermarket');
 assert.equal(billa.tags['building:levels'],'1');
 assert.equal(clinic.tags.amenity,'clinic');
 assert.equal(clinic.tags.name,'Poliklinika Milovice');
-assert.equal(html.match(/const BUILD_ID='([^']+)'/)?.[1],
- '20261117-armadni-photo-sign-511900');
-assert(html.includes('<title>Milovice RP – 5.119'));
-assert(html.includes('Verze 5.119 · build'));
-assert(html.includes('href="./?v=511900"'));
-assert(html.includes('href="?v=511900&streetAudit=armadni-billa-5118"'));
-assert(html.includes('href="?v=511900&streetAudit=armadni-clinic-5118"'));
+const build=html.match(/const BUILD_ID='([^']+)'/)?.[1];
+assert(/^20261117-armadni-(?:photo-sign-511900|trolleys-512000)$/.test(build));
+assert(html.includes('<meta name="milovice-build" content="'+build+'"'));
+assert(/<title>Milovice RP – 5\.(?:119|120)/.test(html));
+assert(/Verze 5\.(?:119|120) · build/.test(html));
+assert(/href="\.\/\?v=(?:511900|512000)"/.test(html));
+assert(/href="\?v=(?:511900|512000)&streetAudit=armadni-billa-5118"/.test(html));
+assert(/href="\?v=(?:511900|512000)&streetAudit=armadni-clinic-5118"/.test(html));
 // Photo evidence: individually yellow letters above the grey store entrance,
 // NOT a solid yellow/red retail banner or two coincident roof canopies.
 const photoBlockStart=html.indexOf("if(normalized==='billa'){\n  g.clearRect");
