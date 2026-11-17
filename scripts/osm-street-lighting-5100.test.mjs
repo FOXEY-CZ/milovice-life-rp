@@ -41,7 +41,11 @@ const blockAll=planMappedStreetLamps([way],{...args,photoAllowed:()=>false});
 assert.equal(blockAll.placed,0);
 assert(blockAll.skippedPhotoReviewZone>0);
 house.add('house',[{x:65,z:4.5},{x:90,z:4.5},
- {x:90,z:8},{x:65,z:8}]);
+ {x:90,z:9},{x:65,z:9}]);
+// Block BOTH verges at one sample point: the planner correctly retries
+// the opposite street side if just one side has a mapped house.
+house.add('house-opposite',[{x:65,z:-9},{x:90,z:-9},
+ {x:90,z:-4.5},{x:65,z:-4.5}]);
 const withHouse=planMappedStreetLamps([way],args);
 assert(withHouse.placed<result.placed,'Mapped house blocks lamp placement');
 for(const p of withHouse.posts)assert(house.isClear(p.x,p.z,1.15));
