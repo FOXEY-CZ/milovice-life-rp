@@ -1,6 +1,10 @@
 // Milovice RP 5.104 — visible low grass details inside REAL OSM
 // landuse=grass polygons near ordinary mapped Mladá playgrounds.
 // Tufts are MODEL ESTIMATES, not documented botanical observations.
+// OSM source IDs identify the four ordinary playgrounds of the Mladá
+// residential estate. Unlike a streaming region label, an ID is stable
+// when overlapping regional files load in either order.
+const MLADA_PLAY_IDS=new Set(['1107814421','1136825314','1231190399','1468803906']);
 const X=p=>p?.x, Z=p=>p?.z??p?.y;
 function inside(x,z,points){
  let ok=false;
@@ -54,7 +58,7 @@ export function planOSMPlaygroundLawns(lawns,playgrounds,{
   !Number.isInteger(maxPerLawn)||maxPerLawn<0||maxPerLawn>60||
   !Number.isFinite(nearMeters)||nearMeters<35||nearMeters>230)return result;
  const suitable=playgrounds.filter(p=>p?.tags?.leisure==='playground'&&
-  p?.regionId==='mlada'&&!['private','no','customers'].includes(p.tags.access)&&
+  MLADA_PLAY_IDS.has(String(p?.id))&&!['private','no','customers'].includes(p.tags.access)&&
   !p.tags.building&&!p.tags.playground&&Array.isArray(p.points)&&
   p.points.length>=3&&p.points.every(q=>Number.isFinite(X(q))&&Number.isFinite(Z(q))))
   .map(p=>{
@@ -72,7 +76,7 @@ export function planOSMPlaygroundLawns(lawns,playgrounds,{
   const id=String(lawn?.id??'');
   if(!id||seen.has(id))continue;
   seen.add(id);
-  if(lawn?.tags?.landuse!=='grass'||lawn?.regionId!=='mlada'||
+  if(lawn?.tags?.landuse!=='grass'||
    !Array.isArray(lawn?.points)||lawn.points.length<4||
    lawn.points.length>250||lawn.points.some(p=>!Number.isFinite(X(p))||
     !Number.isFinite(Z(p)))){result.skippedUnmapped++;continue;}
