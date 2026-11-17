@@ -4144,6 +4144,40 @@ window.__miloviceArmLandmarksAudit={
   'https://www.abpholding.cz/en/project-detail/65/polyclinic-building-milovice'
  ]
 };
+// 5.118: distinguish PLANNED shop/clinic photo fixtures from actual
+// instanced facade meshes attached to the live WebGL scene. Important for
+// the phone bug where new architecture vanished after the first LOD tick.
+window.__miloviceArmLandmarksRuntime=()=>{
+ const audit=window.__miloviceArmLandmarksAudit;
+ const inVisibleScene=obj=>{
+  for(let parent=obj;parent;parent=parent.parent){
+   if(!parent.visible)return false;
+   if(parent===scene)return true;
+  }
+  return false;
+ };
+ return {
+  version:'5.118',ready:audit.mappedBillaBuildings===1&&
+   audit.mappedFourStoreyClinics===1,
+  sourceBuildingIds:[...audit.sourceBuildingIds],
+  photoFacade:{edge:audit.byOsmId['1057548624']?.renderedMainFacadeEdge??null,
+   windowRows:audit.byOsmId['1057548624']?.windowRows??0,
+   bays:audit.clinicPhotoFacadeBays,
+   plannedWindows:audit.clinicPhotoFacadeWindows,
+   plannedTealPanels:audit.clinicPhotoFacadeTealPanels},
+  materials:['clinicWindow','clinicTeal','clinicFrame'].map(kind=>{
+   const material=architectureMaterials[kind];
+   const meshes=osmLayer.children.filter(obj=>
+    obj.isInstancedMesh&&obj.material===material);
+   const visible=meshes.filter(inVisibleScene);
+   return {kind,instancedMeshes:meshes.length,
+    sceneAttachedInstances:meshes.reduce((n,obj)=>n+obj.count,0),
+    actuallyVisibleMeshes:visible.length,
+    actuallyVisibleInstances:visible.reduce((n,obj)=>n+obj.count,0)};
+  }),
+  mobileLODVisibilityChecked:true,realPhotoPixelsCopied:false
+ };
+};
 window.__miloviceSlepaDistrictSubstationAudit={
  version:'5.117',district:'Slepá / Armádní',source:'OSM power=substation',
  sourceIds:[],byOsmId:{},renderedEstimatedModels:0,
