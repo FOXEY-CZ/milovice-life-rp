@@ -1,3 +1,11 @@
+### Oprava 5.90.1 — streamování Mladé (17. 11. 2026)
+
+- Přidána jednorázová inicializace 68 prioritních obytných fasád. Překrývající se region Mladá nyní **nesmí opakovaně registrovat ID fotografovaného štítu `202298939`** při každém streamování dalších OSM souborů. Starší verze v této situaci volala `setPhotoFocusIds()` až po vykreslení budov, což vyvolalo výjimku.
+- Při opětovném načtení celé mapy se resetuje i nová zeleň Školské 5.90 a diagnostiky obou nových východních bloků.
+- Globální limit 68 detailních domů se nemění, ostatní obytné domy zůstávají standardně vykreslené.
+
+---
+
 ## Školská jihovýchod 5.90 — šestý obytný úsek (17. 11. 2026)
 
 **Přímý technický úhel z ulice:** https://foxey-cz.github.io/milovice-life-rp/?v=59000&streetAudit=skolska-tail-590  

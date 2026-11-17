@@ -4674,7 +4674,13 @@ function rpAppendOSMElements(elements){
  // One BLOCK pass: prioritize 24 existing mapped houses on 5. května
  // toward St Catherine. Change render fidelity, NEVER building footprints,
  // roofs, garden boundaries or unverified entrances.
- const massBlock=planMassStreetBlock583([...roadWays,...buildingWays]);
+ // 5.90.1: Mladá and other streamed regions overlap Old Milovice.
+ // Register the 68 detailed-house priorities exactly once on initial load.
+ // Re-registering even the protected fork gable after construction throws.
+ const initialStreetPriorityPass=heroBuildings.stats().buildings===0 &&
+  !window.__miloviceMassStreetBlock583;
+ const massBlock=initialStreetPriorityPass?
+  planMassStreetBlock583([...roadWays,...buildingWays]):null;
  if(massBlock){
   heroBuildings.setPriorityIds(massBlock.priorityIds);
   window.__miloviceMassStreetBlock583=massBlock;
@@ -4682,36 +4688,36 @@ function rpAppendOSMElements(elements){
  // 5.86: choose twelve more real OSM house footprints along Mírová from
  // two public 2024 photographs. No cadastral boundaries or side entrances
  // are invented; facades without direct evidence remain marked inferred.
- const mirovaPhotoBlock=planPublicPhotoMirovaBlock586(
-  [...roadWays,...buildingWays],massBlock?.priorityIds||[]);
- const skolskaPhotoBlock=planPublicPhotoSkolskaBlock587(
+ const mirovaPhotoBlock=initialStreetPriorityPass?planPublicPhotoMirovaBlock586(
+  [...roadWays,...buildingWays],massBlock?.priorityIds||[]):null;
+ const skolskaPhotoBlock=initialStreetPriorityPass?planPublicPhotoSkolskaBlock587(
   [...roadWays,...buildingWays],
-  [...(massBlock?.priorityIds||[]),...(mirovaPhotoBlock?.priorityIds||[])]);
+  [...(massBlock?.priorityIds||[]),...(mirovaPhotoBlock?.priorityIds||[])]):null;
  // 20 church + 12 Mírová + 12 Školská + 8 west + 8 east +
  // 7 more southeast Školská + 1 photographed fork gable = 68 priority shells.
  // Public school photography does NOT certify the neighboring private homes.
- const skolskaWestBlock=planSkolskaWestBlock588(
+ const skolskaWestBlock=initialStreetPriorityPass?planSkolskaWestBlock588(
   [...roadWays,...buildingWays],
   [...(massBlock?.priorityIds||[]),...(mirovaPhotoBlock?.priorityIds||[]),
-   ...(skolskaPhotoBlock?.priorityIds||[])]);
- const skolskaEastBlock=planSkolskaEastBlock589(
-  [...roadWays,...buildingWays],
-  [...(massBlock?.priorityIds||[]),...(mirovaPhotoBlock?.priorityIds||[]),
-   ...(skolskaPhotoBlock?.priorityIds||[]),...(skolskaWestBlock?.priorityIds||[]),
-   '202298939']);
- const skolskaTailBlock=planSkolskaTailBlock590(
+   ...(skolskaPhotoBlock?.priorityIds||[])]):null;
+ const skolskaEastBlock=initialStreetPriorityPass?planSkolskaEastBlock589(
   [...roadWays,...buildingWays],
   [...(massBlock?.priorityIds||[]),...(mirovaPhotoBlock?.priorityIds||[]),
    ...(skolskaPhotoBlock?.priorityIds||[]),...(skolskaWestBlock?.priorityIds||[]),
-   ...(skolskaEastBlock?.priorityIds||[]),'202298939']);
- const publicPhotoFocusIds=[
+   '202298939']):null;
+ const skolskaTailBlock=initialStreetPriorityPass?planSkolskaTailBlock590(
+  [...roadWays,...buildingWays],
+  [...(massBlock?.priorityIds||[]),...(mirovaPhotoBlock?.priorityIds||[]),
+   ...(skolskaPhotoBlock?.priorityIds||[]),...(skolskaWestBlock?.priorityIds||[]),
+   ...(skolskaEastBlock?.priorityIds||[]),'202298939']):null;
+ const publicPhotoFocusIds=initialStreetPriorityPass?[
   ...(mirovaPhotoBlock?.priorityIds||[]),
   ...(skolskaPhotoBlock?.priorityIds||[]),
   ...(skolskaWestBlock?.priorityIds||[]),
   ...(skolskaEastBlock?.priorityIds||[]),
   ...(skolskaTailBlock?.priorityIds||[]),
   '202298939' // Already source-verified fork gable needs a reserved, NOT extra, hero slot.
- ];
+ ]:[];
  if(publicPhotoFocusIds.length)heroBuildings.setPhotoFocusIds(publicPhotoFocusIds);
  if(mirovaPhotoBlock)window.__miloviceMirovaPublicPhotoBlock586=mirovaPhotoBlock;
  if(skolskaPhotoBlock)window.__miloviceSkolskaPublicPhotoBlock587=skolskaPhotoBlock;
@@ -5114,13 +5120,15 @@ osmBtn.onclick=async()=>{
  if(osmLoading)return;
  osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';osmMessage('Načítám místní soubor mapy ze stejného GitHub Pages webu…');
  try{
- const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();legacyRealityAudit.reset();renderedPedestrianPieces.clear();collisionWorld.reset();heroBuildings.reset();photoStreetBlock.reset();photoStreetEnvironment.reset();mirovaPhotoStreet586.reset();skolskaWestGreen588.reset();photoPionyruVerge.reset();photoChurchSidewalk2022.reset();photoChurchStreet2022.reset();stationPhotoForecourt.reset();stationPhotoParking.reset();bikeTowerEntryPaving.reset();stationTicketMachines.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;landscapeZones.length=0;
+ const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();legacyRealityAudit.reset();renderedPedestrianPieces.clear();collisionWorld.reset();heroBuildings.reset();photoStreetBlock.reset();photoStreetEnvironment.reset();mirovaPhotoStreet586.reset();skolskaWestGreen588.reset();skolskaTailGreen590.reset();photoPionyruVerge.reset();photoChurchSidewalk2022.reset();photoChurchStreet2022.reset();stationPhotoForecourt.reset();stationPhotoParking.reset();bikeTowerEntryPaving.reset();stationTicketMachines.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;landscapeZones.length=0;
   if(trafficGroup.parent!==osmLayer)osmLayer.add(trafficGroup);
   if(visualDetails.parent!==osmLayer)osmLayer.add(visualDetails);for(const batch of facadeBatches)batch.clear();
  window.__miloviceMassStreetBlock583=null;
  window.__miloviceMirovaPublicPhotoBlock586=null;
  window.__miloviceSkolskaPublicPhotoBlock587=null;
  window.__miloviceSkolskaWestBlock588=null;
+ window.__miloviceSkolskaEastBlock589=null;
+ window.__miloviceSkolskaTailBlock590=null;
  if(terrainGrid)rpTerrainMesh();else cube(2200,.16,2200,osmParkMaterial,0,-.18,0,osmLayer);
  rpAppendOSMElements(elements);
  if(!osmRoads.length)throw Error('Žádné silnice v odpovědi');finalizeRoadStrips();finalizeCityWalls();finalizeFoundations();finalizeFacades();finalizeArchitecture();heroBuildings.flush(osmLayer);osmStreetLabels();chunkMilovice();improveMiloviceVisuals();publishLegacyRealityAudit();rpPopulate();rpInitRailTraffic();
