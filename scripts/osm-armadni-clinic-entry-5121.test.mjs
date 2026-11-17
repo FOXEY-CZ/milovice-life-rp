@@ -90,8 +90,8 @@ const tokens=[
  "exactEntranceBayVerified:false",
  "walkingPortalCreated:false",
  "inventedParkingSpaces:0,newFootpaths:0",
- "href=\"?v=512300&streetAudit=armadni-clinic-5118\"",
- "href=\"?v=512300&streetAudit=armadni-billa-5118\""
+ "href=\"?v=512400&streetAudit=armadni-clinic-5118\"",
+ "href=\"?v=512400&streetAudit=armadni-billa-5118\""
 ];
 for(const tok of tokens)assert(html.includes(tok),'Missing '+tok);
 const build=html.match(/const BUILD_ID='([^']+)'/)?.[1];
