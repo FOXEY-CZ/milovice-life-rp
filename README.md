@@ -1,3 +1,18 @@
+## Milovice RP 5.109 — obytná ulice Slepá: pět čtyřpodlažních domů (Part 23, 17. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=510900
+
+**Přímá technická kamera (není fotografie):** https://foxey-cz.github.io/milovice-life-rp/?v=510900&streetAudit=road-slepa-5108
+
+- Podle uložených OSM exportů `data/regions/mlada.json` a `data/regions/vrutice.json` se **v okolí skutečné mapované ulice Slepá (way/202375817)** nachází 5 blízkých bytových objektů `building=residential` s výslovným `building:levels=4`: **53865778, 734359705, 734359706, 734359707 a 734359708**. OSM navíc uvádí 32, 29, 20, 39 a 23 bytů; počty bytů **nepoužíváme k odhadování oken**. Měřená vzdálenost od dvoubodové střednice Slepé je 11,5–59,5 m; výběr omezen do 75 m.
+- `scripts/osm-slepa-residential-5109.js` je přísně omezený na obě překrývající se oblasti a **konkrétní existující OSM road way 202375817** předaný přes skutečnou regionální geometrii. Nevznikají další domy, neověřené obytné budovy `building=yes` zůstávají beze změny; daleký pojmenovaný komplex Relax A/B a rodinné domky se nepředělávají.
+- Vlastní 3D změna: všech pět již vykreslovaných bytových domů používá u fasád stejný čtyřpodlažní rastr jako dřívější Mladá 5.105: **tři vodorovné podlažní spáry**, svislé spáry pouze jednou mezi okny, bez duplicitního opakování jedné lišty v každém patře. Modelová přízemní okna se nevykreslují přes již naplánované vstupy. Stávající architektonické instancování sdružuje opakující se detaily do GPU dávek podle 160m buněk.
+- Žádné úpravy půdorysů, skutečných tras silnic a chodníků, zelených ploch, výškového modelu, střešních typů, soukromých pozemků či dříve fotograficky ověřeného centra. **Barvy, poloha a skutečné počty oken ani detaily vstupů nejsou fotograficky potvrzené.**
+- Regionální deduplikace zabraňuje dvojitému vytvoření stejných pěti objektů z Mladé a Vrutice. Fasády jsou identické bez ohledu na pořadí načtení zdrojů. Oddělené diagnostiky `window.__miloviceSlepaResidentialAudit` a `window.__miloviceMladaResidentialAudit` zajistí, že vylepšení Slepé nenaruší původní audit 22 bytových objektů v jiné části Mladé.
+- Nový `scripts/osm-slepa-residential-5109.test.mjs` ověřuje zdrojové ID, podlaží, byty, ochranu nesouvisejících objektů, počet 5 a stejný výsledek v obou překrývajících se exportech. `scripts/osm-slepa-residential-webgl-5109.mjs` obsahuje kontrolu běžící scény na telefonu po 6,2 s. `window.__miloviceSlepaResidentialRuntime()` rozlišuje pouhé počty plánovaných dílů od skutečných viditelných `THREE.InstancedMesh` po průchodu LOD/streamováním. Browser test je **připravený, nikoliv prokazatelně spuštěný** v tomto chatu.
+
+---
+
 ## Milovice RP 5.108 — skutečné mapované šířky ulic v Mladé a Benátecké Vrutici (Part 23, 17. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=510800
