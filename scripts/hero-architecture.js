@@ -394,13 +394,13 @@ export function makeMiloviceHeroArchitecture(THREE,{
   publish();
  }
  function setPhotoFocusIds(ids=[]){
-  // 20 church street + 12 Mírová + 36 remaining = unchanged max 68.
+  // 20 church + 12 Mírová + 12 Školská + 8 west + 8 east + 1 fork + 7 other = 68.
   if(selected.size)throw Error('Photo street focus must precede construction');
   photoFocusIds.clear();
   for(const id of ids){
    const key=String(id);
    if(!/^\d+$/.test(key)||priorityIds.has(key)||photoFocusIds.has(key))continue;
-   if(photoFocusIds.size>=33||photoFocusIds.size+priorityIds.size>=maxBuildings)break;
+   if(photoFocusIds.size>=41||photoFocusIds.size+priorityIds.size>=maxBuildings)break;
    photoFocusIds.add(key);
   }
   state.photoFocusReservedPlaces=photoFocusIds.size;
