@@ -90,7 +90,7 @@ for(const term of [
 ])assert(html.includes(term),'Missing 5.111 game scene integration: '+term);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1],
  build=html.match(/const BUILD_ID='([^']+)'/)?.[1];
-assert(meta===build&&build.endsWith('511100'));
+assert(meta===build&&build.endsWith('511200'));
 console.log('PASS 5.111 Slepá OSM pedestrian bends',{
  sourceStreet:'202375817',verifiedRegions:['mlada','vrutice'],
  syntheticPaths:0,originalFootwaysUnchanged:true
