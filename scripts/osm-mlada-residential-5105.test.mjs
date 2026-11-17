@@ -80,6 +80,8 @@ for(const token of [
  'planMladaPanelEdge(\n   estatePlan,len,regionalStyle?.baySpacing??3.12)',
  'panelDoorWindowConflict(regionalEntrance?.index,',
  'window.__miloviceMladaResidentialAudit={',
+ 'streetAudit=estate-mlada-5105',
+ 'window.__miloviceMladaEstateCameraAudit={',
  'if(!estatePlan)archPart(\'panelSeam\',',
  'window.__miloviceMladaResidentialAudit.duplicateVerticalJointsRemoved++',
 ].filter(Boolean))
