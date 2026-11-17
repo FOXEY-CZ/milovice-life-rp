@@ -1,0 +1,40 @@
+name: Milovice 5.100 OSM-lit streets WebGL
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - scripts/osm-street-lighting-5100.js
+      - scripts/street-lamp-webgl-5100.mjs
+      - data/regions/mlada.json
+      - data/regions/vrutice.json
+      - .github/workflows/street-lamp-webgl.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mobile-street-lamps:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium browser client
+        run: npm install --no-save --no-package-lock playwright-core@1.57.0
+      - name: Verify lit=yes Italská and Armádní lamps in real mobile WebGL
+        run: |
+          CHROME_BIN="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          export CHROME_BIN
+          python3 -m http.server 8080 >/tmp/milovice-lamps-5100-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          node scripts/street-lamp-webgl-5100.mjs
+      - name: Upload two actual game screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: milovice-lamps-5100-mobile
+          path: browser-artifacts/milovice-lamps-5100-*.png
+          if-no-files-found: ignore
