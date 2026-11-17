@@ -121,6 +121,8 @@ for(const token of [
  "archPart('clinicFrame'",
  "continue; // Side/back windows are not photographically established.",
  "window.__miloviceArmLandmarksAudit={",
+ "window.__miloviceArmLandmarksRuntime=()=>{",
+ "actuallyVisibleInstances:visible.reduce((n,obj)=>n+obj.count,0)",
  "streetAudit=armadni-billa-5118",
  "streetAudit=armadni-clinic-5118",
  "camera:{lat:50.2289351,lon:14.86186245},heading:50.6,",
