@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const index=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const art=readFileSync(new URL('./visual-overhaul.js',import.meta.url),'utf8');
-assert(index.includes("const BUILD_ID='20261117-skolska-tail-59000'"));
+assert(index.includes("const BUILD_ID='20261117-city-landuse-59100'"));
 assert(index.includes("const ROAD_ASPHALT_TILE_METERS=7"));
 const p=index.indexOf('function osmStrip(a,b,width,material,y=.15){');
 const q=index.indexOf('// 5.2.1:',p);
