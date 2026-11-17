@@ -19,6 +19,19 @@ assert.equal(street.tags.name,'Slepá');
 assert.equal(street.tags.highway,'residential');
 const streetPoints=street.geometry.map(toWorld);
 assert.equal(streetPoints.length,2);
+// No polygon with amenity=parking is mapped inside this Slepá street block.
+// A road with possible curbside cars does not prove a marked parking lot.
+const wayDistance=p=>{
+ const [a,b]=streetPoints,q=toWorld(p),
+  dx=b.x-a.x,dz=b.z-a.z;
+ const t=Math.max(0,Math.min(1,
+  ((q.x-a.x)*dx+(q.z-a.z)*dz)/(dx*dx+dz*dz)));
+ return Math.hypot(q.x-a.x-dx*t,q.z-a.z-dz*t);
+};
+const nearParkingLots=[...mlada,...vrutice].filter(e=>
+ e.tags?.amenity==='parking'&&e.geometry?.some(p=>wayDistance(p)<110));
+assert.equal(nearParkingLots.length,0,
+ 'Never invent a Slepá parking polygon absent from both regional exports');
 const modelWidth=kind=>kind==='primary'?11:kind==='secondary'?9:
  kind==='tertiary'?8:kind==='pedestrian'?4:kind==='footway'?1.8:
  kind==='path'||kind==='steps'?1.65:kind==='cycleway'?2:
