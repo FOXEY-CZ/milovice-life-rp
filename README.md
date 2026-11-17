@@ -1,3 +1,19 @@
+## Milovice RP 5.123 — Spojovací 873: celé fotograficky doložené dlážděné prostranství před Poliklinikou (Part 25, 18. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=512300
+
+**Kontrolní kamera směrem na Polikliniku:** https://foxey-cz.github.io/milovice-life-rp/?v=512300&streetAudit=armadni-clinic-5118
+
+**Co je doloženo fotograficky:** 2023 dokončené exteriéry [ABP Holding](https://www.abpholding.cz/en/project-detail/65/polyclinic-building-milovice), novější foto [RE/MAX – Centrum zdraví](https://www.remax-czech.cz/reality/detail/423323/pronajem-komercniho-prostoru-41-m2-milovice) a [foto gynekologie 2026](https://gynekologie-milovice.cz/) ukazují velkou pale-šedou dlážděnou plochu před jižní až severní částí dlouhé fasády Polikliniky, s parkováním a pěšími trasami. Nezobrazujeme všechny její fotografie jako texturu a nepředstíráme, že snímky poskytují souřadnice jednotlivých parkovacích míst.
+
+- Ve starých verzích byla hlavní čtyřpodlažní Poliklinika na správném skutečném půdorysu, ale podél celého objektu chyběl samostatný souvislý světlý povrch dokončeného předprostoru. Verze **5.123** doplňuje **jeden terrain/DEM-following 3D mesh se stávající sdílenou texturou městských dlažebních kostek**, nikoli opakované improvizované čtverce, nové vozovky nebo odhady parkovacích míst. Povrch se generuje pouze pro jedinou budovu, OSM **way/1057548624**, její skutečnou východní stěnu edge 2 o cca 44,86 m; pro omezení hloubky vůči veřejné komunikaci vyžaduje skutečnou Spojovací **way/246652750** a souběžný pěší úsek **way/1339091016**.
+- **Bezpečnost původní geometrie:** modul `scripts/osm-clinic-forecourt-5123.js` kontroluje orientaci fasády, mapovanou plochu cca 827,58 m², odsazení mapované pěší cesty a komunikace a OSM šířku silnice. Rozložení nízkých polygonů je **jen modelová aproximace rozsahu dlážděného nádvoří**, nikoliv zaměřená parcela. Každá malá dlaždicová buněčná plocha se kontroluje proti reálným okolním OSM jízdním pásům, odmítne průnik do budovy a zachová minimální odstup od modelového okraje vozovky. Mřížka určuje jen hustotu triangulace, **ne fyzické formáty dlažby**.
+- Plocha leží **na DEM + 0,105 m** a zůstává opticky pod původní mapovanou `highway=footway` (DEM + 0,13 m) a mapovanými komunikacemi (DEM + 0,17 m). OSM pěší trasy a silnice se nepřesouvají ani nepřidávají, žádná křižovatka nepřichází o skutečný přechod. Parkovací čáry, individuální počet a místa stání, příjezdová ramena, inventovaný záhon, lampy a náhodná auta **nejsou přidány**; jejich případné modelování vyžaduje přesnější zdrojové zaměření.
+- Sledování `window.__miloviceClinicForecourtAudit` ukazuje zdrojové OSM identifikátory, plochu modelu, skutečný počet trojúhelníků, přibližný nejmenší odstup od komunikace a počet odhozených buněk. `window.__miloviceClinicForecourtRuntime()` kontroluje skutečný 3D objekt připojený ke scéně a jeho **viditelnost po automatickém mobilním LOD**.
+- Statická validace `scripts/osm-clinic-forecourt-5123.test.mjs` používá originální JSON s OSM geometrií a testuje nulové parkovací spekulace. Test `scripts/osm-clinic-forecourt-webgl-5123.mjs` používá skutečné mobilní Chromium/WebGL a vyhodnocuje povrch **po 6,8 sekundách**, ukládá screenshot do GitHub Actions. Existence kódu sama ještě nedokazuje, že WebGL běží; ověřujte až po dokončení CI.
+
+---
+
 ## Milovice RP 5.122 — zásadní oprava skutečného čtyřrohého půdorysu Polikliniky (Part 25, 17. 11. 2026)
 
 **Aktuální hra:** https://foxey-cz.github.io/milovice-life-rp/?v=512200
