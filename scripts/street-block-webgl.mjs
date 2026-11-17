@@ -22,7 +22,7 @@ try{
   {id:'mirova',width:1280,height:760,mobile:false,technical:false},
    {id:'school-detail-2024',width:1280,height:760,mobile:false,technical:false},
    {id:'skolska-west-2024',width:1280,height:760,mobile:false,technical:false},
-   {id:'skolska-east-589',width:1280,height:760,mobile:false,technical:true}
+   {id:'skolska-east-589',width:1280,height:760,mobile:false,technical:true,streetLevel:true}
  ]){
   const page=await browser.newPage({
    viewport:{width:cfg.width,height:cfg.height},deviceScaleFactor:1,
