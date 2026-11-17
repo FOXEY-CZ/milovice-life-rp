@@ -1,3 +1,24 @@
+## Milovice RP 5.95 — OSM doložené jednostranné chodníky bez kolizí (17. 11. 2026)
+
+**Aktuální hra:** https://foxey-cz.github.io/milovice-life-rp/?v=59500
+
+**Přímé technické záběry do hry:**
+- [Armádní · mapovaný chodník vlevo](https://foxey-cz.github.io/milovice-life-rp/?v=59500&streetAudit=armadni-sidewalk-595) — OSM way 1395041609, souřadnice 50.2310945, 14.8510071, směr podle OSM 119,8°.
+- [Topolová · mapovaný chodník vpravo](https://foxey-cz.github.io/milovice-life-rp/?v=59500&streetAudit=topolova-sidewalk-595) — OSM way 309581823, souřadnice 50.2326139, 14.8449130, směr podle OSM 195,47°.
+
+Jde o **technické herní kamery**, nikoli o autentické snímky Mapy Panorama. OSM říká, na které straně komunikace je chodník, **neříká však přesnou polohu obrubníku, šířku ani stav povrchu**.
+
+- Nová logika `scripts/osm-tagged-sidewalk.js` pracuje výhradně s OSM komunikacemi výslovně označenými `sidewalk=left`, `sidewalk=right` či `both`. Nevytváří žádný chodník pro `sidewalk=separate`, `no`, chybějící značku, soukromé cesty ani dálnice. Staré souvislé chodníky, historická nádražní geometrie a reálné OSM silnice se nepřepisují.
+- V dodaných exportech v Mladé a Benátecké Vrutici byly identifikovány **tři unikátní zdrojové silnice**: Armádní (1395041608 a 1395041609) a Topolová (309581823). Jejich celková délka je cca 445 m; po **striktním vynechání kolizních úseků** vzniká cca **429,75 m nového chodníkového povrchu v sedmi bezpečných dílech** (Armádní 339,29 m, Topolová 90,46 m). Jsou to plánovací hodnoty vypočtené z aktuálních OSM dat, nikoliv měření skutečného nasazení či fotoověření.
+- Zvolená modelová šířka chodníku 1,55 m a mezera od vozovky 0,34 m jsou **odhady**. Směr vlevo/vpravo respektuje pořadí uzlů OSM way, včetně obráceného směru. Kontroluje se **všechny aktuálně zmapované vozovky a pěší cesty** i samostatný prostorový index **skutečných OSM půdorysů budov**. Chodníkový pás se v kolizích a na křižovatkách bezpečně přeruší a příliš krátké úlomky se odmítají.
+- Všechny nové pásy používají **existující dlažební materiál** a dosavadní slučování geometrie v 160m dávkách. Žádné nové materiály, neznámé ploty, lampy, stromy ani vymyšlené silnice. Při opětovném sestavení města se indexy komunikací, budov a diagnostika vymažou.
+- Kontrola v prohlížeči: `window.__miloviceMappedSidewalkAudit` se skutečně vygenerovanými délkami, počty úseků, zdrojovými ID a oblastmi. Počty závisejí na tom, jaké mapové oblasti už hráč načetl.
+- Automatické regresní testy: `scripts/osm-tagged-sidewalk.test.mjs` (syntetické strany, reverzní pořadí OSM way, existující souběžný chodník, křižovatky, budovy, přenačtení a reálné GPS podklady), a rozšířený `scripts/city-region-street-audit.test.mjs` (5 konkrétních kamer). Nový test je vložen do `.github/workflows/validate.yml`.
+
+**Ověření:** funkční geometrické testy prošly v izolovaném prostředí nad daty z repozitáře; kompletní běh GitHub Actions, skutečná WebGL vizualizace na Androidu a FPS se musejí ověřit na nasazené stránce.
+
+---
+
 ## Milovice RP 5.94 — skutečně mapované povrchy ulic, chodníků a polních cest (17. 11. 2026)
 
 **Aktuální hra:** https://foxey-cz.github.io/milovice-life-rp/?v=59400
