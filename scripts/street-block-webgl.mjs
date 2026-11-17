@@ -21,7 +21,8 @@ try{
   {id:'church-2024',width:393,height:852,mobile:true,technical:false,sourcePhoto:true},
   {id:'mirova',width:1280,height:760,mobile:false,technical:false},
    {id:'school-detail-2024',width:1280,height:760,mobile:false,technical:false},
-   {id:'skolska-west-2024',width:1280,height:760,mobile:false,technical:false}
+   {id:'skolska-west-2024',width:1280,height:760,mobile:false,technical:false},
+   {id:'skolska-east-589',width:1280,height:760,mobile:false,technical:true}
  ]){
   const page=await browser.newPage({
    viewport:{width:cfg.width,height:cfg.height},deviceScaleFactor:1,
@@ -51,6 +52,7 @@ try{
     mirovaBatch:window.__miloviceMirovaPublicPhotoBlock586,
     skolskaBatch:window.__miloviceSkolskaPublicPhotoBlock587,
     skolskaWestBatch:window.__miloviceSkolskaWestBlock588,
+    skolskaEastBatch:window.__miloviceSkolskaEastBlock589,
     skolskaWestGreen:window.__miloviceSkolskaWestGreen588,
     mirovaGreen:window.__miloviceMirovaPhotoStreet586,
    hero:window.__miloviceHeroArchitecture,
@@ -84,7 +86,7 @@ try{
    assert.equal(info.skolskaBatch?.newBuildingFootprints,0);
    assert.equal(info.skolskaBatch?.alteredRoadOrFootway,false);
    assert.equal(info.skolskaBatch?.schoolLandmarkPreserved,true);
-   assert.equal(info.skolskaBatch?.totalPublicPhotoContextHouses,33);
+   assert.equal(info.skolskaBatch?.totalPublicPhotoContextHouses,41);
    assert.equal(info.skolskaWestBatch?.prioritizedBuildings,8);
    assert.equal(info.skolskaWestBatch?.actuallyDetailed,8);
    assert.equal(info.skolskaWestBatch?.reservedBudget,8);
@@ -103,9 +105,14 @@ try{
    assert.equal(info.skolskaWestGreen.changedRoads,0);
    assert.equal(info.skolskaWestGreen.changedSidewalks,0);
    assert.equal(info.skolskaWestGreen.guessedPrivateEntrances,0);
-   assert.equal(info.hero?.photoFocusReservedPlaces,33);
-   assert.equal(info.hero?.photoFocusBuilt,33);
-   assert.equal(info.hero.photoFocusBuiltIds.length,33);
+   assert.equal(info.skolskaEastBatch?.prioritizedBuildings,8);
+    assert.equal(info.skolskaEastBatch?.actuallyDetailed,8);
+    assert.equal(info.skolskaEastBatch?.reservedBudget,8);
+    assert.equal(info.skolskaEastBatch?.roadsChanged,false);
+    assert.equal(info.skolskaEastBatch?.photoVerifiedHouseFacades,0);
+    assert.equal(info.hero?.photoFocusReservedPlaces,41);
+   assert.equal(info.hero?.photoFocusBuilt,41);
+   assert.equal(info.hero.photoFocusBuiltIds.length,41);
    assert.equal(info.mirovaGreen?.active,true,
     'Actual Mírová clipped-hedge/trees must render after city OSM load');
    assert(info.mirovaGreen.hedgeSegments+info.mirovaGreen.plantedTrees>=2);
@@ -115,7 +122,7 @@ try{
    assert.equal(info.mirovaGreen.positionsEstimated,true);
    assert.equal(info.hero?.normalBuilt+info.hero?.photoFocusBuilt+
     info.hero?.priorityBuilt,68,'Keep whole 68-house budget stable');
-   assert.equal(new Set([...info.hero.priorityIds,...info.hero.photoFocusIds]).size,53,
+   assert.equal(new Set([...info.hero.priorityIds,...info.hero.photoFocusIds]).size,61,
     'No selected house may be counted in two of the four OSM street blocks');
   assert.equal(info.hero?.maxBuildings,68,
    'Retain the old maxBuildings capacity for mobile performance');
