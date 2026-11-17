@@ -185,5 +185,7 @@ jobs:
         run: node scripts/osm-armadni-open-polygons-5122.test.mjs
       - name: Verify 5.123 source-mapped photographed Spojovaci clinic paving avoids roads and invented parking
         run: node scripts/osm-clinic-forecourt-5123.test.mjs
+      - name: Verify 5.124 clinic full-height photographed shop glazing and registered LEMON tenant without fictitious facade signage
+        run: node scripts/osm-clinic-storefronts-5124.test.mjs
       - name: Validate expanded Milovice districts and real elevation data
         run: python3 scripts/validate_regions.py
