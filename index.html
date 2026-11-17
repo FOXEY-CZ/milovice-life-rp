@@ -5005,10 +5005,16 @@ function maybeStreamCityAreas(){
  const nearby=cityAreaManifest.filter(r=>r.id!=='old'&&!loadedCityAreas.has(r.id)&&r.bbox)
   .map(r=>({r,dist:cityAreaDistance(cx,cz,r.bbox)}))
   .sort((a,b)=>a.dist-b.dist);
+ const ahead=nearby.find(v=>v.dist<OSM_VIEW+520);
+ // If the player turns away, discard the old speculative payload: at most
+ // one nearby district remains retained in memory on mobile.
+ if(cityAreaAhead&&(!ahead||cityAreaAhead.id!==ahead.r.id)){
+  window.__miloviceAreaPrefetch={areaId:cityAreaAhead.id,state:'discarded'};
+  cityAreaAhead=null;
+ }
  const candidate=nearby.find(v=>v.dist<OSM_VIEW+240);
  if(candidate){rpLoadCityArea(candidate.r.id);return;}
  // Warm outside visible range; never pull every district into RAM at once.
- const ahead=nearby.find(v=>v.dist<OSM_VIEW+520);
  if(ahead)rpWarmCityArea(ahead.r);
 }
 async function fetchMiloviceOSM(){
