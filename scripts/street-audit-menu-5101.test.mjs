@@ -48,7 +48,8 @@ assert(html.includes('flex:0 0 auto;min-height:38px'));
 assert(html.includes('flex-shrink:0'));
 assert(html.includes('height:auto!important;min-height:40px!important'));
 
-assert(html.includes("if(statusText)statusText.textContent=rpStreetAuditView.osmWidthWayId?"));
+assert(html.includes("if(statusText)statusText.textContent=rpStreetAuditView.osmHouseClusterId?"));
+assert(html.includes("rpStreetAuditView.osmWidthWayId?"));
 const menuScript=readFileSync(new URL('./street-audit-menu-5101.js',import.meta.url),'utf8');
 assert(menuScript.includes("group.open=!mobile&&section.id===selectedGroup"));
 assert(menuScript.includes("setInfoExpanded(false)"));
