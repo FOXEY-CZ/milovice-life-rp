@@ -5388,6 +5388,9 @@ function rpAppendOSMElements(elements,regionId='old'){
    tri.flatMap(p=>[p.x/(material===osmRoadMaterial?
     ROAD_ASPHALT_TILE_METERS:8),
     p.z/(material===osmRoadMaterial?ROAD_ASPHALT_TILE_METERS:8)]),2));
+  // All existing road-strip buffers are indexed; joining a non-indexed
+  // triangle would make mergeGeometries fail and multiply draw calls.
+  geo.setIndex([0,1,2]);
   geo.computeVertexNormals();geo.computeBoundingSphere();
   const midX=tri.reduce((s,p)=>s+p.x,0)/3;
   const midZ=tri.reduce((s,p)=>s+p.z,0)/3;
