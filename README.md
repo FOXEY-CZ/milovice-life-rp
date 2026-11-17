@@ -1,3 +1,21 @@
+## Milovice RP 5.94 — skutečně mapované povrchy ulic, chodníků a polních cest (17. 11. 2026)
+
+**Aktuální hra:** https://foxey-cz.github.io/milovice-life-rp/?v=59400
+
+### Rozsah a přesnost
+
+- Pro každou načtenou **existující** OSM cestu se nyní vyhodnocuje její `surface=*` z původního exportu. Vizuální klasifikátor `scripts/osm-road-surfaces.js` rozlišuje asfalt, dlažbu/beton, štěrkové povrchy, hlínu/písek a travnaté pěšiny. Jestliže povrch chybí či je neurčitý (např. `paved`), zůstává dosavadní herní materiál. Skutečné barvy, rozmístění dlažebních kostek, stav vozovky a stáří povrchu **nejsou fotograficky doložené**.
+- **Zmapované polní a lesní komunikace** `highway=track` se konečně vykreslují jako úzké 3,2m povrchové pruhy. Tato šířka je herní aproximace, nikoli geodetické zaměření. Mapované trasy se **nevymýšlejí** a neotevírají novou trasu pro automatickou NPC dopravu. Výjimky povrchu z OSM mají přednost; neznámý povrch takové cesty je označený jako herní neutrální odhad.
+- Bez změn půdorysů, souřadnic silnic a pěšin, vzorkování výškopisu, asfaltového UV mapování 7m nebo originálních chodníků a parkoviště před nádražím. Zúžení platí **jen** pro dosud nevykreslovaný typ `highway=track`; ostatním komunikacím se šířka nemění.
+- Znovupoužité materiály z existující sady procedurálních textur: **pouze tři nové sdílené materiály**, žádná textura per-road, žádné stažené fotografie. Původní 160m batch slučování terénních pruhů zůstává.
+- Statistika nad zdrojovými daty po odstranění opakujících se OSM ID ze šesti exportů: **395 jedinečných OSM cest s explicitním tagem `surface`**, z toho 199 klasifikovaných jako asfalt, 79 jako dlažba a 23 jako zemina (počty materiálových skupin zahrnují i určitá náhradní zobrazení). Dále **100 jedinečných mapovaných `highway=track`**; nejde o počet skutečně viditelných úseků při jednom načtení hry.
+- Herní diagnostika: `window.__miloviceOSMSurfaceAudit` ukazuje skutečné zpracované OSM cesty, skupiny materiálů a vykreslené úseky dle aktuálně načtených regionů. Hlídaná regenerace scén obnoví počítadla, aniž by násobila historii.
+- Automatické testy `scripts/osm-road-surfaces.test.mjs`, `scripts/road-asphalt-world-uv-5813.test.mjs`, `scripts/reality-walkways.test.mjs`. Nový test povrchů je zahrnut do `.github/workflows/validate.yml`. Dřívější test asfaltu už není chybně navázaný na staré build ID 5.91.
+
+**Poznámka k výkonu:** materiály jsou sdílené a všechny OSM trasy zůstávají v dosavadním mechanismu vykreslování po dávkách. Reálný dopad na FPS ani skutečné nasazení GitHub Pages zatím není měřené v cílovém prohlížeči.
+
+---
+
 ## Milovice RP 5.93 — sjednocení všech pěti regionálních oblastí a technické uliční kamery (17. 11. 2026)
 
 **Spustit aktuální verzi:** https://foxey-cz.github.io/milovice-life-rp/?v=59300
