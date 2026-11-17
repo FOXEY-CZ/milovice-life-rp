@@ -27,6 +27,8 @@ on:
       - scripts/osm-armadni-clinic-entry-5121.js
       - scripts/osm-armadni-clinic-entry-5121.test.mjs
       - scripts/osm-armadni-clinic-entry-webgl-5121.mjs
+      - scripts/osm-armadni-landmarks-5118.js
+      - scripts/osm-armadni-open-polygons-5122.test.mjs
       - scripts/station-photo-parking.js
       - scripts/station-photo-parking.test.mjs
       - scripts/station-ticket-machines.js
