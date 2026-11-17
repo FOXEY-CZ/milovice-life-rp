@@ -1,4 +1,4 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.114 park u Slepé, pěší cesty a zeleň</title><meta name="milovice-build" content="20261117-slepa-park-511400"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
+<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.115 Slepá a Armádní: plynulé zatáčky silnic</title><meta name="milovice-build" content="20261117-slepa-armadni-joins-511500"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
 #realmap{position:fixed;inset:0;z-index:100;background:#101e2c;display:none;flex-direction:column;color:#fff;font-family:system-ui}#realmap.open{display:flex}#maphead{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#142c3e}#maphead button{flex:0 0 auto;min-height:40px}#osmmap{flex:1;min-height:0;touch-action:pan-x pan-y}#mapfoot{padding:8px 12px;background:#142c3e;font-size:12px;line-height:1.4}#maplaunch{position:fixed;right:12px;top:75px;z-index:45;background:#193d58;border:1px solid #93b4c7;box-shadow:0 2px 8px #0006}#realmap .leaflet-container{background:#d7e5da}#realmap a{color:#aedbff} @media(max-width:700px){#maplaunch{top:72px;right:8px;padding:7px 10px;font-size:12px;min-height:36px}#maphead{font-size:13px}}
 </style><style>#perf{position:fixed;top:10px;right:10px;z-index:42;background:#102437e8;border:1px solid #77a7b6;border-radius:10px;padding:7px 10px;color:#c8f6d4;font:600 12px system-ui;pointer-events:none;min-width:100px;text-align:center}#perf small{display:block;color:#c9d5dd;font-size:10px;font-weight:400}@media(max-width:700px){#perf{top:8px;right:8px;padding:5px 7px;font-size:11px}#maplaunch{top:100px!important}}</style><style id="milovice-modern-ui">
 #hud{background:linear-gradient(145deg,rgba(9,24,39,.88),rgba(20,44,61,.82));backdrop-filter:blur(12px);border:1px solid rgba(176,214,235,.3);box-shadow:0 10px 30px #061b2b33;border-radius:18px}
@@ -286,6 +286,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <a href="?v=511200&streetAudit=slepa-houses-5112">🏠 Slepá · dvanáct rodinných domů (OSM)</a>
 <a href="?v=511300&streetAudit=slepa-utilities-5113">⚡ Slepá · trafostanice a kontejnerový přístřešek (OSM)</a>
 <a href="?v=511400&streetAudit=slepa-park-5114">🌳 Slepá · skutečný park a pěší cesty (OSM)</a>
+<a href="?v=511500&streetAudit=slepa-armadni-bends-5115">🛣️ Slepá × Armádní · průjezd po mapovaných zatáčkách</a>
 <a href="?v=511200&streetAudit=road-vruticka-5108">🛣️ Vrutická · OSM šířka 6 m</a>
 <a href="?v=510500&streetAudit=estate-mlada-5105">🏢 Mladá · bytové domy vedle hřiště</a></nav>
 <button id="street-audit-info-toggle" type="button" aria-expanded="false">📍 GPS a zdroj</button>
@@ -314,7 +315,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <strong>📸 Milovice nádraží · fotoaudit 5.80</strong>
 <span>Pohled podle GPS a směru fotoaparátu z 30. 5. 2024. Velikost a poloha automatů jsou odhady, nikoliv geodetické zaměření.</span>
 <div><a href="https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_automaty_na_j%C3%ADzdenky.jpg" target="_blank" rel="noopener noreferrer">Původní fotografie · ŠJů · CC BY 4.0</a> · <a href="./?v=5800">Zpět do hry</a></div>
-</aside><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.114 · build <strong id="build-label">20261117-slepa-park-511400</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="rp-camera-gps-toggle" type="button" aria-expanded="false">📍 GPS kamery</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
+</aside><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.115 · build <strong id="build-label">20261117-slepa-armadni-joins-511500</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="rp-camera-gps-toggle" type="button" aria-expanded="false">📍 GPS kamery</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
 <button id="osm-inspect-toggle" type="button" aria-pressed="false" title="Klepnutím na konkrétní budovu zjistíš její OSM identitu">🔎 Objekt</button>
 <section id="osm-inspect-result" role="status" aria-live="polite" hidden>
 <strong id="osm-inspect-title">Identifikace objektu</strong>
@@ -468,6 +469,7 @@ import {planOSMPlaygroundLawns} from './scripts/osm-playground-verges-5104.js?v=
 import {planSlepaStreetLawns,planSlepaDrivewayWidth,slepaParkingClearsGrass,slepaParkingClearsPeople} from './scripts/osm-slepa-street-5110.js?v=511200';
 import {planSlepaUtility} from './scripts/osm-slepa-utilities-5113.js?v=511300';
 import {planSlepaParkGround} from './scripts/osm-slepa-park-ground-5114.js?v=511400';
+import {planSlepaArmRoadCornerWedges} from './scripts/osm-slepa-armadni-road-joins-5115.js?v=511500';
 import {planMladaFootwayCorners} from './scripts/osm-mlada-footway-joins-5106.js?v=511200';
 import {mountStreetAuditMenu} from './scripts/street-audit-menu-5101.js?v=511200';
 import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
@@ -536,7 +538,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261117-slepa-park-511400';
+const BUILD_ID='20261117-slepa-armadni-joins-511500';
 // Keep the visible HUD build and runtime declaration in sync for photo audits.
 document.getElementById('build-label').textContent=BUILD_ID;
 const rpStationRoofAuditCamera=new URLSearchParams(location.search).has('roofAudit');
@@ -789,6 +791,16 @@ const rpStreetAuditViews={
   regionId:'mlada',osmParkId:'891874829',
   source:'https://www.openstreetmap.org/way/891874829',
   author:'OSM leisure=park way/891874829; kamera na Slepá way/202375819; azimut podle půdorysu, vegetace je modelový odhad',
+  technical:true,streetLevel:true,estimatedHeading:true
+ },
+ // 5.115: map-aligned game camera on actual Slepá roadway,
+ // looking towards the mapped turn onto Armádní. Not Panorama.
+ 'slepa-armadni-bends-5115':{
+  label:'Slepá × Armádní · technický kontrolní pohled na napojení (NENÍ foto)',
+  camera:{lat:50.2287654,lon:14.8593937},heading:92.0,
+  regionId:'mlada',osmRoadJoinId:'202375815',
+  source:'https://www.openstreetmap.org/way/202375815',
+  author:'OSM Slepá way/202375815 a Armádní way/800846496; technický model vozovek podle mapovaných střednic, NE fotografický záběr',
   technical:true,streetLevel:true,estimatedHeading:true
  },
  'road-slepa-5108':{
@@ -5351,6 +5363,60 @@ function rpAppendOSMElements(elements,regionId='old'){
   if(isPedestrianWay(kind))
    osmPedestrianClearance.addRoad({id:el.id,points,width,kind});
  }
+ // 5.115: each original multi-node Slepá/Armádní road segment was
+ // rendered as independent rectangular ribbons, leaving a small triangle
+ // at its INSIDE bends. Fill only those source-node wedges, reusing the
+ // same width/material/DEM and the existing road-strip batching queue.
+ const slepaArmJoinPlan=planSlepaArmRoadCornerWedges(roadWays.map(el=>({
+  id:el.id,tags:el.tags,points:el.geometry.map(osmPoint)
+ })),{regionId,widths:roadWidths,maxWedges:120});
+ const joinSurfaceCounts={};
+ let joinedArea=0,queuedTriangles=0;
+ for(const wedge of slepaArmJoinPlan.wedges){
+  const surface=classifyMappedRoadSurface({
+   highway:wedge.highway,surface:wedge.sourceSurface??undefined
+  });
+  const material=osmMappedSurfaceMaterials[surface?.material]||osmRoadMaterial;
+  const tri=[wedge.a,wedge.b,wedge.c];
+  const orientation=(tri[1].x-tri[0].x)*(tri[2].z-tri[0].z)-
+   (tri[1].z-tri[0].z)*(tri[2].x-tri[0].x);
+  if(orientation>0)[tri[1],tri[2]]=[tri[2],tri[1]];
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.Float32BufferAttribute(
+   tri.flatMap(p=>[p.x,terrainAt(p.x,p.z)+.17,p.z]),3));
+  geo.setAttribute('uv',new THREE.Float32BufferAttribute(
+   tri.flatMap(p=>[p.x/(material===osmRoadMaterial?
+    ROAD_ASPHALT_TILE_METERS:8),
+    p.z/(material===osmRoadMaterial?ROAD_ASPHALT_TILE_METERS:8)]),2));
+  geo.computeVertexNormals();geo.computeBoundingSphere();
+  const midX=tri.reduce((s,p)=>s+p.x,0)/3;
+  const midZ=tri.reduce((s,p)=>s+p.z,0)/3;
+  queueRoadStrip(geo,material,midX,midZ);
+  joinedArea+=wedge.areaSquareMeters;
+  queuedTriangles++;
+  const key=surface?.material||'legacy-asphalt';
+  joinSurfaceCounts[key]=(joinSurfaceCounts[key]||0)+1;
+ }
+ const joinAudits=window.__miloviceSlepaArmRoadJoinAudits ||= [];
+ joinAudits.push({
+  regionId,eligibleWays:slepaArmJoinPlan.eligibleWays,
+  sourceWayIds:slepaArmJoinPlan.sourceWayIds,
+  cornersRenderedToRoadBatch:queuedTriangles,
+  modelWedgeAreaSquareMeters:+joinedArea.toFixed(2),
+  bySurface:joinSurfaceCounts,sourceVertexCount:slepaArmJoinPlan.sourceVertexCount,
+  avoidedStraight:slepaArmJoinPlan.ignoredStraight,
+  avoidedHairpins:slepaArmJoinPlan.ignoredSharp,
+  sourceWidthsUntouched:true,roadCentersUntouched:true,
+  createdNewRoads:0,createdCrossings:0,createdSidewalks:0,
+  modelAlignmentSource:'OSM original centreline + existing ribbon width',
+  notPhotoVerified:true
+ });
+ window.__miloviceSlepaArmRoadJoinAudit={
+  version:'5.115',regions:joinAudits,
+  queuedCornerTriangles:joinAudits.reduce((n,a)=>
+   n+a.cornersRenderedToRoadBatch,0),
+  existingRoadMeshesBatched:true
+ };
  for(const el of roadWays){
   const points=el.geometry.map(osmPoint);osmRoads.push(points);
   let minX=Infinity,maxX=-Infinity,minZ=Infinity,maxZ=-Infinity;
