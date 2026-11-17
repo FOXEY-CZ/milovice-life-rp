@@ -1,3 +1,18 @@
+## Milovice RP 5.105 — obytný blok Mladá kolem dětského hřiště (Part 22, 17. 11. 2026)
+
+**Spustit verzi:** https://foxey-cz.github.io/milovice-life-rp/?v=510500
+
+**Přímá technická kamera do 3D na bytové domy:** https://foxey-cz.github.io/milovice-life-rp/?v=510500&streetAudit=estate-mlada-5105
+
+- OSM region Mladá obsahuje **22 skutečných `building=residential` půdorysů** do ~112 m od dětského hřiště [OSM way 1468803906](https://www.openstreetmap.org/way/1468803906). Všechny mají doložené **`building:levels=4` nebo `5`**. Neznámý počet bytů není vyplněn odhadem. Půdorysy, výšky terénu a stávající 3D hmoty i střechy zůstávají beze změn.
+- Nový modul `scripts/osm-mlada-residential-5105.js` z počtu mapovaných podlaží odvozuje **skutečný počet vizuálních vodorovných spár** na fasádě. Oproti původnímu jedinému pásku uprostřed stěny se přechodová spára opakuje jen ve výšce hranic podlaží; stejný rastr pokračuje i přes krátké fasádní úseky.
+- Svislé spáry jsou **jednou na danou polohu** mezi okny podle stabilního počtu polí. Opravené obytné bloky už nevytvářejí tutéž plnovýškovou lištu znovu uvnitř každé řady oken. U středového vstupu z mapové strany domu nezakrývá vstup generické okno přízemí.
+- Stávající kreslicí systém `archPart` zachovává sdílené materiály a instancing (ne jeden draw call na lištu). Barevnost, přesné počty oken, vzhled dveří a konkrétní polohy spár **nejsou fotograficky ani geodeticky ověřené**. Model je systematická úprava vizuálního rastru podle OSM pater, nikoliv označením skutečného panelového obložení budov.
+- Přímá kamera [`estate-mlada-5105`](https://foxey-cz.github.io/milovice-life-rp/?v=510500&streetAudit=estate-mlada-5105) vychází z endpointu OSM pěší trasy [1468803907](https://www.openstreetmap.org/way/1468803907) a automaticky míří na skutečný OSM půdorys pětietážového domu [891874834](https://www.openstreetmap.org/way/891874834) (`building:flats=20`). Pohled je **technický, není to fotografie**. Ve složce kontrolních pohledů přibylo jedno přímé URL (celkem 31, dosavadních 30 zachováno).
+- Test `scripts/osm-mlada-residential-5105.test.mjs` ověřuje 22 zdrojových domů, poctivé 4/5 patro, rozumné rozestupy spár a ochranu vstupů. Nový Chromium WebGL test `scripts/osm-mlada-residential-webgl-5105.mjs` ověřuje skutečnou 3D kameru, načtení všech budov, instancované ozdobné spoje a ukládá screenshot. Diagnostika: `window.__miloviceMladaResidentialAudit` a `window.__miloviceMladaEstateCameraAudit`.
+
+---
+
 ## Milovice RP 5.104 — mapované travnaté vnitrobloky v Mladé (Part 22, 17. 11. 2026)
 
 **Spustit novou verzi:** https://foxey-cz.github.io/milovice-life-rp/?v=510400
