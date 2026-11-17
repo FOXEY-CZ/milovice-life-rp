@@ -188,7 +188,7 @@ assert(!source.includes('new THREE.CanvasTexture'));
 assert(!source.includes('new THREE.TextureLoader'));
 assert(!source.includes('fetch('));
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(html.includes("const BUILD_ID='20261117-skolska-east-58900'"));
+assert(html.includes("const BUILD_ID='20261117-skolska-tail-59000'"));
 assert(html.includes("from './scripts/bike-tower-entry-paving.js?v=58530'"));
 assert(html.includes("bikeTowerEntryPaving.create(elements,{sidewalkMaterial:osmSidewalkMat})"));
 assert(html.includes('bikeTowerEntryPaving.reset()'));
