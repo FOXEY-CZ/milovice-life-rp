@@ -1,3 +1,20 @@
+## Milovice RP 5.110 — Slepá: skutečné travnaté plochy, příjezdy a parkování bez kolizí (Part 23, 17. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=511000
+
+**Přímý technický 3D pohled na Slepou:** https://foxey-cz.github.io/milovice-life-rp/?v=511000&streetAudit=road-slepa-5108
+
+- Po 5.109 následuje **okolí celé mapované ulice**, ne další izolovaná fasáda. Podle aktuálně uložených OSM exportů `data/regions/mlada.json` + `data/regions/vrutice.json` je ve vzdálenosti do 85 m od původní střednice **Slepá way/202375817** celkem **15 platných polygonů `landuse=grass`**. Dvě regionální kopie téhož objektu se počítají jen jednou. Jejich půdorysy, světová výška a původní barevné materiály jsou NEDOTČENÉ.
+- Nový `scripts/osm-slepa-street-5110.js` tvoří uvnitř těchto doložených polygonů **48 drobných instancovaných travních trsů**. Každá odvozená pozice musí ležet celým drobným půdorysem uvnitř skutečného OSM polygonu, mimo mapovanou vozovku, chodník, příjezd, stavbu a vodní cestu. Odmítá soukromé plochy a fotograficky chráněné zóny. Respektuje již detailované polygony okolí hřišť z verze 5.104, aby nevznikaly dvojité trsy.
+- Dvě skutečně zmapované příjezdové komunikace `highway=service + service=driveway` — **way/1019598855 a way/1019598856** — mají konzistentní **modelovou šířku 3,2 m místo původní univerzální 4,5 m**. Šířka je odhad pro 3D model, nikoliv údaj z OSM ani z fotografie! Nehýbá se jejich osou a zároveň se používá pro asfalt, jízdní index a ochranu chodníků. Ostatní komunikace a oficiální `width=*` tagy se nemění.
+- V OSM exportech pro nejbližší okolí této Slepé **není označený samostatný polygon `amenity=parking`**, takže **nevznikají nová domnělá parkoviště, vyznačená stání ani obrubníky**. Procedurálně zaparkovaná auta nejsou prezentována jako dokumentovaná reálná vozidla. Parkovací plánovač `scripts/parking-layout.js` nově přijímá filtr `acceptSpot`. V okolí Slepé tím každé navržené auto kontroluje svůj přibližný celý půdorys 4,7 × 1,92 m proti existujícím mapovaným travnatým polygonům, pěším cestám a budovám; při kolizi se nevykreslí. Kontrola se netýká vzdáleného starého centra.
+- Jako další prostorová bezpečnost přidán oddělený `osmPedestrianClearance` (pouze reálné mapované pěší cesty), aby parkované auto nemuselo být odmítnuto jen proto, že stojí na existující vozovce, ale nesmělo přejet přes chodník. Žádné nové stromy, keře, veřejný mobiliář ani dětské vybavení se nepřidávají.
+- Diagnostika ve hře: `window.__miloviceSlepaLawnAudit`, `window.__miloviceSlepaLawnRuntime()`, `window.__miloviceSlepaAccessAudit`, `window.__miloviceSlepaParkingAudit`. Runtime test trávních instancí kontroluje **celý řetězec rodičů do skutečné Three.js scény**, aby se neopakovala chyba mizících objektů po streamování.
+- Test `scripts/osm-slepa-street-5110.test.mjs` byl spuštěn v JS testovacím prostředí s oběma skutečnými OSM exporty a **prošel**: přesných 15 doložených trávníků / 48 detailů / 2 příjezdů, determinismus při prohození regionů, odmítání kolizí i příliš obecných prvků. Přidán také `scripts/osm-slepa-street-webgl-5110.mjs` pro mobilní Chromium včetně kontroly viditelnosti detailů po 6,2 s; **WebGL běh nebyl v tomto kroku potvrzen**.
+- Grafika zůstává **realistickým, ale dílčím procedurálním modelem**; přesný porost, typ obrubníků, šířka příjezdů i skutečné rozmístění zaparkovaných aut bude potřeba přizpůsobit podle veřejných fotografií nebo budoucích panorama snímků. Půdorysy domů (včetně 5 bytovek z 5.109), veřejné chodníky a silnice zůstávají zachované.
+
+---
+
 ## Milovice RP 5.109 — obytná ulice Slepá: pět čtyřpodlažních domů (Part 23, 17. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=510900
