@@ -1,3 +1,19 @@
+## Milovice RP 5.96 — mapované potoky a otevřená odvodnění (Part 21, 17. 11. 2026)
+
+**Spustit hru:** https://foxey-cz.github.io/milovice-life-rp/?v=59600
+
+**Technické kamery přímo na vodních trasách:**
+- [Mlynařice — herní kamera](https://foxey-cz.github.io/milovice-life-rp/?v=59600&streetAudit=water-mlynarice-596) (OSM way 82222748, GPS 50.2233738 / 14.8887585).
+- [Svodnice od Benátecké Vrutice — herní kamera](https://foxey-cz.github.io/milovice-life-rp/?v=59600&streetAudit=water-svodnice-596) (OSM way 1547734545, GPS 50.2312589 / 14.8488875).
+
+- Předchozí systém vykresloval silnice, stezky, OSM budovy a zeleň, ale **ignoroval mapované vodní cesty**. Nový modul `scripts/osm-waterways.js` přidává pouze existující OSM `waterway=stream/drain/ditch/river`, bez vymyšlených vodotečí. Ze zdrojových regionálních exportů bylo nalezeno **11 jedinečných vodních ways**, z toho **7 neoznačených jako podzemní/sezónní** a **4 podzemní či zakryté**. Čísla jsou inventář zdrojových dat, nikoli potvrzení aktuálního stavu vody v terénu.
+- `tunnel=culvert`, záporný `layer`, `covered=yes` či `location=underground` se nevykreslují. Linie se ořezávají k hranici načtené oblasti (+180 m), takže několik kilometrů vzdálený kus OSM way nezatěžuje mobil při načtení Mladé. Přes explicitní komunikace, pěšiny a půdorysy budov se vodní povrch nekreslí.
+- Mapová linie toku je doložená, **šířka a výška viditelného plochého modelu jsou však vizuální odhady**, nikoli změřené břehy, koryta či hladina. Podklady DIBAVOD/OSM netvrdí, že v roce 2026 všude fyzicky proudí voda. Řešení nepředělává terén ani nevytváří mosty. Zatím jde o stylizovaný vodní pás, který bude potřeba porovnat s veřejnými fotografiemi.
+- Jeden znovupoužitý sdílený materiál pro vodní trasy, existující dávkové `osmStrip` slučování po 160 m; bez kopírování textur, bez další simulace částic a bez zásahu do NPC dopravy. Diagnostika `window.__miloviceMappedWaterways` obsahuje skutečně vykreslené metry a počty načtených oblastí.
+- Automatický test `scripts/osm-waterways.test.mjs` ověřuje podzemní výluky, ořezávání, zdrojové IDs, silnice, stezky, budovy, herní propojení i synchronizaci build čísla. Je připojen do validačního workflow. Skutečné vizuální vykreslení a mobilní FPS se musí teprve ověřit v prohlížeči.
+
+---
+
 ## Milovice RP 5.95 — OSM doložené jednostranné chodníky bez kolizí (17. 11. 2026)
 
 **Aktuální hra:** https://foxey-cz.github.io/milovice-life-rp/?v=59500

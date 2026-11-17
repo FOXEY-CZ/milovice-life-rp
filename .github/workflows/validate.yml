@@ -23,6 +23,8 @@ jobs:
         run: node scripts/city-landscape-batch.test.mjs
       - name: Validate mapped OSM road, track and footpath surface materials without invented geometry
         run: node scripts/osm-road-surfaces.test.mjs
+      - name: Validate source-mapped Mlynařice and Svodnice streams, underground culverts, region clips and zero road collisions
+        run: node scripts/osm-waterways.test.mjs
       - name: Verify OSM-tagged one-sided Armádní and Topolová sidewalks avoid roads, footways and mapped homes
         run: node scripts/osm-tagged-sidewalk.test.mjs
       - name: Validate 5.91 safe single-region OSM and ČÚZK data prefetch
