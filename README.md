@@ -1,3 +1,16 @@
+## Školská východ 5.89 — pátý obytný blok (2026-11-17)
+
+**Přímá OSM kamera od Pionýrů:** https://foxey-cz.github.io/milovice-life-rp/?v=58900&streetAudit=skolska-east-589  
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=58900
+
+- Osm nových OSM-půdorysů obytných domů podél Školské východně od Pionýrů (ways `1331897643` a `1331897644`). Půdorysy, ulice, chodníky a školní budova zůstávají v původní mapové geometrii.
+- Kontextová veřejná fotografie [ZŠ T. G. Masaryka](https://commons.wikimedia.org/wiki/File:Milovice,_Z%C5%A0_T._G._Masaryka_(01).jpg), ŠJů, 30. 5. 2024, CC BY 4.0. Neprokazuje vzhled všech sousedních soukromých domů; jejich obecné fasády jsou **odhady**, nikoliv fotograficky ověřený stav.
+- Nový přímý kontrolní pohled na skutečném uzlu OSM `50.2280951, 14.8875431` směřuje přibližně k východu pod azimutem 119° podle osy ulice. **Není to úhel veřejné fotografie** a hra jej tak označuje.
+- Nové kapacitní rozdělení přesně 68 detailních obytných budov: kostelní blok 20, Mírová 12, Školská u školy 12, Školská západ 8, Školská východ 8, již fotograficky doložený štít 1, zbývající městské domy 7. Předchozí fotobloky zůstaly vyhrazené.
+- Žádné umělé parcely, ploty, vjezdy, lampy ani přechody. Další inventář celé ulice musí být veden jako vizuální odhad, dokud nebude fotograficky nebo mapově doložen.
+
+---
+
 ## Školská západ 5.88 — čtvrtý uliční blok (2026-11-17)
 
 **Přímá kamera — Školská 220/1:** https://foxey-cz.github.io/milovice-life-rp/?v=58800&streetAudit=skolska-west-2024  
