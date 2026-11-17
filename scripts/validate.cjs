@@ -22,4 +22,13 @@ for (const id of ['hud','perf','controls','minimap','maplaunch','realmap','speed
 assert(html.includes('requestAnimationFrame(animate)'), 'Animation loop missing');
 assert(html.includes('fetchMiloviceOSM'), 'OSM loader missing');
 assert(html.includes('BUILD_ID'), 'Build identifier missing');
+const embeddedBuild=html.match(/const BUILD_ID='([^']+)'/)?.[1];
+const metaBuild=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
+const labelBuild=html.match(/id="build-label">([^<]+)<\/strong>/)?.[1];
+assert(embeddedBuild&&metaBuild&&labelBuild,
+ 'Build must be set in metadata, HUD and module runtime');
+assert.equal(embeddedBuild,metaBuild,
+ 'Build metadata must match the actual JavaScript build ID');
+assert.equal(embeddedBuild,labelBuild,
+ 'Build displayed in HUD must match runtime; stale labels break WebGL regression tests');
 console.log('OK: inline JavaScript syntax, critical UI, game loop, OSM loader, build identifier');
