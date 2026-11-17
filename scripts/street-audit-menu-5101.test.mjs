@@ -43,6 +43,10 @@ assert(html.includes('#street-audit-exit'));
 assert(html.includes('#street-audit-info-toggle'));
 assert(html.includes('#street-block-audit .street-audit-links a{'));
 assert(html.includes('white-space:normal!important'));
+assert(html.includes('flex:0 0 auto;min-height:38px'));
+assert(html.includes('flex-shrink:0'));
+assert(html.includes('height:auto!important;min-height:40px!important'));
+
 assert(html.includes("if(statusText)statusText.textContent=rpStreetAuditView.osmWidthWayId?"));
 const menuScript=readFileSync(new URL('./street-audit-menu-5101.js',import.meta.url),'utf8');
 assert(menuScript.includes("group.open=!mobile&&section.id===selectedGroup"));
