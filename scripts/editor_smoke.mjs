@@ -2,6 +2,13 @@
 // source links and persisted cards. Does not modify any live game state.
 import {chromium} from 'playwright-core';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+// Count the actual manually reviewed entries, not a stale test fixture.
+const approvedManifest=JSON.parse(readFileSync(
+ new URL('../data/architecture/verified-buildings.json',import.meta.url),'utf8'));
+assert.equal(approvedManifest.schema,'milovice-rp-approved-buildings-v1');
+const expectedPublished=Object.keys(approvedManifest.buildings).length;
+assert(expectedPublished>=4,'Cannot silently discard already published photo-approved buildings');
 const browser=await chromium.launch({executablePath:process.env.CHROME_BIN||'/usr/bin/google-chrome',
  headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
 try{
@@ -187,7 +194,10 @@ try{
  assert.equal(await page.locator('#stage').inputValue(),'verified','local progress not persisted');
  assert.equal(await page.locator('#face-status').inputValue(),'seen','Per-facade review not persisted');
  assert.equal(await page.locator('#face-rows').inputValue(),'2,3','Per-floor geometry not persisted');
- await page.waitForFunction(()=>window.__miloviceEditor?.publishedCount===4,null,{timeout:12000});
+ await page.waitForFunction(expected=>window.__miloviceEditor?.publishedCount===expected,
+  expectedPublished,{timeout:45000});
+ assert.equal(await page.evaluate(()=>window.__miloviceEditor.publishedCount),
+  expectedPublished,'Editor must import every reviewed OSM card from the published manifest');
  assert.equal(await page.evaluate(()=>window.__miloviceEditor.reviewCandidateCount),1,
   'A locally verified house should be eligible for a human-reviewed batch');
  const exportWait=page.waitForEvent('download');
