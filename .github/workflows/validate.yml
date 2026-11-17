@@ -23,6 +23,8 @@ jobs:
         run: node scripts/city-landscape-batch.test.mjs
       - name: Validate mapped OSM road, track and footpath surface materials without invented geometry
         run: node scripts/osm-road-surfaces.test.mjs
+      - name: Verify the technical forest camera is inside concave Juventsky forest
+        run: node scripts/forest-camera-598.test.mjs
       - name: Validate deterministic OSM forest and park trees against roads, buildings and open waterways
         run: node scripts/forest-placement-597.test.mjs
       - name: Validate source-mapped Mlynařice and Svodnice streams, underground culverts, region clips and zero road collisions

@@ -1,3 +1,19 @@
+## Milovice RP 5.98 — skutečný les v kontrolní kameře (Part 21, 17. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=59800
+
+**Opravené kontrolní pohledy:**
+- [Juventský les, Mladá](https://foxey-cz.github.io/milovice-life-rp/?v=59800&streetAudit=forest-mlada-597)
+- [Mapovaný les, Boží Dar](https://foxey-cz.github.io/milovice-life-rp/?v=59800&streetAudit=forest-bozidar-597)
+
+- Uživatelský mobilní screenshot 17. 11. 2026 ukázal pouze prázdný horizont. Příčina: kamera z 5.97 byla na aritmetickém průměru **hraničních OSM uzlů**, který v nepravidelném polygonu Juventského lesa (way 26023867) leží mimo samotný les. Zdrojová oblast už přitom obsahovala skutečně vykreslených 34 modelovaných stromů.
+- Kamera se nyní po načtení odpovídající oblasti přemístí **dovnitř OSM lesního polygonu**, mimo mapované silnice/budovy/vodní povrchy, tak, aby v dohledu měla jeden či více skutečně instancovaných modelových stromů. Výška se opakovaně aktualizuje podle DMR dané oblasti.
+- Původní velký a nesprávně zastaralý nadpis „Šest uličních bloků · Školská jihovýchod 5.90“ se v režimu lesních a vodních kamer změní na smysluplný popis.
+- Jedná se o **technické herní kamery**, nikoli fotografie nebo přesnou polohu konkrétních živých stromů. OSM polygon, veřejné silnice a terén se nemění.
+- Přidán jednotkový test kontrolující původní bod mimo les a nově bezpečnou kameru uvnitř. Samostatný Playwright/Chromium mobilní test ověřuje i to, že skutečně vykreslená koruna stromu je v záběru a herní kamera je 1,68 m nad místním DEM. Screenshot testu se ukládá do GitHub Actions.
+
+---
+
 ## Milovice RP 5.97 — stálá a bezpečná zeleň napříč ulicemi (Part 21, 17. 11. 2026)
 
 **Aktuální hra:** https://foxey-cz.github.io/milovice-life-rp/?v=59700

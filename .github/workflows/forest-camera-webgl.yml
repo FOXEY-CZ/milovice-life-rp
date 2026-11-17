@@ -1,0 +1,41 @@
+name: Milovice 5.98 forest camera WebGL
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - scripts/forest-camera-598.js
+      - scripts/forest-camera-webgl.mjs
+      - scripts/forest-placement-597.js
+      - scripts/landscapes.js
+      - data/regions/mlada.json
+      - .github/workflows/forest-camera-webgl.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  forest-camera-webgl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install headless browser client
+        run: npm install --no-save --no-package-lock playwright-core@1.57.0
+      - name: Verify mapped forest camera on phone
+        run: |
+          CHROME_BIN="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          export CHROME_BIN
+          python3 -m http.server 8080 >/tmp/milovice-forest-598-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          node scripts/forest-camera-webgl.mjs
+      - name: Upload real 3D forest view
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: milovice-forest-598-mobile
+          path: browser-artifacts/milovice-forest-598-mobile.png
+          if-no-files-found: ignore
