@@ -1,3 +1,15 @@
+## Milovice RP 5.102 — veřejná dětská hřiště podle OSM (Part 22, 17. 11. 2026)
+
+**Spustit verzi:** https://foxey-cz.github.io/milovice-life-rp/?v=510200
+
+- Nové skutečné **3D konstrukce** na veřejných OSM plochách `leisure=playground`: modelované houpačky a skluzavky, příčky žebříků, kovové podpěry, sedátka a řetězy. Jde o původní nízkopolygonové modely v sdílených Three.js `InstancedMesh` várkách po 200 m buňkách.
+- V šesti regionálních souborech bylo identifikováno **18 jedinečných mapovaných polygonů** dětských hřišť. Jen **6** z nich jsou běžné veřejné prostory vhodné pro odhadované standardní vybavení; vzniká **9 součástí hřišť** (houpaček/skluzavek). Ostatních 12, včetně soukromých ploch a konkrétních pojmenovaných atrakcí Mirakula, se nevyplňuje smyšleným běžným vybavením. Výslovný OSM `playground=swing` vytváří pouze houpačku.
+- **Polygon a lokalita pocházejí z OSM. Konkrétní vybavení, jeho souřadnice, barvy a provedení NEJSOU fotograficky ověřené.** Umístění je vázané na vnitřní plochu mapovaného polygonu s bezpečnostní rezervou a kontroluje již mapované silnice, cesty, budovy i otevřené vodoteče. Staré fotograficky přezkoumané části Milovic se umělým vybavením nedoplňují.
+- Nedochází ke změně původních OSM silnic, budov, mostů ani výškopisu ČÚZK. Všechny dekorace podléhají stávající hranici viditelnosti a uživatelskému nastavení výkonu. Diagnostika v konzoli: `window.__milovicePlaygroundAudit`.
+- Nový test `scripts/osm-playground-equipment-5102.test.mjs` ověřuje neduplikaci regionů, původ veřejných polygonů, vyloučení Mirakula, bezpečnost poloh a shodné opakovatelné umístění.
+
+---
+
 ## Milovice RP 5.101 — mobilní kontrolní nabídka už nezakrývá hru (Part 21, 17. 11. 2026)
 
 **Spustit aktuální verzi:** https://foxey-cz.github.io/milovice-life-rp/?v=510100
