@@ -61,7 +61,7 @@ try{
    gpsHref:document.getElementById('street-audit-map-gps')?.href,
    build:document.getElementById('build-label')?.textContent
   }));
-  assert.equal(info.build,'20261116-live-camera-gps-share-58530');
+  assert.equal(info.build,'20261117-skolska-east-58900');
   assert.equal(info.mass?.prioritizedBuildings,20,
    'A WHOLE 20-house neighborhood block, not an isolated prop, must be planned');
   assert.equal(info.mass?.actuallyDetailed,20,
