@@ -10,7 +10,9 @@ export function planSlepaUtility({id,regionId,tags={},points=[],
  const sourceId=String(id??'');
  if(!AREAS.has(regionId)||photoReviewed||approvedArchitecture||
   tags?.building!=='yes'||!Array.isArray(points)||
-  points.length<4||points.length>14||!points.every(finite))return null;
+  points.length<4||points.length>14||!points.every(finite)||
+  ['private','no'].includes(tags.access)||
+  tags['building:levels']!==undefined||tags.height!==undefined)return null;
  const shelter=sourceId===SHELTER&&tags.amenity==='shelter'&&
   /přístřešek pro kontejnery na směsný odpad/i.test(tags.note??'');
  const substation=SUBSTATIONS.has(sourceId)&&
