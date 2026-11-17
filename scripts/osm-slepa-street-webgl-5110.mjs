@@ -15,7 +15,7 @@ try{
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',err=>errors.push(String(err.stack||err)));
  await page.goto(
-  'http://127.0.0.1:8080/?v=511100&streetAudit=road-slepa-5108',
+  'http://127.0.0.1:8080/?v=511200&streetAudit=road-slepa-5108',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>
@@ -65,7 +65,7 @@ try{
  assert.equal(data.parking?.unverifiedPaintedSpaces,0);
  assert.equal(data.estate.mappedApartmentBuildings,5);
  assert.equal(data.meta,data.hud);
- assert(data.meta?.endsWith('511100'));
+ assert(data.meta?.endsWith('511200'));
  await page.waitForTimeout(6200);
  const live=await page.evaluate(()=>
   window.__miloviceSlepaLawnRuntime?.());
