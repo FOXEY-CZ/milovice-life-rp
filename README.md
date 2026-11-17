@@ -1,3 +1,17 @@
+## Milovice RP 5.106 — plynulé ohyby pěších cest v Mladé (Part 22, 17. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=510600
+
+**Přímý technický pohled do OSM obytného bloku:** https://foxey-cz.github.io/milovice-life-rp/?v=510600&streetAudit=estate-mlada-5105
+
+- OSM pěší trasy v obytné Mladé se dosud renderovaly jako navazující rovné pásy. V ostrých či středních ohybech konce obdélníků vytvářely drobné **trojúhelníkové mezery**. Nový geometrický plánovač `scripts/osm-mlada-footway-joins-5106.js` pro tyto případy dopočítává pouze chybějící **miterový trojúhelník** v koridoru existujícího OSM `highway=footway/path`.
+- V současné souborové verzi Mladé plánovač doložil **18 drobných oprav ohybů na 10 OSM pěších trasách** v okolí již vytvořeného hřiště (`way/1468803906`), a odmítl 3 kandidáty kolidující s vozovkou. Originální OSM uzly, směry, délky, šířky, povrchy, domy a terén zůstávají nezměněné. Šířky už existujících cest (cca 1,65–1,8 m) zůstávají modelové odhady.
+- **Žádné Minecraftové čtvercové záplaty, nové trasy, falešné přechody ani malované zebry.** `footway=crossing` se zcela vynechává, zvlášť ty explicitně označené `crossing=unmarked` a `crossing:markings=no`. Plocha trojúhelníku je jen chybějící roh již existujícího chodníku; bezpečnostní kontrola zakazuje jeho umístění do zmapované vozovky či budovy.
+- Herní renderer sčítá všechny malé trojúhelníky podle již sdíleného materiálu cest do jednoho až několika `BufferGeometry` meshů se stejnou texturou a výškou terénu (`terrainAt`). Tím nevzniká jeden draw call na každý ohyb. Původní přímé OSM pásy se nevykreslují podruhé. Jen oblast Mladá je v tomto kroku zahrnuta; fotograficky auditované staré centrum se tím nepřekresluje.
+- `scripts/osm-mlada-footway-joins-5106.test.mjs` kontroluje 18 triangulací, 10 zdrojových tras, test průchodnosti, odolnost proti duplicitám regionálních dat a nulové vymyšlené cesty. WebGL test `scripts/osm-mlada-residential-webgl-5105.mjs` nyní navíc kontroluje skutečně načtenou geometrii 5.106. Diagnostika: `window.__miloviceMladaFootwayJoinAudit`.
+
+---
+
 ## Milovice RP 5.105 — obytný blok Mladá kolem dětského hřiště (Part 22, 17. 11. 2026)
 
 **Spustit verzi:** https://foxey-cz.github.io/milovice-life-rp/?v=510500
