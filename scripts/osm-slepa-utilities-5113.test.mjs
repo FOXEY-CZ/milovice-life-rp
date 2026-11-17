@@ -68,6 +68,7 @@ for(const term of [
  'approvedArchitecture:Boolean(modelCard)',
  'const defaultLevels=(slepaUtility||isGarage||isIndustrial||',
  'slepaUtility?slepaUtility.modelHeightMeters',
+ 'Math.max(isGarage||slepaUtility?2.35:3.0,',
  'const regionalStyle=slepaUtility?null:planRegionalBuildingStyle({',
  "const roofPreference=slepaUtility?'flat':",
  'const visibleFloors=slepaUtility?0:',
