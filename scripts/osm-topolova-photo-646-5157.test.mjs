@@ -90,7 +90,7 @@ for(const q of [
  "from './scripts/osm-topolova-photo-646-5157.js?v=515700'",
  'const topolova646BothPlan=topolova646Photo?',
  'renderTopolova646BothFacades5157(THREE,{',
- 'topolova646BothPlan.photoExteriorEdges.includes(i)',
+ 'topolova646BothPlan?.photoExteriorEdges.includes(i)',
  'window.__miloviceTopolovaBothFacadesRuntime=()=>{',
  "'topolova-646-both-5157':{"
 ])assert(html.includes(q),'Missing real 5.157 integration '+q);

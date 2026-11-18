@@ -46,7 +46,8 @@ for(const needle of [
  'const topolova646Photo=planTopolova646Photo5156({',
  'if(topolova646Photo)floors=topolova646Photo.modelWallFloors;',
  'if(topolova646Photo)h=topolova646Photo.modelWallHeightMeters;',
- 'const rendered646=topolova646Photo?',
+ 'const rendered646=topolova646BothPlan?',
+ 'renderTopolova646BothFacades5157(THREE,{',
  'window.__miloviceTopolova646PhotoRuntime=()=>{',
  "'topolova-646-photo-5156':{",
  '!topolova646Photo&&!sportovniHall'
