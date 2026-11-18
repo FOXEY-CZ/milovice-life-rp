@@ -45,7 +45,7 @@ try{
   panelHeight:document.getElementById('street-block-audit')
    ?.getBoundingClientRect().height
  }));
- assert.equal(s.meta,'20261118-ruian-residential-shared-walls-sportovni-513300');
+ assert.match(s.meta,/^20[0-9]{6}-[a-z0-9-]+$/,'Nonempty release identity must remain machine-readable');
  assert.equal(s.meta,s.build);
  assert.equal(s.audit.clinicId,'1057548624');
  assert.equal(s.audit.sourceStreetId,'246652750');

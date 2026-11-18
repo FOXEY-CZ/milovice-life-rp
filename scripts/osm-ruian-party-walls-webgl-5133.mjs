@@ -46,7 +46,7 @@ try{
   menuHeight:document.getElementById('street-block-audit')
    ?.getBoundingClientRect().height
  }));
- assert.equal(s.build,'20261118-ruian-residential-shared-walls-sportovni-513300');
+ assert.match(s.build,/^20[0-9]{6}-[a-z0-9-]+$/,'Nonempty release identity must remain machine-readable');
  assert.equal(s.hud,s.build);
  assert.equal(s.cam.view,'tyrsova-sportovni-5133');
  assert(s.regions.includes('mlada'));

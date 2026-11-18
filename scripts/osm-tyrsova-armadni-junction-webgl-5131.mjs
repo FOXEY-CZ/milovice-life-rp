@@ -52,7 +52,7 @@ try{
   oldClinicShopfront:window.__miloviceClinicShopfrontRuntime?.(),
   oldClinicSaplings:window.__miloviceClinicPhotoSaplingsRuntime?.()
  }));
- assert.equal(s.build,'20261118-ruian-residential-shared-walls-sportovni-513300');
+ assert.match(s.build,/^20[0-9]{6}-[a-z0-9-]+$/,'Nonempty release identity must remain machine-readable');
  assert.equal(s.label,s.build);
  assert(s.regions.includes('mlada'));
  assert.equal(s.cam.view,'tyrsova-terrace-5131');

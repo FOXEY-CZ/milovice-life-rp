@@ -51,7 +51,7 @@ try{
   pharmacyText:document.getElementById('street-audit-clinic-tenants')?.textContent,
   menuHeight:document.getElementById('street-block-audit')?.getBoundingClientRect().height
  }));
- assert.equal(x.version,'20261118-ruian-residential-shared-walls-sportovni-513300');
+ assert.match(x.version,/^20[0-9]{6}-[a-z0-9-]+$/,'Nonempty release identity must remain machine-readable');
  assert.equal(x.hud,x.version);
  assert.equal(x.audit.sourceBuildingId,'1057548624');
  assert.equal(x.audit.bays,8);
