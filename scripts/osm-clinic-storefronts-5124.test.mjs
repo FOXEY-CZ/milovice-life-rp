@@ -103,8 +103,8 @@ for(const token of [
  "clinicPhotoGroundGlazedBays",
  "physicalPharmacySignAdded:false",
  "pharmacyPlacementOnFacadeVerified:false",
- "const BUILD_ID='20261118-spojovaci-complete-photo-street-context-513000'",
- "href=\"?v=513000&streetAudit=armadni-clinic-5118\"",
+ "const BUILD_ID='20261118-tyrsova-armadni-osm-zebra-estate-513100'",
+ "href=\"?v=513100&streetAudit=armadni-clinic-5118\"",
  "id=\"street-audit-clinic-tenants\" hidden",
  "clinicTenantPanel.hidden=rpStreetAuditId!=='armadni-clinic-5118'",
  "Přesné umístění jednotlivých provozoven na fasádě není potvrzené."
