@@ -23,6 +23,7 @@ export function makeMiloviceHeroArchitecture(THREE,{
   detailInstances:0,drawMeshes:0,chunkCount:0,
   suppressedArbitraryChimneys:0,skippedUnverifiedGables:0,
   suppressedUnverifiedPhotoOrnaments:0,shortWallSegmentsSealed:0,
+  sharedPartyWallFacesSuppressed:0,sharedPartyWallDecorationsSuppressed:0,
   skippedDegenerateEdges:0,
   trimmedWallEdges:0,trimmedShortReturns:0,trimmedPerimeterMetres:0,
   photoEaveBands:0,photoEaveVisibleBands:0,
@@ -137,7 +138,8 @@ export function makeMiloviceHeroArchitecture(THREE,{
   if(selected.has(identity)||selected.size>=maxBuildings)return false;
   return true;
  }
- function addBuilding({points,base,height,floors,type,index,id,excluded=false,override=null}){
+ function addBuilding({points,base,height,floors,type,index,id,excluded=false,
+  override=null,sharedPartyEdges=null,onSharedPartyEdge=null}){
   if(!supports({points,height,floors,type,index,id,excluded,override}))return false;
   const identity=id??('local-'+index);
   selected.add(identity);
@@ -166,6 +168,17 @@ export function makeMiloviceHeroArchitecture(THREE,{
    // on concave OSM buildings, exposing the sky below the hip roof.
    const wallKind=classifyFacadeEdgeLength(len);
    if(wallKind==='degenerate'){state.skippedDegenerateEdges++;continue;}
+   // 5.133.1: exact RUIAN shared inner wall requires a CLOSED shell
+   // and NO generic outer facade openings, plinths or cornices.
+   if(sharedPartyEdges?.has(sideIndex)){
+    const wall=wallGeometry(a,b,base,height,[],tone);
+    if(wall){chunk.walls.push(wall);state.solidWalls++;}
+    state.sharedPartyWallFacesSuppressed++;
+    state.sharedPartyWallDecorationsSuppressed++;
+    if(typeof onSharedPartyEdge==='function')
+     onSharedPartyEdge(sideIndex);
+    continue;
+   }
    // The SAME base/cornice planner is used BEFORE splitting long facades
    // from short, undecorated returns. Previously an early continue skipped
    // both bands on every short return, leaving visibly broken plinths.
