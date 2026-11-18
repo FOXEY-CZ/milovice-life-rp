@@ -2,7 +2,7 @@
 
 > **Účel:** stručný, průběžně aktualizovaný startovní bod pro nové ChatGPT konverzace. **Nejde o úplnou historii.** Detailní changelog je na začátku `README.md`. Udržuj tento soubor krátký: aktuální stav, otevřené úkoly, ověřené zdroje a další krok.
 >
-> **Aktuální zapsaná verze:** 18. 11. 2026; hra **5.142** na větvi `main`. Implementace 5.142 je v repozitáři; jednotkové a mobilní WebGL testy se spouštějí přes GitHub Actions (výsledek je potřeba zkontrolovat, netvrdit PASS před dokončením).
+> **Aktuální ověřená verze:** 18. 11. 2026; hra **5.142** na větvi `main`. Unit testy prošly v [GitHub Actions Validate](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44316888551), a **samostatný mobilní WebGL test prošel** v [Sportovní 5.142](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44317164137), včetně viditelnosti obou košů po šesti sekundách a zachování předchozích prvků. GitHub Pages nasazení verze 5.142 proběhlo úspěšně.
 
 ## Projekt a odkazy
 
@@ -38,7 +38,7 @@ Dřívější práce pokrývají nádraží, Bike Tower, centrum, střechy a fas
 
 ## Co je potřeba dál
 
-- **Nejbližší směr:** nejprve zkontrolovat výsledky GitHub Actions pro 5.142 (unit + mobilní WebGL, oba koše viditelné i po LOD); případnou regresi opravit. Potom pokračovat systematicky v **Sportovní / Průběžná**, kontrolovat celé ulice, navazující domy, pěší trasy, vozovky a okolí. Před každým novým konkrétním zásahem ověřit skutečný stav repozitáře a odpovídající zdrojová data.
+- **Nejbližší směr:** 5.142 prošla unit i samostatným mobilním WebGL testem. Pokračovat systematicky ve **Sportovní / Průběžná**, kontrolovat celé ulice, navazující domy, pěší trasy, vozovky a okolí. Nezaměňovat funkční test za fotografické schválení vzhledu modelů. Před každým novým konkrétním zásahem ověřit skutečný stav repozitáře a odpovídající zdrojová data.
 - **Chybějící georeferencovaný podklad:** projektová parkovací stání (v dokumentaci 109), lampy (22), obruby a přesná poloha nových prvků v Průběžné. Dokud není konkrétní polohopis / výkres C.3 nebo fotografická kontrola, **nevkládat odhadem**.
 - **Dlouhodobý dluh:** znovu projít starší budovy a celé ulice podle `docs/building-rebuild-program.md` a `docs/reality-audit-00.md`. Fotofasády mohou být jen částečně podložené; nezaměňovat je za hotovou 360° rekonstrukci.
 - **Každá další verze:** jedna smysluplná úprava → cílené unit testy → pokud se mění scéna, kontrola v mobilním WebGL → commit a stručný zápis zde. Neoznačovat test jako prošlý, pokud skutečně neběžel.
@@ -55,4 +55,4 @@ Dřívější práce pokrývají nádraží, Bike Tower, centrum, střechy a fas
 
 - Založení `DEVELOPMENT_STATUS.md` je **pouze dokumentační změna**, ne nová verze hry.
 - Žádné herní skripty ani mapová data se tím nemění.
-- **Změny 5.142:** hra již byla upravena a kontroly jsou zapojené do `validate.yml` a `browser-smoke.yml`; stav úspěchu je nutné ověřit z aktuálního GitHub Actions běhu.
+- **Změny 5.142:** nové koše jsou ve hře, úspěšně nasazené na GitHub Pages. Jednotkové testy prošly; **samostatný mobilní 3D test s 6s LOD kontrolou prošel**. Zároveň je přidán rychlý samostatný workflow `.github/workflows/sportovni-basketball-5142-webgl.yml` a testy jsou zapojené i v běžné validační a prohlížečové sadě.
