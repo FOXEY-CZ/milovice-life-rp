@@ -205,5 +205,7 @@ jobs:
         run: node scripts/osm-tyrsova-party-walls-5132.test.mjs
       - name: Verify 5.133 all exact RUIAN full-height shared residential facades in Mladá and intact Tyršova
         run: node scripts/osm-ruian-party-walls-5133.test.mjs
+      - name: Verify 5.134 official Průběžná 2025 pavers stay on two actual OSM footways without fake lamps/parking
+        run: node scripts/osm-prubezna-renovation-5134.test.mjs
       - name: Validate expanded Milovice districts and real elevation data
         run: python3 scripts/validate_regions.py
