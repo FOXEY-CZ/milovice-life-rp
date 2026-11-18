@@ -15,7 +15,7 @@ try{
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
  await page.goto(
-  'http://127.0.0.1:8080/?v=512900&streetAudit=armadni-clinic-5118',
+  'http://127.0.0.1:8080/?v=513000&streetAudit=armadni-clinic-5118',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>(
@@ -60,7 +60,7 @@ try{
   menuHeight:document.getElementById('street-block-audit')
    ?.getBoundingClientRect().height
  }));
- assert.equal(s.version,'20261118-spojovaci-photographed-verge-saplings-512900');
+ assert.equal(s.version,'20261118-spojovaci-complete-photo-street-context-513000');
  assert.equal(s.label,s.version);
  assert.equal(s.audit.osmClinicId,'1057548624');
  assert.equal(s.audit.streetWayId,'246652750');
