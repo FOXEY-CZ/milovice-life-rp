@@ -43,7 +43,7 @@ for(const key of [
  'if(slunickoPlan)floors=slunickoPlan.modelFloors;',
  'if(slunickoPlan)h=slunickoPlan.modelHeightMeters;',
  'window.__miloviceSlunickoRuntime=()=>{',
- 'streetAudit=topolova-slunicko-5153',
+ 'camera:{lat:50.2294884,lon:14.8662864},heading:50',
  "'topolova-slunicko-5153':{",
  '!sportovniHall&&!slunickoPlan&&!slepaUtility'
 ])assert(html.includes(key),'Missing game hook '+key);

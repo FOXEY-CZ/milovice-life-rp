@@ -42,9 +42,10 @@ for(const token of [
  "if(osmId===53865798&&tags.shop==='supermarket'&&name==='Billa')",
  "photoEntranceEdge?.index===4",
  "const isArmClinic=armLandmark?.kind==='polyclinic'",
- "const floors=modelCard?.floors??(armLandmark?.floors??",
  "window.__miloviceArmLandmarksRuntime=()=>{",
  "const isPhotoBillaSign=normalized==='billa'",
  "roofLetters:'BILLA',letterColour:'yellow'"
 ])assert(html.includes(token),'Missing protected integration: '+token);
+assert(/(?:const|let) floors=modelCard\?\.floors\?\?\(armLandmark\?\.floors/.test(html),
+ 'Original clinic floor-level fallback must still exist');
 console.log('PASS 5.119: BILLA roof sign transparent yellow, one mapped canopy, preserved clinic, OSM and photo cameras');

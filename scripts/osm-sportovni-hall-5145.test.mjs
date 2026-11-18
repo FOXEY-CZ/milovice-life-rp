@@ -61,6 +61,7 @@ for(const text of [
  'streetAudit=sportovni-hall-5145',
  'if(sportovniHall)h=sportovniHall.modelHeight',
  'const visibleFloors=(sportovniHall||slepaUtility||isArmClinic)?0:',
- 'const inventedEntrance=!sportovniHall&&!slepaUtility'
  ])assert(html.includes(text),'Missing real 5.145 OSM scene integration '+text);
+assert(/const inventedEntrance=![^;]*sportovniHall[^;]*slepaUtility/.test(html),
+ 'Sports hall must still suppress unsupported automatic entrances');
 console.log('PASS 5.145 photo-grounded hall with original RUIAN polygon, 9.6m estimated height, 39 ribbed modules and no invented objects');
