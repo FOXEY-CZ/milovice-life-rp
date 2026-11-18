@@ -1,3 +1,16 @@
+## Milovice RP 5.135 — Průběžná 2025: opravený asfalt na skutečné jednosměrce (Part 27, 18. 11. 2026)
+
+**Přímá kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=513500&streetAudit=prubezna-road-asphalt-5135
+
+- Veřejná [městská zakázka 2025 – Oprava povrchu chodníků a komunikace sídliště Průběžná](https://zakazky.mesto-milovice.cz/contract_display_51.html) dokumentuje plánovanou výměnu obrusné asfaltové vrstvy cca **400 m** od Tyršovy ke Sportovní ve třech etapách s výjimkami již opravených míst. Projekt rovněž počítá s novými chodníky z betonové dlažby a výměnou obrub o **+12 cm u silnice / +6 cm u zeleně**. **Projekt neobsahuje zaměřené polohy všech hotových hran a konstrukčních spojů použitelné pro náš OSM export.**
+- Nový vykreslovací modul `scripts/osm-prubezna-road-5135.js` připustí **jen skutečný OSM way/83076189** (`Průběžná`, `residential`, `oneway=yes`) při naprosto přesné shodě **všech 13 originálních GPS bodů**, ~**256,6 m**, 12 původních segmentů. Původní OSM linky navazujících ulic se **nepřemisťují**. Neprohlašujeme, že tato část zahrnuje všech 400 m z městské smlouvy nebo že hranice vizuální obnovy věrně kopíruje as-built stav.
+- **Vizuální změna ve hře:** samostatný, nepatrně tmavší a čistší modelový **asfaltový povrch** na všech 12 mapových segmentech; sdílí již existující procedurální asfaltovou texturu. Jde o odstín pro herní rekonstrukci, **ne ověřenou barvu asfaltu ani ověřené stopy frézování**. Zůstávají stejné šířky, nadmořské výšky, terén, kolize, dopravní graf, jednosměrka, domy i reálné chodníky; nepřibyly vymyšlené čáry, nová silnice, nové obrubníky, stání ani světla.
+- **Souvislost s 5.134:** dva předchozí přesně mapované OSM pěší průběhy 1046197808 a 1278746581 (~301 m) zůstaly s modelovou betonovou dlažbou a odpovídajícím materiálovým auditem. Automatický test nyní musí prokázat **12 původních asfaltových segmentů + oba původní pěší úseky** v mobilním Chromium **i po LOD**.
+- **Kontroly:** Node `scripts/osm-prubezna-road-5135.test.mjs` odmítá cizí jednosměrky, změny každého GPS vrcholu i nepodložené objekty. Mobilní test `scripts/osm-prubezna-road-webgl-5135.mjs` kontroluje originální OSM navigaci, skutečně vykreslený materiál, nulové nové kolidery a kompaktní nabídku technických kamer. `window.__milovicePrubeznaRoadRuntime()` publikuje výsledky načteného regionu Mladá.
+- **Nedoplněná část podle dokumentace:** 109 projektovaných parkovacích stání, 22 nových svítidel a detailní profily obrubníkům zatím chybí georeferencovaný přehled konkrétních poloh. Nepokládáme tyto objekty do ulice odhadem. Město v [zápisu rady 50/2024](https://www.mesto-milovice.cz/assets/File.ashx?id_dokumenty=17347&id_org=9519) výslovně uvádí **koordinační situační výkres C.3** jako přílohu projektu, kterou je třeba pro další přesnější modelování získat a spárovat s body OSM.
+
+---
+
 ## Milovice RP 5.134 — Průběžná × Sportovní: asfalt a betonové chodníky z městské dokumentace (Part 27, 18. 11. 2026)
 
 **Kontrolní kamera (mobil i PC):** https://foxey-cz.github.io/milovice-life-rp/?v=513400&streetAudit=prubezna-renovation-5134
