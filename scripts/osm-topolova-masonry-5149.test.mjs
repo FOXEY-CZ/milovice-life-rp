@@ -46,7 +46,7 @@ for(const token of [
  'isPanelBlock&&!topolovaMasonry?panelFacadeMaterials',
  'const estateEdge=estatePlan&&!topolovaMasonry?planMladaPanelEdge(',
  'if(topolovaMasonry){',
- 'wallMaterialFromCSU:true',
+ 'window.__miloviceTopolovaResidentialAudit.wallMaterialFromCSU=',
  'suppressedUnverifiedPanelEdges',
  'streetAudit=topolova-masonry-5149'
 ])assert(html.includes(token),'Real 5.149 renderer integration missing: '+token);
