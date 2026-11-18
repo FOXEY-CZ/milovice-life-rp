@@ -63,7 +63,7 @@ for(const token of [
  'window.__miloviceClinicPhotoYellowCrossRuntime=()=>{',
  'yellow.userData.lodDetail=false',
  'terrainAt(v.x,v.z)+.120',
- "const BUILD_ID='20261118-tyrsova-five-houses-partywall-cleanup-513200'",
+ "const BUILD_ID='20261118-ruian-residential-shared-walls-sportovni-513300'",
  'window.__miloviceClinicParkingInlaysRuntime=()=>{',
  'window.__miloviceClinicPhotoPharmacySignRuntime=()=>{'
 ])assert(html.includes(token),'Missing 5.127 integration '+token);
