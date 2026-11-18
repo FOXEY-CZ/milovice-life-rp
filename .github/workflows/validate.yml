@@ -195,5 +195,7 @@ jobs:
         run: node scripts/osm-clinic-yellow-cross-5127.test.mjs
       - name: Verify 5.128 original OSM photo-clinic pavers exclude unsurveyed street-lamp poles but preserve lit road and mapped grass
         run: node scripts/osm-clinic-furniture-protection-5128.test.mjs
+      - name: Verify 5.129 RE/MAX photo-based three young clinic trees clear actual OSM road, opposite footway and buildings
+        run: node scripts/osm-clinic-photo-saplings-5129.test.mjs
       - name: Validate expanded Milovice districts and real elevation data
         run: python3 scripts/validate_regions.py
