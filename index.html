@@ -1,4 +1,4 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.140 Sportovní: devět 8–9podlažních bytových domů RÚIAN</title><meta name="milovice-build" content="20261118-sportovni-ruian-panels-514000"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
+<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.141 Sportovní: napojení 5 pěších tras mezi bytovými domy</title><meta name="milovice-build" content="20261118-sportovni-estate-walkway-joins-514100"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
 #realmap{position:fixed;inset:0;z-index:100;background:#101e2c;display:none;flex-direction:column;color:#fff;font-family:system-ui}#realmap.open{display:flex}#maphead{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#142c3e}#maphead button{flex:0 0 auto;min-height:40px}#osmmap{flex:1;min-height:0;touch-action:pan-x pan-y}#mapfoot{padding:8px 12px;background:#142c3e;font-size:12px;line-height:1.4}#maplaunch{position:fixed;right:12px;top:75px;z-index:45;background:#193d58;border:1px solid #93b4c7;box-shadow:0 2px 8px #0006}#realmap .leaflet-container{background:#d7e5da}#realmap a{color:#aedbff} @media(max-width:700px){#maplaunch{top:72px;right:8px;padding:7px 10px;font-size:12px;min-height:36px}#maphead{font-size:13px}}
 </style><style>#perf{position:fixed;top:10px;right:10px;z-index:42;background:#102437e8;border:1px solid #77a7b6;border-radius:10px;padding:7px 10px;color:#c8f6d4;font:600 12px system-ui;pointer-events:none;min-width:100px;text-align:center}#perf small{display:block;color:#c9d5dd;font-size:10px;font-weight:400}@media(max-width:700px){#perf{top:8px;right:8px;padding:5px 7px;font-size:11px}#maplaunch{top:100px!important}}</style><style id="milovice-modern-ui">
 #hud{background:linear-gradient(145deg,rgba(9,24,39,.88),rgba(20,44,61,.82));backdrop-filter:blur(12px);border:1px solid rgba(176,214,235,.3);box-shadow:0 10px 30px #061b2b33;border-radius:18px}
@@ -258,7 +258,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <button id="rp-camera-gps-copy" type="button">📋 Kopírovat GPS + směr</button>
 <button id="rp-camera-gps-close" type="button">✕ Zavřít</button></div></aside><aside id="street-block-audit" class="audit-compact" hidden aria-label="Kontrola polohy a vzhledu ulic Milovic">
 <strong>🗺️ Kontrola ulice</strong>
-<a id="street-audit-exit" href="./?v=514000" aria-label="Zavřít kontrolní pohled a vrátit se do hry" title="Zpět do hry">✕</a>
+<a id="street-audit-exit" href="./?v=514100" aria-label="Zavřít kontrolní pohled a vrátit se do hry" title="Zpět do hry">✕</a>
 <button id="street-audit-toggle" type="button" aria-controls="street-audit-nav" aria-expanded="false">☰ Vybrat pohled</button>
 <span id="street-audit-label"></span>
 <nav><a href="?v=58530&streetAudit=5kv">5. května shora</a>
@@ -312,6 +312,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <a href="?v=513800&streetAudit=prubezna-bends-east-5138">🛣️ Průběžná × Sportovní · asfaltové napojení (východ)</a>
 <a href="?v=513900&streetAudit=sportovni-sidewalk-5139">🚶 Sportovní × Průběžná · severovýchodní chodník (OSM)</a>
 <a href="?v=514000&streetAudit=sportovni-panel-houses-5140">🏢 Sportovní · 9 skutečných 8–9podlažních domů (RÚIAN)</a>
+<a href="?v=514100&streetAudit=sportovni-estate-joins-5141">🚶 Sportovní · pěší propojení a zatáčky podle OSM</a>
 <a href="?v=511200&streetAudit=road-vruticka-5108">🛣️ Vrutická · OSM šířka 6 m</a>
 <a href="?v=510500&streetAudit=estate-mlada-5105">🏢 Mladá · bytové domy vedle hřiště</a></nav>
 <button id="street-audit-info-toggle" type="button" aria-expanded="false">📍 GPS a zdroj</button>
@@ -329,7 +330,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <small>Přesné umístění jednotlivých provozoven na fasádě není potvrzené.</small>
 </div>
 <div id="street-audit-footer"><a id="street-audit-source" target="_blank" rel="noopener noreferrer">Zdrojový podklad</a>
- · <a href="./?v=514000">Zpět do hry</a></div>
+ · <a href="./?v=514100">Zpět do hry</a></div>
 </aside><aside id="forecourt-photo-audit" hidden aria-label="Fotoaudit celého přednádraží">
 <strong>📸 Přednádraží · kontrola 5.85.3</strong>
 <button id="forecourt-audit-toggle" type="button" aria-expanded="true">Sbalit nabídku</button>
@@ -349,7 +350,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <strong>📸 Milovice nádraží · fotoaudit 5.80</strong>
 <span>Pohled podle GPS a směru fotoaparátu z 30. 5. 2024. Velikost a poloha automatů jsou odhady, nikoliv geodetické zaměření.</span>
 <div><a href="https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_automaty_na_j%C3%ADzdenky.jpg" target="_blank" rel="noopener noreferrer">Původní fotografie · ŠJů · CC BY 4.0</a> · <a href="./?v=5800">Zpět do hry</a></div>
-</aside><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.132 · build <strong id="build-label">20261118-sportovni-ruian-panels-514000</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="rp-camera-gps-toggle" type="button" aria-expanded="false">📍 GPS kamery</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
+</aside><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.132 · build <strong id="build-label">20261118-sportovni-estate-walkway-joins-514100</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="rp-camera-gps-toggle" type="button" aria-expanded="false">📍 GPS kamery</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
 <button id="osm-inspect-toggle" type="button" aria-pressed="false" title="Klepnutím na konkrétní budovu zjistíš její OSM identitu">🔎 Objekt</button>
 <section id="osm-inspect-result" role="status" aria-live="polite" hidden>
 <strong id="osm-inspect-title">Identifikace objektu</strong>
@@ -521,6 +522,7 @@ import {planSlepaParkGround} from './scripts/osm-slepa-park-ground-5114.js?v=511
 import {planSlepaArmRoadCornerWedges} from './scripts/osm-slepa-armadni-road-joins-5115.js?v=511500';
 import {planSlepaPedestrianEndpointSeams} from './scripts/osm-slepa-pedestrian-endpoints-5116.js?v=511600';
 import {planMladaFootwayCorners} from './scripts/osm-mlada-footway-joins-5106.js?v=511200';
+import {planSportovniEstateWalkCorners} from './scripts/osm-sportovni-estate-walk-5141.js?v=514100';
 import {mountStreetAuditMenu} from './scripts/street-audit-menu-5101.js?v=513600';
 import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=511200';
@@ -594,7 +596,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261118-sportovni-ruian-panels-514000';
+const BUILD_ID='20261118-sportovni-estate-walkway-joins-514100';
 // Keep the visible HUD build and runtime declaration in sync for photo audits.
 document.getElementById('build-label').textContent=BUILD_ID;
 const rpStationRoofAuditCamera=new URLSearchParams(location.search).has('roofAudit');
@@ -934,6 +936,16 @@ const rpStreetAuditViews={
   regionId:'mlada',osmLandmarkId:'61979140',
   source:'https://www.openstreetmap.org/way/1318462995',
   author:'OSM 1318462995 crossing:markings=zebra, crossing:island=yes; dvě poloviny bílé zebry na existující Armádní, mezera kolem ostrůvku bez nového fyzického modelu. Kamera na původním chodníku 1046197807.',
+  technical:true,streetLevel:true,estimatedHeading:true
+ },
+ 'sportovni-estate-joins-5141':{
+  label:'Sportovní · skutečné pěší propojení, opravené rohy pěšin mezi domy',
+  // Camera on ORIGINAL OSM footway/1278749454 node 9, aligned west
+  // with following existing pedestrian strip, NOT a panorama.
+  camera:{lat:50.2308053,lon:14.8640133},heading:275.0,
+  regionId:'mlada',osmRoadId:'1278749454',
+  source:'https://www.openstreetmap.org/way/1278749454',
+  author:'Pět skutečných pěších cest OSM 1046197807, 1046197808, 1046197810, 1278749454 a 1278749456 tvoří již dříve namodelované trasy mezi bytovými domy. V deseti vnitřních zalomeních doplňujeme pouze chybějící trojúhelníkové výplně původní šířky, s kontrolou silnic a budov. 5.134 a 5.139 dlažba zůstává návrhový povrch (ne úplné fotodokumentované provedení). Nezakreslujeme nedoložené parky, stromy, parkoviště, obrubníky ani přechody; zdrojové neznačené přechody zůstávají beze změny. Kamera je technický směr z GPS pěšiny.',
   technical:true,streetLevel:true,estimatedHeading:true
  },
  'sportovni-panel-houses-5140':{
@@ -6548,6 +6560,76 @@ function rpAppendOSMElements(elements,regionId='old'){
   if(regionId==='mlada')
    window.__miloviceMladaFootwayJoinRuntime=liveFootwayCorners;
   else window.__miloviceVruticeFootwayJoinRuntime=liveFootwayCorners;
+ }
+ // 5.141 — these five exact OSM pedestrian ways already exist. Only
+ // seal safe inner bend wedges and retain their OLD paved/footway look.
+ // Trees and lawn polygons are NOT mapped for these housing-block yards,
+ // so drawing green furniture there would invent unsupported positions.
+ if(regionId==='mlada'){
+  const sportovniEstateWalk=planSportovniEstateWalkCorners({
+   regionId,ways:roadWays,roads:osmCarriagewayClearance,
+   buildings:taggedSidewalkBuildings,toWorld:osmPoint
+  });
+  if(sportovniEstateWalk){
+   const mergedByMaterial=new Map();
+   for(const tri of sportovniEstateWalk.triangles){
+    const inferred=classifyMappedRoadSurface({
+     highway:tri.kind||'footway',surface:tri.materialSource||undefined
+    })?.material||'legacy-footway';
+    const material=osmMappedSurfaceMaterials[tri.materialKind||inferred]||
+     osmSidewalkMat;
+    if(!mergedByMaterial.has(material))mergedByMaterial.set(material,{
+     positions:[],uvs:[],triangles:0
+    });
+    const batch=mergedByMaterial.get(material);
+    const {a,b,c}=tri;
+    const signed=(a.x-c.x)*(b.z-c.z)-(a.z-c.z)*(b.x-c.x);
+    const pts=signed>0?[c,b,a]:[c,a,b];
+    for(const p of pts){
+     batch.positions.push(p.x,terrainAt(p.x,p.z)+.137,p.z);
+     batch.uvs.push(p.x/8,p.z/8);
+    }
+    batch.triangles++;
+    sportovniEstateWalk.renderedCornerTriangles++;
+   }
+   let drawnMeshes=0;
+   for(const [material,batch] of mergedByMaterial){
+    if(!batch.positions.length)continue;
+    const geo=new THREE.BufferGeometry();
+    geo.setAttribute('position',
+     new THREE.Float32BufferAttribute(batch.positions,3));
+    geo.setAttribute('uv',
+     new THREE.Float32BufferAttribute(batch.uvs,2));
+    geo.computeVertexNormals();geo.computeBoundingSphere();
+    const mesh=new THREE.Mesh(geo,material);
+    mesh.name='Milovice_OSM_Sportovni_EstateFootwayJoin_5141';
+    mesh.receiveShadow=true;
+    osmLayer.add(mesh);
+    drawnMeshes++;
+   }
+   sportovniEstateWalk.mergedMaterialMeshes=drawnMeshes;
+   window.__miloviceSportovniEstateWalkAudit=sportovniEstateWalk;
+   window.__miloviceSportovniEstateWalkRuntime=()=>({
+    ...window.__miloviceSportovniEstateWalkAudit,
+    ready:sportovniEstateWalk.renderedCornerTriangles===
+     sportovniEstateWalk.plannedSealedCorners,
+    meshes:osmLayer.children.filter(o=>
+     o.name==='Milovice_OSM_Sportovni_EstateFootwayJoin_5141').length,
+    visibleMeshes:osmLayer.children.filter(o=>
+     o.name==='Milovice_OSM_Sportovni_EstateFootwayJoin_5141').filter(o=>{
+      for(let p=o;p;p=p.parent){if(!p.visible)return false;if(p===scene)return true}
+      return false;
+     }).length,
+    visibleTriangles:osmLayer.children.filter(o=>
+     o.name==='Milovice_OSM_Sportovni_EstateFootwayJoin_5141').filter(o=>{
+      for(let p=o;p;p=p.parent){if(!p.visible)return false;if(p===scene)return true}
+      return false;
+     }).reduce((s,o)=>
+      s+(o.geometry?.getAttribute('position')?.count||0)/3,0),
+    onlySourceOSMWedgeTriangles:true,
+    originalMappedRoadsUnchanged:true
+   });
+  }
  }
  // 5.111: Join ONLY the tiny corner wedges of ALREADY mapped pedestrian
  // paths along Slepá. The 5.106 Mladá playground and 5.107 Vrutice

@@ -40,7 +40,7 @@ assert.equal(plan.inventedGrassPolygons,0);
 assert.equal(plan.inventedTrees,0);
 assert.equal(plan.inventedFootways,0);
 assert.equal(plan.inventedZebraCrossings,0);
-assert.equal(plan.generatedStandaloneDrawMeshes,0);
+assert.equal(plan.createdIndividualTriangleMeshes,0);
 assert.equal(plan.allOSMVerticesExactlyMatched,true);
 assert.equal(JSON.stringify(ways),original);
 assert(plan.areaSquareMeters>1.4&&plan.areaSquareMeters<3.5);

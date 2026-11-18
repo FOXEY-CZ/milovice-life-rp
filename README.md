@@ -1,3 +1,16 @@
+## Milovice RP 5.141 — pěší trasy a návaznost okolí Sportovní mezi bytovými domy (18. 11. 2026)
+
+**Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=514100&streetAudit=sportovni-estate-joins-5141
+
+- Po nové fasádě devíti 8/9podlažních budov (5.140) navazujeme **pěší částí skutečného sídliště**. Pět původních, již renderovaných OSM tras `1046197807`, `1046197808`, `1046197810`, `1278749454` a `1278749456` je zdrojově uzamčeno všemi vrcholy GPS a tagy. Místo přidávání falešných chodníků doplňujeme **10 malých rohových trojúhelníků**, které spojují asfaltové a dlážděné segmenty v jejich **původních vnitřních zatáčkách**.
+- Rozdělení rohů: 1046197807 (**3**), 1046197808 (**3**), 1046197810 (**1**), 1278749454 (**2**), 1278749456 (**1**). Geometrie je stejná jako u ověřené opravy chodníků v Mladé 5.106, ale s jiným samostatným územím a samostatnými specifickými OSM ID. Rohem nevzniká nový průchod, nový chodník nebo navržená křižovatka.
+- **Bezpečnost:** každý roh musí projít testem `osmCarriagewayClearance` a `taggedSidewalkBuildings`, tj. nic se nevykreslí do vozovky ani budovy. OSM `1278749453` a `1278749455` zůstávají **neznačené přechody**. Na cestách `1046197808` a `1278749454` používají nové trojúhelníčky **stejnou projektovou barvu dlažby** jako dřívější 5.134 a 5.139, takže nevznikají asfaltové výplně v přebarvených chodnících. Materiál je návrh, ne fotografie dokončeného úseku.
+- **Zeleň:** v této části exportu OSM nejsou dostatečně přesně zakreslené travnaté polygony a jednotlivé stromy pro okolí daných devíti domů. **Nevymysleli jsme tedy žádné nové stromy, zelené pásy, lavičky, lampy ani parkovací stání.** Existující tenisové a basketbalové plochy zůstávají vykreslené staršími OSM moduly bez změny.
+- Nový modul `scripts/osm-sportovni-estate-walk-5141.js` využívá zdrojově ověřený plánovač 5.106, vytvoří pár společných materiálových meshů namísto deseti jednotlivých renderovacích objektů a na telefonu má vlastní kontrolu viditelnosti po LOD `window.__miloviceSportovniEstateWalkRuntime()`. `scripts/osm-sportovni-estate-walk-5141.test.mjs` ověřuje původních pět tras, veškeré GPS vrcholy i oba neznačené přechody. `scripts/osm-sportovni-estate-walk-webgl-5141.mjs` potvrzuje živou 3D geometrii na mobilním Chromium.
+- Kamera stojí na skutečném bodu OSM `1278749454` **50.2308053, 14.8640133**, orientační směr **275°**; nejde o historickou fotografii ani panoramaticky shodný úhel.
+
+---
+
 ## Milovice RP 5.140 — Sportovní / Průběžná: devět domů podle skutečného počtu podlaží RÚIAN (18. 11. 2026)
 
 **Přímý 3D záběr:** https://foxey-cz.github.io/milovice-life-rp/?v=514000&streetAudit=sportovni-panel-houses-5140

@@ -117,7 +117,7 @@ export function planSportovniEstateWalkCorners({
   roadConflictsAvoided:base.skippedNearCarriageway,
   buildingsAvoided:base.skippedNearBuilding,
   privateOrCrossingsSkipped:base.skippedPhotoOrPrivate+base.skippedCrossings,
-  generatedStandaloneDrawMeshes:0,renderedCornerTriangles:0,
+  createdIndividualTriangleMeshes:0,mergedMaterialMeshes:0,renderedCornerTriangles:0,
   inventedFootways:0,inventedRoads:0,inventedGrassPolygons:0,
   inventedTrees:0,inventedZebraCrossings:0,
   inventedStreetLamps:0,inventedCurbs:0,inventedParking:0

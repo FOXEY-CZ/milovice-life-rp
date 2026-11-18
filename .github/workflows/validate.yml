@@ -217,5 +217,7 @@ jobs:
         run: node scripts/osm-sportovni-sidewalk-5139.test.mjs
       - name: Verify 5.140 exact nine 8/9-storey Sportovni RUIAN apartment blocks and preserved footprints
         run: node scripts/osm-sportovni-ruian-panels-5140.test.mjs
+      - name: Verify 5.141 five source-locked Sportovni estate footways, safe inner corners and protected unmarked crossings
+        run: node scripts/osm-sportovni-estate-walk-5141.test.mjs
       - name: Validate expanded Milovice districts and real elevation data
         run: python3 scripts/validate_regions.py

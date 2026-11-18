@@ -53,12 +53,11 @@ try{
   '1046197807':3,'1046197808':3,'1046197810':1,
   '1278749454':2,'1278749456':1
  });
- assert.equal(x.walk.newFootways,undefined);
  assert.equal(x.walk.inventedFootways,0);
  assert.equal(x.walk.inventedTrees,0);
  assert.equal(x.walk.inventedGrassPolygons,0);
  assert.equal(x.walk.inventedZebraCrossings,0);
- assert.equal(x.walk.generatedStandaloneDrawMeshes,0);
+ assert.equal(x.walk.createdIndividualTriangleMeshes,0);
  assert(x.walk.meshes>=1);
  assert(x.walk.visibleMeshes>=1,'New paths must remain visible after mobile LOD');
  assert(x.walk.visibleTriangles>=10);

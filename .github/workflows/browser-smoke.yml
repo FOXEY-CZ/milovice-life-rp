@@ -72,6 +72,9 @@ on:
       - scripts/osm-sportovni-ruian-panels-5140.js
       - scripts/osm-sportovni-ruian-panels-5140.test.mjs
       - scripts/osm-sportovni-ruian-panels-webgl-5140.mjs
+      - scripts/osm-sportovni-estate-walk-5141.js
+      - scripts/osm-sportovni-estate-walk-5141.test.mjs
+      - scripts/osm-sportovni-estate-walk-webgl-5141.mjs
       - scripts/osm-clinic-parking-inlays-5125.test.mjs
       - scripts/osm-clinic-parking-inlays-webgl-5125.mjs
       - scripts/station-photo-parking.js
@@ -123,6 +126,7 @@ jobs:
           node scripts/osm-prubezna-bends-webgl-5138.mjs
           node scripts/osm-sportovni-sidewalk-webgl-5139.mjs
           node scripts/osm-sportovni-ruian-panels-webgl-5140.mjs
+          node scripts/osm-sportovni-estate-walk-webgl-5141.mjs
           node scripts/osm-ruian-party-walls-webgl-5133.mjs
           node scripts/browser_smoke.mjs
           node scripts/osm-armadni-trolleys-webgl-5120.mjs
