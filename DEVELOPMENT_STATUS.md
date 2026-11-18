@@ -43,16 +43,24 @@ Dřívější práce pokrývají nádraží, Bike Tower, centrum, střechy a fas
 - **Dlouhodobý dluh:** znovu projít starší budovy a celé ulice podle `docs/building-rebuild-program.md` a `docs/reality-audit-00.md`. Fotofasády mohou být jen částečně podložené; nezaměňovat je za hotovou 360° rekonstrukci.
 - **Každá další verze:** jedna smysluplná úprava → cílené unit testy → pokud se mění scéna, kontrola v mobilním WebGL → commit a stručný zápis zde. Neoznačovat test jako prošlý, pokud skutečně neběžel.
 
+## Nový pracovní režim W1 (18. 11. 2026)
+
+- **Jednotná pravidla:** `AGENTS.md` a `docs/DEVELOPMENT_WORKFLOW.md`. Nejde o novou verzi hry; aktuální zůstává **5.142**.
+- **Převzetí práce:** načíst tento stav + poslední relevantní kousek README + jen související kód; ověřit hlavní větev GitHubu.
+- **Práce jako jeden úsek:** pokračovat Sportovní/Průběžná po celých ulicích a blocích, ne jen izolovanými dekoracemi. Odhady odlišovat od skutečných fotografických důkazů.
+- **Cílené unit testy:** `node scripts/dev-check.mjs sportovni` (další oblasti po `--list`); změny 3D pak ověřit samostatným mobilním WebGL testem po LOD.
+- **Méně commitů:** pokud to nástroje umožňují, připravit společně kód + testy + README + tento status a odeslat v **jednom atomickém commitu**. Samostatné dokumentační commity mají minimum CI; `validate.yml` ignoruje změny pouze v Markdown souborech.
+- **Další stavební krok:** pro souvislou Sportovní/Průběžnou vybrat podle OSM a veřejných zdrojů největší skutečnou vizuální odchylku (fasáda, přístup, silnice, zeleň), opravit ji a nezapomenout celý kontext ulice.
+
 ## Jak v novém chatu rychle navázat
 
-1. Otevři **tento soubor jako první**. Pak se podívej na **poslední 1–3 relevantní záznamy** v horní části `README.md`. Nenačítej automaticky celý historický README ani celý `index.html`; podle úkolu si vyžádej konkrétní oblasti kódu.
+1. Otevři **`AGENTS.md` a tento soubor jako první**. Pak se podívej na **poslední 1–3 relevantní záznamy** v horní části `README.md`. Nenačítej automaticky celý historický README ani celý `index.html`; podle úkolu si vyžádej konkrétní oblasti kódu.
 2. Před úpravou ověř aktuální `main` a související moduly. Soubor může být opožděný za commity.
 3. Při změně Sportovní použij příslušný modul a test, např. `node scripts/osm-sportovni-basketball-5142.test.mjs` nebo `node scripts/osm-sportovni-estate-walk-5141.test.mjs`. Další existující příklady: `scripts/osm-sportovni-ruian-panels-5140.test.mjs`, `scripts/osm-sportovni-sidewalk-5139.test.mjs`; WebGL: `scripts/osm-sportovni-estate-walk-webgl-5141.mjs`. Prohlížečové testy vyžadují prostředí podle `.github/workflows/browser-smoke.yml`.
 4. Po každé významné ověřené úpravě přepiš **datum, nejnovější verzi, 3–6 posledních kroků, otevřené problémy a nejbližší akci**. Nepřidávej celý diff ani historii konverzace. Starší detaily patří do `README.md`/historie Git.
 5. Když uživatel napíše **„Pokračuj“**, navazuj na nejnovější uložený stav, nejbližší konkrétní úkol a pravidla výše; nechtěj opakovat staré informace, pokud repo poskytuje odpověď.
 
-## Stav této změny
+## Technický stav a ověření
 
-- Založení `DEVELOPMENT_STATUS.md` je **pouze dokumentační změna**, ne nová verze hry.
-- Žádné herní skripty ani mapová data se tím nemění.
+- **W1 upravuje jen organizační postup, testovací runner a filtr dokumentačních commitů; žádné 3D objekty ani mapová data nemění.**
 - **Změny 5.142:** nové koše jsou ve hře, úspěšně nasazené na GitHub Pages. Jednotkové testy prošly; **samostatný mobilní 3D test s 6s LOD kontrolou prošel**. Zároveň je přidán rychlý samostatný workflow `.github/workflows/sportovni-basketball-5142-webgl.yml` a testy jsou zapojené i v běžné validační a prohlížečové sadě.

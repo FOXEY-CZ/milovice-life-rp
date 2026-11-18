@@ -1,0 +1,13 @@
+# Milovice RP — pracovní pokyny pro vývojové asistenty
+
+Tento soubor popisuje **pracovní postup**, ne automatickou službu. Uživatel může psát jen „Pokračuj“: začni od posledního ověřeného stavu repozitáře a dokonči přiměřený konkrétní krok, pokud jsou k tomu potřebné nástroje a přístup.
+
+1. **Začni úsporně:** přečti `DEVELOPMENT_STATUS.md`, ověř aktuální HEAD větve `main` a teprve potom 1–3 nejnovější relevantní sekce `README.md`. Nečti rutinně celý dlouhý `README.md` nebo `index.html`; v něm hledej pouze dotčené bloky. Podle úkolu otevři konkrétní moduly, testy a regionální data.
+2. **Plánuj celé místo, implementuj ověřitelný krok:** pro jednu ulici/blok sleduj budovy, střešní siluety, sokly a vchody, chodníky, vozovku, přechody, zeleň, osvětlení a okolní návaznost. Jediný commit může pokrýt více souvisejících dílčích oprav, ale ne každou verzi měnit všechno najednou. Neřeš pořád jen další drobný dekorativní prvek, pokud zůstávají zásadní chyby ulice.
+3. **Důkazy před geometrií:** zachovej OSM/RÚIAN GPS a ID; všechny nedoložené tvary, barvy, materiály a polohy označ za odhad. Nepřidávej fiktivní parkovací místa, přechody, lampy, stromy či vchody. Fotografie/panorama používej v mezích licencí, nevydávej technický kamerový záběr za foto shodu.
+4. **Šetři čas a GitHub Actions:** připrav související změny lokálně/logicky společně; pokud to nástroje umožňují, proveď **jeden atomický více-souborový commit** za hotový krok. Neprováděj řadu malých commitů jen kvůli průběžné dokumentaci. Nenuť git force-push; před commitem ověř aktuální HEAD.
+5. **Testy ve vrstvách:** nejdřív rychlé unit testy dotčené oblasti (`node scripts/dev-check.mjs --list`, případně `node scripts/dev-check.mjs sportovni`); pro změny 3D scény poté mobilní Chromium/WebGL test včetně 6s+ LOD; potřebné širší regrese a CI. Neměň herní výkon „naslepo“ a neříkej PASS, pokud test skutečně neprošel. Dokumentační-only změny nemusí spouštět plnou validační sadu.
+6. **Handoff po skutečně dokončené práci:** aktualizuj stručný `DEVELOPMENT_STATUS.md` spolu s implementací a `README.md` changelogem (je-li nová verze). Uveď přesnou verzi, důkazy/odhady, nové funkce, otevřené chyby, stav testů a konkrétní další krok. Výsledky CI, které přijdou **po commitu**, označ jako čekající, dokud nejsou ověřené.
+7. **Komunikace:** uživateli sděl stručně, co je změněné a kde to vyzkouší. Nežádej znovu o informace, které jsou v repozitáři. U hlubokého úkolu průběžně uváděj ověřený pokrok; nepracuj údajně na pozadí.
+
+Plné podrobnosti: `docs/DEVELOPMENT_WORKFLOW.md`. Základní zdroj reality: `docs/STREET_WORKFLOW.md`, `docs/reality-audit-00.md`.
