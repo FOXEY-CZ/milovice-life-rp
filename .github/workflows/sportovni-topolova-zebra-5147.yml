@@ -1,0 +1,39 @@
+name: Sportovni Topolova 5.147 OSM zebra mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/reality-walkways.js
+      - scripts/osm-sportovni-topolova-zebra-5147.test.mjs
+      - scripts/osm-sportovni-topolova-zebra-webgl-5147.mjs
+      - data/regions/mlada.json
+      - .github/workflows/sportovni-topolova-zebra-5147.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  existing-zebra:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify exact mapped zebra and protected unmarked paths
+        run: |
+          node scripts/reality-walkways.test.mjs
+          node scripts/osm-sportovni-topolova-zebra-5147.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Mobile Chromium check after 6.5 seconds LOD
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-sportovni-topolova-zebra-webgl-5147.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sportovni-topolova-zebra-5147
+          path: browser-artifacts/sportovni-topolova-zebra-5147-mobile.png
+          if-no-files-found: ignore

@@ -15,6 +15,11 @@ assert.equal(safePedestrianPieces({x:20,y:-10},{x:20,y:10},1.8,road).length,2);
 assert(pedestrianPieceKey({a:{x:0,z:1},b:{x:3,z:5}},1.8)===
  pedestrianPieceKey({a:{x:3,z:5},b:{x:0,z:1}},1.8),'A duplicate reversed OSM footway must merge');
 assert(markedCrossing({footway:'crossing',crossing:'marked'}));
+assert(markedCrossing({footway:'crossing',crossing:'zebra'}),
+ 'Legacy crossing=zebra must display existing OSM white paint');
+assert(markedCrossing({footway:'crossing',crossing:'uncontrolled','crossing:markings':'zebra'}));
+assert(!markedCrossing({footway:'crossing',crossing:'zebra','crossing:markings':'no'}));
+assert(!markedCrossing({highway:'footway',crossing:'zebra'}));
 assert(!markedCrossing({footway:'crossing'}),'Unknown zebra paint is not invented');
 assert(isCarriageway('service')&&!isCarriageway('footway'));
 assert(isPedestrianWay('footway')&&!isPedestrianWay('residential'));

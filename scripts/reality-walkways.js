@@ -147,8 +147,12 @@ export function planMappedStationPassage({footprint,footway,indoorFootway,halfOp
   footwayEndpoint:street.point,streetSide:Math.sign(street.coords.t)||1};
 }
 export function markedCrossing(tags){
- return Boolean(tags?.footway==='crossing'&&
-  (tags['crossing:markings']==='yes'||tags.crossing==='marked'||tags['crossing:markings']==='zebra'));
+ // Historic crossing=zebra is still used on real mapped Milovice ways.
+ // A modern explicit no-marking tag overrides legacy marking claims.
+ if(tags?.footway!=='crossing'||tags['crossing:markings']==='no')return false;
+ return tags['crossing:markings']==='yes'||
+  tags['crossing:markings']==='zebra'||
+  tags.crossing==='marked'||tags.crossing==='zebra';
 }
 export function planZebraPieces(points,carriageway,{width=3.4}={}){
  if(!Array.isArray(points)||points.length<2||!carriageway)return [];

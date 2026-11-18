@@ -1,3 +1,14 @@
+## Milovice RP 5.147 — Sportovní × Topolová: skutečné mapované zebry (18. 11. 2026)
+
+**Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=514700&streetAudit=sportovni-topolova-zebra-5147
+
+- Na jižním rameni křižovatky Sportovní × Topolová existuje OSM `way/1316882853`, `footway=crossing`, `crossing=zebra`, `surface=asphalt`, původní souřadnice 50.2304072, 14.8663619 → 50.2304105, 14.8662962 → 50.2304133, 14.8662413. Renderer starší zápis `crossing=zebra` ignoroval a nevykresloval bílé pruhy. Nyní rozpoznává i tento historický tag, aniž by měnil OSM.
+- Stejnou opravu dostává dalších **čtyři** již existujících přechodů v regionu Mladá: `1316882854`, `1316882858`, `1317645191`, `1317645193`. Nová definice respektuje `crossing:markings=no`; neznačené přechody zůstávají neznačené. Historický tag je v OSM odrazován, ale jeho význam je doložený na [OSM Wiki](https://wiki.openstreetmap.org/wiki/Tag:crossing%3Dzebra).
+- Bílé značení používá stávající `planZebraPieces` a je ořezávané podle původní vozovky. Rozměry pruhů jsou modelový odhad, nikoliv geodetické měření. Žádné nové chodníky, GPS, lampy, auta, kolizní objekty ani routing. Severní fotochodník Sportovní 5.146 nadále končí před křižovatkou.
+- Nová technická kontrolní kamera stojí na východním OSM konci přechodu a míří přibližně západně (není fotografií). Do běhové diagnostiky se zapisují ID skutečně vykreslených značených OSM přechodů. Přidané cílené unit a mobilní WebGL testy 6,5 s LOD; po commitu **jejich výsledek teprve ověřit**.
+
+---
+
 ## Milovice RP 5.146 — Sportovní: severní chodník u sportovní haly (18. 11. 2026)
 
 **Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=514600&streetAudit=sportovni-photo-northwalk-5146
