@@ -10,6 +10,7 @@ const packs=Object.freeze({
  sportovni:[
   'osm-sportovni-basketball-5142.test.mjs',
   'osm-prubezna-photo-frontages-5144.test.mjs',
+  'osm-sportovni-hall-5145.test.mjs',
   'osm-sportovni-estate-walk-5141.test.mjs',
   'osm-sportovni-ruian-panels-5140.test.mjs',
   'osm-sportovni-sidewalk-5139.test.mjs',
@@ -18,6 +19,7 @@ const packs=Object.freeze({
  ],
  prubezna:[
   'osm-prubezna-photo-frontages-5144.test.mjs',
+  'osm-sportovni-hall-5145.test.mjs',
   'osm-prubezna-renovation-5134.test.mjs',
   'osm-prubezna-road-5135.test.mjs',
   'osm-prubezna-links-5137.test.mjs',

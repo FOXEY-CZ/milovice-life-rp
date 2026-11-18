@@ -1,3 +1,15 @@
+## Milovice RP 5.145 — Sportovní: sportovní hala podle skutečné fotografie (18. 11. 2026)
+
+**Přímý pohled od původního fotoaparátu:** https://foxey-cz.github.io/milovice-life-rp/?v=514500&streetAudit=sportovni-hall-5145
+
+- **Zásadní oprava měřítka skutečné budovy:** zdrojově uzamčený OSM/RÚIAN polygon `way/53866046` (`ref:ruian:building=27906272`, 13 GPS vrcholů, `building:levels=1`) dříve dostával automatických **3,05 metru** jako obyčejná jednopodlažní stavba. Z veřejné fotografie [Sportovní (3).jpg](https://commons.wikimedia.org/wiki/File:Sportovn%C3%AD_(3).jpg) autora Risajanda, 6. 6. 2024, CC BY-SA 3.0, je vidět vysoké kovové opláštění haly na východní straně Sportovní. Počet podlaží **1** zůstává beze změn; výška je nyní **modelový odhad 9,6 m** (nikoliv geodeticky změřená hodnota). OSM půdorys, poloha, dopravní síť a kolize se nemění.
+- **Fyzická foto-fasáda na mapované stěně:** původní východní RÚIAN hrana `index=6` (~52,21 m) je přesně odhalená GPS pozici fotografie (50.230950, 14.866606; kompas 277,50°). Nová úsporná instancovaná kovová plocha a přibližně **39 jemných svislých žeber** připomínají světle šedé plechové opláštění skutečné sportovní haly. Počet, rozteč a hloubka žeber jsou *modelový vzhled*, nikoli fotogrammetrie. Na **této doloženě holé stěně** se negenerují stará náhodná okna či fiktivní vstup; o dalších stranách haly nic nevyvozujeme.
+- **Ochrana regionu a výkonu:** žádné nové budovy, chodníky, silnice, stromy, ploty, lampy či kolidery. Modul `scripts/osm-sportovni-hall-5145.js` vyžaduje přesný otisk každého GPS bodu a správné RÚIAN tagy, jinak nezmění nic. Všechny riby mají společnou geometrii/materiál a renderují se pomocí stávajícího GPU instancování, nikoliv jako desítky samostatných draw callů. Fotografie se nekopíruje do textury hry.
+- **Testy:** `scripts/osm-sportovni-hall-5145.test.mjs` (RÚIAN, půdorys, pohled, výška, bez náhodných objektů), `scripts/osm-sportovni-hall-webgl-5145.mjs` (skutečné instancované kovové panely a žebra viditelná po 6s mobilní LOD, devět starších paneláků a basketbal zachován). CI výsledek ověřit po commitu.
+- **Nedoložené části:** přesné rozměry, konstrukce střechy, zadní stěny a vnitřní prostory haly nemáme, jejich vizuál zůstává starší modelový. Fotografie z 2024 automaticky nedokládá 2026 stav Sportovní po úpravách.
+
+---
+
 ## Milovice RP 5.144 — Průběžná/Sportovní: přesné fotografické kamery a viditelné fasády (18. 11. 2026)
 
 **Přímé fotokamery:** [Průběžná 2024](https://foxey-cz.github.io/milovice-life-rp/?v=514400&streetAudit=prubezna-public-photo-5144) · [Sportovní 2024](https://foxey-cz.github.io/milovice-life-rp/?v=514400&streetAudit=sportovni-public-photo-5144)

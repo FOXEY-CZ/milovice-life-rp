@@ -1,0 +1,39 @@
+name: Sportovni 5.145 photo hall mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/osm-sportovni-hall-5145.js
+      - scripts/osm-sportovni-hall-5145.test.mjs
+      - scripts/osm-sportovni-hall-webgl-5145.mjs
+      - data/regions/mlada.json
+      - .github/workflows/sportovni-hall-5145.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  hall-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check original RUIAN sports hall and photo facade
+        run: node scripts/osm-sportovni-hall-5145.test.mjs
+      - name: Install Chromium client
+        run: npm install --no-save --no-package-lock playwright-core
+      - name: Verify sports hall in live 3D after mobile LOD
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-sportovni-hall-webgl-5145.mjs
+      - name: Store screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sportovni-hall-5145-mobile
+          path: browser-artifacts/sportovni-hall-5145-mobile.png
+          if-no-files-found: ignore

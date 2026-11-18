@@ -2,13 +2,13 @@
 
 > **Účel:** stručný průběžný přehled pro navazování ChatGPT vývoje. Historie změn je v `README.md`; zdroj pravdy je aktuální GitHub `main`, nikoliv předchozí chat.
 >
-> **Aktuálně ověřená herní verze: 5.144 (18. 11. 2026).** [Úplná validace](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44322902587) **PASS**, [mobilní 3D fotoaudit + LOD po 6 sekundách](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44322655691) **PASS** a [nasazení GitHub Pages](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44322902059) **PASS**. Širší, déle běžící browser smoke může mít vlastní stav.
+> **Poslední ověřená verze: 5.144. Nová 5.145 čeká na testy** (18. 11. 2026). [Úplná validace](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44322902587) **PASS**, [mobilní 3D fotoaudit + LOD po 6 sekundách](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44322655691) **PASS** a [nasazení GitHub Pages](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44322902059) **PASS**. Širší, déle běžící browser smoke může mít vlastní stav.
 
 ## Projekt a odkazy
 
 - Repozitář: https://github.com/FOXEY-CZ/milovice-life-rp
 - Veřejná hra (GitHub Pages): https://foxey-cz.github.io/milovice-life-rp/
-- Poslední kontrolní kamera: https://foxey-cz.github.io/milovice-life-rp/?v=514400&streetAudit=prubezna-public-photo-5144 (Wikimedia fotografie 2024 s EXIF)
+- Poslední kontrolní kamera: https://foxey-cz.github.io/milovice-life-rp/?v=514500&streetAudit=sportovni-hall-5145 (Sportovní foto EXIF 2024)
 - Webová hra: `index.html`; stavební editor: `editor.html`; kontrolní pohledy a pomůcky: `survey.html`, `photo-pilot.html`, `rebuild.html`.
 - Herní moduly a testy: `scripts/`; OSM, výšková a regionální data: `data/` a `data/regions/`; metodika: `docs/STREET_WORKFLOW.md`, `docs/building-rebuild-program.md`, `docs/reality-audit-00.md`.
 - Detailní verze a zdůvodnění: `README.md` (číst **jen nejnovější relevantní sekce**, ne všech 366 kB).
@@ -26,6 +26,7 @@ Budovat **celé propojené Milovice** jako prohlížečovou realistickou 3D RP/G
 
 | Verze | Oblast | Výsledek podle README a kódu |
 | --- | --- | --- |
+| **5.145** | Sportovní – skutečná sportovní hala | OSM/RÚIAN hala 53866046 (1 podlaží) zvednuta z generických 3,05 m na modelových **9,6 m** dle fotografie 2024, na foto-východní fasádě přidán šedý kovový plášť a ~39 svislých žeber; žádná okna či fiktivní dveře na doloženě holé stěně. Výška/rozteče nejsou měřené, testy čekají na CI. |
 | **5.144** | Průběžná / Sportovní – fotoaudit 2024 | Dvě kamery přímo z GPS/EXIF fotografie Wikimedia Commons (Průběžná 272.09°, Sportovní 277.50°). Dvě přibližně tónované FOTO-viditelné stěny přesně mapovaných RÚIAN domů 53865991/53865992; ostatní strany a street furniture neověřeny. Unit/WebGL testy + GitHub Pages PASS. |
 | **5.143** | Sportovní / Průběžná – vchody 9 bytových domů | Fyzická mezera 1,89 m v přízemním modelovém soklu namísto překrytí dveří, lepší metricky měřené vynechávání oken kolem modelových vchodů, odebrání nedoložených generických přístřešků. Přesná poloha vchodů stále není fotograficky ověřená. |
 | **5.142** | Sportovní – venkovní basketbal | Na existujícím OSM hřišti `1278746587` s tagem `hoops=2` přibyly dva modelované koše. Počet/obrys z OSM, polohy stojanů a typ konstrukce pouze schématicky. Kontrola dvou modelů a žádných nových kolizí. |
@@ -40,14 +41,14 @@ Dřívější práce pokrývají nádraží, Bike Tower, centrum, střechy a fas
 
 ## Co je potřeba dál
 
-- **Nejbližší směr:** 5.144 už má úspěšné unit/WebGL/deploy testy. Pokračovat po celých ulicích **Průběžná / Sportovní**: porovnat 2024 veřejné foto-kamery s 3D záběry, potom bezpečně zpřesnit pouze podložené fasády, chodníky a okolí; hlídat, že 2024 fotografie nejsou důkaz současného stavu po stavebních pracích 2025. Před dalším commitem ověřit nejnovější GitHub a případné výsledky širších browser testů. Nezaměňovat funkční test za fotografické schválení vzhledu modelů. Před každým novým konkrétním zásahem ověřit skutečný stav repozitáře a odpovídající zdrojová data.
+- **Nejbližší směr:** nejdřív ověřit nové 5.145 unit / mobilní WebGL / deploy včetně výšky a LOD sportovní haly. Potom Pokračovat po celých ulicích **Průběžná / Sportovní**: porovnat 2024 veřejné foto-kamery s 3D záběry, potom bezpečně zpřesnit pouze podložené fasády, chodníky a okolí; hlídat, že 2024 fotografie nejsou důkaz současného stavu po stavebních pracích 2025. Před dalším commitem ověřit nejnovější GitHub a případné výsledky širších browser testů. Nezaměňovat funkční test za fotografické schválení vzhledu modelů. Před každým novým konkrétním zásahem ověřit skutečný stav repozitáře a odpovídající zdrojová data.
 - **Chybějící georeferencovaný podklad:** projektová parkovací stání (v dokumentaci 109), lampy (22), obruby a přesná poloha nových prvků v Průběžné. Dokud není konkrétní polohopis / výkres C.3 nebo fotografická kontrola, **nevkládat odhadem**.
 - **Dlouhodobý dluh:** znovu projít starší budovy a celé ulice podle `docs/building-rebuild-program.md` a `docs/reality-audit-00.md`. Fotofasády mohou být jen částečně podložené; nezaměňovat je za hotovou 360° rekonstrukci.
 - **Každá další verze:** jedna smysluplná úprava → cílené unit testy → pokud se mění scéna, kontrola v mobilním WebGL → commit a stručný zápis zde. Neoznačovat test jako prošlý, pokud skutečně neběžel.
 
 ## Nový pracovní režim W1 (18. 11. 2026)
 
-- **Jednotná pravidla:** `AGENTS.md` a `docs/DEVELOPMENT_WORKFLOW.md`. Nejde o novou verzi hry; nová herní verze **5.144**.
+- **Jednotná pravidla:** `AGENTS.md` a `docs/DEVELOPMENT_WORKFLOW.md`. Nejde o novou verzi hry; nová herní verze **5.145**.
 - **Převzetí práce:** načíst tento stav + poslední relevantní kousek README + jen související kód; ověřit hlavní větev GitHubu.
 - **Práce jako jeden úsek:** pokračovat Sportovní/Průběžná po celých ulicích a blocích, ne jen izolovanými dekoracemi. Odhady odlišovat od skutečných fotografických důkazů.
 - **Cílené unit testy:** `node scripts/dev-check.mjs sportovni` (další oblasti po `--list`); změny 3D pak ověřit samostatným mobilním WebGL testem po LOD.
@@ -63,6 +64,8 @@ Dřívější práce pokrývají nádraží, Bike Tower, centrum, střechy a fas
 5. Když uživatel napíše **„Pokračuj“**, navazuj na nejnovější uložený stav, nejbližší konkrétní úkol a pravidla výše; nechtěj opakovat staré informace, pokud repo poskytuje odpověď.
 
 ## Technický stav a ověření
+
+- **5.145:** zdrojově zamčený sportovní objekt 53866046, půdorys RÚIAN zachován, modelová výška 9,6 m a šedý jemně ribovaný východní plášť podle 2024 Commons foto; žádné extra kolize/objekty, CI unit a WebGL jsou zatím neověřené.
 
 - **5.144:** 2 originální foto-kamery (EXIF GPS a azimut) z Wikimedia Commons, Risajanda CC BY-SA 3.0; 2 přibližně modelově tónované pohledové fasády přesně mapovaných domů OSM **53865991/53865992**. **Unit + mobilní WebGL 6s LOD + GitHub Pages prošly.** Sedm dalších domů, stromy, ulice, parkoviště a nedoložené fasády zůstávají beze změn. Pozor: 2024 photo ≠ 2026 as-built.
 
