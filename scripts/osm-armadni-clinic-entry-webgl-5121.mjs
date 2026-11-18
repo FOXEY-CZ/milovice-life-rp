@@ -13,7 +13,7 @@ try{
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',err=>errors.push(String(err.stack||err)));
  await page.goto(
-  'http://127.0.0.1:8080/?v=512800&streetAudit=armadni-clinic-5118',
+  'http://127.0.0.1:8080/?v=512900&streetAudit=armadni-clinic-5118',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>(
