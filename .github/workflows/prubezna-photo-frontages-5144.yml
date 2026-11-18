@@ -1,0 +1,40 @@
+name: Prubezna 5.144 public-photo facades mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/osm-prubezna-photo-frontages-5144.js
+      - scripts/osm-prubezna-photo-frontages-5144.test.mjs
+      - scripts/osm-prubezna-photo-frontages-webgl-5144.mjs
+      - scripts/facade-anchors.js
+      - data/regions/mlada.json
+      - .github/workflows/prubezna-photo-frontages-5144.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  photo-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify 2024 Commons source and source-locked facades
+        run: node scripts/osm-prubezna-photo-frontages-5144.test.mjs
+      - name: Install browser test client
+        run: npm install --no-save --no-package-lock playwright-core
+      - name: Run 2024 street photo camera and facade LOD test
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-prubezna-photo-frontages-webgl-5144.mjs
+      - name: Upload mobile screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prubezna-public-photo-frontages-5144
+          path: browser-artifacts/prubezna-photo-facades-5144-mobile.png
+          if-no-files-found: ignore

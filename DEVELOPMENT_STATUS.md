@@ -2,13 +2,13 @@
 
 > **Účel:** stručný, průběžně aktualizovaný startovní bod pro nové ChatGPT konverzace. **Nejde o úplnou historii.** Detailní changelog je na začátku `README.md`. Udržuj tento soubor krátký: aktuální stav, otevřené úkoly, ověřené zdroje a další krok.
 >
-> **Aktuální ověřená verze:** 18. 11. 2026; hra **5.143** na větvi `main`. [Kompletní unit validace](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44320269490), [cílený mobilní WebGL test po 6 s LOD](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44320269592) a [nasazení na GitHub Pages](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44320268582) **prošly**. Předchozí testy 5.142 prošly v [GitHub Actions Validate](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44316888551), a **samostatný mobilní WebGL test prošel** v [Sportovní 5.142](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44317164137), včetně viditelnosti obou košů po šesti sekundách a zachování předchozích prvků. Oprava 5.143 navíc prokázala otevřené sokly, zachování devíti domů, deseti rohů pěších cest a dvou košů v mobilním WebGL po LOD.
+> **Poslední ověřená verze:** 18. 11. 2026; hra **5.143**. **Nová 5.144** byla zapsána do hry a čeká na výsledky CI a mobilního WebGL. Předchozí na větvi `main`. [Kompletní unit validace](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44320269490), [cílený mobilní WebGL test po 6 s LOD](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44320269592) a [nasazení na GitHub Pages](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44320268582) **prošly**. Předchozí testy 5.142 prošly v [GitHub Actions Validate](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44316888551), a **samostatný mobilní WebGL test prošel** v [Sportovní 5.142](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44317164137), včetně viditelnosti obou košů po šesti sekundách a zachování předchozích prvků. Oprava 5.143 navíc prokázala otevřené sokly, zachování devíti domů, deseti rohů pěších cest a dvou košů v mobilním WebGL po LOD.
 
 ## Projekt a odkazy
 
 - Repozitář: https://github.com/FOXEY-CZ/milovice-life-rp
 - Veřejná hra (GitHub Pages): https://foxey-cz.github.io/milovice-life-rp/
-- Poslední kontrolní kamera: https://foxey-cz.github.io/milovice-life-rp/?v=514300&streetAudit=sportovni-entrances-5143
+- Poslední kontrolní kamera: https://foxey-cz.github.io/milovice-life-rp/?v=514400&streetAudit=prubezna-public-photo-5144 (Wikimedia fotografie 2024 s EXIF)
 - Webová hra: `index.html`; stavební editor: `editor.html`; kontrolní pohledy a pomůcky: `survey.html`, `photo-pilot.html`, `rebuild.html`.
 - Herní moduly a testy: `scripts/`; OSM, výšková a regionální data: `data/` a `data/regions/`; metodika: `docs/STREET_WORKFLOW.md`, `docs/building-rebuild-program.md`, `docs/reality-audit-00.md`.
 - Detailní verze a zdůvodnění: `README.md` (číst **jen nejnovější relevantní sekce**, ne všech 366 kB).
@@ -26,6 +26,7 @@ Budovat **celé propojené Milovice** jako prohlížečovou realistickou 3D RP/G
 
 | Verze | Oblast | Výsledek podle README a kódu |
 | --- | --- | --- |
+| **5.144** | Průběžná / Sportovní – fotoaudit 2024 | Dvě kamery přímo z GPS/EXIF fotografie Wikimedia Commons (Průběžná 272.09°, Sportovní 277.50°). Dvě přibližně tónované FOTO-viditelné stěny přesně mapovaných RÚIAN domů 53865991/53865992; ostatní strany a street furniture neověřeny. Unit/WebGL testy zatím čekají. |
 | **5.143** | Sportovní / Průběžná – vchody 9 bytových domů | Fyzická mezera 1,89 m v přízemním modelovém soklu namísto překrytí dveří, lepší metricky měřené vynechávání oken kolem modelových vchodů, odebrání nedoložených generických přístřešků. Přesná poloha vchodů stále není fotograficky ověřená. |
 | **5.142** | Sportovní – venkovní basketbal | Na existujícím OSM hřišti `1278746587` s tagem `hoops=2` přibyly dva modelované koše. Počet/obrys z OSM, polohy stojanů a typ konstrukce pouze schématicky. Kontrola dvou modelů a žádných nových kolizí. |
 | **5.141** | Sportovní – sídlištní pěší trasy | Deset malých spojovacích rohů na pěti existujících OSM chodnících. Nejsou to nové cesty ani nové přechody. Modul `scripts/osm-sportovni-estate-walk-5141.js`. |
@@ -39,14 +40,14 @@ Dřívější práce pokrývají nádraží, Bike Tower, centrum, střechy a fas
 
 ## Co je potřeba dál
 
-- **Nejbližší směr:** 5.143 prošla cíleným WebGL i unit testy. Pokračovat systematicky ve **Sportovní / Průběžná**, ale před přidáním dalších modelových ozdob hledat veřejné fotografické důkazy a prioritně řešit celkovou věrnost fasád, vstupů, cest a okolí; zkontrolovat i širší browser smoke, pokud po posledním commitu ještě není dokončen. Nezaměňovat funkční test za fotografické schválení vzhledu modelů. Před každým novým konkrétním zásahem ověřit skutečný stav repozitáře a odpovídající zdrojová data.
+- **Nejbližší směr:** nejprve prověřit 5.144 unit, mobilní WebGL, deploy a vzhled obou foto-přibližovaných fasád (při selhání opravit). Potom Pokračovat systematicky ve **Sportovní / Průběžná**, ale před přidáním dalších modelových ozdob hledat veřejné fotografické důkazy a prioritně řešit celkovou věrnost fasád, vstupů, cest a okolí; zkontrolovat i širší browser smoke, pokud po posledním commitu ještě není dokončen. Nezaměňovat funkční test za fotografické schválení vzhledu modelů. Před každým novým konkrétním zásahem ověřit skutečný stav repozitáře a odpovídající zdrojová data.
 - **Chybějící georeferencovaný podklad:** projektová parkovací stání (v dokumentaci 109), lampy (22), obruby a přesná poloha nových prvků v Průběžné. Dokud není konkrétní polohopis / výkres C.3 nebo fotografická kontrola, **nevkládat odhadem**.
 - **Dlouhodobý dluh:** znovu projít starší budovy a celé ulice podle `docs/building-rebuild-program.md` a `docs/reality-audit-00.md`. Fotofasády mohou být jen částečně podložené; nezaměňovat je za hotovou 360° rekonstrukci.
 - **Každá další verze:** jedna smysluplná úprava → cílené unit testy → pokud se mění scéna, kontrola v mobilním WebGL → commit a stručný zápis zde. Neoznačovat test jako prošlý, pokud skutečně neběžel.
 
 ## Nový pracovní režim W1 (18. 11. 2026)
 
-- **Jednotná pravidla:** `AGENTS.md` a `docs/DEVELOPMENT_WORKFLOW.md`. Nejde o novou verzi hry; nová herní verze **5.143**.
+- **Jednotná pravidla:** `AGENTS.md` a `docs/DEVELOPMENT_WORKFLOW.md`. Nejde o novou verzi hry; nová herní verze **5.144**.
 - **Převzetí práce:** načíst tento stav + poslední relevantní kousek README + jen související kód; ověřit hlavní větev GitHubu.
 - **Práce jako jeden úsek:** pokračovat Sportovní/Průběžná po celých ulicích a blocích, ne jen izolovanými dekoracemi. Odhady odlišovat od skutečných fotografických důkazů.
 - **Cílené unit testy:** `node scripts/dev-check.mjs sportovni` (další oblasti po `--list`); změny 3D pak ověřit samostatným mobilním WebGL testem po LOD.
@@ -62,6 +63,8 @@ Dřívější práce pokrývají nádraží, Bike Tower, centrum, střechy a fas
 5. Když uživatel napíše **„Pokračuj“**, navazuj na nejnovější uložený stav, nejbližší konkrétní úkol a pravidla výše; nechtěj opakovat staré informace, pokud repo poskytuje odpověď.
 
 ## Technický stav a ověření
+
+- **5.144:** veřejné snímky z Wikimedia Commons (Risajanda, CC BY-SA 3.0) mají foto GPS a směr z EXIF. Do hry přidané 2 foto-kamery a modelované omítkové odstíny na 2 ulice-viditelných fasádách. Přesné detaily snímků nebyly kopírovány; testy CI vyhodnotit z GitHub Actions po commitu.
 
 - **5.143:** sokly a modelové vchody devíti původních RÚIAN domů opravené; unit validace, samostatný mobilní WebGL 6s LOD a GitHub Pages nasazení mají stav **PASS**. Širší browser smoke má vlastní běh v GitHub Actions. Neodvozovat realitu z generického 3D modelu.
 

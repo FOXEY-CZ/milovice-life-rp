@@ -1,3 +1,15 @@
+## Milovice RP 5.144 — Průběžná/Sportovní: přesné fotografické kamery a viditelné fasády (18. 11. 2026)
+
+**Přímé fotokamery:** [Průběžná 2024](https://foxey-cz.github.io/milovice-life-rp/?v=514400&streetAudit=prubezna-public-photo-5144) · [Sportovní 2024](https://foxey-cz.github.io/milovice-life-rp/?v=514400&streetAudit=sportovni-public-photo-5144)
+
+- **Dvě skutečné veřejné fotografie s EXIF GPS a kompasem:** Risajanda / Wikimedia Commons, CC BY-SA 3.0. [Průběžná.jpg](https://commons.wikimedia.org/wiki/File:Pr%C5%AFb%C4%9B%C5%BEn%C3%A1.jpg) 13. 6. 2024 z GPS **50.230236, 14.864183**, heading **272.09°**. [Sportovní (3).jpg](https://commons.wikimedia.org/wiki/File:Sportovn%C3%AD_(3).jpg) 6. 6. 2024 z GPS **50.230950, 14.866606**, heading **277.50°**. V nové verzi lze skočit přímo na obě GPS pozice a otevřít originální, řádně licencované podklady. Herní výška kamery 1.68m a FOV se mohou mírně lišit od mobilního fotoaparátu; není garantována pixelová shoda.
+- **Realističtější městský blok (2 skutečné RÚIAN budovy):** při pohledu z Průběžné jsou z originální fotografie prostorově přiřazeny dvě již mapované budovy: **OSM 53865991** (jižní levá, světlá fasáda s tmavším horním lemem) a **OSM 53865992** (severní pravá, světle zelená fasáda s tmavším lemem). Přidány jsou pouze **dva přibližné tónované omítkové 3D povrchy na fyzicky určených fotograficky viditelných stěnách**, se sdílenou procedural stucco texturou. Zpřesnění barev je **modelový odhad podle snímku z roku 2024**, nikoliv zaměřené RAL a nikoliv doklad stavu po přestavbě 2025.
+- **Žádné falešné detaily:** ostatních sedm vyšších domů, všechny nefotografované fasády, zdrojové OSM půdorysy, existující okna, dveře, vchody, balkóny, střechy, silnice, chodníky, parkování, stromy a lampy se **nemění**. Ani jeden pixel fotografie se nestahuje či nevkládá do herních textur; zdroj je jen hypertextový odkaz s autorem a licencí.
+- **Kontrola po načtení:** `window.__milovicePrubeznaPhotoFacadeRuntime()` audituje skutečné instancované omítkové panely, jejich materiály a viditelnost po 6 s LOD. Unit test a samostatný mobilní WebGL test byly přidány do CI; výsledek se zapisuje až po doběhnutí.
+- **Do budoucna:** na dvou přesných 2024 kamerách porovnávat celý viditelný 360° kontext, nikoliv pouze jednu fasádu. **2025 práce na Průběžné** jsou doložené městskou veřejnou zakázkou, ale do doby získání georeferencované výkresové dokumentace neopravovat naslepo přesné polohy lamp, obrub a parkovacích stání.
+
+---
+
 ## Milovice RP 5.143 — Sportovní / Průběžná: přízemí a vchody devíti bytových domů (18. 11. 2026)
 
 **Přímá mobilní kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=514300&streetAudit=sportovni-entrances-5143
