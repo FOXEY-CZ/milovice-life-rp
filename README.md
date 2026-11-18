@@ -1,3 +1,17 @@
+## Milovice RP 5.133 — Oprava sdílených stěn v Mladé + kontrola Tyršova × Sportovní (Part 27, 18. 11. 2026)
+
+**Přímá technická kamera Tyršova × Sportovní:** https://foxey-cz.github.io/milovice-life-rp/?v=513300&streetAudit=tyrsova-sportovni-5133
+
+**Předchozí hotová řada pěti domů v Tyršově:** https://foxey-cz.github.io/milovice-life-rp/?v=513300&streetAudit=tyrsova-terrace-5131
+
+- Do ulice se nevracíme jen kvůli pěti konkrétním domům: nové čistě geometrické ověření souboru `data/regions/mlada.json` našlo mezi **dvěma samostatnými, přesto přesně sousedícími bytovými objekty** celkem **28 sdílených plnohodnotných RÚIAN hran** (37 různých bytových domů). Včetně 4 společných stěn původní Tyršovské řady to je celkem **56 interních vnějších fasádních hran**, které **nesmějí dostat generická okna, dveře ani fasádní lišty**. V jiných oblastech či na silniční síti nic nepřepisujeme. Nově se opravuje i **24 dalších takových spár**.
+- Všechny kandidáty hlídají přesné společné 3D souřadnice **obou koncových bodů téže hrany**, délka 6–21 m, stejné `building:levels` (2–16), `building=residential` a doložený identifikátor `ref:ruian:building` se zdrojem `cuzk:ruian`. Odlišné výšky, jiné typy staveb, blízké ale neidentické rovnoběžné zdi nebo více než dvě překryté stěny jsou z ochrany vyloučeny. Kompaktní hash podle vrcholů hledá spáry v čase úměrném počtu hran, nikoli všemi dvojicemi budov.
+- Samotné OSM domy **nepřibývají, neposouvají se a nemění střechy, výšky, kolizní objemy ani půdorysy**. Mění se jen generické **vnější dekorace** na vnitřních stěnách, ponechají se všechny ostatní fasády. Původní samostatný audit Tyršovy 5.132 pořád vyžaduje původních **8 vynechaných vnitřních hran**, nový celkový audit očekává **56**, aby se systémová oprava nemohla nepozorovaně rozbít.
+- U Sportovní jsou z uložených OSM zřejmé skutečné navazující komunikace `Tyršova 1331897627` → `Sportovní 8618266` + severní `Tyršova 1331897631`, jednosměrná část `Sportovní 83076186`, **neoznačený** pěší crossing `1278749455`, bytový dům `53865993` s tagem **8 podlaží** a okolní mapované tenisové plochy. Nový kontrolní záběr je z mapového bodu; jeho směr je technický odhad, **ne fotka ani potvrzení vzhledu fasád**. Značený přechod zde bez zdrojů **nevymýšlíme**. Povrch kurtů a schematické sportovní čáry již zpracovává starší obecný OSM renderer 5.99; v tomto kroku nevznikl nově vymyšlený kurt ani síť.
+- Implementace `scripts/osm-ruian-party-walls-5133.js`, zdrojový regresní test `scripts/osm-ruian-party-walls-5133.test.mjs`, živý mobilní Chromium test `scripts/osm-ruian-party-walls-webgl-5133.mjs`. Audity: `window.__miloviceRUIANPartyWallAudit`, `window.__miloviceRUIANPartyWallRuntime()` + dřívější `window.__miloviceTyrsovaPartyWallRuntime()`. GitHub Actions musí potvrdit testy a Pages deployment; samotné commity nejsou důkazem funkčního nasazení.
+
+---
+
 ## Milovice RP 5.132 — Tyršova: správné souvislé fasády pěti RÚIAN domů (Part 26, 18. 11. 2026)
 
 **Přímá kontrolní kamera pro všech pět domů:** https://foxey-cz.github.io/milovice-life-rp/?v=513200&streetAudit=tyrsova-terrace-5131
