@@ -78,7 +78,7 @@ try{
    status:document.getElementById('street-audit-search-count').textContent
   }));
   assert.equal(filtered.count,6,'All six mapped Průběžná / Sportovní cameras must match');
-  assert.equal(filtered.results,1,'Search must hide empty categories');
+  assert.equal(filtered.results,2,'Only the two categories containing matching source cameras must remain visible');
   assert(filtered.status.includes('6 z '),'Accessible result count');
   await page.locator('#street-audit-search').fill('neexistujici-ulice');
   assert.equal(await page.locator('#street-audit-nav a:not([hidden])').count(),0);
