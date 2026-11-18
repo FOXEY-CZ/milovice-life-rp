@@ -29,6 +29,7 @@ assert.equal(streetAuditCategory('tyrsova-sportovni-5133'),'streets');
 assert(ids.includes('tyrsova-sportovni-5133'),'Keep Sportovní source camera');
 assert(ids.includes('prubezna-renovation-5134'),'Keep city-sourced Průběžná paving camera');
 assert(ids.includes('prubezna-road-asphalt-5135'),'Keep exact Průběžná one-way asphalt camera');
+assert(ids.includes('prubezna-links-5137'),'Keep both newly modelled OSM footway camera');
 assert(ids.includes('tyrsova-terrace-5131')&&ids.includes('armadni-island-zebra-5131'));
 assert(ids.includes('spojovaci-north-crossing-5130'),'Keep 43rd OSM crossing camera');
 assert(ids.includes('clinic-verge-trees-5129'),'Protect direct source-backed tree camera');

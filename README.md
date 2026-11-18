@@ -1,3 +1,15 @@
+## Milovice RP 5.137 — Part 28: dvě původní pěší spojky mezi domy v Průběžné (18. 11. 2026)
+
+**Přímá herní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=513700&streetAudit=prubezna-links-5137
+
+- Nový skutečně viditelný 3D povrch na **dvou původních OSM chodnících** v bytové zástavbě Průběžná: `way/1282219855` (**20,9 m**) a `way/1282219856` (**27,9 m**), dohromady **48,8 m**. Obě mapové spojky mají v uloženém OpenStreetMap importu `footway=sidewalk` a `surface=asphalt` a nyní dostávají stejný úsporný betonový dlažební vizuál jako první dvě pěší cesty v 5.134.
+- [Městská zakázka 2025](https://zakazky.mesto-milovice.cz/contract_display_51.html) dokládá výměnu povrchu řešených starých chodníků a doplnění nových mezi objekty. **Přímou fotku definitivního povrchu právě těchto dvou jednotlivých OSM cest ale nemáme.** Jde o pravděpodobný povrchový model podle projektu, nikoli potvrzené as-built zaměření.
+- **Bez přesunů** GPS bodů, změn šířky, kolizí, navigační sítě, jednosměrky a hráčské silnice. Nepřibyla žádná nová cesta, zebra, lampa, obrubník ani parkovací místo. Původní 12 úseků asfaltu Průběžné a dvě starší pěší cesty se zachovaly; materiálových pěších průběhů jsou nyní celkem **4**.
+- Jedna nová kontrolní kamera stojí na **původním OSM bodu 50.2298232, 14.8625736** a má technický směr **40,6°** podle pokračování mapovaného chodníku. V mobilní nabídce je stále dostupná po ručním výběru a hledání `prubezna`. Nemá označení fotograficky shodné panoramy.
+- Regresní ochrany: `scripts/osm-prubezna-links-5137.test.mjs` odmítá změny přesné OSM geometrie a identifikátorů; `scripts/osm-prubezna-links-webgl-5137.mjs` ověřuje skutečné 3D vykreslení, 4 chodníkové materiálové cesty, zachovanou jednosměrku a stabilní mobilní menu.
+
+---
+
 ## Milovice RP 5.136 — Part 28: rychlé hledání skutečných kontrolních kamer (18. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=513600&streetAudit=prubezna-road-asphalt-5135
