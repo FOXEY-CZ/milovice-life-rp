@@ -51,6 +51,9 @@ on:
       - scripts/osm-tyrsova-armadni-junction-webgl-5131.mjs
       - scripts/osm-tyrsova-party-walls-5132.js
       - scripts/osm-tyrsova-party-walls-5132.test.mjs
+      - scripts/osm-ruian-party-walls-5133.js
+      - scripts/osm-ruian-party-walls-5133.test.mjs
+      - scripts/osm-ruian-party-walls-webgl-5133.mjs
       - scripts/osm-clinic-parking-inlays-5125.test.mjs
       - scripts/osm-clinic-parking-inlays-webgl-5125.mjs
       - scripts/station-photo-parking.js
@@ -103,6 +106,7 @@ jobs:
           node scripts/osm-clinic-storefronts-webgl-5124.mjs
           node scripts/osm-clinic-parking-inlays-webgl-5125.mjs
           node scripts/osm-tyrsova-armadni-junction-webgl-5131.mjs
+          node scripts/osm-ruian-party-walls-webgl-5133.mjs
           node scripts/editor_smoke.mjs
           node scripts/photo-pilot-smoke.mjs
       - name: Attach browser screenshot if available
