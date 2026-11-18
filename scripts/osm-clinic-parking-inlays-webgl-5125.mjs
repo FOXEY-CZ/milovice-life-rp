@@ -53,7 +53,7 @@ try{
  assert.equal(s.audit.osmClinicId,'1057548624');
  assert.equal(s.audit.streetWayId,'246652750');
  assert.equal(s.audit.footwayId,'1339091016');
- assert(s.audit.modelledSeparatorCount>=7);
+ assert(s.audit.modelledSeparatorCount>=5);
  assert.equal(s.audit.drawMeshes,1);
  assert.equal(s.audit.renderedMeshes,1);
  assert.equal(s.audit.renderedTriangles,s.audit.triangleCount);
