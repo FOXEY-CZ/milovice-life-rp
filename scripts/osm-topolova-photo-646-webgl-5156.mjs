@@ -40,7 +40,8 @@ try{
  assert.equal(r.p?.sourceOriginalLevels,1);
  assert.equal(r.p?.actualFloors,3);
  assert.equal(r.p?.actualWallHeight,9.15);
- assert.equal(r.p?.extrudedWallHeight,9.15);
+ assert(Math.abs(r.p?.extrudedWallHeight-9.15)<.001,
+  'GPU Float32 world mesh height must be within 1mm of the photo-derived model');
  assert.equal(r.p?.pitchedRoofCreated,true);
  assert.equal(r.p?.renderedMeshes,4);
  assert.equal(r.p?.modelGables,8);
