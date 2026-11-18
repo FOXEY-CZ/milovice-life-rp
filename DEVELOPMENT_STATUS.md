@@ -1,6 +1,6 @@
 # Milovice RP — rychlý handoff vývoje
 
-> **Nová 5.157 (18. 11. 2026; CI/WebGL/Pages čekají):** dům **Topolová 646** nově z obou dlouhých stran podle referenčních fotek z roku 2025 (fotografie 2 od vozidel a 3 od zeleného plotu). Foto přímo ukazuje půlkruhově ukončené podkrovní zasklení, dříve chybně obdélníkové. OSM 53866048 / RÚIAN 25789813, GPS hash 73d119b1, hrany 5 a 7 měří 43,046 m a 43,021 m; obě obdržely odhadovanou pravidelnou fasádu. Počty oken/štítů, přiřazení světové strany i metry jsou nadále odhady, ne georeferencovaná fotogrammetrie. **4 sloučené fasádní meshe i pro 2 líce**; generické fasády na obou dlouhých stranách vypnuté. Žádné vymyšlené vchody ani GPS změny. 5.156 CI/WebGL/Pages PASS.
+> **Nová 5.157 (18. 11. 2026; CI/WebGL/Pages PASS):** dům **Topolová 646** nově z obou dlouhých stran podle referenčních fotek z roku 2025 (fotografie 2 od vozidel a 3 od zeleného plotu). Foto přímo ukazuje půlkruhově ukončené podkrovní zasklení, dříve chybně obdélníkové. OSM 53866048 / RÚIAN 25789813, GPS hash 73d119b1, hrany 5 a 7 měří 43,046 m a 43,021 m; obě obdržely odhadovanou pravidelnou fasádu. Počty oken/štítů, přiřazení světové strany i metry jsou nadále odhady, ne georeferencovaná fotogrammetrie. **4 sloučené fasádní meshe i pro 2 líce**; generické fasády na obou dlouhých stranách vypnuté. Žádné vymyšlené vchody ani GPS změny. **5.157 [plná validace PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44385453094), [mobilní WebGL +6,9s LOD PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44385453029), [starší 5.156 mobilní WebGL PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44385453142), [Pages PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44385451098).** Původní 5.156 nadále vyhovuje.
 
 ## Odkazy a spuštění
 
@@ -15,7 +15,7 @@
 - Zdroj dvě odlišná exteriérová foto dlouhých líců: https://www.revitalizacebytovek.cz/realizace/topolova-646-milovice, foto č. 2 od vozidel a č. 3 od živého plotu. Přímý důkaz krémové/lososové omítky, opakovaných štítů a půlkruhového zasklení. Negeoreferencovaná foto orientace: není známo, které dlouhé GPS straně patří konkrétní detail.
 - Skutečné OSM 53866048, RÚIAN 25789813, hash 73d119b1, 9 mapových GPS bodů; originální wall edge 5 = 43,046 m a edge 7 = 43,021 m. Model generuje obě stěny s modelovým rozvrhem po 8 štítech, 48 běžných a 16 podkrovních půlkruhových oken na stranu; 2× v součtu. Oblouk skutečně triangulovaný, 10 úseček, ne obdélníkový hranatý decal.
 - Vykreslení ve 4 sdílených materiálových meshech pro obě strany dohromady; dva generické fasádní passthrough na skutečných OSM hranách záměrně vypnuté. Výška 9,15m a červená střecha modelově ponechána z 5.156. OSM level=1, sousední 647, 614–618, MŠ, chodníky a silnice beze změny.
-- Modul scripts/osm-topolova-photo-646-5157.js, unit s fyzickými vertex buffery, mobilní Chrome/WebGL +6,9s LOD, regresní testy staré 5.156/5.155 a workflow .github/workflows/topolova-both-facades-5157.yml. Nový runtime __miloviceTopolovaBothFacadesRuntime() kontroluje počet foto-stran, vypnuté generické fasády, 4 reálné GPU meshe a přežití LOD. **CI/WebGL/Pages zatím nedoloženy.**
+- Modul scripts/osm-topolova-photo-646-5157.js, unit s fyzickými vertex buffery, mobilní Chrome/WebGL +6,9s LOD, regresní testy staré 5.156/5.155 a workflow .github/workflows/topolova-both-facades-5157.yml. Nový runtime __miloviceTopolovaBothFacadesRuntime() kontroluje počet foto-stran, vypnuté generické fasády, 4 reálné GPU meshe a přežití LOD. **CI, mobilní WebGL po 6,9s LOD a GitHub Pages skutečně PASS (odkazy nahoře).** Původní statické testy hlídaly doslova starý single-facade výraz z 5.156; opraveno v commitu 92c2abf, následný nový unit i obě samostatné mobilní WebGL workflow zelené.
 - Další krok: georeferenční určení skutečných vstupů a krátkých průčelí z foto/OSM, pak pokračovat další ulicí.
 
 ## 5.156 — Topolová 646: fotografie skutečné fasády 2025
@@ -61,7 +61,7 @@
 
 | Verze | Co bylo změněno | Zdroj / omezení |
 | --- | --- | --- |
-| **5.157** | Topolová 646: dvě 43m foto-fasády, 32 klenutých podkrovních oken, generické fasády potlačeny | 4 sdílené mesh; počet štítů/rozteče model, CI čeká. |
+| **5.157** | Topolová 646: dvě 43m foto-fasády, 32 klenutých podkrovních oken, generické fasády potlačeny | 4 sdílené mesh; počet štítů/rozteče model; CI, mobilní WebGL+LOD, Pages PASS. |
 | **5.156** | Topolová 646: skutečná fasáda a podkroví z přímých foto 2025, původně chybná jednopodlažní hmota | 3 řady a podkrovní štíty, metry i rozteče model; CI/WebGL/Pages PASS. |
 | **5.155** | Topolová 614–618, úředních 5 nadzemních pater; oprava OSM nesouladu 618 a společné stěny 617–618 | Přísný GPS/RÚIAN zámek, bez změny originálních dat; CI/WebGL/Pages PASS. |
 | **5.154** | MŠ Sluníčko: projektová západní fasáda 44 m, výška vizuální hmoty 13,15 m | Rozpočtový údaj není as-built zaměření; přísný OSM hash, CI/WebGL/Pages PASS. |
