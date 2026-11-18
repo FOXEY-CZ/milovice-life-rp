@@ -42,6 +42,8 @@ on:
       - scripts/osm-clinic-yellow-cross-5127.test.mjs
       - scripts/osm-clinic-furniture-protection-5128.js
       - scripts/osm-clinic-furniture-protection-5128.test.mjs
+      - scripts/osm-clinic-photo-saplings-5129.js
+      - scripts/osm-clinic-photo-saplings-5129.test.mjs
       - scripts/osm-clinic-parking-inlays-5125.test.mjs
       - scripts/osm-clinic-parking-inlays-webgl-5125.mjs
       - scripts/station-photo-parking.js
