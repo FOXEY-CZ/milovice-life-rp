@@ -563,6 +563,7 @@ import {planTopolovaContinuousHip5160,renderTopolovaContinuousHip5160} from './s
 import {planTopolovaEstimatedFacades5161,renderTopolovaEstimatedFacades5161} from './scripts/osm-topolova-estimated-facades-5161.js?v=516100';
 import {planTopolovaMappedWalkers5162,toTopolovaWalkSegment5162} from './scripts/osm-topolova-mapped-walkers-5162.js?v=516200';
 import {planTopolovaPromenade5163,topolovaPromenadeSegment5163} from './scripts/osm-topolova-promenade-5163.js?v=516300';
+import {planTopolovaConnectedWalk5164,makeTopolovaConnectedRoute5164,sampleTopolovaConnectedRoute5164,advanceTopolovaConnectedRoute5164} from './scripts/osm-topolova-connected-5164.js?v=516400';
 import {planTopolovaDrawing5159,renderTopolovaDrawing5159} from './scripts/osm-topolova-drawing-614615-5159.js?v=515900';
 import {planTopolova646Photo5156,renderTopolova646Photo5156} from './scripts/osm-topolova-photo-646-5156.js?v=515600';
 import {planTopolova646BothFacades5157,renderTopolova646BothFacades5157} from './scripts/osm-topolova-photo-646-5157.js?v=515700';
@@ -1071,7 +1072,16 @@ const rpStreetAuditViews={
   technical:true,streetLevel:true,estimatedHeading:true,
   note:'Podepsané výkresy západního a východního pohledu 614–615; pět nadzemních podlaží, bílá dvoukřídlá okna, balkonové sestavy, vstupy a obloukové schodišťové nástavby. OSM source footprint beze změn. Přesné rozteče, výška nástaveb a stříšek jsou odhad podle výkresu, nikoli geodetické zaměření. Dveře jsou optický detail neprůchozí plné fasády. Kamera je technická, orientačně na OSM service-way 1201945272.'
  },
- 'topolova-promenade-5163':{
+ 'topolova-connected-5164':{
+   label:'Topolová · průchozí pěší trasa 197 m',
+   camera:{lat:50.2293793,lon:14.8654041},heading:90,
+   source:'https://www.openstreetmap.org/way/1316882852',
+   regionId:'mlada',osmLandmarkId:'61979139',
+   author:'OSM way 1316882860 -> sdílený node 13 -> way 1316882852 body 13–22',
+   technical:true,streetLevel:true,estimatedHeading:true,
+   note:'Verze 5.164: chodící NPC projde bez teleportu z původní 29m pěšiny na navazující mapovaný dlážděný chodník, kolem jižního rohu a pokračuje podél Topolové. Dvě originální OSM trasy, 11 GPS uzlů, 10 segmentů, dohromady 197 m, 2 m rezerva u obslužné vozovky a 4 m před existujícím severním přechodem. Tento průběžný chodec je herní simulace, žádná skutečně sledovaná osoba; čtyři původní NPC z verzí 5.162 a 5.163 zůstávají. Nové vozovky, vchody, chodníky, přechody či kolize nevznikají. Kamera je technický pohled na mapový uzel, nikoli Panorama.'
+  },
+  'topolova-promenade-5163':{
    label:'Topolová · 102 m dlouhý chodník s chodci',
    camera:{lat:50.22985,lon:14.86619},heading:355,
    source:'https://www.openstreetmap.org/way/1316882852',
@@ -3396,7 +3406,46 @@ window.__miloviceTopolovaDrawingRuntime=()=>{
    a.entries===4&&a.roundedCaps===4&&addresses.join(',')==='614,615'&&
    window.__miloviceAreasLoaded?.includes('mlada')===true};
 };
-window.__miloviceTopolovaPromenadeRuntime=()=>{
+window.__miloviceTopolovaConnectedRuntime=()=>{
+  const plan=window.__miloviceTopolovaConnectedPlan;
+  if(!plan)return {ready:false};
+  const person=trafficPeople.find(x=>x.connectedRoute5164?.version==='5.164');
+  if(!person)return {ready:false,version:'5.164',npcCount:0};
+  const sampled=sampleTopolovaConnectedRoute5164(
+   person.connectedRoute5164,person.routeDistance5164,person.direction);
+  const g=person.g,route=person.connectedRoute5164;
+  const spatialError=Math.hypot(g.position.x-sampled.x,
+   g.position.z-sampled.z);
+  const terrainDelta=Math.abs(g.position.y-terrainAt(g.position.x,g.position.z));
+  let attached=false,visible=true;
+  for(let n=g;n;n=n.parent){
+   if(!n.visible)visible=false;
+   if(n===scene)attached=true;
+  }
+  const seen=attached&&visible;
+  const spur=window.__miloviceTopolovaWalkersRuntime?.();
+  const promenade=window.__miloviceTopolovaPromenadeRuntime?.();
+  return {
+   ...plan,originalGPSNodes:undefined,
+   npcCount:1,visibleInScene:seen?1:0,
+   x:g.position.x,z:g.position.z,
+   routeDistance:person.routeDistance5164,
+   segmentIndex:sampled.segmentIndex,
+   sourceWayIdAtActor:sampled.sourceWayId,
+   junctionTransitions:person.junctionTransitions5164,
+   joinedSourceWays:person.junctionTransitions5164>0,
+   onSourceMappedRoute:spatialError<.045,
+   spatialError,terrainDelta,
+   groundAligned:terrainDelta<.075,
+   routeSegments:route.segments.length,
+   sourceRouteLength:route.length,
+   preservedOtherLocalNPCs:spur?.ready===true&&promenade?.ready===true,
+   ready:seen&&spatialError<.045&&terrainDelta<.075&&
+    route.segments.length===10&&spur?.ready===true&&
+    promenade?.ready===true&&window.__miloviceAreasLoaded?.includes('mlada')===true
+  };
+ };
+ window.__miloviceTopolovaPromenadeRuntime=()=>{
   const plan=window.__miloviceTopolovaPromenadePlan;
   if(!plan)return {ready:false};
   const walkers=trafficPeople.filter(p=>p.sourceFootwayId===plan.sourceSidewalkId);
@@ -7088,6 +7137,13 @@ function rpAppendOSMElements(elements,regionId='old'){
  });
  if(topolovaPromenadePlan)
   window.__miloviceTopolovaPromenadePlan=topolovaPromenadePlan;
+ const topolovaConnectedPlan=planTopolovaConnectedWalk5164({
+  regionId,rowPlan:topolovaRow5155,
+  shortWalkPlan:topolovaWalkPlan,
+  promenadePlan:topolovaPromenadePlan,ways:roadWays
+ });
+ if(topolovaConnectedPlan)
+  window.__miloviceTopolovaConnectedPlan=topolovaConnectedPlan;
  const topolovaInferredPlan=planTopolovaEstimatedFacades5161({
   regionId,rowPlan:topolovaRow5155,hipPlan:topolovaHipPlan,ways:buildingWays
  });
@@ -8994,7 +9050,7 @@ async function rpLoadCityArea(id){
   
   rpAppendOSMElements(osm.elements,id);
   finalizeRoadStrips();finalizeCityWalls();finalizeFoundations();finalizeFacades();finalizeArchitecture();heroBuildings.flush(osmLayer);
-  chunkMilovice();rpBuildRoadGraph();rpPopulateRegionalTraffic(area);rpSpawnTopolovaWalkers5162();rpSpawnTopolovaPromenade5163();improveMiloviceVisuals();publishLegacyRealityAudit();rpInitRailTraffic();
+  chunkMilovice();rpBuildRoadGraph();rpPopulateRegionalTraffic(area);rpSpawnTopolovaWalkers5162();rpSpawnTopolovaPromenade5163();rpSpawnTopolovaConnected5164();improveMiloviceVisuals();publishLegacyRealityAudit();rpInitRailTraffic();
   loadedCityAreas.add(id);
   window.__miloviceAreasLoaded=[...loadedCityAreas];
   window.__miloviceAreaStats={buildings:osmBuildings,roads:osmRoads.length,landscape:landscapeZones.length};
@@ -9792,6 +9848,26 @@ function rpSpawnTopolovaPromenade5163(){
    legs:rig.legs,arms:rig.arms,phase:i*1.7});
  }
 }
+// 5.164: one NPC follows 10 connected EXISTING OSM footway segments;
+// no speculative sidewalk draw calls or building entrances.
+function rpSpawnTopolovaConnected5164(){
+ const plan=window.__miloviceTopolovaConnectedPlan;
+ if(!plan||trafficPeople.some(p=>p.connectedRoute5164))return;
+ const route=makeTopolovaConnectedRoute5164(plan,osmPoint);
+ if(!route)return;
+ const initial=route.junctionDistance-.65,
+  sampled=sampleTopolovaConnectedRoute5164(route,initial,1);
+ if(!sampled)return;
+ const rig=makeHumanRig(THREE,88,0x567e84),g=rig.group;
+ g.position.set(sampled.x,terrainAt(sampled.x,sampled.z),sampled.z);
+ g.rotation.y=Math.atan2(-sampled.tangentX,-sampled.tangentZ);
+ trafficGroup.add(g);
+ trafficPeople.push({
+  g,rig,connectedRoute5164:route,routeDistance5164:initial,
+  walkSegmentIndex5164:sampled.segmentIndex,junctionTransitions5164:0,
+  direction:1,speed:1.15,phase:1.7,legs:rig.legs,arms:rig.arms
+ });
+}
 function rpSeedParkedCars(center,max=12){
  const slepaParkingAudit=window.__miloviceSlepaParkingAudit ||= {
   version:'5.110',candidateSlotsNearStreet:0,
@@ -9946,6 +10022,34 @@ function rpAnimateTraffic(dt){
   g.visible=Math.hypot(g.position.x-playerX,g.position.z-playerZ)<Math.min(270,OSM_VIEW*.52);
  }
  for(const obj of trafficPeople){
+  if(obj.connectedRoute5164){
+   // One continuous GPS polyline; keep the full simulated pedestrian
+   // on original footway centres around the 90-degree mapped corner.
+   const next=advanceTopolovaConnectedRoute5164(
+    obj.connectedRoute5164,obj.routeDistance5164,
+    obj.direction,dt*obj.speed);
+   if(!next)continue;
+   if(obj.walkSegmentIndex5164===0&&next.segmentIndex>=1)
+    obj.junctionTransitions5164++;
+   obj.walkSegmentIndex5164=next.segmentIndex;
+   obj.routeDistance5164=next.distance;
+   obj.direction=next.direction;
+   const g=obj.g;
+   g.position.set(next.x,terrainAt(next.x,next.z),next.z);
+   g.rotation.y=Math.atan2(-next.tangentX,-next.tangentZ);
+   const focusX=rpStreetAuditCameraWorld?.x??playerX,
+    focusZ=rpStreetAuditCameraWorld?.z??playerZ,
+    distance=Math.hypot(g.position.x-focusX,g.position.z-focusZ);
+   g.visible=distance<135;
+   if(g.visible){
+    obj.rig.high.visible=!g.userData.cc0Active&&distance<64;
+    obj.rig.low.visible=!g.userData.cc0Active&&distance>=64;
+    const phase=Math.sin(elapsed*6+obj.phase)*.48;
+    obj.legs[0].rotation.x=phase;obj.legs[1].rotation.x=-phase;
+    obj.arms[0].rotation.x=-phase*.67;obj.arms[1].rotation.x=phase*.67;
+   }
+   continue;
+  }
   obj.progress+=obj.direction*dt*obj.speed/obj.seg.len;
   if(obj.progress>=1){obj.progress=1;obj.direction=-1}
   else if(obj.progress<=0){obj.progress=0;obj.direction=1}

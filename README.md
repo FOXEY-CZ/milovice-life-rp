@@ -1,3 +1,14 @@
+## Milovice RP 5.164 — skutečné propojení pěšiny a Topolové, chodec projde roh bez teleportu (18. 11. 2026)
+
+**Kontrolní kamera na sdíleném OSM uzlu:** https://foxey-cz.github.io/milovice-life-rp/?v=516400&streetAudit=topolova-connected-5164
+
+- **Průběžná pěší trasa místo obracení na hranici verzí:** [OSM pěšina 1316882860](https://www.openstreetmap.org/way/1316882860) se **přesně připojuje na GPS uzel 13** [dlážděného chodníku OSM 1316882852](https://www.openstreetmap.org/way/1316882852). Následuje skutečný původní chodník přes všechny původní body 14–21 za jižním rohem a dále přes původní **102,53metrový** úsek mezi 21–22 podél celé Topolové. Vzniká **196,93 m dlouhá souvislá zdrojová GPS linie**, složená z 10 původních úseků a 11 reálných bodů, bez vloženého smyšleného uzlu nebo nově namalované plochy. Původní OSM geometrii ani silnice neměníme. Přechody 1316882854/2853 zůstávají originální.
+- **Skutečná změna herní interakce:** **1 nový simulovaný chodec** používá vlastní malý polyline navigátor: jde ze dvora po originální pěšině přes skutečný spoj, **plynule zahne do dalšího OSM chodníku** a může pokračovat až téměř na severní konec Topolové. 2 m od začátku obslužné komunikace a 4 m před severním skutečným přechodem končí jeho vyznačený rozsah (190,93 m) a teprve tam se obrací. Nepřechází přes vozovku ani nepoužívá smyšlené vstupy do domů. Viditelná animace končetin i správná poloha na původním DEM. Jde o **herní simulaci občana**, nikoli sledovanou skutečnou osobu.
+- **Větší živá ulice bez vizuálních výmyslů:** 2 lidé z 5.162 na krátké pěšině + 2 z 5.163 na hlavním chodníku se nijak nemění; přibývá **pátý NPC**, který umí skutečně projít mezi oběma díly. Pro běžné město zachováváme stávající herní silniční graf a NPC; nová navigace je zatím pouze pro tento OSM-zdrojově uzamčený blok. Vykreslovač nepřidává žádný nový chodník, vchod, zebrу, parkování, lampu, kolizní geometrii, ani budovu, jen jeden existující low-poly `makeHumanRig`.
+- **Testy a důkazy:** fail-closed `scripts/osm-topolova-connected-5164.js` ověřuje GPS hashy obou pěších OSM way a obslužné komunikace, celou pětidomovou řadu RÚIAN/5.155, 5.162 a 5.163, původní spoj, deset fyzicky spojitých segmentů a délky. Čisté funkce pro výpočet pozice a překlápění směru. Nový mobilní Chrome WebGL +7,5 s LOD kontroluje **změnu `sourceWayId` u skutečného NPC přes původní mapový uzel**, návaznost starších NPC/5.160/5.161, terén a zachované nulové street meshe. **CI/WebGL/Pages čekají na ověření po commitu.** Dále: napojit další skutečné části pěší sítě přes původní OSM uzly a z fotek ověřit skutečné vchody domů 616–618; nikoli je domýšlet.
+
+---
+
 ## Milovice RP 5.163 — Topolová: dalších 102,5 m skutečného chodníku s animovanými chodci (18. 11. 2026)
 
 **Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=516300&streetAudit=topolova-promenade-5163
