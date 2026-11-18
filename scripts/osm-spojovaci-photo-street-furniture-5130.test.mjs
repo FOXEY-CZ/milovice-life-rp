@@ -147,7 +147,7 @@ for(const token of [
  "mesh.userData.photoFixtureLodProtected=true",
  " 'spojovaci-north-crossing-5130':{",
  "href=\"?v=513200&streetAudit=spojovaci-north-crossing-5130\"",
- "const BUILD_ID='20261118-tyrsova-five-houses-partywall-cleanup-513200'",
+ "const BUILD_ID='20261118-ruian-residential-shared-walls-sportovni-513300'",
  'window.__miloviceClinicPhotoSaplingsRuntime=()=>{',
  'window.__miloviceClinicPhotoYellowCrossRuntime=()=>{'
 ])assert(html.includes(token),'Missing source-backed street hookup '+token);
