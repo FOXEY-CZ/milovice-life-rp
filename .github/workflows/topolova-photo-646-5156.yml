@@ -1,0 +1,40 @@
+name: Milovice 5.156 Topolova 646 contractor photo 2025
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/osm-topolova-photo-646-5156.js
+      - scripts/osm-topolova-photo-646-5156.test.mjs
+      - scripts/osm-topolova-photo-646-webgl-5156.mjs
+      - .github/workflows/topolova-photo-646-5156.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  photo-646:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source footprint and predecessor regressions
+        run: |
+          node scripts/osm-topolova-photo-646-5156.test.mjs
+          node scripts/osm-topolova-panel-row-5155.test.mjs
+          node scripts/osm-ruian-party-walls-5133.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Mobile Chrome WebGL with 6.8-second LOD
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-topolova-photo-646-webgl-5156.mjs
+          node scripts/osm-topolova-panel-row-webgl-5155.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: topolova-photo-646-5156
+          path: browser-artifacts/*5156-mobile.png
+          if-no-files-found: ignore
