@@ -2,7 +2,7 @@
 
 > **Účel:** stručný, průběžně aktualizovaný startovní bod pro nové ChatGPT konverzace. **Nejde o úplnou historii.** Detailní changelog je na začátku `README.md`. Udržuj tento soubor krátký: aktuální stav, otevřené úkoly, ověřené zdroje a další krok.
 >
-> **Poslední dříve ověřená verze:** 18. 11. 2026; hra **5.142**. **Nová verze 5.143** byla implementována a její nové CI kontroly je potřeba ověřit na posledním commitu; dřívější testy 5.142 prošly v [GitHub Actions Validate](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44316888551), a **samostatný mobilní WebGL test prošel** v [Sportovní 5.142](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44317164137), včetně viditelnosti obou košů po šesti sekundách a zachování předchozích prvků. GitHub Pages nasazení verze 5.142 proběhlo úspěšně; 5.143 ověřit zvlášť.
+> **Aktuální ověřená verze:** 18. 11. 2026; hra **5.143** na větvi `main`. [Kompletní unit validace](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44320269490), [cílený mobilní WebGL test po 6 s LOD](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44320269592) a [nasazení na GitHub Pages](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44320268582) **prošly**. Předchozí testy 5.142 prošly v [GitHub Actions Validate](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44316888551), a **samostatný mobilní WebGL test prošel** v [Sportovní 5.142](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44317164137), včetně viditelnosti obou košů po šesti sekundách a zachování předchozích prvků. Oprava 5.143 navíc prokázala otevřené sokly, zachování devíti domů, deseti rohů pěších cest a dvou košů v mobilním WebGL po LOD.
 
 ## Projekt a odkazy
 
@@ -39,7 +39,7 @@ Dřívější práce pokrývají nádraží, Bike Tower, centrum, střechy a fas
 
 ## Co je potřeba dál
 
-- **Nejbližší směr:** ověřit 5.143 CI a mobilní Chromium LOD test soklů/vchodů (včetně 5.142 košů a 5.141 cest), případně opravit regresi. Potom pokračovat systematicky ve **Sportovní / Průběžná**, kontrolovat celé ulice, navazující domy, pěší trasy, vozovky a okolí. Nezaměňovat funkční test za fotografické schválení vzhledu modelů. Před každým novým konkrétním zásahem ověřit skutečný stav repozitáře a odpovídající zdrojová data.
+- **Nejbližší směr:** 5.143 prošla cíleným WebGL i unit testy. Pokračovat systematicky ve **Sportovní / Průběžná**, ale před přidáním dalších modelových ozdob hledat veřejné fotografické důkazy a prioritně řešit celkovou věrnost fasád, vstupů, cest a okolí; zkontrolovat i širší browser smoke, pokud po posledním commitu ještě není dokončen. Nezaměňovat funkční test za fotografické schválení vzhledu modelů. Před každým novým konkrétním zásahem ověřit skutečný stav repozitáře a odpovídající zdrojová data.
 - **Chybějící georeferencovaný podklad:** projektová parkovací stání (v dokumentaci 109), lampy (22), obruby a přesná poloha nových prvků v Průběžné. Dokud není konkrétní polohopis / výkres C.3 nebo fotografická kontrola, **nevkládat odhadem**.
 - **Dlouhodobý dluh:** znovu projít starší budovy a celé ulice podle `docs/building-rebuild-program.md` a `docs/reality-audit-00.md`. Fotofasády mohou být jen částečně podložené; nezaměňovat je za hotovou 360° rekonstrukci.
 - **Každá další verze:** jedna smysluplná úprava → cílené unit testy → pokud se mění scéna, kontrola v mobilním WebGL → commit a stručný zápis zde. Neoznačovat test jako prošlý, pokud skutečně neběžel.
@@ -63,7 +63,7 @@ Dřívější práce pokrývají nádraží, Bike Tower, centrum, střechy a fas
 
 ## Technický stav a ověření
 
-- **5.143:** nová modelová úprava vchodů a soklů u všech devíti původních RÚIAN domů; jednotkový a mobilní WebGL test jsou zapojené do CI, výsledek nutno po commitu ověřit. Neodvozovat realitu z generického 3D modelu.
+- **5.143:** sokly a modelové vchody devíti původních RÚIAN domů opravené; unit validace, samostatný mobilní WebGL 6s LOD a GitHub Pages nasazení mají stav **PASS**. Širší browser smoke má vlastní běh v GitHub Actions. Neodvozovat realitu z generického 3D modelu.
 
 - **W1 upravuje jen organizační postup, testovací runner a filtr dokumentačních commitů; žádné 3D objekty ani mapová data nemění.**
 - **Změny 5.142:** nové koše jsou ve hře, úspěšně nasazené na GitHub Pages. Jednotkové testy prošly; **samostatný mobilní 3D test s 6s LOD kontrolou prošel**. Zároveň je přidán rychlý samostatný workflow `.github/workflows/sportovni-basketball-5142-webgl.yml` a testy jsou zapojené i v běžné validační a prohlížečové sadě.
