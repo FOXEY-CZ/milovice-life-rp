@@ -10,6 +10,7 @@ const packs=Object.freeze({
  sportovni:[
   'osm-sportovni-basketball-5142.test.mjs',
   'osm-sportovni-tennis-5150.test.mjs',
+  'osm-milten-photo-corridor-5151.test.mjs',
   'osm-prubezna-photo-frontages-5144.test.mjs',
   'osm-sportovni-hall-5145.test.mjs',
   'osm-sportovni-photo-northwalk-5146.test.mjs',

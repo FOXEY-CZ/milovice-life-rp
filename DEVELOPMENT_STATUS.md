@@ -2,13 +2,13 @@
 
 > **Účel:** stručný průběžný přehled pro navazování ChatGPT vývoje. Historie změn je v `README.md`; zdroj pravdy je aktuální GitHub `main`, nikoliv předchozí chat.
 >
-> **Aktuálně ověřená verze 5.150 (18. 11. 2026):** sedm modelovaných venkovních tenisových kurtů Milten na čtyřech původních OSM plochách poblíž Sportovní × Topolová. [Kompletní CI PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44351742198), [mobilní WebGL + LOD PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44351741766), [Pages PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44351740395). Některé širší browser smoke workflow mají vlastní běh. Předchozí **5.149**: [kompletní CI PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44348532833), [mobilní WebGL PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44348533002), [Pages PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44348529964).
+> **Nově implementovaná 5.151 (18. 11. 2026; GitHub Actions zatím čekají):** zelené pletivo a vizuální pěší pás u tenisového areálu Milten podle veřejné fotografie, bezpečně modelově kotvené mezi původní OSM kurt 612386900 a halu Sportovní 588 (53866046). Existenci plotu a chodníku dokládá fotografie, vybranou hranu a rozměry **odhadujeme**. Poslední plně ověřená **5.150**: [kompletní CI PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44351742198), [mobilní 3D PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44351741766), [Pages PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44351740395).
 
 ## Projekt a odkazy
 
 - Repozitář: https://github.com/FOXEY-CZ/milovice-life-rp
 - Veřejná hra (GitHub Pages): https://foxey-cz.github.io/milovice-life-rp/
-- Poslední kontrolní kamera: https://foxey-cz.github.io/milovice-life-rp/?v=515000&streetAudit=pitch-tennis-milten-5150 (technická OSM kamera na sportovišti Milten, ne fotografie)
+- Poslední kontrolní kamera: https://foxey-cz.github.io/milovice-life-rp/?v=515100&streetAudit=milten-court-corridor-5151 (technický OSM pohled, ne fotokamera)
 - Webová hra: `index.html`; stavební editor: `editor.html`; kontrolní pohledy a pomůcky: `survey.html`, `photo-pilot.html`, `rebuild.html`.
 - Herní moduly a testy: `scripts/`; OSM, výšková a regionální data: `data/` a `data/regions/`; metodika: `docs/STREET_WORKFLOW.md`, `docs/building-rebuild-program.md`, `docs/reality-audit-00.md`.
 - Detailní verze a zdůvodnění: `README.md` (číst **jen nejnovější relevantní sekce**, ne všech 366 kB).
@@ -26,6 +26,7 @@ Budovat **celé propojené Milovice** jako prohlížečovou realistickou 3D RP/G
 
 | Verze | Oblast | Výsledek podle README a kódu |
 | --- | --- | --- |
+| **5.151 (CI čeká)** | Sportovní – Milten kurt a pěší pás | Fotografie restaurace Milten skutečně ukazuje zelený plot a zpevněnou uličku vedle antukového kurtu. Jen modelové **31m pletivo/11 sloupků a 2,10m grafický pěší pás** na odhadnuté východní straně existujícího OSM kurtu 612386900 vedle RÚIAN haly 53866046; konkrétní umístění není geofotograficky ověřené. GPS, stavby, cestní routing a kolize neměněny. Unit/WebGL/Pages čekají. |
 | **5.150 – ověřeno** | Sportovní / Topolová – 7 tenisových kurtů | Milten Sport Center Sportovní 588 uvádí 7 venkovních antukových dvorců. Čtyři OSM tenisové polygony 612386900/901/902/1278746589 geometricky dovolují **odhadované rozdělení 2+2+2+1**. Nahrazené generické čáry uvnitř původních polygonů; 7 modelovaných sítí, 14 sloupků, 3 sdílené draw objekty. Přesné rozmístění neověřeno fotografií. Kompletní CI, mobilní WebGL a Pages **PASS**. |
 | **5.149 – ověřeno** | Topolová 647 – skutečný zděný dům | Úřední ČSÚ/iRSO RÚIAN 42429056 potvrzuje cihly/tvárnice jako **nosné zdivo**, 6 podlaží a 60 bytů. Odstraněny modelové panelové spáry na původní budově OSM 53866045, použita sdílená neutrální fasáda. Vnější omítka/barva stále model; OSM GPS, střecha a vstup nezměněny. Celkové CI, mobilní WebGL a Pages **PASS**. |
 | **5.148 – ověřeno** | Topolová – šestipodlažní RÚIAN bytový dům | Na stávajícím přesném 23vrcholovém OSM půdorysu 53866045/42429056 modelové podlažní a svislé spáry dle doložených 6 podlaží; 60 bytů jen evidenční údaj. Oddělený audit, ochrana vchodu proti soklu a oknům, bez fotograficky nepodložené stříšky. Oprava zastaralé 6/7 kontroly menu. Kompletní CI, mobilní 3D WebGL, menu i Pages **PASS**. |
@@ -46,14 +47,14 @@ Dřívější práce pokrývají nádraží, Bike Tower, centrum, střechy a fas
 
 ## Co je potřeba dál
 
-- **Nejbližší směr:** po úspěšně ověřené 5.150 pokračovat po Sportovní × Topolová **celými bloky**, nyní preferovat další fotograficky či úředně doložené střechy, vchody a pěší přístup k areálu. Nedomýšlet přesné polohy sítě 2+2+2+1 ani oplocení a parkování bez georeferencovaného podkladu. Čtvrtý kurt má OSM `surface` neznámý.
+- **Nejbližší směr:** ověřit novou 5.151 v CI, mobilním WebGL po 6,5 s LOD, předchozí 5.150/5.149 a Pages; podle případných screenshotů odstranit kolize plotu a cesty, pokud vzniknou. Pak pokračovat celou Sportovní a Topolovou s důrazem na doložené vstupy, střechy a návaznosti pěších tras. **ČSÚ Sportovní 587** uvádí tři podlaží *celkem* (RÚIAN 27906264), ale nedokládá počet **nadzemních** pater ani výšku členité haly; nepřenastavovat slepě celou budovu na třípatrový panelák. Negeoreferencované parkování, plotové brány a lampy nedoplňovat.
 - **Chybějící georeferencovaný podklad:** projektová parkovací stání (v dokumentaci 109), lampy (22), obruby a přesná poloha nových prvků v Průběžné. Dokud není konkrétní polohopis / výkres C.3 nebo fotografická kontrola, **nevkládat odhadem**.
 - **Dlouhodobý dluh:** znovu projít starší budovy a celé ulice podle `docs/building-rebuild-program.md` a `docs/reality-audit-00.md`. Fotofasády mohou být jen částečně podložené; nezaměňovat je za hotovou 360° rekonstrukci.
 - **Každá další verze:** jedna smysluplná úprava → cílené unit testy → pokud se mění scéna, kontrola v mobilním WebGL → commit a stručný zápis zde. Neoznačovat test jako prošlý, pokud skutečně neběžel.
 
 ## Nový pracovní režim W1 (18. 11. 2026)
 
-- **Jednotná pravidla:** `AGENTS.md` a `docs/DEVELOPMENT_WORKFLOW.md`. Nejde o novou verzi hry; ověřená herní verze **5.150**.
+- **Jednotná pravidla:** `AGENTS.md` a `docs/DEVELOPMENT_WORKFLOW.md`. Nejde o novou verzi hry; nová herní verze **5.151** (CI čeká), poslední ověřená **5.150**.
 - **Převzetí práce:** načíst tento stav + poslední relevantní kousek README + jen související kód; ověřit hlavní větev GitHubu.
 - **Práce jako jeden úsek:** pokračovat Sportovní/Průběžná po celých ulicích a blocích, ne jen izolovanými dekoracemi. Odhady odlišovat od skutečných fotografických důkazů.
 - **Cílené unit testy:** `node scripts/dev-check.mjs sportovni` (další oblasti po `--list`); změny 3D pak ověřit samostatným mobilním WebGL testem po LOD.
@@ -70,6 +71,7 @@ Dřívější práce pokrývají nádraží, Bike Tower, centrum, střechy a fas
 
 ## Technický stav a ověření
 
+- **5.151:** foto-doložená existence zeleného oplocení a pěší uličky u antukových kurtů Milten, ale modelové přesné umístění. Mezi původním OSM kurt 612386900 (hash 3dfef3a9) a halou RÚIAN 27906272 (hash b4bc8b6d), ~31 m 3D zelené pletivo, 11 sloupků, jeden 2,10m viditelný pás mimo OSM kurt. Bez navigace/kolizí. Unit, mobilní WebGL, Pages čekají.
 - **5.150:** 4 skutečné tenisové polygony OSM, 7 kurtů z veřejného popisu areálu, **odhad** geometrického rozdělení 2+2+2+1; 63 modelových linek, 7 sítí a 14 sloupků bez kolizí a nových OSM ploch. [Kompletní CI PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44351742198), [mobilní WebGL PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44351741766), [Pages PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44351740395).
 - **5.149:** Topolová 647 (RÚIAN 42429056, OSM 53866045) má úředně potvrzené zděné nosné stěny, šesti podlaží, 60 bytů a výtah; zvenčí nic z toho neurčuje přesnou barvu. Neověřené panelové spáry 5.148 z renderu odstraněny, zůstal společný neutrální materiál a přízemní vstup bez překryvu. [CI PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44348532833), [mobilní WebGL PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44348533002), [Pages PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44348529964).
 - **5.148:** RÚIAN 53866045/42429056, 6 podlaží, 60 evidovaných bytů, 23 GPS vrcholů, modelové spáry a dělený sokl u dveří; starších 9 paneláků 5.140 netknuto. [Mobilní 3D PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44341187285), [menu PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44341187583), [plné CI PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44341504680), [Pages PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44341504357).

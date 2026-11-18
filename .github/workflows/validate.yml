@@ -243,5 +243,7 @@ jobs:
         run: node scripts/osm-topolova-masonry-5149.test.mjs
       - name: Verify 5.150 seven tennis courts on four exact OSM Milten pitches
         run: node scripts/osm-sportovni-tennis-5150.test.mjs
+      - name: Verify 5.151 photo-supported Milten walkway and fence beside real clay OSM court
+        run: node scripts/osm-milten-photo-corridor-5151.test.mjs
       - name: Validate expanded Milovice districts and real elevation data
         run: python3 scripts/validate_regions.py

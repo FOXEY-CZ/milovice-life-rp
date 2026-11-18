@@ -1,3 +1,16 @@
+## Milovice RP 5.151 — Sportovní: foto-doložené zelené oplocení a pěší ulička u Milten (18. 11. 2026)
+
+**Přímá kamera v 3D hře:** https://foxey-cz.github.io/milovice-life-rp/?v=515100&streetAudit=milten-court-corridor-5151
+
+- **Skutečný vizuální důkaz:** veřejná [fotografie terasy restaurace Milten](https://milten-restaurant-bar.webnode.cz/galerie-menu/) z galerie Milten Restaurant zachycuje **zelené drátěné oplocení vedle antukového tenisového kurtu a zpevněnou pěší uličku** mezi sportovištěm a budovou. Foto **nemá doložený EXIF GPS ani azimut** a nelze z něj přesně identifikovat parcelu, délky a tloušťky jednotlivých částí oplocení. Fotku jsme do hry nekopírovali.
+- **Návaznost reálného bloku:** stávající OSM antukový kurt `612386900` má 5 GPS vrcholů (hash `3dfef3a9`); sousední velká sportovní hala **Sportovní 588**, OSM `53866046`, RÚIAN `27906272`, má 13 GPS vrcholů (hash `b4bc8b6d`). Zvolená **východní hrana kurtu orientovaná k hale** je geometrická modelová interpretace fotografované situace, **ne georeferencovaný fotografický důkaz konkrétního plotu**.
+- **Konkrétní 3D oprava okolí:** na původní linii kurtu je nyní přibližně **31 m zeleného průhledného pletiva** s **11 zelenými sloupky** a podél něj úzký **souvislý zpevněný pás 2,10 m**, který mírně kopíruje již existující terén; odhadovaná výška plotu **2,15 m**. Síťovina je řídký model v jednotných linkách; žádné vymyšlené brány, cedule, auta, lampy, zábrany či zahradní vybavení. Barva a rozteč sloupků, šířka uličky i její přesná poloha jsou **neověřené modelové rozměry**.
+- **Nejde o novou navigační cestu:** pás je jen viditelný 3D povrch tam, kde fotografie existenci uličky ukazuje; **nepřibyla jediná OSM footway, silnice, kolize či nová geometrie původních budov, hřišť a vozovek**. Vstup do haly a celá západní fasáda zůstaly beze změn.
+- **Výkon, GPS zámky a regrese:** modul `scripts/osm-milten-photo-corridor-5151.js` se aktivuje jen při současné přesné shodě GPS a RÚIAN obou objektů. Jeden terénní pás, jeden instancovaný soubor sloupků a jedno pletivo = **3 nové sdílené scény objekty**, bez individuálních stovek meshů. Cílený unit test kontroluje průběh mimo původní tenisovou plochu a zachování zdrojových GPS. Mobilní Chromium/WebGL test po 6,5 s LOD prověří také 7 sítí 5.150, basketbal, halu 5.145, chodníky a Topolovou 647. **Plná CI a GitHub Pages čekají na výsledek po commitu.**
+- **Foto vs. technická kamera:** kamera je na původním GPS rohu OSM kurtu, míří modelově severně. Není odvozena ze skutečné fotografické pozice restaurace ani neumí garantovat přesnou shodu fotek.
+
+---
+
 ## Milovice RP 5.150 — Sportovní: sedm tenisových kurtů Milten místo čtyř obecných hřišť (18. 11. 2026)
 
 **Přímá technická kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=515000&streetAudit=pitch-tennis-milten-5150
