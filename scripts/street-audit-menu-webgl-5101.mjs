@@ -74,17 +74,22 @@ try{
   await page.locator('#street-audit-search').fill('prubezna');
   const filtered=await page.evaluate(()=>({
    count:document.querySelectorAll('#street-audit-nav a:not([hidden])').length,
+   matchingIds:[...document.querySelectorAll('#street-audit-nav a:not([hidden])')].map(a=>a.dataset.auditId),
    results:document.querySelectorAll('#street-audit-nav details:not([hidden])').length,
    status:document.getElementById('street-audit-search-count').textContent
   }));
-  assert.equal(filtered.count,6,'All six mapped Průběžná / Sportovní cameras must match');
-  assert.equal(filtered.results,2,'Only the two categories containing matching source cameras must remain visible');
-  assert(filtered.status.includes('6 z '),'Accessible result count');
+  // Source cameras are cumulative: new verified views must not break
+  // mobile menu smoke just because the legitimate search count grew.
+  assert(filtered.count>=7,'Preserve at least seven Průběžná / Sportovní source cameras');
+  assert(filtered.matchingIds.includes('prubezna-public-photo-5144'));
+  assert(filtered.matchingIds.includes('sportovni-sidewalk-5139'));
+  assert.equal(filtered.results,2,'Only categories with matched cameras should remain visible');
+  assert(filtered.status.includes(filtered.count+' z '),'Search result count must match visible links');
   await page.locator('#street-audit-search').fill('neexistujici-ulice');
   assert.equal(await page.locator('#street-audit-nav a:not([hidden])').count(),0);
   await page.locator('#street-audit-search').fill('');
-  assert((await page.locator('#street-audit-nav a:not([hidden])').count())>=48,
-   'Clearing search must restore all source cameras');
+  assert.equal(await page.locator('#street-audit-nav a:not([hidden])').count(),initial.allLinks,
+   'Clearing the search restores the complete current camera catalog');
   if(view.mobile)await page.click('#street-audit-nav details[data-category="'+view.cat+'"] summary');
   const expanded=await page.evaluate(()=>({
    compact:document.querySelector('#street-block-audit')

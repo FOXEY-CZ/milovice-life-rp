@@ -1,3 +1,16 @@
+## Milovice RP 5.148 — Topolová: šestipodlažní bytový dům se skutečným půdorysem RÚIAN (18. 11. 2026)
+
+**Kontrolní 3D pohled:** https://foxey-cz.github.io/milovice-life-rp/?v=514800&streetAudit=topolova-residential-5148
+
+- **Celý navazující uliční blok Sportovní × Topolová:** místo dalšího odhadovaného přechodu nebo lampy dostal existující bytový dům OSM `way/53866045` (RÚIAN `42429056`) na severovýchod od křižovatky skutečně doložené **6 úrovní** z `building:levels=6`; v evidenci `building:flats=60` je **60 bytů**, ne 60 nově generovaných oken nebo dveří. Zachováno všech **23 původních GPS vrcholů** (FNV otisk `aef1ea1b`) a stávající 3D hmota, střecha a poloha.
+- **Modelové architektonické členění:** sdílený `planMladaPanelEdge` nyní vykreslí 5 vodorovných podlažních spár a geometricky vhodné svislé spáry podle existujícího algoritmu, se sdílenými instancovanými materiály. OSM **neobsahuje** fotografické rozměry, barvu omítky, počet panelů nebo polohu oken. Části fasády jsou označené jako **model**, nikoli věrná fotogrammetrie.
+- **Přízemí bez překryvů:** v místě již existujícího **modelového** vstupu se dělením soklu vytváří čistá mezera 1,89 m, která nezasahuje do dveří; na téže hraně se potlačují modelová přízemní okna překrývající dveře. Bez nedoloženého širokého vstupního přístřešku. Přesná poloha vchodu není fotograficky potvrzena; nepřidává se další budova, parkoviště, stromy, stínidla ani dopravní síť.
+- **Bez narušení starších modelů:** vlastní `5.148` audit, původních devět bytových domů Sportovní/Průběžná `5.140` se dál eviduje samostatně, stejně jako jejich `5.143` vchody, hala `5.145`, chodník `5.146` a přechody `5.147`. Sousední dům je přidaný jen do již existujícího rendereru bez nových draw materiálů.
+- **Technický směr kamery:** skutečný OSM bod Topolové (50.2307951, 14.8663268), odhadovaný azimut 80° k bytovému domu; **nejde o fotografickou kameru**. Unit test uzamyká GPS, RÚIAN, odstupy dveří a 5 podlažních spár; mobilní Chromium/WebGL čeká 6,5 s po LOD a kontroluje zachování okolí. **Po commitu je potřeba ověřit CI a nasazení.**
+- **Regrese menu 5.147:** test hledání `Průběžná` pevně očekával 6 položek, ačkoli jich je správně 7 (přibyly legitimní kontrolní pohledy). Opravená kontrola odvozuje stav z aktuálního počtu zdrojových odkazů a stále vyžaduje původní GPS foto i OSM chodník. Selhání nebylo důkazem chybného zobrazení hry.
+
+---
+
 ## Milovice RP 5.147 — Sportovní × Topolová: skutečné mapované zebry (18. 11. 2026)
 
 **Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=514700&streetAudit=sportovni-topolova-zebra-5147

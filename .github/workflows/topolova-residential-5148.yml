@@ -1,0 +1,37 @@
+name: Topolova 5.148 RUIAN apartment WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/osm-topolova-residential-5148.js
+      - scripts/osm-topolova-residential-5148.test.mjs
+      - scripts/osm-topolova-residential-webgl-5148.mjs
+      - data/regions/mlada.json
+      - .github/workflows/topolova-residential-5148.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-locked-apartment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify original RUIAN and safe model facade
+        run: node scripts/osm-topolova-residential-5148.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Check six-floor apartment in mobile 3D after LOD
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-topolova-residential-webgl-5148.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: topolova-ruian-apartment-5148
+          path: browser-artifacts/topolova-ruian-panel-5148-mobile.png
+          if-no-files-found: ignore
