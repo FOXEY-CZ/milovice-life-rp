@@ -24,6 +24,7 @@ Každému objektu rozlišujte **zdrojově ověřeno / odvozeno z OSM / vizuáln�
 - Udělat předběžnou analýzu a navrhnout změny v souvisejících modulech **před** zapisováním do `main`.
 - Je-li to možné, použít GitHub Git Trees / jeden atomický commit pro kód + testy + záznam v README + přehled stavu. Nepoužívat force-push ani přepis cizích commitů. Při změně HEAD nejdřív znovu načíst a smířit změny.
 - Neprodlužovat odpověď velkými logy a surovým obsahem celého HTML. Stačí změněné soubory, CI výsledek a kontrolní URL.
+- Tři široké regresní WebGL workflow (nádražní předprostor, staniční foto, blok 5.82) nově ignorují změny **pouze v Markdown dokumentaci** a pomocném runneru `scripts/dev-check.mjs`. Při změnách herního kódu, mapy či samotných workflow běží dál. GitHub Pages má vlastní build/deploy pravidla, tento filtr jeho spouštění nemění.
 - Pokud automatické testy teprve dobíhají, napsat to. Případné opravy po selhání jsou samostatný **nutný** commit; zbytečný „PASS“ dokumentační commit není nutný pro samotnou funkčnost.
 
 ## Cílené testování

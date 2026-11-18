@@ -2,8 +2,14 @@ name: Milovice 5.82 street-block photo WebGL
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - 'scripts/dev-check.mjs'
   pull_request:
     branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - 'scripts/dev-check.mjs'
   workflow_dispatch:
 permissions:
   contents: read

@@ -2,8 +2,14 @@ name: Nádražní 5.81 Forecourt photo WebGL
 on:
   pull_request:
     branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - 'scripts/dev-check.mjs'
   push:
     branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - 'scripts/dev-check.mjs'
   workflow_dispatch:
 permissions:
   contents: read

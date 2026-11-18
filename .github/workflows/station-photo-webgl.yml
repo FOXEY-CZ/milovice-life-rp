@@ -2,8 +2,14 @@ name: Station photo WebGL smoke
 on:
   pull_request:
     branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - 'scripts/dev-check.mjs'
   push:
     branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - 'scripts/dev-check.mjs'
   workflow_dispatch:
 permissions:
   contents: read
