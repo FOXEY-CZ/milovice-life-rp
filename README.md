@@ -1,3 +1,14 @@
+## Milovice RP 5.162 — chodci skutečně používají původní pěší trasu Topolová 614–618 (18. 11. 2026)
+
+**Kontrolní kamera (živé NPC):** https://foxey-cz.github.io/milovice-life-rp/?v=516200&streetAudit=topolova-walkers-5162
+
+- **Návaznost celé ulice bez odhadu GPS:** veřejná pěší OSM [1316882860](https://www.openstreetmap.org/way/1316882860), původní hash `35c50c19`, dva uzly, `highway=footway`, `surface=paving_stones`, `lit=yes`, délka asi 29,3 m, tvoří přímé původní napojení mezi koncovým uzlem servisní komunikace [202399863](https://www.openstreetmap.org/way/202399863) a 13. uzlem hlavního chodníku [1316882852](https://www.openstreetmap.org/way/1316882852). Uzly, polohy domů, kolize i průjezdy jsou naprosto stejné jako ve zdroji. V geometrii již existujícího T-napojení jsem nenašla důkaz chybějící plochy; přidávat zaslepený chodník by bylo neodůvodněné.
+- **Nová skutečně viditelná RP funkce:** dvě další herní postavy ze stávajícího `makeHumanRig` animovaně chodí právě po této původní OSM pěšině. Převzaty jsou pouze 2 skutečné GPS koncové body a jejich úsečka; oba lidé se otáčejí 2 m před každým koncem, takže zůstávají na dlážděném pásu a neodcházejí do obslužné vozovky, nedoloženého vchodu ani do křižovatky. Samotní chodci jsou **simulace**, nikoliv pozorované osoby. Využívají již existující `trafficPeople` update a 3D rigy, žádné nové textury/uliční draw-meshe. Ostatní kolemjdoucí i doprava si zachovávají původní logiku.
+- **Nepředstíráme dokončené vstupy:** přesné pozice dveří 616–618 nejsou doložené, proto žádné nepřidáváme. Výkresy domů 614–615 / 5.159, celá valbová střecha 5.160, šest provizorních fasád 5.161, fyzické chodníky, lampy, auta a kolizní svět jsou beze změn. Žádné nezdokumentované přechody, stání, strom, chodník ani schodiště.
+- **Automatizovaná kontrola:** fail-closed `scripts/osm-topolova-mapped-walkers-5162.js`, unit se třemi přesnými OSM hashi a kontrolou 2m bezpečných konců, mobilní Chrome/WebGL 393×852 po 7,35 s LOD, fyzická viditelnost ve scéně, posun obou animovaných pozic a DEM výška postav. Regresní 5.161/5.160. **CI/WebGL/Pages čekají na ověření po commitu.** Další krok: podložené skutečné osy vchodů 616–618 a rozšíření pěšího pohybu pouze po existujících mapovaných cestách.
+
+---
+
 ## Milovice RP 5.161 — Topolová 616–618: sjednocený provizorní okenní rytmus, bez domyšlených ulic (18. 11. 2026)
 
 **Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=516100&streetAudit=topolova-inferred-616618-5161
