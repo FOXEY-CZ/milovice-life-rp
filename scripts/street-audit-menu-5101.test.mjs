@@ -46,7 +46,7 @@ assert.equal(shortStreetAuditLabel(
  'Mladá · antukové tenisové kurty · OSM model (NENÍ foto)',
  'pitch-tennis-599'),'Mladá · antukové tenisové kurty');
 assert(html.includes(
- "from './scripts/street-audit-menu-5101.js?v=511200'"));
+ "from './scripts/street-audit-menu-5101.js?v=513600'"));
 assert(html.includes("mountStreetAuditMenu(panel,"));
 assert(html.includes('#street-audit-nav'));
 assert(html.includes('max-height:min(44dvh,'));
@@ -66,8 +66,14 @@ assert(menuScript.includes("group.open=!mobile&&section.id===selectedGroup"));
 assert(menuScript.includes("setInfoExpanded(false)"));
 assert(menuScript.includes("if(!expanded)setInfoExpanded(false)"));
 assert(html.includes('street-audit-quicklinks'));
+assert(html.includes('#street-audit-search'));
+assert(html.includes('#street-audit-nav [hidden]{display:none!important}'));
+assert(menuScript.includes("filter.addEventListener('input',applyFilter)"));
+assert(menuScript.includes("normalize('NFD')"));
+assert(menuScript.includes("filter.value=''"));
+assert(menuScript.includes('sourceLinks.length'));
 const id=html.match(/const BUILD_ID='([^']+)'/)?.[1];
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const hud=html.split('id="build-label">')[1]?.split('</strong>')[0];
 assert(id&&meta===id&&hud===id,'All three build labels must remain synchronized');
-console.log('PASS 5.133 mobile review menu and 46 source cameras in 7 categories');
+console.log('PASS 5.136 audit search, current build ID and all 48+ source cameras in 7 categories');
