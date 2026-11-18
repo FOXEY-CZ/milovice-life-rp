@@ -201,5 +201,7 @@ jobs:
         run: node scripts/osm-spojovaci-photo-street-furniture-5130.test.mjs
       - name: Verify 5.131 real Tyršova continuation, twin Armádní zebra island crossings and five adjacent RUIAN homes
         run: node scripts/osm-tyrsova-armadni-junction-5131.test.mjs
+      - name: Verify 5.132 original five Tyršova RUIAN buildings skip eight internal shared wall exterior features but preserve 12 real outer facades
+        run: node scripts/osm-tyrsova-party-walls-5132.test.mjs
       - name: Validate expanded Milovice districts and real elevation data
         run: python3 scripts/validate_regions.py
