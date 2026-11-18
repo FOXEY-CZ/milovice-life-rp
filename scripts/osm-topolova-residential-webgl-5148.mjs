@@ -24,11 +24,16 @@ try{
   road:window.__miloviceSidewalkDebug,
   walk:window.__miloviceSportovniNorthWalkRuntime?.()
  }));
- assert.equal(runtime.home.version,'5.148');
- assert(runtime.home.ready,'Floor seams and open doorway must be in scene');
+ assert.equal(runtime.home.version,'5.149');
+ assert(runtime.home.ready,'Official masonry wall and existing model doorway must survive LOD');
+ assert(runtime.home.csuMasonryVerified===true);
+ assert(runtime.home.wallMaterialFromCSU===true);
+ assert(runtime.home.suppressedUnverifiedPanelEdges>=8);
+ assert.equal(runtime.home.horizontalFloorJoints,0,'No unverified masonry facade panel grid');
+ assert.equal(runtime.home.verticalBayJoints,0,'No fake precast seams');
  assert.equal(runtime.home.mappedLevelsByBuilding['53866045'],6);
  assert.equal(runtime.home.mappedFlatsByBuilding['53866045'],60);
- assert(runtime.home.visibleSeamMeshes>0);
+ assert.equal(runtime.home.doorPlinthOpenings,1);
  assert.equal(runtime.home.unverifiedEntryCanopiesSuppressed,1);
  assert.equal(runtime.estate.mappedApartmentBuildings,9);
  assert(runtime.hall?.ready&&runtime.walk?.ready);
@@ -36,5 +41,5 @@ try{
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/topolova-ruian-panel-5148-mobile.png'});
- console.log('PASS 5.148 mobile LOD: 6-floor Topolova model, no floating door plinth and earlier blocks safe');
+ console.log('PASS 5.149 regression on old 5.148 camera: six-storey sourced masonry, no fake panel seams, original entry and blocks safe');
 }finally{await browser.close()}

@@ -1,3 +1,15 @@
+## Milovice RP 5.149 — Topolová 647: oprava zděné konstrukce podle ČSÚ (18. 11. 2026)
+
+**Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=514900&streetAudit=topolova-masonry-5149
+
+- **Nový věrohodný úřední zdroj:** Český statistický úřad, [iRSO detail budovy](https://apl2.czso.cz/irso4/buddet.jsp?b=21&budid=3443237&hkodcis=43&idob=1035017661&kod=537501&kodcis=43&kodpol=nnnnnn), údaje platné k **1. 4. 2025**, potvrzuje dům **Topolová č.p. 647**, RÚIAN **42429056**, šest podlaží, 60 bytů, výtah a **cihly/tvárnice/cihelné bloky jako materiál nosných stěn**. Eviduje zastavěnou plochu 858 m² a obestavěný prostor 16 888 m³. Poslední dvě položky **nepřepočítáváme na přesnou výšku ani tvar střechy**.
+- **Opravený chybný předpoklad 5.148:** počet šesti podlaží **neznamená prefabrikovaný panelák**. U konkrétního OSM/RÚIAN domu `53866045` se odstraní **nepodložené vodorovné a svislé 3D panelové spáry** (včetně generického horního pásu a všech krátkých obvodových návratů). Vnější modelový materiál se mění na stávající sdílený neutrální povrch obytné budovy; **jeho skutečná omítka a barva není doložena**. Ostatní devítka domů Sportovní/Průběžná nepřebírá tuto individuální úpravu.
+- **Půdorys a vstup zůstávají:** původních 23 OSM GPS bodů, zdrojový počet podlaží/bytů, dosavadní výška jako *odhad*, střecha, modelová okna a již průchodný modelový vstup s děleným soklem. Jeho skutečné umístění není fotodoložené; nefabrikujeme druhé dveře, přístřešek nebo výtah na střeše. Žádné nové kolize, cesty, zeleň, parkoviště ani doprava.
+- **Technický pohled 5.149:** původní OSM bod Topolové (50.2307951, 14.8663268), odhad 80° na východní budovu, nikoli fotoaparát s fotografickou shodou. Tlačítko zdroje odkazuje přímo na ČSÚ; v modelu se nezobrazuje úřední fotografie či text přes fasádu.
+- **Ochrana starších verzí:** samostatný modul `scripts/osm-topolova-masonry-5149.js` se aktivuje pouze pokud už přísný zámek půdorysu a RÚIAN z 5.148 prošel. Zkrácená diagnostika prohlížeče potvrzuje nulové panelové spáry **jen pro tento dům**, přítomný vchod, stávající halu 5.145, severní chodník 5.146 a původní přechod 5.147. Aktualizovaný i původní mobilní WebGL test čekají 6,5 sekund po LOD. **CI a Pages ověřit po commitu, PASS netvrdit před doběhnutím.**
+
+---
+
 ## Milovice RP 5.148 — Topolová: šestipodlažní bytový dům se skutečným půdorysem RÚIAN (18. 11. 2026)
 
 **Kontrolní 3D pohled:** https://foxey-cz.github.io/milovice-life-rp/?v=514800&streetAudit=topolova-residential-5148
