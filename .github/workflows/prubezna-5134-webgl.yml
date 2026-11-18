@@ -1,0 +1,39 @@
+name: Milovice 5.134 Prubezna 2025 city-paving WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/osm-prubezna-renovation-5134.js
+      - scripts/osm-prubezna-renovation-5134.test.mjs
+      - scripts/osm-prubezna-renovation-webgl-5134.mjs
+      - data/regions/mlada.json
+      - .github/workflows/prubezna-5134-webgl.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  prubezna-mobile-render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate public construction records against exact OSM footprints
+        run: node scripts/osm-prubezna-renovation-5134.test.mjs
+      - name: Install browser adapter
+        run: npm install --no-save --no-package-lock playwright-core
+      - name: Verify source-anchored concrete pavers actually render on mobile
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-prubezna-renovation-webgl-5134.mjs
+      - name: Save mobile reference view
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: milovice-prubezna-2025-5134
+          path: browser-artifacts/milovice-prubezna-2025-concrete-sidewalk-5134-mobile.png
+          if-no-files-found: ignore
