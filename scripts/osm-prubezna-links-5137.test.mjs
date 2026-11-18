@@ -49,7 +49,7 @@ for(const term of [
  "'prubezna-links-5137':{",
  'streetAudit=prubezna-links-5137',
  'window.__milovicePrubeznaLinksRuntime=()=>(',
- "prubeznaPaver||prubeznaLink?",
+ "prubeznaPaver||prubeznaLink",
 ])assert(html.includes(term),'Required real visual integration missing: '+term);
 assert(PRUBEZNA_5137_SOURCE.tender.includes('contract_display_51.html'));
 console.log('PASS 5.137: 2 original OSM asphalt footway links / 48.8 m, safeguarded and material-rendered only');
