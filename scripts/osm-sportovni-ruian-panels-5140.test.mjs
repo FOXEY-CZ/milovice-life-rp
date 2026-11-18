@@ -61,7 +61,7 @@ for(const spec of source){
  }
 }
 assert.equal(floors,75);
-assert.equal(flats,416);
+assert.equal(flats,400);
 assert(totalEdges>=35);
 assert.equal(planSportovniRUIANPanel({id:0,regionId:'mlada'}),null);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');

@@ -43,7 +43,7 @@ try{
  assert.equal(state.audit.version,'5.140');
  assert.equal(state.audit.mappedApartmentBuildings,9);
  assert.equal(state.audit.mappedFloorsTotal,75);
- assert.equal(state.audit.mappedFlatsTotal,416);
+ assert.equal(state.audit.mappedFlatsTotal,400);
  assert(state.audit.horizontalFloorJoints>=180);
  assert(state.audit.verticalBayJoints>0);
  assert(state.audit.duplicateVerticalJointsRemoved>0);

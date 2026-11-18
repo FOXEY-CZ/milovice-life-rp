@@ -1,3 +1,15 @@
+## Milovice RP 5.140 — Sportovní / Průběžná: devět domů podle skutečného počtu podlaží RÚIAN (18. 11. 2026)
+
+**Přímý 3D záběr:** https://foxey-cz.github.io/milovice-life-rp/?v=514000&streetAudit=sportovni-panel-houses-5140
+
+- **Tentokrát 3D budovy, ne jen povrchy ulic:** devět již existujících bytových domů v okolí Sportovní a Průběžné má v uloženém OSM importu údaje RÚIAN včetně `building:levels` a `building:flats`. **Šest** má **8 podlaží** a **tři** mají **9 podlaží**. Celkem jde o **75 evidovaných podlaží a 400 evidovaných bytů** v tagu budov (nejde o tvrzení o aktuální obsazenosti).
+- Původní domy nyní dostávají **průběžné modelové podlažní spáry** na každé z 8/9 mapovaných podlaží a **svislé modelové spáry mezi okny**, znovu používáme sdílenou `archPart('panelSeam')` instancovanou geometrii. Nahradí jednu generickou spáru ve výšce půlky domu, beze změn existujících modelových oken, střech, barev, vchodů, balkónů nebo samotné hmoty domu.
+- **Devět chráněných půdorysů:** way/`53865979`, `53865980`, `53865981`, `53865990`, `53865991`, `53865992`, `53865993`, `53865994`, `53865995`. Funkce `planSportovniRUIANPanel` aktivuje fasádu pouze při přesné shodě celé posloupnosti GPS vrcholů, typu budovy, podlaží, bytů a RÚIAN ID. Žádná další budova ani domy kolem hřiště v Mladé nejsou zahrnuty.
+- **Zdroj versus odhad:** počty podlaží a půdorysy jsou reálná mapová metadata; jedna výška podlaží 3,05 m, pravidelná okna, spáry a barvy fasád jsou **herní model, nikoliv fotogrammetrické zaměření**. Nikdy z `building:flats=48` neodvozujeme 48 oken, stejně jako nevymýšlíme dodatečné balkóny nebo parkovací stání.
+- **Oddělené kontrolní počítadlo** `window.__miloviceSportovniResidentialRuntime()` sleduje devět vysokých domů a skutečná instancovaná 3D data po mobilním LOD. Dřívější audit **22 čtyř–pětipodlažních domů** hřiště Mladá (5.105) musí zůstat nezměněný. Testy jsou `scripts/osm-sportovni-ruian-panels-5140.test.mjs` a `scripts/osm-sportovni-ruian-panels-webgl-5140.mjs`.
+
+---
+
 ## Milovice RP 5.139 — Part 28: dlouhý navazující chodník Sportovní (18. 11. 2026)
 
 **Přímá kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=513900&streetAudit=sportovni-sidewalk-5139
