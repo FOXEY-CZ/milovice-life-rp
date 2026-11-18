@@ -511,7 +511,7 @@ import {mountStreetAuditMenu} from './scripts/street-audit-menu-5101.js?v=511200
 import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=560';
 import {planMiloviceParking} from './scripts/parking-layout.js?v=511200';
 import {makeMiloviceCollisionWorld} from './scripts/world-collisions.js?v=550';
-import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=58800';
+import {makeMiloviceHeroArchitecture} from './scripts/hero-architecture.js?v=513301';
 import {planSchoolStreetFrontage,schoolFacadeFixture,planSchoolPhotographedRoof,schoolPhotoCameraWorld,SCHOOL_PHOTO_WAY_ID,SCHOOL_ROOF_DETAIL_PROFILE} from './scripts/school-street-pass.js?v=5500';
 import {planSourceAnchoredRoofFixtures} from './scripts/roof-source-details.js?v=5500';
 import {planGroundedEntrance} from './scripts/entrance-grade.js?v=5450';
@@ -4425,6 +4425,25 @@ const legacyRealityAudit=makeRetrospectiveAuditTracker();
 function publishLegacyRealityAudit(){window.__miloviceLegacyRealityAudit=legacyRealityAudit.summary();}
 const tyrsovaPartyEdgesByBuilding=new Map(); // 5.132 Tyršova source audit
 const ruianPartyEdgesByBuilding=new Map(); // 5.133 region-wide source audit
+function recordRUIANSharedEdge(id,edge,rendererKind='generic'){
+ const sid=String(id);
+ if(tyrsovaPartyEdgesByBuilding.get(sid)?.has(edge)){
+  const audit=window.__miloviceTyrsovaPartyWallAudit;
+  if(audit){
+   audit.runtimeSkippedPartyFacadeEdges++;
+   audit.skippedPerBuilding[sid]++;
+  }
+ }
+ if(ruianPartyEdgesByBuilding.get(sid)?.has(edge)){
+  const audit=window.__miloviceRUIANPartyWallAudit;
+  if(audit){
+   audit.runtimeSkippedInteriorEdges++;
+   audit.skipByBuilding[sid]++;
+   if(rendererKind==='hero')audit.runtimeHeroFacadesSkipped++;
+   else audit.runtimeGenericFacadesSkipped++;
+  }
+ }
+}
 function osmBuilding(points,tags,index,osmId=null,regionId='old',slepaStreet=null){
  // 5.61: The 17 ways hidden in 5.60 were the WRONG buildings. Restore
  // exactly their pre-5.59 legacy meshes and colliders, without treating
@@ -4703,7 +4722,10 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
  const heroFacade=heroBuildings.addBuilding({
   points:pts,base:baseHeight,height:h,floors,type,index,id:osmId,
   excluded:!isHouse||isBlueStar||isMirova36||isGrocer74||isGarage||isIndustrial||isSchool||isChurch||isCommerce||isBikeTower,
-  override:modelCard
+  override:modelCard,
+  // Exact source walls retain their SOLID geometry, but no outside holes.
+  sharedPartyEdges:ruianPartyEdgesByBuilding.get(String(osmId))||null,
+  onSharedPartyEdge:edge=>recordRUIANSharedEdge(osmId,edge,'hero')
  });
  if(!heroFacade){
   queueCityWall(geometry,wallMat,centerX,baseHeight+stationPortalHeight,centerZ);
@@ -5137,20 +5159,7 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
   const legacyShared=tyrsovaPartyEdgesByBuilding.get(String(osmId));
   const sharedEdges=ruianPartyEdgesByBuilding.get(String(osmId));
   if(legacyShared?.has(i)||sharedEdges?.has(i)){
-   if(legacyShared?.has(i)){
-    const audit=window.__miloviceTyrsovaPartyWallAudit;
-    if(audit){
-     audit.runtimeSkippedPartyFacadeEdges++;
-     audit.skippedPerBuilding[String(osmId)]++;
-    }
-   }
-   if(sharedEdges?.has(i)){
-    const audit=window.__miloviceRUIANPartyWallAudit;
-    if(audit){
-     audit.runtimeSkippedInteriorEdges++;
-     audit.skipByBuilding[String(osmId)]++;
-    }
-   }
+   recordRUIANSharedEdge(osmId,i,'generic');
    continue;
   }
   const facade=exteriorFacadeFrame(pts,i);
@@ -7238,6 +7247,8 @@ function rpAppendOSMElements(elements,regionId='old'){
      ruianPlan.internalFacadeEdgesToSkip,
     affectedBuildingCount:allIds.length,
     runtimeSkippedInteriorEdges:previous?.runtimeSkippedInteriorEdges||0,
+    runtimeHeroFacadesSkipped:previous?.runtimeHeroFacadesSkipped||0,
+    runtimeGenericFacadesSkipped:previous?.runtimeGenericFacadesSkipped||0,
     skipByBuilding:skipped,
     photoValidatedAppearance:false,originalSolidWallExtrusionsPreserved:true,
     originalRoofsPreserved:true,originalBuildingGeometryPreserved:true,
@@ -7251,6 +7262,10 @@ function rpAppendOSMElements(elements,regionId='old'){
       audit.internalFacadeEdgesToSkip,
      skipped:audit.runtimeSkippedInteriorEdges,
      expected:audit.internalFacadeEdgesToSkip,
+     heroFacadesSkipped:audit.runtimeHeroFacadesSkipped,
+     genericFacadesSkipped:audit.runtimeGenericFacadesSkipped,
+     countsPartitionCorrect:audit.runtimeHeroFacadesSkipped+
+      audit.runtimeGenericFacadesSkipped===audit.runtimeSkippedInteriorEdges,
      allBuildingCountsCorrect:audit.sourceBuildingIds.every(id=>
       audit.skipByBuilding[id]===audit.edgeMap[id].length),
      auditedRegions:audit.sourceRegions,
