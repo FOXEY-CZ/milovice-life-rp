@@ -63,7 +63,7 @@ for(const token of [
  'window.__miloviceClinicPhotoYellowCrossRuntime=()=>{',
  'yellow.userData.lodDetail=false',
  'terrainAt(v.x,v.z)+.120',
- "const BUILD_ID='20261118-spojovaci-photographed-verge-saplings-512900'",
+ "const BUILD_ID='20261118-spojovaci-complete-photo-street-context-513000'",
  'window.__miloviceClinicParkingInlaysRuntime=()=>{',
  'window.__miloviceClinicPhotoPharmacySignRuntime=()=>{'
 ])assert(html.includes(token),'Missing 5.127 integration '+token);
