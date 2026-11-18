@@ -168,7 +168,7 @@ export function planTyrsovaArmJunctionZebras({
  const atArm=p[0],atNext=p.at(-1);
  if(distance(atArm,armadniWest.points.at(-1))>.25||
   distance(atNext,n[0])>.25||
-  distance(spojovaci.points.at(-1),armadniEast.points.at(-1))>.25||
+  distance(spojovaci.points.at(-1),armadniEast.points[0])>.25||
   distance(atArm,spojovaci.points.at(-1))>35)
   return empty;
  const row=commercialFloorPlan(eastTerraceBuildings);
