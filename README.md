@@ -1,3 +1,16 @@
+## Milovice RP 5.139 — Part 28: dlouhý navazující chodník Sportovní (18. 11. 2026)
+
+**Přímá kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=513900&streetAudit=sportovni-sidewalk-5139
+
+- Nový krok k dokončení celé ulice: původní mapovaná severovýchodní pěší trasa kolem domů na rozhraní Sportovní/Průběžné, **OSM way/1278749454**, **24 originálních GPS vrcholů, 23 původních segmentů, délka 162,9 m**, má ve hře materiálový vzhled betonové dlažby. **Žádný nový chodník jsme nevymysleli.** Zdrojový OSM tag `surface=asphalt` stále respektujeme jako starší zachycený stav a nepřepisujeme data.
+- **Podklad a jeho meze:** [městská zakázka z roku 2025](https://zakazky.mesto-milovice.cz/contract_display_51.html) výslovně pokrývá opravy chodníků v ulicích **Průběžná a Sportovní** včetně sjednocení povrchů do betonové dlažby. Fotogrammetricky ani geodeticky ale nemáme ověřené, zda **každý metr právě této OSM cesty** prošel přesně touto opravou nebo jaký má dnes barevný odstín. **Jedná se o doložený projektový princip a modelový povrch na bezpečně ověřené trase, nikoli 100% fotografický as-built.** Veřejné ZIP projektové podklady se nepodařilo přímo stáhnout; detailní situační geometrii z nich tedy netvrdíme.
+- Na sousedících původních OSM kříženích `1278749453` a `1278749455` je nadále `crossing=unmarked, crossing:markings=no`. **Nekreslíme zde neověřenou zebru** a neměníme jejich pěší navigační trasu. Původní jednosměrná komunikace Sportovní `83076186`, její GPS/body, silniční graf a kolize zůstávají beze změny.
+- Celkový modelový betonový materiál v oblasti je nyní použit na **5 starých OSM pěších cestách** (2 z 5.134, 2 z 5.137 a 1 z 5.139). Nový úsek přidává **162,9 m**, celkově tedy cca **512,7 m** původních pěších linií. Nic z toho není nově nakreslená síť tras.
+- Ochranný modul `scripts/osm-sportovni-sidewalk-5139.js` kontroluje otisk **všech 24 OSM bodů**, navazující jednosměrnou vozovku i oba neznačené přechody. Unit test odmítne pouhý posun jediného GPS vrcholu nebo nepodložené značení. Mobilní Chromium test `scripts/osm-sportovni-sidewalk-webgl-5139.mjs` ověřuje skutečnou geometrii po LOD, viditelný paver materiál, všech 18 výplní asfaltových rohů a přetrvání předchozích úprav.
+- Kontrolní kamera stojí na původním OSM bodu **50.2308115, 14.8639536** a dívá se ve směru mapované trasy **276,4°**. Oproti panoramatické fotografii jde o technické natočení.
+
+---
+
 ## Milovice RP 5.138 — Part 28: skutečné asfaltové vnitřní rohy Průběžné × Sportovní (18. 11. 2026)
 
 **Kontrolní záběry:**

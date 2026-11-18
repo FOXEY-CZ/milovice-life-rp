@@ -41,7 +41,7 @@ try{
  assert.equal(s.audit.version,'5.134');
  assert.equal(s.audit.updatedSurfaceWayCount,2);
  assert(s.audit.appliedVisualSegments>=2);
- assert.equal(s.material['prubezna-concrete'],4);
+ assert.equal(s.material['prubezna-concrete'],5);
  assert.equal(s.audit.originalOSMFootwayLengthMeters,301);
  assert.equal(s.audit.existingOSMGeometryPreserved,true);
  assert.equal(s.audit.actualParkingPositionsSurveyed,false);

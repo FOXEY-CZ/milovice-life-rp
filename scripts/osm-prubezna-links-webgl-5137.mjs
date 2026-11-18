@@ -56,7 +56,7 @@ try{
  assert.equal(s.older.updatedSurfaceWayCount,2);
  assert.equal(s.road.renderedExistingSegments,12);
  assert.equal(s.road.originalMapDrivenOneWay,true);
- assert.equal(s.materials['prubezna-concrete'],4);
+ assert.equal(s.materials['prubezna-concrete'],5);
  assert.equal(s.materials['prubezna-repaired-asphalt'],1);
  assert(s.totalCameras>=49);
  assert(s.panelHeight<150);

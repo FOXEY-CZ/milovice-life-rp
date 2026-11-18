@@ -58,7 +58,7 @@ try{
  assert.equal(s.road.inventedStreetLights,0);
  assert.equal(s.road.inventedPaintedLines,0);
  assert.equal(s.materials['prubezna-repaired-asphalt'],1);
- assert.equal(s.materials['prubezna-concrete'],4);
+ assert.equal(s.materials['prubezna-concrete'],5);
  assert(s.pavedPaths.appliedVisualSegments>0);
  assert(s.links>=48);
  assert(s.menuHeight<150,'Street source audit must stay compact on phone');

@@ -32,6 +32,7 @@ assert(ids.includes('prubezna-road-asphalt-5135'),'Keep exact Průběžná one-w
 assert(ids.includes('prubezna-links-5137'),'Keep both newly modelled OSM footway camera');
 assert(ids.includes('prubezna-bends-west-5138'),'Keep west Průběžná road-bend camera');
 assert(ids.includes('prubezna-bends-east-5138'),'Keep east Průběžná road-bend camera');
+assert(ids.includes('sportovni-sidewalk-5139'),'Keep long Sportovní source-sidewalk camera');
 assert(ids.includes('tyrsova-terrace-5131')&&ids.includes('armadni-island-zebra-5131'));
 assert(ids.includes('spojovaci-north-crossing-5130'),'Keep 43rd OSM crossing camera');
 assert(ids.includes('clinic-verge-trees-5129'),'Protect direct source-backed tree camera');

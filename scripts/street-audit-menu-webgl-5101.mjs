@@ -77,9 +77,9 @@ try{
    results:document.querySelectorAll('#street-audit-nav details:not([hidden])').length,
    status:document.getElementById('street-audit-search-count').textContent
   }));
-  assert.equal(filtered.count,5,'All five mapped Průběžná cameras must match');
+  assert.equal(filtered.count,6,'All six mapped Průběžná / Sportovní cameras must match');
   assert.equal(filtered.results,1,'Search must hide empty categories');
-  assert(filtered.status.includes('5 z '),'Accessible result count');
+  assert(filtered.status.includes('6 z '),'Accessible result count');
   await page.locator('#street-audit-search').fill('neexistujici-ulice');
   assert.equal(await page.locator('#street-audit-nav a:not([hidden])').count(),0);
   await page.locator('#street-audit-search').fill('');
