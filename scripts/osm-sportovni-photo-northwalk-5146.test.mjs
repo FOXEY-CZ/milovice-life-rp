@@ -31,7 +31,7 @@ assert.equal(JSON.stringify([road,south]),original);
 for(const changes of [
  {regionId:'old'},{roadWidth:12},
  {roads:{isClear:()=>false}},{buildings:{isClear:()=>false}},
- {ways:ways.filter(x=>x.id!==S.road)},
+ {ways:ways.filter(x=>String(x.id)!==S.road)},
  {ways:ways.map(w=>w.id===road.id?{...w,tags:{...w.tags,oneway:'yes'}}:w)},
  {ways:ways.map(w=>w.id===road.id?{...w,geometry:w.geometry.map((p,i)=>
   i===2?{...p,lat:p.lat+.0000001}:p)}:w)},
