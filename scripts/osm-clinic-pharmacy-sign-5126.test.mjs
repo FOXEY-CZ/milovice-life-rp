@@ -75,8 +75,8 @@ for(const str of [
  'window.__miloviceClinicPhotoPharmacySignRuntime=()=>{',
  'sign.userData.lodDetail=false',
  'window.__miloviceClinicShopfrontAudit.physicalPharmacySignAdded=true',
- "const BUILD_ID='20261118-spojovaci-photographed-verge-saplings-512900'",
- 'href="?v=512900&streetAudit=armadni-clinic-5118"',
+ "const BUILD_ID='20261118-spojovaci-complete-photo-street-context-513000'",
+ 'href="?v=513000&streetAudit=armadni-clinic-5118"',
  'window.__miloviceClinicParkingInlaysRuntime=()=>{',
  'window.__miloviceClinicForecourtRuntime=()=>{',
  'window.__miloviceClinicShopfrontRuntime=()=>{'
