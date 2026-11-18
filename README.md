@@ -1,3 +1,18 @@
+## Milovice RP 5.129 — tři fotograficky doložené stromky u Polikliniky (Part 26, 18. 11. 2026)
+
+**Živá hra:** https://foxey-cz.github.io/milovice-life-rp/?v=512900
+
+**Přímá kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=512900&streetAudit=armadni-clinic-5118
+
+- **Fotografie a počet:** [RE/MAX — skutečný letecký/šikmý záběr na polikliniku Spojovací 873](https://www.remax-czech.cz/reality/detail/423323/pronajem-komercniho-prostoru-41-m2-milovice), [zdroj konkrétního snímku](https://mlsf.remax-czech.cz/data/zs/423323/3002119.jpg). Na popředí snímku je **řada tří mladých stromků v kruhových výsadbových plochách** před parkovacím prostranstvím. Počet 3 se vztahuje jen k této zřetelné řadě; **neznamená počet všech stromů na fotografii, celkový počet stromů v ulici ani survey výsadeb**.
+- **OSM geometrie, nikoli domnělá GPS přesnost:** Poliklinika `way/1057548624`, východní fasáda edge 2 délky asi 44,86 m, Spojovací `way/246652750` (`lit=yes`), protější mapovaná pěší cesta `way/1092081938` a všechny místní OSM dopravní cesty/budovy v regionu Mladá. Tři modelové středy jsou ve vzdálenostech přibližně **-16, -4 a +8 m po fasádě**, všechny **25,2 m před fasádou** směrem k protějšímu chodníku. **Skutečné vzdálenosti, přesné souřadnice, druhy stromů, průměry korun i velikost výsadbových kruhů z fotografie nezjistíme.** Tyto parametry jsou přiznaně aproximované. Modul nikdy neschvaluje nové stromy na jiné ulici.
+- **Dopravní bezpečnost:** `scripts/osm-clinic-photo-saplings-5129.js` přijme skutečné geometrie silnic, chodníků a budov. Kontroluje oba okraje polohy přes poloměr modelové koruny a dodatečnou rezervu 75 cm. Zamítne strom na existující vozovce, pěší cestě, stavebním půdorysu, fotograficky doložených dlažebních buňkách (5.123) nebo blízko jiného stromku. Nejmenší vypočtené odstupy se zveřejní v auditu. Odmítne i upravená či nepodložená OSM ID. Nenakreslí novou parcelu zeleně, parkoviště, komunikaci, plot ani jakékoli kolizní objekty.
+- **Úsporné 3D:** 3 mladé stromy s tenkými kmeny a dvěma skromnými částmi listnaté koruny, plus 3 malé zemité kruhové výsadbové disky. **4 instancované materiálové/geometrické skupiny, celkem 12 instancí**, sdílené existující materiály kmene a koruny, pouze 1 nový jednoduchý zemní materiál. Vše je přímo v `osmLayer` a `photoFixtureLodProtected=true`, `lodDetail=false`, aby objekty **po mobilním 5sekundovém LOD nezmizely**. Dosavadní Poliklinika, SPADIA, lékárna, červené a žluté pruhy, komunikace a světla nejsou překreslované ani nahrazované.
+- **Další bezpečnostní vazba:** odhadnutý sloup osvětlení z generátoru `lit=yes` nesmí stát do **2,65 m** od některého z těchto tří fotodoložených kmenů. To neudává skutečné místo přesunutého stožáru. Není přidána žádná vymyšlená fyzická lampa.
+- **Testy a inspekce:** `scripts/osm-clinic-photo-saplings-5129.test.mjs` se opírá o uložené originální OSM Mladá, kontroluje řadu stromků, všechny cesty a budovy, zamítnutí konfliktní nové cesty, zachování zdrojů a správné přiznání aproximací. `window.__miloviceClinicPhotoSaplingsAudit` odděluje důkazy od odhadů; `window.__miloviceClinicPhotoSaplingsRuntime()` kontroluje 4 skutečné instancované 3D objekty a 12 instancí. Rozšířený mobilní Chromium/WebGL test kontroluje všechna tři stromová stanoviště a přetrvání všech starších lékárenských a dlažebních detailů po 6,8 sekundách. **Testy a deployment je nutno ověřit podle reálného výsledku GitHub Actions**.
+
+---
+
 ## Milovice RP 5.128 — Spojovací: žádné odhadnuté lampy na fotograficky doloženém dláždění (Part 26, 18. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=512800
