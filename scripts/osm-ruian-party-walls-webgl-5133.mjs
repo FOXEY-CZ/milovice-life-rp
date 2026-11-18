@@ -41,6 +41,7 @@ try{
   audit:window.__miloviceRUIANPartyWallAudit,
   runtime:window.__miloviceRUIANPartyWallRuntime?.(),
   old:window.__miloviceTyrsovaPartyWallRuntime?.(),
+  hero:window.__miloviceHeroArchitecture,
   regions:window.__miloviceAreasLoaded,
   menuHeight:document.getElementById('street-block-audit')
    ?.getBoundingClientRect().height
@@ -57,6 +58,14 @@ try{
  assert.equal(s.runtime.ready,true);
  assert.equal(s.runtime.allBuildingCountsCorrect,true);
  assert.equal(s.runtime.skipped,56);
+ assert.equal(s.runtime.heroFacadesSkipped,1,
+  'One priority-mass hero building must also skip its actual shared party wall');
+ assert.equal(s.runtime.genericFacadesSkipped,55);
+ assert.equal(s.runtime.countsPartitionCorrect,true);
+ assert.equal(s.audit.skipByBuilding['202381246'],1,
+  'Photo-priority hero 202381246 must NOT cut false exterior windows into a party wall');
+ assert(s.hero.sharedPartyWallFacesSuppressed>=1,
+  'Hero architecture should still emit a physically SOLID common wall');
  assert.equal(s.runtime.alteredRoads,0);
  assert.equal(s.runtime.alteredBuildingPolygons,0);
  assert.equal(s.runtime.addedMeshes,0);
