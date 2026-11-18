@@ -1,3 +1,16 @@
+## Milovice RP 5.150 — Sportovní: sedm tenisových kurtů Milten místo čtyř obecných hřišť (18. 11. 2026)
+
+**Přímá technická kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=515000&streetAudit=pitch-tennis-milten-5150
+
+- **Skutečný sportovní areál:** [Milten Sport Center Milovice, Sportovní 588](https://www.firmy.cz/detail/2256575-milten-sport-center-milovice-milovice-mlada.html) uvádí **7 venkovních antukových dvorců**. Regionální OSM export přitom obsahuje **čtyři konkrétní** `leisure=pitch, sport=tennis` polygony: `612386900`, `612386901`, `612386902` a `1278746589`. Tři první mají OSM `surface=clay`, čtvrtý povrch nemá specifikovaný. Neměníme jeho mapový tag. Nedovozujeme aktuální provozní stav z historického fotopohledu.
+- **Oprava celé části ulice Sportovní × Topolová:** tři původní plochy mají skutečný půdorys přibližně **37 × 37 m**, čtvrtá přibližně **38 × 26 m**. Rozvržení dvou běžných kurtů do každé z větších ploch a jednoho do menší (`2 + 2 + 2 + 1 = 7`) odpovídá uvedenému počtu sedmi. **Konkrétní přiřazení, rozteče, lajny, orientace a sítě jsou rekonstrukční odhad podle polohopisné geometrie, nikoliv fotograficky zaměřené body.** Každý nový bod modelu musí zůstat uvnitř originálního OSM polygonu; žádný nový polygon se nevytváří.
+- **Viditelná 3D oprava:** místo původních čtyř generických tenisových schémat nyní stejné sdílené plochy používají **63 modelových lajných segmentů** pro sedm kurtů. Doplněno **7 jednoduchých tenisových sítí a 14 sloupků**. Všechny sítě dohromady používají **jen 3 sdílené vykreslovací objekty** (instancované sloupky a horní lemy, společné čárové pletivo); žádné fyzikální kolidery ani smyšlené okolní tribuny či ploty.
+- **Přísná ochrana skutečné mapy:** `scripts/osm-sportovni-tennis-5150.js` ověřuje **přesné GPS otisky všech 4 OSM polygonů**. Když se kterýkoli zdroj změní, přídavná rekonstrukce se bezpečně nevykreslí. Ostatní OSM sportoviště i předešlá basketbalová konstrukce 5.142 zůstávají beze změny; jízdní síť, chodníky, budovy, zeleň, materiály a výškový terén se neposouvají.
+- **Důležitá hranice reality:** počet *sedm venkovních kurtů* je podložený veřejným popisem areálu; počty 2/2/2/1 na jednotlivých půdorysech a podoba sítí nejsou potvrzené georeferencovanou fotografií. Čtvrtý tenisový OSM polygon nemá `surface=clay`, jeho vzhled proto zůstává obecný. Nová technická kamera používá skutečný GPS roh polygonu, odhadovaný pohled k areálu; fotografie se do textur nevkládá.
+- **Kontrola výkonu a předchozí práce:** samostatná unit regrese kontroluje polohu všech sedmi hřišť a nulové změny OSM. Nový mobilní WebGL test po 6,5 s LOD ověřuje sítě, tři skupiny vybavení, dva koše 5.142, halu 5.145 a zděný dům 5.149. **Výsledek CI a nasazení Pages aktualizovat po dokončení GitHub Actions.**
+
+---
+
 ## Milovice RP 5.149 — Topolová 647: oprava zděné konstrukce podle ČSÚ (18. 11. 2026)
 
 **Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=514900&streetAudit=topolova-masonry-5149

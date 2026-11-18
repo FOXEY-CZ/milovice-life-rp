@@ -1,0 +1,40 @@
+name: Milten Sportovni 5.150 seven tennis courts mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/landscapes.js
+      - scripts/osm-sportovni-tennis-5150.js
+      - scripts/osm-sportovni-tennis-5150.test.mjs
+      - scripts/osm-sportovni-tennis-webgl-5150.mjs
+      - data/regions/mlada.json
+      - .github/workflows/milten-tennis-5150.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  seven-source-guarded-courts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify original 4 OSM pitch polygons and 7 modeled courts
+        run: |
+          node scripts/osm-pitch-markings-599.test.mjs
+          node scripts/osm-sportovni-tennis-5150.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Check 7 playable-looking tennis nets in mobile WebGL after LOD
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-sportovni-tennis-webgl-5150.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: milten-tennis-courts-5150
+          path: browser-artifacts/sportovni-milten-seven-tennis-5150-mobile.png
+          if-no-files-found: ignore

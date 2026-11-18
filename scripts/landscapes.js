@@ -125,7 +125,7 @@ export function planCityLanduseBatches(elements,convert,{cellSize=180}={}){
 /** Render the same source polygon shapes as addLanduseFeature, grouped by
  * geographic chunk and material. One outline draw call per pitch batch. */
 export function addCityLanduseBatches(T,elements,convert,terrain,osmLayer,zones,
- mergeGeometries,{cellSize=180}={}){
+ mergeGeometries,{cellSize=180,tennisPlan=null}={}){
  const plan=planCityLanduseBatches(elements,convert,{cellSize});
  if(!plan||!T||typeof terrain!=='function'||!osmLayer||
   !Array.isArray(zones)||typeof mergeGeometries!=='function')return null;
@@ -181,9 +181,16 @@ export function addCityLanduseBatches(T,elements,convert,terrain,osmLayer,zones,
      addMark(pitchPaintVertices,{x:a.x,z:a.y},{x:b.x,z:b.y},.10);
     }
     // These interior lines are SCHEMATIC, not verified photographed paint.
-    const court=planOSMPitchMarkings(entry.tags,pts);
-    courtMarkSegments+=court.segments.length;
-    for(const segment of court.segments)
+    // 5.150: this exact source-locked Milten complex contains seven
+    // outdoor playing courts across four mapped OSM sport polygons.
+    // Replace the old ONE-court-per-polygon schematic with seven inside
+    // these SAME polygons, reusing the existing batched paint renderer.
+    const dedicated=tennisPlan?.version==='5.150'&&
+     Object.hasOwn(tennisPlan.segmentsById,entry.id)?
+     tennisPlan.segmentsById[entry.id]:null;
+    const segments=dedicated||planOSMPitchMarkings(entry.tags,pts).segments;
+    courtMarkSegments+=segments.length;
+    for(const segment of segments)
      addMark(pitchPaintVertices,segment.a,segment.b,.13);
    }
   }
