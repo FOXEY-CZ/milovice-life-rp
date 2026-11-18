@@ -1,3 +1,31 @@
+## Milovice RP 5.131 — návazná Tyršova, Armádní a dvě skutečně mapované zebry (Part 26, 18. 11. 2026)
+
+**Živé kontrolní kamery:**
+- **Tyršova – řada pěti bytových domů + chodník:** https://foxey-cz.github.io/milovice-life-rp/?v=513100&streetAudit=tyrsova-terrace-5131
+- **Armádní – přechod zebra s ostrůvkem:** https://foxey-cz.github.io/milovice-life-rp/?v=513100&streetAudit=armadni-island-zebra-5131
+- **Předchozí Spojovací / Poliklinika:** https://foxey-cz.github.io/milovice-life-rp/?v=513100&streetAudit=armadni-clinic-5118
+
+### Správná geografie: žádné vymyšlené prodloužení Spojovací
+Spojovací OSM `way/246652750` končí na skutečné křižovatce s Armádní; **na sever od Armádní začíná Tyršova `way/8618265` a pokračuje `way/1331897627`**. Oba úseky mají spojité původní OSM uzly a zůstávají jako jeden průjezdný uliční systém. Hra nepřidává umělou silnici ani žádnou novou odbočku. Všechny sousední regionální OSM chodníky zůstávají na původních GPS pozicích.
+
+Podél východní strany Tyršovy tvoří skutečnou bezprostředně sousedící řadu **5 bytových domů dle RÚIAN/OSM** `61979140`, `61979141`, `61979149`, `61979146`, `61979143`. Všech pět má tag `building:levels=5`, čtyři jsou označeny 14 byty a poslední 12 byty, všechny mapové půdorysy na sebe dosedají. Nezavádíme odhadnuté další vchody, balkóny, parkoviště, stromy či jiné nepodložené detailní vybavení domů. Stejně tak zůstává beze změny původní souvislý východní **mapovaný dlážděný chodník `1316882852`** i západní **dlážděný chodník `1046197807`**.
+
+### OSM značené přechody, nikoliv náhodné bílé čáry
+- Armádní má dvě **explicitně jako zebra zakreslené pěší trasy**: **`1318462995`** západně od křižovatky s Tyršovou a **`1316882855`** východně směrem k Topolové. Obě mají `crossing:markings=zebra`, `crossing:island=yes` a střední uzel leží přímo na OSM ose příslušné části silnice `1331897681` a `1331897683`. Nově proto dostaly dvě sady **vizuálních bílých zebrových pruhů na existujícím asfaltu**; fyzicky **nepřidáváme ostrůvky ani kolize**.
+- Geometrie pruhů je *modelový odhad*: každá zebra má **5 pruhů na každé straně** mapovaného ostrůvku, ten zůstává uprostřed **bez nátěru** (modelová mezera 1,8 m, skutečná šířka nezměřená). Přesný počet, šířky, opotřebení a aktuální rozmístění bílé barvy nebyly fotograficky/technicky změřeny; jejich existenci a typ `zebra` potvrzují mapové tagy. Pruhy nejsou zasahováním do originální mapy. Celkem **20 obdélníků, 40 trojúhelníků, jen 2 lehká WebGL mesh**.
+- Další původní OSM cesta u Spojovací **`1044078125`** nese pouze `crossing:markings=yes`, nikoliv *konkrétní* typ zebra; proto ji automaticky nepřemalujeme jako zebra. Severně na Tyršově je `1278749453` dokonce výslovně `crossing=unmarked`, `crossing:markings=no`; ta zůstává **bez falešného přechodu**.
+- Geometrii bílých 3D pruhů vytváří `scripts/osm-tyrsova-armadni-junction-5131.js` přesně na obou skutečných OSM liniích. Jejich střední uzly, směr křížení, konečné body a minimální rezerva od okraje celé existující vozovky se kontrolují ještě před renderováním. Dlažby, vozovky, 5 domů, chodníky a křižovatky zůstaly beze změny. Nenavrhuje se nový přechod; jde o vizualizaci **dvou již existujících a zmapovaných**.
+- Systém stávajících kontrolních kamer má další dvě opakovatelné 3D technické pozice: na skutečném chodníku Tyršovy podél bytové řady a na severním konci mapované západní zebry. Souřadnice jsou OSM body, směr kamery je odhad. Žádná kamera není označena za exaktní místo fotografa.
+- Městské veřejné materiály k [chodníku ul. Tyršova](https://www.mesto-milovice.cz/assets/File.ashx?id_dokumenty=18187&id_org=9519) a [veřejné zeleni Tyršova II](https://smlouvy.gov.cz/vyhledavani?all_versions=0&contr_num=&contract_descr=&contract_id=&do=searchResultList-setLimit&file_text=&searchResultList-limit=500) jsou doplňující kontext, **nikoliv důkaz přesné polohy jednotlivých vysazených stromů**; stromy se zde proto ještě bez konkrétního vizuálního podkladu negenerují.
+
+### Testy a výkon
+- `scripts/osm-tyrsova-armadni-junction-5131.test.mjs` používá uložená originální OSM data regionu Mladá a ověřuje spojitost skutečných úseků, 5 sousedících pětipodlažních domů, dva typované přechody, jejich asfalt, 40 fyzicky vykreslovaných trojúhelníků i zamítání nepodložených zásahů do označení.
+- `window.__miloviceTyrsovaArmadniJunctionAudit` poskytuje přímé zdrojové důkazy a pozorované vs odhadnuté parametry; `window.__miloviceTyrsovaArmadniJunctionRuntime()` ověřuje **opravdu živé** WebGL mesh objekty a jejich viditelnost po automatickém LOD.
+- Samostatný `scripts/osm-tyrsova-armadni-junction-webgl-5131.mjs` spouští mobilní Chromium na **správné mapové pozici Tyršovy**, čeká 6,8 s a kontroluje skutečné objekty a počty trojúhelníků. Starší mobilní kontrola Polikliniky navíc chrání její stávající 5.118–5.130 viditelné prvky včetně parkování, nápisu, stromků, kříže a značek.
+- Statické testy, skutečný Chromium WebGL a GitHub Pages build je nutné ověřit podle konkrétních dokončených běhů Actions — nezaměňovat commit za potvrzení úspěšného nasazení.
+
+---
+
 ## Milovice RP 5.130 — celá část Spojovací kolem Polikliniky až k severnímu přechodu (Part 26, 18. 11. 2026)
 
 **Hra / ověřené odkazované kamery:**
