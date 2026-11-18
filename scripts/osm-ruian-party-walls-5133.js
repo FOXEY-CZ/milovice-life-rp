@@ -22,7 +22,8 @@ const isCandidate=b=>{
   getVertices(b.points)!==null;
 };
 export function planRUIANResidentialSharedWalls({regionId,buildings=[]}={}){
- if(regionId!=='mlada'||!Array.isArray(buildings))return null;
+ if(!['old','mlada','vrutice','westlink','centerlink','bozidar'].includes(regionId)||
+  !Array.isArray(buildings))return null;
  const rows=buildings.filter(isCandidate);
  // The edge hash is O(E), and pairs must have BOTH identical exact
  // projected OSM endpoints. Nearby parallel walls are never merged.
