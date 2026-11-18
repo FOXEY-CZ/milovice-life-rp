@@ -4599,6 +4599,7 @@ window.__miloviceSportovniHallAudit={
   renderedCorrugationRibs:0,skippedGenericWindowsOnPhotoFace:0,
   originalOSMLevels:1,modelHeightMeters:9.6,
   photographedHeightExact:false,blankObservedFaceHasGenericWindows:false,
+  omittedUnverifiedOtherSideWindows:true,
   addedColliders:0,addedRoads:0,addedFences:0,
   unseenSideDetailsEstimated:true
 };
@@ -5484,7 +5485,7 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
    };
   }
  }
- const visibleFloors=(slepaUtility||isArmClinic)?0:tags.shop==='supermarket'||isGarage||isChurch?0:isBlueStar||isMirova36?2:isGrocer74?1:isIndustrial?1:isPanelBlock?Math.min(floors,16):Math.min(Math.max(1,Math.floor(h/3)),8);
+ const visibleFloors=(sportovniHall||slepaUtility||isArmClinic)?0:tags.shop==='supermarket'||isGarage||isChurch?0:isBlueStar||isMirova36?2:isGrocer74?1:isIndustrial?1:isPanelBlock?Math.min(floors,16):Math.min(Math.max(1,Math.floor(h/3)),8);
  for(let i=0;i<pts.length;i++){
   const p=pts[i],q=pts[(i+1)%pts.length],dx=q.x-p.x,dz=q.y-p.y,len=Math.hypot(dx,dz);
   // Ignore only degenerate edges. Short returns have no invented

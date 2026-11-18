@@ -2,7 +2,7 @@
 
 > **Účel:** stručný průběžný přehled pro navazování ChatGPT vývoje. Historie změn je v `README.md`; zdroj pravdy je aktuální GitHub `main`, nikoliv předchozí chat.
 >
-> **Poslední ověřená verze: 5.144. Nová 5.145 čeká na testy** (18. 11. 2026). [Úplná validace](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44322902587) **PASS**, [mobilní 3D fotoaudit + LOD po 6 sekundách](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44322655691) **PASS** a [nasazení GitHub Pages](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44322902059) **PASS**. Širší, déle běžící browser smoke může mít vlastní stav.
+> **Poslední ověřená verze: 5.144; verze 5.145 je nasazená a cílený mobilní WebGL test již prošel** (18. 11. 2026). Po poslední drobné opravě potlačení neověřených oken na sportovní hale je nutné ještě ověřit CI. [Úplná validace](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44322902587) **PASS**, [mobilní 3D fotoaudit + LOD po 6 sekundách](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44322655691) **PASS** a [nasazení GitHub Pages](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44322902059) **PASS**. Širší, déle běžící browser smoke může mít vlastní stav.
 
 ## Projekt a odkazy
 
@@ -26,7 +26,7 @@ Budovat **celé propojené Milovice** jako prohlížečovou realistickou 3D RP/G
 
 | Verze | Oblast | Výsledek podle README a kódu |
 | --- | --- | --- |
-| **5.145** | Sportovní – skutečná sportovní hala | OSM/RÚIAN hala 53866046 (1 podlaží) zvednuta z generických 3,05 m na modelových **9,6 m** dle fotografie 2024, na foto-východní fasádě přidán šedý kovový plášť a ~39 svislých žeber; žádná okna či fiktivní dveře na doloženě holé stěně. Výška/rozteče nejsou měřené, testy čekají na CI. |
+| **5.145** | Sportovní – skutečná sportovní hala | OSM/RÚIAN hala 53866046 (1 podlaží) zvednuta z generických 3,05 m na modelových **9,6 m** dle fotografie 2024, na foto-východní fasádě přidán šedý kovový plášť a ~39 svislých žeber; žádná okna či fiktivní dveře na doloženě holé stěně. Výška/rozteče nejsou měřené. Obecné náhodné prosklení ostatních neověřených stěn je potlačené. Po úpravě ověřit CI. |
 | **5.144** | Průběžná / Sportovní – fotoaudit 2024 | Dvě kamery přímo z GPS/EXIF fotografie Wikimedia Commons (Průběžná 272.09°, Sportovní 277.50°). Dvě přibližně tónované FOTO-viditelné stěny přesně mapovaných RÚIAN domů 53865991/53865992; ostatní strany a street furniture neověřeny. Unit/WebGL testy + GitHub Pages PASS. |
 | **5.143** | Sportovní / Průběžná – vchody 9 bytových domů | Fyzická mezera 1,89 m v přízemním modelovém soklu namísto překrytí dveří, lepší metricky měřené vynechávání oken kolem modelových vchodů, odebrání nedoložených generických přístřešků. Přesná poloha vchodů stále není fotograficky ověřená. |
 | **5.142** | Sportovní – venkovní basketbal | Na existujícím OSM hřišti `1278746587` s tagem `hoops=2` přibyly dva modelované koše. Počet/obrys z OSM, polohy stojanů a typ konstrukce pouze schématicky. Kontrola dvou modelů a žádných nových kolizí. |
@@ -65,7 +65,7 @@ Dřívější práce pokrývají nádraží, Bike Tower, centrum, střechy a fas
 
 ## Technický stav a ověření
 
-- **5.145:** zdrojově zamčený sportovní objekt 53866046, půdorys RÚIAN zachován, modelová výška 9,6 m a šedý jemně ribovaný východní plášť podle 2024 Commons foto; žádné extra kolize/objekty, CI unit a WebGL jsou zatím neověřené.
+- **5.145:** zdrojově zamčený sportovní objekt 53866046, půdorys RÚIAN zachován, modelová výška 9,6 m a jemně žebrovaný východní plášť podle fotky; bez náhodného prosklení neznámých stěn a bez nových kolizí. První cílený mobilní WebGL [PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44325066006); po aktualizaci potlačení oken je nutné ověřit poslední CI.
 
 - **5.144:** 2 originální foto-kamery (EXIF GPS a azimut) z Wikimedia Commons, Risajanda CC BY-SA 3.0; 2 přibližně modelově tónované pohledové fasády přesně mapovaných domů OSM **53865991/53865992**. **Unit + mobilní WebGL 6s LOD + GitHub Pages prošly.** Sedm dalších domů, stromy, ulice, parkoviště a nedoložené fasády zůstávají beze změn. Pozor: 2024 photo ≠ 2026 as-built.
 

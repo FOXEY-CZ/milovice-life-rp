@@ -59,6 +59,8 @@ for(const text of [
  "window.__miloviceSportovniHallRuntime=()=>{",
  "'sportovni-hall-5145':{",
  'streetAudit=sportovni-hall-5145',
- 'if(sportovniHall)h=sportovniHall.modelHeight'
+ 'if(sportovniHall)h=sportovniHall.modelHeight',
+ 'const visibleFloors=(sportovniHall||slepaUtility||isArmClinic)?0:',
+ 'const inventedEntrance=!sportovniHall&&!slepaUtility'
  ])assert(html.includes(text),'Missing real 5.145 OSM scene integration '+text);
 console.log('PASS 5.145 photo-grounded hall with original RUIAN polygon, 9.6m estimated height, 39 ribbed modules and no invented objects');

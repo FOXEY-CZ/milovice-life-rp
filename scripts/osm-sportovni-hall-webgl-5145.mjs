@@ -43,6 +43,7 @@ try{
  assert(s.hall.ribMeshInstances>=35&&s.hall.ribMeshInstances<=49);
  assert(s.hall.visibleRibMeshInstances>=35);
  assert.equal(s.hall.blankObservedFaceHasGenericWindows,false);
+ assert.equal(s.hall.omittedUnverifiedOtherSideWindows,true);
  assert.equal(s.hall.addedColliders,0);
  assert.equal(s.hall.photographedHeightExact,false);
  assert.equal(s.camera.cameraMode,'documented-photo-gps-and-heading');
