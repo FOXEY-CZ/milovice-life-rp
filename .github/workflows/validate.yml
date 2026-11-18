@@ -245,5 +245,7 @@ jobs:
         run: node scripts/osm-sportovni-tennis-5150.test.mjs
       - name: Verify 5.151 photo-supported Milten walkway and fence beside real clay OSM court
         run: node scripts/osm-milten-photo-corridor-5151.test.mjs
+      - name: Verify 5.152 actual V7a direction and road clipping on mapped crossings
+        run: node scripts/osm-zebra-v7-5152.test.mjs
       - name: Validate expanded Milovice districts and real elevation data
         run: python3 scripts/validate_regions.py

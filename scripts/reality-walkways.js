@@ -154,36 +154,60 @@ export function markedCrossing(tags){
   tags['crossing:markings']==='zebra'||
   tags.crossing==='marked'||tags.crossing==='zebra';
 }
+/**
+ * 5.152 V7a: mapped Czech zebra bars run ALONG vehicle travel,
+ * perpendicular to the pedestrian crossing axis (OSM footway geometry).
+ * Previously six long white ribbons were mistakenly laid longitudinally
+ * along the pedestrian route; that looks like rails rather than a zebra.
+ *
+ * Respect the ORIGINAL mapped crossing endpoints and road-clearance index.
+ * Each 0.50 m thick bar spans across the model 3.4m crossing width,
+ * and is clipped to the actual OSM carriageway; no stripe on a sidewalk,
+ * road shoulder, island or an unmarked crossing.
+ *
+ * Source: Czech Ministry of Transport V7a method, dimensions estimated.
+ */
 export function planZebraPieces(points,carriageway,{width=3.4}={}){
- if(!Array.isArray(points)||points.length<2||!carriageway)return [];
+ if(!Array.isArray(points)||points.length<2||
+    typeof carriageway?.nearest!=='function'||
+    !Number.isFinite(width)||width<2.5||width>6)return [];
  const a=points[0],b=points.at(-1);
- const ax=X(a),az=Z(a),bx=X(b),bz=Z(b),len=Math.hypot(bx-ax,bz-az);
+ const ax=X(a),az=Z(a),bx=X(b),bz=Z(b);
+ if(![ax,az,bx,bz].every(Number.isFinite))return [];
+ const len=Math.hypot(bx-ax,bz-az);
  if(len<3||len>40)return [];
- const ux=(bx-ax)/len,uz=(bz-az)/len,nx=-uz,nz=ux;
+ const ux=(bx-ax)/len,uz=(bz-az)/len;
+ // Every white stripe lies across the pedestrian direction and therefore
+ // along the traffic flow on a normal crosswalk.
+ const nx=-uz,nz=ux,barThickness=.50,barPitch=.95;
  const pieces=[];
- // Each lengthwise white bar follows the photographic pedestrian approach
- // direction; six narrow bars run side-by-side, only over mapped asphalt.
- for(let stripe=0;stripe<6;stripe++){
-  const offset=(stripe-2.5)*.55;
-  let start=-1,last=-1;
-  for(let i=0;i<Math.ceil(len/.5);i++){
-   const chunks=Math.ceil(len/.5),t=(i+.5)/chunks;
-   const x=ax+ux*len*t+nx*offset,z=az+uz*len*t+nz*offset;
-   const near=carriageway.nearest(x,z);
-   const driving=near&&isCarriageway(near.kind)&&near.clearance<-.18;
-   if(driving){if(start<0)start=i;last=i+1}
-   else if(start>=0){
-    if(last-start>=3){const s=start/chunks,e=last/chunks;pieces.push({
-     a:{x:ax+ux*len*s+nx*offset,z:az+uz*len*s+nz*offset},
-     b:{x:ax+ux*len*e+nx*offset,z:az+uz*len*e+nz*offset},width:.34});}
-    start=last=-1;
+ const acrossSamples=Math.max(12,Math.ceil(width/.20));
+ const p=(s,offset)=>({
+  x:ax+ux*s+nx*offset,z:az+uz*s+nz*offset
+ });
+ for(let s=.45;s<=len-.40;s+=barPitch){
+  let start=-1,end=-1;
+  const flush=()=>{
+   if(start<0)return;
+   // Do not emit isolated specks at junction corners / traffic islands.
+   if(end-start>=Math.ceil(.8*acrossSamples/width)){
+    pieces.push({
+     a:p(s,-width/2+width*start/acrossSamples),
+     b:p(s,-width/2+width*end/acrossSamples),
+     width:barThickness
+    });
    }
+   start=end=-1;
+  };
+  for(let i=0;i<acrossSamples;i++){
+   const offset=-width/2+width*(i+.5)/acrossSamples;
+   const q=p(s,offset),nearest=carriageway.nearest(q.x,q.z);
+   const driving=nearest&&isCarriageway(nearest.kind)&&
+    nearest.clearance<-(barThickness/2+.06);
+   if(driving){if(start<0)start=i;end=i+1}
+   else flush();
   }
-  if(start>=0&&last-start>=3){
-   const chunks=Math.ceil(len/.5),s=start/chunks,e=last/chunks;
-   pieces.push({a:{x:ax+ux*len*s+nx*offset,z:az+uz*len*s+nz*offset},
-    b:{x:ax+ux*len*e+nx*offset,z:az+uz*len*e+nz*offset},width:.34});
-  }
+  flush();
  }
  return pieces;
 }

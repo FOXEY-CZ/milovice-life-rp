@@ -1,0 +1,40 @@
+name: Sportovni Topolova 5.152 V7a zebra direction mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/reality-walkways.js
+      - scripts/osm-zebra-v7-5152.test.mjs
+      - scripts/osm-zebra-v7-webgl-5152.mjs
+      - data/regions/mlada.json
+      - .github/workflows/osm-zebra-v7-5152.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-transverse-v7a:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify mapped 5.147 zebra, V7a orientation, old pedestrian safety
+        run: |
+          node scripts/reality-walkways.test.mjs
+          node scripts/osm-sportovni-topolova-zebra-5147.test.mjs
+          node scripts/osm-zebra-v7-5152.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Run mobile Chromium WebGL after 6.5-second LOD
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-zebra-v7-webgl-5152.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: milovice-v7a-transverse-5152
+          path: browser-artifacts/sportovni-topolova-v7a-transverse-5152-mobile.png
+          if-no-files-found: ignore

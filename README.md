@@ -1,3 +1,16 @@
+## Milovice RP 5.152 — všechny mapované zebry: české příčné pruhy V7a, ne podélné bílé koleje (18. 11. 2026)
+
+**Přímá technická kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=515200&streetAudit=sportovni-crossing-v7a-5152
+
+- **Opraven skutečný problém 3D renderu, nikoliv nová smyšlená geografie:** generický `planZebraPieces` od staršího vývoje 5.26 maloval **šest podélných bílých pásů ve směru chůze**. To neodpovídá českému dopravnímu značení **V7a**: na běžném přechodu jsou bílé pruhy **rovnoběžné se směrem jízdy vozidel**, tedy **kolmé na OSM směr přecházení**. Podklad: [metodika Ministerstva dopravy ČR k úpravám přechodů](https://md.gov.cz/getattachment/Dokumenty/Veda-a-vyzkum/Certifikovane-metodiky/Silnicni-metodiky/Metodika-doporuceni-pro-realizaci-ci-upravy-u-vybr/Metodika-Doporuceni-pro-realizaci-ci-upravy-u-vybraneho-typu-prechodu-pro-chodce.pdf.aspx). Není to tvrzení, že známe skutečný počet pruhů přímo v Milovicích z fotogrammetrie.
+- **Už existující reálné OSM přechody:** v lokálním exportu Mladá má pět `crossing=zebra` skutečně mapovaných polygonů/way, včetně Topolová `way/1316882853` (tři GPS body `50.2304072,14.8663619` → `50.2304105,14.8662962` → `50.2304133,14.8662413`). Žádné OSM GPS, jízdní pruhy ani značkovací tagy se nemění. Jiné mapované `crossing:markings=zebra` nadále fungují, `crossing:markings=no` má přednost a neoznačené přechody bez pruhů zůstávají neoznačené.
+- **Správná 3D skladba zebry:** podél původní OSM osy chůze se nyní rozmístí krátké jednotlivé **příčné** pásy přibližně **0,50 m** široké se **zhruba 0,95m** krokem a modelovou **3,40m** šířkou přechodu. Tyto rozměry jsou technické odhady. Každá tyč je vzorkována po cca 20 cm a **oříznuta jen dovnitř modelové vozovky** pomocí již existujícího registru `osmCarriagewayClearance`: žádný bílý pás na sousedním chodníku, do dělicího ostrůvku, mimo asfalt ani na neoznačeném místě. Žádné nové pěší trasy, kolizní objekty nebo falešné přechody. Počet draw segmentů se může podle délky skutečného přechodu lišit od předchozích šesti.
+- **Oprava celoměstská, audit na Sportovní × Topolová:** sdílený modul `scripts/reality-walkways.js` využívají veškeré kraje hry. Nový `window.__miloviceZebraV7Runtime()` zobrazuje u konkrétního **OSM 1316882853** skutečně vložený počet bílých pásů a ověřuje pravý úhel mezi osou pruhů a přechodem (pomocí normalizovaného skalárního součinu), barWidth, nulové změny mapových objektů a polohu středu každého pruhu na vozovce.
+- **Ochrana starších částí:** samostatný unit `scripts/osm-zebra-v7-5152.test.mjs` včetně testu dělicího ostrůvku, regresní 5.147 test a `scripts/reality-walkways.test.mjs` kontrolují úřední směr i originální GPS. Nová mobilní Chromium/WebGL kontrola po 6,5s LOD zachovává již hotové kurty Milten (5.150), zelený plot (5.151), halu, severní chodník a Topolovou 647. CI a Pages **čekají na potvrzení po commitu**.
+- **Kamera:** technický OSM bod na západním konci přechodu s odhadovaným azimutem 90°, nikoliv fotografie, panoramatická shoda nebo nové mapované místo.
+
+---
+
 ## Milovice RP 5.151 — Sportovní: foto-doložené zelené oplocení a pěší ulička u Milten (18. 11. 2026)
 
 **Přímá kamera v 3D hře:** https://foxey-cz.github.io/milovice-life-rp/?v=515100&streetAudit=milten-court-corridor-5151
