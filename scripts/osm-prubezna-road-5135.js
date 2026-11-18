@@ -20,7 +20,18 @@ export const PRUBEZNA_5135_SOURCE=Object.freeze({
  reconstructionDescription:'2025 wearing-course surface renewal',
  expectedPointCount:13,
  sourceOSMStart:Object.freeze({lat:50.2302093,lon:14.864159}),
- sourceOSMEnd:Object.freeze({lat:50.2301766,lon:14.8605686})
+ sourceOSMEnd:Object.freeze({lat:50.2301766,lon:14.8605686}),
+ // Checked-in source points in OSM traversal order, NOT reconstructed.
+ // A different centreline must be surveyed before renewing its material.
+ sourceOSMPoints:Object.freeze([
+  [50.2302093,14.864159],[50.2302054,14.8640527],
+  [50.230189,14.8636121],[50.2301766,14.863279],
+  [50.2301686,14.8630634],[50.2301622,14.8628916],
+  [50.230164,14.862534],[50.2301654,14.8622498],
+  [50.2301664,14.8620645],[50.2301681,14.8617124],
+  [50.2301704,14.8614062],[50.2301714,14.8612668],
+  [50.2301766,14.8605686]
+ ])
 });
 const d=(a,b)=>Math.hypot((a.lat-b.lat)*111194,(a.lon-b.lon)*71435);
 function length(points){
@@ -37,6 +48,8 @@ function valid(way){
   p.some(x=>!Number.isFinite(x.lat)||!Number.isFinite(x.lon)))return false;
  if(d(p[0],PRUBEZNA_5135_SOURCE.sourceOSMStart)>.22||
   d(p.at(-1),PRUBEZNA_5135_SOURCE.sourceOSMEnd)>.22)return false;
+ if(p.some((point,i)=>Math.abs(point.lat-PRUBEZNA_5135_SOURCE.sourceOSMPoints[i][0])>1e-7||
+  Math.abs(point.lon-PRUBEZNA_5135_SOURCE.sourceOSMPoints[i][1])>1e-7))return false;
  const metres=length(p);
  // Fail closed if any real mapped vertex moves off the expected route.
  if(metres<254||metres>260)return false;
