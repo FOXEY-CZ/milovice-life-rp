@@ -103,8 +103,8 @@ for(const token of [
  "clinicPhotoGroundGlazedBays",
  "physicalPharmacySignAdded:false",
  "pharmacyPlacementOnFacadeVerified:false",
- "const BUILD_ID='20261118-spojovaci-clinic-photo-yellow-cross-512700'",
- "href=\"?v=512700&streetAudit=armadni-clinic-5118\"",
+ "const BUILD_ID='20261118-spojovaci-photo-lit-paving-protection-512800'",
+ "href=\"?v=512800&streetAudit=armadni-clinic-5118\"",
  "id=\"street-audit-clinic-tenants\" hidden",
  "clinicTenantPanel.hidden=rpStreetAuditId!=='armadni-clinic-5118'",
  "Přesné umístění jednotlivých provozoven na fasádě není potvrzené."
