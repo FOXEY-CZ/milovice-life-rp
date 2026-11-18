@@ -36,6 +36,8 @@ on:
       - scripts/osm-clinic-storefronts-5124.test.mjs
       - scripts/osm-clinic-storefronts-webgl-5124.mjs
       - scripts/osm-clinic-parking-inlays-5125.js
+      - scripts/osm-clinic-pharmacy-sign-5126.js
+      - scripts/osm-clinic-pharmacy-sign-5126.test.mjs
       - scripts/osm-clinic-parking-inlays-5125.test.mjs
       - scripts/osm-clinic-parking-inlays-webgl-5125.mjs
       - scripts/station-photo-parking.js
