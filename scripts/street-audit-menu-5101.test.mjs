@@ -6,9 +6,9 @@ const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const nav=html.match(/<nav><a href="\?v=58530&streetAudit=5kv">([\s\S]*?)<\/nav>/)?.[0];
 assert(nav,'Keep the original review URLs, playgrounds and street width cameras');
 const ids=[...nav.matchAll(/streetAudit=([^"&]+)"/g)].map(m=>m[1]);
-assert.equal(ids.length,45);
-assert.equal(new Set(ids).size,45,'Do not lose or duplicate a review camera URL');
-const expected={streets:33,sidewalks:2,water:2,forests:2,sports:2,playgrounds:2,lighting:2};
+assert.equal(ids.length,46);
+assert.equal(new Set(ids).size,46,'Do not lose or duplicate a review camera URL');
+const expected={streets:34,sidewalks:2,water:2,forests:2,sports:2,playgrounds:2,lighting:2};
 assert.deepEqual(STREET_AUDIT_SECTIONS.map(s=>s.id),Object.keys(expected));
 for(const [group,count] of Object.entries(expected))
  assert.equal(ids.filter(id=>streetAuditCategory(id)===group).length,count,
@@ -25,6 +25,8 @@ assert.equal(streetAuditCategory('clinic-verge-trees-5129'),'streets');
 assert.equal(streetAuditCategory('spojovaci-north-crossing-5130'),'streets');
 assert.equal(streetAuditCategory('tyrsova-terrace-5131'),'streets');
 assert.equal(streetAuditCategory('armadni-island-zebra-5131'),'streets');
+assert.equal(streetAuditCategory('tyrsova-sportovni-5133'),'streets');
+assert(ids.includes('tyrsova-sportovni-5133'),'Keep Sportovní source camera');
 assert(ids.includes('tyrsova-terrace-5131')&&ids.includes('armadni-island-zebra-5131'));
 assert(ids.includes('spojovaci-north-crossing-5130'),'Keep 43rd OSM crossing camera');
 assert(ids.includes('clinic-verge-trees-5129'),'Protect direct source-backed tree camera');
@@ -66,4 +68,4 @@ const id=html.match(/const BUILD_ID='([^']+)'/)?.[1];
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const hud=html.split('id="build-label">')[1]?.split('</strong>')[0];
 assert(id&&meta===id&&hud===id,'All three build labels must remain synchronized');
-console.log('PASS 5.131 mobile review menu and 45 source cameras in 7 categories');
+console.log('PASS 5.133 mobile review menu and 46 source cameras in 7 categories');
