@@ -94,7 +94,7 @@ for(const token of [
  'const tyrsovaPartyEdgesByBuilding=new Map();',
  'const tyrsovaPartyPlan=planTyrsovaRUIANSharedWalls({',
  'tyrsovaPartyEdgesByBuilding.set(id,',
- 'if(sharedEdges?.has(i)){',
+ 'if(legacyShared?.has(i)||sharedEdges?.has(i)){',
  'audit.runtimeSkippedPartyFacadeEdges++;',
  'window.__miloviceTyrsovaPartyWallAudit={',
  'window.__miloviceTyrsovaPartyWallRuntime=()=>{',
