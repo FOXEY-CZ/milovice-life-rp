@@ -25,7 +25,7 @@ const hash=g=>{
  }
  return (h>>>0).toString(16).padStart(8,'0');
 };
-const good=w,s=>w?.tags?.highway===s.kind&&
+const good=(w,s)=>w?.tags?.highway===s.kind&&
  Array.isArray(w.geometry)&&w.geometry.length===s.nodes&&
  w.geometry.every(p=>Number.isFinite(p?.lat)&&Number.isFinite(p?.lon))&&
  hash(w.geometry)===s.hash&&
