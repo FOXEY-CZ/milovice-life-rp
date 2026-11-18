@@ -2,13 +2,13 @@
 
 > **Účel:** stručný průběžný přehled pro navazování ChatGPT vývoje. Historie změn je v `README.md`; zdroj pravdy je aktuální GitHub `main`, nikoliv předchozí chat.
 >
-> **Aktuální ověřená verze: 5.145 (18. 11. 2026).** [Kompletní validace](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44325571571) **PASS**, [mobilní WebGL test včetně 6s LOD](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44325571552) **PASS**, [GitHub Pages nasazení](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44325570579) **PASS**. Předchozí 5.144 zůstává ověřená, širší průběžné browser workflow mají vlastní běhy. [Úplná validace](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44322902587) **PASS**, [mobilní 3D fotoaudit + LOD po 6 sekundách](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44322655691) **PASS** a [nasazení GitHub Pages](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44322902059) **PASS**. Širší, déle běžící browser smoke může mít vlastní stav.
+> **Poslední ověřená verze: 5.145; nová 5.146 čeká na CI validaci a mobilní WebGL (18. 11. 2026).** [Kompletní validace](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44325571571) **PASS**, [mobilní WebGL test včetně 6s LOD](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44325571552) **PASS**, [GitHub Pages nasazení](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44325570579) **PASS**. Předchozí 5.144 zůstává ověřená, širší průběžné browser workflow mají vlastní běhy. [Úplná validace](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44322902587) **PASS**, [mobilní 3D fotoaudit + LOD po 6 sekundách](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44322655691) **PASS** a [nasazení GitHub Pages](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44322902059) **PASS**. Širší, déle běžící browser smoke může mít vlastní stav.
 
 ## Projekt a odkazy
 
 - Repozitář: https://github.com/FOXEY-CZ/milovice-life-rp
 - Veřejná hra (GitHub Pages): https://foxey-cz.github.io/milovice-life-rp/
-- Poslední kontrolní kamera: https://foxey-cz.github.io/milovice-life-rp/?v=514500&streetAudit=sportovni-hall-5145 (Sportovní foto EXIF 2024)
+- Poslední kontrolní kamera: https://foxey-cz.github.io/milovice-life-rp/?v=514600&streetAudit=sportovni-photo-northwalk-5146 (Sportovní foto EXIF 2024)
 - Webová hra: `index.html`; stavební editor: `editor.html`; kontrolní pohledy a pomůcky: `survey.html`, `photo-pilot.html`, `rebuild.html`.
 - Herní moduly a testy: `scripts/`; OSM, výšková a regionální data: `data/` a `data/regions/`; metodika: `docs/STREET_WORKFLOW.md`, `docs/building-rebuild-program.md`, `docs/reality-audit-00.md`.
 - Detailní verze a zdůvodnění: `README.md` (číst **jen nejnovější relevantní sekce**, ne všech 366 kB).
@@ -26,6 +26,7 @@ Budovat **celé propojené Milovice** jako prohlížečovou realistickou 3D RP/G
 
 | Verze | Oblast | Výsledek podle README a kódu |
 | --- | --- | --- |
+| **5.146** | Sportovní – severní fotochodník | Doložena existence obou chodníků na foto 2024; jižní je původní OSM 1316882852, severní v tomto úseku nemá vlastní OSM geometrii. Doplněn *jen grafický přibližný model 49 m* + obruba podle skutečné vozovky 8618266, žádné navigační hrany, kolize ani nové přechody. Testy CI zatím čekají. |
 | **5.145** | Sportovní – skutečná sportovní hala | OSM/RÚIAN hala 53866046 (1 podlaží) zvednuta z generických 3,05 m na modelových **9,6 m** dle fotografie 2024, na foto-východní fasádě přidán šedý kovový plášť a ~39 svislých žeber; žádná okna či fiktivní dveře na doloženě holé stěně. Výška/rozteče nejsou měřené. Obecné náhodné prosklení ostatních neověřených stěn je potlačené. **Unit + mobilní WebGL + deploy PASS.** |
 | **5.144** | Průběžná / Sportovní – fotoaudit 2024 | Dvě kamery přímo z GPS/EXIF fotografie Wikimedia Commons (Průběžná 272.09°, Sportovní 277.50°). Dvě přibližně tónované FOTO-viditelné stěny přesně mapovaných RÚIAN domů 53865991/53865992; ostatní strany a street furniture neověřeny. Unit/WebGL testy + GitHub Pages PASS. |
 | **5.143** | Sportovní / Průběžná – vchody 9 bytových domů | Fyzická mezera 1,89 m v přízemním modelovém soklu namísto překrytí dveří, lepší metricky měřené vynechávání oken kolem modelových vchodů, odebrání nedoložených generických přístřešků. Přesná poloha vchodů stále není fotograficky ověřená. |
@@ -41,14 +42,14 @@ Dřívější práce pokrývají nádraží, Bike Tower, centrum, střechy a fas
 
 ## Co je potřeba dál
 
-- **Nejbližší směr:** 5.145 unit / mobilní WebGL / deploy již PASS. Pokračovat od foto-pohledu Sportovní a ověřit další základní prvky ulice vůči autorizovanému snímku: návaznost chodníků, šířky a povrch vozovky, existující sídlištní domy a přístup k hale. **Nevkládat** negeoreferencované ploty, stromy, auta ani lampy. Potom Pokračovat po celých ulicích **Průběžná / Sportovní**: porovnat 2024 veřejné foto-kamery s 3D záběry, potom bezpečně zpřesnit pouze podložené fasády, chodníky a okolí; hlídat, že 2024 fotografie nejsou důkaz současného stavu po stavebních pracích 2025. Před dalším commitem ověřit nejnovější GitHub a případné výsledky širších browser testů. Nezaměňovat funkční test za fotografické schválení vzhledu modelů. Před každým novým konkrétním zásahem ověřit skutečný stav repozitáře a odpovídající zdrojová data.
+- **Nejbližší směr:** nejdřív ověřit CI/LOD 5.146 a jestli se chodník nepřekrývá s jinou vozovkou či budovou. Potom Pokračovat od foto-pohledu Sportovní a ověřit další základní prvky ulice vůči autorizovanému snímku: návaznost chodníků, šířky a povrch vozovky, existující sídlištní domy a přístup k hale. **Nevkládat** negeoreferencované ploty, stromy, auta ani lampy. Potom Pokračovat po celých ulicích **Průběžná / Sportovní**: porovnat 2024 veřejné foto-kamery s 3D záběry, potom bezpečně zpřesnit pouze podložené fasády, chodníky a okolí; hlídat, že 2024 fotografie nejsou důkaz současného stavu po stavebních pracích 2025. Před dalším commitem ověřit nejnovější GitHub a případné výsledky širších browser testů. Nezaměňovat funkční test za fotografické schválení vzhledu modelů. Před každým novým konkrétním zásahem ověřit skutečný stav repozitáře a odpovídající zdrojová data.
 - **Chybějící georeferencovaný podklad:** projektová parkovací stání (v dokumentaci 109), lampy (22), obruby a přesná poloha nových prvků v Průběžné. Dokud není konkrétní polohopis / výkres C.3 nebo fotografická kontrola, **nevkládat odhadem**.
 - **Dlouhodobý dluh:** znovu projít starší budovy a celé ulice podle `docs/building-rebuild-program.md` a `docs/reality-audit-00.md`. Fotofasády mohou být jen částečně podložené; nezaměňovat je za hotovou 360° rekonstrukci.
 - **Každá další verze:** jedna smysluplná úprava → cílené unit testy → pokud se mění scéna, kontrola v mobilním WebGL → commit a stručný zápis zde. Neoznačovat test jako prošlý, pokud skutečně neběžel.
 
 ## Nový pracovní režim W1 (18. 11. 2026)
 
-- **Jednotná pravidla:** `AGENTS.md` a `docs/DEVELOPMENT_WORKFLOW.md`. Nejde o novou verzi hry; nová herní verze **5.145**.
+- **Jednotná pravidla:** `AGENTS.md` a `docs/DEVELOPMENT_WORKFLOW.md`. Nejde o novou verzi hry; nová herní verze **5.146**.
 - **Převzetí práce:** načíst tento stav + poslední relevantní kousek README + jen související kód; ověřit hlavní větev GitHubu.
 - **Práce jako jeden úsek:** pokračovat Sportovní/Průběžná po celých ulicích a blocích, ne jen izolovanými dekoracemi. Odhady odlišovat od skutečných fotografických důkazů.
 - **Cílené unit testy:** `node scripts/dev-check.mjs sportovni` (další oblasti po `--list`); změny 3D pak ověřit samostatným mobilním WebGL testem po LOD.
@@ -64,6 +65,8 @@ Dřívější práce pokrývají nádraží, Bike Tower, centrum, střechy a fas
 5. Když uživatel napíše **„Pokračuj“**, navazuj na nejnovější uložený stav, nejbližší konkrétní úkol a pravidla výše; nechtěj opakovat staré informace, pokud repo poskytuje odpověď.
 
 ## Technický stav a ověření
+
+- **5.146:** fotograficky doložená existence severního chodníku Sportovní. Jeho GPS nemáme, proto jen krátký 49m 3D model navázaný na souřadnice existující OSM silnice; žádný nový oficiální pěší graf, kolize, zebra nebo lampy. První CI kontrola čeká.
 
 - **5.145:** zdrojově zamčený sportovní objekt 53866046, půdorys RÚIAN zachován, modelová výška 9,6 m a jemně žebrovaný východní plášť podle fotky; bez náhodného prosklení neznámých stěn a bez nových kolizí. [Celková validace PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44325571571), [mobilní 3D test PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44325571552) i [Pages deploy PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44325570579).
 

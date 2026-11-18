@@ -1,0 +1,37 @@
+name: Sportovni 5.146 photo sidewalk mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/osm-sportovni-photo-northwalk-5146.js
+      - scripts/osm-sportovni-photo-northwalk-5146.test.mjs
+      - scripts/osm-sportovni-photo-northwalk-webgl-5146.mjs
+      - data/regions/mlada.json
+      - .github/workflows/sportovni-photo-northwalk-5146.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  north-walk-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Unit check mapped street and inferred northern sidewalk
+        run: node scripts/osm-sportovni-photo-northwalk-5146.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Browser check after 6.5 seconds of LOD
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-sportovni-photo-northwalk-webgl-5146.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sportovni-photo-northwalk-5146
+          path: browser-artifacts/sportovni-north-photo-walk-5146-mobile.png
+          if-no-files-found: ignore

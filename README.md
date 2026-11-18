@@ -1,3 +1,15 @@
+## Milovice RP 5.146 — Sportovní: severní chodník u sportovní haly (18. 11. 2026)
+
+**Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=514600&streetAudit=sportovni-photo-northwalk-5146
+
+- **Celý uliční řez:** veřejná fotografie [Sportovní (3).jpg](https://commons.wikimedia.org/wiki/File:Sportovn%C3%AD_(3).jpg), Risajanda, 6. 6. 2024, CC BY-SA 3.0, ukazuje po obou stranách vozovky chodníky. Jižní je skutečný OSM `way/1316882852` (`surface=paving_stones`). Severní není samostatně zakreslený podél posledních 59 m OSM Sportovní `way/8618266`.
+- **Vizuální oprava, nikoli nová mapa:** doplněný pouze **cca 49 m dlouhý modelový severní dlážděný pás** s úzkou souvislou nízkou obrubou. Vedení je odvozené od existující mapové silnice (hash `e9f06930`), jeho **šířka 1,85 m, konkrétní offset a barva jsou neověřené odhady**. Končí 8 m před křižovatkou Topolová a 2 m od druhého konce segmentu, aby nevznikl vymyšlený přechod ani připojení.
+- **Přísná ochrana reality:** přesných 4 GPS bodů silnice a 28 bodů stávajícího jižního OSM chodníku (hash `a50c0251`), okolních OSM pěších tras a ochranných odstupů od jiných komunikací a domů. Pokud novější OSM chodník v tomtéž místě existuje, model má ustoupit. **Žádné nové navigační hrany, kolizní objekty, silnice, zebry, lampy, parkovací místa nebo stromy**.
+- **Vykreslení a výkon:** 2 jednoduché souvislé DEM-terénní meshe, stejný sdílený materiál paving jako ostatní chodníky; bez samostatných čtvercových dílků. Mobilní WebGL test čeká na ověření viditelnosti po 6,5 sekundách a kontroly zachování haly 5.145, paneláků a basketbalových košů.
+- **Nejistota:** výskyt chodníku je z fotografie 2024; přesné GPS jeho okrajů, chodníkové šířky, nájezdy a dnešní podoba po úpravách nejsou geodeticky doložené. Až bude georeferencovaný as-built, nahradíme tímto podkladem modelový pás.
+
+---
+
 ## Milovice RP 5.145 — Sportovní: sportovní hala podle skutečné fotografie (18. 11. 2026)
 
 **Přímý pohled od původního fotoaparátu:** https://foxey-cz.github.io/milovice-life-rp/?v=514500&streetAudit=sportovni-hall-5145
