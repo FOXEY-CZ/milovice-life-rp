@@ -22,7 +22,8 @@ try{
    window.__miloviceAreasLoaded?.includes('mlada')&&
    window.__miloviceStreetAuditRendered?.view==='armadni-clinic-5118'&&
    window.__miloviceClinicParkingInlaysAudit?.renderedMeshes===1&&
-   window.__miloviceClinicParkingInlaysRuntime?.()?.ready===true
+   window.__miloviceClinicParkingInlaysRuntime?.()?.ready===true&&
+   window.__miloviceClinicPhotoPharmacySignRuntime?.()?.ready===true
   ),null,{timeout:110000});
  }catch(e){
   const debug=await page.evaluate(()=>({
@@ -44,6 +45,8 @@ try{
   live:window.__miloviceClinicParkingInlaysRuntime?.(),
   forecourt:window.__miloviceClinicForecourtRuntime?.(),
   storefront:window.__miloviceClinicShopfrontRuntime?.(),
+  pharmacySign:window.__miloviceClinicPhotoPharmacySignRuntime?.(),
+  signAudit:window.__miloviceClinicPhotoPharmacySignAudit,
   entrance:window.__miloviceClinicEntranceRuntime?.(),
   menuHeight:document.getElementById('street-block-audit')
    ?.getBoundingClientRect().height
@@ -75,6 +78,12 @@ try{
  assert.equal(s.live.addedSyntheticParkingStalls,0);
  assert.equal(s.forecourt.visibleInScene,true,
   'Photo paver inlays must not remove the whole 5.123 square');
+ assert.equal(s.signAudit.photographedText,'LÉKÁRNA');
+ assert.equal(s.signAudit.approximatedGlassBay,1);
+ assert.equal(s.signAudit.exactStorefrontBayEstablished,false);
+ assert.equal(s.pharmacySign.visibleAfterLOD,true,
+  '5.126 photo-confirmed LÉKÁRNA must remain visible after mobile LOD');
+ assert.equal(s.pharmacySign.actualDrawMeshCount,1);
  assert.equal(s.storefront.allVisible,true,
   'All 5.124 clinic shop glass must remain visible');
  assert.equal(s.entrance.allVisible,true,
@@ -91,6 +100,7 @@ try{
    visibleAfterLOD:s.live.visibleAfterLOD,
    legalParkingSlotCountUnknown:!s.audit.exactStallCountKnown,
    oldClinicGlassVisible:s.storefront.allVisible,
+   pharmacySignVisible:s.pharmacySign.visibleAfterLOD,
    oldForecourtVisible:s.forecourt.visibleInScene,
    menuHeight:s.menuHeight}));
  await page.close();
