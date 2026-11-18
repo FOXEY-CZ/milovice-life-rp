@@ -1,3 +1,18 @@
+## Milovice RP 5.128 — Spojovací: žádné odhadnuté lampy na fotograficky doloženém dláždění (Part 26, 18. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=512800
+
+**Přímá 3D kamera na Polikliniku:** https://foxey-cz.github.io/milovice-life-rp/?v=512800&streetAudit=armadni-clinic-5118
+
+- [Městská plánovací smlouva k Centru zdraví Milovice](https://www.mesto-milovice.cz/assets/File.ashx?id_dokumenty=3513&id_org=9519) potvrzuje projektovou přeložku kabelů veřejného osvětlení **včetně tří stožárů** u budoucího parkování a chodníku. Neobsahuje ale použitelné skutečné as-built souřadnice všech stožárů. Značka OSM `lit=yes` na skutečné Spojovací potvrzuje osvětlení **ulice**, ne polohy a počty samotných sloupů. Proto nevytváříme falešnou trojici přesně zaměřených lamp.
+- Dosavadní plánovač `scripts/osm-street-lighting-5100.js` rozmisťuje vizuálně **odhadnuté** sloupy podle `lit=yes` a kontrol silnic/budov. Nový `scripts/osm-clinic-furniture-protection-5128.js` zavádí cílenou ochranu konkrétního skutečného areálu **way/1057548624**: vyloučí odhadnutý sloup pouze tehdy, pokud by ležel na existujících fotograficky doložených buňkách dlažby verze 5.123. Tato ochrana není plošnou výmazovou zónou pro všechny ulice Milovic, není geodeticky zaměřenou polohou skutečných lamp a nepřepisuje původní OSM `lit` data.
+- **Přesné mapové vstupy:** východní fasáda Polikliniky edge 2 cca 44,86 m, Spojovací **way/246652750** (`residential`, `lit=yes`), pěší cesta **way/1339091016** (`footway`, `lit=yes`) a již existujících **422 modelových dlažebních buněk** o ploše asi 569,1 m², které byly oříznuty mimo skutečné jízdní koridory. Okrajové body buněk se převádějí do souřadnic fasády a přidává se pouze **55cm bezpečnostní modelový okraj**, ne nová změna povrchu nebo hranice parkoviště.
+- V okolí je již uložen i **skutečný OSM travnatý polygon way/1454936713** západně od Polikliniky, který zůstává v existujícím vykreslování zeleně. **Nepřidáváme do něj nedoložené stromy, lampy, záhony ani lavičky**. Ve zdrojových uložených OSM prvcích okolo Polikliniky nebyly samostatně zaměřené body lamp nebo stromů. Veřejné mapové/úřední podklady navíc neopravňují k vymyšlení souřadnic sloupů, skříní nebo úprav zeleně.
+- `window.__miloviceClinicFurnitureProtectionAudit` uvádí dokumentační zdroje, počty ochranných dlažebních buněk, počet odmítnutých kandidátů a zachovanou OSM geometrii. `window.__miloviceClinicFurnitureProtectionRuntime()` kontroluje skutečný plán pouličního osvětlení a všechny vypočtené polohy sloupů, které v ochráněné ploše nesmějí být; netvrdí tím, že jednotlivé fyzické stožáry jsou fotograficky změřené. **Nejsou přidány žádné nové objekty**, nové silnice, chodníky, trvalá parkovací místa ani kolize.
+- Nový skutečný OSM regresní test `scripts/osm-clinic-furniture-protection-5128.test.mjs` ověřuje všech 422 ochranných buněk a odmítnutí změněných zdrojů. Rozšířený **mobilní Chromium/WebGL test** kontroluje, že do chráněné dlažby nezasahuje žádný plánovaný odhadnutý sloup, zároveň po 6,8 sekundách LOD zůstávají viditelné Poliklinika, LÉKÁRNA, tyrkysový vstup, světlé dláždění, červenohnědé pruhy i žluté křížové značení. O úspěchu nasazení a testů rozhodnou skutečné běhy GitHub Actions.
+
+---
+
 ## Milovice RP 5.127 — Spojovací u Polikliniky: fotograficky doložený žlutý kříž na dlažbě (Part 26, 18. 11. 2026)
 
 **Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=512700
