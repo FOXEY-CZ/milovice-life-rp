@@ -1,0 +1,39 @@
+name: Sportovni 5.142 basketball mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/osm-sportovni-basketball-5142.js
+      - scripts/osm-sportovni-basketball-5142.test.mjs
+      - scripts/osm-sportovni-basketball-webgl-5142.mjs
+      - data/regions/mlada.json
+      - .github/workflows/sportovni-basketball-5142-webgl.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  basketball-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check exact OSM pitch and scene code
+        run: node scripts/osm-sportovni-basketball-5142.test.mjs
+      - name: Install mobile Chromium test client
+        run: npm install --no-save --no-package-lock playwright-core
+      - name: Run only 5.142 live mobile WebGL and LOD regression
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 > /tmp/milovice-http.log 2>&1 &
+          node scripts/osm-sportovni-basketball-webgl-5142.mjs
+      - name: Save browser image
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sportovni-basketball-5142-mobile
+          path: browser-artifacts/sportovni-two-basketball-hoops-5142-mobile.png
+          if-no-files-found: ignore
