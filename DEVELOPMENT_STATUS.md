@@ -1,6 +1,6 @@
 # Milovice RP — rychlý handoff vývoje
 
-> **Nová 5.159 (18. 11. 2026; CI/WebGL/Pages ČEKAJÍ):** podepsané výkresy města/PSK TUZAR 2024 pro Topolovou 614–615, ZÁPAD a VÝCHOD, PDF strany 10–12: https://zakazky.mesto-milovice.cz/document_184/107a3038c3f90b7000c396e9ce9f9f75-projektova_dokumentace_podepsana-pdf. Čtyři skutečné 16m OSM fasády z 2 source-locked budov 61979151/22968067, 61979152/22968075, hrany [2,0] a [1,3]. Šest sloučených GPU meshů: 48 modelových dvojkřídlých oken, 32 balkonových sestav, 16 schodišťových okének, čtyři vizuální vstupy a čtyři zdrojově doložené oblé schodišťové nástavby. Barevné PVC 1750×1350mm doloženo, skutečné absolutní rozteče/výšky **model, ne as-built**. Zdi, GPS, kolize, řada 616–618 a zbytek ulic nezměněny. CI/WebGL/Pages zatím neověřené.
+> **Nová 5.159 (18. 11. 2026; CI/WebGL/Pages PASS):** podepsané výkresy města/PSK TUZAR 2024 pro Topolovou 614–615, ZÁPAD a VÝCHOD, PDF strany 10–12: https://zakazky.mesto-milovice.cz/document_184/107a3038c3f90b7000c396e9ce9f9f75-projektova_dokumentace_podepsana-pdf. Čtyři skutečné 16m OSM fasády z 2 source-locked budov 61979151/22968067, 61979152/22968075, hrany [2,0] a [1,3]. Šest sloučených GPU meshů: 48 modelových dvojkřídlých oken, 32 balkonových sestav, 16 schodišťových okének, čtyři vizuální vstupy a čtyři zdrojově doložené oblé schodišťové nástavby. Barevné PVC 1750×1350mm doloženo, skutečné absolutní rozteče/výšky **model, ne as-built**. Zdi, GPS, kolize, řada 616–618 a zbytek ulic nezměněny. CI/WebGL/Pages jsou ověřené: **[Celková CI PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44399024857), [nová mobilní WebGL +6,9 s LOD PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44399025166), [regrese 5.155 PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44399025125), [GitHub Pages PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44399022791).**
 
 > **Nová 5.158 (18. 11. 2026; CI/WebGL/Pages PASS):** Topolová 646: na všech 6 krátkých mapovaných fasádách [0,1,2,3,4,6] jsme odstranili nepodložené generické modely oken/vchodů. Krémové neprůhledné stěny, obě 43m fotofasády, 4 GPU meshe, střecha, GPS hash 73d119b1, kolize a okolní silnice zachovány. Existence reálných oken není vyvrácena, chybí pouze georeferencovaná poloha. Unit + mobilní WebGL 6,9s LOD prošly. **[Celková CI PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44395744528), [mobilní WebGL +6,9s LOD PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44395744503), [regrese 5.157 PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44395743730), [GitHub Pages PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44395742263).** Nejbližší: najít krátké boční foto/vstupy.
 
@@ -19,7 +19,7 @@
 ## 5.159 — fasády Topolová 614–615 podle městských výkresů
 - Strana 10/11 podepsaného PDF (západ/východ) jasně zobrazuje kompozici 5 pater, dva vchody, oblé zakončení a balkonové sestavy. Výpis strana 12 obsahuje rozměry 1750×1350mm (standardní dvoukřídlá okna) a 800×2000mm (balkonové dveře). PDF https://zakazky.mesto-milovice.cz/document_184/107a3038c3f90b7000c396e9ce9f9f75-projektova_dokumentace_podepsana-pdf.
 - Přesná OSM ID, RÚIAN a GPS hash pro 614–615 uzamčeny; žádná nová cesta, strom, lampa, stání, kolize ani měněná stěna. U obou budov po 3 fyzických meshích; 4 generické fasády potlačeny. Výškový model stále 15,25m, zaoblení/rozestupy modelové odhady.
-- Nový modul `osm-topolova-drawing-614615-5159.js`, unit, mobilní WebGL 6,9s a workflow. **CI/Pages zatím čekají**. Další: doložit detail 616–618 a veřejná pěší napojení.
+- Nový modul `osm-topolova-drawing-614615-5159.js`, unit, mobilní WebGL 6,9s a workflow. **CI, mobilní WebGL po LOD a Pages PASS** (odkazy v úvodu). Další: doložit detail 616–618 a veřejná pěší napojení.
 
 ## 5.158 — Topolová 646: šest krátkých stěn bez neověřených generických doplňků
 - Hrany 0,1,2,3,4,6 mají 6,337 / 3,452 / 7,253 / 3,434 / 2,874 / 16,515 m. Generické okno/dveře pro tyto hrany potlačeny, ale samotné krémové zdi a OSM polygon zůstávají. Není to tvrzení, že reálné krátké strany nemají žádná okna.
@@ -76,7 +76,7 @@
 
 | Verze | Co bylo změněno | Zdroj / omezení |
 | --- | --- | --- |
-| **5.159** | Topolová 614–615: 4 modelované západní/východní projektové fasády, 6 GPU meshů | Projekt 2024; přesná výška/rozteče model, CI/WebGL/Pages čekají. |
+| **5.159** | Topolová 614–615: 4 modelované západní/východní projektové fasády, 6 GPU meshů | Projekt 2024; přesná výška/rozteče model, CI/WebGL/Pages PASS. |
 | **5.158** | Topolová 646: 6 krátkých skutečných stěn bez vymyšlených oken | Základní stěny/GPS zachovány, CI/WebGL/Pages PASS. |
 | **5.157** | Topolová 646: dvě 43m foto-fasády, 32 klenutých podkrovních oken, generické fasády potlačeny | 4 sdílené mesh; počet štítů/rozteče model; CI, mobilní WebGL+LOD, Pages PASS. |
 | **5.156** | Topolová 646: skutečná fasáda a podkroví z přímých foto 2025, původně chybná jednopodlažní hmota | 3 řady a podkrovní štíty, metry i rozteče model; CI/WebGL/Pages PASS. |
