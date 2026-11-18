@@ -1,0 +1,41 @@
+name: Milovice 5.160 Topolova five-house continuous hip roof
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/osm-topolova-continuous-hip-5160.js
+      - scripts/osm-topolova-continuous-hip-5160.test.mjs
+      - scripts/osm-topolova-continuous-hip-webgl-5160.mjs
+      - .github/workflows/topolova-continuous-hip-5160.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  hip-roof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: OSM source topology and previous row/646 regressions
+        run: |
+          node scripts/osm-topolova-continuous-hip-5160.test.mjs
+          node scripts/osm-topolova-panel-row-5155.test.mjs
+          node scripts/osm-topolova-drawing-614615-5159.test.mjs
+          node scripts/osm-topolova-photo-646-5157.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Mobile Chromium/WebGL and 7.0-second LOD
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-topolova-continuous-hip-webgl-5160.mjs
+          node scripts/osm-topolova-panel-row-webgl-5155.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: topolova-continuous-hip-5160
+          path: browser-artifacts/*5160-mobile.png
+          if-no-files-found: ignore

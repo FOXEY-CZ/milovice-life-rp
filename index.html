@@ -559,6 +559,7 @@ import {SPORTOVNI_HALL_5145,planSportovniPhotoHall} from './scripts/osm-sportovn
 import {planSlunickoStoreys5153} from './scripts/osm-slunicko-storeys-5153.js?v=515300';
 import {planSlunickoWestElevation5154} from './scripts/osm-slunicko-west-elevation-5154.js?v=515400';
 import {planTopolovaPanelRow5155} from './scripts/osm-topolova-panel-row-5155.js?v=515500';
+import {planTopolovaContinuousHip5160,renderTopolovaContinuousHip5160} from './scripts/osm-topolova-continuous-hip-5160.js?v=516000';
 import {planTopolovaDrawing5159,renderTopolovaDrawing5159} from './scripts/osm-topolova-drawing-614615-5159.js?v=515900';
 import {planTopolova646Photo5156,renderTopolova646Photo5156} from './scripts/osm-topolova-photo-646-5156.js?v=515600';
 import {planTopolova646BothFacades5157,renderTopolova646BothFacades5157} from './scripts/osm-topolova-photo-646-5157.js?v=515700';
@@ -1066,6 +1067,15 @@ const rpStreetAuditViews={
   author:'Město Milovice / PSK TUZAR, projekt 2022, smlouva 2024',
   technical:true,streetLevel:true,estimatedHeading:true,
   note:'Podepsané výkresy západního a východního pohledu 614–615; pět nadzemních podlaží, bílá dvoukřídlá okna, balkonové sestavy, vstupy a obloukové schodišťové nástavby. OSM source footprint beze změn. Přesné rozteče, výška nástaveb a stříšek jsou odhad podle výkresu, nikoli geodetické zaměření. Dveře jsou optický detail neprůchozí plné fasády. Kamera je technická, orientačně na OSM service-way 1201945272.'
+ },
+ 'topolova-hip-roof-5160':{
+  label:'Topolová 614–618 · společná valbová střecha',
+  camera:{lat:50.2294938,lon:14.8661579},heading:292,
+  source:'https://www.celakovice.cz/filemanager/files/2973758.pdf',
+  regionId:'mlada',osmLandmarkId:'61979145',
+  author:'Město Čelákovice, rady města 14/2023 a 27/2023, OSM/RÚIAN',
+  technical:true,streetLevel:true,estimatedHeading:true,
+  note:'Rada Čelákovic v nájemních dokumentech 2023 popisuje 617–618 jako součást pětipodlažního pětivchodového domu s VALBOVOU střechou a skutečnými balkony. Opravených je pět dříve plochých samostatných střešních čepic na jeden souvislý 80m valbový model po přesných obvodových hranách všech pěti RÚIAN bytových částí 614–618. Výška hřebene 2,25m, jeho umístění a barva jsou modelový odhad; dokument není geodetický plán. Pět panelových podlaží, 4 společné vnitřní stěny, fasády 614–615/5.159, všechny OSM GPS, kolize, chodníky i silnice zachované.'
  },
  'topolova-panel-row-5155':{
   label:'Topolová 614–618 · celá řada 5patrových panelových domů',
@@ -3354,6 +3364,19 @@ window.__miloviceTopolovaDrawingRuntime=()=>{
    a.genericFacadeEdgesSuppressed===4&&a.renderedMeshes===6&&
    visible===6&&inScene&&a.normalWindows===48&&a.balconySets===32&&
    a.entries===4&&a.roundedCaps===4&&addresses.join(',')==='614,615'&&
+   window.__miloviceAreasLoaded?.includes('mlada')===true};
+};
+window.__miloviceTopolovaHipRuntime=()=>{
+ const a=window.__miloviceTopolovaHipAudit;
+ if(!a)return {ready:false};
+ const attached=a.allInScene?.()===true;
+ const visible=a.visibleAfterLOD?.()||0;
+ const row=window.__miloviceTopolovaRowRuntime?.();
+ return {...a,visibleAfterLOD:visible,allInScene:attached,
+  ready:row?.ready===true&&a.suppressedFlatCaps===5&&
+   a.drawMeshes===1&&a.triangles===22&&
+   a.joinedSideEdges===10&&a.hipEndFaces===2&&
+   a.sourceOSMIds.length===5&&visible===1&&attached&&
    window.__miloviceAreasLoaded?.includes('mlada')===true};
 };
 window.__miloviceTopolovaRowRuntime=()=>{
@@ -5743,6 +5766,12 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
    geometricFeatureOverlap:true
   };
  }
+ else if(!pitchedSurface&&
+  window.__miloviceTopolovaHipPlan?.sourceOSMIds.includes(String(osmId))){
+  // 5.160: original five separate flat caps would intersect the single
+  // source-backed, contiguous roof. Solid walls and collision still exist.
+  window.__miloviceTopolovaHipAudit.suppressedFlatCaps++;
+ }
  else if(!pitchedSurface){
   // A flat cap is a fallback, not a second layer under a pitched roof.
   roofEnvelopeAudit.flatFallbacks++;
@@ -6918,6 +6947,21 @@ function rpAppendOSMElements(elements,regionId='old'){
  const topolovaRow5155=planTopolovaPanelRow5155({
   regionId,ways:buildingWays
  });
+ const topolovaHipPlan=planTopolovaContinuousHip5160({
+  regionId,rowPlan:topolovaRow5155,ways:buildingWays
+ });
+ if(topolovaHipPlan){
+  window.__miloviceTopolovaHipPlan=topolovaHipPlan;
+  window.__miloviceTopolovaHipAudit={
+   version:'5.160',sourceOSMIds:topolovaHipPlan.sourceOSMIds,
+   addresses:topolovaHipPlan.addresses,
+   modelRiseMeters:topolovaHipPlan.roofRiseMeters,
+   sourceHipRoofDocumented:true,suppressedFlatCaps:0,
+   drawMeshes:0,triangles:0,joinedSideEdges:0,hipEndFaces:0,
+   visibleAfterLOD:()=>0,allInScene:()=>false,
+   inventedWindows:0,newColliders:0,newRoads:0,newFootpaths:0
+  };
+ }
  if(topolovaRow5155){
   window.__miloviceTopolovaRowAudit={
    ...topolovaRow5155,renderedCorrectedBuildings:0
@@ -8538,6 +8582,23 @@ function rpAppendOSMElements(elements,regionId='old'){
  for(const el of buildingWays){
   osmBuilding(el.geometry,el.tags,osmBuildings,el.id,regionId,slepaStreet);
   osmAddLandmark(el);
+ }
+ // A roof of one physically continuous five-entrance RUIAN block,
+ // built after ALL five DEM-grounded foundations are known.
+ if(topolovaHipPlan){
+  const roof=renderTopolovaContinuousHip5160(THREE,{
+   plan:topolovaHipPlan,toWorld:osmPoint,
+   baseById:id=>osmInspectionBuildings.find(b=>String(b.id)===id),
+   layer:osmLayer
+  });
+  if(roof)Object.assign(window.__miloviceTopolovaHipAudit,{
+   drawMeshes:roof.drawMeshes,triangles:roof.triangles,
+   joinedSideEdges:roof.joinedSideEdges,
+   hipEndFaces:roof.hipEndFaces,
+   visibleAfterLOD:roof.visibleAfterLOD,allInScene:roof.allInScene,
+   physicalRoofHighY:roof.modelRoofHighY,
+   physicalEaveLowY:roof.modelEaveMinY
+  });
  }
  window.__miloviceStreetFronts=streetFrontage.summary();
  // One inexpensive planted street pass for the WHOLE Mírová corridor;
