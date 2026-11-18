@@ -1,3 +1,15 @@
+## Milovice RP 5.136 — Part 28: rychlé hledání skutečných kontrolních kamer (18. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=513600&streetAudit=prubezna-road-asphalt-5135
+
+- Po otevření **☰ Vybrat pohled** lze hledat ulici, místo nebo ID pohledu. Vyhledávání funguje i bez české diakritiky (např. `prubezna` → obě současné kamery Průběžné). Během psaní se otevřou jen odpovídající sekce a stránka ohlásí počet výsledků. Po vymazání hledání se obnoví všech 48+ původních přímých odkazů.
+- Mobilní výběr nadále začíná sbalený; filtr, seznam, GPS a zdroj jsou dostupné po dobrovolném rozbalení. Žádná původní kamera, metadata, GPS, silniční model, vozidlo nebo OSM import nebyly v této verzi změněny.
+- Opravena zastaralá titulková verze 5.125 a identita sestavení 5.133 na aktuální 5.136. Zůstává automatická kontrola shody meta/HUD/runtime build ID.
+- Regrese: `scripts/street-audit-menu-5101.test.mjs` chrání všechny původní položky; `scripts/street-audit-menu-webgl-5101.mjs` ověřuje hledání bez diakritiky, prázdné výsledky a obnovení katalogu v mobilním i desktopovém Chromium.
+- **Průběžná zůstává geometricky jako v 5.135:** přesné souřadnice 109 parkovacích míst, 22 lamp a neověřených obrub i přechodu nejsou doloženy. Veřejný [profil zakázky](https://zakazky.mesto-milovice.cz/contract_display_51.html) zveřejňuje také ZIP projektovou dokumentaci pro chodníky a vozovku; bez skutečného georeferencovaného zákresu / ověřeného situačního výkresu C.3 netvrdíme, že detaily byly rozmístěny.
+
+---
+
 ## Milovice RP 5.135 — Průběžná 2025: opravený asfalt na skutečné jednosměrce (Part 27, 18. 11. 2026)
 
 **Přímá kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=513500&streetAudit=prubezna-road-asphalt-5135
