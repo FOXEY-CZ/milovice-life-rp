@@ -1,3 +1,15 @@
+## Milovice RP 5.133.1 — skutečně poslední chybějící společná zeď (Part 27, 18. 11. 2026)
+
+**Kontrolní kamera ve hře:** https://foxey-cz.github.io/milovice-life-rp/?v=513301&streetAudit=tyrsova-sportovni-5133
+
+- Mobilní Chromium test verze 5.133 prokázal **55/56** správně vynechaných vnějších dekorací. Výjimka je původní OSM/RÚIAN obytný dům **way/202381246** u staršího centra, který se nevykresluje přes běžnou fasádu, ale přes oddělený **Hero Architecture** s opravdovými otvory ve stěnách.
+- Oprava: **oba** vykreslovače čtou stejný index úplných společných hran podle skutečných OSM vrcholů. Hero renderer na takové straně ponechá **jednu plnou neprůchozí stěnu**, ale **nevytvoří** okna, dveře, soklové pásy, římsy, rámy nebo otvory. Běžný renderer stále vynechá jen dekorace, původní pevná hmota a kolizní půdorysy zůstávají beze změny. Počítadla nově rozlišují **55 obyčejných** a **1 hero** stran.
+- Mobilní WebGL test po opravě zveřejnil `PASS 5.133 live Tyršova × Sportovní camera; 28 RUIAN shared walls / 56 empty interior facades after mobile LOD` (běh Actions ze dne 18.11.2026). Původní generický smoke test odhalil ještě dřívější předpoklad, že každá plná stěna musí mít vnější římsu; nově ověřuje 1 skutečnou vnitřní stěnu **samostatně**, místo aby jí přiřadil vnější dekoraci jen kvůli starému počítadlu.
+- Oficiální [Milovický zpravodaj 11/2025, str. 7](https://www.mesto-milovice.cz/assets/File.ashx?id_dokumenty=18977&id_org=9519) potvrzuje nově zhotovený osvětlený přechod **Tyršova × Sportovní**. Ve starším uloženém OSM exportu je v této části cesta 1278749455 `crossing=unmarked`. Bez přesného vizuálního nebo geodetického spárování nového přechodu se starou linií zatím **nepřidáváme falešné pruhy ani lampy**. Evidence je uvedena přímo v technické kameře.
+- Až jednotlivé GitHub Actions doběhnou, kontrolují `scripts/osm-ruian-party-walls-5133.test.mjs`, `scripts/osm-ruian-party-walls-webgl-5133.mjs`, `scripts/browser_smoke.mjs` a historickou ochranu `scripts/osm-tyrsova-party-walls-5132.test.mjs`. Nový hero modul používá samostatné číslo cache `v=513301`.
+
+---
+
 ## Milovice RP 5.133 — Oprava sdílených stěn v Mladé + kontrola Tyršova × Sportovní (Part 27, 18. 11. 2026)
 
 **Přímá technická kamera Tyršova × Sportovní:** https://foxey-cz.github.io/milovice-life-rp/?v=513300&streetAudit=tyrsova-sportovni-5133
