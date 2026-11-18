@@ -1030,6 +1030,15 @@ const rpStreetAuditViews={
   technical:true,streetLevel:true,estimatedHeading:true,
   note:'Kontrolní kamera stojí na skutečném OSM bodě Topolové, pohled na východní bytový dům je orientační. Půdorys OSM/RÚIAN 53866045, 6 podlaží, 60 evidovaných bytů. Původní modelové panelové spáry byly ve verzi 5.149 odstraněné podle údaje ČSÚ o zděné nosné konstrukci. Dveře, okna, barevnost a výška jednotlivého patra nejsou fotograficky ověřené. Žádné nové budovy ani parkoviště.'
  },
+ 'topolova-646-short-5158':{
+  label:'Topolová 646 · krátká průčelí',
+  camera:{lat:50.2304072,lon:14.8663619},heading:105,
+  source:'https://www.openstreetmap.org/way/53866048',
+  regionId:'mlada',osmLandmarkId:'53866048',
+  author:'OSM/RÚIAN a fotografie 2025',
+  technical:true,streetLevel:true,estimatedHeading:true,
+  note:'Krátké skutečné OSM obvodové hrany 0,1,2,3,4,6 jsou nyní bez domyšlených generických oken a vstupů. Původní krémové neprůhledné stěny zůstávají. Existence reálných oken není vyvrácená; jejich přesné polohy nejsou známy. Obě 43metrové foto fasády, střecha, OSM GPS a kolize nezměněny.'
+ },
  'topolova-646-both-5157':{
   label:'Topolová 646 · obě dlouhé fasády a půlkruhová okna',
   camera:{lat:50.2304072,lon:14.8663619},heading:105,
@@ -3306,6 +3315,22 @@ window.__miloviceTopolovaBothFacadesRuntime=()=>{
    window.__miloviceAreasLoaded?.includes('mlada')===true
  };
 };
+window.__miloviceTopolovaShortEndsRuntime=()=>{
+ const a=window.__miloviceTopolova646PhotoAudit;
+ const both=window.__miloviceTopolovaBothFacadesRuntime?.();
+ if(!a?.bothPhotoPlan)return {ready:false};
+ return {
+  version:'5.158',sourceOSMId:a.bothPhotoPlan.sourceOSMId,
+  sourceOSMHash:a.bothPhotoPlan.sourceOSMHash,
+  shortEdgeIndices:[0,1,2,3,4,6],
+  genericShortFacadesSuppressed:a.genericShortFacadesSuppressed,
+  realShortSideWindowsNotGeoreferenced:true,
+  originalOSMFootprintUnmodified:true,
+  createdWindows:0,createdDoors:0,createdMeshes:0,createdColliders:0,
+  ready:both?.ready===true&&a.bothPhotoPlan.sourceOSMHash==='73d119b1'&&
+   a.genericShortFacadesSuppressed===6&&a.renderedMeshes===4
+ };
+};
 window.__miloviceTopolovaRowRuntime=()=>{
  const a=window.__miloviceTopolovaRowAudit;
  if(!a)return {ready:false};
@@ -5412,6 +5437,7 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
   ...topolova646Photo,
   bothPhotoPlan:topolova646BothPlan,
   genericFacadesSuppressed:0,
+  genericShortFacadesSuppressed:0,
   actualFloors:floors,actualWallHeight:h,
   extrudedWallHeight:topolova646WallSpan,
   pitchedRoofCreated:Boolean(pitchedSurface),
@@ -5838,6 +5864,12 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
   // not the old generic exterior windows behind them.
   if(topolova646BothPlan?.photoExteriorEdges.includes(i)){
    window.__miloviceTopolova646PhotoAudit.genericFacadesSuppressed++;
+   continue;
+  }
+  // 5.158: no speculative generic windows/doors on the six remaining
+  // short OSM edges. The existing cream solid wall remains intact.
+  if(topolova646BothPlan&&!topolova646BothPlan.photoExteriorEdges.includes(i)){
+   window.__miloviceTopolova646PhotoAudit.genericShortFacadesSuppressed++;
    continue;
   }
   if(!topolova646BothPlan&&topolova646Photo&&

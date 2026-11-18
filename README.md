@@ -1,3 +1,13 @@
+## Milovice RP 5.158 — Topolová 646: šest krátkých průčelí bez fiktivních oken (18. 11. 2026)
+
+**Kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=515800&streetAudit=topolova-646-short-5158
+
+- **Realismus:** zdrojově uzamčené OSM 53866048 / RÚIAN 25789813 / hash 73d119b1. Kromě dvou 43m foto fasád má budova šest krátkých OSM hran 0,1,2,3,4,6 (délky 6,337/3,452/7,253/3,434/2,874/16,515 m). Dosavadní generický renderer na ně přidával nepodložená okna/vstupní rámy. 5.158 zde tyto detaily nevytváří, ale **původní souvislé krémové stěny zůstávají**. Netvrdíme, že ve skutečnosti na kratších stranách okna nejsou: jejich polohy nebyly ověřeny.
+- **Zachováno:** celé GPS/OSM, střecha, dvě fotodoložené dlouhé strany, 32 obloukových podkrovních oken, 4 GPU meshe, kolizní obvod, přilehlé silnice a chodníky. Žádné nové meshe, collider, vchod, auto, parkování ani lampa.
+- **Ověření:** unit `osm-topolova-short-facades-5158.test.mjs` + mobilní Chromium/WebGL 6,9 s LOD + regrese 5.157, runtime `window.__miloviceTopolovaShortEndsRuntime()`. **CI/WebGL/Pages: čekají na dokončení běhů.** Dále dohledat georeferencované fotografie krátkých průčelí a skutečné vstupy.
+
+---
+
 ## Milovice RP 5.157 — Topolová 646, dva dlouhé fasádní líce a půlkruhová podkrovní okna (18. 11. 2026)
 
 **Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=515700&streetAudit=topolova-646-both-5157
