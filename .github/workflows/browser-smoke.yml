@@ -38,6 +38,8 @@ on:
       - scripts/osm-clinic-parking-inlays-5125.js
       - scripts/osm-clinic-pharmacy-sign-5126.js
       - scripts/osm-clinic-pharmacy-sign-5126.test.mjs
+      - scripts/osm-clinic-yellow-cross-5127.js
+      - scripts/osm-clinic-yellow-cross-5127.test.mjs
       - scripts/osm-clinic-parking-inlays-5125.test.mjs
       - scripts/osm-clinic-parking-inlays-webgl-5125.mjs
       - scripts/station-photo-parking.js
