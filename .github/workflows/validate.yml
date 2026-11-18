@@ -191,5 +191,7 @@ jobs:
         run: node scripts/osm-clinic-parking-inlays-5125.test.mjs
       - name: Verify 5.126 photographed pharmacy letters on real clinic frontage without invented signage or streets
         run: node scripts/osm-clinic-pharmacy-sign-5126.test.mjs
+      - name: Validate photo-observed 5.127 yellow crossed paving on real clinic OSM, untouched streets and pedestrian clearance
+        run: node scripts/osm-clinic-yellow-cross-5127.test.mjs
       - name: Validate expanded Milovice districts and real elevation data
         run: python3 scripts/validate_regions.py
