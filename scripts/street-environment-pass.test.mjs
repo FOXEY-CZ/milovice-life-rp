@@ -153,8 +153,10 @@ assert(cameraHTML.includes('let cameraSnapPending=false'));
 assert(cameraHTML.includes('cameraSnapPending=true'));
 assert(cameraHTML.includes("get('streetAudit')"));
 assert(cameraHTML.includes("if(rpStreetAuditCameraWorld&&rpStreetAuditView)"));
-assert(cameraHTML.includes("cameraMode:rpStreetAuditView.streetLevel?'technical-osm-street-axis'"),
- 'Street-level OSM cameras must not masquerade as photographs');
+assert(cameraHTML.includes("rpStreetAuditView.streetLevel?'technical-osm-street-axis'")&&
+ cameraHTML.includes("rpStreetAuditView.publicPhotoCamera&&!rpStreetAuditView.estimatedHeading?'documented-photo-gps-and-heading'")&&
+ cameraHTML.includes('technicalStreetLevel:rpStreetAuditView.streetLevel===true&&!rpStreetAuditView.publicPhotoCamera'),
+ 'OSM-only technical street views stay technical; genuine EXIF photo cameras may use documented photo heading');
 assert(cameraHTML.includes("rpStreetAuditId.startsWith('pionyru')"));
 assert(cameraHTML.includes('camera.position.set(x,terrainAt(x,z)+1.68,z)'));
 assert(cameraHTML.includes("streetAudit=pionyru-forward"));
