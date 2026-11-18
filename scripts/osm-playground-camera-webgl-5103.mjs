@@ -121,7 +121,7 @@ try{
   }
   assert(state.header.includes('hřiště')||state.header.includes('hřiště'.toUpperCase()));
   assert(state.label.length>0);
-  assert.equal(state.links,34);
+  assert(state.links>=46,'Street review menu must retain all verified camera links');
   assert.equal(state.sections,7);
   assert.equal(state.selected,view);
   assert.equal(state.compact,true);
