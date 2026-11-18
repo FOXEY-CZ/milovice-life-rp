@@ -44,6 +44,8 @@ on:
       - scripts/osm-clinic-furniture-protection-5128.test.mjs
       - scripts/osm-clinic-photo-saplings-5129.js
       - scripts/osm-clinic-photo-saplings-5129.test.mjs
+      - scripts/osm-spojovaci-photo-street-furniture-5130.js
+      - scripts/osm-spojovaci-photo-street-furniture-5130.test.mjs
       - scripts/osm-clinic-parking-inlays-5125.test.mjs
       - scripts/osm-clinic-parking-inlays-webgl-5125.mjs
       - scripts/station-photo-parking.js
