@@ -1,6 +1,6 @@
 # Milovice RP — rychlý handoff vývoje
 
-> **Nově 5.156 (18. 11. 2026; testy čekají):** 2025 **přímé foto Topolová 646** realizátora zateplení půdy: tři řady běžných oken, světle omítnutá dlouhá fasáda, lososové pásy a opakované štítové vikýře. OSM 53866048 / RÚIAN 25789813 uvádí 1 podlaží, ČSÚ také 1 CELKEM ale nadzemní podlaží nezjištěna; 27 bytů a zděné zdi. Pouze *visual-only* model 3 × 3,05 m = **9,15 m fasádní výšky** a 2,5m štítovou střechu + 8 modelových vikýřů, 48 oken na jedné 43m straně a 16 vikýřových; **OSM tag/GPS, ostatní domy a silnice nedotčeny**. Přesné metry, počet vikýřů a strana záběru negeoreferencované. **5.155 CI/WebGL/Pages PASS**.
+> **Nově 5.156 (18. 11. 2026; CI/WebGL/Pages PASS):** 2025 **přímé foto Topolová 646** realizátora zateplení půdy: tři řady běžných oken, světle omítnutá dlouhá fasáda, lososové pásy a opakované štítové vikýře. OSM 53866048 / RÚIAN 25789813 uvádí 1 podlaží, ČSÚ také 1 CELKEM ale nadzemní podlaží nezjištěna; 27 bytů a zděné zdi. Pouze *visual-only* model 3 × 3,05 m = **9,15 m fasádní výšky** a 2,5m štítovou střechu + 8 modelových vikýřů, 48 oken na jedné 43m straně a 16 vikýřových; **OSM tag/GPS, ostatní domy a silnice nedotčeny**. Přesné metry, počet vikýřů a strana záběru negeoreferencované. **5.156 [plná CI PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44382755580), [mobilní WebGL + 6,8s LOD PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44382755851), [GitHub Pages PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44382754821).** Starší 5.155 zůstává PASS.
 
 ## Odkazy a spuštění
 
@@ -16,7 +16,7 @@
 - ČSÚ https://apl2.czso.cz/irso4/buddet.jsp?b=21&budid=1914643&hkodcis=43&idob=1031339361&kod=537501&kodcis=43&kodpol=nnnnnn: bytový dům / 27 bytů / zdivo; OSM building:levels=1 a ČSÚ všechny=1, *nadzemní podlaží nezjištěna*. Ve hře vizuální fotorekonstrukce 3 běžných okenních řad, NIKOLI úředně potvrzený počet pater.
 - 3D: hlavní stěna 9,15m, podkrovní převýšení 2,50m, 8 modelových štítů, 48 oken + 16 podkrovních. Čtyři sdílené batched material meshes. Strana fotomodelu OSM edge5 (východní 43,046m), protější edge7 43,021m; foto přesný azimut neudává.
 - Přísný OSM/RÚIAN hash 73d119b1 na všech 9 GPS bodech, žádná nová silnice, chodník, kolize, vstup, lampa ani parking. Foto doložilo existenci vstupního přístřešku, **bez znalosti GPS polohy není domodelován**.
-- scripts/osm-topolova-photo-646-5156.js, cílený unit, nový mobilní WebGL po 6,8s LOD, workflow topolova-photo-646-5156.yml. **CI/WebGL/Pages zatím nepotvrzené.** Další krok: fotodoložení druhého průčelí, pak navázat další Topolová blok.
+- scripts/osm-topolova-photo-646-5156.js, cílený unit, nový mobilní WebGL po 6,8s LOD, workflow topolova-photo-646-5156.yml. **CI, mobilní WebGL po 6,8s LOD a Pages ověřeny PASS (odkazy nahoře).** Původní kontrolní skript chybně očekával 9 uzavřených OSM bodů přímo v renderu, ale engine správně používá 8 unikátních; opraveno 95fc4ea. Následně opravena milimetrová tolerance GPU Float32 pro 9,15m stěnu, commit 5a070f2. Závěrečné testy potvrzují 4 foto-fasádní meshe i zachované sousední bloky. Další krok: fotodoložení druhého průčelí, pak navázat další Topolová blok.
 
 ## 5.155 — celý navazující blok Topolová 614–618, pět nadzemních podlaží
 
@@ -53,7 +53,7 @@
 
 | Verze | Co bylo změněno | Zdroj / omezení |
 | --- | --- | --- |
-| **5.156** | Topolová 646: skutečná fasáda a podkroví z přímých foto 2025, původně chybná jednopodlažní hmota | 3 řady a podkrovní štíty, metry i rozteče model, CI čeká. |
+| **5.156** | Topolová 646: skutečná fasáda a podkroví z přímých foto 2025, původně chybná jednopodlažní hmota | 3 řady a podkrovní štíty, metry i rozteče model; CI/WebGL/Pages PASS. |
 | **5.155** | Topolová 614–618, úředních 5 nadzemních pater; oprava OSM nesouladu 618 a společné stěny 617–618 | Přísný GPS/RÚIAN zámek, bez změny originálních dat; CI/WebGL/Pages PASS. |
 | **5.154** | MŠ Sluníčko: projektová západní fasáda 44 m, výška vizuální hmoty 13,15 m | Rozpočtový údaj není as-built zaměření; přísný OSM hash, CI/WebGL/Pages PASS. |
 | **5.153** | Čtyři modelovaná podlaží podle školy/ČŠI | Půdorys zachován, novou výšku viz 5.154, předchozí CI PASS. |
