@@ -59,7 +59,7 @@ try{
  const hero=await page.evaluate(()=>window.__miloviceHeroArchitecture||null);
  if(!hero||hero.buildings<3||hero.cutoutWindows<12||hero.cutoutDoors<2||
     hero.solidWalls<10||hero.drawMeshes<4||!(hero.shortWallSegmentsSealed>=1)||
-    hero.trimmedWallEdges!==hero.solidWalls||
+    hero.trimmedWallEdges+hero.sharedPartyWallFacesSuppressed!==hero.solidWalls||
     hero.trimmedShortReturns!==hero.shortWallSegmentsSealed||
     hero.trimmedPerimeterMetres<150||
     hero.suppressedUnverifiedPhotoOrnaments<20||
