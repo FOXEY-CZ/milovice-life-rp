@@ -44,6 +44,7 @@ try{
    category:window.__miloviceStreetAuditMenu?.category,
    openSections:document.querySelectorAll('#street-audit-nav details[open]').length,
    allLinks:document.querySelectorAll('#street-audit-nav a').length,
+   search:document.getElementById('street-audit-search')?.placeholder,
    categories:document.querySelectorAll('#street-audit-nav details').length,
    current:document.querySelectorAll('#street-audit-nav a[aria-current="page"]').length,
    quick:document.querySelectorAll('#street-audit-quicklinks a').length,
@@ -57,6 +58,7 @@ try{
    'Mobile must not load all 21 street links open');
   assert(initial.allLinks>=46,'Expanded camera catalog must remain accessible');
   assert.equal(initial.categories,7);
+  assert(initial.search?.includes('Hledat ulici'));
   assert.equal(initial.current,1);
   assert(await page.locator('#street-audit-exit').count()===1,
    'Visible X must exit technical camera mode');
@@ -68,6 +70,22 @@ try{
    // Open ONLY the chosen category; all 7 headings start closed.
    await page.click('#street-audit-nav details[data-category="'+view.cat+'"] summary');
   }
+  // 5.136: find an OSM source camera by plain Czech text without accents.
+  await page.locator('#street-audit-search').fill('prubezna');
+  const filtered=await page.evaluate(()=>({
+   count:document.querySelectorAll('#street-audit-nav a:not([hidden])').length,
+   results:document.querySelectorAll('#street-audit-nav details:not([hidden])').length,
+   status:document.getElementById('street-audit-search-count').textContent
+  }));
+  assert.equal(filtered.count,2,'Only both real Průběžná cameras must match');
+  assert.equal(filtered.results,1,'Search must hide empty categories');
+  assert(filtered.status.includes('2 z '),'Accessible result count');
+  await page.locator('#street-audit-search').fill('neexistujici-ulice');
+  assert.equal(await page.locator('#street-audit-nav a:not([hidden])').count(),0);
+  await page.locator('#street-audit-search').fill('');
+  assert((await page.locator('#street-audit-nav a:not([hidden])').count())>=48,
+   'Clearing search must restore all source cameras');
+  if(view.mobile)await page.click('#street-audit-nav details[data-category="'+view.cat+'"] summary');
   const expanded=await page.evaluate(()=>({
    compact:document.querySelector('#street-block-audit')
     .classList.contains('audit-compact'),
@@ -107,7 +125,7 @@ try{
    assert(await page.locator('#street-block-audit.audit-compact').count()===1);
   }
   assert.deepEqual(errors,[],'Audit menu introduced a page error');
-  console.log('PASS street menu 5.111',JSON.stringify({
+  console.log('PASS street menu 5.136 search',JSON.stringify({
    view:view.id,mobile:view.mobile,sections:initial.categories,
    quick:initial.quick,closedHeight:initial.panelHeight,
    expandedHeight:expanded.height,allLinks:initial.allLinks
