@@ -62,13 +62,13 @@ assert(html.includes('height:auto!important;min-height:40px!important'));
 assert(html.includes("if(statusText)statusText.textContent=rpStreetAuditView.osmHouseClusterId?"));
 assert(html.includes("rpStreetAuditView.osmWidthWayId?"));
 
+const menuScript=readFileSync(new URL('./street-audit-menu-5101.js',import.meta.url),'utf8');
 assert(menuScript.includes("group.open=!mobile&&section.id===selectedGroup"));
 assert(menuScript.includes("setInfoExpanded(false)"));
 assert(menuScript.includes("if(!expanded)setInfoExpanded(false)"));
 assert(html.includes('street-audit-quicklinks'));
 assert(html.includes('#street-audit-search'));
 assert(html.includes('#street-audit-nav [hidden]{display:none!important}'));
-const menuScript=readFileSync(new URL('./street-audit-menu-5101.js',import.meta.url),'utf8');
 assert(menuScript.includes("filter.addEventListener('input',applyFilter)"));
 assert(menuScript.includes("normalize('NFD')"));
 assert(menuScript.includes("filter.value=''"));
