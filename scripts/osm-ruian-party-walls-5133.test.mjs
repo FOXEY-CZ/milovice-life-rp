@@ -65,6 +65,14 @@ const shifted=buildings.map(b=>String(b.id)==='61979141'?
  {...b,points:b.points.map(p=>({x:p.x+.4,z:p.z}))}:b);
 assert(planRUIANResidentialSharedWalls({regionId:'mlada',buildings:shifted})
  .sourceSharedWallCount<plan.sourceSharedWallCount);
+const hero=readFileSync(new URL('./hero-architecture.js',import.meta.url),'utf8');
+for(const needle of [
+ 'sharedPartyEdges=null,onSharedPartyEdge=null',
+ "if(sharedPartyEdges?.has(sideIndex)){",
+ 'wallGeometry(a,b,base,height,[],tone)',
+ 'state.sharedPartyWallFacesSuppressed++',
+ 'onSharedPartyEdge(sideIndex)'
+])assert(hero.includes(needle),'Hero renderer missing party wall protection: '+needle);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const marker of [
  "from './scripts/osm-ruian-party-walls-5133.js?v=513300'",
@@ -73,6 +81,9 @@ for(const marker of [
  'ruianPartyEdgesByBuilding.set(id,new Set(edges));',
  'window.__miloviceRUIANPartyWallRuntime=()=>{',
  "const BUILD_ID='20261118-ruian-residential-shared-walls-sportovni-513300'",
- 'streetAudit=tyrsova-sportovni-5133'
+ 'streetAudit=tyrsova-sportovni-5133',
+  "sharedPartyEdges:ruianPartyEdgesByBuilding.get(String(osmId))||null",
+  "onSharedPartyEdge:edge=>recordRUIANSharedEdge(osmId,edge,'hero')",
+  "from './scripts/hero-architecture.js?v=513301'"
 ])assert(html.includes(marker),marker);
 console.log('PASS 5.133: 28 exact mapped residential joins, 56 internal facades hidden without changing roofs, geometry or roads');
