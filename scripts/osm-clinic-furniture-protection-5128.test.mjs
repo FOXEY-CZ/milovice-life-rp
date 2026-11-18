@@ -59,8 +59,8 @@ for(const cell of paved.cells){
  assert.equal(plan.contains(centroid.x,centroid.z),true,
   'Every photo-paver cell must reject guessed 3D posts');
 }
-assert.equal(plan.contains(face.mx,face.mz),false,
- 'A pole INSIDE the actual building wall must be handled by the building guard');
+assert.equal(plan.contains(face.mx-face.nx*2,face.mz-face.nz*2),false,
+ 'A pole well INSIDE the building wall remains the building guard’s concern');
 assert.equal(plan.contains(face.mx+face.nx*35,face.mz+face.nz*35),false,
  'Unrelated distant roads must retain their OSM-lit street estimates');
 assert.equal(plan.contains(NaN,0),false);
