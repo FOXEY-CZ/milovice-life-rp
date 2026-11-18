@@ -1,6 +1,6 @@
 # Milovice RP — rychlý handoff vývoje
 
-> **Nová 5.155 (18. 11. 2026; testy zatím čekají):** celý souvislý panelový blok **Topolová 614–618**. ČSÚ potvrzuje všem pěti domům 5 **NADZEMNÍCH** pater / 10 bytů / panelové nosné zdi. OSM dům **618** (way 61979145, RÚIAN 22968105) má přesto building:levels=1; ve hře nově model 5 pater, 15,25 m místo 3,05 m, zachován půdorys. Opravena i souvislá společná stěna 617–618 (virtuální výška pro RÚIAN party-wall planner, žádné falešné okno do souseda): odhadem 29 spojů / 58 nezdobených vnitřních fasád. **OSM datový tag se NEMĚNÍ**. 5.154 CI/WebGL/Pages PASS. Nové 5.155 se teprve testuje.
+> **Nová 5.155 (18. 11. 2026; CI/WebGL/Pages PASS):** celý souvislý panelový blok **Topolová 614–618**. ČSÚ potvrzuje všem pěti domům 5 **NADZEMNÍCH** pater / 10 bytů / panelové nosné zdi. OSM dům **618** (way 61979145, RÚIAN 22968105) má přesto building:levels=1; ve hře nově model 5 pater, 15,25 m místo 3,05 m, zachován půdorys. Opravena i souvislá společná stěna 617–618 (virtuální výška pro RÚIAN party-wall planner, žádné falešné okno do souseda): odhadem 29 spojů / 58 nezdobených vnitřních fasád. **OSM datový tag se NEMĚNÍ**. **5.155 [plná CI PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44379650843), [mobilní WebGL +6,5s LOD PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44379650735), [Pages PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44379648444)**. Starší 5.133 RÚIAN WebGL byl v novém workflow také úspěšný. 5.154 zůstává PASS.
 
 ## Odkazy a spuštění
 
@@ -16,7 +16,7 @@
 - OSM 618: way 61979145, 5 GPS bodů, hash b69a7ef6, původní building:levels=1 a 10 bytů. **Nepřepisovat tag ani originální geometrii.** Opravovat jen vizuální floors=5, výšku modelu na 15,25 m; rozměr model, ČSÚ nepotvrdil metry ani střešní formu.
 - Všechny 5 části RÚIAN sdílejí 4 přesné společné hrany. Opravit falešné externí fasády 617–618 zdrojově uzamčeným dočasným vstupem pro planner vnitřních stěn; aktuálně po přidání RÚIAN 29 spojů / 58 nezdobených fasád místo 28 / 56. **OSM originál neměnit**.
 - Nový modul scripts/osm-topolova-panel-row-5155.js + unit + mobilní Chromium/WebGL >6,5 s LOD; opraven starý RÚIAN browser očekávaný počet. Gable z původní mylné jednopatrové klasifikace odstraněn, návrh ploché střechy je model. Nic v cestách, domovní GPS, kolizích, vstupu nebo dopravě nezměněno.
-- **CI/WebGL/Pages aktuálně neověřené**, další krok po potvrzení: vyhledat přesnou fotografii frontů 614–618 nebo pokračovat další souvislou ulicí.
+- **CI/WebGL/Pages PASS** (odkazy nahoře); první mobilní kontrola jen chybně čerpala součet společných stěn z runtime místo auditu, opraveno f2a4741 a druhý běh úspěšný. Další krok: vyhledat přesnou fotografii frontů 614–618 nebo pokračovat další souvislou ulicí.
 
 ## 5.154 — nový úřední podklad pro školní západní fasádu
 
@@ -45,7 +45,7 @@
 
 | Verze | Co bylo změněno | Zdroj / omezení |
 | --- | --- | --- |
-| **5.155** | Topolová 614–618, úředních 5 nadzemních pater; oprava OSM nesouladu 618 a společné stěny 617–618 | Přísný GPS/RÚIAN zámek, bez změny originálních dat; čeká na CI. |
+| **5.155** | Topolová 614–618, úředních 5 nadzemních pater; oprava OSM nesouladu 618 a společné stěny 617–618 | Přísný GPS/RÚIAN zámek, bez změny originálních dat; CI/WebGL/Pages PASS. |
 | **5.154** | MŠ Sluníčko: projektová západní fasáda 44 m, výška vizuální hmoty 13,15 m | Rozpočtový údaj není as-built zaměření; přísný OSM hash, CI/WebGL/Pages PASS. |
 | **5.153** | Čtyři modelovaná podlaží podle školy/ČŠI | Půdorys zachován, novou výšku viz 5.154, předchozí CI PASS. |
 | **5.152** | Správná orientace pruhů pěti OSM zebřích přechodů podle V7a | Žádné nové GPS ani přechody; CI/WebGL/Pages PASS. |
