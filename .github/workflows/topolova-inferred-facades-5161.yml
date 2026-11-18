@@ -1,0 +1,41 @@
+name: Milovice 5.161 Topolova 616-618 cautious inferred facade rhythm
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/osm-topolova-estimated-facades-5161.js
+      - scripts/osm-topolova-estimated-facades-5161.test.mjs
+      - scripts/osm-topolova-estimated-facades-webgl-5161.mjs
+      - .github/workflows/topolova-inferred-facades-5161.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-locked-inference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: OSM geometry / visual and earlier rooftop regressions
+        run: |
+          node scripts/osm-topolova-estimated-facades-5161.test.mjs
+          node scripts/osm-topolova-continuous-hip-5160.test.mjs
+          node scripts/osm-topolova-drawing-614615-5159.test.mjs
+          node scripts/osm-topolova-panel-row-5155.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Mobile Chrome WebGL and 7.2-second LOD
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-topolova-estimated-facades-webgl-5161.mjs
+          node scripts/osm-topolova-continuous-hip-webgl-5160.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: topolova-inferred-facades-5161
+          path: browser-artifacts/*5161-mobile.png
+          if-no-files-found: ignore

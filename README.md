@@ -1,3 +1,14 @@
+## Milovice RP 5.161 — Topolová 616–618: sjednocený provizorní okenní rytmus, bez domyšlených ulic (18. 11. 2026)
+
+**Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=516100&streetAudit=topolova-inferred-616618-5161
+
+- **Podložená hmota a nepodložený detail jsou striktně oddělené.** ČSÚ/RÚIAN potvrzují 5 nadzemních podlaží pro 616–618 a společné obvodové stěny s 614–615 (5.155); [podepsané výkresy města Milovice 2024](https://zakazky.mesto-milovice.cz/document_184/107a3038c3f90b7000c396e9ce9f9f75-projektova_dokumentace_podepsana-pdf) mají okna i balkonové sestavy **výhradně na 614–615**. [Městská sdělení o bytech 617 a 618](https://www.celakovice.cz/filemanager/files/3095067.pdf) potvrzují některé skutečné balkony, nikoli přesné pozice balkonů či barevný odstín fasád 616–618. Vzor oken pro zbytek pětidomové řady je proto **modelová extrapolace, ne přesná fotorekonstrukce**.
+- **Vizuální změna přímo ve hře:** OSM 616=61979144/RÚIAN 22968083, 617=61979139/RÚIAN 22968091, 618=61979145/RÚIAN 22968105; všechny tři mají zdrojový hash fixovaný verzí 5.155. Šest skutečných venkovních OSM hran (východní/west indexy 1 a 3 na každém ze tří domů) nově používá jeden společný **3-mesh GPU batch**: 72 modelových obdélníkových oken, 48 prozatímních okenních/balkonových dveřních sestav a 24 modelových schodišťových oken. Na těchto fasádách je vypnuto šest původních generických fasádních oken, aby nedocházelo k překryvům. Žádné dveřní vstupy, fyzické balkonové desky ani zábradlí nepřidáváme bez přímého dokladu místa.
+- **Ulice v okolí:** vedle pětidomové řady už existuje v mapovém podkladu obslužná OSM komunikace 202399863; od jižního okraje navazuje mapovaný pěší úsek 1316882860 s `surface=paving_stones`. [Úřední návrh požárních nástupních ploch 2023, situace Topolová/Tyršova](https://ud.mestolysa.cz/vr2024/vm12/MULL0B02HTSH_0/MULL0B02HTSH/priloha_1446729700_1_MeU_Milovice__Milovice__nastupni_plochy_pro_pozarni_techniku__var_2_sig.pdf) vizuálně označuje prostor mezi 609 a 618 i *navržené* značky B28 a V12c. Tyto značky nejsou důkazem skutečné realizace v roce 2026, proto **se ve hře nepřidávají**. Silnice, navázané OSM chodníky, kolize, terén, umístění objektů, 5.159 fasády 614/615 a společná 5.160 valbová střecha zůstávají nedotčené.
+- **Výkon a kontrola:** nový fail-closed modul `scripts/osm-topolova-estimated-facades-5161.js`, unit test s kontrolou původních polygonů a fyzických GPU bufferů; mobilní Chromium WebGL po 7,2s LOD s regresí 5.160/5.159. **CI/WebGL/Pages čekají na ověření po commitu.** Dále dohledat fotky 616–618 a skutečné vstupní osy, upravit provizorní rytmus až po konkrétním důkazu.
+
+---
+
 ## Milovice RP 5.160 — Topolová 614–618: jedna souvislá valbová střecha doložená městem (18. 11. 2026)
 
 **Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=516000&streetAudit=topolova-hip-roof-5160

@@ -560,6 +560,7 @@ import {planSlunickoStoreys5153} from './scripts/osm-slunicko-storeys-5153.js?v=
 import {planSlunickoWestElevation5154} from './scripts/osm-slunicko-west-elevation-5154.js?v=515400';
 import {planTopolovaPanelRow5155} from './scripts/osm-topolova-panel-row-5155.js?v=515500';
 import {planTopolovaContinuousHip5160,renderTopolovaContinuousHip5160} from './scripts/osm-topolova-continuous-hip-5160.js?v=516000';
+import {planTopolovaEstimatedFacades5161,renderTopolovaEstimatedFacades5161} from './scripts/osm-topolova-estimated-facades-5161.js?v=516100';
 import {planTopolovaDrawing5159,renderTopolovaDrawing5159} from './scripts/osm-topolova-drawing-614615-5159.js?v=515900';
 import {planTopolova646Photo5156,renderTopolova646Photo5156} from './scripts/osm-topolova-photo-646-5156.js?v=515600';
 import {planTopolova646BothFacades5157,renderTopolova646BothFacades5157} from './scripts/osm-topolova-photo-646-5157.js?v=515700';
@@ -1068,7 +1069,16 @@ const rpStreetAuditViews={
   technical:true,streetLevel:true,estimatedHeading:true,
   note:'Podepsané výkresy západního a východního pohledu 614–615; pět nadzemních podlaží, bílá dvoukřídlá okna, balkonové sestavy, vstupy a obloukové schodišťové nástavby. OSM source footprint beze změn. Přesné rozteče, výška nástaveb a stříšek jsou odhad podle výkresu, nikoli geodetické zaměření. Dveře jsou optický detail neprůchozí plné fasády. Kamera je technická, orientačně na OSM service-way 1201945272.'
  },
- 'topolova-hip-roof-5160':{
+ 'topolova-inferred-616618-5161':{
+   label:'Topolová 616–618 · prozatímní fasády',
+   camera:{lat:50.2294938,lon:14.8661579},heading:285,
+   source:'https://www.celakovice.cz/filemanager/files/3095067.pdf',
+   regionId:'mlada',osmLandmarkId:'61979145',
+   author:'ČSÚ/RÚIAN; architektonický rytmus podle městských výkresů 614–615; doložené balkony 617/618',
+   technical:true,streetLevel:true,estimatedHeading:true,
+   note:'5.161: tři skutečné mapované budovy 616/617/618 mají na šesti existujících dlouhých obvodech neutrální modelové rozvržení oken a balkonových výplní. Je to VÝSLOVNĚ EXTRAPOLACE sousedního projektového typu 614–615, nikoli přesná fotodokumentace konkrétních oken. Městské podklady potvrzují některé skutečné balkony u 617/618, ne jejich rozteče či orientaci. Žádná spekulativní průchozí dvířka, balkonové desky nebo fyzické zábradlí; stará střecha 5.160, OSM GPS, okolní komunikace a chodník zůstávají. Směr kamery technický podle existující OSM pěšiny 1316882854.'
+  },
+  'topolova-hip-roof-5160':{
   label:'Topolová 614–618 · společná valbová střecha',
   camera:{lat:50.2294938,lon:14.8661579},heading:292,
   source:'https://www.celakovice.cz/filemanager/files/2973758.pdf',
@@ -3366,7 +3376,26 @@ window.__miloviceTopolovaDrawingRuntime=()=>{
    a.entries===4&&a.roundedCaps===4&&addresses.join(',')==='614,615'&&
    window.__miloviceAreasLoaded?.includes('mlada')===true};
 };
-window.__miloviceTopolovaHipRuntime=()=>{
+window.__miloviceTopolovaInferredRuntime=()=>{
+  const audit=window.__miloviceTopolovaInferredAudit;
+  const plan=window.__miloviceTopolovaInferredPlan;
+  if(!audit||!plan)return {ready:false};
+  const {visibleAfterLOD,allInScene,...data}=audit;
+  const visible=visibleAfterLOD();
+  const attached=allInScene();
+  const hip=window.__miloviceTopolovaHipRuntime?.();
+  const drawing=window.__miloviceTopolovaDrawingRuntime?.();
+  return {...data,visibleAfterLOD:visible,allInScene:attached,
+   ready:hip?.ready===true&&drawing?.ready===true&&
+    audit.renderedFacades===6&&audit.renderedMeshes===3&&
+    audit.genericFacadeEdgesSuppressed===6&&
+    audit.normalWindows===72&&audit.balconyWindowDoorSets===48&&
+    audit.stairWindows===24&&audit.createdEntranceDoors===0&&
+    audit.createdBalconyPlatforms===0&&
+    visible===3&&attached&&
+    window.__miloviceAreasLoaded?.includes('mlada')===true};
+ };
+ window.__miloviceTopolovaHipRuntime=()=>{
  const a=window.__miloviceTopolovaHipAudit;
  if(!a)return {ready:false};
  const attached=a.allInScene?.()===true;
@@ -5940,7 +5969,14 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
    recordRUIANSharedEdge(osmId,i,'generic');
    continue;
   }
-  // 5.159: exact original OSM east/west walls now use the municipal
+  // 5.161: six source-locked long faces of 616-618 use an explicitly
+   // estimated version of the 614/615 window rhythm, rather than generic
+   // random facade patterns. Never infer actual entrance location.
+   if(window.__miloviceTopolovaInferredPlan?.facadeEdgesById[String(osmId)]?.includes(i)){
+    window.__miloviceTopolovaInferredAudit.genericFacadeEdgesSuppressed++;
+    continue;
+   }
+   // 5.159: exact original OSM east/west walls now use the municipal
   // building-specific elevation instead of unrelated generic windows.
   if(topolovaDrawingPlan?.facadeEdges.includes(i)){
    window.__miloviceTopolovaDrawingAudit.genericFacadeEdgesSuppressed++;
@@ -6950,6 +6986,23 @@ function rpAppendOSMElements(elements,regionId='old'){
  const topolovaHipPlan=planTopolovaContinuousHip5160({
   regionId,rowPlan:topolovaRow5155,ways:buildingWays
  });
+ const topolovaInferredPlan=planTopolovaEstimatedFacades5161({
+  regionId,rowPlan:topolovaRow5155,hipPlan:topolovaHipPlan,ways:buildingWays
+ });
+ if(topolovaInferredPlan){
+  window.__miloviceTopolovaInferredPlan=topolovaInferredPlan;
+  window.__miloviceTopolovaInferredAudit={
+   version:'5.161',sourceAddresses:topolovaInferredPlan.sourceAddresses,
+   sourceOSMIds:topolovaInferredPlan.sourceOSMIds,
+   renderedFacades:0,renderedMeshes:0,
+   genericFacadeEdgesSuppressed:0,normalWindows:0,
+   balconyWindowDoorSets:0,stairWindows:0,
+   createdEntranceDoors:0,createdBalconyPlatforms:0,
+   originalOSMGeometryPreserved:true,
+   addedColliders:0,newRoads:0,newFootways:0,
+   visibleAfterLOD:()=>0,allInScene:()=>false
+  };
+ }
  if(topolovaHipPlan){
   window.__miloviceTopolovaHipPlan=topolovaHipPlan;
   window.__miloviceTopolovaHipAudit={
@@ -8585,6 +8638,24 @@ function rpAppendOSMElements(elements,regionId='old'){
  }
  // A roof of one physically continuous five-entrance RUIAN block,
  // built after ALL five DEM-grounded foundations are known.
+ if(topolovaInferredPlan){
+  const facade=renderTopolovaEstimatedFacades5161(THREE,{
+   plan:topolovaInferredPlan,toWorld:osmPoint,
+   baseById:id=>osmInspectionBuildings.find(b=>String(b.id)===id),
+   layer:osmLayer
+  });
+  if(facade)Object.assign(window.__miloviceTopolovaInferredAudit,{
+   renderedFacades:facade.renderedFacades,
+   renderedMeshes:facade.renderedMeshes,
+   normalWindows:facade.normalWindows,
+   balconyWindowDoorSets:facade.balconyWindowDoorSets,
+   stairWindows:facade.stairWindows,
+   createdEntranceDoors:facade.createdEntranceDoors,
+   createdBalconyPlatforms:facade.createdBalconyPlatforms,
+   gpuTriangles:facade.gpuTriangles,
+   visibleAfterLOD:facade.visibleAfterLOD,allInScene:facade.allInScene
+  });
+ }
  if(topolovaHipPlan){
   const roof=renderTopolovaContinuousHip5160(THREE,{
    plan:topolovaHipPlan,toWorld:osmPoint,

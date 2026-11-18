@@ -1,5 +1,7 @@
 # Milovice RP — rychlý handoff vývoje
 
+> **Nová 5.161 (18. 11. 2026; CI/WebGL/Pages ČEKAJÍ):** Topolová **616–618** (OSM 61979144/139/145) má 6 zdrojově uzamčených venkovních 16m fasád místo generických oken. Vzor **EXTRAPOLOVANÝ** ze sousedních městských 614/615 výkresů 2024; nevydávat za georeferencované foto. ČSÚ 5 pater, část balkonů 617/618 doložena městskými prodeji bytů, přesná umístění neznámá. Jen **3 sdílené fyzické GPU meshe**, 72 modelových oken, 48 prozatímních balkonových výplní, 24 schodišťových výplní; 6 generických fasád vypnuto. Žádné vymyšlené dveře, balkony s deskou, komunikace ani kolize. OSM obslužná 202399863 a pěší 1316882860 už v mapě, nezměněné; návrh požárního značení z roku 2023 není as-built. Společná valbová střecha 5.160 a skutečné 614/615 výkresy zůstaly. Nový source/unit + mobilní WebGL po 7,2s LOD, výsledek CI čeká.
+
 > **Nová 5.160 (18. 11. 2026; CI/WebGL/Pages PASS):** Městská usnesení Čelákovic 14/2023 a 27/2023 popisují **pětipodlažní pětivchodový dům Topolová 614–618 s VALBOVOU střechou**, nikoli 5 rovných střech. Source-lock 5.155 nad 5 původními RÚIAN půdorysy: starých 5 flat caps se nevytváří a nad celým 80m blokem přibyl **jediný hipped roof GPU mesh s 22 trojúhelníky**. Okapní obvod drží přesných 10 OSM bočních hran; 2,25m převýšení hřebene a barva jsou model, ne geodetická fakta. Fasády 614–615/5.159, 5 pater/15,25m stěn, kolize, GPS, cesty, ostatní ulice nedotčeny. Nový unit, mobilní WebGL >7,0s LOD a vlastní workflow: **[Kompletní CI PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44404480704), [nový mobilní WebGL +7,0 s LOD PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44404480545), [GitHub Pages PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44404478799).**
 
 > **Nová 5.159 (18. 11. 2026; CI/WebGL/Pages PASS):** podepsané výkresy města/PSK TUZAR 2024 pro Topolovou 614–615, ZÁPAD a VÝCHOD, PDF strany 10–12: https://zakazky.mesto-milovice.cz/document_184/107a3038c3f90b7000c396e9ce9f9f75-projektova_dokumentace_podepsana-pdf. Čtyři skutečné 16m OSM fasády z 2 source-locked budov 61979151/22968067, 61979152/22968075, hrany [2,0] a [1,3]. Šest sloučených GPU meshů: 48 modelových dvojkřídlých oken, 32 balkonových sestav, 16 schodišťových okének, čtyři vizuální vstupy a čtyři zdrojově doložené oblé schodišťové nástavby. Barevné PVC 1750×1350mm doloženo, skutečné absolutní rozteče/výšky **model, ne as-built**. Zdi, GPS, kolize, řada 616–618 a zbytek ulic nezměněny. CI/WebGL/Pages jsou ověřené: **[Celková CI PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44399024857), [nová mobilní WebGL +6,9 s LOD PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44399025166), [regrese 5.155 PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44399025125), [GitHub Pages PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44399022791).**
@@ -11,13 +13,20 @@
 ## Odkazy a spuštění
 
 - Hra: https://foxey-cz.github.io/milovice-life-rp/
-- Nová kontrolní kamera: https://foxey-cz.github.io/milovice-life-rp/?v=516000&streetAudit=topolova-hip-roof-5160
+- Nová kontrolní kamera: https://foxey-cz.github.io/milovice-life-rp/?v=516100&streetAudit=topolova-inferred-616618-5161
+- Předchozí 5.160: https://foxey-cz.github.io/milovice-life-rp/?v=516000&streetAudit=topolova-hip-roof-5160
 - Předchozí 5.159: https://foxey-cz.github.io/milovice-life-rp/?v=515900&streetAudit=topolova-drawing-614615-5159
 - Předchozí 5.158: https://foxey-cz.github.io/milovice-life-rp/?v=515800&streetAudit=topolova-646-short-5158
 - Předchozí 5.157: https://foxey-cz.github.io/milovice-life-rp/?v=515700&streetAudit=topolova-646-both-5157
 - GitHub: https://github.com/FOXEY-CZ/milovice-life-rp
 - Kompletní historie: `README.md`. Pracovní pokyny: `AGENTS.md`, `docs/DEVELOPMENT_WORKFLOW.md`. Metodika reality: `docs/STREET_WORKFLOW.md`, `docs/reality-audit-00.md`.
 - Herní kód: `index.html`; moduly: `scripts/`; mapové zdroje: `data/regions/mlada.json`. Nečíst příště celé 560kB `index.html`: vyhledat dotčené moduly a identifikátory.
+
+## 5.161 — prozatímní model 616–618 na existujícím OSM obvodu
+- Ovšem přesná 2024 městská dokumentace platí POUZE pro 614/615: na 616–618 používáme **inferenční okenní rytmus**, důkaz se týká jednotné pětidomové soustavy a existujících balkonů SOME bytů 617/618 (městský inzerát). Neznáme přesné rozestupy ani vstupy.
+- OSM 61979144/139/145, RÚIAN 22968083/91/105, originální GPS/hash beze změn; na každém 2 venkovní strany mapového indexu 1/3. Tři sloučené GPU meshe pro 6 líců, 72 obdélníkových oken a 48 prozatímních sestav +24 schodišťových, žádná skutečná balkonová deska nebo neověřené dveře. Šest starých generických fasád přeskočeno.
+- Sousední OSM obslužná cesta 202399863 a dlážděná pěší 1316882860 skutečně již mapované a rendererem zachované; 2023 městská studie B28/V12c jen návrh, *ne* fyzicky doložené umístění. Žádné nově vymýšlené komunikace.
+- Modul `osm-topolova-estimated-facades-5161.js`, unit, WebGL+7,2s LOD a regrese 5.160/5.159. **CI/WebGL/Pages čekají.** Další: doložit georeferencované foto bočních průčelí a jednotlivé vchody 616–618, potom navázat OSM pěší přístupy.
 
 ## 5.160 — Topolová 614–618: celá valbová střecha místo 5 plochých capů
 - Úřední opora: https://www.celakovice.cz/filemanager/files/2973758.pdf str. 6/9 a https://www.celakovice.cz/filemanager/files/3310832.pdf str. 6: 617–618 část pětipatrového pětivchodového domu s valbovou střechou; doloženy také dva balkony po 1,91 m² u některých bytů, ale **ne jejich přesné pozice**.
@@ -84,6 +93,7 @@
 
 | Verze | Co bylo změněno | Zdroj / omezení |
 | --- | --- | --- |
+| **5.161** | Topolová 616–618: jednotný 6stranný výplňový model, 3 GPU meshe | Pouze prozatímní extrapolace 614/615, 6 generických přeskočeno, fyzické GPS/ulice zachovány; CI čeká. |
 | **5.160** | Topolová 614–618: místo 5 plochých poklic 1 valbová souvislá střecha | Usnesení města 2023, 22 GPU trojúhelníků, rise 2,25m model; CI/WebGL/Pages PASS. |
 | **5.159** | Topolová 614–615: 4 modelované západní/východní projektové fasády, 6 GPU meshů | Projekt 2024; přesná výška/rozteče model, CI/WebGL/Pages PASS. |
 | **5.158** | Topolová 646: 6 krátkých skutečných stěn bez vymyšlených oken | Základní stěny/GPS zachovány, CI/WebGL/Pages PASS. |
@@ -108,6 +118,6 @@ Starší oblasti zahrnují nádraží, Bike Tower, staré centrum, garáže, Šk
 
 1. **Vize:** celé propojené Milovice jako 3D realistická webová GTA/RP hra — budovy, střechy, okna, dveře, silnice, obruby, chodníky, značení, skutečná zeleň, osvětlení, nádraží a doprava; udržet FPS/mobilní WebGL. Nejen miniaturní dekorace, realizovat souvislé ulice.
 2. **Důkazy:** zachovat všechny OSM/RÚIAN identifikátory, GPS i geometrii. Fyzicky zobrazovat jen zdrojem podložené objekty; jejich neověřené rozměry a povrchy jasně označit `model`. Nepřidávat fiktivní přechody, lampy, stání, stromy, vchody, brány či trasování.
-3. **Nejbližší směr po 5.160:** pokračovat po **Sportovní × Topolová** celou ulicí, především skutečně fotograficky/úředně doložené střechy a přístupy. Zkontrolovat přechody z pozice chodce a jejich napojení na již mapované chodníky. Nedoplňovat bez podkladů.
+3. **Nejbližší směr po 5.161:** pokračovat po **Sportovní × Topolová** celou ulicí, především skutečně fotograficky/úředně doložené střechy a přístupy. Zkontrolovat přechody z pozice chodce a jejich napojení na již mapované chodníky. Nedoplňovat bez podkladů.
 4. **Nejistoty:** ČSÚ Sportovní 587 (RÚIAN `27906264`) uvádí tři podlaží *celkem*, není to potvrzený počet **nadzemních** podlaží ani přesná střecha. Některé půdorysy/objekty jsou větší než zdrojové fotografie. Plán 109 parkovacích stání a 22 lamp v části Průběžné nemá georeferencované detaily C.3; nedomýšlet polohy.
 5. **Workflow:** po „Pokračuj“ ověřit HEAD + přečíst `AGENTS.md` a tento stručný stav + jen nejnovější sekce `README.md`, pak relevantní kód. Změnit jeden věcný blok v jednom atomickém commitu, přidat test, mobilní Chromium 6s+ LOD a validaci; PASS uvádět až po skutečném proběhnutí. Unit rychle: `node scripts/dev-check.mjs sportovni` nebo `node scripts/dev-check.mjs --list`. `DEVELOPMENT_STATUS.md` aktualizovat dle CI.
