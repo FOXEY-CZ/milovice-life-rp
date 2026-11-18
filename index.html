@@ -299,6 +299,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <a href="?v=513200&streetAudit=armadni-island-zebra-5131">🚸 Armádní · značená zebra s ostrůvkem (OSM)</a>
  <a href="?v=513301&streetAudit=tyrsova-sportovni-5133">🏟️ Tyršova × Sportovní · křižovatka a tenisové kurty</a>
 <a href="?v=513400&streetAudit=prubezna-renovation-5134">🚶 Průběžná · 2025 betonová dlažba, OSM chodníky</a>
+<a href="?v=513500&streetAudit=prubezna-road-asphalt-5135">🛣️ Průběžná · nový asfalt, původní jednosměrka</a>
 <a href="?v=511200&streetAudit=road-vruticka-5108">🛣️ Vrutická · OSM šířka 6 m</a>
 <a href="?v=510500&streetAudit=estate-mlada-5105">🏢 Mladá · bytové domy vedle hřiště</a></nav>
 <button id="street-audit-info-toggle" type="button" aria-expanded="false">📍 GPS a zdroj</button>
@@ -536,6 +537,7 @@ import {createRoadClearance} from './scripts/road-clearance.js?v=5262';
 import {isCarriageway,isPedestrianWay,safePedestrianPieces,pedestrianPieceKey,markedCrossing,planZebraPieces,planStationPassage} from './scripts/reality-walkways.js?v=59400';
 import {classifyMappedRoadSurface,mappedRoadWidth} from './scripts/osm-road-surfaces.js?v=59400';
 import {planPrubezna2025Pavers,isPrubezna2025PaverWay} from './scripts/osm-prubezna-renovation-5134.js?v=513400';
+import {planPrubeznaRoadRenewal,isPrubeznaRenovatedRoad} from './scripts/osm-prubezna-road-5135.js?v=513500';
 import {planMappedRoadWidth} from './scripts/osm-road-width-5108.js?v=511200';
 import {makeSidewalkBuildingGuard,planOSMTaggedSidewalk} from './scripts/osm-tagged-sidewalk.js?v=59500';
 import {planForestReviewCamera} from './scripts/forest-camera-598.js?v=59800';
@@ -916,6 +918,16 @@ const rpStreetAuditViews={
   regionId:'mlada',osmLandmarkId:'61979140',
   source:'https://www.openstreetmap.org/way/1318462995',
   author:'OSM 1318462995 crossing:markings=zebra, crossing:island=yes; dvě poloviny bílé zebry na existující Armádní, mezera kolem ostrůvku bez nového fyzického modelu. Kamera na původním chodníku 1046197807.',
+  technical:true,streetLevel:true,estimatedHeading:true
+ },
+ 'prubezna-road-asphalt-5135':{
+  label:'Průběžná · 256,6 m silnice a zachovaná jednosměrka (OSM, 2025 obnova)',
+  // Camera is located at mapped existing footway 1278749454 vertex;
+  // heading estimates view toward west, along nearby original road.
+  camera:{lat:50.2303156,lon:14.8633074},heading:268,
+  regionId:'mlada',osmRoadId:'83076189',
+  source:'https://zakazky.mesto-milovice.cz/contract_display_51.html',
+  author:'Projekt obnovy obrusné vrstvy Průběžné cca 400m, ale zde bezpečně modelovaný POUZE OSM way 83076189 (13 vrcholů, 12 segmentů, délka 256,6m). Pro tento reálný úsek herní model ztmavil texturu asfaltu. Hrany, šířka, dopravní jednosměrka, kolize a pěší cesty se nemění. Přesné hranice pokládky asfaltu a barva nejsou doloženy fotograficky. Parkování, nové obruby a lampy bez situačního výkresu nevytváříme.',
   technical:true,streetLevel:true,estimatedHeading:true
  },
  'prubezna-renovation-5134':{
@@ -2376,6 +2388,9 @@ const osmMappedSurfaceMaterials={
  // procedural material on TWO pre-existing OSM footways. The tint is
  // intentionally a MODEL approximation, not a surveyed stone colour.
  'prubezna-concrete':cityMatte(0xe1ddd3,citySurfaceKit.paving,.93),
+ // 5.135: repaired asphalt on exact OSM Průběžná carriageway only.
+ // Reuses same original city asphalt pattern; tint is NOT surveyed.
+ 'prubezna-repaired-asphalt':cityMatte(0xd2d6d7,citySurfaceKit.asphalt,.93,THREE.DoubleSide),
  aggregate:cityMatte(0xc3c0b6,citySurfaceKit.ballast,.98,THREE.DoubleSide),
  earth:cityMatte(0xb69a7e,citySurfaceKit.ballast,.99,THREE.DoubleSide),
  grass:cityMatte(0xbccaaa,citySurfaceKit.grass,.98,THREE.DoubleSide)
@@ -6033,6 +6048,20 @@ function rpAppendOSMElements(elements,regionId='old'){
    addedLampMeshes:0,addedFootwayMeshes:0
   });
  }
+ // 5.135: city 2025 contract confirms resurfacing Průběžná; preserve the
+ // exact one-way street skeleton. This 256.6m OSM way is only a subset
+ // of the city's approximate 400m works, not a claim about all sections.
+ const prubeznaRoadPlan=planPrubeznaRoadRenewal({regionId,ways:roadWays});
+ if(prubeznaRoadPlan){
+  window.__milovicePrubeznaRoadAudit=prubeznaRoadPlan;
+  window.__milovicePrubeznaRoadRuntime=()=>({
+   ...window.__milovicePrubeznaRoadAudit,
+   ready:window.__milovicePrubeznaRoadAudit?.renderedExistingSegments===12,
+   originalMapDrivenOneWay:osmDriveRoads.some(r=>
+    String(r.osmId)==='83076189'&&r.oneway===1),
+   originalRoadGeometryPreserved:true
+  });
+ }
  const roadWidths=new Map();
  const osmWidthAudit=window.__miloviceRoadWidthAudit ||= {
   version:'5.108',explicitWidthWays:0,invalidWidthTags:0,
@@ -6163,7 +6192,13 @@ function rpAppendOSMElements(elements,regionId='old'){
   const kind=el.tags.highway;
   const mappedSurfacePlan=classifyMappedRoadSurface(el.tags);
   const prubeznaPaver=isPrubezna2025PaverWay(prubezna2025Plan,el);
-  const surfacePlan=prubeznaPaver?
+  const prubeznaResurfaced=isPrubeznaRenovatedRoad(prubeznaRoadPlan,el);
+  const surfacePlan=prubeznaResurfaced?
+   {...mappedSurfacePlan,material:'prubezna-repaired-asphalt',
+    originalOSMSurfaceTag:mappedSurfacePlan?.surfaceTag||null,
+    visualSource:'Milovice 2025 Průběžná road resurfacing public contract',
+    originalRoadLinesUntouched:true,modelTintEstimated:true}:
+   prubeznaPaver?
    {...mappedSurfacePlan,material:'prubezna-concrete',
     originalOSMSurfaceTag:mappedSurfacePlan?.surfaceTag||null,
     visualSource:'Milovice 2023 permit + 2025 Průběžná road contract',
@@ -6188,7 +6223,8 @@ function rpAppendOSMElements(elements,regionId='old'){
    osmDriveRoads.push(mappedRoad);
    streetFrontage.addRoad(mappedRoad);
   }
-  const prubeznaDrawBefore=prubeznaPaver?osmSurfaceAudit.drawnSegments:0;
+  const prubeznaDrawBefore=(prubeznaPaver||prubeznaResurfaced)?
+   osmSurfaceAudit.drawnSegments:0;
   for(let i=1;i<points.length;i++){
    // The three OSM footway segments [4->5,5->6,6->7] overlap the
    // already reconstructed Nádražní parking-island sidewalk. Painting
@@ -6206,6 +6242,10 @@ function rpAppendOSMElements(elements,regionId='old'){
   if(prubeznaPaver){
    const drawn=osmSurfaceAudit.drawnSegments-prubeznaDrawBefore;
    prubezna2025Plan.appliedVisualSegments+=drawn;
+  }
+  if(prubeznaResurfaced){
+   const drawn=osmSurfaceAudit.drawnSegments-prubeznaDrawBefore;
+   prubeznaRoadPlan.renderedExistingSegments+=drawn;
   }
   // This pass is enabled ONLY by an explicit OSM sidewalk=left|right|both
   // tag; roads tagged sidewalk=separate already have their own mapped
