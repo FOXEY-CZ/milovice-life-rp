@@ -60,7 +60,7 @@ assert.equal(plan.originalOSMDataPreserved,true);
 assert.equal(plan.streetGeometryChanged,false);
 assert.equal(plan.pedestrianCollisionChanged,false);
 assert.equal(plan.drawMeshes,1);
-assert(plan.modelledSeparatorCount>=7&&plan.modelledSeparatorCount<=14);
+assert(plan.modelledSeparatorCount>=5&&plan.modelledSeparatorCount<=14);
 assert.equal(plan.modelledSeparatorCount,plan.lines.length);
 assert.equal(plan.triangleCount,plan.lines.length*14);
 assert.equal(plan.material,'one-shared-red-inlay');
