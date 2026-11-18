@@ -35,7 +35,28 @@ for(const join of plan.joins){
 }
 assert.equal(JSON.stringify(buildings),snapshot,'Do not mutate the original OSM data');
 assert.deepEqual(plan,planRUIANResidentialSharedWalls({regionId:'mlada',buildings}));
-assert.equal(planRUIANResidentialSharedWalls({regionId:'old',buildings}),null);
+// Old city core is rendered BEFORE the Mladá regional extract.
+// Its 4 RUIAN homes form 2 full shared walls, and Mladá's deduped
+// list supplies the remaining 26. Verify the TOTAL still reaches 28.
+const originalCore=JSON.parse(readFileSync(new URL(
+ '../data/milovice-osm.json',import.meta.url),'utf8')).elements;
+const toRows=els=>els.filter(x=>x.tags?.building&&x.geometry).map(b=>({
+ id:b.id,tags:b.tags,points:b.geometry.map(project)
+}));
+const fromCore=planRUIANResidentialSharedWalls({
+ regionId:'old',buildings:toRows(originalCore)
+});
+const earlierIds=new Set(originalCore.map(x=>String(x.id)));
+const remaining=planRUIANResidentialSharedWalls({
+ regionId:'mlada',buildings:buildings.filter(b=>!earlierIds.has(String(b.id)))
+});
+assert.equal(fromCore.sourceSharedWallCount,2);
+assert.equal(remaining.sourceSharedWallCount,26);
+assert.equal(fromCore.internalFacadeEdgesToSkip+
+ remaining.internalFacadeEdgesToSkip,56);
+assert.equal(new Set([...fromCore.sourceBuildingIds,...remaining.sourceBuildingIds]).size,37);
+
+assert.equal(planRUIANResidentialSharedWalls({regionId:'fictional',buildings}),null);
 const modified=buildings.map(b=>String(b.id)==='61979141'?
  {...b,tags:{...b.tags,'building:levels':'4'}}:b);
 assert(planRUIANResidentialSharedWalls({regionId:'mlada',buildings:modified})
