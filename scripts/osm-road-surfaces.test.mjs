@@ -72,7 +72,9 @@ assert(Object.values(regionCounts).reduce((s,r)=>s+r.tracks,0)>85,
  'Actual, deduplicated OSM forestry tracks are rendered across city areas');
 const index=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert(index.includes('const osmMappedSurfaceMaterials={'));
-assert(index.includes('const surfacePlan=classifyMappedRoadSurface(el.tags);'));
+assert(index.includes('const mappedSurfacePlan=classifyMappedRoadSurface(el.tags);'));
+assert(index.includes("isPrubezna2025PaverWay(prubezna2025Plan,el)"),
+ '5.134 must not change source tags or footprints when city concrete pavers are modeled');
 assert(index.includes('osmRoadSegment(points[i-1],points[i],width,kind,surfacePlan);'));
 assert(index.includes('const worldAlignedAsphalt=material===osmRoadMaterial;'),
  'Existing road UV scheme must remain world-aligned');
