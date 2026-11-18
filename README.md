@@ -1,3 +1,17 @@
+## Milovice RP 5.126 — Spojovací: zelený nápis LÉKÁRNA podle nové fotografie (Part 26, 18. 11. 2026)
+
+**Aktuální hra:** https://foxey-cz.github.io/milovice-life-rp/?v=512600
+
+**Přímá kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=512600&streetAudit=armadni-clinic-5118
+
+- Na [novější veřejné fotografii RE/MAX](https://www.remax-czech.cz/reality/detail/423323/pronajem-komercniho-prostoru-41-m2-milovice) je na bílé přízemní fasádě Centra zdraví skutečně vidět zelené písmo **„LÉKÁRNA“**, vlevo (jižně) od hlavního tyrkysového vstupu při pohledu od ulice Spojovací. [LEMON je ověřeným provozovatelem lékárny na adrese Spojovací 873](https://www.lekarnalemon.cz/index.php/lekarny/lemon-lekarna-milovice-spojovaci-873), ale **na použité fotografii není doložen konkrétní značkový nápis LEMON**. Hra proto kreslí pouze viditelné obecné označení „LÉKÁRNA“.
+- Nový modul `scripts/osm-clinic-pharmacy-sign-5126.js` se omezuje na **skutečný OSM půdorys way/1057548624**, jeho východní fasádu č. 2, dřívější čtyřpodlažní foto-massing, sedm přízemních výloh a existující tyrkysový vchod. Návrh používá **jižní přibližný modelový modul 1 z 8**, nikoli změřenou pozici provozovny nebo hranici skutečného nájemního prostoru. Poloha, velikost a výška písma jsou modelové přiblížení; relativní poloha nalevo od vchodu je odvozena z fotografie.
+- Nápis vzniká jako **jeden malý WebGL plane** s vlastním textem na transparentní canvas textuře (nikdy jako kopie obrazových dat třetí strany). Je přidán přímo do téže 3D oblasti a chráněn před 5sekundovým mobilním LOD. Nepřibývají jiné značky, falešný vstup, obchod, parkoviště, nová cesta, zástavba ani kolizní objekt. Spojovací, Poliklinika, Billa, reálné OSM pěší trasy, parkovací pruhy 5.125 a světlá dlažba 5.123 zůstávají beze změny.
+- Diagnostika `window.__miloviceClinicPhotoPharmacySignAudit` otevřeně rozlišuje ověřené písmo od odhadnutého modelového umístění. `window.__miloviceClinicPhotoPharmacySignRuntime()` kontroluje **skutečné připojení 3D objektu ke scéně a jeho viditelnost**. Nový statický test `scripts/osm-clinic-pharmacy-sign-5126.test.mjs` používá uložené OSM souřadnice; rozšířený mobilní Chromium/WebGL regresní test `scripts/osm-clinic-parking-inlays-webgl-5125.mjs` po 6,8 s současně kontroluje nápis, parkovací pruhy, prosklení, vstup i dlažbu. Výsledek GitHub Actions a Pages se potvrzuje až po jejich dokončení.
+- Městská smlouva k původnímu záměru [uváděla 17 projektovaných veřejných stání a přeložky osvětlení/chodníku](https://www.mesto-milovice.cz/assets/File.ashx?id_dokumenty=3513&id_org=9519). Tento historický projektový počet **nepovažujeme za aktuální přesné geodetické rozložení**, a proto žádná nová parkovací stání podle něj nevznikají.
+
+---
+
 ## Milovice RP 5.125 — Spojovací u Polikliniky: červenohnědé dlažební pruhy podle dokončených fotografií + dokumentace města (Part 25, 18. 11. 2026)
 
 **Aktuální hra:** https://foxey-cz.github.io/milovice-life-rp/?v=512500
