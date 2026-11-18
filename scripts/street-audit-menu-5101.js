@@ -1,4 +1,4 @@
-// Milovice RP 5.101: compact mobile audit navigation (UI only).
+// Milovice RP 5.136: compact mobile audit navigation + diacritic-free search (UI only).
 // Retains all source review URLs. Does not touch scene geometry, camera
 // placement, map provenance or the underlying review data.
 export const STREET_AUDIT_SECTIONS=Object.freeze([
@@ -58,7 +58,18 @@ export function mountStreetAuditMenu(panel,{activeId='',label='',mobile=false}={
  allButton.id='street-audit-show-all';
  allButton.className='street-audit-all';
  allButton.textContent='Zobrazit všechny sekce';
- nav.append(allButton);
+ const filter=doc.createElement('input');
+ filter.type='search';
+ filter.id='street-audit-search';
+ filter.placeholder='Hledat ulici nebo místo…';
+ filter.setAttribute('aria-label','Hledat mezi kontrolními pohledy');
+ filter.setAttribute('autocomplete','off');
+ const filterStatus=doc.createElement('small');
+ filterStatus.id='street-audit-search-count';
+ filterStatus.setAttribute('role','status');
+ filterStatus.setAttribute('aria-live','polite');
+ filterStatus.textContent=sourceLinks.length+' dostupných pohledů';
+ nav.append(filter,filterStatus,allButton);
  const details=[];
  for(const section of known){
   if(!section.links.length)continue;
@@ -113,13 +124,47 @@ export function mountStreetAuditMenu(panel,{activeId='',label='',mobile=false}={
  name.textContent=shortStreetAuditLabel(label||name.textContent,activeId);
  name.insertAdjacentElement('afterend',quick);
  const state={
-  version:'5.111',activeId,category:selectedGroup,sourceLinks:sourceLinks.length,
+  version:'5.136',activeId,category:selectedGroup,sourceLinks:sourceLinks.length,
   sections:details.length,quickLinks:quick.children.length,
   get expanded(){return !panel.classList.contains('audit-compact')},
   get openSections(){return details.filter(d=>d.open).map(d=>d.dataset.category)}
  };
  const selected=details.find(d=>d.dataset.category===selectedGroup);
- let showAll=false;
+ let showAll=false,searchActive=false;
+ const normalizeSearch=text=>String(text||'').normalize('NFD')
+  .replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('cs').trim();
+ const applyFilter=()=>{
+  const query=normalizeSearch(filter.value);
+  searchActive=Boolean(query);
+  let visible=0;
+  for(const group of details){
+   let count=0;
+   const links=[...group.querySelectorAll('.street-audit-links a')];
+   for(const a of links){
+    const matching=!query||normalizeSearch(a.textContent+' '+a.dataset.auditId)
+     .includes(query);
+    a.hidden=!matching;
+    if(matching)count++;
+   }
+   group.hidden=searchActive&&count===0;
+   group.querySelector('summary').textContent=known.find(
+    section=>section.id===group.dataset.category).icon+' '+
+    known.find(section=>section.id===group.dataset.category).title+
+    ' ('+(searchActive?count+'/':'')+links.length+')';
+   if(searchActive)group.open=count>0;
+   visible+=count;
+  }
+  if(!searchActive){
+   for(const group of details)group.open=showAll||
+    (!mobile&&group.dataset.category===selectedGroup);
+  }
+  filterStatus.textContent=searchActive
+   ?visible+' z '+sourceLinks.length+' pohledů'
+   :sourceLinks.length+' dostupných pohledů';
+  allButton.hidden=searchActive;
+  nav.dataset.searchCount=String(visible);
+ };
+ filter.addEventListener('input',applyFilter);
  allButton.addEventListener('click',()=>{
   showAll=!showAll;
   for(const d of details)d.open=showAll||d===selected;
@@ -128,7 +173,7 @@ export function mountStreetAuditMenu(panel,{activeId='',label='',mobile=false}={
  });
  for(const group of details){
   group.addEventListener('toggle',()=>{
-   if(!group.open||showAll)return;
+   if(!group.open||showAll||searchActive)return;
    for(const other of details)if(other!==group)other.open=false;
   });
  }
@@ -154,6 +199,9 @@ export function mountStreetAuditMenu(panel,{activeId='',label='',mobile=false}={
   // Never open the full street link list by default on a phone. Keep
   // selected category discoverable; its 21 links require an explicit tap.
   if(mobile&&!expanded){
+   filter.value='';
+   showAll=false;
+   applyFilter();
    for(const d of details)d.open=false;
    showAll=false;
    allButton.textContent='Zobrazit všechny sekce';
@@ -162,6 +210,7 @@ export function mountStreetAuditMenu(panel,{activeId='',label='',mobile=false}={
   panel.scrollTop=0;
  };
  toggle.addEventListener('click',()=>setExpanded(!state.expanded));
+ applyFilter();
  setExpanded(!mobile);
  panel.__streetMenuState=state;
  return state;
