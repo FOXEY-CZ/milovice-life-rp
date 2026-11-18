@@ -118,7 +118,9 @@ export function planPhotographedClinicParkingInlays({
   lines.push({along,depthStart,depthEnd,width:strokeWidth,
    segments:stops,samples});
  }
- if(lines.length<7||lines.length>14)return null;
+ // Nearby OSM service driveways legitimately clip many inlays; do not
+ // hallucinate a complete row when only a short section clears roads.
+ if(lines.length<5||lines.length>14)return null;
  return {
   version:'5.125',osmClinicId:src.buildingWay,
   streetWayId:src.streetWay,footwayId:src.mappedSidewalkWay,
