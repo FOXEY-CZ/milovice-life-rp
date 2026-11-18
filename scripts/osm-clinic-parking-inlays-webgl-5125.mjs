@@ -15,7 +15,7 @@ try{
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
  await page.goto(
-  'http://127.0.0.1:8080/?v=513100&streetAudit=armadni-clinic-5118',
+  'http://127.0.0.1:8080/?v=513200&streetAudit=armadni-clinic-5118',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>(
@@ -66,7 +66,7 @@ try{
   menuHeight:document.getElementById('street-block-audit')
    ?.getBoundingClientRect().height
  }));
- assert.equal(s.version,'20261118-tyrsova-armadni-osm-zebra-estate-513100');
+ assert.equal(s.version,'20261118-tyrsova-five-houses-partywall-cleanup-513200');
  assert.equal(s.label,s.version);
  assert.equal(s.audit.osmClinicId,'1057548624');
  assert.equal(s.audit.streetWayId,'246652750');
