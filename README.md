@@ -1,3 +1,21 @@
+## Milovice RP 5.125 — Spojovací u Polikliniky: červenohnědé dlažební pruhy podle dokončených fotografií + dokumentace města (Part 25, 18. 11. 2026)
+
+**Aktuální hra:** https://foxey-cz.github.io/milovice-life-rp/?v=512500
+
+**Přímá kontrolní kamera na Polikliniku a parkovací prostranství:** https://foxey-cz.github.io/milovice-life-rp/?v=512500&streetAudit=armadni-clinic-5118
+
+### Proč tato změna
+
+- [ABP Holding — fotografie dokončené Polikliniky z projektu 2019–2023](https://www.abpholding.cz/en/project-detail/65/polyclinic-building-milovice) ukazuje dlouhou světlou dlážděnou plochu s **úzkými červenohnědými pruhy mezi kolmo orientovanými vozidly**. To je ověřený **vizuální znak skutečného prostranství**. V modelu byla do 5.124 pouze světlá dlažba; fotku nenahráváme jako texturu.
+- [Oficiální Dopravně inženýrská opatření Milovice, srpen 2022 (PDF)](https://ud.mestolysa.cz/vr2022/vm09/MULL0B019BZD_0/MULL0B019C01/DIO_sing.pdf) výslovně uvádějí výstavbu **kolmých parkovacích stání a chodníku ve Spojovací** u Centra zdraví. Jde o podklad k výstavbě a dopravnímu omezení, nikoli přesnou zaměřenou evidenci konečného počtu a hranic jednotlivých stání; finální realitu potvrzuje samostatná pozdější fotografie ABP.
+- Nový nezávislý modul `scripts/osm-clinic-parking-inlays-5125.js` pracuje **výhradně** s již mapovaným půdorysem Polikliniky OSM **1057548624**, východní fasádou, Spojovací OSM **246652750**, pěší cestou OSM **1339091016**, okolními OSM jízdními cestami a s **422 modelovými dlažebními buňkami** verze 5.123.
+- Původně navržené pruhy se ověřují proti hranám existující světlé dlažby a vzdálenosti od okolních příjezdů i pěší cesty. Ve skutečném OSM rozložení zůstalo **jen 6 vizuálně bezpečných modelových pruhů** a **8 kandidátních pruhů je odmítnuto**, aby se nekreslily přes jiné komunikace. **Šest tedy neznamená skutečný počet parkovacích míst.** Jejich modelová šířka cca 10,5 cm, délka a pravidelné rozestupy jsou **přibližné** — neexistuje dokumentované zaměření každé červené linky.
+- Geometrie všech pruhů je spojena do **jediného triangulovaného 3D meshe, jediného nového sdíleného materiálu** v podobném cihlově červeném odstínu a vzorkuje stávající DEM (+0,117 m, nad dlažbou DEM +0,105 m, pod chodníkem +0,13 m a vozovkou +0,17 m). Detail má explicitně vypnutý LOD pro zmizení objektů po 5 s. Nezakládají se skutečné parkovací objekty pro auta, nová síť cest, bariéry, dopravní značka P, žádná vymyšlená zebra ani neověřená vyhrazená stání.
+- Audit `window.__miloviceClinicParkingInlaysAudit` zveřejňuje počet modelových pruhů, výslovně neznámý reálný počet stání, odmítnuté kandidáty, zdroje fotografie/projektu, změny silniční sítě 0 a DEM. `window.__miloviceClinicParkingInlaysRuntime()` se dívá na **reálně připojený a viditelný WebGL mesh**, ne jen na počítadlo ve skriptu.
+- Nový statický OSM test `scripts/osm-clinic-parking-inlays-5125.test.mjs` ověřuje geometrické zdroje, očekávaná omezení a nepřítomnost neověřených dopravních prvků. Mobilní Playwright `scripts/osm-clinic-parking-inlays-webgl-5125.mjs` ověřuje finální výsledek **po 6,8 sekundách LOD** vedle starší fotografické fasády, zasklení a chodníku. Oprávněnost tvrzení o WebGL úspěchu se potvrzuje až výsledkem GitHub Actions.
+
+---
+
 ## Milovice RP 5.124 — Spojovací 873: celá řada přízemních prosklených výloh a ověřené provozovny (Part 25, 18. 11. 2026)
 
 **Aktuální hra:** https://foxey-cz.github.io/milovice-life-rp/?v=512400
