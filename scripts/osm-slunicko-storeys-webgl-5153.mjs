@@ -41,7 +41,8 @@ try{
  assert.equal(a.school?.sourceOriginalOSMLevels,2);
  assert.equal(a.school?.sourceReportedStoreys,4);
  assert.equal(a.school?.modelHeightMeters,12.2);
- assert.equal(a.school?.actualVisualHeightMeters,12.2);
+ assert.equal(a.school?.actualVisualHeightMeters,13.15);
+ assert.equal(a.school?.westPlan?.version,'5.154');
  assert.equal(a.school?.renderedMappedFootprint,true);
  assert.equal(a.school?.addedBuildings,0);
  assert.equal(a.school?.addedDoors,0);

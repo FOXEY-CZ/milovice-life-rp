@@ -1,3 +1,13 @@
+## Milovice RP 5.154 — Topolová 622: západní fasáda podle projektové kalkulace (18. 11. 2026)
+
+**Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=515400&streetAudit=topolova-slunicko-west-5154
+
+- **Nový zdroj:** projektový výkaz prací MŠ Sluníčko pro Město Milovice z 21. 5. 2020, PDF strana 5: https://www.e-zakazky.cz/stazenisouboru/61b37d16-23a5-4b6b-ae61-13e546a3e2ad. Výpočet lešení západní fasády používá (44 + 2×0,9) × (13,15 + 0,5 − 1,8) = 542,73 m². Hodnota 13,15 m pochází z rozpočtové kalkulace lešení, není geodeticky potvrzenou výškou střechy.
+- **OSM shoda:** skutečná západní stěna 53865699 má délku 44,429 m (projekt zaokrouhluje na 44 m). Východní stěna je 44,299 m. Původní RÚIAN 26092069, 9 GPS bodů a OSM podlaží zůstávají beze změn.
+- **3D změna:** u jediné zdrojově uzamčené hlavní budovy školy nová projektově informovaná výška modelu 13,15 m místo 12,2 m, nadále čtyři vizuálně modelovaná podlaží. Sousední budovy, střešní půdorysy, vozovky, zebry, vchody, kolizní objekty a zelené plochy beze změny. Návrh 55 venkovních žaluzií z roku 2020 není důkaz realizace, a proto je nevykreslujeme.
+- **Regrese:** nový zdrojově uzamčený modul osm-slunicko-west-elevation-5154.js a test, mobilní Chromium/WebGL po 6,5s LOD a kontrola vygenerované vertikální geometrii stěny. CI/WebGL/Pages ještě nejsou potvrzeny.
+
+---
 ## Milovice RP 5.153 — MŠ Sluníčko na Topolové: opravená výšková hmota hlavní budovy (18. 11. 2026)
 
 **Kontrolní technická kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=515300&streetAudit=topolova-slunicko-5153

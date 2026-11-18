@@ -1,0 +1,42 @@
+name: Slunicko 5.154 source-matched west elevation mobile
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/osm-slunicko-west-elevation-5154.js
+      - scripts/osm-slunicko-west-elevation-5154.test.mjs
+      - scripts/osm-slunicko-west-elevation-webgl-5154.mjs
+      - data/regions/mlada.json
+      - .github/workflows/slunicko-west-elevation-5154.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  west-wall:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Source and predecessor unit regressions
+        run: |
+          node scripts/osm-slunicko-storeys-5153.test.mjs
+          node scripts/osm-slunicko-west-elevation-5154.test.mjs
+          node scripts/osm-topolova-masonry-5149.test.mjs
+          node scripts/osm-zebra-v7-5152.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Chromium mobile after 6.5 second LOD
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-slunicko-west-elevation-webgl-5154.mjs
+          node scripts/osm-slunicko-storeys-webgl-5153.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: milovice-slunicko-5154
+          path: browser-artifacts/*slunicko*-mobile.png
+          if-no-files-found: ignore
