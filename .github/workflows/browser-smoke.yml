@@ -57,6 +57,9 @@ on:
       - scripts/osm-prubezna-renovation-5134.js
       - scripts/osm-prubezna-renovation-5134.test.mjs
       - scripts/osm-prubezna-renovation-webgl-5134.mjs
+      - scripts/osm-prubezna-road-5135.js
+      - scripts/osm-prubezna-road-5135.test.mjs
+      - scripts/osm-prubezna-road-webgl-5135.mjs
       - scripts/osm-clinic-parking-inlays-5125.test.mjs
       - scripts/osm-clinic-parking-inlays-webgl-5125.mjs
       - scripts/station-photo-parking.js
@@ -103,6 +106,7 @@ jobs:
         run: |
           python3 -m http.server 8080 --bind 127.0.0.1 > /tmp/milovice-http.log 2>&1 &
           node scripts/osm-prubezna-renovation-webgl-5134.mjs
+          node scripts/osm-prubezna-road-webgl-5135.mjs
           node scripts/osm-ruian-party-walls-webgl-5133.mjs
           node scripts/browser_smoke.mjs
           node scripts/osm-armadni-trolleys-webgl-5120.mjs
