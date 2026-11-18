@@ -36,7 +36,11 @@ const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const key of [
  'streetAudit=sportovni-topolova-zebra-5147',
  "'sportovni-topolova-zebra-5147':{",
- 'mappedMarkedCrossingOSMIds.push(String(el.id))',
- "const BUILD_ID='20261118-sportovni-topolova-osm-zebras-514700'"
+ 'mappedMarkedCrossingOSMIds.push(String(el.id))'
 ])assert(html.includes(key),'Missing 5.147 integration: '+key);
+// Future releases change the build name, not the original OSM crossing.
+// Keep a separate current-build invariant without pinning 5.147 forever.
+const release=html.match(/const BUILD_ID='([^']+)'/)?.[1];
+assert(release&&html.includes('id="build-label">'+release+'</strong>'),
+ 'Visible release must match the live build, regardless of newer game versions');
 console.log('PASS 5.147 OSM: 5 historical zebras, mapped Topolova crossing, no invented roadway');
