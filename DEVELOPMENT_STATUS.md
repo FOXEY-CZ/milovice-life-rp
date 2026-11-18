@@ -1,6 +1,6 @@
 # Milovice RP — rychlý handoff vývoje
 
-> **Nová 5.158 (18. 11. 2026; CI/WebGL/Pages čekají):** Topolová 646: na všech 6 krátkých mapovaných fasádách [0,1,2,3,4,6] jsme odstranili nepodložené generické modely oken/vchodů. Krémové neprůhledné stěny, obě 43m fotofasády, 4 GPU meshe, střecha, GPS hash 73d119b1, kolize a okolní silnice zachovány. Existence reálných oken není vyvrácena, chybí pouze georeferencovaná poloha. Unit + mobilní WebGL 6,9s LOD přidány. Nejbližší: najít krátké boční foto/vstupy.
+> **Nová 5.158 (18. 11. 2026; CI/WebGL/Pages PASS):** Topolová 646: na všech 6 krátkých mapovaných fasádách [0,1,2,3,4,6] jsme odstranili nepodložené generické modely oken/vchodů. Krémové neprůhledné stěny, obě 43m fotofasády, 4 GPU meshe, střecha, GPS hash 73d119b1, kolize a okolní silnice zachovány. Existence reálných oken není vyvrácena, chybí pouze georeferencovaná poloha. Unit + mobilní WebGL 6,9s LOD prošly. **[Celková CI PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44395744528), [mobilní WebGL +6,9s LOD PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44395744503), [regrese 5.157 PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44395743730), [GitHub Pages PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44395742263).** Nejbližší: najít krátké boční foto/vstupy.
 
 > **Nová 5.157 (18. 11. 2026; CI/WebGL/Pages PASS):** dům **Topolová 646** nově z obou dlouhých stran podle referenčních fotek z roku 2025 (fotografie 2 od vozidel a 3 od zeleného plotu). Foto přímo ukazuje půlkruhově ukončené podkrovní zasklení, dříve chybně obdélníkové. OSM 53866048 / RÚIAN 25789813, GPS hash 73d119b1, hrany 5 a 7 měří 43,046 m a 43,021 m; obě obdržely odhadovanou pravidelnou fasádu. Počty oken/štítů, přiřazení světové strany i metry jsou nadále odhady, ne georeferencovaná fotogrammetrie. **4 sloučené fasádní meshe i pro 2 líce**; generické fasády na obou dlouhých stranách vypnuté. Žádné vymyšlené vchody ani GPS změny. **5.157 [plná validace PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44385453094), [mobilní WebGL +6,9s LOD PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44385453029), [starší 5.156 mobilní WebGL PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44385453142), [Pages PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44385451098).** Původní 5.156 nadále vyhovuje.
 
@@ -15,7 +15,7 @@
 
 ## 5.158 — Topolová 646: šest krátkých stěn bez neověřených generických doplňků
 - Hrany 0,1,2,3,4,6 mají 6,337 / 3,452 / 7,253 / 3,434 / 2,874 / 16,515 m. Generické okno/dveře pro tyto hrany potlačeny, ale samotné krémové zdi a OSM polygon zůstávají. Není to tvrzení, že reálné krátké strany nemají žádná okna.
-- Nový unit + mobile Chrome/WebGL >6,9s LOD, `__miloviceTopolovaShortEndsRuntime()`, vlastní workflow. Výsledek GitHub CI/Pages čeká na ověření. Následuje doložení krátkých průčelí a přesných vstupů.
+- Nový unit + mobile Chrome/WebGL >6,9s LOD, `__miloviceTopolovaShortEndsRuntime()`, vlastní workflow. Celková CI, mobilní WebGL 5.158 + 5.157 a Pages **PASS** (odkazy v úvodu). Následuje doložení krátkých průčelí a přesných vstupů.
 
 ## 5.157 — Topolová 646: obě 43m fasády a vyklenutá podkrovní okna
 
@@ -68,7 +68,7 @@
 
 | Verze | Co bylo změněno | Zdroj / omezení |
 | --- | --- | --- |
-| **5.158** | Topolová 646: 6 krátkých skutečných stěn bez vymyšlených oken | Základní stěny/GPS zachovány, CI/WebGL/Pages čekají. |
+| **5.158** | Topolová 646: 6 krátkých skutečných stěn bez vymyšlených oken | Základní stěny/GPS zachovány, CI/WebGL/Pages PASS. |
 | **5.157** | Topolová 646: dvě 43m foto-fasády, 32 klenutých podkrovních oken, generické fasády potlačeny | 4 sdílené mesh; počet štítů/rozteče model; CI, mobilní WebGL+LOD, Pages PASS. |
 | **5.156** | Topolová 646: skutečná fasáda a podkroví z přímých foto 2025, původně chybná jednopodlažní hmota | 3 řady a podkrovní štíty, metry i rozteče model; CI/WebGL/Pages PASS. |
 | **5.155** | Topolová 614–618, úředních 5 nadzemních pater; oprava OSM nesouladu 618 a společné stěny 617–618 | Přísný GPS/RÚIAN zámek, bez změny originálních dat; CI/WebGL/Pages PASS. |
