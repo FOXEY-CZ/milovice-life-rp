@@ -112,8 +112,8 @@ for(const token of [
  'window.__miloviceClinicParkingInlaysAudit={',
  'window.__miloviceClinicParkingInlaysRuntime=()=>{',
  "inlay.userData.lodDetail=false",
- "const BUILD_ID='20261118-spojovaci-clinic-photo-yellow-cross-512700'",
- 'href="?v=512700&streetAudit=armadni-clinic-5118"',
+ "const BUILD_ID='20261118-spojovaci-photo-lit-paving-protection-512800'",
+ 'href="?v=512800&streetAudit=armadni-clinic-5118"',
  'window.__miloviceClinicShopfrontRuntime=()=>{',
  'window.__miloviceClinicForecourtRuntime=()=>{'
 ])assert(html.includes(token),'Missing integrated 5.125 safeguard '+token);
