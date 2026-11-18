@@ -1,6 +1,6 @@
 # Milovice RP — rychlý handoff vývoje
 
-> **Nově 5.154 (18. 11. 2026; testy ještě neověřené):** projekt města 2020 MŠ Sluníčko Topolová 622 (PDF str. 5) uvádí západní fasádu 44 m a ve vzorci lešení výškovou referenci 13,15 m. Přesně zmapovaná západní stěna OSM 53865699 má délku 44,429 m. Proto vizuální model výšky hlavní budovy zdrojově zpřesněn z 12,20 na **13,15 m**. Nejde o zaměřenou výšku střechy, projektové žaluzie se bez důkazu montáže nevykreslují. OSM GPS, 2 původní mapovaná podlaží, vedlejší pavilon, chodníky, kolize a silnice nezměněny. CI/WebGL/Pages 5.154 čekají na ověření. 5.153 PASS.
+> **Nově 5.154 (18. 11. 2026; CI/WebGL/Pages PASS):** projekt města 2020 MŠ Sluníčko Topolová 622 (PDF str. 5) uvádí západní fasádu 44 m a ve vzorci lešení výškovou referenci 13,15 m. Přesně zmapovaná západní stěna OSM 53865699 má délku 44,429 m. Proto vizuální model výšky hlavní budovy zdrojově zpřesněn z 12,20 na **13,15 m**. Nejde o zaměřenou výšku střechy, projektové žaluzie se bez důkazu montáže nevykreslují. OSM GPS, 2 původní mapovaná podlaží, vedlejší pavilon, chodníky, kolize a silnice nezměněny. **5.154 [plná CI PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44369930888), [mobilní WebGL + 6,5s LOD PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44369931011), [GitHub Pages PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44369931396)**. Starší 5.153 zůstává PASS.
 
 ## Odkazy a spuštění
 
@@ -16,7 +16,7 @@
 - OSM way 53865699, RÚIAN 26092069, západní edge 1 = 44,429 m a východní edge 7 = 44,299 m. Zůstává všech 9 původních GPS bodů a building:levels=2 v datech OSM.
 - Visual-only výška 13,15 m (dříve 12,2 m) je stále odhad podle projektu, nikoliv zaměřený skutečný hřeben střechy. Projekt 55 žaluzií neslouží jako důkaz instalace.
 - Nový modul scripts/osm-slunicko-west-elevation-5154.js, unit a mobilní Chromium po 6,5s LOD, runtime window.__miloviceSlunickoWestRuntime(). Ověřováno vertikální rozpětí skutečné extrudované stěny před batchingem.
-- **CI/WebGL/Pages po commitu ověřit, PASS netvrdit před výsledkem.** Další krok: foto západní fasády školy a navázání okolních domů a pěších přístupů Topolové.
+- **CI, mobilní WebGL po 6,5s LOD a Pages ověřeny: PASS (odkazy nahoře).** Přísný zdrojový GPS hash byl doplněn po prvním neúspěšném unit testu, který odhalil příliš benevolentní toleranci; opakovaný nový test již úspěšný. Další krok: foto západní fasády školy a navázání okolních domů a pěších přístupů Topolové.
 
 ## Nová 5.153 — pokračování Topolové
 
@@ -37,7 +37,7 @@
 
 | Verze | Co bylo změněno | Zdroj / omezení |
 | --- | --- | --- |
-| **5.154** | MŠ Sluníčko: projektová západní fasáda 44 m, výška vizuální hmoty 13,15 m | Rozpočtový výškový údaj není as-built zaměření, CI čeká. |
+| **5.154** | MŠ Sluníčko: projektová západní fasáda 44 m, výška vizuální hmoty 13,15 m | Rozpočtový údaj není as-built zaměření; přísný OSM hash, CI/WebGL/Pages PASS. |
 | **5.153** | Čtyři modelovaná podlaží podle školy/ČŠI | Půdorys zachován, novou výšku viz 5.154, předchozí CI PASS. |
 | **5.152** | Správná orientace pruhů pěti OSM zebřích přechodů podle V7a | Žádné nové GPS ani přechody; CI/WebGL/Pages PASS. |
 | **5.151** | ~31m průhledného zeleného plotu, 11 sloupků, 2,10m vizuálního pásu u Milten, 3 draw objekty | Foto restaurace dokládá **existenci** plotu/uličky, konkrétní hrana OSM kurtu `612386900` u haly `53866046` a rozměry jsou **modelové odhady**. CI/WebGL/Pages PASS. |
