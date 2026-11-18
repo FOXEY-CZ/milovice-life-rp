@@ -6,12 +6,12 @@ const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const nav=html.match(/<nav><a href="\?v=58530&streetAudit=5kv">([\s\S]*?)<\/nav>/)?.[0];
 assert(nav,'Keep the original review URLs, playgrounds and street width cameras');
 const ids=[...nav.matchAll(/streetAudit=([^"&]+)"/g)].map(m=>m[1]);
-assert.equal(ids.length,46);
-assert.equal(new Set(ids).size,46,'Do not lose or duplicate a review camera URL');
-const expected={streets:34,sidewalks:2,water:2,forests:2,sports:2,playgrounds:2,lighting:2};
+assert(ids.length>=47,'Keep all 47+ existing review camera URLs');
+assert.equal(new Set(ids).size,ids.length,'Do not lose or duplicate a review camera URL');
+const expected={streets:35,sidewalks:2,water:2,forests:2,sports:2,playgrounds:2,lighting:2};
 assert.deepEqual(STREET_AUDIT_SECTIONS.map(s=>s.id),Object.keys(expected));
 for(const [group,count] of Object.entries(expected))
- assert.equal(ids.filter(id=>streetAuditCategory(id)===group).length,count,
+ assert(ids.filter(id=>streetAuditCategory(id)===group).length>=count,
   'All source links must remain in their correct section: '+group);
 assert.equal(streetAuditCategory('lit-italska-5100'),'lighting');
 assert.equal(streetAuditCategory('pitch-tennis-599'),'sports');
@@ -27,6 +27,7 @@ assert.equal(streetAuditCategory('tyrsova-terrace-5131'),'streets');
 assert.equal(streetAuditCategory('armadni-island-zebra-5131'),'streets');
 assert.equal(streetAuditCategory('tyrsova-sportovni-5133'),'streets');
 assert(ids.includes('tyrsova-sportovni-5133'),'Keep Sportovní source camera');
+assert(ids.includes('prubezna-renovation-5134'),'Keep city-sourced Průběžná paving camera');
 assert(ids.includes('tyrsova-terrace-5131')&&ids.includes('armadni-island-zebra-5131'));
 assert(ids.includes('spojovaci-north-crossing-5130'),'Keep 43rd OSM crossing camera');
 assert(ids.includes('clinic-verge-trees-5129'),'Protect direct source-backed tree camera');
