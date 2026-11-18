@@ -1,3 +1,15 @@
+## Milovice RP 5.155 — Topolová 614–618: všech pět panelových domů správně pět nadzemních pater (18. 11. 2026)
+
+**Přímý technický pohled ze zdrojového chodníku:** https://foxey-cz.github.io/milovice-life-rp/?v=515500&streetAudit=topolova-panel-row-5155
+
+- **Odhalená zásadní chyba celé uliční hmoty:** pětidílná souvislá řada panelových domů má OSM RÚIAN půdorysy 61979151 (č.p. 614), 61979152 (615), 61979144 (616), 61979139 (617), **61979145 (618)**. Čtyři první mapují 5 pater, ale 618 chybně 1 patro. To dosud ve 3D dělalo jednopodlažní krajní dům s chybně odvozenou střechou.
+- **Úředně ověřeno pro všechny domy:** ČSÚ iRSO uvádí ve všech pěti případech **5 NADZEMNÍCH podlaží**, **10 bytů**, **stěnové panely**; odkazy: [614](https://apl2.czso.cz/irso4/buddet.jsp?b=21&budid=533453&hkodcis=43&idob=1003860982&kod=537501&kodcis=43&kodpol=nnnnnn), [615](https://apl2.czso.cz/irso4/buddet.jsp?b=21&budid=533454&hkodcis=43&idob=1003860991&kod=537501&kodcis=43&kodpol=nnnnnn), [616](https://apl2.czso.cz/irso4/buddet.jsp?b=21&budid=533455&hkodcis=43&idob=1003861008&kod=537501&kodcis=43&kodpol=nnnnnn), [617](https://apl2.czso.cz/irso4/buddet.jsp?b=21&budid=533456&hkodcis=43&idob=1003861016&kod=537501&kodcis=43&kodpol=nnnnnn), [618](https://apl2.czso.cz/irso4/buddet.jsp?b=21&budid=2173846&hkodcis=43&idob=1003861024&kod=537501&kodcis=43&kodpol=nnnnnn). Údaj ČSÚ o nosných panelech není potvrzením současné barvy fasády nebo viditelnosti panelových spár.
+- **Opraven celý souvislý blok bez posunu jediného OSM bodu:** pouze na zdrojově uzamčeném objektu 618 se vizuální počet pater mění z 1 na 5. Nová modelová výška 15,25 m (5 × 3,05 m) je shodná s čtyřmi sousedními 5patrovými domy; jednotlivé metry nebyly zaměřeny. Namísto omylem odvozené šikmé střechy vzniká konzistentní modelová plochá silueta. Sousedních 614–617 se geometricky nedotýkáme.
+- **Důležitá návaznost na 5.133:** RÚIAN mapy všech pěti domů sdílejí přesně čtyři obvodové hrany. Dřívější společná stěna **617–618** nebyla zahrnuta, protože univerzální filtr požadoval stejný *původní* počet OSM pater (u 618 mylně 1). Nyní pouze virtuální vstup do vykreslovacího plánu používá úředně ověřených 5 pater, takže **obě vnitřní fasády 617–618** už nedostávají falešná okna ani obvodové detaily. Globální plán RÚIAN má **29 společných stěn / 58 skrytých vnitřních fasád** místo 28/56; originální OSM zdroj zůstává beze změny.
+- **Zámky reality a výkon:** všech 5 přesných souřadnicových otisků, RÚIAN ID, 10 bytů a návazné hrany; pokud se mění zdroj, korekce neprojde. Žádná nová budova, silnice, vchod, auto, lampa, strom ani collider. Údaj o tvaru ploché střechy je výpočet modelu, nikoliv fotografie. Testy: unit, mobilní WebGL 6,5 s LOD, starší audit vnitřních stěn, Sluníčko 5.154. **CI/WebGL/Pages zatím nebyly ověřeny po commitu.**
+
+---
+
 ## Milovice RP 5.154 — Topolová 622: západní fasáda podle projektové kalkulace (18. 11. 2026)
 
 **Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=515400&streetAudit=topolova-slunicko-west-5154

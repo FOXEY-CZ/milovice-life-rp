@@ -51,17 +51,19 @@ try{
  assert.equal(s.cam.view,'tyrsova-sportovni-5133');
  assert(s.regions.includes('mlada'));
  assert.equal(s.audit.version,'5.133');
- assert.equal(s.audit.sourceSharedWallCount,28);
- assert.equal(s.audit.internalFacadeEdgesToSkip,56);
- assert.equal(s.audit.affectedBuildingCount,37);
- assert.equal(s.audit.runtimeSkippedInteriorEdges,56);
+ assert.equal(s.audit.sourceSharedWallCount,29);
+ assert.equal(s.audit.internalFacadeEdgesToSkip,58);
+ assert.equal(s.audit.affectedBuildingCount,38);
+ assert.equal(s.audit.runtimeSkippedInteriorEdges,58);
  assert.equal(s.runtime.ready,true);
  assert.equal(s.runtime.allBuildingCountsCorrect,true);
- assert.equal(s.runtime.skipped,56);
+ assert.equal(s.runtime.skipped,58);
  assert.equal(s.runtime.heroFacadesSkipped,1,
   'One priority-mass hero building must also skip its actual shared party wall');
- assert.equal(s.runtime.genericFacadesSkipped,55);
+ assert.equal(s.runtime.genericFacadesSkipped,57);
  assert.equal(s.runtime.countsPartitionCorrect,true);
+ assert.equal(s.audit.skipByBuilding['61979145'],1,
+  'Corrected Topolova 618 party wall must not be decorated as exterior');
  assert.equal(s.audit.skipByBuilding['202381246'],1,
   'Photo-priority hero 202381246 must NOT cut false exterior windows into a party wall');
  assert(s.hero.sharedPartyWallFacesSuppressed>=1,
@@ -77,6 +79,6 @@ try{
  await page.screenshot({
   path:'browser-artifacts/milovice-tyrsova-sportovni-ruian-walls-5133-mobile.png'
  });
- console.log('PASS 5.133 live Tyršova × Sportovní camera; 28 RUIAN shared walls / 56 empty interior facades after mobile LOD');
+ console.log('PASS 5.133 live Tyršova × Sportovní camera; 29 RUIAN shared walls / 58 empty interior facades after mobile LOD');
  await page.close();
 }finally{await browser.close()}
