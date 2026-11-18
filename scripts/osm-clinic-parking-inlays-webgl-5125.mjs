@@ -23,7 +23,8 @@ try{
    window.__miloviceStreetAuditRendered?.view==='armadni-clinic-5118'&&
    window.__miloviceClinicParkingInlaysAudit?.renderedMeshes===1&&
    window.__miloviceClinicParkingInlaysRuntime?.()?.ready===true&&
-   window.__miloviceClinicPhotoPharmacySignRuntime?.()?.ready===true
+   window.__miloviceClinicPhotoPharmacySignRuntime?.()?.ready===true&&
+   window.__miloviceClinicPhotoYellowCrossRuntime?.()?.ready===true
   ),null,{timeout:110000});
  }catch(e){
   const debug=await page.evaluate(()=>({
@@ -47,6 +48,8 @@ try{
   storefront:window.__miloviceClinicShopfrontRuntime?.(),
   pharmacySign:window.__miloviceClinicPhotoPharmacySignRuntime?.(),
   signAudit:window.__miloviceClinicPhotoPharmacySignAudit,
+  yellowAudit:window.__miloviceClinicPhotoYellowCrossAudit,
+  yellowRuntime:window.__miloviceClinicPhotoYellowCrossRuntime?.(),
   entrance:window.__miloviceClinicEntranceRuntime?.(),
   menuHeight:document.getElementById('street-block-audit')
    ?.getBoundingClientRect().height
@@ -84,6 +87,17 @@ try{
  assert.equal(s.pharmacySign.visibleAfterLOD,true,
   '5.126 photo-confirmed LÉKÁRNA must remain visible after mobile LOD');
  assert.equal(s.pharmacySign.actualDrawMeshCount,1);
+ assert.equal(s.yellowAudit.osmClinicId,'1057548624');
+ assert.equal(s.yellowAudit.paintedDiagonalCount,2);
+ assert.equal(s.yellowAudit.triangleCount,32);
+ assert.equal(s.yellowAudit.renderedTriangles,32);
+ assert.equal(s.yellowAudit.renderedMeshes,1);
+ assert.equal(s.yellowAudit.legallyRestrictedAreaClaimed,false);
+ assert.equal(s.yellowAudit.newParkingBays,0);
+ assert.equal(s.yellowAudit.newCrosswalks,0);
+ assert.equal(s.yellowRuntime.visibleAfterLOD,true);
+ assert.equal(s.yellowRuntime.actualDrawMeshCount,1);
+ assert.equal(s.yellowRuntime.activeTriangles,32);
  assert.equal(s.storefront.allVisible,true,
   'All 5.124 clinic shop glass must remain visible');
  assert.equal(s.entrance.allVisible,true,
@@ -92,7 +106,7 @@ try{
  assert.deepEqual(errors,[],'No browser startup/LOD JS errors');
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({
-  path:'browser-artifacts/milovice-spojovaci-clinic-photo-red-pavers-5125-mobile.png'
+  path:'browser-artifacts/milovice-spojovaci-clinic-photo-yellow-cross-5127-mobile.png'
  });
  console.log('PASS 5.125 Spojovaci red paver photo details real mobile WebGL after 6.8s LOD',
   JSON.stringify({inlayCount:s.audit.modelledSeparatorCount,
@@ -101,6 +115,7 @@ try{
    legalParkingSlotCountUnknown:!s.audit.exactStallCountKnown,
    oldClinicGlassVisible:s.storefront.allVisible,
    pharmacySignVisible:s.pharmacySign.visibleAfterLOD,
+   yellowXVisible:s.yellowRuntime.visibleAfterLOD,
    oldForecourtVisible:s.forecourt.visibleInScene,
    menuHeight:s.menuHeight}));
  await page.close();
