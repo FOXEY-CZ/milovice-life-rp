@@ -1,0 +1,40 @@
+name: Topolova MS Slunicko 5.153 mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/osm-slunicko-storeys-5153.js
+      - scripts/osm-slunicko-storeys-5153.test.mjs
+      - scripts/osm-slunicko-storeys-webgl-5153.mjs
+      - data/regions/mlada.json
+      - .github/workflows/slunicko-storeys-5153.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  school-mass:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Source and neighbouring OSM regression
+        run: |
+          node scripts/osm-slunicko-storeys-5153.test.mjs
+          node scripts/osm-topolova-residential-5148.test.mjs
+          node scripts/osm-zebra-v7-5152.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Mobile Chromium WebGL after 6.5s LOD
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-slunicko-storeys-webgl-5153.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: milovice-slunicko-5153
+          path: browser-artifacts/topolova-slunicko-main-school-5153-mobile.png
+          if-no-files-found: ignore

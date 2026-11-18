@@ -1,3 +1,14 @@
+## Milovice RP 5.153 — MŠ Sluníčko na Topolové: opravená výšková hmota hlavní budovy (18. 11. 2026)
+
+**Kontrolní technická kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=515300&streetAudit=topolova-slunicko-5153
+
+- **Doklad:** [oficiální popis MŠ Sluníčko](https://www.ms-slunicko.com/predstavujeme-ms/) a [inspekční zpráva ČŠI](https://portal.csicr.cz/Files/Get/578617D0-B976-456E-85CB-56E21E47B226?db=Archive) uvádějí čtyřpodlažní hlavní budovu s 11 třídami, Topolová 622. OSM way 53865699 / RÚIAN 26092069 je ovšem na původních 9 GPS bodech (FNV 912f8e04) označen building:levels=2. Zdrojový rozpor je výslovně zaznamenán, data OSM nejsou přepsána.
+- **Skutečná změna ve 3D:** pouze původní hlavní budova má vizuální 4 úrovně a výšku 12,20 m (předpoklad 3,05 m/podlaží). Není úředně doloženo, zda jsou všechna 4 podlaží nadzemní ani metrová výška střechy: rozměry a okenní mřížka jsou modelové. Půdorys, předchozí střešní profil, umístění sousedního školního pavilonu 53865700 a okolní chodníky/vozovky se nemění. Nepřibyl žádný další smyšlený vchod, přístřešek, parkovací stání ani lampa.
+- **Ochrana a výkon:** nová modulární kontrola scripts/osm-slunicko-storeys-5153.js provádí přísnou kontrolu GPS otisku, OSM/RÚIAN a existence školního jména. Nepřidává nové draw objekty, pouze mění původní budově vizuální výšku. scripts/osm-slunicko-storeys-5153.test.mjs testuje přesnou identitu i zamítnutí chybného zdroje; scripts/osm-slunicko-storeys-webgl-5153.mjs kontroluje mobilní Chromium po 6,5 s LOD a starší halu, Topolovou 647, chodník a přechod.
+- **Validace:** 5.153 CI, mobilní WebGL a GitHub Pages čekají na ověření; žádný PASS nehlásit před skutečným doběhnutím. Kamerový bod je existující OSM chodník 1314665579 (50.2294884, 14.8662864), azimut 50° je odhad, ne foto-shoda.
+
+---
+
 ## Milovice RP 5.152 — všechny mapované zebry: české příčné pruhy V7a, ne podélné bílé koleje (18. 11. 2026)
 
 **Přímá technická kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=515200&streetAudit=sportovni-crossing-v7a-5152

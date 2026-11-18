@@ -8,6 +8,7 @@ import {fileURLToPath} from 'node:url';
 const scriptDir=dirname(fileURLToPath(import.meta.url));
 const packs=Object.freeze({
  sportovni:[
+  'osm-slunicko-storeys-5153.test.mjs',
   'osm-sportovni-basketball-5142.test.mjs',
   'osm-sportovni-tennis-5150.test.mjs',
   'osm-milten-photo-corridor-5151.test.mjs',
