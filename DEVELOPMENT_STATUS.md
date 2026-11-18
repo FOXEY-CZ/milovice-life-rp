@@ -1,6 +1,6 @@
 # Milovice RP — rychlý handoff vývoje
 
-> **Nová 5.153 (18. 11. 2026; CI/Pages zatím neověřeny):** MŠ Sluníčko Topolová 622, OSM way/53865699, RÚIAN 26092069: oficiální škola i ČŠI uvádějí 4 podlaží, mapa má stále building:levels=2. Přidán pouze model 4 × 3,05 m = 12,20 m na PŮVODNÍM půdorysu. Čtyři *nadzemní* modelové úrovně jsou odhad, přesná výška, okna a střecha nejsou ověřené. Žádná změna původního OSM, vedlejšího pavilonu, silnic ani kolizí. Předchozí **5.152 PASS**: [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44358598412), [mobilní WebGL](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44358598304), [Pages](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44358597439).
+> **Nová 5.153 (18. 11. 2026; CI/WebGL/Pages PASS):** MŠ Sluníčko Topolová 622, OSM way/53865699, RÚIAN 26092069: oficiální škola i ČŠI uvádějí 4 podlaží, mapa má stále building:levels=2. Přidán pouze model 4 × 3,05 m = 12,20 m na PŮVODNÍM půdorysu. Čtyři *nadzemní* modelové úrovně jsou odhad, přesná výška, okna a střecha nejsou ověřené. Žádná změna původního OSM, vedlejšího pavilonu, silnic ani kolizí. **5.153 testy: [full CI PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44362924067), [mobilní WebGL+LOD PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44362924266), [hala PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44362924271), [Pages PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44362921967)**. Dlouhý browser smoke ještě běží. Předchozí **5.152 PASS**: [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44358598412), [mobilní WebGL](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44358598304), [Pages](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44358597439).
 
 ## Odkazy a spuštění
 
@@ -16,7 +16,7 @@
 - OSM zdroje: 53865699 / RÚIAN 26092069 / 9 GPS bodů / FNV 912f8e04 / původní building:levels=2. Sousední školní pavilon 53865700 se nemění.
 - 3D: čtyři modelová podlaží po 3,05 m, dohromady 12,20 m; **neověřený předpoklad čtyř NADZEMNÍCH úrovní**, nikoliv skutečně změřená výška. Žádné nepodložené dveře nebo nové uliční objekty.
 - Modul a regrese: scripts/osm-slunicko-storeys-5153.js, unit scripts/osm-slunicko-storeys-5153.test.mjs, mobilní scripts/osm-slunicko-storeys-webgl-5153.mjs, workflow slunicko-storeys-5153.yml a window.__miloviceSlunickoRuntime().
-- **CI/WebGL/Pages po commitu zkontrolovat a až poté označit PASS.** Další krok: skutečná fotografie hlavní budovy a vyjasnění počtu nadzemních pater, pak pokračovat souvislou ulicí.
+- **CI, mobilní WebGL 6,5s LOD a Pages ověřeny: PASS** (odkazy nahoře). Zároveň opraveny staré statické testy 5.119/5.145, které vyžadovaly doslovný starý zápis dvou nezměněných pravidel. Dlouhý obecný browser smoke test zatím běží. Další krok: skutečná fotografie hlavní budovy a vyjasnění počtu nadzemních pater, pak pokračovat souvislou ulicí.
 
 ## Co je důležité o verzi 5.152
 
