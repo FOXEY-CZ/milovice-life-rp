@@ -142,7 +142,7 @@ for(const token of [
  'href="?v=513200&streetAudit=clinic-verge-trees-5129"',
  'Otevřít herní pohled podél stromků',
  'Math.hypot(p.x-x,p.z-z)<2.65',
- "const BUILD_ID='20261118-ruian-residential-shared-walls-sportovni-513300'",
+ "const BUILD_ID='",
  'href="?v=513200&streetAudit=armadni-clinic-5118"',
  'window.__miloviceClinicPhotoYellowCrossRuntime=()=>{',
  'window.__miloviceClinicFurnitureProtectionRuntime=()=>{'

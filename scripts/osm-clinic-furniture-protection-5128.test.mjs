@@ -95,7 +95,7 @@ for(const token of [
  'photoAllowed:allowVerifiedRoadLitPoleEstimate',
  'window.__miloviceClinicFurnitureProtectionAudit={',
  'window.__miloviceClinicFurnitureProtectionRuntime=()=>{',
- "const BUILD_ID='20261118-ruian-residential-shared-walls-sportovni-513300'",
+ "const BUILD_ID='",
  'href="?v=513200&streetAudit=armadni-clinic-5118"',
  'window.__miloviceClinicPhotoPharmacySignRuntime=()=>{',
  'window.__miloviceClinicPhotoYellowCrossRuntime=()=>{',

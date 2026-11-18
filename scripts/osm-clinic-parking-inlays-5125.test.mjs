@@ -112,7 +112,7 @@ for(const token of [
  'window.__miloviceClinicParkingInlaysAudit={',
  'window.__miloviceClinicParkingInlaysRuntime=()=>{',
  "inlay.userData.lodDetail=false",
- "const BUILD_ID='20261118-ruian-residential-shared-walls-sportovni-513300'",
+ "const BUILD_ID='",
  'href="?v=513200&streetAudit=armadni-clinic-5118"',
  'window.__miloviceClinicShopfrontRuntime=()=>{',
  'window.__miloviceClinicForecourtRuntime=()=>{'

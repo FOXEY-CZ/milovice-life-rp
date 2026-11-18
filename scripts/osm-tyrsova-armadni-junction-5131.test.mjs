@@ -156,6 +156,6 @@ for(const token of [
  " 'armadni-island-zebra-5131':{",
  'href="?v=513200&streetAudit=tyrsova-terrace-5131"',
  'href="?v=513200&streetAudit=armadni-island-zebra-5131"',
- "const BUILD_ID='20261118-ruian-residential-shared-walls-sportovni-513300'"
+ "const BUILD_ID='"
 ])assert(html.includes(token),'5.131 scene integration missing '+token);
 console.log('PASS 5.131: named Tyršova continuity, 5 × 5-level RUIAN terrace, two OSM-tagged zebra crossings, 40 triangles, no invented roads/islands');

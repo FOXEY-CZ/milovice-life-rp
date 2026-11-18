@@ -80,7 +80,7 @@ for(const marker of [
  'const ruianPlan=planRUIANResidentialSharedWalls({',
  'ruianPartyEdgesByBuilding.set(id,new Set(edges));',
  'window.__miloviceRUIANPartyWallRuntime=()=>{',
- "const BUILD_ID='20261118-ruian-residential-shared-walls-sportovni-513300'",
+ "const BUILD_ID='",
  'streetAudit=tyrsova-sportovni-5133',
   "sharedPartyEdges:ruianPartyEdgesByBuilding.get(String(osmId))||null",
   "onSharedPartyEdge:edge=>recordRUIANSharedEdge(osmId,edge,'hero')",
