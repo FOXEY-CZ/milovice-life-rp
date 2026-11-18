@@ -67,7 +67,8 @@ export function renderTopolova646Photo5156(THREE,{
  plan,outline,baseY,layer
 }={}){
  if(!THREE||plan?.version!=='5.156'||!Array.isArray(outline)||
-  outline.length!==9||!Number.isFinite(baseY)||!layer?.add)return null;
+  // osmBuilding removes the OSM polygon's duplicated closing vertex.
+  outline.length!==8||!Number.isFinite(baseY)||!layer?.add)return null;
  const a=outline[5],b=outline[6];
  if(![a?.x,a?.y,b?.x,b?.y].every(Number.isFinite))return null;
  const len=Math.hypot(b.x-a.x,b.y-a.y);
