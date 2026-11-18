@@ -1,3 +1,17 @@
+## Milovice RP 5.138 — Part 28: skutečné asfaltové vnitřní rohy Průběžné × Sportovní (18. 11. 2026)
+
+**Kontrolní záběry:**
+- [Západní část – skutečná větev Sportovní](https://foxey-cz.github.io/milovice-life-rp/?v=513800&streetAudit=prubezna-bends-west-5138)
+- [Východní část – další větev Sportovní](https://foxey-cz.github.io/milovice-life-rp/?v=513800&streetAudit=prubezna-bends-east-5138)
+
+- **Skutečná herní změna:** šest původních OSM obytných komunikací v sídlišti Průběžná–Sportovní mělo v 3D grafice jednotlivé rovné asfaltové pásy s geometrickými mezerami ve vnitřních zatáčkách. Nový modul `scripts/osm-prubezna-bends-5138.js` vytváří **18 malých trojúhelníkových výplní** pouze v již existující šířce asfaltových pásů (**4 na větvích Průběžné, 14 na Sportovní**). Výplně přebírají skutečné OSM vrcholy, dosavadní modelovou šířku, nadmořskou výšku a materiál. Tvoří součást původní dávky silniční geometrie, nikoli nové samostatné objekty nebo nové silnice.
+- **Zdroje:** originální uložené OSM ways `83076186`, `200820420`, `200820424`, `200820425`, `200820426`, `200820427`. Každá ze šesti silnic musí před vykreslením projít kontrolou **všech GPS vrcholů pomocí deterministického otisku**; změna v mapě tuto opravu bezpečně vypne. Přesné as-built obruby nebo skutečnou asfaltovou texturu tím netvrdíme.
+- **Nedotčené:** původní průjezdy, centerlines, jednosměrka OSM `83076189` i `83076186`, silniční kolize, navazující chodníky, zebra, parkování a domy. **Nulové nové komunikace, lampy, chodníky, obrubníky, kolidery, stání a dopravní značení.**
+- **Dva nové kontrolní směry:** první stojí na OSM chodníku `1278746588`, GPS **50.2308681, 14.8624701**, míří na jih; druhý na OSM chodníku `1278749454`, GPS **50.2303156, 14.8633074**, míří na sever. Jde o technické, nikoli fotorealisticky spárované záběry.
+- **Testy:** `scripts/osm-prubezna-bends-5138.test.mjs` musí potvrdit 18 výplní a nulové zásahy do dat včetně negativních kontrol falešné geometrie; `scripts/osm-prubezna-bends-webgl-5138.mjs` kontroluje skutečné vykreslení ve scéně na mobilním Chromium po LOD a současné zachování verze 5.135 a 5.137.
+
+---
+
 ## Milovice RP 5.137 — Part 28: dvě původní pěší spojky mezi domy v Průběžné (18. 11. 2026)
 
 **Přímá herní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=513700&streetAudit=prubezna-links-5137

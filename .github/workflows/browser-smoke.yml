@@ -63,6 +63,9 @@ on:
       - scripts/osm-prubezna-links-5137.js
       - scripts/osm-prubezna-links-5137.test.mjs
       - scripts/osm-prubezna-links-webgl-5137.mjs
+      - scripts/osm-prubezna-bends-5138.js
+      - scripts/osm-prubezna-bends-5138.test.mjs
+      - scripts/osm-prubezna-bends-webgl-5138.mjs
       - scripts/osm-clinic-parking-inlays-5125.test.mjs
       - scripts/osm-clinic-parking-inlays-webgl-5125.mjs
       - scripts/station-photo-parking.js
@@ -111,6 +114,7 @@ jobs:
           node scripts/osm-prubezna-renovation-webgl-5134.mjs
           node scripts/osm-prubezna-road-webgl-5135.mjs
           node scripts/osm-prubezna-links-webgl-5137.mjs
+          node scripts/osm-prubezna-bends-webgl-5138.mjs
           node scripts/osm-ruian-party-walls-webgl-5133.mjs
           node scripts/browser_smoke.mjs
           node scripts/osm-armadni-trolleys-webgl-5120.mjs
