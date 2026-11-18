@@ -55,7 +55,7 @@ try{
   assert.equal(initial.category,view.cat);
   assert.equal(initial.openSections,view.mobile?0:1,
    'Mobile must not load all 21 street links open');
-  assert.equal(initial.allLinks,41);
+  assert(initial.allLinks>=46,'Expanded camera catalog must remain accessible');
   assert.equal(initial.categories,7);
   assert.equal(initial.current,1);
   assert(await page.locator('#street-audit-exit').count()===1,
