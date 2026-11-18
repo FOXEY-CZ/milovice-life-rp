@@ -112,8 +112,8 @@ for(const token of [
  'window.__miloviceClinicParkingInlaysAudit={',
  'window.__miloviceClinicParkingInlaysRuntime=()=>{',
  "inlay.userData.lodDetail=false",
- "const BUILD_ID='20261118-tyrsova-armadni-osm-zebra-estate-513100'",
- 'href="?v=513100&streetAudit=armadni-clinic-5118"',
+ "const BUILD_ID='20261118-tyrsova-five-houses-partywall-cleanup-513200'",
+ 'href="?v=513200&streetAudit=armadni-clinic-5118"',
  'window.__miloviceClinicShopfrontRuntime=()=>{',
  'window.__miloviceClinicForecourtRuntime=()=>{'
 ])assert(html.includes(token),'Missing integrated 5.125 safeguard '+token);
