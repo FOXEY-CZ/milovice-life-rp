@@ -1,0 +1,40 @@
+name: Milovice 5.159 Topolova 614-615 signed facades
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/osm-topolova-drawing-614615-5159.js
+      - scripts/osm-topolova-drawing-614615-5159.test.mjs
+      - scripts/osm-topolova-drawing-webgl-5159.mjs
+      - .github/workflows/topolova-drawing-614615-5159.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  elevations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Drawing OSM unit and earlier facade regressions
+        run: |
+          node scripts/osm-topolova-drawing-614615-5159.test.mjs
+          node scripts/osm-topolova-panel-row-5155.test.mjs
+          node scripts/osm-topolova-short-facades-5158.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Mobile WebGL after 6.9s LOD
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-topolova-drawing-webgl-5159.mjs
+          node scripts/osm-topolova-panel-row-webgl-5155.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: topolova-drawing-614615-5159
+          path: browser-artifacts/*5159-mobile.png
+          if-no-files-found: ignore

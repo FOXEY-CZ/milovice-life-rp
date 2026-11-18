@@ -559,6 +559,7 @@ import {SPORTOVNI_HALL_5145,planSportovniPhotoHall} from './scripts/osm-sportovn
 import {planSlunickoStoreys5153} from './scripts/osm-slunicko-storeys-5153.js?v=515300';
 import {planSlunickoWestElevation5154} from './scripts/osm-slunicko-west-elevation-5154.js?v=515400';
 import {planTopolovaPanelRow5155} from './scripts/osm-topolova-panel-row-5155.js?v=515500';
+import {planTopolovaDrawing5159,renderTopolovaDrawing5159} from './scripts/osm-topolova-drawing-614615-5159.js?v=515900';
 import {planTopolova646Photo5156,renderTopolova646Photo5156} from './scripts/osm-topolova-photo-646-5156.js?v=515600';
 import {planTopolova646BothFacades5157,renderTopolova646BothFacades5157} from './scripts/osm-topolova-photo-646-5157.js?v=515700';
 import {planSportovniPhotoNorthWalk,renderSportovniPhotoNorthWalk} from './scripts/osm-sportovni-photo-northwalk-5146.js?v=514600';
@@ -1056,6 +1057,15 @@ const rpStreetAuditViews={
   author:'Fotografie realizátora z roku 2025 + ČSÚ RSO a OSM/RÚIAN',
   technical:true,streetLevel:true,estimatedHeading:true,
   note:'Přímé fotografie bytového domu Topolová 646 z roku 2025 ukazují TŘI obytné okenní řady a členitou tmavě červenou podkrovní střechu s vikýřovými okny. ČSÚ i OSM stále uvádějí 1 podlaží celkem (ČSÚ má NADZEMNÍ podlaží nezjištěno) a 27 bytů. Hra pouze vizuálně modeluje tři řady, 9,15m stěnu, zdvih střechy 2,5m a 8 opakovaných modelových štítků. Střešní výška a počet štítů nejsou zaměřené. Fotka není georeferencovaná: přiřazení fasádních detailů k východní 43m stěně je odhad. Modelová okna neznamenají přesné okno za oknem. OSM GPS, sousedé, chodníky, silnice a kolize beze změny. Neověřené domovní dveře nevytváříme. Kamera na původním OSM bodě chodníku, azimut je model.'
+ },
+ 'topolova-drawing-614615-5159':{
+  label:'Topolová 614–615 · projektové fasády 2024',
+  camera:{lat:50.2304551,lon:14.8659256},heading:220,
+  source:'https://zakazky.mesto-milovice.cz/document_184/107a3038c3f90b7000c396e9ce9f9f75-projektova_dokumentace_podepsana-pdf',
+  regionId:'mlada',osmLandmarkId:'61979151',
+  author:'Město Milovice / PSK TUZAR, projekt 2022, smlouva 2024',
+  technical:true,streetLevel:true,estimatedHeading:true,
+  note:'Podepsané výkresy západního a východního pohledu 614–615; pět nadzemních podlaží, bílá dvoukřídlá okna, balkonové sestavy, vstupy a obloukové schodišťové nástavby. OSM source footprint beze změn. Přesné rozteče, výška nástaveb a stříšek jsou odhad podle výkresu, nikoli geodetické zaměření. Dveře jsou optický detail neprůchozí plné fasády. Kamera je technická, orientačně na OSM service-way 1201945272.'
  },
  'topolova-panel-row-5155':{
   label:'Topolová 614–618 · celá řada 5patrových panelových domů',
@@ -3331,6 +3341,21 @@ window.__miloviceTopolovaShortEndsRuntime=()=>{
    a.genericShortFacadesSuppressed===6&&a.renderedMeshes===4
  };
 };
+window.__miloviceTopolovaDrawingRuntime=()=>{
+ const a=window.__miloviceTopolovaDrawingAudit;
+ if(!a)return {ready:false};
+ const visible=a.pieces.reduce((n,p)=>n+p.visibleAfterLOD(),0);
+ const inScene=a.pieces.every(p=>p.allInScene());
+ const addresses=[...a.sourceAddresses].sort((a,b)=>a-b);
+ const row=window.__miloviceTopolovaRowRuntime?.();
+ return {...a,sourceAddresses:addresses,pieces:undefined,
+  visibleMeshesAfterLOD:visible,allInScene:inScene,
+  ready:row?.ready===true&&a.renderedFaces===4&&
+   a.genericFacadeEdgesSuppressed===4&&a.renderedMeshes===6&&
+   visible===6&&inScene&&a.normalWindows===48&&a.balconySets===32&&
+   a.entries===4&&a.roundedCaps===4&&addresses.join(',')==='614,615'&&
+   window.__miloviceAreasLoaded?.includes('mlada')===true};
+};
 window.__miloviceTopolovaRowRuntime=()=>{
  const a=window.__miloviceTopolovaRowAudit;
  if(!a)return {ready:false};
@@ -5151,6 +5176,12 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
   planTopolova646BothFacades5157({
    oldPhotoPlan:topolova646Photo,geometry:points
   }):null;
+ // 5.159: only source-locked Topolova 614/615, not 616–618.
+ const topolovaDrawingPlan=planTopolovaDrawing5159({
+  id:osmId,regionId,tags,geometry:points,visualHeight:floors*3.05,
+  photoReviewed:photoDecision.photographicApproval===true,
+  approvedArchitecture:Boolean(modelCard)
+ });
  const isPanelBlock=(type==='residential'||type==='yes')&&floors>=4;
  const isCommerce=['commercial','retail','supermarket','hotel'].includes(type);
  // Named OSM shops receive a separate ground-floor glass frontage; avoid generic residential windows over it.
@@ -5426,6 +5457,26 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
  // Fixed a major regression: the standard building branch used to put
  // a FLAT roof through every gable or hip, producing intersecting roof skins.
  const pitchedSurface=pitched||hip;
+ const drawingRendered=topolovaDrawingPlan?
+  renderTopolovaDrawing5159(THREE,{
+   plan:topolovaDrawingPlan,outline:pts,baseY:baseHeight,layer:osmLayer
+  }):null;
+ if(drawingRendered){
+  const audit=window.__miloviceTopolovaDrawingAudit ||= {
+   version:'5.159',sourceAddresses:[],renderedFaces:0,renderedMeshes:0,
+   normalWindows:0,balconySets:0,stairWindows:0,entries:0,roundedCaps:0,
+   genericFacadeEdgesSuppressed:0,createdColliders:0,pieces:[]
+  };
+  audit.sourceAddresses.push(topolovaDrawingPlan.sourceAddress);
+  audit.renderedFaces+=drawingRendered.renderedFaces;
+  audit.renderedMeshes+=drawingRendered.renderedMeshes;
+  audit.normalWindows+=drawingRendered.normalWindows;
+  audit.balconySets+=drawingRendered.balconySets;
+  audit.stairWindows+=drawingRendered.stairWindows;
+  audit.entries+=drawingRendered.entries;
+  audit.roundedCaps+=drawingRendered.roundedCaps;
+  audit.pieces.push(drawingRendered);
+ }
  const rendered646=topolova646BothPlan?
   renderTopolova646BothFacades5157(THREE,{
    plan:topolova646BothPlan,outline:pts,baseY:baseHeight,layer:osmLayer
@@ -5858,6 +5909,12 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
   const sharedEdges=ruianPartyEdgesByBuilding.get(String(osmId));
   if(legacyShared?.has(i)||sharedEdges?.has(i)){
    recordRUIANSharedEdge(osmId,i,'generic');
+   continue;
+  }
+  // 5.159: exact original OSM east/west walls now use the municipal
+  // building-specific elevation instead of unrelated generic windows.
+  if(topolovaDrawingPlan?.facadeEdges.includes(i)){
+   window.__miloviceTopolovaDrawingAudit.genericFacadeEdgesSuppressed++;
    continue;
   }
   // 5.157: two true 43m mapped walls use 4 merged photo-face meshes,
