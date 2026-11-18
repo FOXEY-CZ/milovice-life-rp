@@ -1,0 +1,41 @@
+name: Milovice 5.163 Topolova 102m mapped sidewalk pedestrians
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/osm-topolova-promenade-5163.js
+      - scripts/osm-topolova-promenade-5163.test.mjs
+      - scripts/osm-topolova-promenade-webgl-5163.mjs
+      - .github/workflows/topolova-promenade-5163.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source-locked 102m sidewalk and earlier regressions
+        run: |
+          node scripts/osm-topolova-promenade-5163.test.mjs
+          node scripts/osm-topolova-mapped-walkers-5162.test.mjs
+          node scripts/osm-topolova-estimated-facades-5161.test.mjs
+          node scripts/osm-topolova-continuous-hip-5160.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Mobile Chromium 7.25s LOD + actual walking animation
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-topolova-promenade-webgl-5163.mjs
+          node scripts/osm-topolova-mapped-walkers-webgl-5162.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: topolova-promenade-5163
+          path: browser-artifacts/*5163-mobile.png
+          if-no-files-found: ignore

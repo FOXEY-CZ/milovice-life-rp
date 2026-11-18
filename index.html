@@ -562,6 +562,7 @@ import {planTopolovaPanelRow5155} from './scripts/osm-topolova-panel-row-5155.js
 import {planTopolovaContinuousHip5160,renderTopolovaContinuousHip5160} from './scripts/osm-topolova-continuous-hip-5160.js?v=516000';
 import {planTopolovaEstimatedFacades5161,renderTopolovaEstimatedFacades5161} from './scripts/osm-topolova-estimated-facades-5161.js?v=516100';
 import {planTopolovaMappedWalkers5162,toTopolovaWalkSegment5162} from './scripts/osm-topolova-mapped-walkers-5162.js?v=516200';
+import {planTopolovaPromenade5163,topolovaPromenadeSegment5163} from './scripts/osm-topolova-promenade-5163.js?v=516300';
 import {planTopolovaDrawing5159,renderTopolovaDrawing5159} from './scripts/osm-topolova-drawing-614615-5159.js?v=515900';
 import {planTopolova646Photo5156,renderTopolova646Photo5156} from './scripts/osm-topolova-photo-646-5156.js?v=515600';
 import {planTopolova646BothFacades5157,renderTopolova646BothFacades5157} from './scripts/osm-topolova-photo-646-5157.js?v=515700';
@@ -1070,7 +1071,16 @@ const rpStreetAuditViews={
   technical:true,streetLevel:true,estimatedHeading:true,
   note:'Podepsané výkresy západního a východního pohledu 614–615; pět nadzemních podlaží, bílá dvoukřídlá okna, balkonové sestavy, vstupy a obloukové schodišťové nástavby. OSM source footprint beze změn. Přesné rozteče, výška nástaveb a stříšek jsou odhad podle výkresu, nikoli geodetické zaměření. Dveře jsou optický detail neprůchozí plné fasády. Kamera je technická, orientačně na OSM service-way 1201945272.'
  },
- 'topolova-walkers-5162':{
+ 'topolova-promenade-5163':{
+   label:'Topolová · 102 m dlouhý chodník s chodci',
+   camera:{lat:50.22985,lon:14.86619},heading:355,
+   source:'https://www.openstreetmap.org/way/1316882852',
+   regionId:'mlada',osmLandmarkId:'61979139',
+   author:'OSM way 1316882852 / 21.–22. uzel; veřejné přechody 1316882854 a 1316882853',
+   technical:true,streetLevel:true,estimatedHeading:true,
+   note:'5.163: Na původním dlážděném OSM chodníku podél Topolové se pohybují dva noví simulační chodci. Cesta 102,53 m využívá pouze zdrojové GPS uzly 21 a 22 a na obou koncích má existující OSM přechody zebra, žádné nové přechody se nekreslí. NPC se otáčejí 4m před přechody a nevstupují na silnici. Jižní dvorní pěšina 5.162 s dalšími dvěma lidmi zůstává. Chodci a jejich pohyb jsou vymyšlená herní simulace; skutečné domovní vstupy 616–618 stále nejsou zaměřené, fyzické budovy/ulice/kolize beze změny.'
+  },
+  'topolova-walkers-5162':{
    label:'Topolová 614–618 · chodci na skutečné pěšině',
    camera:{lat:50.229468,lon:14.865411},heading:5,
    source:'https://www.openstreetmap.org/way/1316882860',
@@ -3386,7 +3396,44 @@ window.__miloviceTopolovaDrawingRuntime=()=>{
    a.entries===4&&a.roundedCaps===4&&addresses.join(',')==='614,615'&&
    window.__miloviceAreasLoaded?.includes('mlada')===true};
 };
-window.__miloviceTopolovaWalkersRuntime=()=>{
+window.__miloviceTopolovaPromenadeRuntime=()=>{
+  const plan=window.__miloviceTopolovaPromenadePlan;
+  if(!plan)return {ready:false};
+  const walkers=trafficPeople.filter(p=>p.sourceFootwayId===plan.sourceSidewalkId);
+  const inScene=g=>{
+   if(!g.visible)return false;
+   for(let n=g;n;n=n.parent){
+    if(!n.visible)return false;
+    if(n===scene)return true;
+   }
+   return false;
+  };
+  const positions=walkers.map(w=>{
+   const {a,b,len}=w.seg,g=w.g;
+   const ux=(b.x-a.x)/len,uz=(b.y-a.y)/len,
+    ax=g.position.x-a.x,az=g.position.z-a.y;
+   const along=ax*ux+az*uz,lateral=Math.abs(ax*uz-az*ux);
+   return {
+    x:g.position.x,z:g.position.z,
+    mappedTrackMetres:along+plan.trimEachEndMeters,
+    onSidewalk:along>=-.03&&along<=len+.03&&lateral<.045,
+    deltaFromTerrain:Math.abs(g.position.y-terrainAt(g.position.x,g.position.z))
+   };
+  });
+  const vis=walkers.filter(p=>inScene(p.g)).length,
+   onSidewalk=positions.filter(p=>p.onSidewalk).length,
+   terrain=positions.filter(p=>p.deltaFromTerrain<.075).length;
+  return {...plan,originalGPSNodes:undefined,
+   walkerCount:walkers.length,visibleInScene:vis,
+   onMappedSidewalk:onSidewalk,terrainAligned:terrain,
+   trafficCrossings:0,positions,
+   ready:walkers.length===plan.modelWalkerCount&&
+    vis===2&&onSidewalk===2&&terrain===2&&
+    window.__miloviceTopolovaWalkersRuntime?.()?.ready===true&&
+    window.__miloviceAreasLoaded?.includes('mlada')===true
+  };
+ };
+ window.__miloviceTopolovaWalkersRuntime=()=>{
   const plan=window.__miloviceTopolovaWalkerPlan;
   if(!plan)return {ready:false};
   const people=trafficPeople.filter(p=>p.sourceFootwayId===plan.sourceFootwayId);
@@ -7035,6 +7082,12 @@ function rpAppendOSMElements(elements,regionId='old'){
   regionId,rowPlan:topolovaRow5155,ways:roadWays
  });
  if(topolovaWalkPlan)window.__miloviceTopolovaWalkerPlan=topolovaWalkPlan;
+ const topolovaPromenadePlan=planTopolovaPromenade5163({
+  regionId,rowPlan:topolovaRow5155,
+  shortWalkPlan:topolovaWalkPlan,ways:roadWays
+ });
+ if(topolovaPromenadePlan)
+  window.__miloviceTopolovaPromenadePlan=topolovaPromenadePlan;
  const topolovaInferredPlan=planTopolovaEstimatedFacades5161({
   regionId,rowPlan:topolovaRow5155,hipPlan:topolovaHipPlan,ways:buildingWays
  });
@@ -8941,7 +8994,7 @@ async function rpLoadCityArea(id){
   
   rpAppendOSMElements(osm.elements,id);
   finalizeRoadStrips();finalizeCityWalls();finalizeFoundations();finalizeFacades();finalizeArchitecture();heroBuildings.flush(osmLayer);
-  chunkMilovice();rpBuildRoadGraph();rpPopulateRegionalTraffic(area);rpSpawnTopolovaWalkers5162();improveMiloviceVisuals();publishLegacyRealityAudit();rpInitRailTraffic();
+  chunkMilovice();rpBuildRoadGraph();rpPopulateRegionalTraffic(area);rpSpawnTopolovaWalkers5162();rpSpawnTopolovaPromenade5163();improveMiloviceVisuals();publishLegacyRealityAudit();rpInitRailTraffic();
   loadedCityAreas.add(id);
   window.__miloviceAreasLoaded=[...loadedCityAreas];
   window.__miloviceAreaStats={buildings:osmBuildings,roads:osmRoads.length,landscape:landscapeZones.length};
@@ -9717,6 +9770,28 @@ function rpSpawnTopolovaWalkers5162(){
    side:0,legs:rig.legs,arms:rig.arms,phase:i*1.3});
  }
 }
+// 5.163: two new residents simulated on 102m ORIGINAL OSM footway
+// (not in the drivable road graph). Uses preexisting animation/terrain.
+function rpSpawnTopolovaPromenade5163(){
+ const plan=window.__miloviceTopolovaPromenadePlan;
+ if(!plan||trafficPeople.some(p=>p.sourceFootwayId===plan.sourceSidewalkId))return;
+ const seg=topolovaPromenadeSegment5163(plan,osmPoint);
+ if(!seg)return;
+ for(let i=0;i<plan.modelWalkerCount;i++){
+  const rig=makeHumanRig(THREE,i+76,[0x647f68,0x855768][i]);
+  const g=rig.group,progress=i===0?.25:.60,direction=i===0?-1:1;
+  const px=seg.a.x+(seg.b.x-seg.a.x)*progress,
+   pz=seg.a.y+(seg.b.y-seg.a.y)*progress;
+  g.position.set(px,terrainAt(px,pz),pz);
+  g.rotation.y=Math.atan2(-(seg.b.x-seg.a.x)*direction,
+   -(seg.b.y-seg.a.y)*direction);
+  trafficGroup.add(g);
+  trafficPeople.push({g,rig,seg,progress,direction,
+   sourceFootwayId:plan.sourceSidewalkId,
+   speed:i===0?.95:1.12,side:0,
+   legs:rig.legs,arms:rig.arms,phase:i*1.7});
+ }
+}
 function rpSeedParkedCars(center,max=12){
  const slepaParkingAudit=window.__miloviceSlepaParkingAudit ||= {
   version:'5.110',candidateSlotsNearStreet:0,
@@ -9879,9 +9954,9 @@ function rpAnimateTraffic(dt){
   g.position.set(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,terrainAt(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side),seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side);
   g.rotation.y=Math.atan2(-dx*obj.direction,-dz*obj.direction);
   // Technical street audit cameras should see local mapped walkers.
-  const focusX=obj.sourceFootwayId==='1316882860'&&rpStreetAuditCameraWorld?
+  const focusX=(obj.sourceFootwayId==='1316882860'||obj.sourceFootwayId==='1316882852')&&rpStreetAuditCameraWorld?
    rpStreetAuditCameraWorld.x:playerX;
-  const focusZ=obj.sourceFootwayId==='1316882860'&&rpStreetAuditCameraWorld?
+  const focusZ=(obj.sourceFootwayId==='1316882860'||obj.sourceFootwayId==='1316882852')&&rpStreetAuditCameraWorld?
    rpStreetAuditCameraWorld.z:playerZ;
   g.visible=Math.hypot(g.position.x-focusX,g.position.z-focusZ)<120;
   if(g.visible){

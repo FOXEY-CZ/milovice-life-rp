@@ -1,5 +1,7 @@
 # Milovice RP — rychlý handoff vývoje
 
+> **Nová 5.163 (18. 11. 2026; CI/WebGL/Pages ČEKAJÍ):** rozšířili jsme skutečné pěší RP okolí celé Topolové o původních **102,53 m OSM chodníku 1316882852 (GPS uzly 21–22, hash a50c0251)**, na obou koncích přímo napojeném na již existující mapované zebry **1316882854** (jih) a **1316882853** (sever). Souběžná skutečná OSM silnice **8618275** je vzdálena 3,92–4,65m. **2 další simulovaní chodci** chodí tam a zpět pouze po zdrojovém chodníku a otáčejí se 4m před oběma křižovatkami; spolu se 2 původními pěšími NPC 5.162 jsou **4 místní chodci na dvou skutečných OSM pěších trasách**. Hra nepřidává žádný vymyšlený přechod, cesty, domovní vstup, auta, kolize, lampy ani GPS změny. Source-locked unit, mobilní WebGL 7,25s, regrese 5.162/5.161/5.160; výsledky CI zatím čekají.
+
 > **Nová 5.162 (18. 11. 2026; CI/WebGL/Pages PASS):** 2 nové viditelné herní NPC skutečně používají zdrojově uzamčenou **OSM dlážděnou pěšinu 1316882860** (hash `35c50c19`, 2 uzly, cca 29,3 m) místo náhodné vozovky. Severní konec je identický se zdrojovým uzlem servisní 202399863 hash ec6c3bc0; jižní konec s mapovaným chodníkem 1316882852 hash a50c0251. Oba simulovaní chodci používají 2m bezpečný odstup od koncových uzlů, stávající 3D NPC rig a aktualizaci provozu. Přidaných fyzických cest, kolizí, vchodů, značek, lamp, aut, chodníků = **0**. Mladá/Topolová model 5.155–5.161 nedotčen. Jednotkové testy + mobilní WebGL +7,35s LOD a regresní vše úspěšně: **[Celkové CI PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44409477126), [nový mobilní WebGL +7,35 s a pohyb NPC PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44409476976), [GitHub Pages PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44409475710).**
 
 > **Nová 5.161 (18. 11. 2026; CI/WebGL/Pages PASS):** Topolová **616–618** (OSM 61979144/139/145) má 6 zdrojově uzamčených venkovních 16m fasád místo generických oken. Vzor **EXTRAPOLOVANÝ** ze sousedních městských 614/615 výkresů 2024; nevydávat za georeferencované foto. ČSÚ 5 pater, část balkonů 617/618 doložena městskými prodeji bytů, přesná umístění neznámá. Jen **3 sdílené fyzické GPU meshe**, 72 modelových oken, 48 prozatímních balkonových výplní, 24 schodišťových výplní; 6 generických fasád vypnuto. Žádné vymyšlené dveře, balkony s deskou, komunikace ani kolize. OSM obslužná 202399863 a pěší 1316882860 už v mapě, nezměněné; návrh požárního značení z roku 2023 není as-built. Společná valbová střecha 5.160 a skutečné 614/615 výkresy zůstaly. Nový source/unit + mobilní WebGL po 7,2s LOD: **[Celková validace CI PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44406144887), [mobilní WebGL 5.161 po 7,2 s LOD PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44406144814), [regrese střechy 5.160 PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44406145186), [GitHub Pages PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44406143332).**
@@ -15,7 +17,8 @@
 ## Odkazy a spuštění
 
 - Hra: https://foxey-cz.github.io/milovice-life-rp/
-- Nová kontrolní kamera: https://foxey-cz.github.io/milovice-life-rp/?v=516200&streetAudit=topolova-walkers-5162
+- Nová kontrolní kamera: https://foxey-cz.github.io/milovice-life-rp/?v=516300&streetAudit=topolova-promenade-5163
+- Předchozí 5.162: https://foxey-cz.github.io/milovice-life-rp/?v=516200&streetAudit=topolova-walkers-5162
 - Předchozí 5.161: https://foxey-cz.github.io/milovice-life-rp/?v=516100&streetAudit=topolova-inferred-616618-5161
 - Předchozí 5.160: https://foxey-cz.github.io/milovice-life-rp/?v=516000&streetAudit=topolova-hip-roof-5160
 - Předchozí 5.159: https://foxey-cz.github.io/milovice-life-rp/?v=515900&streetAudit=topolova-drawing-614615-5159
@@ -24,6 +27,11 @@
 - GitHub: https://github.com/FOXEY-CZ/milovice-life-rp
 - Kompletní historie: `README.md`. Pracovní pokyny: `AGENTS.md`, `docs/DEVELOPMENT_WORKFLOW.md`. Metodika reality: `docs/STREET_WORKFLOW.md`, `docs/reality-audit-00.md`.
 - Herní kód: `index.html`; moduly: `scripts/`; mapové zdroje: `data/regions/mlada.json`. Nečíst příště celé 560kB `index.html`: vyhledat dotčené moduly a identifikátory.
+
+## 5.163 — živý 102,5m chodník mezi dvěma skutečnými přechody Topolová
+- Zdrojový dlouhý úsek OSM `1316882852` od bodu 21 k bodu 22 (hash `a50c0251`, 28 uzlů, `paving_stones` a `footway=sidewalk`), **102,53m**. Start přesně končí na existujícím crossing zebra `1316882854` hash 0e127baa a konec na `1316882853` hash dcb5d34e. Soubežná rezidenční Topolová `8618275` hash c0fe69b0, rozdíl od osy vozovky 3,92–4,65m; proto nemusíme hádat dodatečný sidewalk.
+- `planTopolovaPromenade5163` fail-closed ověřuje všechny čtyři source hashy, oba původní GPS koncové uzly zebrových přechodů a 5.162 návaznost; pouze dva NPC na 94,53m vnitřní části s oběma konci 4m od přechodů. Žádná změna asfaltu/OSM/kolizí. S 5.162 jsou celkem 4 lidé na konkrétních, existujících pěších trasách a zbytek města beze změn.
+- Nový unit + WebGL 7,25s po LOD a regrese 5.162/5.161/5.160. **CI/Pages čekají.** Další: bezpečná pěší síť na skutečných waypoint koridorech, detail skutečných vstupů 616–618 pouze podle fotografií.
 
 ## 5.162 — dva herní chodci na přesné OSM pěšině 1316882860
 - Existující `highway=footway`, `paving_stones`, `lit=yes` ~29,3m. Původní zdrojové napojení: severně OSM service 202399863; jižně dlouhá OSM footway 1316882852. Sjednocení cest existovalo už před verzí, žádnou syntetickou T-záplatu nekreslit.
@@ -101,6 +109,7 @@
 
 | Verze | Co bylo změněno | Zdroj / omezení |
 | --- | --- | --- |
+| **5.163** | Topolová: 102,53m další skutečné dlážděné pěší linie, 2 NPC, 2 již mapované zebry | Doplněk k 5.162; 0 nové fyzické geometrii, CI čeká. |
 | **5.162** | Topolová 614–618: 2 simulovaní NPC na původní OSM pěšině, 2m od konců | Žádné nové cesty nebo fyzické objekty; CI/WebGL/Pages PASS. |
 | **5.161** | Topolová 616–618: jednotný 6stranný výplňový model, 3 GPU meshe | Pouze prozatímní extrapolace 614/615, 6 generických přeskočeno, fyzické GPS/ulice zachovány; CI/WebGL/Pages PASS. |
 | **5.160** | Topolová 614–618: místo 5 plochých poklic 1 valbová souvislá střecha | Usnesení města 2023, 22 GPU trojúhelníků, rise 2,25m model; CI/WebGL/Pages PASS. |
@@ -127,6 +136,6 @@ Starší oblasti zahrnují nádraží, Bike Tower, staré centrum, garáže, Šk
 
 1. **Vize:** celé propojené Milovice jako 3D realistická webová GTA/RP hra — budovy, střechy, okna, dveře, silnice, obruby, chodníky, značení, skutečná zeleň, osvětlení, nádraží a doprava; udržet FPS/mobilní WebGL. Nejen miniaturní dekorace, realizovat souvislé ulice.
 2. **Důkazy:** zachovat všechny OSM/RÚIAN identifikátory, GPS i geometrii. Fyzicky zobrazovat jen zdrojem podložené objekty; jejich neověřené rozměry a povrchy jasně označit `model`. Nepřidávat fiktivní přechody, lampy, stání, stromy, vchody, brány či trasování.
-3. **Nejbližší směr po 5.162:** pokračovat po **Sportovní × Topolová** celou ulicí, především skutečně fotograficky/úředně doložené střechy a přístupy. Zkontrolovat přechody z pozice chodce a jejich napojení na již mapované chodníky. Nedoplňovat bez podkladů.
+3. **Nejbližší směr po 5.163:** pokračovat po **Sportovní × Topolová** celou ulicí, především skutečně fotograficky/úředně doložené střechy a přístupy. Zkontrolovat přechody z pozice chodce a jejich napojení na již mapované chodníky. Nedoplňovat bez podkladů.
 4. **Nejistoty:** ČSÚ Sportovní 587 (RÚIAN `27906264`) uvádí tři podlaží *celkem*, není to potvrzený počet **nadzemních** podlaží ani přesná střecha. Některé půdorysy/objekty jsou větší než zdrojové fotografie. Plán 109 parkovacích stání a 22 lamp v části Průběžné nemá georeferencované detaily C.3; nedomýšlet polohy.
 5. **Workflow:** po „Pokračuj“ ověřit HEAD + přečíst `AGENTS.md` a tento stručný stav + jen nejnovější sekce `README.md`, pak relevantní kód. Změnit jeden věcný blok v jednom atomickém commitu, přidat test, mobilní Chromium 6s+ LOD a validaci; PASS uvádět až po skutečném proběhnutí. Unit rychle: `node scripts/dev-check.mjs sportovni` nebo `node scripts/dev-check.mjs --list`. `DEVELOPMENT_STATUS.md` aktualizovat dle CI.
