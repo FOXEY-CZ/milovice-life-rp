@@ -14,7 +14,7 @@ try{
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
  await page.goto(
-  'http://127.0.0.1:8080/?v=513200&streetAudit=tyrsova-terrace-5131',
+  'http://127.0.0.1:8080/?v=513300&streetAudit=tyrsova-terrace-5131',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>(
@@ -52,7 +52,7 @@ try{
   oldClinicShopfront:window.__miloviceClinicShopfrontRuntime?.(),
   oldClinicSaplings:window.__miloviceClinicPhotoSaplingsRuntime?.()
  }));
- assert.equal(s.build,'20261118-tyrsova-five-houses-partywall-cleanup-513200');
+ assert.equal(s.build,'20261118-ruian-residential-shared-walls-sportovni-513300');
  assert.equal(s.label,s.build);
  assert(s.regions.includes('mlada'));
  assert.equal(s.cam.view,'tyrsova-terrace-5131');
