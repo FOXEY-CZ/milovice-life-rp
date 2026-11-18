@@ -207,5 +207,7 @@ jobs:
         run: node scripts/osm-ruian-party-walls-5133.test.mjs
       - name: Verify 5.134 official Průběžná 2025 pavers stay on two actual OSM footways without fake lamps/parking
         run: node scripts/osm-prubezna-renovation-5134.test.mjs
+      - name: Verify 5.135 Průběžná 2025 asphalt stays on the exact 256.6 m original one-way OSM road
+        run: node scripts/osm-prubezna-road-5135.test.mjs
       - name: Validate expanded Milovice districts and real elevation data
         run: python3 scripts/validate_regions.py
