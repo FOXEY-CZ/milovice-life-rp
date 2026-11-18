@@ -1,0 +1,42 @@
+name: Milovice 5.157 Topolova 646 both photo facades
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/osm-topolova-photo-646-5157.js
+      - scripts/osm-topolova-photo-646-5157.test.mjs
+      - scripts/osm-topolova-photo-646-both-webgl-5157.mjs
+      - scripts/osm-topolova-photo-646-webgl-5156.mjs
+      - .github/workflows/topolova-both-facades-5157.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  both-facades:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Source geometry and earlier roof/row regressions
+        run: |
+          node scripts/osm-topolova-photo-646-5157.test.mjs
+          node scripts/osm-topolova-photo-646-5156.test.mjs
+          node scripts/osm-topolova-panel-row-5155.test.mjs
+          node scripts/osm-slunicko-west-elevation-5154.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Mobile Chrome WebGL and 6.9 second LOD
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-topolova-photo-646-both-webgl-5157.mjs
+          node scripts/osm-topolova-photo-646-webgl-5156.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: topolova-both-facades-5157
+          path: browser-artifacts/*5157-mobile.png
+          if-no-files-found: ignore

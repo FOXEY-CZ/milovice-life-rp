@@ -1,14 +1,22 @@
 # Milovice RP — rychlý handoff vývoje
 
-> **Nově 5.156 (18. 11. 2026; CI/WebGL/Pages PASS):** 2025 **přímé foto Topolová 646** realizátora zateplení půdy: tři řady běžných oken, světle omítnutá dlouhá fasáda, lososové pásy a opakované štítové vikýře. OSM 53866048 / RÚIAN 25789813 uvádí 1 podlaží, ČSÚ také 1 CELKEM ale nadzemní podlaží nezjištěna; 27 bytů a zděné zdi. Pouze *visual-only* model 3 × 3,05 m = **9,15 m fasádní výšky** a 2,5m štítovou střechu + 8 modelových vikýřů, 48 oken na jedné 43m straně a 16 vikýřových; **OSM tag/GPS, ostatní domy a silnice nedotčeny**. Přesné metry, počet vikýřů a strana záběru negeoreferencované. **5.156 [plná CI PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44382755580), [mobilní WebGL + 6,8s LOD PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44382755851), [GitHub Pages PASS](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44382754821).** Starší 5.155 zůstává PASS.
+> **Nová 5.157 (18. 11. 2026; CI/WebGL/Pages čekají):** dům **Topolová 646** nově z obou dlouhých stran podle referenčních fotek z roku 2025 (fotografie 2 od vozidel a 3 od zeleného plotu). Foto přímo ukazuje půlkruhově ukončené podkrovní zasklení, dříve chybně obdélníkové. OSM 53866048 / RÚIAN 25789813, GPS hash 73d119b1, hrany 5 a 7 měří 43,046 m a 43,021 m; obě obdržely odhadovanou pravidelnou fasádu. Počty oken/štítů, přiřazení světové strany i metry jsou nadále odhady, ne georeferencovaná fotogrammetrie. **4 sloučené fasádní meshe i pro 2 líce**; generické fasády na obou dlouhých stranách vypnuté. Žádné vymyšlené vchody ani GPS změny. 5.156 CI/WebGL/Pages PASS.
 
 ## Odkazy a spuštění
 
 - Hra: https://foxey-cz.github.io/milovice-life-rp/
-- Nová kontrolní kamera: https://foxey-cz.github.io/milovice-life-rp/?v=515600&streetAudit=topolova-646-photo-5156
+- Nová kontrolní kamera: https://foxey-cz.github.io/milovice-life-rp/?v=515700&streetAudit=topolova-646-both-5157
 - GitHub: https://github.com/FOXEY-CZ/milovice-life-rp
 - Kompletní historie: `README.md`. Pracovní pokyny: `AGENTS.md`, `docs/DEVELOPMENT_WORKFLOW.md`. Metodika reality: `docs/STREET_WORKFLOW.md`, `docs/reality-audit-00.md`.
 - Herní kód: `index.html`; moduly: `scripts/`; mapové zdroje: `data/regions/mlada.json`. Nečíst příště celé 560kB `index.html`: vyhledat dotčené moduly a identifikátory.
+
+## 5.157 — Topolová 646: obě 43m fasády a vyklenutá podkrovní okna
+
+- Zdroj dvě odlišná exteriérová foto dlouhých líců: https://www.revitalizacebytovek.cz/realizace/topolova-646-milovice, foto č. 2 od vozidel a č. 3 od živého plotu. Přímý důkaz krémové/lososové omítky, opakovaných štítů a půlkruhového zasklení. Negeoreferencovaná foto orientace: není známo, které dlouhé GPS straně patří konkrétní detail.
+- Skutečné OSM 53866048, RÚIAN 25789813, hash 73d119b1, 9 mapových GPS bodů; originální wall edge 5 = 43,046 m a edge 7 = 43,021 m. Model generuje obě stěny s modelovým rozvrhem po 8 štítech, 48 běžných a 16 podkrovních půlkruhových oken na stranu; 2× v součtu. Oblouk skutečně triangulovaný, 10 úseček, ne obdélníkový hranatý decal.
+- Vykreslení ve 4 sdílených materiálových meshech pro obě strany dohromady; dva generické fasádní passthrough na skutečných OSM hranách záměrně vypnuté. Výška 9,15m a červená střecha modelově ponechána z 5.156. OSM level=1, sousední 647, 614–618, MŠ, chodníky a silnice beze změny.
+- Modul scripts/osm-topolova-photo-646-5157.js, unit s fyzickými vertex buffery, mobilní Chrome/WebGL +6,9s LOD, regresní testy staré 5.156/5.155 a workflow .github/workflows/topolova-both-facades-5157.yml. Nový runtime __miloviceTopolovaBothFacadesRuntime() kontroluje počet foto-stran, vypnuté generické fasády, 4 reálné GPU meshe a přežití LOD. **CI/WebGL/Pages zatím nedoloženy.**
+- Další krok: georeferenční určení skutečných vstupů a krátkých průčelí z foto/OSM, pak pokračovat další ulicí.
 
 ## 5.156 — Topolová 646: fotografie skutečné fasády 2025
 
@@ -53,6 +61,7 @@
 
 | Verze | Co bylo změněno | Zdroj / omezení |
 | --- | --- | --- |
+| **5.157** | Topolová 646: dvě 43m foto-fasády, 32 klenutých podkrovních oken, generické fasády potlačeny | 4 sdílené mesh; počet štítů/rozteče model, CI čeká. |
 | **5.156** | Topolová 646: skutečná fasáda a podkroví z přímých foto 2025, původně chybná jednopodlažní hmota | 3 řady a podkrovní štíty, metry i rozteče model; CI/WebGL/Pages PASS. |
 | **5.155** | Topolová 614–618, úředních 5 nadzemních pater; oprava OSM nesouladu 618 a společné stěny 617–618 | Přísný GPS/RÚIAN zámek, bez změny originálních dat; CI/WebGL/Pages PASS. |
 | **5.154** | MŠ Sluníčko: projektová západní fasáda 44 m, výška vizuální hmoty 13,15 m | Rozpočtový údaj není as-built zaměření; přísný OSM hash, CI/WebGL/Pages PASS. |
@@ -73,6 +82,6 @@ Starší oblasti zahrnují nádraží, Bike Tower, staré centrum, garáže, Šk
 
 1. **Vize:** celé propojené Milovice jako 3D realistická webová GTA/RP hra — budovy, střechy, okna, dveře, silnice, obruby, chodníky, značení, skutečná zeleň, osvětlení, nádraží a doprava; udržet FPS/mobilní WebGL. Nejen miniaturní dekorace, realizovat souvislé ulice.
 2. **Důkazy:** zachovat všechny OSM/RÚIAN identifikátory, GPS i geometrii. Fyzicky zobrazovat jen zdrojem podložené objekty; jejich neověřené rozměry a povrchy jasně označit `model`. Nepřidávat fiktivní přechody, lampy, stání, stromy, vchody, brány či trasování.
-3. **Nejbližší směr po 5.156:** pokračovat po **Sportovní × Topolová** celou ulicí, především skutečně fotograficky/úředně doložené střechy a přístupy. Zkontrolovat přechody z pozice chodce a jejich napojení na již mapované chodníky. Nedoplňovat bez podkladů.
+3. **Nejbližší směr po 5.157:** pokračovat po **Sportovní × Topolová** celou ulicí, především skutečně fotograficky/úředně doložené střechy a přístupy. Zkontrolovat přechody z pozice chodce a jejich napojení na již mapované chodníky. Nedoplňovat bez podkladů.
 4. **Nejistoty:** ČSÚ Sportovní 587 (RÚIAN `27906264`) uvádí tři podlaží *celkem*, není to potvrzený počet **nadzemních** podlaží ani přesná střecha. Některé půdorysy/objekty jsou větší než zdrojové fotografie. Plán 109 parkovacích stání a 22 lamp v části Průběžné nemá georeferencované detaily C.3; nedomýšlet polohy.
 5. **Workflow:** po „Pokračuj“ ověřit HEAD + přečíst `AGENTS.md` a tento stručný stav + jen nejnovější sekce `README.md`, pak relevantní kód. Změnit jeden věcný blok v jednom atomickém commitu, přidat test, mobilní Chromium 6s+ LOD a validaci; PASS uvádět až po skutečném proběhnutí. Unit rychle: `node scripts/dev-check.mjs sportovni` nebo `node scripts/dev-check.mjs --list`. `DEVELOPMENT_STATUS.md` aktualizovat dle CI.

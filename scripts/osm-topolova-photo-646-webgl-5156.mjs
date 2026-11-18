@@ -44,9 +44,10 @@ try{
   'GPU Float32 world mesh height must be within 1mm of the photo-derived model');
  assert.equal(r.p?.pitchedRoofCreated,true);
  assert.equal(r.p?.renderedMeshes,4);
- assert.equal(r.p?.modelGables,8);
- assert.equal(r.p?.modelMainWindows,48);
- assert.equal(r.p?.modelAtticWindows,16);
+ assert.equal(r.p?.modelGables,16);
+ assert.equal(r.p?.bothPhotoPlan?.version,'5.157');
+ assert.equal(r.p?.modelMainWindows,96);
+ assert.equal(r.p?.modelAtticWindows,32);
  assert.equal(r.p?.visibleAfterLOD,4);
  assert.equal(r.p?.suppressedUnverifiedEntrance,true);
  assert(r.row?.ready&&r.school?.ready&&r.masonry?.ready&&r.zebra?.ready);

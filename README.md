@@ -1,3 +1,15 @@
+## Milovice RP 5.157 — Topolová 646, dva dlouhé fasádní líce a půlkruhová podkrovní okna (18. 11. 2026)
+
+**Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=515700&streetAudit=topolova-646-both-5157
+
+- **Ověřený přímý fotografický podklad:** [realizace Topolová 646 z roku 2025](https://www.revitalizacebytovek.cz/realizace/topolova-646-milovice), [fotografie č. 2 od vozidel](https://realizace.revitalizacebytovek.cz/images/milovice-topolova-646/milovice--topolova-646-2.jpg?v=1782467203) a [fotografie č. 3 od zeleného plotu](https://realizace.revitalizacebytovek.cz/images/milovice-topolova-646/milovice--topolova-646-3.jpg?v=1782467203). Viditelné jsou světlé omítky, lososové pilastry, 3 běžné řady oken a skutečně **půlkruhová** podkrovní okna ve štítech. Verze 5.156 pokrývala jen jeden 43m líc a podkrovní okna zjednodušila na obdélníky.
+- **Teď dva skutečné dlouhé vnější OSM obvody:** source-lock 53866048 / RÚIAN 25789813 / 9 původních GPS bodů / hash 73d119b1, východní hrana 5 má 43,046 m a západní hrana 7 má 43,021 m. Na obou jsou nové krémovo-lososové modely, skutečně triangulovaná **půlkruhová okna** s 10 segmenty oblouku a modelová červená střešní přerušení. Oba staré generické fasádní průchody na těchto dvou hranách jsou zrušeny, aby se nic nepřekrývalo.
+- **Ověřené vs. odhad:** fotografie dokládají oblouková okna, členění a opakované štíty, nikoli geodetické výšky, všechny rozteče, přesné počty nebo to, kterou fotografovanou stranu přiřadit ke konkrétní OSM hraně. Na *každý* z obou modelových líců připadá odhadovaných 8 štítů, 48 standardních oken a 16 obloukových podkrovních oken, celkem 16 / 96 / 32. Výška stěny 9,15 m, převýšení střechy 2,5 m a původní OSM level=1 zůstávají jako ve 5.156. Žádné naprosto přesné 360° dokončení zatím netvrdit.
+- **Výkon a bezpečnost reality:** fyzická scéna používá **jen čtyři sdílené materiálové draw-meshe pro oba líce dohromady**, stejně jako 5.156 pro jeden. Nevytváříme neověřené dveře, chodník, auta, stromy, lampy, parkování ani kolizní objekty. Fotky ukazují vstup i plot, ale neověřené GPS polohy zatím nevkládáme. Žádné cizí fotografie nejsou vložené do herních textur.
+- **Testy:** čistý modul scripts/osm-topolova-photo-646-5157.js, source/unit s reálnými geometrickými vertex buffery (mock Three), nový mobilní Chromium/WebGL po 6,9 sekundách LOD; staré 5.156 a 5.155 regresní testy zůstávají. **CI, WebGL a Pages čekají na výsledky commitu.**
+
+---
+
 ## Milovice RP 5.156 — Topolová 646: skutečná fasáda a podkrovní štíty podle fotografií z roku 2025 (18. 11. 2026)
 
 **Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=515600&streetAudit=topolova-646-photo-5156
