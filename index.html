@@ -496,6 +496,7 @@ import {planPhotoClinicYellowCross} from './scripts/osm-clinic-yellow-cross-5127
 import {planClinicPavingFurnitureProtection} from './scripts/osm-clinic-furniture-protection-5128.js?v=512800';
 import {planPhotographedClinicVergeSaplings} from './scripts/osm-clinic-photo-saplings-5129.js?v=512900';
 import {planSpojovaciPhotoStreetFurniture} from './scripts/osm-spojovaci-photo-street-furniture-5130.js?v=513000';
+import {planTyrsovaArmJunctionZebras} from './scripts/osm-tyrsova-armadni-junction-5131.js?v=513100';
 import {planBillaTrolleyShelter} from './scripts/osm-armadni-trolleys-5120.js?v=512000';
 import {planSlepaParkGround} from './scripts/osm-slepa-park-ground-5114.js?v=511400';
 import {planSlepaArmRoadCornerWedges} from './scripts/osm-slepa-armadni-road-joins-5115.js?v=511500';
@@ -6565,6 +6566,109 @@ function rpAppendOSMElements(elements,regionId='old'){
   const a=slepaStreet.points[0],b=slepaStreet.points[1];
   window.__miloviceSlepaResidentialAudit.sourceStreetCenter={
    x:(a.x+b.x)*.5,z:(a.y+b.y)*.5};
+ }
+ // 5.131: Spojovací really ENDS on Armádní; the northern road is
+ // Tyršova. Original OSM tags confirm two actual ZEBRA crossings on
+ // Armádní and two genuine sidewalk ribbons beside the Tyršova estate.
+ // Paint only those two OSM zebra geometries on asphalt. Do not repaint
+ // the nearby marked-but-style-unspecified or UNMARKED crossings.
+ // Five abutting five-storey 1999 RUIAN buildings are source-checked,
+ // but their shells, heights, windows, footprints and collision stay intact.
+ if(regionId==='mlada'){
+  const srcRoad=id=>roadWays.find(w=>String(w.id)===String(id));
+  const srcHouse=id=>buildingWays.find(w=>String(w.id)===String(id));
+  const roadRecord=el=>el?{
+   id:el.id,tags:el.tags,
+   width:roadWidths.get(String(el.id)),
+   points:el.geometry.map(osmPoint)
+  }:null;
+  const houseRecord=el=>el?{
+   id:el.id,tags:el.tags,
+   points:el.geometry.map(osmPoint)
+  }:null;
+  const tyrsovaPlan=planTyrsovaArmJunctionZebras({
+   regionId,
+   spojovaci:roadRecord(srcRoad(246652750)),
+   tyrsovaSouth:roadRecord(srcRoad(8618265)),
+   tyrsovaNorth:roadRecord(srcRoad(1331897627)),
+   armadniWest:roadRecord(srcRoad(1331897681)),
+   armadniEast:roadRecord(srcRoad(1331897683)),
+   westSidewalk:roadRecord(srcRoad(1046197807)),
+   eastSidewalk:roadRecord(srcRoad(1316882852)),
+   westZebra:roadRecord(srcRoad(1318462995)),
+   eastZebra:roadRecord(srcRoad(1316882855)),
+   markedUnknown:roadRecord(srcRoad(1044078125)),
+   unmarked:roadRecord(srcRoad(1278749453)),
+   eastTerraceBuildings:[
+    61979140,61979141,61979149,61979146,61979143
+   ].map(id=>houseRecord(srcHouse(id)))
+  });
+  if(tyrsovaPlan){
+   const paintMaterial=new THREE.MeshBasicMaterial({
+    color:0xf5f3ed,side:THREE.DoubleSide,depthWrite:false
+   });
+   const crossingMeshes=[];
+   for(const part of tyrsovaPlan.crossingParts){
+    const pos=[];
+    for(const bar of part.bars){
+     const c=bar.corners;
+     for(const tri of [[c[0],c[1],c[2]],[c[0],c[2],c[3]]]){
+      for(const p of tri)
+       pos.push(p.x,terrainAt(p.x,p.z)+.185,p.z);
+     }
+    }
+    const geo=new THREE.BufferGeometry();
+    geo.setAttribute('position',
+     new THREE.Float32BufferAttribute(pos,3));
+    geo.computeBoundingSphere();
+    const mesh=new THREE.Mesh(geo,paintMaterial);
+    mesh.name='Milovice_Tyrsova_Armadni_RealOSMZebra_5131_'+part.crossingId;
+    mesh.userData.lodDetail=false;
+    mesh.userData.photoFixtureLodProtected=true;
+    mesh.userData.sourceOSMZebraWay=part.crossingId;
+    mesh.userData.estimatedIslandGap=true;
+    osmLayer.add(mesh);
+    crossingMeshes.push(mesh);
+   }
+   const {crossingParts,eastBuildingRow,...facts}=tyrsovaPlan;
+   window.__miloviceTyrsovaArmadniJunctionAudit={
+    ...facts,
+    actualRenderedMeshes:crossingMeshes.length,
+    actualRenderedTriangles:crossingMeshes.reduce((n,m)=>
+     n+m.geometry.getAttribute('position').count/3,0),
+    mappedBuildingRow:eastBuildingRow,
+    actualZebraWayIds:crossingMeshes.map(m=>m.userData.sourceOSMZebraWay),
+    originalCrossingFootwayGeometryPreserved:true,
+    existingOSMSidewalkSurfacesPreserved:true,
+    sourceOnlyWithoutGuessedHouses:true
+   };
+   window.__miloviceTyrsovaArmadniJunctionRuntime=()=>{
+    const entries=crossingMeshes.map(mesh=>{
+     let attached=osmLayer.children.includes(mesh),visible=attached,inScene=false;
+     for(let node=attached?mesh:null;node;node=node.parent){
+      if(!node.visible)visible=false;
+      if(node===scene){inScene=true;break;}
+     }
+     return {id:mesh.userData.sourceOSMZebraWay,
+      triangles:mesh.geometry.getAttribute('position').count/3,
+      attached,inScene,visibleInScene:visible&&inScene,
+      protectedFromDetailLOD:mesh.userData.lodDetail===false};
+    });
+    return {
+     ready:entries.length===2&&entries.every(e=>e.inScene),
+     drawMeshes:entries.length,
+     originalSourceCrossings:tyrsovaPlan.sourceCrossingWayIds,
+     fullPaintedTriangles:entries.reduce((n,e)=>n+e.triangles,0),
+     visibleZebraCrossingsAfterLOD:entries.filter(e=>e.visibleInScene).length,
+     allGeometryPreserved:entries.every(e=>e.attached&&e.triangles===20),
+     allProtectedFromDetailLOD:entries.every(e=>e.protectedFromDetailLOD),
+     markedUnspecifiedStillUnpainted:true,
+     northUnmarkedStillUnpainted:true,
+     fiveStoreyTerraceUnmodified:true,
+     entries
+    };
+   };
+  }
  }
  // 5.123: The 2023 completed ABP exterior and later property photos
  // prove a broad PALE PAVED forecourt between Poliklinika 873 and Spojovací.
