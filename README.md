@@ -1,3 +1,24 @@
+## Milovice RP 5.130 — celá část Spojovací kolem Polikliniky až k severnímu přechodu (Part 26, 18. 11. 2026)
+
+**Hra / ověřené odkazované kamery:**
+- Poliklinika + nové značky a osvětlení: https://foxey-cz.github.io/milovice-life-rp/?v=513000&streetAudit=armadni-clinic-5118
+- Tři mladé stromky z fotografie: https://foxey-cz.github.io/milovice-life-rp/?v=513000&streetAudit=clinic-verge-trees-5129
+- **Skutečný mapovaný severní přechod přes Spojovací:** https://foxey-cz.github.io/milovice-life-rp/?v=513000&streetAudit=spojovaci-north-crossing-5130
+
+### Co je fotograficky doložené a co OSM
+- [SPADIA – exteriér Polikliniky](https://www.spadia.cz/verejnost/odberova-mista/praha-a-stredocesky-kraj/milovice/) zobrazuje v přední části budovy modrou značku `P` na sloupku. Neprokazuje její **přesný mapový bod**, ani právní vyhrazení či počet parkovacích míst. Nový 3D prvek je proto jen **piktogram P**, bez logiky parkování nebo vymyšlených zákazů.
+- [Novější exteriér gynekologické kliniky](https://gynekologie-milovice.cz/) v objektu na Spojovací 873 ([přímý snímek zveřejněný v roce 2026](https://gynekologie-milovice.cz/uploads/20260401061151_poliklinika-milovice.jpg)) ukazuje rovněž vysoký **sloup s vyloženou hlavou veřejného osvětlení**. Ve hře přibyl jediný podobný vizuální sloup. Jeho modelová výška 5,8 m, typ hlavice a poloha jsou přiznanými odhady, **nikoliv geodetickým zaměřením** nebo údaji o počtu stožárů v celé ulici.
+- Oproti fotografickým dekoracím jsou **polohy silnic a křižovatek přímo doložené skutečnými mapovými daty OSM**: Poliklinika `1057548624`, Spojovací `246652750` (`lit=yes`), vnější pěší cesta `1092081938`, vnitřní pěší cesta `1339091016`, **značený severní přechod `1044078125`** (`footway=crossing`, `crossing=marked`) a protější rozsáhlá **jednopodlažní komerční stavba `202380957`** (OSM `building=commercial`, `building:levels=1`). Komerční stavbu proto nesmíme v projektu pod vlivem fotografie vzdáleného bytového domu v pozadí zaměnit za výškový panelák. Zachován také mapovaný pozemek zeleně `1454936713`.
+- Modul `scripts/osm-spojovaci-photo-street-furniture-5130.js` modeluje **2 skutečně fotograficky viděné typy objektů**, rozdělené do **5 lehkých WebGL meshů** (modrá P tabulka + sloupek; lampový sloup, rameno a hlavice). Aby se neocitly na cestách, přijímá *všechny* blízké mapované komunikace, stavby, chráněných 422 buněk dlažby a tři modelové stromky. Všechna umístění se zamítnou při kolizi nebo při změně potvrzených ID. Žádné nové kolize, silnice, chodníky, přechody, parkovací stání, stromy ani výšky existujících budov.
+- Nová technická kamera v menu míří ze **skutečného východního konce severního přechodu OSM** na vozovku směrem k západu. Je to **mapový pohled, ne fotografická poloha fotografa**. Už existující přechod kreslený původním enginem se nenahrazuje druhou falešnou zebrou. Celá dosavadní ulice a okolní objekty přežívají i mobilní LOD.
+
+### Ověření
+- `scripts/osm-spojovaci-photo-street-furniture-5130.test.mjs` provádí přesné vazby na originální region Mladá, ověřuje komunikace/pěší trasy, zachovanou zeleň, komerční objekt s jedním podlažím, severní crossing, dvě fotovizuální zařízení a odmítnutí vymyšlených prvků.
+- Audit: `window.__miloviceSpojovaciPhotoStreetAudit`; skutečná kontrola 3D: `window.__miloviceSpojovaciPhotoStreetRuntime()`. Mobilní `scripts/osm-clinic-parking-inlays-webgl-5125.mjs` navíc čeká 6,8 sekund po načtení a ověřuje viditelnost nových 5 meshů, předešlých stromů, nápisu LÉKÁRNA, dlažby a žlutého kříže.
+- Jde o nahrání zdrojů na GitHub; úspěch statických testů, živého WebGL a nasazení GitHub Pages se musí potvrdit konkrétními dokončenými GitHub Actions běhy.
+
+---
+
 ## Milovice RP 5.129 — tři fotograficky doložené stromky u Polikliniky (Part 26, 18. 11. 2026)
 
 **Živá hra:** https://foxey-cz.github.io/milovice-life-rp/?v=512900
