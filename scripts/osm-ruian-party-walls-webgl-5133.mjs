@@ -1,0 +1,73 @@
+// 5.133: live mobile Chromium sanity at TRUE Tyršova × Sportovní.
+import assert from 'node:assert/strict';
+import {mkdir} from 'node:fs/promises';
+import {chromium} from 'playwright-core';
+const browser=await chromium.launch({
+ executablePath:process.env.CHROME_BIN||'/usr/bin/google-chrome',
+ headless:true,args:['--no-sandbox','--disable-dev-shm-usage',
+  '--enable-webgl','--use-gl=angle','--use-angle=swiftshader',
+  '--enable-unsafe-swiftshader']
+});
+try{
+ const page=await browser.newPage({viewport:{width:393,height:852},
+  deviceScaleFactor:1,isMobile:true,hasTouch:true});
+ const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
+ await page.goto(
+  'http://127.0.0.1:8080/?v=513300&streetAudit=tyrsova-sportovni-5133',
+  {waitUntil:'domcontentloaded',timeout:35000});
+ try{
+  await page.waitForFunction(()=>(
+   window.__miloviceAreasLoaded?.includes('mlada')&&
+   window.__miloviceStreetAuditRendered?.view==='tyrsova-sportovni-5133'&&
+   window.__miloviceRUIANPartyWallRuntime?.()?.ready===true&&
+   window.__miloviceTyrsovaPartyWallRuntime?.()?.ready===true
+  ),null,{timeout:110000});
+ }catch(error){
+  const ctx=await page.evaluate(()=>({
+   areas:window.__miloviceAreasLoaded,
+   cam:window.__miloviceStreetAuditRendered,
+   plan:window.__miloviceRUIANPartyWallAudit,
+   live:window.__miloviceRUIANPartyWallRuntime?.(),
+   old:window.__miloviceTyrsovaPartyWallRuntime?.()
+  }));
+  throw Error('5.133 live plan failed: '+JSON.stringify(ctx)+
+   ' JS '+JSON.stringify(errors)+' '+error);
+ }
+ await page.waitForTimeout(6800);
+ const s=await page.evaluate(()=>({
+  build:document.querySelector('meta[name="milovice-build"]')?.content,
+  hud:document.getElementById('build-label')?.textContent,
+  cam:window.__miloviceStreetAuditRendered,
+  audit:window.__miloviceRUIANPartyWallAudit,
+  runtime:window.__miloviceRUIANPartyWallRuntime?.(),
+  old:window.__miloviceTyrsovaPartyWallRuntime?.(),
+  regions:window.__miloviceAreasLoaded,
+  menuHeight:document.getElementById('street-block-audit')
+   ?.getBoundingClientRect().height
+ }));
+ assert.equal(s.build,'20261118-ruian-residential-shared-walls-sportovni-513300');
+ assert.equal(s.hud,s.build);
+ assert.equal(s.cam.view,'tyrsova-sportovni-5133');
+ assert(s.regions.includes('mlada'));
+ assert.equal(s.audit.version,'5.133');
+ assert.equal(s.audit.sourceSharedWallCount,28);
+ assert.equal(s.audit.internalFacadeEdgesToSkip,56);
+ assert.equal(s.audit.affectedBuildingCount,37);
+ assert.equal(s.audit.runtimeSkippedInteriorEdges,56);
+ assert.equal(s.runtime.ready,true);
+ assert.equal(s.runtime.allBuildingCountsCorrect,true);
+ assert.equal(s.runtime.skipped,56);
+ assert.equal(s.runtime.alteredRoads,0);
+ assert.equal(s.runtime.alteredBuildingPolygons,0);
+ assert.equal(s.runtime.addedMeshes,0);
+ assert.equal(s.old.ready,true);
+ assert.equal(s.old.skippedInteriorEdges,8);
+ assert(s.menuHeight<150,'Street audit menu must not cover mobile viewport');
+ assert.deepEqual(errors,[],'No JS exceptions after streaming and LOD');
+ await mkdir('browser-artifacts',{recursive:true});
+ await page.screenshot({
+  path:'browser-artifacts/milovice-tyrsova-sportovni-ruian-walls-5133-mobile.png'
+ });
+ console.log('PASS 5.133 live Tyršova × Sportovní camera; 28 RUIAN shared walls / 56 empty interior facades after mobile LOD');
+ await page.close();
+}finally{await browser.close()}
