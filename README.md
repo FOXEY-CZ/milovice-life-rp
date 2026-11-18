@@ -1,3 +1,17 @@
+## Milovice RP 5.127 — Spojovací u Polikliniky: fotograficky doložený žlutý kříž na dlažbě (Part 26, 18. 11. 2026)
+
+**Hra:** https://foxey-cz.github.io/milovice-life-rp/?v=512700
+
+**Přímá kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=512700&streetAudit=armadni-clinic-5118
+
+- [SPADIA – reálný snímek přízemí Polikliniky](https://www.spadia.cz/verejnost/odberova-mista/praha-a-stredocesky-kraj/milovice/) viditelně ukazuje **žlutý kříž z diagonálních pruhů** na dlážděné ploše u tyrkysového vstupu. Přesné rozměry, konečné geodetické souřadnice ani právní význam tohoto značení z fotografie doložit nelze. Model **nevydává prvek za přesné oficiální vodorovné dopravní značení, zónu zákazu stání, vyhrazené místo nebo legální parkovací regulaci**.
+- Modul `scripts/osm-clinic-yellow-cross-5127.js` se spustí jen na konkrétní budově **OSM way/1057548624**, autentické východní fasádě, ulici **Spojovací way/246652750** a pěší trase **way/1339091016**. Využívá původních **422 modelových dlažebních buněk verze 5.123**, které již byly oříznuty mimo okolní OSM jízdní trasy. Souřadnice žlutých linek jsou jen umělecká aproximace poblíž centra vstupního průčelí.
+- **Bezpečnost okolní ulice:** obě diagonály se vzorkují po celé délce včetně jejich šířky, každá hranice se ověřuje vůči existující dlažbě, mapovaným vozovkám i pěší trase. Nezasahují do původní vozovky, chodníku ani nedávno doplněných červenohnědých parkovacích pruhů. Pokud se původní geometrie zdrojů změní, dekorace se nevytvoří.
+- Celý motiv jsou **2 tenké žluté diagonály sdružené do jednoho WebGL meshe, 32 trojúhelníků a jednoho nového materiálu**. Nad dlažbou leží na vzorkovaném terénu DEM +0,120 m (dlažba +0,105 m, skutečné OSM pěší cesty +0,13 m), má vypnuté detailové LOD zmizení a **nevytváří žádný kolizní objekt, cestu, dopravní značku, přechod ani parkovací stání**.
+- Test `scripts/osm-clinic-yellow-cross-5127.test.mjs` validuje originální OSM oblast Mladá, pruhy, krajní vzdálenosti a všechny nulové dopravní změny. Audit `window.__miloviceClinicPhotoYellowCrossAudit` odděluje doložený barevný vzor od odhadnuté pozice. Živá kontrola `window.__miloviceClinicPhotoYellowCrossRuntime()` ověřuje skutečnou scénu i zůstávající viditelnost po 5s mobilním LOD. Historické mobilní testy navíc hlídají, že nebyly poškozené Billa, vchod, výlohy, nápis LÉKÁRNA, světlá dlažba ani původní červenohnědé pruhy. Nasazení a úspěch WebGL ověří až GitHub Actions.
+
+---
+
 ## Milovice RP 5.126 — Spojovací: zelený nápis LÉKÁRNA podle nové fotografie (Part 26, 18. 11. 2026)
 
 **Aktuální hra:** https://foxey-cz.github.io/milovice-life-rp/?v=512600
