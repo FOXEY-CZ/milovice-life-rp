@@ -49,6 +49,8 @@ on:
       - scripts/osm-tyrsova-armadni-junction-5131.js
       - scripts/osm-tyrsova-armadni-junction-5131.test.mjs
       - scripts/osm-tyrsova-armadni-junction-webgl-5131.mjs
+      - scripts/osm-tyrsova-party-walls-5132.js
+      - scripts/osm-tyrsova-party-walls-5132.test.mjs
       - scripts/osm-clinic-parking-inlays-5125.test.mjs
       - scripts/osm-clinic-parking-inlays-webgl-5125.mjs
       - scripts/station-photo-parking.js
