@@ -95,8 +95,8 @@ for(const token of [
  'photoAllowed:allowVerifiedRoadLitPoleEstimate',
  'window.__miloviceClinicFurnitureProtectionAudit={',
  'window.__miloviceClinicFurnitureProtectionRuntime=()=>{',
- "const BUILD_ID='20261118-spojovaci-complete-photo-street-context-513000'",
- 'href="?v=513000&streetAudit=armadni-clinic-5118"',
+ "const BUILD_ID='20261118-tyrsova-armadni-osm-zebra-estate-513100'",
+ 'href="?v=513100&streetAudit=armadni-clinic-5118"',
  'window.__miloviceClinicPhotoPharmacySignRuntime=()=>{',
  'window.__miloviceClinicPhotoYellowCrossRuntime=()=>{',
  'window.__miloviceClinicParkingInlaysRuntime=()=>{'
