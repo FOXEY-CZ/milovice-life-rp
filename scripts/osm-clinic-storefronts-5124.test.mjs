@@ -103,7 +103,7 @@ for(const token of [
  "clinicPhotoGroundGlazedBays",
  "physicalPharmacySignAdded:false",
  "pharmacyPlacementOnFacadeVerified:false",
- "const BUILD_ID='20261118-tyrsova-five-houses-partywall-cleanup-513200'",
+ "const BUILD_ID='20261118-ruian-residential-shared-walls-sportovni-513300'",
  "href=\"?v=513200&streetAudit=armadni-clinic-5118\"",
  "id=\"street-audit-clinic-tenants\" hidden",
  "clinicTenantPanel.hidden=rpStreetAuditId!=='armadni-clinic-5118'",
