@@ -21,10 +21,15 @@ for(const source of SPORTOVNI_RUIAN_5140.buildings){
   tags:way.tags,geometry:way.geometry,height:Number(source.levels)*3.05});
  assert(plan);
  const points=way.geometry.map(toWorld);
- const face=exteriorFacadeFrame(points,0);
- assert(face&&face.len>=2.1);
+ // OSM starts at an arbitrary cadastral vertex. Some polygon FIRST
+ // edges are only short setbacks, so never assume edge 0 is a frontage.
+ const candidates=points.map((_,i)=>exteriorFacadeFrame(points,i))
+  .filter(face=>face&&face.len>=2.1)
+  .sort((a,b)=>b.len-a.len);
+ assert(candidates.length>0,'Mapped tower must have a real door-capable wall: '+source.id);
+ const face=candidates[0];
  const p=planSportovniEntrancePlinth({
-  plan,facade:face,entranceEdgeIndex:0});
+  plan,facade:face,entranceEdgeIndex:face.index});
  assert(p,'All nine geometrically matched RUIAN buildings must permit an unblocked entry plinth');
  assert.equal(p.sourceBuildingId,source.id);
  assert.equal(p.sourceRUIANId,source.ruian);
@@ -45,12 +50,12 @@ for(const source of SPORTOVNI_RUIAN_5140.buildings){
  });
  assert(pieces.reduce((sum,x)=>sum+x.width,0)<face.len-1.88);
  assert.equal(planSportovniEntrancePlinth({
-  plan,facade:face,entranceEdgeIndex:1}),null);
+  plan,facade:face,entranceEdgeIndex:(face.index+1)%points.length}),null);
  assert.equal(planSportovniEntrancePlinth({
   plan:{...plan,sourceGeometryExactlyMatched:false},
-  facade:face,entranceEdgeIndex:0}),null);
+  facade:face,entranceEdgeIndex:face.index}),null);
  assert.equal(planSportovniEntrancePlinth({
-  plan:{...plan,id:'made-up'},facade:face,entranceEdgeIndex:0}),null);
+  plan:{...plan,id:'made-up'},facade:face,entranceEdgeIndex:face.index}),null);
  const wi={plan,entranceEdgeIndex:0,edgeIndex:0,
   edgeLength:face.len,floor:0};
  assert.equal(sportovniEntryWindowConflict({...wi,fraction:.5}),true);
