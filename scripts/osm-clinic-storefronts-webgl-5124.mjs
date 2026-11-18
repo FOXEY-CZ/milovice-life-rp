@@ -60,7 +60,11 @@ try{
  assert.equal(x.audit.groundGlassAnchoredToDEM,7);
  assert.equal(x.audit.missingGroundGrades,0);
  assert.equal(x.audit.pharmacyPlacementOnFacadeVerified,false);
- assert.equal(x.audit.physicalPharmacySignAdded,false);
+ // 5.126: newer RE/MAX photography confirms generic green LÉKÁRNA letters.
+ // Keep the old 5.124 tenant-bay uncertainty; the new text is not a verified
+ // branded LEMON unit or an extra lease/entrance.
+ assert.equal(x.audit.physicalPharmacySignAdded,true);
+ assert.equal(x.audit.pharmacySignPhysicallyObserved,true);
  assert.equal(x.audit.newBusinessSignMeshes,0);
  assert.equal(x.audit.newAssumedShopDoorHoles,0);
  assert.equal(x.audit.newParkingBays,0);
