@@ -1,3 +1,21 @@
+## Milovice RP 5.132 — Tyršova: správné souvislé fasády pěti RÚIAN domů (Part 26, 18. 11. 2026)
+
+**Přímá kontrolní kamera pro všech pět domů:** https://foxey-cz.github.io/milovice-life-rp/?v=513200&streetAudit=tyrsova-terrace-5131
+
+**Navazující Armádní a dvě skutečné zebry:** https://foxey-cz.github.io/milovice-life-rp/?v=513200&streetAudit=armadni-island-zebra-5131
+
+### Zdrojově doložená oprava, bez vymyšlených domů
+- Pět existujících souvisejících skutečných OSM/RÚIAN polygonů `61979140`, `61979141`, `61979149`, `61979146`, `61979143` v Tyršově. Všechny jsou v OSM označeny `building=residential` a `building:levels=5`. Vždy dva sousední polygony sdílejí **oba přesné koncové body jedné hranové úsečky** délky přibližně **11,56–11,58 m**. Nejde o souřadnicově hádané „blízké domy“.
+- Obecný generátor dříve osazoval dekorativní okna, dveře, vodorovné lišty a panely i na každou společnou vnitřní stěnu dvou domů. Na celé řadě jsou **4 společné stěny**, které ale tvoří **8 vnitřních fasádních hran** v pěti samostatných polygonech. Oprava je odstraňuje z běžného generování fasádních dekorací, zatímco **12 původních vnějších fasádních hran** nadále dostává původní prvky.
+- Nový samostatný plánovač `scripts/osm-tyrsova-party-walls-5132.js` určí orientaci každé sdílené hrany přímo z originálních polygonů a společných dvou koncových bodů, nikoliv ze vzdálenosti středů budov. Oprava je striktně omezena na tuto doloženou řadu. Při změně způsobu využití, počtu podlaží, nesouvislosti sousedů, cest OSM či identity budovy se změna **nevykreslí**. Neznámé domy jinde ve městě neovlivní.
+- **Běžné solidní objemy budov, stěnové extruze, fyzikální kolize, střechy, základy a původní 5-podlažní výška zůstávají přesně stejné.** Mění se pouze generování vnějších detailů na interních stěnách. Nebyly odhadnuty nové vstupy, barvy domů, balkony, umístění stromů, křižovatky ani čísla dveří; skutečný vzhled jednotlivých fasád dosud **nebyl fotograficky zaměřen**.
+- Precompute se provede nad **celou pěticí OSM domů ještě před jejich vykreslením**, aby výsledek nebyl závislý na pořadí načítání. V `window.__miloviceTyrsovaPartyWallAudit` lze vidět 4 spáry, 8 odmítnutých vnitřních hran, přesné indexy každé budovy a skutečně zpracované hrany. `window.__miloviceTyrsovaPartyWallRuntime()` porovnává očekávané a živé počty **1,2,2,2,1** podle jednotlivých OSM ID.
+- Nový regresní test `scripts/osm-tyrsova-party-walls-5132.test.mjs` ověřuje originální data v `data/regions/mlada.json` i odmítnutí podvržené geometrie. Rozšířená 3D mobilní kontrola `scripts/osm-tyrsova-armadni-junction-webgl-5131.mjs` čeká po načtení **6,8 sekundy**, ověřuje všech 8 skutečně potlačených hran a zároveň zachování obou dřívějších přechodů s ostrůvky.
+- **Aktualita k povrchu ulice:** úřad v květnu 2026 zveřejnil [přechodnou úpravu provozu pro výměnu krytu Tyršovy](https://ud.mestolysa.cz/vr2026/vm05/MULL0B03D324_0.html). Dokument sám nepotvrzuje konečný vzhled každého chodníku či parkovacího místa. Proto dosavadní dopravní trasy a OSM dlažby ponecháváme beze změny a žádné nové obrubníky ani parkovací pruhy podle návrhu **nepřidáváme**.
+- Nové zdroje, browser testy a aktuální GitHub Pages je potřeba potvrdit skutečnými výsledky GitHub Actions; samotný commit není potvrzení funkčnosti.
+
+---
+
 ## Milovice RP 5.131 — návazná Tyršova, Armádní a dvě skutečně mapované zebry (Part 26, 18. 11. 2026)
 
 **Živé kontrolní kamery:**
