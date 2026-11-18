@@ -1,3 +1,15 @@
+## Milovice RP 5.142 — Sportovní: dva mapované basketbalové koše (18. 11. 2026)
+
+**Přímá 3D kontrola:** https://foxey-cz.github.io/milovice-life-rp/?v=514200&streetAudit=sportovni-basketball-5142
+
+- **Nové skutečné 3D modely:** na již existujícím venkovním basketbalovém hřišti přibyly **dvě konstrukce košů**. Nezakládá se nový sportovní areál ani nové navigační/kolizní objekty. Každý koš má úspornou stojnou konstrukci, rameno, desku s orientačním značením a obroučku (celkem 10 malých meshů pro oba). Model nezobrazuje nedoložené sítě, osvětlení ani ploty.
+- **Mapový důkaz počtu a polohy plochy:** původní OSM `way/1278746587` je `leisure=pitch`, `sport=basketball`, **`hoops=2`**, `access=yes`, `lit=no`; polygon má 6 původních GPS bodů. Celý jeho otisk i počet dva jsou kontrolované a změna jediného bodu ochranu vypne. Fyzické modely jsou vedené pouze uvnitř již existujícího obrysu hřiště a při dodržení odstupu od silnic a budov.
+- **Přesnost:** OSM dokládá hřiště a dva koše, **ne přesné polohy jednotlivých stojanů, typ, barvu, výšku ani konstrukční provedení**. Umístění naproti sobě odvozuje model ze směru původního hřiště (cca běžný herní basketbalový layout); všechny tyto detaily jsou viditelně označené jako přibližný **model**, nikoliv fotografie dokončené reality.
+- **Bezpečnost:** `scripts/osm-sportovni-basketball-5142.js` vytváří pouze dvě malé grafické skupiny bez fyzických koliderů. Původní značení hřiště 5.99, pěší napojení 5.141, devět domů 5.140 a veřejný OSM silniční graf zůstávají nedotčené. Mobilní skupiny jsou registrované přes vlastní LOD souřadnice. Testy: `scripts/osm-sportovni-basketball-5142.test.mjs` a `scripts/osm-sportovni-basketball-webgl-5142.mjs`.
+- **Kamera:** OSM `footway/1278746588`, GPS **50.2310064, 14.8624583**, technický směr **320°** k hřišti. Není to foto ani spárovaný panoramatický úhel.
+
+---
+
 ## Milovice RP 5.141 — pěší trasy a návaznost okolí Sportovní mezi bytovými domy (18. 11. 2026)
 
 **Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=514100&streetAudit=sportovni-estate-joins-5141
