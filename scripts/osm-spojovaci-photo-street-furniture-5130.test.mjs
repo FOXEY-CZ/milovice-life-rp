@@ -146,8 +146,8 @@ for(const token of [
  "new THREE.CylinderGeometry(.06,.084,light.postHeight,8)",
  "mesh.userData.photoFixtureLodProtected=true",
  " 'spojovaci-north-crossing-5130':{",
- "href=\"?v=513000&streetAudit=spojovaci-north-crossing-5130\"",
- "const BUILD_ID='20261118-spojovaci-complete-photo-street-context-513000'",
+ "href=\"?v=513100&streetAudit=spojovaci-north-crossing-5130\"",
+ "const BUILD_ID='20261118-tyrsova-armadni-osm-zebra-estate-513100'",
  'window.__miloviceClinicPhotoSaplingsRuntime=()=>{',
  'window.__miloviceClinicPhotoYellowCrossRuntime=()=>{'
 ])assert(html.includes(token),'Missing source-backed street hookup '+token);
