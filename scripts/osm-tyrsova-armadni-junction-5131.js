@@ -78,7 +78,7 @@ function crossingBars(cross,road){
  if(toLine(mid,road.points)>.25)return null;
  const direction=[0,2].map(i=>{
   const point=cross.points[i],len=distance(point,mid);
-  if(len<5.5||len>17)return null;
+  if(len<5.0||len>17)return null;
   return {ux:(X(point)-X(mid))/len,uz:(Z(point)-Z(mid))/len};
  });
  if(direction.some(d=>!d))return null;
