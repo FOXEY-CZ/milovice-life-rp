@@ -7203,22 +7203,46 @@ function rpAppendOSMElements(elements,regionId='old'){
    }
   }
  }
- // 5.133: calculate all source-identical RUIAN residential party walls
- // before adding any facade geometry (O(edges), no guessed neighbors).
- if(regionId==='mlada'){
+ // 5.133: apply exact party-wall protection in EVERY progressively
+ // loaded OSM district. Neighboring extracts overlap: by this point the
+ // buildingWays list has already been deduplicated, so each shared edge
+ // is counted only in the district that FIRST actually renders its two
+ // source buildings. Original core is loaded before regional Mladá.
+ if(['old','mlada','vrutice','westlink','centerlink','bozidar'].includes(regionId)){
   const ruianPlan=planRUIANResidentialSharedWalls({
    regionId,buildings:buildingWays.map(el=>({
     id:el.id,tags:el.tags,points:el.geometry.map(osmPoint)
    }))
   });
   if(ruianPlan){
-   ruianPartyEdgesByBuilding.clear();
-   for(const [id,edges] of Object.entries(ruianPlan.edgeMap))
+   const previous=window.__miloviceRUIANPartyWallAudit;
+   const edgeMap={...(previous?.edgeMap||{})};
+   const skipped={...(previous?.skipByBuilding||{})};
+   for(const [id,edges] of Object.entries(ruianPlan.edgeMap)){
+    const existing=ruianPartyEdgesByBuilding.get(id);
+    if(existing)throw Error('RUIAN facade ID rendered in two regions: '+id);
     ruianPartyEdgesByBuilding.set(id,new Set(edges));
+    edgeMap[id]=edges;
+    skipped[id]=0;
+   }
+   const allIds=Object.keys(edgeMap).sort();
    window.__miloviceRUIANPartyWallAudit={
-    ...ruianPlan,runtimeSkippedInteriorEdges:0,
-    skipByBuilding:Object.fromEntries(
-     ruianPlan.sourceBuildingIds.map(id=>[id,0]))
+    version:'5.133',regionId:'progressive-regions',
+    sourceRegions:[...(previous?.sourceRegions||[]),{
+     id:regionId,sourceWalls:ruianPlan.sourceSharedWallCount,
+     sourceFacadeEdges:ruianPlan.internalFacadeEdgesToSkip}],
+    sourceBuildingIds:allIds,edgeMap,
+    sourceSharedWallCount:(previous?.sourceSharedWallCount||0)+
+     ruianPlan.sourceSharedWallCount,
+    internalFacadeEdgesToSkip:(previous?.internalFacadeEdgesToSkip||0)+
+     ruianPlan.internalFacadeEdgesToSkip,
+    affectedBuildingCount:allIds.length,
+    runtimeSkippedInteriorEdges:previous?.runtimeSkippedInteriorEdges||0,
+    skipByBuilding:skipped,
+    photoValidatedAppearance:false,originalSolidWallExtrusionsPreserved:true,
+    originalRoofsPreserved:true,originalBuildingGeometryPreserved:true,
+    originalTrafficAndFootwaysPreserved:true,additionalMeshes:0,
+    additionalColliders:0
    };
    window.__miloviceRUIANPartyWallRuntime=()=>{
     const audit=window.__miloviceRUIANPartyWallAudit;
@@ -7229,6 +7253,7 @@ function rpAppendOSMElements(elements,regionId='old'){
      expected:audit.internalFacadeEdgesToSkip,
      allBuildingCountsCorrect:audit.sourceBuildingIds.every(id=>
       audit.skipByBuilding[id]===audit.edgeMap[id].length),
+     auditedRegions:audit.sourceRegions,
      sourceOnly:true,allSolidsPreserved:true,
      alteredBuildingPolygons:0,alteredFloorCounts:0,
      alteredRoads:0,alteredSidewalks:0,addedMeshes:0,
