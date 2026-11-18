@@ -1,0 +1,40 @@
+name: Sportovni 5.143 entrances mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/osm-sportovni-entrances-5143.js
+      - scripts/osm-sportovni-entrances-5143.test.mjs
+      - scripts/osm-sportovni-entrances-webgl-5143.mjs
+      - scripts/osm-mlada-residential-5105.js
+      - data/regions/mlada.json
+      - .github/workflows/sportovni-entrances-5143-webgl.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  entries-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Exact original OSM building footprints and doorway holes
+        run: node scripts/osm-sportovni-entrances-5143.test.mjs
+      - name: Install mobile Chromium test client
+        run: npm install --no-save --no-package-lock playwright-core
+      - name: Check scene model and LOD after 6s
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-sportovni-entrances-webgl-5143.mjs
+      - name: Save screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sportovni-entrances-5143-mobile
+          path: browser-artifacts/sportovni-entrances-5143-mobile.png
+          if-no-files-found: ignore

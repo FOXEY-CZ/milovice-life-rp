@@ -1,3 +1,16 @@
+## Milovice RP 5.143 — Sportovní / Průběžná: přízemí a vchody devíti bytových domů (18. 11. 2026)
+
+**Přímá mobilní kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=514300&streetAudit=sportovni-entrances-5143
+
+- **Oprava napříč skutečným blokem:** devět přesně identifikovaných panelových domů RÚIAN/OSM ze 5.140 dosud dostávalo 1,3 m vysoký **sokl i přes modelový vchod**, takže se mohl graficky překrývat se spodkem dveří. V nové verzi se pouze na stejné původní vstupní hraně sokl rozdělí na dva segmenty s čistým otvorem **1,89 m**, v úrovni stávajícího modelového dveřního rámu 1,65 m. Žádný nový vchod se nevytváří a světová GPS geometrie, půdorysy, fasády, střechy a podlaží se nemění.
+- **Druhá související oprava:** na tomto přesně určeném souboru domů **nepokládáme univerzální 3,2 × 1,6 m modelový přístřešek**, jehož existenci jsme u konkrétních domů neměli podloženou fotografií. Dveře, stávající modelový rám a výškově ukotvený práh zůstávají; skutečné umístění dveří je zatím *modelová volba dle mapované ulice*, nikoli ověřený vchod. Ostatní paneláky mimo těchto devět domů se nemění.
+- **Třetí oprava:** v přízemí se vynechávají pouze okna, jejichž **skutečný modelový rám o šířce 1,40 m** by se fyzicky překrýval s 1,65 m vstupním rámem (+8 cm rezerva), místo původního pevného ±9,5% intervalu na všech fasádách bez ohledu na délku. Horní patra a okna ostatních budov zůstávají nedotčená.
+- **Ochrana reálných zdrojů:** `scripts/osm-sportovni-entrances-5143.js` je aktivní jen pokud projde původní 5.140 kontrolou všech devíti RÚIAN ID, podlaží a GPS vrcholů. Fasáda a vchod jsou nadále **model**, žádná fotografie ani 360° zaměření. Nulové nové budovy, chodníky, ploty, kolize, parkoviště či lampy.
+- **Testy:** `scripts/osm-sportovni-entrances-5143.test.mjs` ověřuje všech devět původních polygonů, přesné mezery v soklu, nezávislost na okolních budovách a nekolizi modelových přízemních oken. `scripts/osm-sportovni-entrances-webgl-5143.mjs` kontroluje reálné instancované sokly po 6 s mobilního LOD, dřívější devět domů, deset rohů chodníků a dva basketbalové koše. GitHub Actions výsledek ověřit po commitu.
+- **Pozice kamery:** původní mapovaný pěší bod `1278746588`, **50.2308681, 14.8624701**, směr **147°** jako dosavadní technická kamera 5.140, ne fotograficky totožný úhel.
+
+---
+
 ## Milovice RP 5.142 — Sportovní: dva mapované basketbalové koše (18. 11. 2026)
 
 **Přímá 3D kontrola:** https://foxey-cz.github.io/milovice-life-rp/?v=514200&streetAudit=sportovni-basketball-5142

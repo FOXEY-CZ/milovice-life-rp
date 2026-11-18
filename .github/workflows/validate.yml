@@ -227,5 +227,7 @@ jobs:
         run: node scripts/osm-sportovni-estate-walk-5141.test.mjs
       - name: Verify 5.142 two real OSM Sportovni basketball hoops inside mapped court
         run: node scripts/osm-sportovni-basketball-5142.test.mjs
+      - name: Verify 5.143 nine RUIAN apartment entrance plinth openings
+        run: node scripts/osm-sportovni-entrances-5143.test.mjs
       - name: Validate expanded Milovice districts and real elevation data
         run: python3 scripts/validate_regions.py
