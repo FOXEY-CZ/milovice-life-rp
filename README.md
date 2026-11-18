@@ -1,3 +1,15 @@
+## Milovice RP 5.134 — Průběžná × Sportovní: asfalt a betonové chodníky z městské dokumentace (Part 27, 18. 11. 2026)
+
+**Kontrolní kamera (mobil i PC):** https://foxey-cz.github.io/milovice-life-rp/?v=513400&streetAudit=prubezna-renovation-5134
+
+- **Prameny:** [Město Milovice: společné povolení Parkování ulice Průběžná, 15. 3. 2023](https://www.mesto-milovice.cz/assets/File.ashx?id_dokumenty=14345&id_org=9519), [Město Milovice: veřejná zakázka opravy chodníků a komunikace Průběžná, 2025](https://zakazky.mesto-milovice.cz/contract_display_51.html). Projektová dokumentace explicitně popisuje betonovou dlažbu na chodnících, asfaltovou obnovu vozovky v délce *cca 400 m od Tyršovy ke Sportovní*, parkování a veřejné osvětlení. Jde o projektové a smluvní informace, **ne fotogrammetrické zaměření hotové stavby**.
+- **Co se skutečně změnilo ve 3D:** dva originální pěší OSM průběhy v regionu Mladá — way/**1046197808** (10 mapových bodů, ~251,1 m, dosud bez výslovného `surface`) a way/**1278746581** (7 mapových bodů, ~49,9 m, ve starším OSM `surface=asphalt`) — dohromady ~**301,0 m**. Na existující, silnicemi bezpečně oříznuté povrchové pásy používáme jemně odlišený **modelový povrch betonové dlažby** z již existující herní procedurální textury. Barva, jednotlivý vzor a přesná hranice rekonstrukce jsou odhady; žádné nové úseky pěších cest, obrubníky či geometrie se nepřidávají.
+- **Přesné veřejně doložené parametry projektu:** **109 navrhovaných stání**, z toho 94 šikmých a 15 kolmých, **6 míst pro ZTP**, standardní šířka stání 2,50 m, šířky chodníků 1,0–2,10 m, v dokumentaci **22 nových svítidel**. Nejedná se o souřadnice: všech **109 stání, 22 stožárů, značky ZTP i 4×4 m kontejnerová stání zůstávají záměrně bez nových modelů**, dokud jejich přesná poloha nebude ověřena výkresem a fotografiemi. Hra nemění původní jednosměrný OSM way/**83076189**.
+- **Automatické pojistky:** `scripts/osm-prubezna-renovation-5134.js` aktivuje povrch pouze na přesně spárovaných zdrojových OSM cestách při načtení Mladé. Kontrolní počítadlo `window.__milovicePrubezna2025Runtime()` zaznamená změněné materiály, ponechané mapové vrcholy a 0 vymyšlených parkovacích nebo světelných objektů. Node test odmítá jiné OSM cesty / změněné označení, prohlížečový mobilní test navíc ověřuje skutečně vykreslený povrch po adaptivním LOD a kompaktní nabídku ulic.
+- **Navazující Tyršova × Sportovní:** [Milovický zpravodaj 11/2025, str. 7](https://www.mesto-milovice.cz/assets/File.ashx?id_dokumenty=18977&id_org=9519) potvrzuje nově zhotovený osvětlený přechod. Do hry se ale bez detailní situace stále **nepřidávají odhadnuté pruhy a osvětlení přechodu**.
+
+---
+
 ## Milovice RP 5.133.1 — skutečně poslední chybějící společná zeď (Part 27, 18. 11. 2026)
 
 **Kontrolní kamera ve hře:** https://foxey-cz.github.io/milovice-life-rp/?v=513301&streetAudit=tyrsova-sportovni-5133
