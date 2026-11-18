@@ -27,7 +27,8 @@ try{
    window.__miloviceClinicPhotoYellowCrossRuntime?.()?.ready===true&&
    window.__miloviceClinicFurnitureProtectionRuntime?.()?.ready===true&&
    window.__miloviceClinicPhotoSaplingsRuntime?.()?.ready===true&&
-   window.__miloviceSpojovaciPhotoStreetRuntime?.()?.ready===true
+   window.__miloviceSpojovaciPhotoStreetRuntime?.()?.ready===true&&
+   window.__miloviceTyrsovaArmadniJunctionRuntime?.()?.ready===true
   ),null,{timeout:110000});
  }catch(e){
   const debug=await page.evaluate(()=>({
@@ -59,6 +60,8 @@ try{
   photoSaplingsRuntime:window.__miloviceClinicPhotoSaplingsRuntime?.(),
   streetPhotoAudit:window.__miloviceSpojovaciPhotoStreetAudit,
   streetPhotoRuntime:window.__miloviceSpojovaciPhotoStreetRuntime?.(),
+  tyrsovaJunctionAudit:window.__miloviceTyrsovaArmadniJunctionAudit,
+  tyrsovaJunctionRuntime:window.__miloviceTyrsovaArmadniJunctionRuntime?.(),
   entrance:window.__miloviceClinicEntranceRuntime?.(),
   menuHeight:document.getElementById('street-block-audit')
    ?.getBoundingClientRect().height
@@ -164,6 +167,24 @@ try{
  assert.equal(s.streetPhotoRuntime.parkingRightsNotClaimed,true);
  assert.equal(s.streetPhotoRuntime.entries.length,5);
  assert(s.streetPhotoRuntime.entries.every(e=>e.triangleCount>0));
+ assert.deepEqual(s.tyrsovaJunctionAudit.namedTyrsovaWayIds,['8618265','1331897627']);
+ assert.equal(s.tyrsovaJunctionAudit.mappedBuildingCount,5);
+ assert(s.tyrsovaJunctionAudit.mappedFiveFloorBuildings.every(h=>h.floors===5));
+ assert.equal(s.tyrsovaJunctionAudit.sourceIslandCount,2);
+ assert.equal(s.tyrsovaJunctionAudit.modeledIslandCount,0);
+ assert.equal(s.tyrsovaJunctionAudit.paintedBarCount,20);
+ assert.equal(s.tyrsovaJunctionAudit.actualRenderedTriangles,40);
+ assert.equal(s.tyrsovaJunctionAudit.actualRenderedMeshes,2);
+ assert.equal(s.tyrsovaJunctionAudit.crossingMarkedButStyleUnspecifiedNotPainted,'1044078125');
+ assert.equal(s.tyrsovaJunctionAudit.crossingExplicitUnmarkedNotPainted,'1278749453');
+ assert.equal(s.tyrsovaJunctionAudit.inventedStreetSegments,0);
+ assert.equal(s.tyrsovaJunctionAudit.addedRoads,0);
+ assert.equal(s.tyrsovaJunctionAudit.addedBuildings,0);
+ assert.equal(s.tyrsovaJunctionRuntime.ready,true);
+ assert.equal(s.tyrsovaJunctionRuntime.drawMeshes,2);
+ assert.equal(s.tyrsovaJunctionRuntime.fullPaintedTriangles,40);
+ assert.equal(s.tyrsovaJunctionRuntime.allGeometryPreserved,true);
+ assert.equal(s.tyrsovaJunctionRuntime.allProtectedFromDetailLOD,true);
  assert.equal(s.storefront.allVisible,true,
   'All 5.124 clinic shop glass must remain visible');
  assert.equal(s.entrance.allVisible,true,
@@ -172,7 +193,7 @@ try{
  assert.deepEqual(errors,[],'No browser startup/LOD JS errors');
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({
-  path:'browser-artifacts/milovice-spojovaci-clinic-whole-street-5130-mobile.png'
+  path:'browser-artifacts/milovice-spojovaci-tyrsova-north-street-5131-mobile.png'
  });
  console.log('PASS 5.125 Spojovaci red paver photo details real mobile WebGL after 6.8s LOD',
   JSON.stringify({inlayCount:s.audit.modelledSeparatorCount,
@@ -186,6 +207,7 @@ try{
    threeClinicPhotoSaplingsVisible:s.photoSaplingsRuntime.visibleAfterLOD,
    visiblePhotoParkingPlateAndStreetLamp:s.streetPhotoRuntime.visibleAfterLOD,
    markedNorthCrossingPreserved:s.streetPhotoRuntime.originalOSMCrossingUntouched,
+   bothRealArmadniZebrasPreserved:s.tyrsovaJunctionRuntime.allGeometryPreserved,
    oldForecourtVisible:s.forecourt.visibleInScene,
    menuHeight:s.menuHeight}));
  await page.close();
