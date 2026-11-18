@@ -154,8 +154,8 @@ for(const token of [
  'window.__miloviceTyrsovaArmadniJunctionRuntime=()=>{',
  " 'tyrsova-terrace-5131':{",
  " 'armadni-island-zebra-5131':{",
- 'href="?v=513100&streetAudit=tyrsova-terrace-5131"',
- 'href="?v=513100&streetAudit=armadni-island-zebra-5131"',
- "const BUILD_ID='20261118-tyrsova-armadni-osm-zebra-estate-513100'"
+ 'href="?v=513200&streetAudit=tyrsova-terrace-5131"',
+ 'href="?v=513200&streetAudit=armadni-island-zebra-5131"',
+ "const BUILD_ID='20261118-tyrsova-five-houses-partywall-cleanup-513200'"
 ])assert(html.includes(token),'5.131 scene integration missing '+token);
 console.log('PASS 5.131: named Tyršova continuity, 5 × 5-level RUIAN terrace, two OSM-tagged zebra crossings, 40 triangles, no invented roads/islands');
