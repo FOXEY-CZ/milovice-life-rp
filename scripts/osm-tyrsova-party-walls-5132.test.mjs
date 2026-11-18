@@ -98,7 +98,7 @@ for(const token of [
  'audit.runtimeSkippedPartyFacadeEdges++;',
  'window.__miloviceTyrsovaPartyWallAudit={',
  'window.__miloviceTyrsovaPartyWallRuntime=()=>{',
- "const BUILD_ID='20261118-tyrsova-five-houses-partywall-cleanup-513200'",
+ "const BUILD_ID='20261118-ruian-residential-shared-walls-sportovni-513300'",
  'href="?v=513200&streetAudit=tyrsova-terrace-5131"',
  'window.__miloviceTyrsovaArmadniJunctionRuntime=()=>{'
 ])assert(html.includes(token),
