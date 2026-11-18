@@ -1,3 +1,14 @@
+## Milovice RP 5.165 — pěší okruh dvěma existujícími zebrami Topolové (18. 11. 2026)
+
+**Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=516500&streetAudit=topolova-loop-5165
+
+- **Skutečný OSM okruh bez vymyšlené geometrie:** východní dlážděný chodník **1316882852** (body 22→21), existující jižní zebra **1316882854**, západní dlážděný chodník **1314665579** (body 12→13) a severní zebra **1316882853** tvoří **222,740 m dlouhou uzavřenou mapovou linii**. Má 7 doslovných GPS bodů (první = poslední) a 6 původních úseků; oba konce obou zebrových přechodů přesně souhlasí s chodníky, jejich prostřední uzly s existující silnicí **8618275**. Originální hash všech pěti OSM ways se ověřuje při inicializaci; při rozdílu se nové NPC nespustí.
+- **Herní posun:** nový animovaný chodec (spolu s pěti staršími **celkem šest místních NPC**) může po okruhu plynule projít oběma mapovanými přechody, z východu na západ a zase zpět, bez teleportu. Je to simulace hráčského světa, nikoliv pozorování konkrétních skutečných lidí. **Pozor: model dopravy zatím nenařizuje autům zastavit před tímto NPC; přednost/zdržení před přechodem je následující práce.**
+- **Vědomě beze změn:** žádné další fyzické chodníky, přechody, silnice, vstupy, parkování, kolize, stromy nebo lampy. Původní 5.164 navázaná pěší trasa, další čtyři NPC a fasády 614–618 / 646 i valbová střecha zůstávají.
+- **Testy:** nový fail-closed zdrojový unit test přesně kontroluje napojení obou zebrových přechodů, GPS hash, 6 segmentů, uzavření okruhu a nulovou syntetickou geometrii. Workflow spouští také 5.164/5.163/5.162 regresní testy a mobilní Chromium WebGL po **8,5 s**. **Výsledek GitHub Actions a Pages při přípravě commitu dosud neověřený; nelze jej označovat PASS.**
+
+---
+
 ## Milovice RP 5.164 — skutečné propojení pěšiny a Topolové, chodec projde roh bez teleportu (18. 11. 2026)
 
 **Kontrolní kamera na sdíleném OSM uzlu:** https://foxey-cz.github.io/milovice-life-rp/?v=516400&streetAudit=topolova-connected-5164

@@ -564,6 +564,7 @@ import {planTopolovaEstimatedFacades5161,renderTopolovaEstimatedFacades5161} fro
 import {planTopolovaMappedWalkers5162,toTopolovaWalkSegment5162} from './scripts/osm-topolova-mapped-walkers-5162.js?v=516200';
 import {planTopolovaPromenade5163,topolovaPromenadeSegment5163} from './scripts/osm-topolova-promenade-5163.js?v=516300';
 import {planTopolovaConnectedWalk5164,makeTopolovaConnectedRoute5164,sampleTopolovaConnectedRoute5164,advanceTopolovaConnectedRoute5164} from './scripts/osm-topolova-connected-5164.js?v=516400';
+import {planTopolovaZebraLoop5165,makeTopolovaZebraLoop5165,sampleTopolovaZebraLoop5165,advanceTopolovaZebraLoop5165} from './scripts/osm-topolova-zebra-loop-5165.js?v=516500';
 import {planTopolovaDrawing5159,renderTopolovaDrawing5159} from './scripts/osm-topolova-drawing-614615-5159.js?v=515900';
 import {planTopolova646Photo5156,renderTopolova646Photo5156} from './scripts/osm-topolova-photo-646-5156.js?v=515600';
 import {planTopolova646BothFacades5157,renderTopolova646BothFacades5157} from './scripts/osm-topolova-photo-646-5157.js?v=515700';
@@ -1071,6 +1072,15 @@ const rpStreetAuditViews={
   author:'Město Milovice / PSK TUZAR, projekt 2022, smlouva 2024',
   technical:true,streetLevel:true,estimatedHeading:true,
   note:'Podepsané výkresy západního a východního pohledu 614–615; pět nadzemních podlaží, bílá dvoukřídlá okna, balkonové sestavy, vstupy a obloukové schodišťové nástavby. OSM source footprint beze změn. Přesné rozteče, výška nástaveb a stříšek jsou odhad podle výkresu, nikoli geodetické zaměření. Dveře jsou optický detail neprůchozí plné fasády. Kamera je technická, orientačně na OSM service-way 1201945272.'
+ },
+ 'topolova-loop-5165':{
+   label:'Topolová · dva skutečné přechody, pěší okruh 223 m',
+   camera:{lat:50.22949,lon:14.86618},heading:90,
+   source:'https://www.openstreetmap.org/way/1316882854',
+   regionId:'mlada',osmLandmarkId:'61979139',
+   author:'OSM sidewalks 1316882852/1314665579; zebras 1316882854/1316882853',
+   technical:true,streetLevel:true,estimatedHeading:true,
+   note:'5.165: jeden simulovaný chodec obchází oba původní OSM chodníky po dvou EXISTUJÍCÍCH zebrových přechodech přes Topolovou. 7 GPS bodů, 6 úseků, cca 223 m. Bez smyšlených cest, přechodů, dveří a kolizí. Auta zatím nedávají speciálně přednost tomuto chodci; není to bezpečnostní dopravní model. Technická kamera není Panorama.'
  },
  'topolova-connected-5164':{
    label:'Topolová · průchozí pěší trasa 197 m',
@@ -3406,7 +3416,35 @@ window.__miloviceTopolovaDrawingRuntime=()=>{
    a.entries===4&&a.roundedCaps===4&&addresses.join(',')==='614,615'&&
    window.__miloviceAreasLoaded?.includes('mlada')===true};
 };
-window.__miloviceTopolovaConnectedRuntime=()=>{
+window.__miloviceTopolovaLoopRuntime=()=>{
+  const plan=window.__miloviceTopolovaLoopPlan;
+  if(!plan)return {ready:false};
+  const actor=trafficPeople.find(p=>p.zebraLoop5165?.version==='5.165');
+  if(!actor)return {ready:false,version:'5.165',npcCount:0};
+  const sample=sampleTopolovaZebraLoop5165(actor.zebraLoop5165,actor.loopDistance5165);
+  if(!sample)return {ready:false};
+  const g=actor.g;let attached=false,visible=true;
+  for(let p=g;p;p=p.parent){
+   if(!p.visible)visible=false;
+   if(p===scene)attached=true;
+  }
+  const error=Math.hypot(sample.x-g.position.x,sample.z-g.position.z);
+  const terrainDelta=Math.abs(g.position.y-terrainAt(g.position.x,g.position.z));
+  const old=window.__miloviceTopolovaConnectedRuntime?.();
+  return {...plan,originalGPSNodes:undefined,npcCount:1,
+   visibleInScene:attached&&visible?1:0,
+   sourceWayIdAtActor:sample.sourceWayId,isCrossing:sample.isCrossing,
+   segmentIndex:sample.segmentIndex,x:g.position.x,z:g.position.z,
+   crossingsEntered:actor.crossingsEntered5165,
+   distanceMoved:actor.metresWalked5165,
+   spatialError:error,terrainDelta,
+   onMappedSource:error<.045,groundAligned:terrainDelta<.075,
+   ready:attached&&visible&&error<.045&&terrainDelta<.075&&
+    actor.zebraLoop5165.segments.length===6&&old?.ready===true&&
+    window.__miloviceAreasLoaded?.includes('mlada')===true
+  };
+ };
+ window.__miloviceTopolovaConnectedRuntime=()=>{
   const plan=window.__miloviceTopolovaConnectedPlan;
   if(!plan)return {ready:false};
   const person=trafficPeople.find(x=>x.connectedRoute5164?.version==='5.164');
@@ -7144,6 +7182,11 @@ function rpAppendOSMElements(elements,regionId='old'){
  });
  if(topolovaConnectedPlan)
   window.__miloviceTopolovaConnectedPlan=topolovaConnectedPlan;
+ const topolovaLoopPlan=planTopolovaZebraLoop5165({
+  regionId,connectedPlan:topolovaConnectedPlan,
+  promenadePlan:topolovaPromenadePlan,ways:roadWays
+ });
+ if(topolovaLoopPlan)window.__miloviceTopolovaLoopPlan=topolovaLoopPlan;
  const topolovaInferredPlan=planTopolovaEstimatedFacades5161({
   regionId,rowPlan:topolovaRow5155,hipPlan:topolovaHipPlan,ways:buildingWays
  });
@@ -9050,7 +9093,7 @@ async function rpLoadCityArea(id){
   
   rpAppendOSMElements(osm.elements,id);
   finalizeRoadStrips();finalizeCityWalls();finalizeFoundations();finalizeFacades();finalizeArchitecture();heroBuildings.flush(osmLayer);
-  chunkMilovice();rpBuildRoadGraph();rpPopulateRegionalTraffic(area);rpSpawnTopolovaWalkers5162();rpSpawnTopolovaPromenade5163();rpSpawnTopolovaConnected5164();improveMiloviceVisuals();publishLegacyRealityAudit();rpInitRailTraffic();
+  chunkMilovice();rpBuildRoadGraph();rpPopulateRegionalTraffic(area);rpSpawnTopolovaWalkers5162();rpSpawnTopolovaPromenade5163();rpSpawnTopolovaConnected5164();rpSpawnTopolovaLoop5165();improveMiloviceVisuals();publishLegacyRealityAudit();rpInitRailTraffic();
   loadedCityAreas.add(id);
   window.__miloviceAreasLoaded=[...loadedCityAreas];
   window.__miloviceAreaStats={buildings:osmBuildings,roads:osmRoads.length,landscape:landscapeZones.length};
@@ -9868,6 +9911,24 @@ function rpSpawnTopolovaConnected5164(){
   direction:1,speed:1.15,phase:1.7,legs:rig.legs,arms:rig.arms
  });
 }
+// 5.165: exact OSM pedestrian loop; crossing priority/yielding is future work.
+function rpSpawnTopolovaLoop5165(){
+ const plan=window.__miloviceTopolovaLoopPlan;
+ if(!plan||trafficPeople.some(p=>p.zebraLoop5165))return;
+ const route=makeTopolovaZebraLoop5165(plan,osmPoint);
+ if(!route)return;
+ const initial=route.segments[0].endMetres-.7;
+ const sample=sampleTopolovaZebraLoop5165(route,initial);
+ if(!sample)return;
+ const rig=makeHumanRig(THREE,89,0x7a6a8f),g=rig.group;
+ g.position.set(sample.x,terrainAt(sample.x,sample.z),sample.z);
+ g.rotation.y=Math.atan2(-sample.tangentX,-sample.tangentZ);
+ trafficGroup.add(g);
+ trafficPeople.push({g,rig,zebraLoop5165:route,
+  loopDistance5165:initial,metresWalked5165:0,
+  crossingsEntered5165:0,wasCrossing5165:false,
+  speed:1.45,phase:2.5,legs:rig.legs,arms:rig.arms});
+}
 function rpSeedParkedCars(center,max=12){
  const slepaParkingAudit=window.__miloviceSlepaParkingAudit ||= {
   version:'5.110',candidateSlotsNearStreet:0,
@@ -10022,6 +10083,31 @@ function rpAnimateTraffic(dt){
   g.visible=Math.hypot(g.position.x-playerX,g.position.z-playerZ)<Math.min(270,OSM_VIEW*.52);
  }
  for(const obj of trafficPeople){
+    if(obj.zebraLoop5165){
+   const next=advanceTopolovaZebraLoop5165(
+    obj.zebraLoop5165,obj.loopDistance5165,dt*obj.speed);
+   if(!next)continue;
+   if(next.isCrossing&&!obj.wasCrossing5165)
+    obj.crossingsEntered5165++;
+   obj.wasCrossing5165=next.isCrossing;
+   obj.loopDistance5165=next.distance;
+   obj.metresWalked5165+=dt*obj.speed;
+   const g=obj.g;
+   g.position.set(next.x,terrainAt(next.x,next.z),next.z);
+   g.rotation.y=Math.atan2(-next.tangentX,-next.tangentZ);
+   const focusX=rpStreetAuditCameraWorld?.x??playerX;
+   const focusZ=rpStreetAuditCameraWorld?.z??playerZ;
+   const dist=Math.hypot(g.position.x-focusX,g.position.z-focusZ);
+   g.visible=dist<135;
+   if(g.visible){
+    obj.rig.high.visible=!g.userData.cc0Active&&dist<64;
+    obj.rig.low.visible=!g.userData.cc0Active&&dist>=64;
+    const phase=Math.sin(elapsed*6+obj.phase)*.48;
+    obj.legs[0].rotation.x=phase;obj.legs[1].rotation.x=-phase;
+    obj.arms[0].rotation.x=-phase*.67;obj.arms[1].rotation.x=phase*.67;
+   }
+   continue;
+  }
   if(obj.connectedRoute5164){
    // One continuous GPS polyline; keep the full simulated pedestrian
    // on original footway centres around the 90-degree mapped corner.

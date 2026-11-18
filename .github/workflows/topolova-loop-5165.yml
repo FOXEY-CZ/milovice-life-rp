@@ -1,0 +1,41 @@
+name: Milovice 5.165 two-real-zebras pedestrian loop
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/osm-topolova-zebra-loop-5165.js
+      - scripts/osm-topolova-zebra-loop-5165.test.mjs
+      - scripts/osm-topolova-zebra-loop-webgl-5165.mjs
+      - .github/workflows/topolova-loop-5165.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source-locked OSM pedestrian crossings + old regressions
+        run: |
+          node scripts/osm-topolova-zebra-loop-5165.test.mjs
+          node scripts/osm-topolova-connected-5164.test.mjs
+          node scripts/osm-topolova-promenade-5163.test.mjs
+          node scripts/osm-topolova-mapped-walkers-5162.test.mjs
+          node scripts/osm-topolova-continuous-hip-5160.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Mobile Chromium WebGL 8.5s and two real zebras
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-topolova-zebra-loop-webgl-5165.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: topolova-loop-5165
+          path: browser-artifacts/topolova-loop-5165-mobile.png
+          if-no-files-found: ignore
