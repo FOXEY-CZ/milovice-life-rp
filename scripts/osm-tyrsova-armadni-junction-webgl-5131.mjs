@@ -21,13 +21,16 @@ try{
    window.__miloviceAreasLoaded?.includes('mlada')&&
    window.__miloviceStreetAuditRendered?.view==='tyrsova-terrace-5131'&&
    window.__miloviceTyrsovaArmadniJunctionAudit?.mappedBuildingCount===5&&
-   window.__miloviceTyrsovaArmadniJunctionRuntime?.()?.ready===true
+   window.__miloviceTyrsovaArmadniJunctionRuntime?.()?.ready===true&&
+   window.__miloviceTyrsovaPartyWallRuntime?.()?.ready===true
   ),null,{timeout:110000});
  }catch(error){
   const context=await page.evaluate(()=>({
    regions:window.__miloviceAreasLoaded,
    junction:window.__miloviceTyrsovaArmadniJunctionAudit,
    runtime:window.__miloviceTyrsovaArmadniJunctionRuntime?.(),
+   partyWalls:window.__miloviceTyrsovaPartyWallAudit,
+   partyRuntime:window.__miloviceTyrsovaPartyWallRuntime?.(),
    cam:window.__miloviceStreetAuditRendered
   }));
   throw Error('Real Tyršova zebra not loaded '+
@@ -39,6 +42,8 @@ try{
   label:document.getElementById('build-label')?.textContent,
   audit:window.__miloviceTyrsovaArmadniJunctionAudit,
   live:window.__miloviceTyrsovaArmadniJunctionRuntime?.(),
+  partyWalls:window.__miloviceTyrsovaPartyWallAudit,
+  partyRuntime:window.__miloviceTyrsovaPartyWallRuntime?.(),
   regions:window.__miloviceAreasLoaded,
   cam:window.__miloviceStreetAuditRendered,
   menuHeight:document.getElementById('street-block-audit')
@@ -52,6 +57,26 @@ try{
  assert(s.regions.includes('mlada'));
  assert.equal(s.cam.view,'tyrsova-terrace-5131');
  assert.equal(s.audit.version,'5.131');
+ assert.equal(s.partyWalls.version,'5.132');
+ assert.equal(s.partyWalls.actualBuildingCount,5);
+ assert.equal(s.partyWalls.abuttingPairCount,4);
+ assert.equal(s.partyWalls.sharedUndirectedWalls,4);
+ assert.equal(s.partyWalls.internalFacadeEdgesToSkip,8);
+ assert.equal(s.partyWalls.exteriorFacadeEdgesRemaining,12);
+ assert.equal(s.partyWalls.runtimeSkippedPartyFacadeEdges,8);
+ assert.deepEqual(s.partyWalls.sourceBuildings,
+  ['61979140','61979141','61979149','61979146','61979143']);
+ assert.deepEqual(s.partyWalls.expectedSkippedPerHouse,[1,2,2,2,1]);
+ assert.deepEqual(s.partyWalls.sourceBuildings.map(id=>
+  s.partyWalls.skippedPerBuilding[id]),[1,2,2,2,1],
+  'Each exact OSM house has expected shared wall count');
+ assert.equal(s.partyRuntime.ready,true);
+ assert.equal(s.partyRuntime.skippedInteriorEdges,8);
+ assert.equal(s.partyRuntime.perHouseMatchesSource,true);
+ assert.equal(s.partyRuntime.existingSolidBuildingsPreserved,true);
+ assert.equal(s.partyRuntime.changedBuildingFloorCounts,0);
+ assert.equal(s.partyRuntime.changedOSMPolygons,0);
+
  assert.equal(s.audit.sourceRoadToNorth,'Tyršova');
  assert.equal(s.audit.spojoContinuingPastArmadni,false);
  assert.equal(s.audit.mappedBuildingCount,5);
@@ -91,15 +116,17 @@ try{
  assert.deepEqual(errors,[],'No JS exceptions during streaming / LOD');
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({
-  path:'browser-artifacts/milovice-tyrsova-five-houses-two-armadni-zebras-5131-mobile.png'
+  path:'browser-artifacts/milovice-tyrsova-five-houses-no-internal-window-5132-mobile.png'
  });
- console.log('PASS 5.131 live mobile Tyršova OSM real road junction and zebra (after 6.8 sec LOD)',
+ console.log('PASS 5.132 live mobile Tyršova five abutting RUIAN homes, no fake internal facade parts, real zebra after LOD',
   JSON.stringify({realFlats:s.audit.mappedBuildingCount,
    fiveFloorsEverywhere:s.audit.mappedFiveFloorBuildings.every(b=>b.floors===5),
    sourceZebraIds:s.audit.sourceCrossingWayIds,
    paintTriangles:s.live.fullPaintedTriangles,
    visibleAfterLOD:s.live.visibleZebraCrossingsAfterLOD,
    markedUnknownLeftUnpainted:true,unmarkedLeftUnpainted:true,
+   interiorFacesSkipped:s.partyRuntime.skippedInteriorEdges,
+   fourPartyWalls:s.partyWalls.sharedUndirectedWalls,
    menuHeight:s.menuHeight}));
  await page.close();
 }finally{await browser.close()}
