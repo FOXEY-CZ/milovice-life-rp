@@ -48,6 +48,7 @@ on:
       - scripts/osm-spojovaci-photo-street-furniture-5130.test.mjs
       - scripts/osm-tyrsova-armadni-junction-5131.js
       - scripts/osm-tyrsova-armadni-junction-5131.test.mjs
+      - scripts/osm-tyrsova-armadni-junction-webgl-5131.mjs
       - scripts/osm-clinic-parking-inlays-5125.test.mjs
       - scripts/osm-clinic-parking-inlays-webgl-5125.mjs
       - scripts/station-photo-parking.js
@@ -80,7 +81,7 @@ permissions:
 jobs:
   smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -99,6 +100,7 @@ jobs:
           node scripts/osm-clinic-forecourt-webgl-5123.mjs
           node scripts/osm-clinic-storefronts-webgl-5124.mjs
           node scripts/osm-clinic-parking-inlays-webgl-5125.mjs
+          node scripts/osm-tyrsova-armadni-junction-webgl-5131.mjs
           node scripts/editor_smoke.mjs
           node scripts/photo-pilot-smoke.mjs
       - name: Attach browser screenshot if available
