@@ -15,7 +15,7 @@ try{
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
  await page.goto(
-  'http://127.0.0.1:8080/?v=512500&streetAudit=armadni-clinic-5118',
+  'http://127.0.0.1:8080/?v=512600&streetAudit=armadni-clinic-5118',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>(
@@ -48,7 +48,7 @@ try{
   menuHeight:document.getElementById('street-block-audit')
    ?.getBoundingClientRect().height
  }));
- assert.equal(s.version,'20261118-spojovaci-photo-parking-inlays-512500');
+ assert.equal(s.version,'20261118-spojovaci-pharmacy-photo-sign-512600');
  assert.equal(s.label,s.version);
  assert.equal(s.audit.osmClinicId,'1057548624');
  assert.equal(s.audit.streetWayId,'246652750');
