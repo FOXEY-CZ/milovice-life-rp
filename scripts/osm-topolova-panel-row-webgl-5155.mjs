@@ -33,6 +33,7 @@ try{
  const s=await page.evaluate(()=>({
   row:window.__miloviceTopolovaRowRuntime?.(),
   walls:window.__miloviceRUIANPartyWallRuntime?.(),
+  wallAudit:window.__miloviceRUIANPartyWallAudit,
   school:window.__miloviceSlunickoWestRuntime?.(),
   masonry:window.__miloviceTopolovaResidentialRuntime?.(),
   zebra:window.__miloviceZebraV7Runtime?.(),
@@ -49,7 +50,7 @@ try{
  assert.equal(s.row?.originalOSMLevelTag,'1');
  assert.equal(s.row?.preserveOriginalOSMLevelTag,true);
  assert.equal(s.walls?.ready,true);
- assert.equal(s.walls?.sourceSharedWallCount,29);
+ assert.equal(s.wallAudit?.sourceSharedWallCount,29);
  assert.equal(s.walls?.skipped,58);
  assert(s.school?.ready&&s.masonry?.ready&&s.zebra?.ready);
  assert(s.menu<150);
