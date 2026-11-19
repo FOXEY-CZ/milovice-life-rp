@@ -561,6 +561,7 @@ import {planSlunickoWestElevation5154} from './scripts/osm-slunicko-west-elevati
 import {planTopolovaPanelRow5155} from './scripts/osm-topolova-panel-row-5155.js?v=515500';
 import {planTopolovaContinuousHip5160,renderTopolovaContinuousHip5160} from './scripts/osm-topolova-continuous-hip-5160.js?v=516000';
 import {planTopolovaEstimatedFacades5161,renderTopolovaEstimatedFacades5161} from './scripts/osm-topolova-estimated-facades-5161.js?v=516100';
+import {planTopolovaEndGables5169} from './scripts/osm-topolova-end-gables-5169.js?v=516900';
 import {planTopolovaMappedWalkers5162,toTopolovaWalkSegment5162} from './scripts/osm-topolova-mapped-walkers-5162.js?v=516200';
 import {planTopolovaPromenade5163,topolovaPromenadeSegment5163} from './scripts/osm-topolova-promenade-5163.js?v=516300';
 import {planTopolovaConnectedWalk5164,makeTopolovaConnectedRoute5164,sampleTopolovaConnectedRoute5164,advanceTopolovaConnectedRoute5164} from './scripts/osm-topolova-connected-5164.js?v=516400';
@@ -1075,6 +1076,15 @@ const rpStreetAuditViews={
   author:'Město Milovice / PSK TUZAR, projekt 2022, smlouva 2024',
   technical:true,streetLevel:true,estimatedHeading:true,
   note:'Podepsané výkresy západního a východního pohledu 614–615; pět nadzemních podlaží, bílá dvoukřídlá okna, balkonové sestavy, vstupy a obloukové schodišťové nástavby. OSM source footprint beze změn. Přesné rozteče, výška nástaveb a stříšek jsou odhad podle výkresu, nikoli geodetické zaměření. Dveře jsou optický detail neprůchozí plné fasády. Kamera je technická, orientačně na OSM service-way 1201945272.'
+ },
+ 'topolova-end-gables-5169':{
+  label:'Topolová 614–618 · skutečné krajní štíty',
+  camera:{lat:50.2296214,lon:14.8653900},heading:90,
+  source:'https://www.openstreetmap.org/way/61979145',
+  regionId:'mlada',osmLandmarkId:'61979145',
+  author:'RÚIAN/OSM budovy 614 a 618, městské výkresy 614–615 pokrývají pouze východní/západní dlouhé stěny',
+  technical:true,streetLevel:true,estimatedHeading:true,
+  note:'5.169: na původních dvou 11,6m krajních štítech nejsou náhodně generovaná neověřená okna ani dveře. Samotné stěny, valbová střecha, chodníky a terén jsou původní. Skutečné otvory těchto dvou stěn nejsou fotograficky ověřeny. Jde o technický úhel, ne reálnou fotografii.'
  },
  'topolova-north-encounter-5168':{
   label:'Topolová · severní zebra · dvě protijedoucí auta',
@@ -3690,7 +3700,26 @@ window.__miloviceTopolovaPriorityRuntime=()=>{
     window.__miloviceTopolovaHipRuntime?.()?.ready===true&&
     window.__miloviceAreasLoaded?.includes('mlada')===true};
  };
- window.__miloviceTopolovaInferredRuntime=()=>{
+ window.__miloviceTopolovaGableRuntime=()=>{
+ const p=window.__miloviceTopolovaGablePlan,
+  a=window.__miloviceTopolovaGableAudit;
+ if(!p||!a)return {ready:false,version:'5.169'};
+ const inferred=window.__miloviceTopolovaInferredRuntime?.(),
+  hip=window.__miloviceTopolovaHipRuntime?.(),
+  drawing=window.__miloviceTopolovaDrawingRuntime?.();
+ return {...a,
+  blockedGenericEdgesById:p.blockedGenericEdgesById,
+  newMeshes:p.newMeshes,newWindows:p.newWindows,
+  newEntranceDoors:p.newEntranceDoors,
+  originalCadastralEndWallsPreserved:p.originalCadastralEndWallsPreserved,
+  longEastWestFacadesUnchanged:p.longEastWestFacadesUnchanged,
+  exactEntrancePositionsUnknown:p.exactEntrancePositionsUnknown,
+  ready:a.genericEdgesSuppressed===2&&inferred?.ready===true&&
+   hip?.ready===true&&drawing?.ready===true&&
+   window.__miloviceAreasLoaded?.includes('mlada')===true
+ };
+};
+window.__miloviceTopolovaInferredRuntime=()=>{
   const audit=window.__miloviceTopolovaInferredAudit;
   const plan=window.__miloviceTopolovaInferredPlan;
   if(!audit||!plan)return {ready:false};
@@ -6283,6 +6312,12 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
    recordRUIANSharedEdge(osmId,i,'generic');
    continue;
   }
+  // 5.169: source-locked blank end gables: suppress ONLY random generic
+  // facade windows/doors. Solid walls, RUIAN footprint and shared roof remain.
+  if(window.__miloviceTopolovaGablePlan?.blockedGenericEdgesById[String(osmId)]?.includes(i)){
+   window.__miloviceTopolovaGableAudit.genericEdgesSuppressed++;
+   continue;
+  }
   // 5.161: six source-locked long faces of 616-618 use an explicitly
    // estimated version of the 614/615 window rhythm, rather than generic
    // random facade patterns. Never infer actual entrance location.
@@ -7343,6 +7378,19 @@ function rpAppendOSMElements(elements,regionId='old'){
    originalOSMGeometryPreserved:true,
    addedColliders:0,newRoads:0,newFootways:0,
    visibleAfterLOD:()=>0,allInScene:()=>false
+  };
+ }
+ const topolovaEndGablePlan=planTopolovaEndGables5169({
+  regionId,rowPlan:topolovaRow5155,hipPlan:topolovaHipPlan,
+  inferredPlan:topolovaInferredPlan,ways:buildingWays
+ });
+ if(topolovaEndGablePlan){
+  window.__miloviceTopolovaGablePlan=topolovaEndGablePlan;
+  window.__miloviceTopolovaGableAudit={
+   version:'5.169',sourceAddresses:[614,618],
+   sourceOSMIds:['61979151','61979145'],
+   genericEdgesSuppressed:0,createdDoors:0,createdRoads:0,
+   sourceGableLengths:topolovaEndGablePlan.clearedGables.map(f=>f.originalLengthMetres)
   };
  }
  if(topolovaHipPlan){
