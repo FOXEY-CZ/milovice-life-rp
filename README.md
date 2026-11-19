@@ -1,3 +1,14 @@
+## Milovice RP 5.170 — OSM/RÚIAN pohledy na přízemí 616–618 a 30 DEM kontrol výšky (20. 11. 2026)
+
+**Kontrolní kamera, Topolová 617 od východu:** https://foxey-cz.github.io/milovice-life-rp/?v=517000&streetAudit=topolova-entry-617-east-5170. Dalších pět kamer je v rozbalovací nabídce technických pohledů: západní 617; obě dlouhé fasády 616 a 618.
+
+- **Šest konkrétních úhlů bez vymyšlených dveří:** Východní a západní dlouhá fasáda každého z původních domů **616 (OSM 61979144/RÚIAN 22968083), 617 (61979139/22968091), 618 (61979145/22968105)**. Souřadnice cílových bodů jsou **přímo středy původních OSM hran [1,3]**, kontrolované hashi půdorysů `ace63062`, `43ca97b1`, `b69a7ef6`. Virtuální kamera je **modelově 8 m před stěnou**, heading je přibližně 270° z východu / 90° ze západu. **Není to fotopozice z Panoramy ani z veřejného snímku**; jde o konkrétní herní úhel pro následné srovnání se skutečným záběrem.
+- **Důležitá kontrola výšky nad DEM:** pro každou ze šesti fasád se skutečný OSM úsek rozdělí na **5 měřicích míst (0 %, 25 %, 50 %, 75 %, 100 %)**. Hra z lokálního načteného DEM a existujících základů `osmInspectionBuildings` vypočítá 30 výšek terénu a rozdíl základ–terén na úrovni každé zdi. Rozdíly jsou dostupné přes `window.__miloviceTopolovaEntrySurveyRuntime()`. Z toho **neodhadujeme konkrétní vchod ani výšku prahu**, protože vstup zatím není fotograficky určen.
+- **Co veřejný podklad potvrzuje a co ne:** úřední městský situační plán požární techniky z 10/2023 znázorňuje přibližné okolí celé řady 614–618 a návrh dopravních značek, ale **negeoreferencuje skutečné domovní dveře 616–618**. Podepsané výkresy 614–615 také nedokazují konkrétní pozice otvorů sousedních 616–618. Fasády 5.161 jsou pořád explicitní extrapolace. Nic nebylo svévolně přidáno do terénu, nové prahy/schody/markýzy **0**, dveře **0**, silnice/chodníky/lampy/parkoviště **0**.
+- **Testovací plán:** source-locked unit pro všech šest kamer, přesných 30 vzorků, změnu původních GPS (fail-closed) a regrese 5.169/5.161/5.160. Mobilní Chromium/WebGL po 8,5 s LOD má zkontrolovat skutečné načtení budov, modelových fasád, valbové střechy a dopravního řízení. **CI/WebGL/Pages zatím čekají na ověření po commitu.**
+
+---
+
 ## Milovice RP 5.169 — opravena nepodložená okna na krajních štítech celé řady Topolová 614–618 (19. 11. 2026)
 
 **Technická kontrolní kamera na krajní štít 618:** https://foxey-cz.github.io/milovice-life-rp/?v=516900&streetAudit=topolova-end-gables-5169

@@ -325,6 +325,12 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <a href="?v=515200&streetAudit=sportovni-crossing-v7a-5152">🚸 Sportovní × Topolová · příčné pruhy zebry (V7a)</a>
 <a href="?v=514800&streetAudit=topolova-residential-5148">🏢 Topolová · šestipodlažní RÚIAN dům (model)</a>
 <a href="?v=514900&streetAudit=topolova-masonry-5149">🏠 Topolová 647 · zděný dům dle ČSÚ (model fasády)</a>
+ <a href="?v=517000&streetAudit=topolova-entry-616-east-5170">🔎 Topolová 616 · východní přízemí</a>
+ <a href="?v=517000&streetAudit=topolova-entry-616-west-5170">🔎 Topolová 616 · západní přízemí</a>
+ <a href="?v=517000&streetAudit=topolova-entry-617-east-5170">🔎 Topolová 617 · východní přízemí</a>
+ <a href="?v=517000&streetAudit=topolova-entry-617-west-5170">🔎 Topolová 617 · západní přízemí</a>
+ <a href="?v=517000&streetAudit=topolova-entry-618-east-5170">🔎 Topolová 618 · východní přízemí</a>
+ <a href="?v=517000&streetAudit=topolova-entry-618-west-5170">🔎 Topolová 618 · západní přízemí</a>
 <a href="?v=511200&streetAudit=road-vruticka-5108">🛣️ Vrutická · OSM šířka 6 m</a>
 <a href="?v=510500&streetAudit=estate-mlada-5105">🏢 Mladá · bytové domy vedle hřiště</a></nav>
 <button id="street-audit-info-toggle" type="button" aria-expanded="false">📍 GPS a zdroj</button>
@@ -561,6 +567,7 @@ import {planSlunickoWestElevation5154} from './scripts/osm-slunicko-west-elevati
 import {planTopolovaPanelRow5155} from './scripts/osm-topolova-panel-row-5155.js?v=515500';
 import {planTopolovaContinuousHip5160,renderTopolovaContinuousHip5160} from './scripts/osm-topolova-continuous-hip-5160.js?v=516000';
 import {planTopolovaEstimatedFacades5161,renderTopolovaEstimatedFacades5161} from './scripts/osm-topolova-estimated-facades-5161.js?v=516100';
+import {planTopolovaEntrySurvey5170,inspectTopolovaEntryGrade5170} from './scripts/osm-topolova-entry-survey-5170.js?v=517000';
 import {planTopolovaEndGables5169} from './scripts/osm-topolova-end-gables-5169.js?v=516900';
 import {planTopolovaMappedWalkers5162,toTopolovaWalkSegment5162} from './scripts/osm-topolova-mapped-walkers-5162.js?v=516200';
 import {planTopolovaPromenade5163,topolovaPromenadeSegment5163} from './scripts/osm-topolova-promenade-5163.js?v=516300';
@@ -1148,6 +1155,60 @@ const rpStreetAuditViews={
    author:'OSM footway 1316882860, source joins to 1316882852 and 202399863',
    technical:true,streetLevel:true,estimatedHeading:true,
    note:'Dva simulovaní herní chodci chodí tam a zpět po existující 29m dlážděné OSM pěšině mezi domy Topolová 614–618. Otáčejí se 2 metry před konci u původních OSM spojů s obslužnou silnicí a chodníkem. Chodci jsou simulační NPC, nikoliv skutečně fotografovaní obyvatelé. OSM GPS, fyzické cesty, vstupy, kolize ani ulice nezměněny. Kamera je technický OSM pohled.'
+  },
+  'topolova-entry-616-east-5170':{
+   label:'Topolová 616 · přízemí od východu',
+   camera:{lat:50.2299797,lon:14.8658078},heading:270,
+   source:'https://www.openstreetmap.org/way/61979144',
+   regionId:'mlada',osmLandmarkId:'61979144',
+   author:'OSM/RÚIAN původní geometrie budovy č. 616; 8 m modelový odstup kamery',
+   technical:true,streetLevel:true,estimatedHeading:true,
+   note:'5.170: pouze TECHNICKÁ kamera podle původní dlouhé obvodové stěny domu Topolová 616, odhadnutý virtuální odstup 8m, pohled ze skutečné východní strany směrem na západ. Není to nalezený úhel Panorama ani geodetické zaměření skutečného vchodu. Přesné pozice dveří nejsou fotoověřeny a žádné nové fyzické dveře či cesty se nepřidaly.'
+  },
+  'topolova-entry-616-west-5170':{
+   label:'Topolová 616 · přízemí od západu',
+   camera:{lat:50.2299853,lon:14.8654206},heading:90,
+   source:'https://www.openstreetmap.org/way/61979144',
+   regionId:'mlada',osmLandmarkId:'61979144',
+   author:'OSM/RÚIAN původní geometrie budovy č. 616; 8 m modelový odstup kamery',
+   technical:true,streetLevel:true,estimatedHeading:true,
+   note:'5.170: pouze TECHNICKÁ kamera podle původní dlouhé obvodové stěny domu Topolová 616, odhadnutý virtuální odstup 8m, pohled ze skutečné západní strany směrem na východ. Není to nalezený úhel Panorama ani geodetické zaměření skutečného vchodu. Přesné pozice dveří nejsou fotoověřeny a žádné nové fyzické dveře či cesty se nepřidaly.'
+  },
+  'topolova-entry-617-east-5170':{
+   label:'Topolová 617 · přízemí od východu',
+   camera:{lat:50.2298361,lon:14.8657953},heading:270,
+   source:'https://www.openstreetmap.org/way/61979139',
+   regionId:'mlada',osmLandmarkId:'61979139',
+   author:'OSM/RÚIAN původní geometrie budovy č. 617; 8 m modelový odstup kamery',
+   technical:true,streetLevel:true,estimatedHeading:true,
+   note:'5.170: pouze TECHNICKÁ kamera podle původní dlouhé obvodové stěny domu Topolová 617, odhadnutý virtuální odstup 8m, pohled ze skutečné východní strany směrem na západ. Není to nalezený úhel Panorama ani geodetické zaměření skutečného vchodu. Přesné pozice dveří nejsou fotoověřeny a žádné nové fyzické dveře či cesty se nepřidaly.'
+  },
+  'topolova-entry-617-west-5170':{
+   label:'Topolová 617 · přízemí od západu',
+   camera:{lat:50.2298416,lon:14.8654084},heading:90,
+   source:'https://www.openstreetmap.org/way/61979139',
+   regionId:'mlada',osmLandmarkId:'61979139',
+   author:'OSM/RÚIAN původní geometrie budovy č. 617; 8 m modelový odstup kamery',
+   technical:true,streetLevel:true,estimatedHeading:true,
+   note:'5.170: pouze TECHNICKÁ kamera podle původní dlouhé obvodové stěny domu Topolová 617, odhadnutý virtuální odstup 8m, pohled ze skutečné západní strany směrem na východ. Není to nalezený úhel Panorama ani geodetické zaměření skutečného vchodu. Přesné pozice dveří nejsou fotoověřeny a žádné nové fyzické dveře či cesty se nepřidaly.'
+  },
+  'topolova-entry-618-east-5170':{
+   label:'Topolová 618 · přízemí od východu',
+   camera:{lat:50.2296915,lon:14.8657829},heading:270,
+   source:'https://www.openstreetmap.org/way/61979145',
+   regionId:'mlada',osmLandmarkId:'61979145',
+   author:'OSM/RÚIAN původní geometrie budovy č. 618; 8 m modelový odstup kamery',
+   technical:true,streetLevel:true,estimatedHeading:true,
+   note:'5.170: pouze TECHNICKÁ kamera podle původní dlouhé obvodové stěny domu Topolová 618, odhadnutý virtuální odstup 8m, pohled ze skutečné východní strany směrem na západ. Není to nalezený úhel Panorama ani geodetické zaměření skutečného vchodu. Přesné pozice dveří nejsou fotoověřeny a žádné nové fyzické dveře či cesty se nepřidaly.'
+  },
+  'topolova-entry-618-west-5170':{
+   label:'Topolová 618 · přízemí od západu',
+   camera:{lat:50.2296969,lon:14.8653961},heading:90,
+   source:'https://www.openstreetmap.org/way/61979145',
+   regionId:'mlada',osmLandmarkId:'61979145',
+   author:'OSM/RÚIAN původní geometrie budovy č. 618; 8 m modelový odstup kamery',
+   technical:true,streetLevel:true,estimatedHeading:true,
+   note:'5.170: pouze TECHNICKÁ kamera podle původní dlouhé obvodové stěny domu Topolová 618, odhadnutý virtuální odstup 8m, pohled ze skutečné západní strany směrem na východ. Není to nalezený úhel Panorama ani geodetické zaměření skutečného vchodu. Přesné pozice dveří nejsou fotoověřeny a žádné nové fyzické dveře či cesty se nepřidaly.'
   },
   'topolova-inferred-616618-5161':{
    label:'Topolová 616–618 · prozatímní fasády',
@@ -3716,6 +3777,44 @@ window.__miloviceTopolovaPriorityRuntime=()=>{
   exactEntrancePositionsUnknown:p.exactEntrancePositionsUnknown,
   ready:a.genericEdgesSuppressed===2&&inferred?.ready===true&&
    hip?.ready===true&&drawing?.ready===true&&
+   window.__miloviceAreasLoaded?.includes('mlada')===true
+ };
+};
+window.__miloviceTopolovaEntrySurveyRuntime=()=>{
+ const p=window.__miloviceTopolovaEntrySurveyPlan;
+ const grade=window.__miloviceTopolovaEntryGradeAudit;
+ if(!p||!grade)return {version:'5.170',ready:false,
+  planPresent:Boolean(p),gradePresent:Boolean(grade)};
+ const current=p.views.find(v=>
+  'topolova-entry-'+v.address+'-'+v.side+'-5170'===rpStreetAuditId);
+ const cameraOK=Boolean(current&&rpStreetAuditView&&
+  Math.abs(rpStreetAuditView.camera.lat-current.cameraGPS.lat)<.00000011&&
+  Math.abs(rpStreetAuditView.camera.lon-current.cameraGPS.lon)<.00000011&&
+  rpStreetAuditView.heading===current.heading);
+ const previous=window.__miloviceTopolovaInferredRuntime?.();
+ return {
+  version:'5.170',
+  sourceHouseNumbers:p.sourceHouseNumbers,
+  sourceBuildingIds:p.sourceBuildingIds,
+  cameraCount:p.cameraCount,
+  realSampledFacades:grade.realSampledFacades,
+  terrainSamples:grade.terrainSamples,
+  groundGradeProfiles:grade.groundGradeProfiles,
+  worstFoundationClearanceMetres:grade.worstFoundationClearanceMetres,
+  lowestFoundationClearanceMetres:grade.lowestFoundationClearanceMetres,
+  activeViewId:current?
+   'topolova-entry-'+current.address+'-'+current.side+'-5170':null,
+  activeCameraMatchesOriginalWall:cameraOK,
+  exactRealEntrancesUnverified:p.exactRealEntrancesUnverified,
+  noInventedDoorOrEntrance:p.noInventedDoorOrEntrance,
+  modelCameraOffsetMetres:p.modelCameraOffsetMetres,
+  newDoors:p.newDoors,newMeshes:p.newMeshes,
+  newRoads:p.newRoads,newWalkways:p.newWalkways,
+  ready:previous?.ready===true&&
+   p.allTargetsOnOriginalOSMWalls===true&&
+   grade.terrainSamples===30&&grade.realSampledFacades===6&&
+   grade.profileDerivedFromDEM===true&&
+   (!current||cameraOK)&&
    window.__miloviceAreasLoaded?.includes('mlada')===true
  };
 };
@@ -7380,6 +7479,12 @@ function rpAppendOSMElements(elements,regionId='old'){
    visibleAfterLOD:()=>0,allInScene:()=>false
   };
  }
+ const topolovaEntrySurveyPlan=planTopolovaEntrySurvey5170({
+  regionId,rowPlan:topolovaRow5155,
+  inferredPlan:topolovaInferredPlan,ways:buildingWays
+ });
+ if(topolovaEntrySurveyPlan)
+  window.__miloviceTopolovaEntrySurveyPlan=topolovaEntrySurveyPlan;
  const topolovaEndGablePlan=planTopolovaEndGables5169({
   regionId,rowPlan:topolovaRow5155,hipPlan:topolovaHipPlan,
   inferredPlan:topolovaInferredPlan,ways:buildingWays
@@ -9026,6 +9131,14 @@ function rpAppendOSMElements(elements,regionId='old'){
   osmBuilding(el.geometry,el.tags,osmBuildings,el.id,regionId,slepaStreet);
   osmAddLandmark(el);
  }
+ if(topolovaEntrySurveyPlan){
+  const grade=inspectTopolovaEntryGrade5170(topolovaEntrySurveyPlan,{
+   toWorld:osmPoint,terrainAt,
+   baseById:id=>osmInspectionBuildings.find(b=>String(b.id)===id)
+  });
+  if(grade)window.__miloviceTopolovaEntryGradeAudit=grade;
+ }
+
  // A roof of one physically continuous five-entrance RUIAN block,
  // built after ALL five DEM-grounded foundations are known.
  if(topolovaInferredPlan){

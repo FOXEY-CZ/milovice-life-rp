@@ -1,0 +1,40 @@
+name: Milovice 5.170 Topolova 616-618 entry ground survey and cameras
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/osm-topolova-entry-survey-5170.js
+      - scripts/osm-topolova-entry-survey-5170.test.mjs
+      - scripts/osm-topolova-entry-survey-webgl-5170.mjs
+      - .github/workflows/topolova-entry-survey-5170.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Actual RUIAN grade/cameras and full five-house regressions
+        run: |
+          node scripts/osm-topolova-entry-survey-5170.test.mjs
+          node scripts/osm-topolova-end-gables-5169.test.mjs
+          node scripts/osm-topolova-estimated-facades-5161.test.mjs
+          node scripts/osm-topolova-continuous-hip-5160.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Mobile Chromium WebGL 8.5s LOD and entry grade survey
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-topolova-entry-survey-webgl-5170.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: topolova-entry-survey-5170
+          path: browser-artifacts/topolova-entry-survey-5170-mobile.png
+          if-no-files-found: ignore
