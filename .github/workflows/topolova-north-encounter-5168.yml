@@ -1,0 +1,41 @@
+name: Milovice 5.168 north zebra two opposing AI cars WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/osm-topolova-north-encounter-5168.js
+      - scripts/osm-topolova-north-encounter-5168.test.mjs
+      - scripts/osm-topolova-north-encounter-webgl-5168.mjs
+      - .github/workflows/topolova-north-encounter-5168.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  north-two-cars:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: North zebra OSM source lock and older street regressions
+        run: |
+          node scripts/osm-topolova-north-encounter-5168.test.mjs
+          node scripts/osm-topolova-encounter-5167.test.mjs
+          node scripts/osm-topolova-priority-5166.test.mjs
+          node scripts/osm-topolova-zebra-loop-5165.test.mjs
+          node scripts/osm-topolova-connected-5164.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Real north crossing and simultaneous two-car yielding mobile WebGL
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-topolova-north-encounter-webgl-5168.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: topolova-north-encounter-5168
+          path: browser-artifacts/topolova-north-encounter-5168-mobile.png
+          if-no-files-found: ignore

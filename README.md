@@ -1,3 +1,15 @@
+## Milovice RP 5.168 — skutečné setkání dvou protijedoucích AI aut s chodcem na SEVERNÍ zebře Topolové (19. 11. 2026)
+
+**Kontrolní kamera/scénář:** https://foxey-cz.github.io/milovice-life-rp/?v=516800&streetAudit=topolova-north-encounter-5168&encounterTest=1
+
+- **Druhá strana ulice pod kontrolou:** na původním OSM severním přechodu **1316882853** přes původní silnici **8618275** ověřujeme na mobilním Chromium/WebGL skutečný pohyb dvou AI vozidel z opačných směrů. Oba testovací vozy používají **originální drivable OSM úseky** Topolové [1] (příjezd z jihu) a [2] (příjezd ze severu), startují modelově 13,5 m před mapovou osou zebry a jedou rychlostí 8 m/s. Identita cesty a přechodu je source-locked na GPS a OSM hash `c0fe69b0`; žádná fyzická cesta či přechod není přidán.
+- **Reálný pohyb bez přepisování běžné AI:** obě auta jsou skutečné herní mesh/rig modely a pohybují se beze změny přes existující `rpAnimateTraffic`, s předností z 5.166. Jediný chodec používá původní 5.165 chůzi po mapované smyčce. Aby se test nemusel prodírat celým cca 223m okruhem, **výhradně při inicializaci testu** začne na původním západním chodníku **0,7 m před severní zebrou**, což je **testovací spawn**, ne důkaz skutečně absolvované cesty od jižního přechodu. Výchozí poloha je přesný zdrojový GPS bod na existující pěší linii. V normální hře se NPC spawn ani jeho trajektorie nemění.
+- **Důsledná izolace:** scénář se aktivuje výhradně kombinací `streetAudit=topolova-north-encounter-5168` a `encounterTest=1`. Žádná změna počtu vozidel v běžné hře. Oba modelové vozy musí na severní zebře bezpečně dobrzdit, chodec se zdrží před obrubou, pak přejde na východní chodník, a **oba vozy se po přechodu rozjedou**. Každému autu se zvlášť měří přednost, zpomalení, nejmenší vzdálenost při obsazeném přechodu a pokračování. Původní jižní scénář 5.167 není odstraněn.
+- **Kontroly a nejistoty:** nový unit zdrojových ID, návaznosti a dvou jízdních směrů, fail-closed při změně OSM; mobilní WebGL po nejméně 7 sekundách LOD ověřuje celý sled skutečných událostí, zachování starší pěší sítě, modelů fasád a kompaktního menu. Modelová hranice 3,5 m je aproximace přednosti, ne geodeticky ověřená zastavovací čára. **CI/WebGL/Pages po commitu čekají na ověření**; nelze vydávat za hotové před výsledky.
+- **Nulové nové pevné objekty:** žádná silnice, přechod, chodník, zástavba, vchod, parkování, lampa, strom, semafor, značka ani kolizní objekt. Cílem je robustnost dopravní simulace, nikoliv prokázání univerzální bezpečnosti provozu.
+
+---
+
 ## Milovice RP 5.167 — skutečný 3D scénář potkání NPC a auta na Topolové (19. 11. 2026)
 
 **Kontrolní kamera / scénář:** https://foxey-cz.github.io/milovice-life-rp/?v=516700&streetAudit=topolova-encounter-5167&encounterTest=1

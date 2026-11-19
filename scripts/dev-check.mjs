@@ -8,6 +8,7 @@ import {fileURLToPath} from 'node:url';
 const scriptDir=dirname(fileURLToPath(import.meta.url));
 const packs=Object.freeze({
  sportovni:[
+  'osm-topolova-north-encounter-5168.test.mjs',
   'osm-topolova-encounter-5167.test.mjs',
   'osm-topolova-priority-5166.test.mjs',
   'osm-topolova-zebra-loop-5165.test.mjs',
