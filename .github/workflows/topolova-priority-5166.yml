@@ -1,0 +1,41 @@
+name: Milovice 5.166 mapped zebra NPC traffic priority
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/osm-topolova-priority-5166.js
+      - scripts/osm-topolova-priority-5166.test.mjs
+      - scripts/osm-topolova-priority-webgl-5166.mjs
+      - .github/workflows/topolova-priority-5166.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Exact-road and crossing rules plus old regressions
+        run: |
+          node scripts/osm-topolova-priority-5166.test.mjs
+          node scripts/osm-topolova-zebra-loop-5165.test.mjs
+          node scripts/osm-topolova-connected-5164.test.mjs
+          node scripts/osm-topolova-promenade-5163.test.mjs
+          node scripts/osm-topolova-continuous-hip-5160.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Mobile Chromium WebGL 8.5s+ LOD and older scene regressions
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-topolova-priority-webgl-5166.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: topolova-priority-5166
+          path: browser-artifacts/topolova-priority-5166-mobile.png
+          if-no-files-found: ignore

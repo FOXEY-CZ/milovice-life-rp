@@ -565,6 +565,7 @@ import {planTopolovaMappedWalkers5162,toTopolovaWalkSegment5162} from './scripts
 import {planTopolovaPromenade5163,topolovaPromenadeSegment5163} from './scripts/osm-topolova-promenade-5163.js?v=516300';
 import {planTopolovaConnectedWalk5164,makeTopolovaConnectedRoute5164,sampleTopolovaConnectedRoute5164,advanceTopolovaConnectedRoute5164} from './scripts/osm-topolova-connected-5164.js?v=516400';
 import {planTopolovaZebraLoop5165,makeTopolovaZebraLoop5165,sampleTopolovaZebraLoop5165,advanceTopolovaZebraLoop5165} from './scripts/osm-topolova-zebra-loop-5165.js?v=516500';
+import {planTopolovaPriority5166,makeTopolovaPriority5166,topolovaIntent5166,topolovaYieldCar5166,topolovaWaitAtCurb5166} from './scripts/osm-topolova-priority-5166.js?v=516600';
 import {planTopolovaDrawing5159,renderTopolovaDrawing5159} from './scripts/osm-topolova-drawing-614615-5159.js?v=515900';
 import {planTopolova646Photo5156,renderTopolova646Photo5156} from './scripts/osm-topolova-photo-646-5156.js?v=515600';
 import {planTopolova646BothFacades5157,renderTopolova646BothFacades5157} from './scripts/osm-topolova-photo-646-5157.js?v=515700';
@@ -1072,6 +1073,15 @@ const rpStreetAuditViews={
   author:'Město Milovice / PSK TUZAR, projekt 2022, smlouva 2024',
   technical:true,streetLevel:true,estimatedHeading:true,
   note:'Podepsané výkresy západního a východního pohledu 614–615; pět nadzemních podlaží, bílá dvoukřídlá okna, balkonové sestavy, vstupy a obloukové schodišťové nástavby. OSM source footprint beze změn. Přesné rozteče, výška nástaveb a stříšek jsou odhad podle výkresu, nikoli geodetické zaměření. Dveře jsou optický detail neprůchozí plné fasády. Kamera je technická, orientačně na OSM service-way 1201945272.'
+ },
+ 'topolova-priority-5166':{
+  label:'Topolová · přednost na skutečných zebrách',
+  camera:{lat:50.22949,lon:14.86618},heading:90,
+  source:'https://www.openstreetmap.org/way/1316882854',
+  regionId:'mlada',osmLandmarkId:'61979139',
+  author:'OSM Topolová 8618275 a přechody 1316882854/1316882853',
+  technical:true,streetLevel:true,estimatedHeading:true,
+  note:'5.166: chodící simulované NPC vyčkává u skutečných zebrových přechodů; AI auta na zdrojové Topolové zpomalují před přechodem a modelově zastaví 3,5m před mapovou osou. Auto řízené hráčem se automaticky nebrzdí. Žádné nové fyzické objekty. Technický kamerový pohled, ne Panorama.'
  },
  'topolova-loop-5165':{
    label:'Topolová · dva skutečné přechody, pěší okruh 223 m',
@@ -3416,7 +3426,34 @@ window.__miloviceTopolovaDrawingRuntime=()=>{
    a.entries===4&&a.roundedCaps===4&&addresses.join(',')==='614,615'&&
    window.__miloviceAreasLoaded?.includes('mlada')===true};
 };
-window.__miloviceTopolovaLoopRuntime=()=>{
+window.__miloviceTopolovaPriorityRuntime=()=>{
+  const plan=window.__miloviceTopolovaPriorityPlan;
+  const control=topolovaPriorityControls5166;
+  const walker=trafficPeople.find(p=>p.zebraLoop5165?.version==='5.165');
+  const previous=window.__miloviceTopolovaLoopRuntime?.();
+  if(!plan||!control||!walker)return {ready:false,version:'5.166'};
+  const intent=topolovaIntent5166(control,walker.zebraLoop5165,
+   walker.loopDistance5165);
+  const groundDelta=Math.abs(walker.g.position.y-
+   terrainAt(walker.g.position.x,walker.g.position.z));
+  return {
+   ...plan,sourceRoadGPS:undefined,
+   ready:previous?.ready===true&&groundDelta<.075&&
+    window.__miloviceAreasLoaded?.includes('mlada')===true&&
+    control.roadSegments.length===3,
+   controlRoadSegments:control.roadSegments.length,
+   actorCrossing:intent?.onCrossing||false,
+   actorIntent:intent?.key||null,
+   actorWaiting:walker.waitAtTopolova5166||false,
+   actorWaitingFrames:walker.waitFrames5166||0,
+   aiCarsYieldingNow:trafficCars.filter(c=>c.topolovaYielding5166).length,
+   aiYieldFrames:trafficCars.reduce((n,v)=>n+(v.topolovaYieldFrames5166||0),0),
+   groundAligned:groundDelta<.075,
+   distanceMoved:walker.metresWalked5165,
+   playerCarsNotAutoBraked:true
+  };
+ };
+ window.__miloviceTopolovaLoopRuntime=()=>{
   const plan=window.__miloviceTopolovaLoopPlan;
   if(!plan)return {ready:false};
   const actor=trafficPeople.find(p=>p.zebraLoop5165?.version==='5.165');
@@ -7187,6 +7224,11 @@ function rpAppendOSMElements(elements,regionId='old'){
   promenadePlan:topolovaPromenadePlan,ways:roadWays
  });
  if(topolovaLoopPlan)window.__miloviceTopolovaLoopPlan=topolovaLoopPlan;
+ const topolovaPriorityPlan=planTopolovaPriority5166({
+  regionId,loopPlan:topolovaLoopPlan,ways:roadWays
+ });
+ if(topolovaPriorityPlan)
+  window.__miloviceTopolovaPriorityPlan=topolovaPriorityPlan;
  const topolovaInferredPlan=planTopolovaEstimatedFacades5161({
   regionId,rowPlan:topolovaRow5155,hipPlan:topolovaHipPlan,ways:buildingWays
  });
@@ -9093,7 +9135,7 @@ async function rpLoadCityArea(id){
   
   rpAppendOSMElements(osm.elements,id);
   finalizeRoadStrips();finalizeCityWalls();finalizeFoundations();finalizeFacades();finalizeArchitecture();heroBuildings.flush(osmLayer);
-  chunkMilovice();rpBuildRoadGraph();rpPopulateRegionalTraffic(area);rpSpawnTopolovaWalkers5162();rpSpawnTopolovaPromenade5163();rpSpawnTopolovaConnected5164();rpSpawnTopolovaLoop5165();improveMiloviceVisuals();publishLegacyRealityAudit();rpInitRailTraffic();
+  chunkMilovice();rpBuildRoadGraph();rpPopulateRegionalTraffic(area);rpSpawnTopolovaWalkers5162();rpSpawnTopolovaPromenade5163();rpSpawnTopolovaConnected5164();rpSpawnTopolovaLoop5165();rpActivateTopolovaPriority5166();improveMiloviceVisuals();publishLegacyRealityAudit();rpInitRailTraffic();
   loadedCityAreas.add(id);
   window.__miloviceAreasLoaded=[...loadedCityAreas];
   window.__miloviceAreaStats={buildings:osmBuildings,roads:osmRoads.length,landscape:landscapeZones.length};
@@ -9774,6 +9816,7 @@ osmBtn.onclick=async()=>{
 // Pedestrians remain on sidewalks; vehicles occupy the correct half of a two-way road.
 const trafficGroup=new THREE.Group();osmLayer.add(trafficGroup);
 const trafficCars=[],trafficPeople=[],driveSegments=[],driveGraph=new Map(),osmParkingLots=[];
+let topolovaPriorityControls5166=null;
  // Upgrade 5.3.0: licensed, skinned GLB human models and full walk/idle animation clips.
  // A few near-field NPCs at a time preserve the existing mobile draw-call budget.
  const glbHumans=makeMiloviceHumanAssets(THREE,{playerRig,people:trafficPeople,maxNpc:5});
@@ -9929,6 +9972,10 @@ function rpSpawnTopolovaLoop5165(){
   crossingsEntered5165:0,wasCrossing5165:false,
   speed:1.45,phase:2.5,legs:rig.legs,arms:rig.arms});
 }
+function rpActivateTopolovaPriority5166(){
+ const plan=window.__miloviceTopolovaPriorityPlan;
+ topolovaPriorityControls5166=makeTopolovaPriority5166(plan,osmPoint);
+}
 function rpSeedParkedCars(center,max=12){
  const slepaParkingAudit=window.__miloviceSlepaParkingAudit ||= {
   version:'5.110',candidateSlotsNearStreet:0,
@@ -10042,6 +10089,10 @@ function rpNextStreet(car){
 function rpAnimateTraffic(dt){
  if(!osmActive)return;
  const playerX=walking?px:x,playerZ=walking?pz:z;
+ const loopActor5166=trafficPeople.find(p=>p.zebraLoop5165?.version==='5.165');
+ const intent5166=topolovaPriorityControls5166&&loopActor5166?
+  topolovaIntent5166(topolovaPriorityControls5166,
+   loopActor5166.zebraLoop5165,loopActor5166.loopDistance5165):null;
  for(const obj of trafficCars){
   const {g}=obj;
   const proximity=Math.hypot(g.position.x-playerX,g.position.z-playerZ);
@@ -10071,7 +10122,13 @@ function rpAnimateTraffic(dt){
    if(along>0&&along<15&&Math.abs(vx*forwardZ-vz*forwardX)<3.3)frontDist=Math.min(frontDist,along);
   }
   const eased=frontDist<5?0:frontDist<13?Math.max(0,(frontDist-5)/8):1;
-  const movingMetres=obj.speed*eased*dt;
+  const rightOfWay=topolovaYieldCar5166(
+   topolovaPriorityControls5166,obj,intent5166,dt);
+  const movingMetres=Math.min(obj.speed*eased*dt*
+   (rightOfWay?.factor??1),rightOfWay?.capMetres??Infinity);
+  obj.topolovaYielding5166=rightOfWay?.yielding===true;
+  if(obj.topolovaYielding5166)
+   obj.topolovaYieldFrames5166=(obj.topolovaYieldFrames5166||0)+1;
   obj.progress+=obj.direction*movingMetres/obj.seg.len;
   rpSpinWheels(obj,movingMetres);
   if(obj.progress>1||obj.progress<0)rpNextStreet(obj);
@@ -10084,14 +10141,21 @@ function rpAnimateTraffic(dt){
  }
  for(const obj of trafficPeople){
     if(obj.zebraLoop5165){
+   const curb=topolovaWaitAtCurb5166(
+    topolovaPriorityControls5166,obj.zebraLoop5165,
+    obj.loopDistance5165,dt*obj.speed,trafficCars);
+   obj.waitAtTopolova5166=curb?.wait===true;
+   if(obj.waitAtTopolova5166)
+    obj.waitFrames5166=(obj.waitFrames5166||0)+1;
+   const step=curb?.step??dt*obj.speed;
    const next=advanceTopolovaZebraLoop5165(
-    obj.zebraLoop5165,obj.loopDistance5165,dt*obj.speed);
+    obj.zebraLoop5165,obj.loopDistance5165,step);
    if(!next)continue;
    if(next.isCrossing&&!obj.wasCrossing5165)
     obj.crossingsEntered5165++;
    obj.wasCrossing5165=next.isCrossing;
    obj.loopDistance5165=next.distance;
-   obj.metresWalked5165+=dt*obj.speed;
+   obj.metresWalked5165+=step;
    const g=obj.g;
    g.position.set(next.x,terrainAt(next.x,next.z),next.z);
    g.rotation.y=Math.atan2(-next.tangentX,-next.tangentZ);

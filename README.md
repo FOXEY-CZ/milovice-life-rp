@@ -1,3 +1,14 @@
+## Milovice RP 5.166 — přednost vozidel u dvou existujících přechodů Topolové (19. 11. 2026)
+
+**Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=516600&streetAudit=topolova-priority-5166
+
+- **Dopravní AI:** auta simulace na původní silnici OSM 8618275 zpomalují při blížícím se/přecházejícím NPC u přechodů 1316882854 a 1316882853. Orientace silnice a čtyři směry nájezdu jsou kontrolovány podle skutečných původních GPS uzlů, hash c0fe69b0. Modelový odstup zastavení od osy přechodu je 3,5 m, nejde o geodeticky ověřenou čáru. Ostatní silnice/vozidla mimo tento blok se nemění.
+- **Interakce chodce:** původní šestý NPC z 5.165 na 222,740 m okruhu vyčkává před vstupem na zebru, dokud se auta bezpečně nepřiblíží k modelovému bodu zastavení či neprojedou. Pokud už vstoupil do přechodu, normální AI auta zpomalují. **Auto řízené hráčem se automaticky nebrzdí**; chodec před jeho příjezdem čeká. Lokální gameplay aproximace, nikoli obecně platný certifikovaný systém prevence dopravních kolizí.
+- **Nulová nová geografie:** žádné nové silnice, přechody, chodníky, vchody, lampy, rekvizity, auta ani kolize. OSM ID a souřadnice neměněny; při GPS/ID změně se řídící pravidlo vypne, místo aby si vymýšlelo novou mapu.
+- **Testy:** nový přesný unit pro všechny směry nájezdu, nesprávné silnice, auto hráče, čekání chodce a vzdálenosti; mobilní Chromium WebGL alespoň 8,5 s včetně LOD a regrese 5.165/5.164/5.163/5.160. **Stav CI/WebGL/Pages při commitu čekající**, ověřit před označením PASS.
+
+---
+
 ## Milovice RP 5.165 — pěší okruh dvěma existujícími zebrami Topolové (18. 11. 2026)
 
 **Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=516500&streetAudit=topolova-loop-5165
