@@ -1,3 +1,14 @@
+## Milovice RP 5.167 — skutečný 3D scénář potkání NPC a auta na Topolové (19. 11. 2026)
+
+**Kontrolní kamera / scénář:** https://foxey-cz.github.io/milovice-life-rp/?v=516700&streetAudit=topolova-encounter-5167&encounterTest=1
+
+- **Co bylo ve 5.166 ještě neověřené:** tehdejší mobile WebGL ověřoval aktivní modul a chodce, nikoliv dokončené setkání *jedoucího auta* s *čekajícím chodcem*. Nová 5.167 přidává deterministický test do existujícího render/traffic loopu: model běžného AI auta se vloží **pouze na zvláštní technické kontrolní URL s `encounterTest=1`**, 13,5 m před skutečným OSM uzlem jižního přechodu. Používá totožný 3D model, reálný silniční segment, GPS a aktualizaci běžné AI. Žádné mockované posouvání auta ani teleportování chodce, žádná změna normálního počtu dopravních NPC. Na obyčejné URL nové testovací auto nevznikne.
+- **Původní a source-locked:** silnice OSM **8618275** hash `c0fe69b0`, skutečná jižní zebra **1316882854**, současná 5.166 přednost a **původní chodec 5.165** na reálném 222,740m okruhu. Při změně ID, přechodu, uzlů, mapového dopravního segmentu nebo řídicího modulu se scénář nespustí. Modelová rychlost AI auta 8 m/s, zkušební odstup 13,5 m a předchozí 3,5 m před přechodem jsou herní parametry, ne skutečné měření silnice.
+- **Kritéria v novém mobilním WebGL testu:** nejprve nejméně 6,5 s skutečného renderování pro LOD, poté čekat na **reálně zaznamenané**: chodec stojí před obrubou, AI auto skutečně brzdí a dojede do zastavovacího odstupu; chodec přejde jižní zebru na západní chodník; vozidlo neporuší 3,5m modelovou hranici během přecházení a **po uvolnění přechodu pokračuje**. Test používá existující aktéry a fyzické herní aktualizace, ne simulovaný izolovaný výpočet. Připravena screenshotová kontrola a unit source/drift testy; **CI, WebGL, Pages při commitu čekají na výsledek**.
+- **Geometrie se nemění:** žádný nový chodník, přechod, silnice, domovní vchod, lampa, strom, parkovací stání ani kolizní prvek. Mobilní výkon, starší budovy i pěší sítě se regresně kontrolují. Technická kamera není dokumentační fotografie. Jde o jeden kontrolní scénář, nikoliv důkaz chování všech AI aut v celých Milovicích.
+
+---
+
 ## Milovice RP 5.166 — přednost vozidel u dvou existujících přechodů Topolové (19. 11. 2026)
 
 **Kontrolní kamera:** https://foxey-cz.github.io/milovice-life-rp/?v=516600&streetAudit=topolova-priority-5166

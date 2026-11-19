@@ -1,0 +1,40 @@
+name: Milovice 5.167 actual AI car and pedestrian encounter WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - scripts/osm-topolova-encounter-5167.js
+      - scripts/osm-topolova-encounter-5167.test.mjs
+      - scripts/osm-topolova-encounter-webgl-5167.mjs
+      - .github/workflows/topolova-encounter-5167.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-encounter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Encounter geometry, both crossing sources and older NPC regressions
+        run: |
+          node scripts/osm-topolova-encounter-5167.test.mjs
+          node scripts/osm-topolova-priority-5166.test.mjs
+          node scripts/osm-topolova-zebra-loop-5165.test.mjs
+          node scripts/osm-topolova-connected-5164.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Real mobile WebGL car yields to pedestrian and then continues
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-topolova-encounter-webgl-5167.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: topolova-encounter-5167
+          path: browser-artifacts/topolova-encounter-5167-mobile.png
+          if-no-files-found: ignore
