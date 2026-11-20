@@ -579,6 +579,7 @@ import {planTopolovaWestWalk5175,makeTopolovaWestWalk5175} from './scripts/osm-t
 import {makeTopolovaFootJob5179,advanceTopolovaFootJob5179} from './scripts/osm-topolova-foot-job-5179.js?v=517900';
 import {directionTopolovaFootJob5180} from './scripts/osm-topolova-foot-navigation-5180.js?v=518000';
 import {topolovaFootMinimapMarker5181} from './scripts/osm-topolova-foot-minimap-5181.js?v=518100';
+import {planTopolovaMissionWestSegment5182} from './scripts/osm-topolova-foot-path-highlight-5182.js?v=518200';
 import {planTopolovaPaving5177} from './scripts/osm-topolova-paving-5177.js?v=517700';
 import {planTopolovaPriority5166,makeTopolovaPriority5166,topolovaApproach5166,topolovaIntent5166,topolovaYieldCar5166,topolovaWaitAtCurb5166} from './scripts/osm-topolova-priority-5166.js?v=516600';
 import {planTopolovaEncounter5167} from './scripts/osm-topolova-encounter-5167.js?v=516700';
@@ -7541,6 +7542,11 @@ function rpAppendOSMElements(elements,regionId='old'){
   promenadePlan:topolovaPromenadePlan,ways:roadWays
  });
  if(topolovaLoopPlan)window.__miloviceTopolovaLoopPlan=topolovaLoopPlan;
+ const westMissionSegment5182=planTopolovaMissionWestSegment5182({
+  regionId,ways:roadWays,loopPlan:topolovaLoopPlan,toWorld:osmPoint
+ });
+ if(westMissionSegment5182)
+  window.__miloviceTopolovaMissionWestSegment5182=westMissionSegment5182;
  const topolovaWestWalk5175=planTopolovaWestWalk5175(topolovaLoopPlan);
  if(topolovaWestWalk5175)
   window.__miloviceTopolovaWestWalkPlan=topolovaWestWalk5175;
@@ -10900,6 +10906,25 @@ function drawMini(){const mapX=walking?px:x,mapZ=walking?pz:z,heading=walking?or
   mc.beginPath();mc.arc(cx,cz,7,0,Math.PI*2);mc.fill();mc.stroke();
   mc.fillStyle='#fff';mc.font='bold 10px system-ui';mc.textAlign='center';mc.fillText('CÍL',cx,cz-12);
   mc.textAlign='start';
+ }
+ // 5.182: source-exact OSM 1314665579 nodes 12->13. Highlight only
+ // the existing mission pavement, never an inferred street connection.
+ const missionLine5182=topolovaFootJob5179?
+  window.__miloviceTopolovaMissionWestSegment5182:null;
+ window.__miloviceTopolovaMissionLineRuntime5182=()=>({
+  active:!!topolovaFootJob5179,
+  sourceWayId:missionLine5182?.sourceWayId||null,
+  highlightedOriginalSegment:!!missionLine5182,
+  noNewPaths:true,newWorldMeshes:0
+ });
+ if(missionLine5182){
+  mc.save();mc.strokeStyle='#53efbe';mc.lineWidth=3.5;
+  mc.setLineDash([6,3]);mc.beginPath();
+  mc.moveTo((missionLine5182.a.x-mapX)*scale,
+   (missionLine5182.a.z-mapZ)*scale);
+  mc.lineTo((missionLine5182.b.x-mapX)*scale,
+   (missionLine5182.b.z-mapZ)*scale);
+  mc.stroke();mc.restore();
  }
  mc.restore();
  // 5.181: screen-space mission target AFTER unrotating the street layer.
