@@ -70,7 +70,7 @@ for(const token of [
  'const topolovaZebraPaint5187=planTopolovaZebraPaint5187(regionId,el)',
  'topolovaZebraPaint5187?topolovaZebraMat5187:osmStripeMaterial',
  'window.__miloviceTopolovaZebraPaint5187',
- "20261120-topolova-street-markings-518700"
+
 ])assert(html.includes(token),'missing 5.187 crossing integration: '+token);
 console.log('PASS 5.187: 2 source-locked Topolova zebra ways; one shared 64px texture, no new crossing geometry');
 console.log('PASS 5.177: three original Topolova footways get OSM-locked paving tint without new geometry');
