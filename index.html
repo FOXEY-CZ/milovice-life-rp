@@ -516,7 +516,7 @@ document.addEventListener('keydown',e=>{if(e.code==='Escape'&&mapPanel.classList
 
 import * as THREE from 'three';
 import {makeHumanRig,makeRoadCar,makePidBus,makeCityElefantStyleTrain} from './scripts/world-models.js?v=560';
-import {addCityLanduseBatches,forestInstancePlacements} from './scripts/landscapes.js?v=59900';
+import {addCityLanduseBatches,forestInstancePlacements,inspectMappedClayGrain5178} from './scripts/landscapes.js?v=517800';
 import {planOSMPitchMarkings} from './scripts/osm-pitch-markings-599.js?v=59900';
 import {planMappedStreetLamps} from './scripts/osm-street-lighting-5100.js?v=510000';
 import {planMappedPlaygroundEquipment,planPlaygroundReviewCamera} from './scripts/osm-playground-equipment-5102.js?v=510300';
@@ -7373,6 +7373,11 @@ function rpAppendOSMElements(elements,regionId='old'){
  const greenBatches=addCityLanduseBatches(THREE,landscapeWays,osmPoint,
   terrainAt,osmLayer,landscapeZones,mergeGeometries,
   {tennisPlan:miltenTennisPlan});
+ if(regionId==='mlada')window.__miloviceClayGrainRuntime5178=()=>({
+  ...inspectMappedClayGrain5178(THREE),
+  mappedClayPitchIds:landscapeWays.filter(w=>w.tags?.leisure==='pitch'&&
+   w.tags?.surface==='clay').map(w=>String(w.id)).sort()
+ });
  if(greenBatches){
   const prior=window.__miloviceCityGreenBatch||{};
   window.__miloviceCityGreenBatch={
