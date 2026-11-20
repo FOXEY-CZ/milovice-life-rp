@@ -153,6 +153,12 @@ try{
  assert.equal(mini.marker?.checkpoint,1);
  assert.equal(mini.marker?.directPointNotRoute,true);
  assert.equal(mini.worldObjectsCreated,0);
+ const line=await page.evaluate(()=>window.__miloviceTopolovaMissionLineRuntime5182?.());
+ assert.equal(line?.active,true,JSON.stringify(line));
+ assert.equal(line?.highlightedOriginalSegment,true,JSON.stringify(line));
+ assert.equal(line?.sourceWayId,'1314665579');
+ assert.equal(line?.newWorldMeshes,0);
+ assert.equal(line?.noNewPaths,true);
  await page.evaluate(()=>document.getElementById('topolova-foot-job-end')?.click());
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
