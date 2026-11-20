@@ -575,6 +575,7 @@ import {planTopolovaMappedWalkers5162,toTopolovaWalkSegment5162} from './scripts
 import {planTopolovaPromenade5163,topolovaPromenadeSegment5163} from './scripts/osm-topolova-promenade-5163.js?v=516300';
 import {planTopolovaConnectedWalk5164,makeTopolovaConnectedRoute5164,sampleTopolovaConnectedRoute5164,advanceTopolovaConnectedRoute5164} from './scripts/osm-topolova-connected-5164.js?v=516400';
 import {planTopolovaZebraLoop5165,makeTopolovaZebraLoop5165,sampleTopolovaZebraLoop5165,advanceTopolovaZebraLoop5165} from './scripts/osm-topolova-zebra-loop-5165.js?v=516500';
+import {planTopolovaWestWalk5175,makeTopolovaWestWalk5175} from './scripts/osm-topolova-west-walker-5175.js?v=517500';
 import {planTopolovaPriority5166,makeTopolovaPriority5166,topolovaApproach5166,topolovaIntent5166,topolovaYieldCar5166,topolovaWaitAtCurb5166} from './scripts/osm-topolova-priority-5166.js?v=516600';
 import {planTopolovaEncounter5167} from './scripts/osm-topolova-encounter-5167.js?v=516700';
 import {planTopolovaNorthEncounter5168} from './scripts/osm-topolova-north-encounter-5168.js?v=516800';
@@ -7498,6 +7499,9 @@ function rpAppendOSMElements(elements,regionId='old'){
   promenadePlan:topolovaPromenadePlan,ways:roadWays
  });
  if(topolovaLoopPlan)window.__miloviceTopolovaLoopPlan=topolovaLoopPlan;
+ const topolovaWestWalk5175=planTopolovaWestWalk5175(topolovaLoopPlan);
+ if(topolovaWestWalk5175)
+  window.__miloviceTopolovaWestWalkPlan=topolovaWestWalk5175;
  const topolovaPriorityPlan=planTopolovaPriority5166({
   regionId,loopPlan:topolovaLoopPlan,ways:roadWays
  });
@@ -9436,7 +9440,7 @@ async function rpLoadCityArea(id){
   
   rpAppendOSMElements(osm.elements,id);
   finalizeRoadStrips();finalizeCityWalls();finalizeFoundations();finalizeFacades();finalizeArchitecture();heroBuildings.flush(osmLayer);
-  chunkMilovice();rpBuildRoadGraph();rpPopulateRegionalTraffic(area);rpSpawnTopolovaWalkers5162();rpSpawnTopolovaPromenade5163();rpSpawnTopolovaConnected5164();rpSpawnTopolovaLoop5165();rpActivateTopolovaPriority5166();rpSeedTopolovaEncounter5167();rpSeedTopolovaNorthEncounter5168();improveMiloviceVisuals();publishLegacyRealityAudit();rpInitRailTraffic();
+  chunkMilovice();rpBuildRoadGraph();rpPopulateRegionalTraffic(area);rpSpawnTopolovaWalkers5162();rpSpawnTopolovaPromenade5163();rpSpawnTopolovaConnected5164();rpSpawnTopolovaLoop5165();rpSpawnTopolovaWestWalk5175();rpActivateTopolovaPriority5166();rpSeedTopolovaEncounter5167();rpSeedTopolovaNorthEncounter5168();improveMiloviceVisuals();publishLegacyRealityAudit();rpInitRailTraffic();
   loadedCityAreas.add(id);
   window.__miloviceAreasLoaded=[...loadedCityAreas];
   window.__miloviceAreaStats={buildings:osmBuildings,roads:osmRoads.length,landscape:landscapeZones.length};
@@ -10272,6 +10276,24 @@ function rpSpawnTopolovaLoop5165(){
   loopDistance5165:initial,metresWalked5165:0,
   crossingsEntered5165:0,wasCrossing5165:false,
   speed:1.45,phase:2.5,legs:rig.legs,arms:rig.arms});
+}
+// 5.175: extra simulated pedestrian on the OSM west pavement, without entering zebras.
+function rpSpawnTopolovaWestWalk5175(){
+ const plan=window.__miloviceTopolovaWestWalkPlan;
+ if(!plan||trafficPeople.some(p=>p.westWalk5175))return;
+ const seg=makeTopolovaWestWalk5175(plan,osmPoint);
+ if(!seg)return;
+ const rig=makeHumanRig(THREE,90,0x736c4d),g=rig.group;
+ const progress=.38,direction=1;
+ const x=seg.a.x+(seg.b.x-seg.a.x)*progress;
+ const z=seg.a.y+(seg.b.y-seg.a.y)*progress;
+ g.position.set(x,terrainAt(x,z),z);
+ g.rotation.y=Math.atan2(-(seg.b.x-seg.a.x)*direction,
+  -(seg.b.y-seg.a.y)*direction);
+ trafficGroup.add(g);
+ trafficPeople.push({g,rig,seg,progress,direction,
+  westWalk5175:true,sourceFootwayId:plan.sourceWayId,
+  speed:1.03,side:0,legs:rig.legs,arms:rig.arms,phase:2.9});
 }
 function rpActivateTopolovaPriority5166(){
  const plan=window.__miloviceTopolovaPriorityPlan;
