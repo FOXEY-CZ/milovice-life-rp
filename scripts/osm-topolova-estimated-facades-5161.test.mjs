@@ -62,7 +62,11 @@ for(const [key,value] of Object.entries({
  balconyWindowDoorSets:32,stairWindows:24,
  createdBalconyPlatforms:0,createdEntranceDoors:0,addedColliders:0
 }))assert.equal(rendered[key],value,key);
-assert(rendered.gpuTriangles>300);
+assert(rendered.gpuTriangles>1200,'four-sided frames must be actual geometry');
+// 5.186: batched frames and glass are separate, with four frame strips
+// around each pane (not an opaque backing rectangle).
+assert(layer.children[0].geometry.position.array.length >
+ layer.children[1].geometry.position.array.length * 2);
 assert.equal(rendered.visibleAfterLOD(),3);
 assert.equal(rendered.allInScene(),true);
 assert.equal(layer.children.length,3);
@@ -91,7 +95,7 @@ assert.equal(rendered.visibleAfterLOD(),0);
 assert.equal(JSON.stringify([buildings,roads]),before);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const str of [
- "from './scripts/osm-topolova-estimated-facades-5161.js?v=518500'",
+ "from './scripts/osm-topolova-estimated-facades-5161.js?v=518600'",
  'const topolovaInferredPlan=planTopolovaEstimatedFacades5161({',
  'renderTopolovaEstimatedFacades5161(THREE,{',
  'if(window.__miloviceTopolovaInferredPlan?.facadeEdgesById[String(osmId)]?.includes(i)){',
