@@ -121,6 +121,25 @@ try{
  assert(Math.hypot(westAfter.position.x-westBefore.position.x,
   westAfter.position.z-westBefore.position.z)>.1,
   'west walker must physically move on existing OSM sidewalk');
+ // 5.179: interact with the real job-menu control in loaded mobile 3D.
+ const footJob=await page.evaluate(()=>{
+  const before=window.__miloviceTopolovaFootJobRuntime5179?.();
+  const control=document.getElementById('topolova-foot-job-start');
+  control?.click();
+  const after=window.__miloviceTopolovaFootJobRuntime5179?.();
+  const hud=document.getElementById('topolova-foot-job-hud');
+  const menuClosed=document.getElementById('rp-job-panel')?.hidden;
+  document.getElementById('topolova-foot-job-end')?.click();
+  const canceled=window.__miloviceTopolovaFootJobRuntime5179?.();
+  return {before,after,hudHidden:hud?.hidden,menuClosed,canceled};
+ });
+ assert.equal(footJob.before?.active,false,JSON.stringify(footJob));
+ assert.equal(footJob.after?.active,true,JSON.stringify(footJob));
+ assert.equal(footJob.after?.sourceWayId,'1314665579');
+ assert.equal(footJob.after?.rewardCZK,80);
+ assert.equal(footJob.hudHidden,false,JSON.stringify(footJob));
+ assert.equal(footJob.menuClosed,true);
+ assert.equal(footJob.canceled?.active,false);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/topolova-entry-survey-5170-mobile.png'});
