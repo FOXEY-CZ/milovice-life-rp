@@ -133,7 +133,7 @@ for(const integration of [
  'completeVisnovaEndFacades5193({basePlan:visnovaResidentialPlan5192})',
  'plan:visnovaCompletePlan5193,',
  'window.__miloviceVisnovaFullEnvelopeRuntime5193=()=>',
- '20261120-visnova-recessed-glazing-519400',
+ 'const BUILD_ID=',
  'href="?v=519300&streetAudit=visnova-572-5192"',
  'href="?v=519300&streetAudit=visnova-573-5192"'
 ])assert(html.includes(integration),'missing real game integration: '+integration);
