@@ -10,7 +10,7 @@ try{
  const page=await browser.newPage({viewport:{width:393,height:852},
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
- await page.goto('http://127.0.0.1:8080/?v=519000&streetAudit=topolova-slunicko-west-5154',
+ await page.goto('http://127.0.0.1:8080/?v=519100&streetAudit=topolova-slunicko-west-5154',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>
@@ -35,6 +35,7 @@ try{
   tennis:window.__miloviceMiltenTennisRuntime?.(),
   zebra:window.__miloviceZebraV7Runtime?.(),
   refuge:window.__miloviceArmadniRefugeRuntime5190?.(),
+  refugeZebra:window.__miloviceArmadniZebraArmsRuntime5191?.(),
   menu:document.getElementById('street-block-audit')?.getBoundingClientRect().height
  }));
  assert.equal(r.wall?.version,'5.154');
@@ -70,10 +71,23 @@ try{
  assert.equal(r.refuge?.newCrossingWays,0);
  assert.equal(r.refuge?.addedPlayerColliders,0);
  assert.equal(r.refuge?.changedRoadRoutes,0);
+ // 5.191: rendered two separately clipped painted approaches, not
+ // one continuous stripe layout through the source-confirmed median.
+ assert.equal(r.refugeZebra?.ready,true,JSON.stringify(r.refugeZebra));
+ assert.equal(r.refugeZebra?.version,'5.191');
+ assert.equal(r.refugeZebra?.sourceCrossingId,'1316882855');
+ assert.equal(r.refugeZebra?.originalStripePieces,7);
+ assert.equal(r.refugeZebra?.northApproachBars,3);
+ assert.equal(r.refugeZebra?.southApproachBars,3);
+ assert.equal(r.refugeZebra?.paintedBars,6);
+ assert.equal(r.refugeZebra?.excludedIslandBars,1);
+ assert(r.refugeZebra.minimumPaintEdgeGapMetres>.48);
+ assert.equal(r.refugeZebra?.originalCrossingVerticesPreserved,true);
+ assert.equal(r.refugeZebra?.newColliders,0);
  assert(r.school?.ready&&r.topolova?.ready&&r.hall?.ready&&r.tennis?.ready&&r.zebra?.ready);
  assert(r.menu<150);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/slunicko-west-elevation-5154-mobile.png'});
- console.log('PASS 5.190 mobile WebGL 6.5-second LOD: Armádní OSM refuge island with 24 triangles + intact school glazing');
+ console.log('PASS 5.191 mobile WebGL 6.5-second LOD: Armádní 3+3 marked crossing arms, mapped refuge island and intact school glazing');
 }finally{await browser.close()}
