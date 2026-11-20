@@ -160,6 +160,22 @@ try{
  assert.equal(line?.newWorldMeshes,0);
  assert.equal(line?.noNewPaths,true);
  await page.evaluate(()=>document.getElementById('topolova-foot-job-end')?.click());
+ // 5.183: reset while mission is active must discard checkpoints and
+ // preserve currency. This uses the actual game key handler, not a mock.
+ const resetResult=await page.evaluate(()=>{
+  document.getElementById('topolova-foot-job-start')?.click();
+  const before=window.__miloviceTopolovaFootJobRuntime5179?.();
+  const balanceBefore=Number(document.getElementById('money')?.textContent);
+  document.dispatchEvent(new KeyboardEvent('keydown',{
+   bubbles:true,code:'KeyR',key:'r'}));
+  return {before,after:window.__miloviceTopolovaFootJobRuntime5179?.(),
+   lifecycle:window.__miloviceTopolovaFootJobLifecycle5183?.(),
+   balanceBefore,balanceAfter:Number(document.getElementById('money')?.textContent)};
+ });
+ assert.equal(resetResult.before?.active,true,JSON.stringify(resetResult));
+ assert.equal(resetResult.after?.active,false,JSON.stringify(resetResult));
+ assert.equal(resetResult.lifecycle?.resetCancelsWithoutReward,true);
+ assert.equal(resetResult.balanceAfter,resetResult.balanceBefore);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/topolova-entry-survey-5170-mobile.png'});
