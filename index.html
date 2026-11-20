@@ -566,6 +566,7 @@ import {PRUBEZNA_PUBLIC_PHOTOS_5144,planPrubeznaPhotoFrontage} from './scripts/o
 import {SPORTOVNI_HALL_5145,planSportovniPhotoHall} from './scripts/osm-sportovni-hall-5145.js?v=514500';
 import {planSlunickoStoreys5153} from './scripts/osm-slunicko-storeys-5153.js?v=515300';
 import {planSlunickoWestElevation5154} from './scripts/osm-slunicko-west-elevation-5154.js?v=515400';
+import {planSlunickoWestWindows5189,renderSlunickoWestWindows5189} from './scripts/osm-slunicko-west-windows-5189.js?v=518900';
 import {planTopolovaPanelRow5155} from './scripts/osm-topolova-panel-row-5155.js?v=515500';
 import {planTopolovaContinuousHip5160,renderTopolovaContinuousHip5160} from './scripts/osm-topolova-continuous-hip-5160.js?v=516000';
 import {planTopolovaEstimatedFacades5161,renderTopolovaEstimatedFacades5161} from './scripts/osm-topolova-estimated-facades-5161.js?v=518600';
@@ -650,7 +651,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261120-topolova-pedestrian-beacon-518800';
+const BUILD_ID='20261120-slunicko-west-model-windows-518900';
 // Keep the visible HUD build and runtime declaration in sync for photo audits.
 document.getElementById('build-label').textContent=BUILD_ID;
 const rpStationRoofAuditCamera=new URLSearchParams(location.search).has('roofAudit');
@@ -6028,6 +6029,31 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
   geometry.dispose();
  }
  // Report only after the source-locked wall or hero geometry is queued.
+ // 5.189: facade dimensions derive from the 2020 city tender, while
+ // every placement remains an explicitly unverified game model.
+ const slunickoWestWindowsPlan5189=slunickoWestPlan?
+  planSlunickoWestWindows5189({westPlan:slunickoWestPlan,geometry:points}):null;
+ const slunickoWestWindows5189=slunickoWestWindowsPlan5189?
+  renderSlunickoWestWindows5189(THREE,{
+   plan:slunickoWestWindowsPlan5189,toWorld:osmPoint,
+   baseHeight,layer:osmLayer
+  }):null;
+ if(slunickoWestWindows5189){
+  window.__miloviceSlunickoWestWindowsAudit5189={
+   version:'5.189',sourceOSMId:'53865699',
+   bays:slunickoWestWindows5189.renderedWestBays,
+   meshes:slunickoWestWindows5189.renderedMeshes,
+   genericWestEdgesSuppressed:0,
+   allBayPositionsEstimated:true,noNewColliders:true
+  };
+  window.__miloviceSlunickoWestWindowsRuntime5189=()=>({
+   ...window.__miloviceSlunickoWestWindowsAudit5189,
+   inScene:slunickoWestWindows5189.inScene(),
+   visibleAfterLOD:slunickoWestWindows5189.visibleAfterLOD(),
+   gpuTriangles:slunickoWestWindows5189.gpuTriangles,
+   sourceGeometryChanged:false,actualDoorPositionsVerified:false
+  });
+ }
  if(slunickoPlan)window.__miloviceSlunickoAudit={
   ...slunickoPlan,westPlan:slunickoWestPlan,
   actualVisualHeightMeters:h,wallSpanMeters:slunickoWallSpan,
@@ -6562,6 +6588,12 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
   }
   if(!topolova646BothPlan&&topolova646Photo&&
    i===topolova646Photo.eastPhotoEdgeIndex)continue;
+  // The OSM-locked school west wall uses its own modeled wide bays;
+  // do not overlay the unrelated generic narrow windows on this face.
+  if(slunickoWestWindows5189&&slunickoWestWindowsPlan5189?.westEdgeIndex===i){
+   window.__miloviceSlunickoWestWindowsAudit5189.genericWestEdgesSuppressed++;
+   continue;
+  }
   const facade=exteriorFacadeFrame(pts,i);
   if(!facade)continue;
   const {nx,nz,mx,mz,ux,uz,yaw:rotation}=facade;
