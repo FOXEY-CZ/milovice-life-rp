@@ -10,7 +10,7 @@ try{
  const page=await browser.newPage({viewport:{width:393,height:852},
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
- await page.goto('http://127.0.0.1:8080/?v=519100&streetAudit=topolova-slunicko-west-5154',
+ await page.goto('http://127.0.0.1:8080/?v=519200&streetAudit=topolova-slunicko-west-5154',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>
@@ -30,6 +30,7 @@ try{
   wall:window.__miloviceSlunickoWestRuntime?.(),
   windows:window.__miloviceSlunickoWestWindowsRuntime5189?.(),
   school:window.__miloviceSlunickoRuntime?.(),
+  visnova:window.__miloviceVisnovaResidentialRuntime5192?.(),
   topolova:window.__miloviceTopolovaResidentialRuntime?.(),
   hall:window.__miloviceSportovniHallRuntime?.(),
   tennis:window.__miloviceMiltenTennisRuntime?.(),
@@ -84,10 +85,26 @@ try{
  assert(r.refugeZebra.minimumPaintEdgeGapMetres>.48);
  assert.equal(r.refugeZebra?.originalCrossingVerticesPreserved,true);
  assert.equal(r.refugeZebra?.newColliders,0);
+ // 5.192: BOTH original Višňová 572/573 buildings have source-locked
+ // long exterior walls and exactly 11+5 actual mapped building levels;
+ // simple estimated facade windows remain 4 meshes each after >6s LOD.
+ assert.equal(r.visnova?.version,'5.192',JSON.stringify(r.visnova));
+ assert.equal(r.visnova?.ready,true,JSON.stringify(r.visnova));
+ assert.deepEqual(r.visnova?.originalBuildingIds,['53865847','53865848']);
+ assert.deepEqual(r.visnova?.originalFloors,[5,11]);
+ assert.equal(r.visnova?.renderedWindowCount,520);
+ assert.equal(r.visnova?.meshCount,8);
+ assert.equal(r.visnova?.genericFacadeEdgesSuppressed,28);
+ assert.equal(r.visnova?.modelNotPhotoSurvey,true);
+ assert.equal(r.visnova?.addedEntrances,0);
+ assert.equal(r.visnova?.addedBalconies,0);
+ assert.equal(r.visnova?.newColliders,0);
+ assert.deepEqual(r.visnova?.buildings.map(b=>b.visibleAfterLOD),[4,4]);
+ assert.deepEqual(r.visnova?.buildings.map(b=>b.totalTriangles),[4666,2670]);
  assert(r.school?.ready&&r.topolova?.ready&&r.hall?.ready&&r.tennis?.ready&&r.zebra?.ready);
  assert(r.menu<150);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/slunicko-west-elevation-5154-mobile.png'});
- console.log('PASS 5.191 mobile WebGL 6.5-second LOD: Armádní 3+3 marked crossing arms, mapped refuge island and intact school glazing');
+ console.log('PASS 5.192 mobile WebGL 6.5s LOD: two Višňová source-locked 11+5-level buildings, 520 model windows and intact school/zebras');
 }finally{await browser.close()}
