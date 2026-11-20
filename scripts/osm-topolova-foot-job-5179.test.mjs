@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {makeTopolovaFootJob5179,advanceTopolovaFootJob5179}
  from './osm-topolova-foot-job-5179.js';
+import {createTopolovaFootBeacon5188} from './osm-topolova-foot-beacon-5188.js';
 import {planTopolovaPanelRow5155} from './osm-topolova-panel-row-5155.js';
 import {planTopolovaMappedWalkers5162} from './osm-topolova-mapped-walkers-5162.js';
 import {planTopolovaPromenade5163} from './osm-topolova-promenade-5163.js';
@@ -63,4 +64,53 @@ for(const snippet of [
  'advanceTopolovaFootJob5179(job,{x:px,z:pz},walking)',
  "window.__miloviceTopolovaFootJobRuntime5179=()=>"
 ])assert(html.includes(snippet),'missing live integration '+snippet);
+// 5.188: actual reusable TWO-mesh in-world mission indicator.
+const vec=()=>({x:0,y:0,z:0,set(x,y,z){this.x=x;this.y=y;this.z=z;}});
+const ThreeMock={
+ DoubleSide:2,
+ Group:class {constructor(){this.children=[];this.userData={};this.position=vec();this.visible=true;}add(o){this.children.push(o);o.parent=this;}},
+ Mesh:class {constructor(g,m){this.geometry=g;this.material=m;this.position=vec();this.rotation={x:0,y:0};this.scale={setScalar(n){this.value=n}};}},
+ TorusGeometry:class {constructor(...args){this.args=args}},
+ OctahedronGeometry:class {constructor(...args){this.args=args}},
+ MeshBasicMaterial:class {constructor(opts){this.options=opts}}
+};
+const beaconLayer=new ThreeMock.Group();
+const terrainAt=(x,z)=>50+Math.sin(x*.01)+Math.cos(z*.01);
+const beacon=createTopolovaFootBeacon5188(ThreeMock,{layer:beaconLayer,terrainAt});
+assert(beacon);
+assert.equal(beacon.inspect().active,false);
+assert.equal(beacon.inspect().actualSceneObjects,2);
+assert.equal(beacon.inspect().physicalStreetObjectsAdded,0);
+assert.equal(beaconLayer.children.length,1);
+const beaconMeshes=[...beacon.group.children];
+const newJob={...plan,next:0};
+assert.equal(beacon.update(newJob,1.5),true);
+assert.equal(beacon.inspect().checkpoint,1);
+assert.equal(beacon.inspect().visibleAfterLOD,true);
+assert.equal(beacon.inspect().world.x,plan.checkpoints[0].x);
+assert.equal(beacon.inspect().world.z,plan.checkpoints[0].z);
+assert(Math.abs(beacon.inspect().world.y-terrainAt(start.x,start.z)-.06)<.000001);
+newJob.next=1;
+assert.equal(beacon.update(newJob,2.3),true);
+assert.equal(beacon.inspect().checkpoint,2);
+assert.equal(beacon.inspect().world.x,plan.checkpoints[1].x);
+beaconLayer.visible=false;
+assert.equal(beacon.inspect().visibleAfterLOD,false);
+beaconLayer.visible=true;
+assert.equal(beacon.update({...newJob,sourceWayId:'fake'},3),false);
+assert.equal(beacon.inspect().active,false);
+assert.equal(beacon.update({...newJob,next:3},3),false);
+assert.equal(beacon.update(newJob,4),true);
+assert.equal(beacon.update(null,4),false);
+assert.equal(beacon.inspect().active,false);
+assert.deepEqual(beacon.group.children,beaconMeshes);
+assert.equal(beaconLayer.children.length,1,'repeated jobs must not grow draw calls');
+for(const snippet of [
+ "from './scripts/osm-topolova-foot-beacon-5188.js?v=518800'",
+ 'createTopolovaFootBeacon5188(THREE,{',
+ 'topolovaFootBeacon5188?.update(topolovaFootJob5179,elapsed)',
+ 'window.__miloviceTopolovaFootBeacon5188=()=>',
+ '20261120-topolova-pedestrian-beacon-518800'
+])assert(html.includes(snippet),'missing live 5.188 beacon integration: '+snippet);
+console.log('PASS 5.188: one temporary 3D waypoint from original sidewalk, two reusable meshes, reset and completion hide it');
 console.log('PASS 5.179: 3 source-locked foot checkpoints, vehicle pauses, 80 Kč only on third arrival, no new physical street assets');
