@@ -576,6 +576,7 @@ import {planTopolovaPromenade5163,topolovaPromenadeSegment5163} from './scripts/
 import {planTopolovaConnectedWalk5164,makeTopolovaConnectedRoute5164,sampleTopolovaConnectedRoute5164,advanceTopolovaConnectedRoute5164} from './scripts/osm-topolova-connected-5164.js?v=516400';
 import {planTopolovaZebraLoop5165,makeTopolovaZebraLoop5165,sampleTopolovaZebraLoop5165,advanceTopolovaZebraLoop5165} from './scripts/osm-topolova-zebra-loop-5165.js?v=516500';
 import {planTopolovaWestWalk5175,makeTopolovaWestWalk5175} from './scripts/osm-topolova-west-walker-5175.js?v=517500';
+import {planTopolovaPaving5177} from './scripts/osm-topolova-paving-5177.js?v=517700';
 import {planTopolovaPriority5166,makeTopolovaPriority5166,topolovaApproach5166,topolovaIntent5166,topolovaYieldCar5166,topolovaWaitAtCurb5166} from './scripts/osm-topolova-priority-5166.js?v=516600';
 import {planTopolovaEncounter5167} from './scripts/osm-topolova-encounter-5167.js?v=516700';
 import {planTopolovaNorthEncounter5168} from './scripts/osm-topolova-north-encounter-5168.js?v=516800';
@@ -2832,6 +2833,8 @@ const osmMappedSurfaceMaterials={
  // procedural material on FIVE pre-existing OSM footways (5.134+5.137+5.139). The tint is
  // intentionally a MODEL approximation, not a surveyed stone colour.
  'prubezna-concrete':cityMatte(0xe1ddd3,citySurfaceKit.paving,.93),
+ // 5.177: source-tagged paving stones on three exact Topolova OSM ways.
+ 'topolova-paving-stones':cityMatte(0xd1c8b9,citySurfaceKit.paving,.94),
  // 5.135: repaired asphalt on exact OSM Průběžná carriageway only.
  // Reuses same original city asphalt pattern; tint is NOT surveyed.
  'prubezna-repaired-asphalt':cityMatte(0xd2d6d7,citySurfaceKit.asphalt,.93,THREE.DoubleSide),
@@ -7758,6 +7761,14 @@ function rpAppendOSMElements(elements,regionId='old'){
    osmStreetLightWays.push({id:el.id,tags:el.tags,points,regionId});
   const kind=el.tags.highway;
   const mappedSurfacePlan=classifyMappedRoadSurface(el.tags);
+  const topolovaPaving5177=planTopolovaPaving5177(regionId,el);
+  if(topolovaPaving5177){
+   const audit=window.__miloviceTopolovaPaving5177 ||=
+    {version:'5.177',sourceWayIds:[],modelTintNotPhotoVerified:true,
+     newGeometry:0,newFootways:0,newColliders:0};
+   if(!audit.sourceWayIds.includes(topolovaPaving5177.sourceWayId))
+    audit.sourceWayIds.push(topolovaPaving5177.sourceWayId);
+  }
   const prubeznaPaver=isPrubezna2025PaverWay(prubezna2025Plan,el);
   const prubeznaLink=isPrubeznaPedestrianLink(prubeznaLinkPlan,el);
   const sportovniSidewalk=isSportovni2025Sidewalk(sportovniSidewalkPlan,el);
@@ -7771,7 +7782,11 @@ function rpAppendOSMElements(elements,regionId='old'){
    {...mappedSurfacePlan,material:'prubezna-concrete',
     originalOSMSurfaceTag:mappedSurfacePlan?.surfaceTag||null,
     visualSource:'Milovice 2023 permit + 2025 Průběžná road contract',
-    geometryUnchanged:true,exactAppearanceSurveyed:false}:mappedSurfacePlan;
+    geometryUnchanged:true,exactAppearanceSurveyed:false}:
+   topolovaPaving5177?
+   {...mappedSurfacePlan,material:topolovaPaving5177.material,
+    sourceOSMId:topolovaPaving5177.sourceWayId,
+    sourceGeometryPreserved:true,modelTintEstimated:true}:mappedSurfacePlan;
   if(surfacePlan){
    osmSurfaceAudit.mappedSurfaceWays++;
    if(surfacePlan.tagged)osmSurfaceAudit.explicitSurfaceWays++;
