@@ -3,7 +3,7 @@ import {readFileSync} from 'node:fs';
 import {planTopolovaPanelRow5155} from './osm-topolova-panel-row-5155.js';
 import {planTopolovaMappedWalkers5162} from './osm-topolova-mapped-walkers-5162.js';
 import {planTopolovaPromenade5163} from './osm-topolova-promenade-5163.js';
-import {planTopolovaConnectedWalk5164} from './osm-topolova-connected-walkers-5164.js';
+import {planTopolovaConnectedWalk5164} from './osm-topolova-connected-5164.js';
 import {planTopolovaZebraLoop5165} from './osm-topolova-zebra-loop-5165.js';
 import {planTopolovaWestWalk5175,makeTopolovaWestWalk5175} from './osm-topolova-west-walker-5175.js';
 const raw=readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8');
