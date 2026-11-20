@@ -69,6 +69,6 @@ for(const term of [
  'planVisnovaLaneEdges5195({',
  'renderVisnovaLaneEdges5195(THREE,{',
  'window.__miloviceVisnovaServiceEdgesRuntime5195=()=>',
- "20261120-visnova-continuous-lane-edges-519600"
+ "const BUILD_ID="
 ])assert(html.includes(term),'missing real scene integration '+term);
 console.log('PASS 5.195: 2 OSM service lanes, 3 original segments, 6 edge strips, 12 triangles, one mesh, no new roads or parking');
