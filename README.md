@@ -1,3 +1,15 @@
+## Milovice RP 5.189 — modelová západní fasáda MŠ Sluníčko s podloženým měřítkem oken (20. 11. 2026)
+
+**Přímá viditelná úprava skutečné budovy:** na autentickém RÚIAN/OSM půdorysu MŠ Sluníčko (Topolová 622, OSM `53865699`) má západní fasáda délky 44,429 m nově samostatné větší modelové okenní výplně, místo starého náhodného generického úzkého okenního rastru. Veřejný rozpočet města Milovice z 21. 5. 2020 na venkovní žaluzie dokládá mj. rozměry 2,4 × 1,8 m (14 ks) a 2,4 × 2,0 m (40 ks) a jednu sestavu 3,6 × 2,0 m; **nedokládá ale, že všechny tyto žaluzie patří na západní stranu nebo kde konkrétně leží**. Proto jsme zvolili výslovně **odhadovaný modelový** západní rastr **4 řady × 9 oken (36 výplní)**, každá šířky 2,4 m a výšky 1,8 m. Ani počet, ani jejich polohy nevydáváme za skutečná adresně/fotograficky ověřená okna. Čtyři podlaží školy dokládá její oficiální web; 13,15m modelová výška a 44m západní stěna navazují na 5.153/5.154. Přidané tři sdílené GPU meshe (rámy/sklo/parapety) stojí před původní pevnou stěnou. Generická okna se na **jediné původní západní hraně** potlačí, aby se obě verze nepřekrývaly. Ostatní fasády, půdorys, střecha, DEM základy, vstupy, kolize, silnice, zebry, hřiště, chodci a GPS podklady zůstávají.
+
+Modul `scripts/osm-slunicko-west-windows-5189.js` ověřuje původní hash `912f8e04`, geometrii RÚIAN hrany 1 a plán 5.154. Rozšířený `scripts/osm-slunicko-west-elevation-5154.test.mjs` kontroluje 36 výplní, 504 trojúhelníků, 3 meshe, modelová omezení, zachování zdrojů a zapojení v `index.html`. Rozšířený mobilní Chromium/WebGL test `scripts/osm-slunicko-west-elevation-webgl-5154.mjs` má ověřit skutečné vykreslení všech 3 meshů po 6,5s LOD a jediné potlačené generické hraně. Verze modulu `?v=518900` a build ID 5.189.
+
+**Zatím není doložen PASS skutečného Node/Chromium/WebGL/Actions ani nasazení na Pages.** GitHub soubory a testovací kód jsou zapsané, ale prohlásit úspěšné nasazení by bylo předčasné. Další: ověřit testy a vzhled přímo ve hře; získat fotografie západní fasády pro nahrazení odhadnutého rastru a pokračovat budovami, chodníky a zelení celé Topolové.
+
+**Podklady:** [oficiální čtyřpodlažní budova MŠ](https://www.ms-slunicko.com/predstavujeme-ms/) a [městský výkaz výměr osazení žaluzií 2020](https://www.e-zakazky.cz/stazenisouboru/61b37d16-23a5-4b6b-ae61-13e546a3e2ad) (str. 5–6).
+
+---
+
 ## Milovice RP 5.188 — viditelný 3D checkpoint pěší zakázky Topolová (20. 11. 2026)
 
 **Nová hratelná změna v reálné 3D scéně:** pěší zakázka Topolová má teď přímo nad aktuálním cílem na původním západním OSM chodníku `1314665579` **dočasný zelený kruh a plovoucí herní symbol**. Už není nutné orientovat se jen podle HUD/minimapy. Po příchodu k bodu se značka automaticky přesune na další ze tří existujících checkpointů; po dokončení, zrušení, resetu `R` nebo změně oblasti/vozidla se zcela skryje. Při nastoupení do vozidla zůstává viditelná, ale samotný postup pěší zakázky je pozastaven.
