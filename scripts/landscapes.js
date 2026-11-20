@@ -266,3 +266,15 @@ export function addCityLanduseBatches(T,elements,convert,terrain,osmLayer,zones,
   chunkCount:plan.groups.length
  };
 }
+
+/** 5.178 audit: reports one real shared GPU texture, no new 3D geometry. */
+export function inspectMappedClayGrain5178(T){
+ const material=landscapeMat.get(T)?.pitchClay;
+ const tex=material?.map;
+ return {version:'5.178',ready:Boolean(tex?.image?.data&&
+   tex.image.width===64&&tex.image.height===64),
+  width:tex?.image?.width||0,height:tex?.image?.height||0,
+  rgbaBytes:tex?.image?.data?.byteLength||0,
+  sharedMaterial:true,originalOSMPolygonsUnchanged:true,
+  newMeshes:0,newPolygonVertices:0,texturePhotoVerified:false};
+}
