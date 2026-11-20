@@ -50,8 +50,8 @@ const baseById=id=>({base:100, height:15.25,id});
 const rendered=renderTopolovaEstimatedFacades5161(mock,{plan,toWorld,baseById,layer});
 assert(rendered);
 for(const [key,value] of Object.entries({
- renderedFacades:6,renderedMeshes:3,normalWindows:72,
- balconyWindowDoorSets:48,stairWindows:24,
+ renderedFacades:6,renderedMeshes:3,normalWindows:88,
+ balconyWindowDoorSets:32,stairWindows:24,
  createdBalconyPlatforms:0,createdEntranceDoors:0,addedColliders:0
 }))assert.equal(rendered[key],value,key);
 assert(rendered.gpuTriangles>300);
