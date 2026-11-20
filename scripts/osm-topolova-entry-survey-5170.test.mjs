@@ -80,6 +80,7 @@ for(const snippet of [
  'topolova-grade-details',
  "topolovaGradeButton.addEventListener('click'",
  'audit.groundGradeProfiles.find',
+ 'Celý blok 616–618 (rozsahy základ–DEM)',
  'Skutečná strana, poloha a výška vstupu nejsou ověřené'
 ])assert(html.includes(snippet),'Missing browser integration '+snippet);
 for(const v of plan.views){
