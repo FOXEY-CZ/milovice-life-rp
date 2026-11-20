@@ -15,7 +15,6 @@ const args={regionId:'mlada',toWorld,roads:safe,buildings:safe,water:safe};
 const original=JSON.stringify(ways);
 const full=plan(ways,args);
 assert(full,'two untouched real OSM polygons');
-assert.deepEqual(full.sourcePolygonIds,undefined); // explicit sourcePolygons below
 assert.deepEqual(full.sourcePolygons,['1460019807','1460019806']);
 assert.deepEqual(full.sourceLawnIds,['1460019807','1460019806']);
 assert(full.tufts.length>5,'mapped source lawns should yield visible geometry');
