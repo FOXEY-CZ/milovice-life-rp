@@ -584,6 +584,7 @@ import {topolovaFootMinimapMarker5181} from './scripts/osm-topolova-foot-minimap
 import {planTopolovaMissionWestSegment5182} from './scripts/osm-topolova-foot-path-highlight-5182.js?v=518200';
 import {planTopolovaPaving5177} from './scripts/osm-topolova-paving-5177.js?v=517700';
 import {planTopolovaZebraPaint5187,makeTopolovaZebraPaintPixels5187} from './scripts/osm-topolova-zebra-paint-5187.js?v=518700';
+import {planArmadniRefuge5190,renderArmadniRefuge5190} from './scripts/osm-armadni-refuge-island-5190.js?v=519000';
 import {planTopolovaPriority5166,makeTopolovaPriority5166,topolovaApproach5166,topolovaIntent5166,topolovaYieldCar5166,topolovaWaitAtCurb5166} from './scripts/osm-topolova-priority-5166.js?v=516600';
 import {planTopolovaEncounter5167} from './scripts/osm-topolova-encounter-5167.js?v=516700';
 import {planTopolovaNorthEncounter5168} from './scripts/osm-topolova-north-encounter-5168.js?v=516800';
@@ -651,7 +652,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261120-slunicko-west-model-windows-518900';
+const BUILD_ID='20261120-armadni-osm-refuge-island-519000';
 // Keep the visible HUD build and runtime declaration in sync for photo audits.
 document.getElementById('build-label').textContent=BUILD_ID;
 const rpStationRoofAuditCamera=new URLSearchParams(location.search).has('roofAudit');
@@ -2754,6 +2755,12 @@ const garagePhotoRoof=new THREE.MeshStandardMaterial({color:0x493833,roughness:.
 
 const workWalls=new THREE.MeshStandardMaterial({color:0xb9b9b0,roughness:.92});
 const osmParkMaterial=mat(0x769b65),osmStripeMaterial=mat(0xf5e8c8);
+// 5.190: low, non-colliding modeled pedestrian refuge ONLY where the
+// original Armádní crossing explicitly has OSM crossing:island=yes.
+// Shared one material and exact source crossing/road centre GPS.
+const armadniRefugeMaterial5190=new THREE.MeshLambertMaterial({
+ color:0xc1c2b8,side:THREE.DoubleSide
+});
 // 5.187: use one 16 KiB deterministic model-paint tile on the two verified
 // Topolova crossing ways ONLY. Real zebra geometry remains untouched.
 const topolovaZebraPixels5187=makeTopolovaZebraPaintPixels5187();
@@ -8458,6 +8465,34 @@ function rpAppendOSMElements(elements,regionId='old'){
     new THREE.Vector2(piece.b.x,piece.b.z),piece.width,
     topolovaZebraPaint5187?topolovaZebraMat5187:osmStripeMaterial,.268);
    sidewalkGeometryStats.crossingStripeSegments++;
+  }
+  // 5.190: OSM middle crossing node exactly matches the real Armádní
+  // centreline; add a modest raised *model* refuge there (not a new
+  // zebra, re-routed road, guessed lamp or blocking pedestrian collider).
+  const armadniRefugePlan5190=planArmadniRefuge5190({
+   regionId,crossing:el,
+   road:roadWays.find(w=>String(w.id)==='1331897683')
+  });
+  if(armadniRefugePlan5190){
+   const refuge=renderArmadniRefuge5190(THREE,{
+    plan:armadniRefugePlan5190,toWorld:osmPoint,
+    terrainAt,layer:osmLayer,material:armadniRefugeMaterial5190
+   });
+   if(refuge){
+    window.__miloviceArmadniRefugeAudit5190={
+     ...armadniRefugePlan5190,
+     renderedMeshes:refuge.renderedMeshes,
+     renderedTriangles:refuge.drawnTriangles,
+     outlineDimensionsEstimated:true,originalRoadsUntouched:true
+    };
+    window.__miloviceArmadniRefugeRuntime5190=()=>({
+     ...window.__miloviceArmadniRefugeAudit5190,
+     ready:refuge.inScene()&&refuge.visibleAfterLOD(),
+     center:refuge.centerWorld,inScene:refuge.inScene(),
+     visibleAfterLOD:refuge.visibleAfterLOD(),
+     addedPlayerColliders:0,changedRoadRoutes:0
+    });
+   }
   }
  }
  // Tracks must load before platforms, regardless of the export's OSM element order.
