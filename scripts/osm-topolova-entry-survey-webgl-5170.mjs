@@ -52,8 +52,37 @@ try{
   Number.isFinite(x.maxFoundationAboveTerrainMetres)));
  assert(a.inferred?.ready&&a.hip?.ready&&a.gables?.ready&&a.traffic?.ready);
  assert(a.menu<150);
+ // 5.172: exercise the actual mobile control, not just a static HTML marker.
+ const ui=await page.evaluate(()=>{
+  const button=document.getElementById('topolova-grade-toggle');
+  const details=document.getElementById('topolova-grade-details');
+  const before={buttonHidden:button?.hidden,detailsHidden:details?.hidden,
+   expanded:button?.getAttribute('aria-expanded')};
+  button?.click();
+  const opened={hidden:details?.hidden,expanded:button?.getAttribute('aria-expanded'),
+   text:details?.textContent||''};
+  button?.click();
+  return {before,opened,closed:{
+   hidden:details?.hidden,expanded:button?.getAttribute('aria-expanded')}};
+ });
+ assert.equal(ui.before.buttonHidden,false,JSON.stringify(ui));
+ assert.equal(ui.before.detailsHidden,true,JSON.stringify(ui));
+ assert.equal(ui.before.expanded,'false');
+ assert.equal(ui.opened.hidden,false,JSON.stringify(ui));
+ assert.equal(ui.opened.expanded,'true');
+ assert(ui.opened.text.includes('Topolová 617'),JSON.stringify(ui));
+ assert(ui.opened.text.includes('Pět bodů'),JSON.stringify(ui));
+ assert(ui.opened.text.includes('Celý blok 616–618'),JSON.stringify(ui));
+ for(const house of [616,617,618]){
+  assert(ui.opened.text.includes(house+'/V:'),JSON.stringify(ui));
+  assert(ui.opened.text.includes(house+'/Z:'),JSON.stringify(ui));
+ }
+ assert(ui.opened.text.includes('NEURČUJÍ práh ani schodiště'));
+ assert(!ui.opened.text.includes('se ještě nenačetly'));
+ assert.equal(ui.closed.hidden,true,JSON.stringify(ui));
+ assert.equal(ui.closed.expanded,'false');
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/topolova-entry-survey-5170-mobile.png'});
- console.log('PASS 5.170 mobile Chromium WebGL +8.5s LOD: six OSM-based 616-618 inspection cameras, 30 real DEM/foundation samples, no invented entrances, older facades + roof + traffic intact');
+ console.log('PASS 5.172 mobile Chromium WebGL +8.5s LOD and real click/close of six-facade DEM inspection: six OSM-based 616-618 inspection cameras, 30 real DEM/foundation samples, no invented entrances, older facades + roof + traffic intact');
 }finally{await browser.close()}
