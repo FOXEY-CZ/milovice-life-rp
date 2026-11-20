@@ -1,3 +1,9 @@
+## Milovice RP 5.171 — zobrazit DEM výšku základů přímo v technické kameře (20. 11. 2026)
+
+V šesti existujících pohledech na přízemí Topolová 616–618 je nové tlačítko **📏 Výšky základů 616–618**. Po kliknutí se z živého `window.__miloviceTopolovaEntrySurveyRuntime()` zobrazí právě aktivní skutečná OSM fasáda, ID domu, rozpětí rozdílu základ–DEM a všech pět vzorků po 25 % délky stěny. Znaménko výšky je vysvětlené. Nic se nedopočítává jako poloha dveří: **práh, schody, vchod i fotografie stále nejsou ověřené**. Nezměnily se půdorysy, DEM, kola, chodci, doprava, střecha ani kolize. Unit 5.170 nově střeží i přítomnost této UI kontroly; **CI/WebGL/Pages výsledky po změně čekají na ověření**.
+
+---
+
 ## Milovice RP 5.170 — OSM/RÚIAN pohledy na přízemí 616–618 a 30 DEM kontrol výšky (20. 11. 2026)
 
 **Kontrolní kamera, Topolová 617 od východu:** https://foxey-cz.github.io/milovice-life-rp/?v=517000&streetAudit=topolova-entry-617-east-5170. Dalších pět kamer je v rozbalovací nabídce technických pohledů: západní 617; obě dlouhé fasády 616 a 618.
