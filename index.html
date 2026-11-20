@@ -10295,6 +10295,18 @@ function rpSpawnTopolovaWestWalk5175(){
   westWalk5175:true,sourceFootwayId:plan.sourceWayId,
   speed:1.03,side:0,legs:rig.legs,arms:rig.arms,phase:2.9});
 }
+window.__miloviceTopolovaWestWalkRuntime=()=>{
+ const p=window.__miloviceTopolovaWestWalkPlan;
+ const people=trafficPeople.filter(x=>x.westWalk5175===true);
+ const w=people[0];
+ return {version:'5.175',ready:!!p&&people.length===1&&
+  w?.sourceFootwayId==='1314665579'&&w?.seg?.neverCrossesRoad===true,
+  count:people.length,wayId:w?.sourceFootwayId||null,
+  position:w?{x:w.g.position.x,z:w.g.position.z}:null,
+  progress:w?.progress??null,direction:w?.direction??null,
+  modelMeshPresent:Boolean(w?.g?.parent),
+  turnbackBeforeZebrasMetres:p?.trimMetres??null};
+};
 function rpActivateTopolovaPriority5166(){
  const plan=window.__miloviceTopolovaPriorityPlan;
  topolovaPriorityControls5166=makeTopolovaPriority5166(plan,osmPoint);
