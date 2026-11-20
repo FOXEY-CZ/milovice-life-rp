@@ -129,7 +129,7 @@ for(const term of [
  '!visnovaResidentialRendered5192&&!slepaUtility',
  "'visnova-572-5192':{",
  "'visnova-573-5192':{",
- 'href="?v=519200&streetAudit=visnova-572-5192"',
- 'href="?v=519200&streetAudit=visnova-573-5192"'
+ 'href="?v=519300&streetAudit=visnova-572-5192"',
+ 'href="?v=519300&streetAudit=visnova-573-5192"'
  ])assert(html.includes(term),'missing visible source-locked facade integration '+term);
 console.log('PASS 5.192: 11/5 source-mapped Višňová 572/573, 520 model windows, 8 meshes, 7336 triangles; OSM unchanged');
