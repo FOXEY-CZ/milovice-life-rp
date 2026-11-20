@@ -581,6 +581,7 @@ import {directionTopolovaFootJob5180} from './scripts/osm-topolova-foot-navigati
 import {topolovaFootMinimapMarker5181} from './scripts/osm-topolova-foot-minimap-5181.js?v=518100';
 import {planTopolovaMissionWestSegment5182} from './scripts/osm-topolova-foot-path-highlight-5182.js?v=518200';
 import {planTopolovaPaving5177} from './scripts/osm-topolova-paving-5177.js?v=517700';
+import {planTopolovaZebraPaint5187,makeTopolovaZebraPaintPixels5187} from './scripts/osm-topolova-zebra-paint-5187.js?v=518700';
 import {planTopolovaPriority5166,makeTopolovaPriority5166,topolovaApproach5166,topolovaIntent5166,topolovaYieldCar5166,topolovaWaitAtCurb5166} from './scripts/osm-topolova-priority-5166.js?v=516600';
 import {planTopolovaEncounter5167} from './scripts/osm-topolova-encounter-5167.js?v=516700';
 import {planTopolovaNorthEncounter5168} from './scripts/osm-topolova-north-encounter-5168.js?v=516800';
@@ -648,7 +649,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261118-topolova-646-both-facades-515700';
+const BUILD_ID='20261120-topolova-street-markings-518700';
 // Keep the visible HUD build and runtime declaration in sync for photo audits.
 document.getElementById('build-label').textContent=BUILD_ID;
 const rpStationRoofAuditCamera=new URLSearchParams(location.search).has('roofAudit');
@@ -2742,6 +2743,25 @@ const garagePhotoRoof=new THREE.MeshStandardMaterial({color:0x493833,roughness:.
 
 const workWalls=new THREE.MeshStandardMaterial({color:0xb9b9b0,roughness:.92});
 const osmParkMaterial=mat(0x769b65),osmStripeMaterial=mat(0xf5e8c8);
+// 5.187: use one 16 KiB deterministic model-paint tile on the two verified
+// Topolova crossing ways ONLY. Real zebra geometry remains untouched.
+const topolovaZebraPixels5187=makeTopolovaZebraPaintPixels5187();
+const topolovaZebraTexture5187=new THREE.DataTexture(
+ topolovaZebraPixels5187.data,topolovaZebraPixels5187.width,
+ topolovaZebraPixels5187.height,THREE.RGBAFormat);
+topolovaZebraTexture5187.wrapS=topolovaZebraTexture5187.wrapT=THREE.RepeatWrapping;
+topolovaZebraTexture5187.colorSpace=THREE.SRGBColorSpace;
+topolovaZebraTexture5187.minFilter=THREE.LinearMipmapLinearFilter;
+topolovaZebraTexture5187.magFilter=THREE.LinearFilter;
+topolovaZebraTexture5187.generateMipmaps=true;
+topolovaZebraTexture5187.needsUpdate=true;
+const topolovaZebraMat5187=cityMatte(0xffffff,topolovaZebraTexture5187,
+ .94,THREE.DoubleSide);
+const topolovaZebraAudit5187=window.__miloviceTopolovaZebraPaint5187={
+ version:'5.187',sourceWayIds:[],drawnBars:0,
+ textureBytes:topolovaZebraPixels5187.byteCount,
+ photoVerifiedWear:false,sourceGPSChanged:false,
+ newCrossingGeometry:0,newColliders:0,newRoads:0};
 // 5.96: single shared diffuse material, source OSM stream centerlines only.
 const osmWaterMaterial=new THREE.MeshLambertMaterial({color:0x396978,side:THREE.DoubleSide});
 let osmActive=false,osmReady=false,osmLoading=false,oldPosition=null,osmRoads=[],osmBuildings=0,osmNamedRoads=[],osmLandmarks=[];
@@ -8353,6 +8373,11 @@ function rpAppendOSMElements(elements,regionId='old'){
   if(!markedCrossing(el.tags))continue;
   const pieces=planZebraPieces(el.geometry.map(osmPoint),osmCarriagewayClearance);
   if(!pieces.length)continue;
+  const topolovaZebraPaint5187=planTopolovaZebraPaint5187(regionId,el);
+  if(topolovaZebraPaint5187){
+   topolovaZebraAudit5187.sourceWayIds.push(topolovaZebraPaint5187.sourceWayId);
+   topolovaZebraAudit5187.drawnBars+=pieces.length;
+  }
   sidewalkGeometryStats.mappedMarkedCrossings++;
   sidewalkGeometryStats.mappedMarkedCrossingOSMIds.push(String(el.id));
   // 5.152: proof of perpendicular Czech V7a bars at the source-locked
@@ -8388,7 +8413,8 @@ function rpAppendOSMElements(elements,regionId='old'){
   }
   for(const piece of pieces){
    osmStrip(new THREE.Vector2(piece.a.x,piece.a.z),
-    new THREE.Vector2(piece.b.x,piece.b.z),piece.width,osmStripeMaterial,.268);
+    new THREE.Vector2(piece.b.x,piece.b.z),piece.width,
+    topolovaZebraPaint5187?topolovaZebraMat5187:osmStripeMaterial,.268);
    sidewalkGeometryStats.crossingStripeSegments++;
   }
  }
