@@ -86,6 +86,7 @@ export function planTopolovaEstimatedFacades5161({
   inferredBayPositionsNotGeoreferenced:true,
   source617618HaveSomeBalconies:true,
   source616BalconyLocationsUnknown:true,
+  provisional616NoInventedBalconyDoors:true,
   frameColourNotIndependentlyVerified:true,
   addedPhysicalBalconyPlatforms:0,addedDoors:0,
   addedRoofCaps:0,addedColliders:0,addedPaths:0,
@@ -137,10 +138,14 @@ export function renderTopolovaEstimatedFacades5161(THREE,{
     pane(x,cy,1.75,1.35,true);normalWindows++;
    }
    for(const x of [-3.45,3.45]){
-    if(floor===0){
+    // 5.184: 616 has no georeferenced balcony-door evidence.
+    // Avoid giving it 16 invented facade door positions. The neutral
+    // neighbour-style window rhythm remains a declared MODEL estimate.
+    if(floor===0||face.address===616){
      pane(x,cy,1.75,1.35,true);normalWindows++;
     }else{
-     // The 2024 614–615 drawing is a pattern reference, NOT survey.
+     // Some 617/618 balconies are documented, but their precise bays
+     // are still a MODEL extrapolation from the 614/615 drawing.
      pane(x-.40,floor*3.05+1.6,.95,1.35,false);
      pane(x+.48,floor*3.05+1.28,.80,2.0,false);
      balconyWindowDoorSets++;
@@ -152,7 +157,7 @@ export function renderTopolovaEstimatedFacades5161(THREE,{
   }
   // Never hallucinate a particular street-facing door or rooftop tower.
  }
- if(normalWindows!==72||balconyWindowDoorSets!==48||
+ if(normalWindows!==88||balconyWindowDoorSets!==32||
   stairWindows!==24||missingGeometry)return null;
  const centroid=plan.faces.reduce((a,f)=>{
   const vertices=f.geometry.slice(0,-1);
