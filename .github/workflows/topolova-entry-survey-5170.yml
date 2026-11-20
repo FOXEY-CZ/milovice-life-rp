@@ -6,6 +6,8 @@ on:
       - scripts/landscapes.js
       - scripts/osm-clay-court-grain-5178.js
       - scripts/osm-clay-court-grain-5178.test.mjs
+      - scripts/osm-topolova-foot-minimap-5181.js
+      - scripts/osm-topolova-foot-minimap-5181.test.mjs
       - scripts/osm-topolova-foot-navigation-5180.js
       - scripts/osm-topolova-foot-navigation-5180.test.mjs
       - scripts/osm-topolova-foot-job-5179.js
@@ -42,6 +44,7 @@ jobs:
           node scripts/osm-topolova-paving-5177.test.mjs
           node scripts/osm-topolova-foot-job-5179.test.mjs
           node scripts/osm-topolova-foot-navigation-5180.test.mjs
+          node scripts/osm-topolova-foot-minimap-5181.test.mjs
           node scripts/osm-clay-court-grain-5178.test.mjs
           node scripts/osm-topolova-entry-survey-5170.test.mjs
           node scripts/osm-topolova-end-gables-5169.test.mjs
