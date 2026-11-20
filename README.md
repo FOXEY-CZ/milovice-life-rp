@@ -1,3 +1,11 @@
+## Milovice RP 5.174 — skutečná topologie pěší sítě Topolové (20. 11. 2026)
+
+Nad inventurou původních OSM cest 5.173 nově běží `scripts/osm-topolova-pedestrian-topology-5174.js`. Ověří identitu původní silnice Topolová **8618275** včetně původního hash `c0fe69b0`, sestaví graf společných OSM GPS uzlů v dostupných pěších trasách do 60 m od osy a vrací sousední trasy, vzájemně propojené komponenty, izolované úseky a kontrolu již používaného čtyřúsekového okruhu z 5.165. **Blízkost dvou čar nestačí na automatické spojení**: bez přesného sdíleného původního GPS uzlu se propojení nevytváří. Původní mapové údaje nejsou pozměněny.
+
+Nový `scripts/osm-topolova-pedestrian-topology-5174.test.mjs` hlídá zdrojovou geometrii, čtyři původní úseky okruhu, obousměrnost grafu, identitu jednotlivých komponent a nulové přidané cesty/kolize. Přidáno do existujícího CI workflow Topolové. **Stav testů a Pages po commitu zatím neověřen**. Nejde o nové chodníky ve 3D ani o důkaz skutečné bezbariérovosti: změna pouze připravuje podloženou navigační síť pro budoucí NPC a cílené kontroly chybějících úseků.
+
+---
+
 ## Milovice RP 5.173 — inventura navazujících chodníků a cest podél Topolové (20. 11. 2026)
 
 Nový **source-only audit celé ulice** `scripts/osm-topolova-street-inventory-5173.js` načítá původní OSM `data/regions/mlada.json`, ověřenou řadu 614–618 (5.155) a původní silniční osu Topolové OSM `8618275`. V modelovém pásmu **60 m od silnice** vypíše existující silniční/pěší OSM úseky včetně OSM ID, typu, případného povrchu, osvětlení, přístupu, označení přechodu a vzdálenosti od osy. Rozliší již dříve referované pěší úseky a **další kandidáty k ověření**, aniž by je považoval za nové hotové chodníky. Vzdálenost je geometrická heuristika, nikoli důkaz fyzického propojení ani fotografické správnosti. Nový `scripts/osm-topolova-street-inventory-5173.test.mjs` ověřuje původní silnici, stávající dva přechody a východní chodník, čitelné výsledky a bezzásahovost dat. Test je zapojen do existujícího workflow Topolové; **CI/WebGL/Pages 5.173 čekají na ověření**. Hra vizuálně zatím nezměněna: žádné vymyšlené stromy, lampy, cesty, dveře či parkování. Dalším krokem jsou konkrétní fotodoložené opravy jednotlivých nenavazujících částí celé ulice.
