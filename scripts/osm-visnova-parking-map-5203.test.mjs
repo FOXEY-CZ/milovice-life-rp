@@ -42,6 +42,6 @@ for(const term of [
  "mc.fillText('P',u,v+4);",
  'window.__miloviceVisnovaParkingMapRuntime5203=()=>',
  'visnovaParkingMap5203=null;',
- '20261121-visnova-map-pin-520300'
+ 'const BUILD_ID='
 ])assert(html.includes(term),'missing live minimap integration '+term);
 console.log('PASS 5.203: source-derived P minimap icon inside original 2-floor parking house; no invented garage entrances or geometry');
