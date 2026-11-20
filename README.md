@@ -1,3 +1,11 @@
+## Milovice RP 5.178 — přirozenější antuka u Topolové / Milten (20. 11. 2026)
+
+**Nová vizuální úprava:** všechny existující, skutečně mapově označené tenisové antukové plochy `leisure=pitch + surface=clay` používají společnou **jemně zrnitou procedurální texturu antuky** místo zcela jednolité plochy. Přímo u Topolové jde o původní kurty Milten v OSM polygonech `612386902` (cca 23 m od osy ulice) a `612386901` (cca 63 m); třetí původní antukový polygon areálu je `612386900`. Zdrojovou sportovní identitu potvrzuje OSM a veřejné popisy areálu se sedmi venkovními antukovými kurty, nikoli přesná aktuální fotografie barvy či struktury. Samotný odstín a zrnitost jsou **herní aproximací**. Již existujících sedm sítí a namalované tenisové čáry z 5.150 zůstávají.
+
+`scripts/osm-clay-court-grain-5178.js` vytváří deterministickou **64×64 RGBA / 16 KiB** texturu bez `Math.random`; renderer `scripts/landscapes.js` používá jediný cacheovaný materiál a sdílenou GPU texturu, nula nových meshů/geometrií nebo mapových zásahů. Runtime `window.__miloviceClayGrainRuntime5178()` ukazuje alokaci a původní OSM ID. Test `scripts/osm-clay-court-grain-5178.test.mjs` kontroluje reprodukovatelnost a mapový podklad, rozšířený mobilní Chromium/WebGL test ověřuje alokaci v běžící 3D scéně. Zapsáno do Actions. **CI/WebGL/GitHub Pages PASS zatím nepotvrzen**.
+
+---
+
 ## Milovice RP 5.177 — barevně sjednocená zdrojová dlažba Topolové (20. 11. 2026)
 
 **Vizuální změna v běžné 3D scéně:** tři původní, již herně kreslené pěší OSM trasy `1316882852` (východní chodník), `1314665579` (západní chodník) a `1316882860` (spojovací pěší cesta) mají nyní jednotný jemný odstín materiálu `topolova-paving-stones`, využívající existující procedurální dlažbu. Jejich skutečná OSM data obsahují `surface=paving_stones`; nový modelový odstín **není prohlašován za fotograficky ověřenou barvu**. Jiný povrch, včetně dvou asfaltových zebrových přechodů, se nemění. OSM souřadnice, šířky, DEM, kolize, domy, 7 chodců a doprava zůstávají nedotčené; **žádné nové chodníky ani lampy**.
