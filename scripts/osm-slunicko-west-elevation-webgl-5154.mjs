@@ -10,7 +10,7 @@ try{
  const page=await browser.newPage({viewport:{width:393,height:852},
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
- await page.goto('http://127.0.0.1:8080/?v=518900&streetAudit=topolova-slunicko-west-5154',
+ await page.goto('http://127.0.0.1:8080/?v=519000&streetAudit=topolova-slunicko-west-5154',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>
@@ -34,6 +34,7 @@ try{
   hall:window.__miloviceSportovniHallRuntime?.(),
   tennis:window.__miloviceMiltenTennisRuntime?.(),
   zebra:window.__miloviceZebraV7Runtime?.(),
+  refuge:window.__miloviceArmadniRefugeRuntime5190?.(),
   menu:document.getElementById('street-block-audit')?.getBoundingClientRect().height
  }));
  assert.equal(r.wall?.version,'5.154');
@@ -54,10 +55,25 @@ try{
  assert.equal(r.windows?.visibleAfterLOD,3);
  assert.equal(r.windows?.gpuTriangles,504);
  assert.equal(r.windows?.sourceGeometryChanged,false);
+ // 5.190: original crossing:island=yes at the source GPS node where
+ // Armádní's centreline meets the 3-node crossing, after mobile LOD.
+ assert.equal(r.refuge?.version,'5.190',JSON.stringify(r.refuge));
+ assert.equal(r.refuge?.crossingId,'1316882855');
+ assert.equal(r.refuge?.roadId,'1331897683');
+ assert.equal(r.refuge?.sourceCrossingHasIsland,true);
+ assert.equal(r.refuge?.centerPointSourceVerified,true);
+ assert.equal(r.refuge?.shapeDimensionsEstimated,true);
+ assert.equal(r.refuge?.renderedMeshes,1);
+ assert.equal(r.refuge?.renderedTriangles,24);
+ assert.equal(r.refuge?.inScene,true);
+ assert.equal(r.refuge?.visibleAfterLOD,true);
+ assert.equal(r.refuge?.newCrossingWays,0);
+ assert.equal(r.refuge?.addedPlayerColliders,0);
+ assert.equal(r.refuge?.changedRoadRoutes,0);
  assert(r.school?.ready&&r.topolova?.ready&&r.hall?.ready&&r.tennis?.ready&&r.zebra?.ready);
  assert(r.menu<150);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/slunicko-west-elevation-5154-mobile.png'});
- console.log('PASS 5.189 mobile WebGL 6.5-second LOD: school 44m west wall, 36 modelled 2.4m glazing bays and no duplicate generic windows');
+ console.log('PASS 5.190 mobile WebGL 6.5-second LOD: Armádní OSM refuge island with 24 triangles + intact school glazing');
 }finally{await browser.close()}
