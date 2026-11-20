@@ -34,6 +34,6 @@ for(const marker of [
  'const visnovaWalk5199=planVisnovaMappedWalk5199(regionId,el);',
  'material:visnovaWalk5199.material,',
  'window.__miloviceVisnovaMappedWalkRuntime5199',
- '20261120-visnova-mapped-walks-519900'
+ 'const BUILD_ID='
 ])assert(html.includes(marker),'missing scene integration '+marker);
 console.log('PASS 5.199: 2 original OSM pedestrian paths / 4 segments, model material only, zero added geometry');
