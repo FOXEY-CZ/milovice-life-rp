@@ -1,3 +1,13 @@
+## Milovice RP 5.181 — cíl pěší zakázky konečně na minimapě (20. 11. 2026)
+
+**Hratelnost v běžné 3D hře:** nový kontrolní bod existující fiktivní pěší mise **Topolová 5.179** je nyní vidět přímo na **herní minimapě**, podobně jako dříve cíl autobusové mise. Zelená značka `PĚŠKY` ukazuje číslo dalšího checkpointu 1–3, promítá se vůči aktuálnímu natočení kamery a pokud cíl leží mimo mapový výřez, drží se na jeho okraji. **Jde o bodový cíl, ne o navrženou průchozí trasu**; žádná fiktivní spojka ani výkres chodníku nevzniká.
+
+Nový pomocný modul `scripts/osm-topolova-foot-minimap-5181.js` pouze promítá původní herní checkpoint odvozený ze západního OSM chodníku `1314665579` do pixelů minimapy s 72px omezením okraje. `index.html` kreslí značku 2D canvasem až po obnovení rotované mapové vrstvy, takže je konzistentní s orientací minimapy; existující 3D svět, terén, GPS, kolize a NPC beze změn. `window.__miloviceTopolovaFootMinimapRuntime5181()` poskytuje jednoduchý testovatelný stav. Source test ověřuje souřadnice, rotaci, omezení okrajů a nulový počet herních objektů; rozšířený mobilní Chromium/WebGL test spustí skutečnou zakázku, počká na namalování značky, zkontroluje její GPS/pěší zdroj a zruší ji. Napojeno na existující Actions.
+
+**Ověření GitHub CI/WebGL/Pages zatím nepotvrzeno:** veřejnou stránku Actions se aktuálně nepodařilo programově přečíst a GitHub commit status API vrací prázdný seznam, což není potvrzení PASS. Při dalším vývoji nejprve prověřit běh Actions/opravu případných regresí.
+
+---
+
 ## Milovice RP 5.180 — směrová navigace pro pěší zakázku Topolová (20. 11. 2026)
 
 **Hratelnost / orientace:** navazující mise `🚶 Pěší doručení – Topolová` (5.179) nyní v HUD ukazuje **šipku k dalšímu ze tří kontrolních bodů**, přepočítávanou vůči aktuálnímu natočení hráčovy kamery. K dispozici je osm směrů `↑ ↗ → ↘ ↓ ↙ ← ↖`; při dosažení modelového okruhu 5 m se zobrazuje `✓`. Zůstává již existující vzdálenost a průběh `0/3` až `3/3`; nastoupení do auta stále nepovoluje postup. Navigace používá **přímý směr k bodu, nikoliv výpočet pěší trasy po ulicích**: neprokazuje průchodnost případných ulic, nenahrazuje mapu a neumisťuje fyzické značky, šipky, sloupy nebo objekty do 3D světa.
