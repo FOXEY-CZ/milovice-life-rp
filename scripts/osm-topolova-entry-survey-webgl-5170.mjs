@@ -35,6 +35,7 @@ try{
   traffic:window.__miloviceTopolovaPriorityRuntime?.(),
   paving:window.__miloviceTopolovaPaving5177,
   mappedPavingCount:window.__miloviceOSMSurfaceAudit?.byMaterial?.['topolova-paving-stones'],
+  clay:window.__miloviceClayGrainRuntime5178?.(),
   menu:document.getElementById('street-block-audit')?.getBoundingClientRect().height
  }));
  assert.equal(a.grade?.ready,true,JSON.stringify(a.grade));
@@ -63,6 +64,12 @@ try{
  assert.equal(a.paving?.newGeometry,0);
  assert.equal(a.paving?.modelTintNotPhotoVerified,true);
  assert(a.mappedPavingCount>=3,JSON.stringify(a));
+ assert.equal(a.clay?.ready,true,JSON.stringify(a.clay));
+ assert.equal(a.clay?.rgbaBytes,16384);
+ assert.deepEqual(a.clay.mappedClayPitchIds,
+  ['612386900','612386901','612386902']);
+ assert.equal(a.clay.newMeshes,0);
+ assert.equal(a.clay.texturePhotoVerified,false);
  // 5.172: exercise the actual mobile control, not just a static HTML marker.
  const ui=await page.evaluate(()=>{
   const button=document.getElementById('topolova-grade-toggle');
