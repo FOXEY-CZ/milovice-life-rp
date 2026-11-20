@@ -334,6 +334,8 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <a href="?v=511200&streetAudit=road-vruticka-5108">🛣️ Vrutická · OSM šířka 6 m</a>
 <a href="?v=510500&streetAudit=estate-mlada-5105">🏢 Mladá · bytové domy vedle hřiště</a></nav>
 <button id="street-audit-info-toggle" type="button" aria-expanded="false">📍 GPS a zdroj</button>
+<button id="topolova-grade-toggle" type="button" aria-expanded="false" hidden>📏 Výšky základů 616–618</button>
+<div id="topolova-grade-details" role="status" aria-live="polite" hidden></div>
 <span id="street-audit-status">Technický pohled podle OSM. Podrobnosti se načtou s mapou.</span>
 <span id="street-audit-camera-gps" aria-live="polite">📍 GPS a směr kamery se zobrazí po načtení 3D scény.</span>
 <div><a id="street-audit-map-gps" target="_blank" rel="noopener noreferrer">🗺️ Otevřít pozici herní kamery v Mapy.com</a></div>
@@ -3818,6 +3820,40 @@ window.__miloviceTopolovaEntrySurveyRuntime=()=>{
    window.__miloviceAreasLoaded?.includes('mlada')===true
  };
 };
+// 5.171: show measured model terrain clearance without implying that door locations are known.
+const topolovaGradeButton=document.getElementById('topolova-grade-toggle');
+const topolovaGradeDetails=document.getElementById('topolova-grade-details');
+if(topolovaGradeButton&&topolovaGradeDetails){
+ const isTopolovaEntryView=/^topolova-entry-(616|617|618)-(east|west)-5170$/.test(rpStreetAuditId||'');
+ topolovaGradeButton.hidden=!isTopolovaEntryView;
+ topolovaGradeButton.addEventListener('click',()=>{
+  const opening=topolovaGradeDetails.hidden;
+  topolovaGradeDetails.hidden=!opening;
+  topolovaGradeButton.setAttribute('aria-expanded',String(opening));
+  if(!opening)return;
+  const audit=window.__miloviceTopolovaEntrySurveyRuntime?.();
+  if(!audit?.ready||audit.terrainSamples!==30){
+   topolovaGradeDetails.textContent='Terénní DEM profily se ještě nenačetly. Zkus tlačítko znovu po načtení scény.';
+   return;
+  }
+  const active=audit.groundGradeProfiles.find(f=>
+   'topolova-entry-'+f.address+'-'+f.side+'-5170'===audit.activeViewId);
+  if(!active){
+   topolovaGradeDetails.textContent='Pro tento úhel není profil k dispozici.';
+   return;
+  }
+  const side=active.side==='east'?'východ':'západ';
+  const fmt=n=>Number(n).toFixed(2).replace('.',',');
+  topolovaGradeDetails.textContent=
+   'Topolová '+active.address+' · '+side+' · OSM '+active.sourceOSMId+
+   ' | základ vůči DEM: '+fmt(active.minFoundationAboveTerrainMetres)+
+   ' až '+fmt(active.maxFoundationAboveTerrainMetres)+' m.'+
+   ' Pět bodů na původní stěně (0/25/50/75/100 %): '+
+   active.samples.map(s=>fmt(s.baseAboveGround)+' m').join(' · ')+
+   '. Kladné číslo = základ nad modelovým terénem, záporné = pod ním.'+
+   ' Skutečná strana, poloha a výška vstupu nejsou ověřené; údaje NEURČUJÍ práh ani schodiště.';
+ });
+}
 window.__miloviceTopolovaInferredRuntime=()=>{
   const audit=window.__miloviceTopolovaInferredAudit;
   const plan=window.__miloviceTopolovaInferredPlan;
