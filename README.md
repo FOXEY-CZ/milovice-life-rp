@@ -1,3 +1,13 @@
+## Milovice RP 5.183 — oprava životního cyklu pěší mise (20. 11. 2026)
+
+**Oprava hratelnosti:** nová pěší doručovací mise Topolová z 5.179–5.182 se předtím při resetu hráče tlačítkem `R` a při výběru nového spawnu / oblasti / vozidla **nerušila**, přestože stávající autobusová mise ano. Hráč se tak mohl přemístit mimo Topolovou se starou aktivní misí, zavádějícím navigačním HUDem a minimapou. Nyní `reset()` i `rpSelectSpawn()` nastaví `topolovaFootJob5179=null` ve stejném místě, kde ruší autobusovou směnu, ještě před obnovením uživatelského rozhraní. Rozpracovaná mise se při resetu či novém startu ruší **bez odměny**; zůstává možné ji znovu zahájit po načtení Mladé a při chůzi. Ostatní dopravní a mapové procesy beze změny.
+
+Přidán statický regresní test `scripts/osm-topolova-foot-lifecycle-5183.test.mjs`, kontroluje obě resetovací větve i to, že jedinou cestou připsání výplaty z pěší mise zůstává její dokončení. Mobilní WebGL test `scripts/osm-topolova-entry-survey-webgl-5170.mjs` nově v reálném rozhraní spustí misi, simuluje stisknutí `R` a ověří její zrušení bez změny herního zůstatku. Workflow aktualizováno. Diagnostický getter `window.__miloviceTopolovaFootJobLifecycle5183()` ukazuje, zda pěší mise běží. **Nula nových 3D objektů, budov, mapových změn a cest.**
+
+**CI, WebGL ani Pages stále nelze potvrdit jako PASS pouze z commitů:** při dalším průchodu vývojem zkontrolovat skutečné výsledky Actions a nejdřív opravit případné selhání.
+
+---
+
 ## Milovice RP 5.182 — skutečný chodník pěší mise zvýrazněný na minimapě (20. 11. 2026)
 
 **Hratelnost / zobrazení města:** při aktivní fiktivní pěší zakázce Topolová (5.179–5.181) se na herní minimapě zeleně čárkovaně zvýrazní **pouze skutečně mapovaný pěší úsek mezi OSM uzly 12→13 původní západní chodníkové cesty `1314665579`**. Celá původní OSM cesta má 18 uzlů a přesahuje rozsah mise; jiných 17 částí ani domnělé spojky se proto nepřimalovávají jako trasa zakázky. Původní dva uzly souhlasí se zdrojově ověřenými body 3→4 okruhu 5.165 a přímou osou herních waypointů 5.179. Dřívější číslovaný cíl 5.181 zůstává. Barevné zvýraznění existuje **pouze na 2D minimapě**, nepřidává fyzickou cestu, čáru, plot, značku, strom, kolizi nebo mesh do světa. Zlepšuje orientaci, ale nezaručuje, že trasa je ve skutečnosti průchodná či fotograficky zaměřená.
