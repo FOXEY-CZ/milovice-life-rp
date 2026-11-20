@@ -3851,7 +3851,12 @@ if(topolovaGradeButton&&topolovaGradeDetails){
    ' Pět bodů na původní stěně (0/25/50/75/100 %): '+
    active.samples.map(s=>fmt(s.baseAboveGround)+' m').join(' · ')+
    '. Kladné číslo = základ nad modelovým terénem, záporné = pod ním.'+
-   ' Skutečná strana, poloha a výška vstupu nejsou ověřené; údaje NEURČUJÍ práh ani schodiště.';
+   ' | Celý blok 616–618 (rozsahy základ–DEM): '+
+   audit.groundGradeProfiles.map(f=>
+    f.address+'/'+(f.side==='east'?'V':'Z')+': '+
+    fmt(f.minFoundationAboveTerrainMetres)+' až '+
+    fmt(f.maxFoundationAboveTerrainMetres)+' m').join('; ')+
+   '. Skutečná strana, poloha a výška vstupu nejsou ověřené; údaje NEURČUJÍ práh ani schodiště.';
  });
 }
 window.__miloviceTopolovaInferredRuntime=()=>{
