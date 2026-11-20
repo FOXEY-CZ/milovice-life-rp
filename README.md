@@ -1,3 +1,13 @@
+## Milovice RP 5.187 — viditelný povrch obou reálných přechodů Topolové (20. 11. 2026)
+
+**Úprava celé ulice přímo v 3D:** dvě již existující a OSM doložené zebry v Topolové (OSM pěší přechody `1316882853` a `1316882854`) nyní dostávají jeden společný jemný procedurální materiál modelového opotřebení bílé barvy, místo dosavadní zcela ploché výplně. Materiál tvoří deterministická RGBA textura 64×64 pixelů (16 KiB), vytvořená pouze při spuštění; její skutečný vzor ani míra opotřebení nejsou fotograficky ověřené. Oproti dřívějšímu shaderu přibývá **jeden sdílený materiál a textura** pro oba přechody, což může změnit dávkování vykreslování, ale **nevytváří další 3D pruhy/mesh geometrie**. Původní OSM 3 uzly každého přechodu a přesné umístění malovaných pruhů, původní asfalt a geometrie ulic, chodníky, budovy, doprava a kolize jsou nedotčené. Ostatní přechody v Milovicích nadále používají původní materiál.
+
+Modul `scripts/osm-topolova-zebra-paint-5187.js` kontroluje úplné původní OSM hashe `dcb5d34e` a `0e127baa`, značení `crossing=zebra`, `surface=asphalt`, a odmítá jiné či pozměněné polohy. `index.html` vykresluje modelový materiál pouze při úspěšném zdrojovém ověření a vystavuje kontrolní stav `window.__miloviceTopolovaZebraPaint5187`; viditelné ID buildu odpovídá 5.187. Regresní kontroly jsou přidané do stávajícího testu `scripts/osm-topolova-paving-5177.test.mjs` (který již spouští Topolová CI workflow), včetně odmítnutí změněné geometrie, konzistence textury a kontroly napojení na renderer.
+
+**Stav ověření:** GitHub soubory jsou aktualizované. Lokální Node, skutečný Chromium/WebGL, Actions ani nasazení Pages dosud nemají ověřený PASS. Další: ověřit automatizované běhy a zkontrolovat vzhled obou přechodů přímo ve hře; potom fotoověřeně dokončovat ostatní fyzické prvky celé Topolové.
+
+---
+
 ## Milovice RP 5.186 — obvodové rámy oken Topolová 616–618 (20. 11. 2026)
 
 **Vizuální oprava 3D hry:** na existujících šesti východních/západních modelových fasádách Topolová 616–618 se rámy oken již nekreslí jako plné podkladové desky za sklem. Každé původní okno má skutečné čtyři úzké obvodové pásy rámu, přední skleněnou plochu a zachovanou případnou příčli a parapet. Trojúhelníky přibývají do existujícího společného batche rámů, ne jako samostatné objekty. Zachováno 88 modelových běžných oken, 32 odhadovaných balkonových sestav a 24 schodišťových oken, stále 3 GPU meshe. Jde o výtvarnou modelovou aproximaci bez fotografického důkazu přesných oken 616–618. OSM/RÚIAN GPS, výšky, DEM, střecha, cesty, kolize a vozidla beze změny.
