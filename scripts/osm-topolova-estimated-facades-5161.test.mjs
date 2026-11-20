@@ -54,6 +54,9 @@ assert.equal(plan.provisional616NoInventedBalconyDoors,true);
 // 4 upper floors. Replace 16 speculative door pairs with ordinary panes.
 assert.equal(rendered.normalWindows,72+16);
 assert.equal(rendered.balconyWindowDoorSets,48-16);
+assert.equal(rendered.glassVertexTinted,true);
+assert.equal(rendered.sourceGlassColoursPhotoVerified,false);
+assert(rendered.glassVertexCount>400);
 for(const [key,value] of Object.entries({
  renderedFacades:6,renderedMeshes:3,normalWindows:88,
  balconyWindowDoorSets:32,stairWindows:24,
@@ -63,6 +66,20 @@ assert(rendered.gpuTriangles>300);
 assert.equal(rendered.visibleAfterLOD(),3);
 assert.equal(rendered.allInScene(),true);
 assert.equal(layer.children.length,3);
+const glass=layer.children[1];
+assert.equal(glass.material.options.vertexColors,true);
+assert.equal(glass.geometry.color.itemSize,3);
+assert.equal(glass.geometry.color.array.length,glass.geometry.position.array.length);
+assert.equal(rendered.glassVertexCount,glass.geometry.position.array.length/3);
+const windowTints=new Set();
+for(let i=0;i<glass.geometry.color.array.length;i+=9){
+ const rgb=glass.geometry.color.array.slice(i,i+3);
+ assert(rgb[0]>=.78&&rgb[0]<=.97);
+ assert(rgb[1]>=.84&&rgb[1]<=.96);
+ assert(rgb[2]>=.91&&rgb[2]<=.99);
+ windowTints.add(rgb.map(v=>v.toFixed(3)).join(','));
+}
+assert(windowTints.size>=8,'window glass should have visible modeled variation');
 for(const mesh of layer.children){
  assert.equal(mesh.geometry.position.array.length%9,0);
  assert(mesh.geometry.position.array.length>0);
@@ -74,7 +91,7 @@ assert.equal(rendered.visibleAfterLOD(),0);
 assert.equal(JSON.stringify([buildings,roads]),before);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const str of [
- "from './scripts/osm-topolova-estimated-facades-5161.js?v=518400'",
+ "from './scripts/osm-topolova-estimated-facades-5161.js?v=518500'",
  'const topolovaInferredPlan=planTopolovaEstimatedFacades5161({',
  'renderTopolovaEstimatedFacades5161(THREE,{',
  'if(window.__miloviceTopolovaInferredPlan?.facadeEdgesById[String(osmId)]?.includes(i)){',
