@@ -137,6 +137,9 @@ try{
  assert.equal(footJob.after?.active,true,JSON.stringify(footJob));
  assert.equal(footJob.after?.sourceWayId,'1314665579');
  assert.equal(footJob.after?.rewardCZK,80);
+ assert(['↑','↖','←','↙','↓','↘','→','↗','✓'].includes(footJob.after?.direction?.arrow),JSON.stringify(footJob));
+ assert(Number.isFinite(footJob.after?.direction?.distanceMetres));
+ assert.equal(footJob.after?.direction?.directBearingOnly,true);
  assert.equal(footJob.hudHidden,false,JSON.stringify(footJob));
  assert.equal(footJob.menuClosed,true);
  assert.equal(footJob.canceled?.active,false);
