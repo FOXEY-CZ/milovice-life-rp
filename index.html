@@ -577,6 +577,7 @@ import {planTopolovaConnectedWalk5164,makeTopolovaConnectedRoute5164,sampleTopol
 import {planTopolovaZebraLoop5165,makeTopolovaZebraLoop5165,sampleTopolovaZebraLoop5165,advanceTopolovaZebraLoop5165} from './scripts/osm-topolova-zebra-loop-5165.js?v=516500';
 import {planTopolovaWestWalk5175,makeTopolovaWestWalk5175} from './scripts/osm-topolova-west-walker-5175.js?v=517500';
 import {makeTopolovaFootJob5179,advanceTopolovaFootJob5179} from './scripts/osm-topolova-foot-job-5179.js?v=517900';
+import {createTopolovaFootBeacon5188} from './scripts/osm-topolova-foot-beacon-5188.js?v=518800';
 import {directionTopolovaFootJob5180} from './scripts/osm-topolova-foot-navigation-5180.js?v=518000';
 import {topolovaFootMinimapMarker5181} from './scripts/osm-topolova-foot-minimap-5181.js?v=518100';
 import {planTopolovaMissionWestSegment5182} from './scripts/osm-topolova-foot-path-highlight-5182.js?v=518200';
@@ -649,7 +650,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261120-topolova-street-markings-518700';
+const BUILD_ID='20261120-topolova-pedestrian-beacon-518800';
 // Keep the visible HUD build and runtime declaration in sync for photo audits.
 document.getElementById('build-label').textContent=BUILD_ID;
 const rpStationRoofAuditCamera=new URLSearchParams(location.search).has('roofAudit');
@@ -1922,7 +1923,7 @@ async function rpSelectSpawn(kind){
  }
  rpCloseOverlays();rpClearGameplayStops();open=false;speed=0;cam=0;busJob=null;
  // 5.183: selecting a different district / vehicle is not mission progress.
- topolovaFootJob5179=null;pass=0;
+ topolovaFootJob5179=null;topolovaFootBeacon5188?.update(null,elapsed);pass=0;
  if(activeCar){activeCar.driven=false;activeCar.parked=true;activeCar.g.rotation.y=angle;activeCar.g.position.set(x,terrainAt(x,z)+.045,z);activeCar=null}
  // Remove a previously spawned custom car to prevent unbounded meshes / draw calls.
  if(playerSpawnCar){
@@ -2009,13 +2010,16 @@ function rpStartTopolovaFootJob5179(){
  if(!plan){notify('Nejdřív načti oblast Mladá / Topolová.');return}
  if(!walking){notify('Zakázku můžeš začít pouze pěšky. Nejdřív vystup.');return}
  topolovaFootJob5179={...plan,next:0};
+ topolovaFootBeacon5188?.update(topolovaFootJob5179,elapsed);
  rpCloseOverlays();keys.clear();
  notify('🚶 Pěší zakázka: dojdi na první bod jižního západního chodníku Topolové.');
  updateUI();
 }
 function rpEndTopolovaFootJob5179(){
  if(!topolovaFootJob5179)return;
- topolovaFootJob5179=null;rpCloseOverlays();
+ topolovaFootJob5179=null;
+ topolovaFootBeacon5188?.update(null,elapsed);
+ rpCloseOverlays();
  notify('Pěší zakázka zrušena bez odměny.');updateUI();
 }
 // 5.183: diagnostics assert that reset/teleport clear the pedestrian job.
@@ -2183,7 +2187,7 @@ document.addEventListener('mousemove',e=>{
  orbitYaw-=e.movementX*.0028;
  orbitPitch=Math.max(-.35,Math.min(.95,orbitPitch+e.movementY*.0028));
 });addEventListener('blur',()=>keys.clear());document.addEventListener('visibilitychange',()=>{if(document.hidden)keys.clear()});function reset(){
- keys.clear();stick.reset();pedestrianIntensity=0;pedestrianVelocity=0;speed=0;pass=0;next=0;open=false;cam=0;elapsed=0;rating=100;paid=false;busJob=null;topolovaFootJob5179=null;walkCam=0;
+ keys.clear();stick.reset();pedestrianIntensity=0;pedestrianVelocity=0;speed=0;pass=0;next=0;open=false;cam=0;elapsed=0;rating=100;paid=false;busJob=null;topolovaFootJob5179=null;topolovaFootBeacon5188?.update(null,elapsed);walkCam=0;
  if(activeCar){activeCar.driven=false;activeCar.parked=true;activeCar=null}
  if(playerSpawnCar){
   const index=trafficCars.indexOf(playerSpawnCar);
@@ -2422,6 +2426,12 @@ let audioCtx=null;document.getElementById('horn').onclick=()=>{try{audioCtx ||= 
 /* Milovice 2.1: voluntary OSM-based 3D road layer; original city stays available. */
 const originalCity=scene.children.filter(o=>o!==bus&&o!==avatar&&!(o.isLight));
 const osmLayer=new THREE.Group();osmLayer.visible=true;scene.add(osmLayer);
+// 5.188: a temporary, obviously non-physical waypoint for the existing
+// OSM-locked foot delivery. Reuses two meshes even across repeated jobs.
+const topolovaFootBeacon5188=createTopolovaFootBeacon5188(THREE,{
+ layer:osmLayer,terrainAt
+});
+window.__miloviceTopolovaFootBeacon5188=()=>topolovaFootBeacon5188?.inspect()||null;
 const rpVehicleShadows=makeVehicleContactShadows(THREE,osmLayer);
 // Lightweight ground-contact shadow: helps the pedestrian feel planted on the terrain.
 const avatarContactShadow=makeContactShadow(THREE);osmLayer.add(avatarContactShadow);
@@ -11101,6 +11111,7 @@ if(topolovaFootJob5179&&Math.floor(elapsed*5)!==Math.floor((elapsed-dt)*5)){
   }
  }
 }
+topolovaFootBeacon5188?.update(topolovaFootJob5179,elapsed);
 if(osmActive)glbVehicles.update(trafficCars,walking?px:x,walking?pz:z,elapsed,activeCar);if(Math.floor(elapsed/3)!==Math.floor((elapsed-dt)/3))maybeStreamCityAreas();
 if(rpRealisticMode){
  const cx=walking?px:x,cz=walking?pz:z;
