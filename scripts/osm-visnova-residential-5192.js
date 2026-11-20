@@ -100,6 +100,8 @@ export function renderVisnovaResidential5192(THREE,{
   !Number.isFinite(baseHeight)||!layer?.add)return null;
  const coords=plan.sourceGeometry.map(toWorld);
  if(coords.some(p=>!Number.isFinite(p?.x)||!Number.isFinite(p?.y)))return null;
+ // Frames protrude beyond glazing; mullions sit just proud of the frames.
+ // All depths are model approximations, not photo-measured.
  const positions=[[],[],[],[]]; // frame, glass, sill, low plinth
  const rectangle=(buffer,a,b,low,high,out,nx,nz)=>{
   const p=(t,y)=>({
@@ -144,9 +146,9 @@ export function renderVisnovaResidential5192(THREE,{
     geoRect(0,a,b,right-rim,right,low,high,.068,nx,nz);
     geoRect(0,a,b,left+rim,right-rim,low,low+pad,.068,nx,nz);
     geoRect(0,a,b,left+rim,right-rim,high-pad,high,.068,nx,nz);
-    geoRect(1,a,b,left+rim,right-rim,low+pad,high-pad,.084,nx,nz);
+    geoRect(1,a,b,left+rim,right-rim,low+pad,high-pad,.044,nx,nz);
     geoRect(0,a,b,center-rim*.60,center+rim*.60,
-     low+pad,high-pad,.108,nx,nz);
+     low+pad,high-pad,.076,nx,nz);
     geoRect(2,a,b,left-.08/len,right+.08/len,
      low-.105,low+.012,.128,nx,nz);
     windows++;
