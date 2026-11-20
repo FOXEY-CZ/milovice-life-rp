@@ -51,19 +51,36 @@ export function renderVisnovaLaneEdges5195(THREE,{
  let sections=0;
  for(const w of plan.ways){
   const coords=w.geometry.map(toWorld);
+  if(coords.some(p=>![p?.x,p?.y].every(Number.isFinite)))return null;
+  // 5.196: each source vertex has ONE shared pair of offset points.
+  // Adjacent strips therefore meet at exactly the same mitered corner.
+  const normals=[];
   for(let i=1;i<coords.length;i++){
-   const a=coords[i-1],b=coords[i];
-   if(![a?.x,a?.y,b?.x,b?.y].every(Number.isFinite))return null;
-   const dx=b.x-a.x,dz=b.y-a.y,len=Math.hypot(dx,dz);
-   if(len<.2)return null;
-   const nx=-dz/len,nz=dx/len;
-   for(const side of [-1,1]){
-    const offset0=side*(half-band),offset1=side*half;
-    const p=(c,off)=>({
-     x:c.x+nx*off,z:c.y+nz*off
-    });
-    const a0=p(a,offset0),a1=p(a,offset1),
-      b0=p(b,offset0),b1=p(b,offset1);
+   const a=coords[i-1],b=coords[i],dx=b.x-a.x,dz=b.y-a.y;
+   const len=Math.hypot(dx,dz);
+   if(!Number.isFinite(len)||len<.2)return null;
+   normals.push({x:-dz/len,z:dx/len});
+  }
+  const offsets=coords.map((c,i)=>{
+   const before=normals[Math.max(0,i-1)];
+   const after=normals[Math.min(normals.length-1,i)];
+   const x=before.x+after.x,z=before.z+after.z;
+   const norm=Math.hypot(x,z);
+   if(norm<.2)return null; // near-hairpin, do not create giant miters
+   const mx=x/norm,mz=z/norm;
+   const dot=mx*after.x+mz*after.z;
+   if(dot<.67)return null; // cap miter ratio <= 1.5
+   const scale=1/dot;
+   return [-1,1].map(side=>[half-band,half].map(rad=>({
+    x:c.x+mx*side*rad*scale,
+    z:c.y+mz*side*rad*scale
+   })));
+  });
+  if(offsets.some(x=>!x))return null;
+  for(let i=1;i<coords.length;i++){
+   for(let sideIndex=0;sideIndex<2;sideIndex++){
+    const from=offsets[i-1][sideIndex],to=offsets[i][sideIndex];
+    const [a0,a1]=from,[b0,b1]=to;
     const tri=[a0,b0,a1,a1,b0,b1];
     for(const point of tri){
      const elev=terrainAt(point.x,point.z);
@@ -75,6 +92,8 @@ export function renderVisnovaLaneEdges5195(THREE,{
    sections++;
   }
  }
+
+ // 5.196 continuous miter joints: no disconnected adjacent segment ends.
  // Construct the only mesh after ALL inputs have passed validation.
  const geometry=new THREE.BufferGeometry();
  geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));
@@ -91,6 +110,7 @@ export function renderVisnovaLaneEdges5195(THREE,{
  layer.add(mesh);
  return {version:'5.195',sourceWayIds:plan.ways.map(w=>w.id),
   originalSegments:sections,edgeBands:sections*2,
+  sharedCornerJoins:1,cornerJointMethod:'shared-miter',
   triangles:vertices.length/9,meshCount:1,
   originalRoadCentrelineChanged:false,newRoads:0,
   newParkingBays:0,newColliders:0,
