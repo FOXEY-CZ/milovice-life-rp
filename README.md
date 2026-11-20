@@ -1,3 +1,11 @@
+## Milovice RP 5.176 — opravená viditelnost chodce z technických kamer Topolové (20. 11. 2026)
+
+U sedmého simulovaného chodce na západním OSM chodníku `1314665579` je opraven výběr viditelnosti a vysoké/nízké úrovně detailu při technických kamerách Topolové. Předchozí 5.175 spouštěla správný NPC rig a animaci, ale obecná větev `rpAnimateTraffic` se při rozhodování o viditelnosti dívala jen na vzdálenost od hráče; hráč může být od kontrolní kamery daleko. Teď jsou **u tří zdrojových pěších cest Topolové** (`1316882860`, `1316882852`, a pouze nový `1314665579` s `westWalk5175`) vzdálenost viditelnosti i LOD vypočteny od aktivní kontrolní kamery. Mimo technickou kameru se používá hráč jako předtím. Přibyly živé indikátory `modelVisible/highLODVisible/lowLODVisible` v `window.__miloviceTopolovaWestWalkRuntime()` a aserce v mobilním Chromium/WebGL testu: existence, skutečná viditelnost jedné LOD úrovně a posun po původním chodníku.
+
+Změna nepřidává chodce, chodníky ani nové mapové prvky, pouze opravuje skutečné vykreslování již přidaného sedmého NPC při kontrole. **CI, WebGL, Pages pro 5.176 zatím nejsou ověřené.**
+
+---
+
 ## Milovice RP 5.175 — sedmý pohybující se chodec na západním chodníku Topolové (20. 11. 2026)
 
 **Skutečná viditelná herní změna:** nový simulovaný NPC chodec se ve scéně Mladá spawnuje na zdrojově identifikovaném **západním chodníku Topolová, OSM 1314665579**. Používá segment již ověřené uzavřené pěší trasy 5.165 (její uzly 3→4), a existující rig, terénní DEM a pohybovou logiku NPC. Otáčí se modelově **4 m před oběma stávajícími zebrami**, takže přechody nepoužívá a nemá se dostat do provozu. Nová trasa je pouze herní simulace pohybu osoby, ne skutečné chování místních obyvatel. Spawnuje se jeden další chodec vedle dosavadních šesti, bez nových cest, dveří, lamp, parkovacích stání, kolizí či výměny OSM GPS.
