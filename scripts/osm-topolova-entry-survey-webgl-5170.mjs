@@ -143,6 +143,17 @@ try{
  assert.equal(footJob.hudHidden,false,JSON.stringify(footJob));
  assert.equal(footJob.menuClosed,true);
  assert.equal(footJob.canceled?.active,false);
+ // 5.181: start again, then let the actual canvas draw one frame.
+ await page.evaluate(()=>document.getElementById('topolova-foot-job-start')?.click());
+ await page.waitForFunction(()=>window.__miloviceTopolovaFootMinimapRuntime5181?.()?.drawn===true,
+  null,{timeout:5000});
+ const mini=await page.evaluate(()=>window.__miloviceTopolovaFootMinimapRuntime5181?.());
+ assert.equal(mini?.active,true,JSON.stringify(mini));
+ assert.equal(mini.marker?.sourceWayId,'1314665579');
+ assert.equal(mini.marker?.checkpoint,1);
+ assert.equal(mini.marker?.directPointNotRoute,true);
+ assert.equal(mini.worldObjectsCreated,0);
+ await page.evaluate(()=>document.getElementById('topolova-foot-job-end')?.click());
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/topolova-entry-survey-5170-mobile.png'});
