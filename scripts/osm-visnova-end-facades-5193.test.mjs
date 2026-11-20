@@ -92,6 +92,22 @@ for(const expected of specifications){
  assert.equal(result.genericFacadeEdgesSuppressed,expected.edges);
  assert.equal(result.totalTriangles,expected.triangles);
  assert.equal(result.meshCount,4);
+ // 5.194: check actual rendered coordinates, not just the declared offsets.
+ // The OSM CCW edge outward normal is (dz/length, -dx/length).
+ const world=full.sourceGeometry.map(toWorld);
+ const firstEdge=full.facades[0].edgeIndex;
+ const wa=world[firstEdge],wb=world[firstEdge+1];
+ const dx=wb.x-wa.x,dz=wb.y-wa.y,edgeLength=Math.hypot(dx,dz);
+ const normalX=dz/edgeLength,normalZ=-dx/edgeLength;
+ const depth=mesh=>{
+  const p=mesh.geometry.position.array;
+  return (p[0]-wa.x)*normalX+(p[2]-wa.y)*normalZ;
+ };
+ const frameDepth=depth(layer.children[0]);
+ const glassDepth=depth(layer.children[1]);
+ assert(Math.abs(frameDepth-.068)<.0001,'frames retain outward offset');
+ assert(Math.abs(glassDepth-.044)<.0001,'glass is recessed behind frames');
+ assert(glassDepth<frameDepth,'glass must not float ahead of the frames');
  assert.equal(result.allInScene(),true);
  assert.equal(result.visibleAfterLOD(),4);
  for(const mesh of layer.children){
