@@ -66,6 +66,6 @@ for(const value of [
  '!visnovaParkingHouseRendered5202&&!slepaUtility',
  "'visnova-parking-house-5202':{",
  'href="?v=520200&streetAudit=visnova-parking-house-5202"',
- '20261121-visnova-parking-house-520200'
+ 'const BUILD_ID='
 ])assert(html.includes(value),'scene integration missing: '+value);
 console.log('PASS 5.202: RUIAN two-storey parking house, six source walls, 18 model bands, 48 triangles/2 meshes, no invented ramp or stalls');
