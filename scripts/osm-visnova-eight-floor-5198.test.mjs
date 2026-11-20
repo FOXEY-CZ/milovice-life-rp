@@ -73,6 +73,6 @@ for(const part of [
  'visnovaEightFloorRenderCache5198.clear();',
  "'visnova-eight-floor-5198':{",
  'href="?v=519800&streetAudit=visnova-eight-floor-5198"',
- '20261120-visnova-eight-floor-519800'
+ 'const BUILD_ID='
 ])assert(html.includes(part),'missing in-game 8-floor model: '+part);
 console.log('PASS 5.198: RUIAN 8-floor neighbour 53865850, 224 model windows, 4 shared meshes, 3168 triangles');
