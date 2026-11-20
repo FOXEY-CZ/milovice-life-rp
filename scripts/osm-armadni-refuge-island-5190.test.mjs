@@ -95,6 +95,9 @@ for(const text of [
  'const armadniRefugePlan5190=planArmadniRefuge5190({',
  'renderArmadniRefuge5190(THREE,{',
  'window.__miloviceArmadniRefugeRuntime5190=()=>',
- '20261120-armadni-osm-refuge-island-519000'
+ '20261120-armadni-osm-refuge-island-519000',
+ "'?v=519000&streetAudit=armadni-refuge-5190'",
+ "'armadni-refuge-5190':{",
+ 'camera:{lat:50.2293347,lon:14.8659125},heading:180'
 ])assert(html.includes(text),'missing actual 3D game integration: '+text);
 console.log('PASS 5.190: original OSM center for Armádní crossing island; 24 triangles in one nonblocking mesh');
