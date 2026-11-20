@@ -578,6 +578,7 @@ import {planTopolovaZebraLoop5165,makeTopolovaZebraLoop5165,sampleTopolovaZebraL
 import {planTopolovaWestWalk5175,makeTopolovaWestWalk5175} from './scripts/osm-topolova-west-walker-5175.js?v=517500';
 import {makeTopolovaFootJob5179,advanceTopolovaFootJob5179} from './scripts/osm-topolova-foot-job-5179.js?v=517900';
 import {directionTopolovaFootJob5180} from './scripts/osm-topolova-foot-navigation-5180.js?v=518000';
+import {topolovaFootMinimapMarker5181} from './scripts/osm-topolova-foot-minimap-5181.js?v=518100';
 import {planTopolovaPaving5177} from './scripts/osm-topolova-paving-5177.js?v=517700';
 import {planTopolovaPriority5166,makeTopolovaPriority5166,topolovaApproach5166,topolovaIntent5166,topolovaYieldCar5166,topolovaWaitAtCurb5166} from './scripts/osm-topolova-priority-5166.js?v=516600';
 import {planTopolovaEncounter5167} from './scripts/osm-topolova-encounter-5167.js?v=516700';
@@ -10901,6 +10902,27 @@ function drawMini(){const mapX=walking?px:x,mapZ=walking?pz:z,heading=walking?or
   mc.textAlign='start';
  }
  mc.restore();
+ // 5.181: screen-space mission target AFTER unrotating the street layer.
+ // This is a destination pin only, never a guessed walking route.
+ const footPin5181=topolovaFootMinimapMarker5181(
+  topolovaFootJob5179,{x:mapX,z:mapZ},heading,scale,72);
+ window.__miloviceTopolovaFootMinimapRuntime5181=()=>({
+  version:'5.181',active:!!topolovaFootJob5179,
+  marker:footPin5181,drawn:!!footPin5181,
+  noInferredWalkingPath:true,worldObjectsCreated:0
+ });
+ if(footPin5181){
+  const u=90+footPin5181.x,v=90+footPin5181.y;
+  mc.fillStyle='#54cfa9';mc.strokeStyle='#153f39';mc.lineWidth=2.5;
+  mc.beginPath();mc.arc(u,v,7.5,0,Math.PI*2);mc.fill();mc.stroke();
+  mc.fillStyle='#101f27';mc.textAlign='center';
+  mc.font='bold 10px system-ui';
+  mc.fillText(String(footPin5181.checkpoint),u,v+3.4);
+  mc.fillStyle='#ffffff';mc.font='bold 10px system-ui';
+  mc.fillText('PĚŠKY',Math.max(26,Math.min(154,u)),
+   Math.max(12,v-12));
+  mc.textAlign='start';
+ }
  mc.fillStyle='#ffe28b';for(const place of osmLandmarks){const dx=(place.point.x-mapX)*scale,dz=(place.point.y-mapZ)*scale;const ca=Math.cos(-heading),sa=Math.sin(-heading);const u=90+dx*ca-dz*sa,v=90+dx*sa+dz*ca;if(u>5&&u<175&&v>22&&v<160){mc.beginPath();mc.arc(u,v,3.3,0,Math.PI*2);mc.fill()}}
  mc.fillStyle='#ffda57';mc.beginPath();mc.moveTo(90,78);mc.lineTo(83,99);mc.lineTo(97,99);mc.closePath();mc.fill();
  mc.fillStyle='white';mc.font='bold 11px sans-serif';mc.fillText('MILOVICE · OSM',8,16);
