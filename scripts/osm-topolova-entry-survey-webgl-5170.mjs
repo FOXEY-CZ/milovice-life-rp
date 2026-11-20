@@ -81,8 +81,26 @@ try{
  assert(!ui.opened.text.includes('se ještě nenačetly'));
  assert.equal(ui.closed.hidden,true,JSON.stringify(ui));
  assert.equal(ui.closed.expanded,'false');
+ // 5.175: the additional simulated pedestrian actually exists in the 3D scene.
+ const westBefore=await page.evaluate(()=>
+  window.__miloviceTopolovaWestWalkRuntime?.());
+ assert.equal(westBefore?.ready,true,JSON.stringify(westBefore));
+ assert.equal(westBefore.count,1);
+ assert.equal(westBefore.wayId,'1314665579');
+ assert.equal(westBefore.turnbackBeforeZebrasMetres,4);
+ assert.equal(westBefore.modelMeshPresent,true);
+ assert(Number.isFinite(westBefore.position?.x));
+ assert(Number.isFinite(westBefore.position?.z));
+ await page.waitForTimeout(1100);
+ const westAfter=await page.evaluate(()=>
+  window.__miloviceTopolovaWestWalkRuntime?.());
+ assert.equal(westAfter?.ready,true,JSON.stringify(westAfter));
+ assert.equal(westAfter.count,1);
+ assert(Math.hypot(westAfter.position.x-westBefore.position.x,
+  westAfter.position.z-westBefore.position.z)>.1,
+  'west walker must physically move on existing OSM sidewalk');
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/topolova-entry-survey-5170-mobile.png'});
- console.log('PASS 5.172 mobile Chromium WebGL +8.5s LOD and real click/close of six-facade DEM inspection: six OSM-based 616-618 inspection cameras, 30 real DEM/foundation samples, no invented entrances, older facades + roof + traffic intact');
+ console.log('PASS 5.175 mobile Chromium WebGL +8.5s LOD and real click/close of six-facade DEM inspection: six OSM-based 616-618 inspection cameras, 30 real DEM/foundation samples, no invented entrances, older facades + roof + traffic intact');
 }finally{await browser.close()}
