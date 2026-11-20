@@ -324,6 +324,8 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <a href="?v=514700&streetAudit=sportovni-topolova-zebra-5147">🚸 Sportovní × Topolová · existující OSM zebra</a>
 <a href="?v=515200&streetAudit=sportovni-crossing-v7a-5152">🚸 Sportovní × Topolová · příčné pruhy zebry (V7a)</a>
 <a href="?v=519100&streetAudit=armadni-refuge-5190">🚶 Armádní × Topolová · ostrůvek a navazující zebra (OSM)</a>
+<a href="?v=519200&streetAudit=visnova-572-5192">🏢 Višňová 572 · 11 modelovaných podlaží (RÚIAN)</a>
+<a href="?v=519200&streetAudit=visnova-573-5192">🏢 Višňová 573 · 5 modelovaných podlaží (RÚIAN)</a>
 <a href="?v=514800&streetAudit=topolova-residential-5148">🏢 Topolová · šestipodlažní RÚIAN dům (model)</a>
 <a href="?v=514900&streetAudit=topolova-masonry-5149">🏠 Topolová 647 · zděný dům dle ČSÚ (model fasády)</a>
  <a href="?v=517000&streetAudit=topolova-entry-616-east-5170">🔎 Topolová 616 · východní přízemí</a>
@@ -1251,6 +1253,24 @@ const rpStreetAuditViews={
   author:'ČSÚ RSO/RÚIAN, všech 5 evidovaných domů a původních GPS',
   technical:true,streetLevel:true,estimatedHeading:true,
   note:'ČSÚ uvádí pro všech pět navazujících panelových domů 614–618 PĚT NADZEMNÍCH podlaží, 10 bytů a stěnové panely. OSM way 61979145 pro č.p. 618 chybně uvádí building:levels=1. Vizuální oprava na 5 podlaží (modelová výška 15,25 m) srovnává střešní siluetu všech 5 domů, odstraňuje chybnou domovní sedlovou střechu a konečně skrývá 2 společné vnitřní fasády mezi 617 a 618. Skutečný materiál fasád, barvy oken, tvar střešních detailů a výška v metrech nejsou fotozaměřené. OSM tagy, půdorysy, silnice a chodníky neměněny. Kamera na původním OSM chodníku 1316882852, azimut 292° je technický odhad.'
+ },
+ 'visnova-572-5192':{
+  label:'Višňová 572 · 11 podlaží na původním RÚIAN půdorysu',
+  camera:{lat:50.2293267,lon:14.8664259},heading:170,
+  source:'https://www.openstreetmap.org/way/53865847',
+  regionId:'mlada',osmLandmarkId:'53865847',
+  author:'© OpenStreetMap contributors / ČÚZK RÚIAN',
+  technical:true,streetLevel:true,estimatedHeading:true,
+  note:'Originální polygon RÚIAN/OSM 53865847 (23 hran, 11 mapovaných podlaží, 69 bytů) je bez změn. Nové modelové výplně na čtyřech existujících dlouhých stěnách mají výslovně odhadovaný počet, barvy i polohu. Netvrdíme foto shodu, nevytváříme vchody, balkóny ani nové kolize. Kamera stojí na původním chodníku 1314665579, azimut 170° je technický odhad.'
+ },
+ 'visnova-573-5192':{
+  label:'Višňová 573 · 5 podlaží na původním RÚIAN půdorysu',
+  camera:{lat:50.2293347,lon:14.8659125},heading:200,
+  source:'https://www.openstreetmap.org/way/53865848',
+  regionId:'mlada',osmLandmarkId:'53865848',
+  author:'© OpenStreetMap contributors / ČÚZK RÚIAN',
+  technical:true,streetLevel:true,estimatedHeading:true,
+  note:'Originální polygon RÚIAN/OSM 53865848 (5 hran, 5 mapovaných podlaží, 84 bytů) je bez změn. Dvě dlouhé původní stěny nově mají zřetelnější modelové okno-rámy a nízký sokl, bez spekulativních balkonů či vchodů. Počet a poloha každého okna jsou odhady. Kamera stojí na původním uzlu chodníku 1316882852, azimut 200° je technický odhad.'
  },
  'armadni-refuge-5190':{
   label:'Armádní × Topolová · existující OSM ostrůvek na přechodu',
