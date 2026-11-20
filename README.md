@@ -1,3 +1,11 @@
+## Milovice RP 5.177 — barevně sjednocená zdrojová dlažba Topolové (20. 11. 2026)
+
+**Vizuální změna v běžné 3D scéně:** tři původní, již herně kreslené pěší OSM trasy `1316882852` (východní chodník), `1314665579` (západní chodník) a `1316882860` (spojovací pěší cesta) mají nyní jednotný jemný odstín materiálu `topolova-paving-stones`, využívající existující procedurální dlažbu. Jejich skutečná OSM data obsahují `surface=paving_stones`; nový modelový odstín **není prohlašován za fotograficky ověřenou barvu**. Jiný povrch, včetně dvou asfaltových zebrových přechodů, se nemění. OSM souřadnice, šířky, DEM, kolize, domy, 7 chodců a doprava zůstávají nedotčené; **žádné nové chodníky ani lampy**.
+
+Source-locked modul `scripts/osm-topolova-paving-5177.js` ověřuje úplné originální OSM hashe každé ze tří cest a jejich `highway=footway`, `surface=paving_stones`; při změně zdroje selže uzavřeně a vrátí stávající materiál. Přidán unit test a mobilní Chromium/WebGL kontrola při reálném načtení Mladé, že materiál je přidělen všem třem. CI workflow rozšířeno. **K okamžiku commitu nemáme potvrzený výsledek CI, reálné WebGL ani Pages PASS**.
+
+---
+
 ## Milovice RP 5.176 — opravená viditelnost chodce z technických kamer Topolové (20. 11. 2026)
 
 U sedmého simulovaného chodce na západním OSM chodníku `1314665579` je opraven výběr viditelnosti a vysoké/nízké úrovně detailu při technických kamerách Topolové. Předchozí 5.175 spouštěla správný NPC rig a animaci, ale obecná větev `rpAnimateTraffic` se při rozhodování o viditelnosti dívala jen na vzdálenost od hráče; hráč může být od kontrolní kamery daleko. Teď jsou **u tří zdrojových pěších cest Topolové** (`1316882860`, `1316882852`, a pouze nový `1314665579` s `westWalk5175`) vzdálenost viditelnosti i LOD vypočteny od aktivní kontrolní kamery. Mimo technickou kameru se používá hráč jako předtím. Přibyly živé indikátory `modelVisible/highLODVisible/lowLODVisible` v `window.__miloviceTopolovaWestWalkRuntime()` a aserce v mobilním Chromium/WebGL testu: existence, skutečná viditelnost jedné LOD úrovně a posun po původním chodníku.
