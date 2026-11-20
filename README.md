@@ -1,3 +1,11 @@
+## Milovice RP 5.184 — oprava nepodložených balkonových dveří Topolová 616 (20. 11. 2026)
+
+**Přímá viditelná úprava fasády skutečné ulice:** modelovaná východní i západní fasáda č. p. **616** měla dosud na čtyřech horních podlažích po dvou párech oken/balkonových dveří, převzatých mechanicky z návrhu sousedních 614/615. Původní zdroje **nedokládají skutečné rozmístění balkonů u 616**. Proto jsme na obou stranách č. 616 nahradili **16 spekulativních balkonových dveřních sestav obyčejnými okny** ve stejném modelovém rastru. To **neznamená tvrzení, že 616 žádné balkony nemá** — jde o záměrně konzervativní kresbu, dokud nebude přesný vzhled fotograficky doložen. U č. p. 617/618 zůstává dřívější výslovně odhadovaný rastr, protože veřejné dokumenty naznačují existenci balkonů alespoň v některých bytech; jejich konkrétní polohy ovšem stále nejsou přesně doloženy.
+
+Při renderování šesti odhadovaných fasád 616/617/618 se počty změnily **72 → 88 běžných oken** a **48 → 32 modelových sestav okno + balkonové dveře**. Celkový počet fasád, původní OSM souřadnice a půdorysy, střešní plochy, DEM/výšky, kolize, silnice a chodníky beze změn. Tuto úpravu nepovažujeme za fotogrammetricky přesnou reprodukci, ale za odstranění konkrétního nepodloženého detailu. Zdrojový renderer: `scripts/osm-topolova-estimated-facades-5161.js`; test `scripts/osm-topolova-estimated-facades-5161.test.mjs` hlídá nové počty a `index.html` používá nový query cache key `v=518400`. Workflow Topolová nově sleduje oba soubory při změně. **CI/Chromium WebGL/Pages výsledek této verze zatím neověřen**, protože přístup k výstupům Actions není potvrzen.
+
+---
+
 ## Milovice RP 5.183 — oprava životního cyklu pěší mise (20. 11. 2026)
 
 **Oprava hratelnosti:** nová pěší doručovací mise Topolová z 5.179–5.182 se předtím při resetu hráče tlačítkem `R` a při výběru nového spawnu / oblasti / vozidla **nerušila**, přestože stávající autobusová mise ano. Hráč se tak mohl přemístit mimo Topolovou se starou aktivní misí, zavádějícím navigačním HUDem a minimapou. Nyní `reset()` i `rpSelectSpawn()` nastaví `topolovaFootJob5179=null` ve stejném místě, kde ruší autobusovou směnu, ještě před obnovením uživatelského rozhraní. Rozpracovaná mise se při resetu či novém startu ruší **bez odměny**; zůstává možné ji znovu zahájit po načtení Mladé a při chůzi. Ostatní dopravní a mapové procesy beze změny.
