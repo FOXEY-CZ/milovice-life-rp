@@ -65,10 +65,10 @@ assert.equal(JSON.stringify(ways),copy);
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),raw);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const term of [
- "from './scripts/osm-visnova-service-edge-5195.js?v=519500'",
+ "from './scripts/osm-visnova-service-edge-5195.js?v=519600'",
  'planVisnovaLaneEdges5195({',
  'renderVisnovaLaneEdges5195(THREE,{',
  'window.__miloviceVisnovaServiceEdgesRuntime5195=()=>',
- "20261120-visnova-service-edge-519500"
+ "20261120-visnova-continuous-lane-edges-519600"
 ])assert(html.includes(term),'missing real scene integration '+term);
 console.log('PASS 5.195: 2 OSM service lanes, 3 original segments, 6 edge strips, 12 triangles, one mesh, no new roads or parking');
