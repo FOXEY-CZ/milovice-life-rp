@@ -72,6 +72,8 @@ for(const part of [
  'if(visnovaResidentialRendered5192||visnovaNeighborRendered5197)',
  '!visnovaNeighborRendered5197&&!slepaUtility',
  'visnovaNeighborRenderCache5197.clear();',
+ "'visnova-neighbor-5197':{",
+ 'href="?v=519700&streetAudit=visnova-neighbor-5197"',
  "20261120-visnova-neighbor-519700"
 ])assert(html.includes(part),'missing in-game rendering: '+part);
 console.log('PASS 5.197: 1 existing 11-floor RUIAN home, 385 estimated model windows, 4 meshes, 5418 tris, OSM unchanged');
