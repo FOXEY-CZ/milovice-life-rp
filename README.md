@@ -1,3 +1,11 @@
+## Milovice RP 5.175 — sedmý pohybující se chodec na západním chodníku Topolové (20. 11. 2026)
+
+**Skutečná viditelná herní změna:** nový simulovaný NPC chodec se ve scéně Mladá spawnuje na zdrojově identifikovaném **západním chodníku Topolová, OSM 1314665579**. Používá segment již ověřené uzavřené pěší trasy 5.165 (její uzly 3→4), a existující rig, terénní DEM a pohybovou logiku NPC. Otáčí se modelově **4 m před oběma stávajícími zebrami**, takže přechody nepoužívá a nemá se dostat do provozu. Nová trasa je pouze herní simulace pohybu osoby, ne skutečné chování místních obyvatel. Spawnuje se jeden další chodec vedle dosavadních šesti, bez nových cest, dveří, lamp, parkovacích stání, kolizí či výměny OSM GPS.
+
+`scripts/osm-topolova-west-walker-5175.js` ověřuje převzetí původního západního segmentu a bezpečně vytváří jeho 4m zkrácenou herní trasu. `index.html` spouští skutečný 3D rig, propojuje ho s pohybem a poskytuje testovací snapshot `window.__miloviceTopolovaWestWalkRuntime()`. Unit `scripts/osm-topolova-west-walker-5175.test.mjs` kontroluje zdrojovou geometrii; mobilní Chromium/WebGL test nově po 8,5s LOD kontroluje existenci NPC, zdrojové ID, model ve scéně a reálný posun během dalších 1,1s. Zapojeno do Topolová GitHub Actions. **CI, WebGL a Pages pro 5.175 zatím nemají potvrzený PASS**; pokud test neprojde, jde o otevřenou regresi k opravě.
+
+---
+
 ## Milovice RP 5.174 — skutečná topologie pěší sítě Topolové (20. 11. 2026)
 
 Nad inventurou původních OSM cest 5.173 nově běží `scripts/osm-topolova-pedestrian-topology-5174.js`. Ověří identitu původní silnice Topolová **8618275** včetně původního hash `c0fe69b0`, sestaví graf společných OSM GPS uzlů v dostupných pěších trasách do 60 m od osy a vrací sousední trasy, vzájemně propojené komponenty, izolované úseky a kontrolu již používaného čtyřúsekového okruhu z 5.165. **Blízkost dvou čar nestačí na automatické spojení**: bez přesného sdíleného původního GPS uzlu se propojení nevytváří. Původní mapové údaje nejsou pozměněny.
