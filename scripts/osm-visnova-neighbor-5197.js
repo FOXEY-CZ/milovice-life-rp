@@ -10,16 +10,6 @@ export const VISNOVA_NEIGHBOR_5197=Object.freeze({
  estimatedWindowWidth:1.46,estimatedWindowHeight:1.52,
  photoVerified:false
 });
-const sourceHash=geo=>{
- let h=2166136261;
- for(const p of geo){
-  for(const c of p.lat.toFixed(7)+','+p.lon.toFixed(7)+';'){
-   h^=c.charCodeAt(0);h=Math.imul(h,16777619);
-  }
- }
- // The source hash joins coordinates with semicolons but has no trailing ';'.
- return(h>>>0).toString(16).padStart(8,'0');
-};
 const canonicalHash=geo=>{
  let h=2166136261;
  for(const c of geo.map(p=>p.lat.toFixed(7)+','+p.lon.toFixed(7)).join(';')){
