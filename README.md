@@ -1,3 +1,11 @@
+## Milovice RP 5.180 — směrová navigace pro pěší zakázku Topolová (20. 11. 2026)
+
+**Hratelnost / orientace:** navazující mise `🚶 Pěší doručení – Topolová` (5.179) nyní v HUD ukazuje **šipku k dalšímu ze tří kontrolních bodů**, přepočítávanou vůči aktuálnímu natočení hráčovy kamery. K dispozici je osm směrů `↑ ↗ → ↘ ↓ ↙ ← ↖`; při dosažení modelového okruhu 5 m se zobrazuje `✓`. Zůstává již existující vzdálenost a průběh `0/3` až `3/3`; nastoupení do auta stále nepovoluje postup. Navigace používá **přímý směr k bodu, nikoliv výpočet pěší trasy po ulicích**: neprokazuje průchodnost případných ulic, nenahrazuje mapu a neumisťuje fyzické značky, šipky, sloupy nebo objekty do 3D světa.
+
+Nový čistý modul `scripts/osm-topolova-foot-navigation-5180.js` počítá úhel k existujícím bodům 5.179. `index.html` má nový směr v HUD a zveřejňuje ho i ve stávajícím runtime snapshotu. `scripts/osm-topolova-foot-navigation-5180.test.mjs` pokrývá osm směrů, rotaci kamery, příjezd i neplatné stavy; rozšířen i mobilní Chromium/WebGL test spuštění skutečné mise. Workflow test zahrnuje. **Výsledek CI/mobilní WebGL/Pages po commitu neověřen**. OSM, domy, terén, síť chodníků, počet NPC a kolize beze změn.
+
+---
+
 ## Milovice RP 5.179 — první pěší zakázka po skutečné Topolové (20. 11. 2026)
 
 **Nová hratelná funkce:** v již existujícím panelu **💼 Povolání a mise** je **🚶 Pěší doručení – Topolová**. Hráč ji může přijmout pouze pěšky a pouze po načtení původní OSM oblasti Mladá. Tři herní kontrolní body jsou uvnitř **skutečné zaznamenané západní pěší osy Topolová OSM `1314665579`** (využívá zdrojově zamčený uzavřený pěší okruh 5.165, jeho body 3→4), s 5m odstupem od severního/jižního přechodu. Má odměnu **80 herních Kč**, kterou připíše teprve průchod posledním ze tří bodů, a lze ji zrušit bez odměny. Nastoupením do vozidla postup nepostupuje; body je nutné projít pěšky. **Nevytváří skutečnou doručovací adresu, vchod, firmu nebo pracovní trasu**; jde o vymyšlenou herní zakázku položenou na doloženou pěší síť, bez teleportování hráče.
