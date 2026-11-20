@@ -324,8 +324,8 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <a href="?v=514700&streetAudit=sportovni-topolova-zebra-5147">🚸 Sportovní × Topolová · existující OSM zebra</a>
 <a href="?v=515200&streetAudit=sportovni-crossing-v7a-5152">🚸 Sportovní × Topolová · příčné pruhy zebry (V7a)</a>
 <a href="?v=519100&streetAudit=armadni-refuge-5190">🚶 Armádní × Topolová · ostrůvek a navazující zebra (OSM)</a>
-<a href="?v=519200&streetAudit=visnova-572-5192">🏢 Višňová 572 · 11 modelovaných podlaží (RÚIAN)</a>
-<a href="?v=519200&streetAudit=visnova-573-5192">🏢 Višňová 573 · 5 modelovaných podlaží (RÚIAN)</a>
+<a href="?v=519300&streetAudit=visnova-572-5192">🏢 Višňová 572 · kompletní modelová fasáda (RÚIAN)</a>
+<a href="?v=519300&streetAudit=visnova-573-5192">🏢 Višňová 573 · kompletní modelová fasáda (RÚIAN)</a>
 <a href="?v=514800&streetAudit=topolova-residential-5148">🏢 Topolová · šestipodlažní RÚIAN dům (model)</a>
 <a href="?v=514900&streetAudit=topolova-masonry-5149">🏠 Topolová 647 · zděný dům dle ČSÚ (model fasády)</a>
  <a href="?v=517000&streetAudit=topolova-entry-616-east-5170">🔎 Topolová 616 · východní přízemí</a>
@@ -571,6 +571,7 @@ import {planSlunickoStoreys5153} from './scripts/osm-slunicko-storeys-5153.js?v=
 import {planSlunickoWestElevation5154} from './scripts/osm-slunicko-west-elevation-5154.js?v=515400';
 import {planSlunickoWestWindows5189,renderSlunickoWestWindows5189} from './scripts/osm-slunicko-west-windows-5189.js?v=518900';
 import {planVisnovaResidential5192,renderVisnovaResidential5192} from './scripts/osm-visnova-residential-5192.js?v=519200';
+import {completeVisnovaEndFacades5193} from './scripts/osm-visnova-end-facades-5193.js?v=519300';
 import {planTopolovaPanelRow5155} from './scripts/osm-topolova-panel-row-5155.js?v=515500';
 import {planTopolovaContinuousHip5160,renderTopolovaContinuousHip5160} from './scripts/osm-topolova-continuous-hip-5160.js?v=516000';
 import {planTopolovaEstimatedFacades5161,renderTopolovaEstimatedFacades5161} from './scripts/osm-topolova-estimated-facades-5161.js?v=518600';
@@ -657,7 +658,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261120-visnova-two-residential-blocks-519200';
+const BUILD_ID='20261120-visnova-full-end-facades-519300';
 // Keep the visible HUD build and runtime declaration in sync for photo audits.
 document.getElementById('build-label').textContent=BUILD_ID;
 const rpStationRoofAuditCamera=new URLSearchParams(location.search).has('roofAudit');
@@ -1261,7 +1262,7 @@ const rpStreetAuditViews={
   regionId:'mlada',osmLandmarkId:'53865847',
   author:'© OpenStreetMap contributors / ČÚZK RÚIAN',
   technical:true,streetLevel:true,estimatedHeading:true,
-  note:'Originální polygon RÚIAN/OSM 53865847 (23 hran, 11 mapovaných podlaží, 69 bytů) je bez změn. Nové modelové výplně na čtyřech existujících dlouhých stěnách mají výslovně odhadovaný počet, barvy i polohu. Netvrdíme foto shodu, nevytváříme vchody, balkóny ani nové kolize. Kamera stojí na původním chodníku 1314665579, azimut 170° je technický odhad.'
+  note:'Originální polygon RÚIAN/OSM 53865847 (23 hran, 11 mapovaných podlaží, 69 bytů) je bez změn. Nové modelové výplně na šesti existujících hlavních stěnách včetně obou čel mají výslovně odhadovaný počet, barvy i polohu. Netvrdíme foto shodu, nevytváříme vchody, balkóny ani nové kolize. Kamera stojí na původním chodníku 1314665579, azimut 170° je technický odhad.'
  },
  'visnova-573-5192':{
   label:'Višňová 573 · 5 podlaží na původním RÚIAN půdorysu',
@@ -1270,7 +1271,7 @@ const rpStreetAuditViews={
   regionId:'mlada',osmLandmarkId:'53865848',
   author:'© OpenStreetMap contributors / ČÚZK RÚIAN',
   technical:true,streetLevel:true,estimatedHeading:true,
-  note:'Originální polygon RÚIAN/OSM 53865848 (5 hran, 5 mapovaných podlaží, 84 bytů) je bez změn. Dvě dlouhé původní stěny nově mají zřetelnější modelové okno-rámy a nízký sokl, bez spekulativních balkonů či vchodů. Počet a poloha každého okna jsou odhady. Kamera stojí na původním uzlu chodníku 1316882852, azimut 200° je technický odhad.'
+  note:'Originální polygon RÚIAN/OSM 53865848 (5 hran, 5 mapovaných podlaží, 84 bytů) je bez změn. Všechny čtyři delší původní stěny včetně dvou čel mají modelové okenní rámy a nízký sokl, bez spekulativních balkonů či vchodů. Počet a poloha každého okna jsou odhady. Kamera stojí na původním uzlu chodníku 1316882852, azimut 200° je technický odhad.'
  },
  'armadni-refuge-5190':{
   label:'Armádní × Topolová · existující OSM ostrůvek na přechodu',
@@ -2492,6 +2493,37 @@ window.__miloviceVisnovaResidentialRuntime5192=()=>{
   genericFacadeEdgesSuppressed:buildings.reduce((n,b)=>n+b.genericFacadeEdgesSuppressed,0),
   modelNotPhotoSurvey:true,addedEntrances:0,addedBalconies:0,
   newBuildings:0,newRoads:0,newColliders:0,buildings
+ };
+};
+// 5.193: proof of complete modeled main facade set, derived from the
+// same 2 RUIAN source meshes and without allocating extra GPU materials.
+window.__miloviceVisnovaFullEnvelopeRuntime5193=()=>{
+ const rows=[...visnovaResidentialRenderCache5192.values()]
+  .sort((a,b)=>a.sourceOSMId.localeCompare(b.sourceOSMId));
+ const buildings=rows.map(r=>({
+  sourceOSMId:r.sourceOSMId,
+  originalFloors:r.sourceReportedFloors,
+  mainFacades:r.longFacadesRendered,
+  completedEndFaces:r.endFacesAdded5193??0,
+  completedEndWindows:r.endFaceModelWindows5193??0,
+  totalModelWindows:r.estimatedWindowsRendered,
+  totalTriangles:r.totalTriangles,meshCount:r.meshCount,
+  sceneAttached:r.allInScene(),visibleMeshesAfterLOD:r.visibleAfterLOD(),
+  photoVerifiedBayLocations:false
+ }));
+ return {
+  version:'5.193',
+  ready:buildings.length===2&&buildings.every(b=>
+   b.completedEndFaces===2&&b.sceneAttached&&b.visibleMeshesAfterLOD===4),
+  buildings,
+  sourceOSMIds:buildings.map(b=>b.sourceOSMId),
+  addedEndFacades:buildings.reduce((n,b)=>n+b.completedEndFaces,0),
+  addedModeledEndWindows:buildings.reduce((n,b)=>n+b.completedEndWindows,0),
+  modeledWindows:buildings.reduce((n,b)=>n+b.totalModelWindows,0),
+  gpuMeshes:buildings.reduce((n,b)=>n+b.meshCount,0),
+  triangles:buildings.reduce((n,b)=>n+b.totalTriangles,0),
+  originalFootprintChanged:false,modelWindowPositionsOnly:true,
+  inventedRealDoors:0,inventedBalconies:0,newColliders:0
  };
 };
 // 5.188: a temporary, obviously non-physical waypoint for the existing
@@ -6113,14 +6145,25 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
  // 5.192: replace hundreds of unrelated generic panel windows with
  // two explicitly approximate 3D window grids tied to each ORIGINAL
  // RUIAN exterior edge; the original extrusion/roof/collision stays.
- const visnovaResidentialRendered5192=visnovaResidentialPlan5192?
+ // 5.193: original RUIAN geometry identifies two further 15–17 m end
+ // walls on EACH block that were unmodeled by 5.192. Refuse the custom
+ // renderer altogether if the source-locked full-envelope test fails.
+ const visnovaCompletePlan5193=visnovaResidentialPlan5192?
+  completeVisnovaEndFacades5193({basePlan:visnovaResidentialPlan5192}):null;
+ const visnovaResidentialRendered5192=visnovaCompletePlan5193?
   renderVisnovaResidential5192(THREE,{
-   plan:visnovaResidentialPlan5192,
+   plan:visnovaCompletePlan5193,
    toWorld:osmPoint,baseHeight,layer:osmLayer
   }):null;
- if(visnovaResidentialRendered5192)
+ if(visnovaResidentialRendered5192){
+  visnovaResidentialRendered5192.endFacesAdded5193=
+   visnovaCompletePlan5193.endFacesAdded;
+  visnovaResidentialRendered5192.endFaceModelWindows5193=
+   visnovaCompletePlan5193.endFaceModelWindowsAdded;
+  visnovaResidentialRendered5192.facadeCompletionVersion='5.193';
   visnovaResidentialRenderCache5192.set(String(osmId),
    visnovaResidentialRendered5192);
+ }
  // 5.189: facade dimensions derive from the 2020 city tender, while
  // every placement remains an explicitly unverified game model.
  const slunickoWestWindowsPlan5189=slunickoWestPlan?
