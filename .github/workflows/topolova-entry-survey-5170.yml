@@ -1,8 +1,10 @@
-name: Milovice 5.170 Topolova 616-618 entry ground survey and cameras
+name: Milovice Topolova verified street and DEM regression
 on:
   push:
     paths:
       - index.html
+      - scripts/osm-topolova-street-inventory-5173.js
+      - scripts/osm-topolova-street-inventory-5173.test.mjs
       - scripts/osm-topolova-entry-survey-5170.js
       - scripts/osm-topolova-entry-survey-5170.test.mjs
       - scripts/osm-topolova-entry-survey-webgl-5170.mjs
@@ -21,6 +23,7 @@ jobs:
           node-version: '22'
       - name: Actual RUIAN grade/cameras and full five-house regressions
         run: |
+          node scripts/osm-topolova-street-inventory-5173.test.mjs
           node scripts/osm-topolova-entry-survey-5170.test.mjs
           node scripts/osm-topolova-end-gables-5169.test.mjs
           node scripts/osm-topolova-estimated-facades-5161.test.mjs
