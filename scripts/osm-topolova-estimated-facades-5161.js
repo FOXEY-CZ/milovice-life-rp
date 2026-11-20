@@ -102,10 +102,14 @@ export function renderTopolovaEstimatedFacades5161(THREE,{
   !layer?.add)return null;
  // Batched geometry shared across three actual mapped building outlines.
  const positions=[[],[],[]]; // model frame, glass, lower ledge
+ const glassColours=[]; // 5.185: batched vertex tint, not new meshes
+ let activeGlassTint=[1,1,1];
  let normalWindows=0,balconyWindowDoorSets=0,stairWindows=0;
  let missingGeometry=0;
- const tri=(g,a,b,c)=>positions[g].push(
-  a.x,a.y,a.z,b.x,b.y,b.z,c.x,c.y,c.z);
+ const tri=(g,a,b,c)=>{
+  positions[g].push(a.x,a.y,a.z,b.x,b.y,b.z,c.x,c.y,c.z);
+  if(g===1)for(let v=0;v<3;v++)glassColours.push(...activeGlassTint);
+ };
  const quad=(g,a,b,c,d)=>{tri(g,a,b,c);tri(g,a,c,d)};
  for(const face of plan.faces){
   const outline=face.geometry.slice(0,-1).map(toWorld);
@@ -126,6 +130,12 @@ export function renderTopolovaEstimatedFacades5161(THREE,{
   const rect=(g,l,r,lo,hi,out)=>quad(g,
    P(l,lo,out),P(r,lo,out),P(r,hi,out),P(l,hi,out));
   const pane=(x,y,w,h,mullion)=>{
+   // 5.185: modest modelled glass variation by window, with no claims
+   // about real curtains, occupants or photographed window shades.
+   const seed=(Math.imul(face.address,97)+Math.imul(Math.round(x*10),41)+
+    Math.imul(Math.round(y*10),19))>>>0;
+   const t=(seed%13)/12;
+   activeGlassTint=[.78+.19*t,.84+.12*t,.91+.08*t];
    // Base wall keeps solid collision; thin facade layers do not.
    rect(0,x-w/2,x+w/2,y-h/2,y+h/2,.080);
    rect(1,x-w/2+.075,x+w/2-.075,y-h/2+.075,y+h/2-.075,.096);
@@ -170,9 +180,12 @@ export function renderTopolovaEstimatedFacades5161(THREE,{
  const meshes=positions.map((data,i)=>{
   const geo=new THREE.BufferGeometry();
   geo.setAttribute('position',new THREE.Float32BufferAttribute(data,3));
+  if(i===1)geo.setAttribute('color',
+   new THREE.Float32BufferAttribute(glassColours,3));
   geo.computeVertexNormals();geo.computeBoundingSphere();
   const mesh=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({
-   color:colors[i],roughness:i===1?.35:.82,
+   color:colors[i],roughness:i===1?.29:.82,
+   vertexColors:i===1,metalness:i===1?.07:0,
    side:THREE.DoubleSide
   }));
   mesh.name='Milovice_Topolova_616_618_Provisional_'+
@@ -190,6 +203,8 @@ export function renderTopolovaEstimatedFacades5161(THREE,{
  return {
   version:'5.161',renderedFacades:6,renderedMeshes:3,
   normalWindows,balconyWindowDoorSets,stairWindows,
+  glassVertexTinted:true,glassVertexCount:glassColours.length/3,
+  sourceGlassColoursPhotoVerified:false,
   gpuTriangles:positions.reduce((n,p)=>n+p.length/9,0),
   allInScene:()=>meshes.every(m=>m.parent===layer),
   visibleAfterLOD:()=>meshes.filter(visible).length,
