@@ -127,11 +127,13 @@ try{
   const control=document.getElementById('topolova-foot-job-start');
   control?.click();
   const after=window.__miloviceTopolovaFootJobRuntime5179?.();
+  const beaconStarted=window.__miloviceTopolovaFootBeacon5188?.();
   const hud=document.getElementById('topolova-foot-job-hud');
   const menuClosed=document.getElementById('rp-job-panel')?.hidden;
   document.getElementById('topolova-foot-job-end')?.click();
   const canceled=window.__miloviceTopolovaFootJobRuntime5179?.();
-  return {before,after,hudHidden:hud?.hidden,menuClosed,canceled};
+  const beaconCanceled=window.__miloviceTopolovaFootBeacon5188?.();
+  return {before,after,beaconStarted,beaconCanceled,hudHidden:hud?.hidden,menuClosed,canceled};
  });
  assert.equal(footJob.before?.active,false,JSON.stringify(footJob));
  assert.equal(footJob.after?.active,true,JSON.stringify(footJob));
@@ -143,6 +145,17 @@ try{
  assert.equal(footJob.hudHidden,false,JSON.stringify(footJob));
  assert.equal(footJob.menuClosed,true);
  assert.equal(footJob.canceled?.active,false);
+ // 5.188: actual game-world marker stays in the streamed 3D scene for
+ // missions only, even beyond the prior 8.5-second LOD visibility test.
+ assert.equal(footJob.beaconStarted?.active,true,JSON.stringify(footJob));
+ assert.equal(footJob.beaconStarted?.checkpoint,1);
+ assert.equal(footJob.beaconStarted?.sourceWayId,'1314665579');
+ assert.equal(footJob.beaconStarted?.actualSceneObjects,2);
+ assert.equal(footJob.beaconStarted?.inScene,true);
+ assert.equal(footJob.beaconStarted?.visibleAfterLOD,true);
+ assert.equal(footJob.beaconStarted?.gameplayOnly,true);
+ assert.equal(footJob.beaconStarted?.physicalStreetObjectsAdded,0);
+ assert.equal(footJob.beaconCanceled?.active,false);
  // 5.181: start again, then let the actual canvas draw one frame.
  await page.evaluate(()=>document.getElementById('topolova-foot-job-start')?.click());
  await page.waitForFunction(()=>window.__miloviceTopolovaFootMinimapRuntime5181?.()?.drawn===true,
@@ -170,11 +183,13 @@ try{
    bubbles:true,code:'KeyR',key:'r'}));
   return {before,after:window.__miloviceTopolovaFootJobRuntime5179?.(),
    lifecycle:window.__miloviceTopolovaFootJobLifecycle5183?.(),
+   beaconAfterReset:window.__miloviceTopolovaFootBeacon5188?.(),
    balanceBefore,balanceAfter:Number(document.getElementById('money')?.textContent)};
  });
  assert.equal(resetResult.before?.active,true,JSON.stringify(resetResult));
  assert.equal(resetResult.after?.active,false,JSON.stringify(resetResult));
  assert.equal(resetResult.lifecycle?.resetCancelsWithoutReward,true);
+ assert.equal(resetResult.beaconAfterReset?.active,false);
  assert.equal(resetResult.balanceAfter,resetResult.balanceBefore);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
