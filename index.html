@@ -572,6 +572,7 @@ import {planSlunickoWestElevation5154} from './scripts/osm-slunicko-west-elevati
 import {planSlunickoWestWindows5189,renderSlunickoWestWindows5189} from './scripts/osm-slunicko-west-windows-5189.js?v=518900';
 import {planVisnovaResidential5192,renderVisnovaResidential5192} from './scripts/osm-visnova-residential-5192.js?v=519400';
 import {completeVisnovaEndFacades5193} from './scripts/osm-visnova-end-facades-5193.js?v=519300';
+import {planVisnovaNeighbor5197} from './scripts/osm-visnova-neighbor-5197.js?v=519700';
 import {planVisnovaLaneEdges5195,renderVisnovaLaneEdges5195} from './scripts/osm-visnova-service-edge-5195.js?v=519600';
 import {planTopolovaPanelRow5155} from './scripts/osm-topolova-panel-row-5155.js?v=515500';
 import {planTopolovaContinuousHip5160,renderTopolovaContinuousHip5160} from './scripts/osm-topolova-continuous-hip-5160.js?v=516000';
@@ -659,7 +660,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261120-visnova-continuous-lane-edges-519600';
+const BUILD_ID='20261120-visnova-neighbor-519700';
 // Keep the visible HUD build and runtime declaration in sync for photo audits.
 document.getElementById('build-label').textContent=BUILD_ID;
 const rpStationRoofAuditCamera=new URLSearchParams(location.search).has('roofAudit');
@@ -2468,6 +2469,19 @@ const osmLayer=new THREE.Group();osmLayer.visible=true;scene.add(osmLayer);
 // residential footprints. Runtime diagnostics intentionally label the
 // window bays/model materials as estimates, never as photographed openings.
 const visnovaResidentialRenderCache5192=new Map();
+const visnovaNeighborRenderCache5197=new Map();
+window.__miloviceVisnovaNeighborRuntime5197=()=>{
+ const rows=[...visnovaNeighborRenderCache5197.values()];
+ return {version:'5.197',ready:rows.length===1&&rows[0].allInScene(),
+  buildings:rows.map(r=>({
+   sourceOSMId:r.sourceOSMId,sourceRUIANId:r.sourceRUIANId,
+   floors:r.sourceReportedFloors,modelWindows:r.estimatedWindowsRendered,
+   modelFacadeFaces:r.longFacadesRendered,meshCount:r.meshCount,
+   triangles:r.totalTriangles,visibleMeshes:r.visibleAfterLOD(),
+   photoVerifiedWindows:false,originalFootprintUnmodified:true
+  }))
+ };
+};
 window.__miloviceVisnovaResidentialRuntime5192=()=>{
  const rows=[...visnovaResidentialRenderCache5192.values()];
  const buildings=rows.map(r=>({
@@ -5937,6 +5951,14 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
   photoReviewed:photoDecision.photographicApproval===true,
   approvedArchitecture:Boolean(modelCard)
  });
+ // 5.197: neighbouring 11-floor RUIAN building shares the existing
+ // four-batch glazing renderer, but keeps a separately source-locked plan.
+ const visnovaNeighborPlan5197=planVisnovaNeighbor5197({
+  id:osmId,regionId,tags,geometry:points,
+  modelFloors:floors,modelHeight:h,
+  photoReviewed:photoDecision.photographicApproval===true,
+  approvedArchitecture:Boolean(modelCard)
+ });
  const massBlockPriority=Boolean(window.__miloviceMassStreetBlock583?.priorityIds.includes(String(osmId)));
  const isHouse=!isBlueStar&&!isMirova36&&!isGrocer74&&(massBlockPriority||type==='house'||
   ((type==='residential'||type==='yes'||type==='detached'||type==='terrace'||type==='semidetached_house')&&
@@ -6165,6 +6187,14 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
   visnovaResidentialRenderCache5192.set(String(osmId),
    visnovaResidentialRendered5192);
  }
+ // 5.197: render the neighbour on its ORIGINAL building shell.
+ const visnovaNeighborRendered5197=visnovaNeighborPlan5197?
+  renderVisnovaResidential5192(THREE,{
+   plan:visnovaNeighborPlan5197,toWorld:osmPoint,
+   baseHeight,layer:osmLayer
+  }):null;
+ if(visnovaNeighborRendered5197)
+  visnovaNeighborRenderCache5197.set(String(osmId),visnovaNeighborRendered5197);
  // 5.189: facade dimensions derive from the 2020 city tender, while
  // every placement remains an explicitly unverified game model.
  const slunickoWestWindowsPlan5189=slunickoWestPlan?
@@ -6727,7 +6757,7 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
   // 5.192: complete long source facades rendered above. Leave tiny
   // polygon returns and end gables solid, with no invented door locations,
   // free-floating generic windows or non-photo panel seams on these blocks.
-  if(visnovaResidentialRendered5192){
+  if(visnovaResidentialRendered5192||visnovaNeighborRendered5197){
    continue;
   }
   // The OSM-locked school west wall uses its own modeled wide bays;
@@ -7370,7 +7400,7 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
  // Ground-floor entrance: a lightweight facade panel, placed on the longest building wall.
  // Hero buildings already have actual wall-cutout doors: don't paint
  // a second fake freestanding doorway on top of their real entrance.
- const inventedEntrance=!topolova646Photo&&!sportovniHall&&!slunickoPlan&&!visnovaResidentialRendered5192&&!slepaUtility&&!isArmClinic&&!isArmBilla&&
+ const inventedEntrance=!topolova646Photo&&!sportovniHall&&!slunickoPlan&&!visnovaResidentialRendered5192&&!visnovaNeighborRendered5197&&!slepaUtility&&!isArmClinic&&!isArmBilla&&
   !heroFacade&&!isGarage&&!isChurch&&!isBlueStar&&
   !isStation&&!isMirova36&&!isGrocer74;
   if(auditedCore&&inventedEntrance&&!isSchool)
@@ -10444,7 +10474,7 @@ osmBtn.onclick=async()=>{
  if(osmLoading)return;
  osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';osmMessage('Načítám místní soubor mapy ze stejného GitHub Pages webu…');
  try{
- const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();streetFrontage.reset();osmRoadClearance.reset();osmCarriagewayClearance.reset();osmWaterVegetationClearance.reset();taggedSidewalkBuildings.reset();cityAreaAhead=null;lastCityStreamingX=Infinity;lastCityStreamingZ=Infinity;legacyRealityAudit.reset();renderedPedestrianPieces.clear();collisionWorld.reset();heroBuildings.reset();photoStreetBlock.reset();photoStreetEnvironment.reset();mirovaPhotoStreet586.reset();skolskaWestGreen588.reset();skolskaTailGreen590.reset();photoPionyruVerge.reset();photoChurchSidewalk2022.reset();photoChurchStreet2022.reset();stationPhotoForecourt.reset();stationPhotoParking.reset();bikeTowerEntryPaving.reset();stationTicketMachines.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmStreetLightWays.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;landscapeZones.length=0;visnovaResidentialRenderCache5192.clear();
+ const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();streetFrontage.reset();osmRoadClearance.reset();osmCarriagewayClearance.reset();osmWaterVegetationClearance.reset();taggedSidewalkBuildings.reset();cityAreaAhead=null;lastCityStreamingX=Infinity;lastCityStreamingZ=Infinity;legacyRealityAudit.reset();renderedPedestrianPieces.clear();collisionWorld.reset();heroBuildings.reset();photoStreetBlock.reset();photoStreetEnvironment.reset();mirovaPhotoStreet586.reset();skolskaWestGreen588.reset();skolskaTailGreen590.reset();photoPionyruVerge.reset();photoChurchSidewalk2022.reset();photoChurchStreet2022.reset();stationPhotoForecourt.reset();stationPhotoParking.reset();bikeTowerEntryPaving.reset();stationTicketMachines.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmStreetLightWays.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;landscapeZones.length=0;visnovaResidentialRenderCache5192.clear();visnovaNeighborRenderCache5197.clear();
   if(trafficGroup.parent!==osmLayer)osmLayer.add(trafficGroup);
   if(visualDetails.parent!==osmLayer)osmLayer.add(visualDetails);for(const batch of facadeBatches)batch.clear();
  window.__miloviceMassStreetBlock583=null;
