@@ -1,5 +1,6 @@
 import {planOSMForestTreeInstances} from './forest-placement-597.js';
 import {classifyOSMPitch,planOSMPitchMarkings} from './osm-pitch-markings-599.js';
+import {makeMappedClayGrain5178} from './osm-clay-court-grain-5178.js';
 // Milovice 5.0 — open OSM landuse footprints, original procedural presentation.
 const landscapeMat=new WeakMap();
 function materials(T){
@@ -9,6 +10,22 @@ function materials(T){
    pitch:0x4c8a60,pitchClay:0xb96a49,pitchAsphalt:0x485058,
    pitchTurf:0x3d7b52,pitchSand:0xc5aa78};
   m=Object.fromEntries(Object.entries(color).map(([k,v])=>[k,new T.MeshLambertMaterial({color:v,side:T.DoubleSide})]));
+  // 5.178: one shared 16 KiB antuka grain texture, only on OSM
+  // leisure=pitch + surface=clay polygons. No geometry or extra meshes.
+  const grain=makeMappedClayGrain5178(64);
+  if(grain&&T.DataTexture){
+   const clayTexture=new T.DataTexture(grain.data,grain.width,
+    grain.height,T.RGBAFormat);
+   clayTexture.wrapS=clayTexture.wrapT=T.RepeatWrapping;
+   clayTexture.minFilter=T.LinearMipmapLinearFilter;
+   clayTexture.magFilter=T.LinearFilter;
+   clayTexture.generateMipmaps=true;
+   clayTexture.colorSpace=T.SRGBColorSpace;
+   clayTexture.repeat.set(.75,.75);
+   clayTexture.needsUpdate=true;
+   m.pitchClay.map=clayTexture;
+   m.pitchClay.needsUpdate=true;
+  }
   m.pitchLine=new T.LineBasicMaterial({color:0xe5e8dd});
   m.pitchPaint=new T.MeshBasicMaterial({color:0xf4eee1,side:T.DoubleSide});
   landscapeMat.set(T,m);
