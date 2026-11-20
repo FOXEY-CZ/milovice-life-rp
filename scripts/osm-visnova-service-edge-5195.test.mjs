@@ -45,6 +45,19 @@ assert.equal(result.rendered(),true);
 assert.equal(result.visibleAfterLOD(),true);
 assert.equal(layer.children.length,1);
 assert.equal(layer.children[0].geometry.position.array.length,108);
+assert.equal(result.sharedCornerJoins,1);
+assert.equal(result.cornerJointMethod,'shared-miter');
+const positions=layer.children[0].geometry.position.array;
+// Second OSM way has two source segments. Both sides must share the exact
+// same joint vertices, including their DEM-derived Y positions.
+const point=k=>Array.from(positions.slice(k,k+3));
+for(const side of [0,1]){
+ const offset=side*18;
+ assert.deepEqual(point(36+offset+3),point(72+offset),
+  'the outer/inner edge must meet at the same mapped corner');
+ assert.deepEqual(point(36+offset+15),point(72+offset+6),
+  'the other edge of the strip must also join without a gap');
+}
 assert(layer.children[0].geometry.position.array.every(Number.isFinite));
 layer.visible=false;
 assert.equal(result.visibleAfterLOD(),false);
