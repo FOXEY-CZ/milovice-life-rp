@@ -323,7 +323,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <a href="?v=514600&streetAudit=sportovni-photo-northwalk-5146">🚶 Sportovní · severní fotochodník u haly (model)</a>
 <a href="?v=514700&streetAudit=sportovni-topolova-zebra-5147">🚸 Sportovní × Topolová · existující OSM zebra</a>
 <a href="?v=515200&streetAudit=sportovni-crossing-v7a-5152">🚸 Sportovní × Topolová · příčné pruhy zebry (V7a)</a>
-<a href="?v=519000&streetAudit=armadni-refuge-5190">🚶 Armádní × Topolová · OSM ostrůvek přechodu (model)</a>
+<a href="?v=519100&streetAudit=armadni-refuge-5190">🚶 Armádní × Topolová · ostrůvek a navazující zebra (OSM)</a>
 <a href="?v=514800&streetAudit=topolova-residential-5148">🏢 Topolová · šestipodlažní RÚIAN dům (model)</a>
 <a href="?v=514900&streetAudit=topolova-masonry-5149">🏠 Topolová 647 · zděný dům dle ČSÚ (model fasády)</a>
  <a href="?v=517000&streetAudit=topolova-entry-616-east-5170">🔎 Topolová 616 · východní přízemí</a>
@@ -586,6 +586,7 @@ import {planTopolovaMissionWestSegment5182} from './scripts/osm-topolova-foot-pa
 import {planTopolovaPaving5177} from './scripts/osm-topolova-paving-5177.js?v=517700';
 import {planTopolovaZebraPaint5187,makeTopolovaZebraPaintPixels5187} from './scripts/osm-topolova-zebra-paint-5187.js?v=518700';
 import {planArmadniRefuge5190,renderArmadniRefuge5190} from './scripts/osm-armadni-refuge-island-5190.js?v=519000';
+import {planArmadniZebraArms5191} from './scripts/osm-armadni-zebra-arms-5191.js?v=519100';
 import {planTopolovaPriority5166,makeTopolovaPriority5166,topolovaApproach5166,topolovaIntent5166,topolovaYieldCar5166,topolovaWaitAtCurb5166} from './scripts/osm-topolova-priority-5166.js?v=516600';
 import {planTopolovaEncounter5167} from './scripts/osm-topolova-encounter-5167.js?v=516700';
 import {planTopolovaNorthEncounter5168} from './scripts/osm-topolova-north-encounter-5168.js?v=516800';
@@ -653,7 +654,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261120-armadni-osm-refuge-island-519000';
+const BUILD_ID='20261120-armadni-split-zebra-519100';
 // Keep the visible HUD build and runtime declaration in sync for photo audits.
 document.getElementById('build-label').textContent=BUILD_ID;
 const rpStationRoofAuditCamera=new URLSearchParams(location.search).has('roofAudit');
@@ -8432,8 +8433,42 @@ function rpAppendOSMElements(elements,regionId='old'){
  // from arbitrary graph junctions). Render them BEFORE road batch finalize.
  for(const el of roadWays){
   if(!markedCrossing(el.tags))continue;
-  const pieces=planZebraPieces(el.geometry.map(osmPoint),osmCarriagewayClearance);
-  if(!pieces.length)continue;
+  const unsegmentedZebraPieces5191=planZebraPieces(
+   el.geometry.map(osmPoint),osmCarriagewayClearance);
+  if(!unsegmentedZebraPieces5191.length)continue;
+  // The OSM Armádní crossing HAS a mapped middle-node refuge. All other
+  // marked crossings retain their existing single-piece V7a renderer.
+  const armadniRefugePlan5190=planArmadniRefuge5190({
+   regionId,crossing:el,
+   road:roadWays.find(w=>String(w.id)==='1331897683')
+  });
+  const armadniZebraArms5191=armadniRefugePlan5190?
+   planArmadniZebraArms5191({
+    islandPlan:armadniRefugePlan5190,crossing:el,
+    toWorld:osmPoint,carriageway:osmCarriagewayClearance,
+    planZebraPieces
+   }):null;
+  const pieces=armadniZebraArms5191?.pieces||unsegmentedZebraPieces5191;
+  if(armadniZebraArms5191){
+   window.__miloviceArmadniZebraArmsAudit5191={
+    version:'5.191',
+    sourceCrossingId:armadniZebraArms5191.sourceCrossingId,
+    sourceRoadId:armadniZebraArms5191.sourceRoadId,
+    originalStripePieces:unsegmentedZebraPieces5191.length,
+    northApproachBars:armadniZebraArms5191.northBars,
+    southApproachBars:armadniZebraArms5191.southBars,
+    excludedIslandBars:armadniZebraArms5191.removedFromIslandArea,
+    minimumPaintEdgeGapMetres:armadniZebraArms5191.minimumPaintEdgeGapMetres,
+    originalCrossingVerticesPreserved:true,
+    paintedBars:pieces.length,physicalIslandBasedOnOSM:true,
+    shapeAndPaintSpacingPhotoVerified:false,
+    newRoads:0,newColliders:0
+   };
+   window.__miloviceArmadniZebraArmsRuntime5191=()=>({
+    ...window.__miloviceArmadniZebraArmsAudit5191,
+    ready:!!window.__miloviceArmadniRefugeRuntime5190?.()?.ready
+   });
+  }
   const topolovaZebraPaint5187=planTopolovaZebraPaint5187(regionId,el);
   if(topolovaZebraPaint5187){
    topolovaZebraAudit5187.sourceWayIds.push(topolovaZebraPaint5187.sourceWayId);
@@ -8481,10 +8516,6 @@ function rpAppendOSMElements(elements,regionId='old'){
   // 5.190: OSM middle crossing node exactly matches the real Armádní
   // centreline; add a modest raised *model* refuge there (not a new
   // zebra, re-routed road, guessed lamp or blocking pedestrian collider).
-  const armadniRefugePlan5190=planArmadniRefuge5190({
-   regionId,crossing:el,
-   road:roadWays.find(w=>String(w.id)==='1331897683')
-  });
   if(armadniRefugePlan5190){
    const refuge=renderArmadniRefuge5190(THREE,{
     plan:armadniRefugePlan5190,toWorld:osmPoint,
