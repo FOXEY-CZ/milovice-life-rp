@@ -49,6 +49,11 @@ const layer={children:[],visible:true,add(m){m.parent=this;this.children.push(m)
 const baseById=id=>({base:100, height:15.25,id});
 const rendered=renderTopolovaEstimatedFacades5161(mock,{plan,toWorld,baseById,layer});
 assert(rendered);
+assert.equal(plan.provisional616NoInventedBalconyDoors,true);
+// 5.184: each of the two 616 faces has 8 former balcony bays on
+// 4 upper floors. Replace 16 speculative door pairs with ordinary panes.
+assert.equal(rendered.normalWindows,72+16);
+assert.equal(rendered.balconyWindowDoorSets,48-16);
 for(const [key,value] of Object.entries({
  renderedFacades:6,renderedMeshes:3,normalWindows:88,
  balconyWindowDoorSets:32,stairWindows:24,
