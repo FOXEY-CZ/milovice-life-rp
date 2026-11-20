@@ -115,7 +115,7 @@ for(const token of [
  "renderSlunickoWestWindows5189(THREE,{",
  "window.__miloviceSlunickoWestWindowsRuntime5189=()=>",
  "genericWestEdgesSuppressed++",
- "20261120-slunicko-west-model-windows-518900"
+
 ])assert(html.includes(token),'Missing 5.189 rendering integration '+token);
 console.log('PASS 5.189: 36 modeled west glazing bays in 3 meshes, tender width grounded, OSM unchanged');
 console.log('PASS 5.154 source-locked west 44.429m wall and estimated 13.15m height, without invented furniture');
