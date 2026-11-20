@@ -1,3 +1,9 @@
+## Milovice RP 5.172 — porovnání šesti DEM profilů a mobilní kontrola skutečného kliknutí (20. 11. 2026)
+
+V technických kamerách domů Topolová 616–618 tlačítko **📏 Výšky základů** nově kromě pěti hodnot aktuální fasády ukazuje rozsahy rozdílů základ–modelový DEM pro **všech šest původních východních/západních obvodových stěn** tří domů. Je to kontrolní tabulka v textu, nikoli opravdové zaměření vstupů ani úprava terénu. Mobilní Chromium/WebGL test je rozšířen tak, že po skutečném načtení scény a 8,5 s LOD programově klikne na tlačítko, ověří otevření, aktuální adresu, šest porovnání, varování o neověřeném prahu a opětovné zavření. Statický unit kontroluje i přítomnost této části. **CI/mobilní WebGL/Pages po commitu čekají na potvrzení; PASS bez výstupu běhu netvrdíme.** Žádný nový mesh, strom, lampa, chodník, přechod, dveře ani kolizní objekt.
+
+---
+
 ## Milovice RP 5.171 — zobrazit DEM výšku základů přímo v technické kameře (20. 11. 2026)
 
 V šesti existujících pohledech na přízemí Topolová 616–618 je nové tlačítko **📏 Výšky základů 616–618**. Po kliknutí se z živého `window.__miloviceTopolovaEntrySurveyRuntime()` zobrazí právě aktivní skutečná OSM fasáda, ID domu, rozpětí rozdílu základ–DEM a všech pět vzorků po 25 % délky stěny. Znaménko výšky je vysvětlené. Nic se nedopočítává jako poloha dveří: **práh, schody, vchod i fotografie stále nejsou ověřené**. Nezměnily se půdorysy, DEM, kola, chodci, doprava, střecha ani kolize. Unit 5.170 nově střeží i přítomnost této UI kontroly; **CI/WebGL/Pages výsledky po změně čekají na ověření**.
