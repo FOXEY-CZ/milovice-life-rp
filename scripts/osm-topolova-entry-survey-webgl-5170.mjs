@@ -33,6 +33,8 @@ try{
   hip:window.__miloviceTopolovaHipRuntime?.(),
   gables:window.__miloviceTopolovaGableRuntime?.(),
   traffic:window.__miloviceTopolovaPriorityRuntime?.(),
+  paving:window.__miloviceTopolovaPaving5177,
+  mappedPavingCount:window.__miloviceOSMSurfaceAudit?.byMaterial?.['topolova-paving-stones'],
   menu:document.getElementById('street-block-audit')?.getBoundingClientRect().height
  }));
  assert.equal(a.grade?.ready,true,JSON.stringify(a.grade));
@@ -52,6 +54,15 @@ try{
   Number.isFinite(x.maxFoundationAboveTerrainMetres)));
  assert(a.inferred?.ready&&a.hip?.ready&&a.gables?.ready&&a.traffic?.ready);
  assert(a.menu<150);
+ // 5.177: specific mapped existing footways are now rendered with
+ // a paving-stone material, while all source GPS stays untouched.
+ assert.equal(a.paving?.version,'5.177',JSON.stringify(a.paving));
+ assert.deepEqual([...(a.paving?.sourceWayIds||[])].sort(),
+  ['1314665579','1316882852','1316882860'].sort());
+ assert.equal(a.paving?.newFootways,0);
+ assert.equal(a.paving?.newGeometry,0);
+ assert.equal(a.paving?.modelTintNotPhotoVerified,true);
+ assert(a.mappedPavingCount>=3,JSON.stringify(a));
  // 5.172: exercise the actual mobile control, not just a static HTML marker.
  const ui=await page.evaluate(()=>{
   const button=document.getElementById('topolova-grade-toggle');
