@@ -75,7 +75,12 @@ for(const snippet of [
  'const topolovaEntrySurveyPlan=planTopolovaEntrySurvey5170({',
  'window.__miloviceTopolovaEntrySurveyRuntime=()=>{',
  'inspectTopolovaEntryGrade5170(topolovaEntrySurveyPlan,{',
- 'topolova-entry-617-east-5170'
+ 'topolova-entry-617-east-5170',
+ 'topolova-grade-toggle',
+ 'topolova-grade-details',
+ "topolovaGradeButton.addEventListener('click'",
+ 'audit.groundGradeProfiles.find',
+ 'Skutečná strana, poloha a výška vstupu nejsou ověřené'
 ])assert(html.includes(snippet),'Missing browser integration '+snippet);
 for(const v of plan.views){
  const id='topolova-entry-'+v.address+'-'+v.side+'-5170';
