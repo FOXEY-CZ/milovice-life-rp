@@ -1,3 +1,11 @@
+## Milovice RP 5.186 — obvodové rámy oken Topolová 616–618 (20. 11. 2026)
+
+**Vizuální oprava 3D hry:** na existujících šesti východních/západních modelových fasádách Topolová 616–618 se rámy oken již nekreslí jako plné podkladové desky za sklem. Každé původní okno má skutečné čtyři úzké obvodové pásy rámu, přední skleněnou plochu a zachovanou případnou příčli a parapet. Trojúhelníky přibývají do existujícího společného batche rámů, ne jako samostatné objekty. Zachováno 88 modelových běžných oken, 32 odhadovaných balkonových sestav a 24 schodišťových oken, stále 3 GPU meshe. Jde o výtvarnou modelovou aproximaci bez fotografického důkazu přesných oken 616–618. OSM/RÚIAN GPS, výšky, DEM, střecha, cesty, kolize a vozidla beze změny.
+
+Verze modulu v index.html: 518600. Source test kontroluje zvýšenou geometrii obvodových pásů proti počtu skleněných trojúhelníků. **Lokální Node, mobilní WebGL, CI a Pages zatím nepotvrzené.** Další: ověřit běhy Actions a místo dalších spekulací získat skutečné fotografie 616–618.
+
+---
+
 ## Milovice RP 5.185 — jemné odstíny skel na skutečné uliční řadě Topolová 616–618 (20. 11. 2026)
 
 **Přímá viditelná úprava fasád:** všech šest existujících modelových východních/západních stěn adres 616, 617 a 618 mělo dosud zcela jednolitý odstín všech prosklených ploch. `scripts/osm-topolova-estimated-facades-5161.js` nyní při kreslení **těch samých původních oken** vytváří malé **deterministické rozdíly ve třech barevných složkách skla** podle adresy a pozice modelového okna. Odstíny jsou čistě grafická aproximace běžného prosklení, **nikoli ověřené skutečné barvy oken, závěsů, bytů či jejich uživatelů**. Skla mají mírně hladší PBR vzhled. Fasádní okna, parapety a rámové stěny nadále sdílejí své **původní tři GPU meshe**: sklo přidává pouze jeden vertex-color atribut k existující sloučené geometrii, bez jednotlivých objektů a draw callů pro každé okno.
