@@ -89,6 +89,10 @@ try{
  assert.equal(westBefore.wayId,'1314665579');
  assert.equal(westBefore.turnbackBeforeZebrasMetres,4);
  assert.equal(westBefore.modelMeshPresent,true);
+ assert.equal(westBefore.modelVisible,true,
+  'west-side walker must be visible to the active Topolova audit camera');
+ assert(westBefore.highLODVisible||westBefore.lowLODVisible,
+  'one pedestrian LOD must be visible, not just parent scene group');
  assert(Number.isFinite(westBefore.position?.x));
  assert(Number.isFinite(westBefore.position?.z));
  await page.waitForTimeout(1100);
