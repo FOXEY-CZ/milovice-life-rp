@@ -137,8 +137,16 @@ export function renderTopolovaEstimatedFacades5161(THREE,{
    const t=(seed%13)/12;
    activeGlassTint=[.78+.19*t,.84+.12*t,.91+.08*t];
    // Base wall keeps solid collision; thin facade layers do not.
-   rect(0,x-w/2,x+w/2,y-h/2,y+h/2,.080);
-   rect(1,x-w/2+.075,x+w/2-.075,y-h/2+.075,y+h/2-.075,.096);
+   // 5.186: four slim surrounding frame strips instead of a solid
+   // backing rectangle. The original solid building wall remains behind
+   // the glass; this only improves depth/legibility of the modelled bays.
+   const left=x-w/2,right=x+w/2,bottom=y-h/2,top=y+h/2;
+   const border=.075;
+   rect(0,left,left+border,bottom,top,.080);
+   rect(0,right-border,right,bottom,top,.080);
+   rect(0,left+border,right-border,bottom,bottom+border,.080);
+   rect(0,left+border,right-border,top-border,top,.080);
+   rect(1,left+border,right-border,bottom+border,top-border,.096);
    if(mullion)rect(0,x-.038,x+.038,y-h/2+.036,y+h/2-.036,.112);
    rect(2,x-w/2-.056,x+w/2+.056,y-h/2-.074,y-h/2+.015,.116);
   };
