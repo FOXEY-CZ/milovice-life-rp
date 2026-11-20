@@ -23,6 +23,8 @@ on:
       - scripts/osm-topolova-pedestrian-topology-5174.test.mjs
       - scripts/osm-topolova-street-inventory-5173.js
       - scripts/osm-topolova-street-inventory-5173.test.mjs
+      - scripts/osm-topolova-estimated-facades-5161.js
+      - scripts/osm-topolova-estimated-facades-5161.test.mjs
       - scripts/osm-topolova-entry-survey-5170.js
       - scripts/osm-topolova-entry-survey-5170.test.mjs
       - scripts/osm-topolova-entry-survey-webgl-5170.mjs
