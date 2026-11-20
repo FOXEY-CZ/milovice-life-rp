@@ -572,7 +572,7 @@ import {planSlunickoWestElevation5154} from './scripts/osm-slunicko-west-elevati
 import {planSlunickoWestWindows5189,renderSlunickoWestWindows5189} from './scripts/osm-slunicko-west-windows-5189.js?v=518900';
 import {planVisnovaResidential5192,renderVisnovaResidential5192} from './scripts/osm-visnova-residential-5192.js?v=519400';
 import {completeVisnovaEndFacades5193} from './scripts/osm-visnova-end-facades-5193.js?v=519300';
-import {planVisnovaLaneEdges5195,renderVisnovaLaneEdges5195} from './scripts/osm-visnova-service-edge-5195.js?v=519500';
+import {planVisnovaLaneEdges5195,renderVisnovaLaneEdges5195} from './scripts/osm-visnova-service-edge-5195.js?v=519600';
 import {planTopolovaPanelRow5155} from './scripts/osm-topolova-panel-row-5155.js?v=515500';
 import {planTopolovaContinuousHip5160,renderTopolovaContinuousHip5160} from './scripts/osm-topolova-continuous-hip-5160.js?v=516000';
 import {planTopolovaEstimatedFacades5161,renderTopolovaEstimatedFacades5161} from './scripts/osm-topolova-estimated-facades-5161.js?v=518600';
@@ -659,7 +659,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261120-visnova-service-edge-519500';
+const BUILD_ID='20261120-visnova-continuous-lane-edges-519600';
 // Keep the visible HUD build and runtime declaration in sync for photo audits.
 document.getElementById('build-label').textContent=BUILD_ID;
 const rpStationRoofAuditCamera=new URLSearchParams(location.search).has('roofAudit');
@@ -7908,6 +7908,8 @@ function rpAppendOSMElements(elements,regionId='old'){
    sourceWayIds:visnovaLaneRendered5195?.sourceWayIds||[],
    originalSegments:visnovaLaneRendered5195?.originalSegments||0,
    edgeBands:visnovaLaneRendered5195?.edgeBands||0,
+   sharedCornerJoins:visnovaLaneRendered5195?.sharedCornerJoins||0,
+   cornerJointMethod:visnovaLaneRendered5195?.cornerJointMethod||null,
    triangles:visnovaLaneRendered5195?.triangles||0,
    meshCount:visnovaLaneRendered5195?.meshCount||0,
    visibleAfterLOD:Boolean(visnovaLaneRendered5195?.visibleAfterLOD()),
