@@ -10,7 +10,7 @@ try{
  const page=await browser.newPage({viewport:{width:393,height:852},
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
- await page.goto('http://127.0.0.1:8080/?v=519200&streetAudit=topolova-slunicko-west-5154',
+ await page.goto('http://127.0.0.1:8080/?v=519300&streetAudit=topolova-slunicko-west-5154',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>
@@ -31,6 +31,7 @@ try{
   windows:window.__miloviceSlunickoWestWindowsRuntime5189?.(),
   school:window.__miloviceSlunickoRuntime?.(),
   visnova:window.__miloviceVisnovaResidentialRuntime5192?.(),
+  visnovaFull:window.__miloviceVisnovaFullEnvelopeRuntime5193?.(),
   topolova:window.__miloviceTopolovaResidentialRuntime?.(),
   hall:window.__miloviceSportovniHallRuntime?.(),
   tennis:window.__miloviceMiltenTennisRuntime?.(),
@@ -92,7 +93,18 @@ try{
  assert.equal(r.visnova?.ready,true,JSON.stringify(r.visnova));
  assert.deepEqual(r.visnova?.originalBuildingIds,['53865847','53865848']);
  assert.deepEqual(r.visnova?.originalFloors,[5,11]);
- assert.equal(r.visnova?.renderedWindowCount,520);
+ assert.equal(r.visnova?.renderedWindowCount,658);
+ assert.equal(r.visnovaFull?.version,'5.193');
+ assert.equal(r.visnovaFull?.ready,true,JSON.stringify(r.visnovaFull));
+ assert.deepEqual(r.visnovaFull?.sourceOSMIds,['53865847','53865848']);
+ assert.equal(r.visnovaFull?.addedEndFacades,4);
+ assert.equal(r.visnovaFull?.addedModeledEndWindows,138);
+ assert.equal(r.visnovaFull?.modeledWindows,658);
+ assert.equal(r.visnovaFull?.gpuMeshes,8);
+ assert.equal(r.visnovaFull?.triangles,9268);
+ assert.equal(r.visnovaFull?.originalFootprintChanged,false);
+ assert.equal(r.visnovaFull?.inventedRealDoors,0);
+ assert.equal(r.visnovaFull?.newColliders,0);
  assert.equal(r.visnova?.meshCount,8);
  assert.equal(r.visnova?.genericFacadeEdgesSuppressed,28);
  assert.equal(r.visnova?.modelNotPhotoSurvey,true);
@@ -100,11 +112,11 @@ try{
  assert.equal(r.visnova?.addedBalconies,0);
  assert.equal(r.visnova?.newColliders,0);
  assert.deepEqual(r.visnova?.buildings.map(b=>b.visibleAfterLOD),[4,4]);
- assert.deepEqual(r.visnova?.buildings.map(b=>b.totalTriangles),[4666,2670]);
+ assert.deepEqual(r.visnova?.buildings.map(b=>b.totalTriangles),[5898,3370]);
  assert(r.school?.ready&&r.topolova?.ready&&r.hall?.ready&&r.tennis?.ready&&r.zebra?.ready);
  assert(r.menu<150);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/slunicko-west-elevation-5154-mobile.png'});
- console.log('PASS 5.192 mobile WebGL 6.5s LOD: two Višňová source-locked 11+5-level buildings, 520 model windows and intact school/zebras');
+ console.log('PASS 5.193 mobile WebGL 6.5s LOD: both Višňová block ends completed, 658 model windows in eight meshes and intact school/zebras');
 }finally{await browser.close()}
