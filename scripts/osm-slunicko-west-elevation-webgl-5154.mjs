@@ -10,7 +10,7 @@ try{
  const page=await browser.newPage({viewport:{width:393,height:852},
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
- await page.goto('http://127.0.0.1:8080/?v=515400&streetAudit=topolova-slunicko-west-5154',
+ await page.goto('http://127.0.0.1:8080/?v=518900&streetAudit=topolova-slunicko-west-5154',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>
@@ -28,6 +28,7 @@ try{
  await page.waitForTimeout(6500);
  const r=await page.evaluate(()=>({
   wall:window.__miloviceSlunickoWestRuntime?.(),
+  windows:window.__miloviceSlunickoWestWindowsRuntime5189?.(),
   school:window.__miloviceSlunickoRuntime?.(),
   topolova:window.__miloviceTopolovaResidentialRuntime?.(),
   hall:window.__miloviceSportovniHallRuntime?.(),
@@ -41,10 +42,22 @@ try{
  assert(Math.abs(r.wall?.wallSpanMeters-13.15)<.01);
  assert.equal(r.wall?.newShades,0);
  assert.equal(r.wall?.newDoors,0);
+ // 5.189: actual 3D modelled school glazing on exactly one mapped west face,
+ // not generic duplicate windows, after 6.5s mobile LOD.
+ assert.equal(r.windows?.version,'5.189',JSON.stringify(r.windows));
+ assert.equal(r.windows?.sourceOSMId,'53865699');
+ assert.equal(r.windows?.bays,36);
+ assert.equal(r.windows?.meshes,3);
+ assert.equal(r.windows?.genericWestEdgesSuppressed,1);
+ assert.equal(r.windows?.allBayPositionsEstimated,true);
+ assert.equal(r.windows?.inScene,true);
+ assert.equal(r.windows?.visibleAfterLOD,3);
+ assert.equal(r.windows?.gpuTriangles,504);
+ assert.equal(r.windows?.sourceGeometryChanged,false);
  assert(r.school?.ready&&r.topolova?.ready&&r.hall?.ready&&r.tennis?.ready&&r.zebra?.ready);
  assert(r.menu<150);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/slunicko-west-elevation-5154-mobile.png'});
- console.log('PASS 5.154 mobile WebGL 6.5-second LOD: school west 44m source and 13.15m generated wall');
+ console.log('PASS 5.189 mobile WebGL 6.5-second LOD: school 44m west wall, 36 modelled 2.4m glazing bays and no duplicate generic windows');
 }finally{await browser.close()}
