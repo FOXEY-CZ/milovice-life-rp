@@ -1,3 +1,13 @@
+## Milovice RP 5.182 — skutečný chodník pěší mise zvýrazněný na minimapě (20. 11. 2026)
+
+**Hratelnost / zobrazení města:** při aktivní fiktivní pěší zakázce Topolová (5.179–5.181) se na herní minimapě zeleně čárkovaně zvýrazní **pouze skutečně mapovaný pěší úsek mezi OSM uzly 12→13 původní západní chodníkové cesty `1314665579`**. Celá původní OSM cesta má 18 uzlů a přesahuje rozsah mise; jiných 17 částí ani domnělé spojky se proto nepřimalovávají jako trasa zakázky. Původní dva uzly souhlasí se zdrojově ověřenými body 3→4 okruhu 5.165 a přímou osou herních waypointů 5.179. Dřívější číslovaný cíl 5.181 zůstává. Barevné zvýraznění existuje **pouze na 2D minimapě**, nepřidává fyzickou cestu, čáru, plot, značku, strom, kolizi nebo mesh do světa. Zlepšuje orientaci, ale nezaručuje, že trasa je ve skutečnosti průchodná či fotograficky zaměřená.
+
+Nový čistý modul `scripts/osm-topolova-foot-path-highlight-5182.js` kontroluje zdrojovou OSM identitu `1314665579`, 18 původních GPS uzlů, úplný hash `476fa89b`, tag `footway=sidewalk` a `surface=paving_stones` i přesnou rovnost původního segmentu s okruhem 5.165. Neodpovídající zdroj se nevykreslí. `index.html` kreslí čárkovanou linii na rotovanou plochu minimapy před vyznačením cíle a zveřejňuje `window.__miloviceTopolovaMissionLineRuntime5182()`. Přidán unit regresní test včetně negativních změn povrchu a GPS a mobilní WebGL test aktivní mise. CI workflow rozšířeno.
+
+**Ověření CI/WebGL/GitHub Pages stále není doloženo:** zapsání souborů do GitHubu samo o sobě nepotvrzuje běh testů ani nasazení. Další úkol: zpřístupnit výstupy Actions/ověřit testy, potom důsledně prioritizovat skutečně vizuální výstavbu celých ulic.
+
+---
+
 ## Milovice RP 5.181 — cíl pěší zakázky konečně na minimapě (20. 11. 2026)
 
 **Hratelnost v běžné 3D hře:** nový kontrolní bod existující fiktivní pěší mise **Topolová 5.179** je nyní vidět přímo na **herní minimapě**, podobně jako dříve cíl autobusové mise. Zelená značka `PĚŠKY` ukazuje číslo dalšího checkpointu 1–3, promítá se vůči aktuálnímu natočení kamery a pokud cíl leží mimo mapový výřez, drží se na jeho okraji. **Jde o bodový cíl, ne o navrženou průchozí trasu**; žádná fiktivní spojka ani výkres chodníku nevzniká.
