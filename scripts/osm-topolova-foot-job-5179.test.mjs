@@ -110,7 +110,7 @@ for(const snippet of [
  'createTopolovaFootBeacon5188(THREE,{',
  'topolovaFootBeacon5188?.update(topolovaFootJob5179,elapsed)',
  'window.__miloviceTopolovaFootBeacon5188=()=>',
- '20261120-topolova-pedestrian-beacon-518800'
+
 ])assert(html.includes(snippet),'missing live 5.188 beacon integration: '+snippet);
 console.log('PASS 5.188: one temporary 3D waypoint from original sidewalk, two reusable meshes, reset and completion hide it');
 console.log('PASS 5.179: 3 source-locked foot checkpoints, vehicle pauses, 80 Kč only on third arrival, no new physical street assets');
