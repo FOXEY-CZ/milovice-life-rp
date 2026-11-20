@@ -1,3 +1,15 @@
+## Milovice RP 5.188 — viditelný 3D checkpoint pěší zakázky Topolová (20. 11. 2026)
+
+**Nová hratelná změna v reálné 3D scéně:** pěší zakázka Topolová má teď přímo nad aktuálním cílem na původním západním OSM chodníku `1314665579` **dočasný zelený kruh a plovoucí herní symbol**. Už není nutné orientovat se jen podle HUD/minimapy. Po příchodu k bodu se značka automaticky přesune na další ze tří existujících checkpointů; po dokončení, zrušení, resetu `R` nebo změně oblasti/vozidla se zcela skryje. Při nastoupení do vozidla zůstává viditelná, ale samotný postup pěší zakázky je pozastaven.
+
+`scripts/osm-topolova-foot-beacon-5188.js` vytváří pouze **jednou při spuštění** jeden nekolizní herní indikátor se dvěma jednoduchými Three.js meshi; ani opakovaná mise nealokuje další geometrii. Poloha X/Z je vždy původní herní waypoint ze zdrojově zamčené OSM 5.165/5.179 mise, výška Y se bere ze skutečného herního DEM `terrainAt`. Je to **výhradně herní navigační prvek**, ne žádná reálná značka, skutečná adresa doručení ani odhad polohy vchodu. **0 nových fyzických ulic, přechodů, vchodů, lamp, stromů a kolizí**; původní OSM/RÚIAN i DEM podklady beze změny.
+
+Runtime `window.__miloviceTopolovaFootBeacon5188()` vrací viditelnost včetně rodičovské vrstvy po LOD, aktuální cíl a počet 2 znovupoužitelných meshů. Rozšířený zdrojový test `scripts/osm-topolova-foot-job-5179.test.mjs` ověřuje všechny přechody stavu, odmítnutí cizího waypointu, DEM výšku a zamezení růstu objektů. Mobilní Chromium/WebGL test `scripts/osm-topolova-entry-survey-webgl-5170.mjs` ověřuje reálné spuštění, viditelný 3D checkpoint po 8,5s LOD, zrušení a reset `R`. Hra používá nový cache key `?v=518800` a ID buildu.
+
+**Ověření:** soubory a testy jsou zapsané do GitHubu, ale skutečný Node/WebGL/CI/Pages PASS ještě není pro tuto verzi ověřen. Další: spustit/ověřit běhy Actions a na mobilu zkontrolovat velikost a skutečnou výšku markeru u terénu; pak pokračovat fotoověřenými fyzickými ulicemi.
+
+---
+
 ## Milovice RP 5.187 — viditelný povrch obou reálných přechodů Topolové (20. 11. 2026)
 
 **Úprava celé ulice přímo v 3D:** dvě již existující a OSM doložené zebry v Topolové (OSM pěší přechody `1316882853` a `1316882854`) nyní dostávají jeden společný jemný procedurální materiál modelového opotřebení bílé barvy, místo dosavadní zcela ploché výplně. Materiál tvoří deterministická RGBA textura 64×64 pixelů (16 KiB), vytvořená pouze při spuštění; její skutečný vzor ani míra opotřebení nejsou fotograficky ověřené. Oproti dřívějšímu shaderu přibývá **jeden sdílený materiál a textura** pro oba přechody, což může změnit dávkování vykreslování, ale **nevytváří další 3D pruhy/mesh geometrie**. Původní OSM 3 uzly každého přechodu a přesné umístění malovaných pruhů, původní asfalt a geometrie ulic, chodníky, budovy, doprava a kolize jsou nedotčené. Ostatní přechody v Milovicích nadále používají původní materiál.
