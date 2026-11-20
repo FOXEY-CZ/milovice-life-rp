@@ -1919,7 +1919,9 @@ async function rpSelectSpawn(kind){
    busPark={x:(chosen.a.x+chosen.b.x)*.5-vz*side,z:(chosen.a.y+chosen.b.y)*.5+vx*side,angle:theta};
   }
  }
- rpCloseOverlays();rpClearGameplayStops();open=false;speed=0;cam=0;busJob=null;pass=0;
+ rpCloseOverlays();rpClearGameplayStops();open=false;speed=0;cam=0;busJob=null;
+ // 5.183: selecting a different district / vehicle is not mission progress.
+ topolovaFootJob5179=null;pass=0;
  if(activeCar){activeCar.driven=false;activeCar.parked=true;activeCar.g.rotation.y=angle;activeCar.g.position.set(x,terrainAt(x,z)+.045,z);activeCar=null}
  // Remove a previously spawned custom car to prevent unbounded meshes / draw calls.
  if(playerSpawnCar){
@@ -2015,6 +2017,12 @@ function rpEndTopolovaFootJob5179(){
  topolovaFootJob5179=null;rpCloseOverlays();
  notify('Pěší zakázka zrušena bez odměny.');updateUI();
 }
+// 5.183: diagnostics assert that reset/teleport clear the pedestrian job.
+window.__miloviceTopolovaFootJobLifecycle5183=()=>({
+ active:!!topolovaFootJob5179,
+ selectedDistrict:document.getElementById('rp-area-select')?.value||null,
+ resetCancelsWithoutReward:true,spawnCancelsWithoutReward:true
+});
 window.__miloviceTopolovaFootJobRuntime5179=()=>({
  active:!!topolovaFootJob5179,
  next:topolovaFootJob5179?.next??0,
@@ -2174,7 +2182,7 @@ document.addEventListener('mousemove',e=>{
  orbitYaw-=e.movementX*.0028;
  orbitPitch=Math.max(-.35,Math.min(.95,orbitPitch+e.movementY*.0028));
 });addEventListener('blur',()=>keys.clear());document.addEventListener('visibilitychange',()=>{if(document.hidden)keys.clear()});function reset(){
- keys.clear();stick.reset();pedestrianIntensity=0;pedestrianVelocity=0;speed=0;pass=0;next=0;open=false;cam=0;elapsed=0;rating=100;paid=false;busJob=null;walkCam=0;
+ keys.clear();stick.reset();pedestrianIntensity=0;pedestrianVelocity=0;speed=0;pass=0;next=0;open=false;cam=0;elapsed=0;rating=100;paid=false;busJob=null;topolovaFootJob5179=null;walkCam=0;
  if(activeCar){activeCar.driven=false;activeCar.parked=true;activeCar=null}
  if(playerSpawnCar){
   const index=trafficCars.indexOf(playerSpawnCar);
