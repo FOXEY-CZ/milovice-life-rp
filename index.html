@@ -580,6 +580,7 @@ import {planVisnovaEightFloor5198} from './scripts/osm-visnova-eight-floor-5198.
 import {planVisnovaMappedWalk5199} from './scripts/osm-visnova-mapped-walks-5199.js?v=519900';
 import {planVisnovaLawnDetail5200} from './scripts/osm-visnova-lawn-detail-5200.js?v=520000';
 import {planVisnovaParkingHouse5202,renderVisnovaParkingHouse5202} from './scripts/osm-visnova-parking-house-5202.js?v=520200';
+import {planVisnovaParkingMap5203} from './scripts/osm-visnova-parking-map-5203.js?v=520300';
 import {planVisnovaLaneEdges5195,renderVisnovaLaneEdges5195} from './scripts/osm-visnova-service-edge-5195.js?v=519600';
 import {planTopolovaPanelRow5155} from './scripts/osm-topolova-panel-row-5155.js?v=515500';
 import {planTopolovaContinuousHip5160,renderTopolovaContinuousHip5160} from './scripts/osm-topolova-continuous-hip-5160.js?v=516000';
@@ -667,7 +668,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261121-visnova-parking-house-520200';
+const BUILD_ID='20261121-visnova-map-pin-520300';
 // Keep the visible HUD build and runtime declaration in sync for photo audits.
 document.getElementById('build-label').textContent=BUILD_ID;
 const rpStationRoofAuditCamera=new URLSearchParams(location.search).has('roofAudit');
@@ -2506,6 +2507,15 @@ const visnovaResidentialRenderCache5192=new Map();
 const visnovaNeighborRenderCache5197=new Map();
 const visnovaEightFloorRenderCache5198=new Map();
 const visnovaParkingHouseCache5202=new Map();
+window.__miloviceVisnovaParkingMapRuntime5203=()=>({
+ version:'5.203',ready:Boolean(visnovaParkingMap5203),
+ sourceBuildingId:visnovaParkingMap5203?.sourceBuildingId||null,
+ markerSymbol:visnovaParkingMap5203?.markerSymbol||null,
+ point:visnovaParkingMap5203?.point||null,
+ insideMappedBuilding:Boolean(visnovaParkingMap5203?.insideMappedBuilding),
+ noInventedEntrance:true,newParkingSpaces:0,new3DSigns:0,
+ noOriginalGeometryChanges:true
+});
 window.__miloviceVisnovaParkingHouseRuntime5202=()=>{
  const rows=[...visnovaParkingHouseCache5202.values()];
  return {version:'5.202',ready:rows.length===1&&rows[0].inScene(),
@@ -2950,6 +2960,7 @@ const topolovaZebraAudit5187=window.__miloviceTopolovaZebraPaint5187={
 // 5.96: single shared diffuse material, source OSM stream centerlines only.
 const osmWaterMaterial=new THREE.MeshLambertMaterial({color:0x396978,side:THREE.DoubleSide});
 let osmActive=false,osmReady=false,osmLoading=false,oldPosition=null,osmRoads=[],osmBuildings=0,osmNamedRoads=[],osmLandmarks=[];
+let visnovaParkingMap5203=null; // in-game map ONLY, source polygon centroid; not the entrance
 rpUpdateRenderBudget(); // All OSM and render-budget dependencies are initialized.
 const osmDriveRoads=[];
 const osmStreetLightWays=[]; // only OSM lit=yes streets with names, no random untagged poles
@@ -6027,6 +6038,10 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
   photoReviewed:photoDecision.photographicApproval===true,
   approvedArchitecture:Boolean(modelCard)
  });
+ if(visnovaParkingHousePlan5202&&!visnovaParkingMap5203)
+  visnovaParkingMap5203=planVisnovaParkingMap5203({
+   regionId,building:{id:osmId,tags,geometry:points},toWorld:osmPoint
+  });
  const massBlockPriority=Boolean(window.__miloviceMassStreetBlock583?.priorityIds.includes(String(osmId)));
  const isHouse=!isBlueStar&&!isMirova36&&!isGrocer74&&(massBlockPriority||type==='house'||
   ((type==='residential'||type==='yes'||type==='detached'||type==='terrace'||type==='semidetached_house')&&
@@ -10597,7 +10612,7 @@ osmBtn.onclick=async()=>{
  if(osmLoading)return;
  osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';osmMessage('Načítám místní soubor mapy ze stejného GitHub Pages webu…');
  try{
- const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();streetFrontage.reset();osmRoadClearance.reset();osmCarriagewayClearance.reset();osmWaterVegetationClearance.reset();taggedSidewalkBuildings.reset();cityAreaAhead=null;lastCityStreamingX=Infinity;lastCityStreamingZ=Infinity;legacyRealityAudit.reset();renderedPedestrianPieces.clear();collisionWorld.reset();heroBuildings.reset();photoStreetBlock.reset();photoStreetEnvironment.reset();mirovaPhotoStreet586.reset();skolskaWestGreen588.reset();skolskaTailGreen590.reset();photoPionyruVerge.reset();photoChurchSidewalk2022.reset();photoChurchStreet2022.reset();stationPhotoForecourt.reset();stationPhotoParking.reset();bikeTowerEntryPaving.reset();stationTicketMachines.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmStreetLightWays.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;landscapeZones.length=0;visnovaGrassSource5200.length=0;visnovaResidentialRenderCache5192.clear();visnovaNeighborRenderCache5197.clear();visnovaEightFloorRenderCache5198.clear();visnovaParkingHouseCache5202.clear();window.__miloviceVisnovaMappedWalkRuntime5199=null;
+ const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();streetFrontage.reset();osmRoadClearance.reset();osmCarriagewayClearance.reset();osmWaterVegetationClearance.reset();taggedSidewalkBuildings.reset();cityAreaAhead=null;lastCityStreamingX=Infinity;lastCityStreamingZ=Infinity;legacyRealityAudit.reset();renderedPedestrianPieces.clear();collisionWorld.reset();heroBuildings.reset();photoStreetBlock.reset();photoStreetEnvironment.reset();mirovaPhotoStreet586.reset();skolskaWestGreen588.reset();skolskaTailGreen590.reset();photoPionyruVerge.reset();photoChurchSidewalk2022.reset();photoChurchStreet2022.reset();stationPhotoForecourt.reset();stationPhotoParking.reset();bikeTowerEntryPaving.reset();stationTicketMachines.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmStreetLightWays.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;landscapeZones.length=0;visnovaGrassSource5200.length=0;visnovaResidentialRenderCache5192.clear();visnovaNeighborRenderCache5197.clear();visnovaEightFloorRenderCache5198.clear();visnovaParkingHouseCache5202.clear();visnovaParkingMap5203=null;window.__miloviceVisnovaMappedWalkRuntime5199=null;
   if(trafficGroup.parent!==osmLayer)osmLayer.add(trafficGroup);
   if(visualDetails.parent!==osmLayer)osmLayer.add(visualDetails);for(const batch of facadeBatches)batch.clear();
  window.__miloviceMassStreetBlock583=null;
@@ -11403,6 +11418,21 @@ function drawMini(){const mapX=walking?px:x,mapZ=walking?pz:z,heading=walking?or
   mc.textAlign='start';
  }
  mc.fillStyle='#ffe28b';for(const place of osmLandmarks){const dx=(place.point.x-mapX)*scale,dz=(place.point.y-mapZ)*scale;const ca=Math.cos(-heading),sa=Math.sin(-heading);const u=90+dx*ca-dz*sa,v=90+dx*sa+dz*ca;if(u>5&&u<175&&v>22&&v<160){mc.beginPath();mc.arc(u,v,3.3,0,Math.PI*2);mc.fill()}}
+ // 5.203: mapped P is INSIDE the existing parking-house polygon, not a
+ // guessed access driveway, invented signpost, or public parking bay.
+ if(visnovaParkingMap5203){
+  const p=visnovaParkingMap5203.point,dx=(p.x-mapX)*scale,
+   dz=(p.z-mapZ)*scale,ca=Math.cos(-heading),sa=Math.sin(-heading);
+  const u=90+dx*ca-dz*sa,v=90+dx*sa+dz*ca;
+  if(u>9&&u<171&&v>24&&v<154){
+   mc.fillStyle='#2767a8';mc.fillRect(u-7,v-7,14,14);
+   mc.strokeStyle='#e5f3ff';mc.lineWidth=1;
+   mc.strokeRect(u-7,v-7,14,14);
+   mc.fillStyle='#ffffff';mc.font='bold 11px system-ui';
+   mc.textAlign='center';mc.fillText('P',u,v+4);
+   mc.textAlign='start';
+  }
+ }
  mc.fillStyle='#ffda57';mc.beginPath();mc.moveTo(90,78);mc.lineTo(83,99);mc.lineTo(97,99);mc.closePath();mc.fill();
  mc.fillStyle='white';mc.font='bold 11px sans-serif';mc.fillText('MILOVICE · OSM',8,16);
  let nearest='',best=Infinity;for(const road of osmNamedRoads){for(const p of road.points){const dist=(p.x-mapX)**2+(p.y-mapZ)**2;if(dist<best){best=dist;nearest=road.name}}}
