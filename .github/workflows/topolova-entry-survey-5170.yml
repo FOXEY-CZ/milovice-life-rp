@@ -3,6 +3,9 @@ on:
   push:
     paths:
       - index.html
+      - scripts/landscapes.js
+      - scripts/osm-clay-court-grain-5178.js
+      - scripts/osm-clay-court-grain-5178.test.mjs
       - scripts/osm-topolova-paving-5177.js
       - scripts/osm-topolova-paving-5177.test.mjs
       - scripts/osm-topolova-west-walker-5175.js
@@ -33,6 +36,7 @@ jobs:
           node scripts/osm-topolova-pedestrian-topology-5174.test.mjs
           node scripts/osm-topolova-west-walker-5175.test.mjs
           node scripts/osm-topolova-paving-5177.test.mjs
+          node scripts/osm-clay-court-grain-5178.test.mjs
           node scripts/osm-topolova-entry-survey-5170.test.mjs
           node scripts/osm-topolova-end-gables-5169.test.mjs
           node scripts/osm-topolova-estimated-facades-5161.test.mjs
