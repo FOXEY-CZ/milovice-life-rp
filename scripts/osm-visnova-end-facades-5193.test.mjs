@@ -133,8 +133,8 @@ for(const integration of [
  'completeVisnovaEndFacades5193({basePlan:visnovaResidentialPlan5192})',
  'plan:visnovaCompletePlan5193,',
  'window.__miloviceVisnovaFullEnvelopeRuntime5193=()=>',
- '20261120-visnova-full-end-facades-519300',
+ '20261120-visnova-recessed-glazing-519400',
  'href="?v=519300&streetAudit=visnova-572-5192"',
  'href="?v=519300&streetAudit=visnova-573-5192"'
 ])assert(html.includes(integration),'missing real game integration: '+integration);
-console.log('PASS 5.193: 4 additional source wall ends, 138 modeled windows, total 658 windows in 8 batches, 9268 triangles, OSM untouched');
+console.log('PASS 5.193/5.194: 4 additional source wall ends, 138 modeled windows, total 658 windows in 8 batches, 9268 triangles, OSM untouched');
