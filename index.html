@@ -10305,6 +10305,9 @@ window.__miloviceTopolovaWestWalkRuntime=()=>{
   position:w?{x:w.g.position.x,z:w.g.position.z}:null,
   progress:w?.progress??null,direction:w?.direction??null,
   modelMeshPresent:Boolean(w?.g?.parent),
+  modelVisible:w?.g?.visible===true,
+  highLODVisible:w?.rig?.high?.visible===true,
+  lowLODVisible:w?.rig?.low?.visible===true,
   turnbackBeforeZebrasMetres:p?.trimMetres??null};
 };
 function rpActivateTopolovaPriority5166(){
@@ -10662,14 +10665,19 @@ function rpAnimateTraffic(dt){
   g.position.set(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,terrainAt(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side),seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side);
   g.rotation.y=Math.atan2(-dx*obj.direction,-dz*obj.direction);
   // Technical street audit cameras should see local mapped walkers.
-  const focusX=(obj.sourceFootwayId==='1316882860'||obj.sourceFootwayId==='1316882852')&&rpStreetAuditCameraWorld?
-   rpStreetAuditCameraWorld.x:playerX;
-  const focusZ=(obj.sourceFootwayId==='1316882860'||obj.sourceFootwayId==='1316882852')&&rpStreetAuditCameraWorld?
-   rpStreetAuditCameraWorld.z:playerZ;
-  g.visible=Math.hypot(g.position.x-focusX,g.position.z-focusZ)<120;
+  // 5.176: Topolova audit cameras must cull/LOD pedestrian models
+  // relative to the rendered camera, not the potentially remote player.
+  const cameraWalker=(obj.sourceFootwayId==='1316882860'||
+   obj.sourceFootwayId==='1316882852'||
+   (obj.westWalk5175===true&&obj.sourceFootwayId==='1314665579'))&&
+   rpStreetAuditCameraWorld;
+  const focusX=cameraWalker?rpStreetAuditCameraWorld.x:playerX;
+  const focusZ=cameraWalker?rpStreetAuditCameraWorld.z:playerZ;
+  const d=Math.hypot(g.position.x-focusX,g.position.z-focusZ);
+  g.visible=d<120;
   if(g.visible){
-   const d=Math.hypot(g.position.x-playerX,g.position.z-playerZ);
-   obj.rig.high.visible=!g.userData.cc0Active&&d<64;obj.rig.low.visible=!g.userData.cc0Active&&d>=64;
+   obj.rig.high.visible=!g.userData.cc0Active&&d<64;
+   obj.rig.low.visible=!g.userData.cc0Active&&d>=64;
    if(d<64){
     const phase=Math.sin(elapsed*6+obj.phase)*.48;
     obj.legs[0].rotation.x=phase;obj.legs[1].rotation.x=-phase;
