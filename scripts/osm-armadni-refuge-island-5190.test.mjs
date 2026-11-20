@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {planArmadniZebraArms5191} from './osm-armadni-zebra-arms-5191.js';
+import {createRoadClearance} from './road-clearance.js';
+import {planZebraPieces,isCarriageway} from './reality-walkways.js';
 import {ARMADNI_REFUGE_5190 as C,planArmadniRefuge5190,
  renderArmadniRefuge5190} from './osm-armadni-refuge-island-5190.js';
 
@@ -96,8 +99,70 @@ for(const text of [
  'renderArmadniRefuge5190(THREE,{',
  'window.__miloviceArmadniRefugeRuntime5190=()=>',
  '20261120-armadni-osm-refuge-island-519000',
- "'?v=519000&streetAudit=armadni-refuge-5190'",
+ "'?v=519100&streetAudit=armadni-refuge-5190'",
  "'armadni-refuge-5190':{",
  'camera:{lat:50.2293347,lon:14.8659125},heading:180'
 ])assert(html.includes(text),'missing actual 3D game integration: '+text);
+// 5.191: the ORIGINAL 3-node footway must be represented by two painted
+// approaches, with NO stripe reaching the source-confirmed centre refuge.
+const modelClearance=createRoadClearance();
+for(const way of es){
+ const kind=way.tags?.highway;
+ if(!isCarriageway(kind)||!way.geometry)continue;
+ const width=kind==='primary'?11:kind==='secondary'?9:
+  kind==='tertiary'?8:kind==='service'?4.5:7.8;
+ modelClearance.addRoad({id:way.id,kind,width,
+  points:way.geometry.map(toWorld)});
+}
+const oldBars=planZebraPieces(crossing.geometry.map(toWorld),modelClearance);
+const arms=planArmadniZebraArms5191({
+ islandPlan:p,crossing,toWorld,carriageway:modelClearance,planZebraPieces
+});
+assert(arms,'two original source-way halves must contain painted bars');
+assert.equal(arms.version,'5.191');
+assert.equal(arms.sourceCrossingId,C.crossingId);
+assert.equal(arms.sourceRoadId,C.roadId);
+assert.equal(arms.northBars,3);
+assert.equal(arms.southBars,3);
+assert.equal(arms.removedFromIslandArea,1);
+assert.equal(oldBars.length,7);
+assert.equal(arms.pieces.length,6);
+assert.equal(arms.allBarsOnApproaches,true);
+assert.equal(arms.originalCrossingVerticesPreserved,true);
+assert.equal(arms.paintSpacingNotPhotoVerified,true);
+assert(arms.minimumPaintEdgeGapMetres>p.modelWidthMeters*.5+.07,
+ 'no paint edge overlaps the 5.190 modeled island');
+const mid=toWorld(crossing.geometry[1]);
+for(const bar of arms.pieces){
+ const x=(bar.a.x+bar.b.x)/2,z=(bar.a.z+bar.b.z)/2;
+ const nearest=modelClearance.nearest(x,z);
+ assert(nearest&&isCarriageway(nearest.kind)&&nearest.clearance<-.25);
+ const centerDistance=Math.abs((x-mid.x)*p.pedestrianAxis.x+
+  (z-mid.y)*p.pedestrianAxis.z);
+ assert(centerDistance-bar.width*.5>p.modelWidthMeters*.5+.07);
+}
+for(const key of ['newOSMWays','newRoads','newColliders'])
+ assert.equal(arms[key],0);
+for(const variant of [
+ {islandPlan:{...p,version:'5.999'}},
+ {islandPlan:{...p,modelWidthMeters:10}},
+ {crossing:{...crossing,tags:{...crossing.tags,'crossing:island':'no'}}},
+ {crossing:{...crossing,geometry:crossing.geometry.map((pt,i)=>
+  i===1?{...pt,lat:pt.lat+.0000001}:pt)}},
+ {carriageway:{nearest:()=>null}},
+ {planZebraPieces:()=>[]}
+])assert.equal(planArmadniZebraArms5191({
+ islandPlan:p,crossing,toWorld,carriageway:modelClearance,planZebraPieces,
+ ...variant
+}),null);
+for(const needle of [
+ "from './scripts/osm-armadni-zebra-arms-5191.js?v=519100'",
+ 'planArmadniZebraArms5191({',
+ 'const pieces=armadniZebraArms5191?.pieces||unsegmentedZebraPieces5191;',
+ 'window.__miloviceArmadniZebraArmsRuntime5191=()=>',
+ '20261120-armadni-split-zebra-519100'
+])assert(html.includes(needle),'missing actual 5.191 zebra integration: '+needle);
+assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),
+ source,'OSM source bytes unchanged after split model');
+console.log('PASS 5.191: Armádní crossing split into 3+3 V7a stripes around OSM median, no GPS/road or collider changes');
 console.log('PASS 5.190: original OSM center for Armádní crossing island; 24 triangles in one nonblocking mesh');
