@@ -74,7 +74,7 @@ assert.equal(rendered.visibleAfterLOD(),0);
 assert.equal(JSON.stringify([buildings,roads]),before);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const str of [
- "from './scripts/osm-topolova-estimated-facades-5161.js?v=516100'",
+ "from './scripts/osm-topolova-estimated-facades-5161.js?v=518400'",
  'const topolovaInferredPlan=planTopolovaEstimatedFacades5161({',
  'renderTopolovaEstimatedFacades5161(THREE,{',
  'if(window.__miloviceTopolovaInferredPlan?.facadeEdgesById[String(osmId)]?.includes(i)){',
