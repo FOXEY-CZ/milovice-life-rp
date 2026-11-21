@@ -33,6 +33,54 @@ function safePose(p,road,width,length,margin){
  const maxCornerDistance=Math.max(...clearance);
  return {maxCornerDistance,passes:maxCornerDistance+margin<=2.5};
 }
+// The 5m road itself is nearly straight. Its source-locked connections
+// to mapped Italska and Kastanova are the actual high-angle turns.
+// This is a topology/angle audit, NOT swept-body or curb validation.
+export function inspectItalskaJunctionAngles5254({roadPlan,segments}={}){
+ const all=Array.isArray(segments)?segments:[];
+ const road=all.filter(s=>narrowItalskaRoad5253(roadPlan,s)&&
+  finite(s.a)&&finite(s.b));
+ if(!road.length)return {ready:false,sourceLocked:false,
+  mappedTurnOptions:0,originalGpsUnchanged:true};
+ const ends=[
+  {street:'Italská',neighborId:'8585601',
+   junction:road[0].a,inward:road[0].b},
+  {street:'Kaštanová',neighborId:'1107814416',
+   junction:road[road.length-1].b,inward:road[road.length-1].a}
+ ];
+ const arms=[];
+ for(const end of ends){
+  const vx=end.inward.x-end.junction.x;
+  const vy=end.inward.y-end.junction.y;
+  const len=Math.hypot(vx,vy);
+  if(len<.1)continue;
+  for(const seg of all){
+   if(String(seg?.osmId)!==end.neighborId||
+      seg?.kind!=='residential'||!finite(seg.a)||!finite(seg.b))
+    continue;
+   let outside=null;
+   if(Math.hypot(seg.a.x-end.junction.x,seg.a.y-end.junction.y)<.05)
+    outside=seg.b;
+   else if(Math.hypot(seg.b.x-end.junction.x,seg.b.y-end.junction.y)<.05)
+    outside=seg.a;
+   if(!outside)continue;
+   const ux=outside.x-end.junction.x,uy=outside.y-end.junction.y;
+   const ul=Math.hypot(ux,uy);
+   if(ul<.1)continue;
+   const cosine=Math.max(-1,Math.min(1,(vx*ux+vy*uy)/(len*ul)));
+   const turn=180-Math.acos(cosine)*180/Math.PI;
+   arms.push({street:end.street,neighborOSMId:end.neighborId,
+    turnAngleDegrees:+turn.toFixed(2)});
+  }
+ }
+ return {ready:arms.length===4,sourceLocked:true,
+  sourceRoadOSMId:'8590284',originalGpsUnchanged:true,
+  mappedTurnOptions:arms.length,
+  turnsOver75Degrees:arms.filter(a=>a.turnAngleDegrees>75).length,
+  maxTurnDegrees:Math.max(0,...arms.map(a=>a.turnAngleDegrees)),
+  arms,physicalSteeringVerified:false,
+  intersectionClearanceVerified:false};
+}
 export function inspectItalskaTurnEnvelope5254({
  roadPlan,segments,modelWidth=2*(1.81*.56+.03),modelLength=5.08,
  margin=0.10
@@ -77,6 +125,7 @@ export function inspectItalskaTurnEnvelope5254({
   firstFailure:failing[0]||null,modelWidthMetres:modelWidth,
   modelLengthMetres:modelLength,safetyMarginMetres:margin,
   modelCorridorHalfWidthMetres:2.5,
+  junctions:inspectItalskaJunctionAngles5254({roadPlan,segments}),
   // Circular buffered-centerline corridor is more permissive than square
   // mesh joins, so passing is only a candidate, never a certification.
   centerlineBufferProxyOnly:true,actualRoadMeshNotVerified:true,
