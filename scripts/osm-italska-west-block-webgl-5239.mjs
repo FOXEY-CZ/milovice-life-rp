@@ -57,6 +57,15 @@ try{
  assert(traffic.publicTrafficSegments>0);
  assert.equal(traffic.roadsAndCollisionsUnchanged,true);
  assert.equal(traffic.playerMovementUnchanged,true);
+ const continuity=await page.evaluate(()=>
+  window.__miloviceTrafficContinuityRuntime5241?.());
+ assert(continuity?.ready,'connected traffic graph and source road must be ready');
+ assert(continuity.npcGraphCount>0);
+ assert.equal(continuity.visibleTeleports,0,
+  'never jump cars between noncontiguous roads inside camera view');
+ assert.equal(continuity.originalOSMRoadsPreserved,true);
+ assert.equal(continuity.physicalCollidersChanged,false);
+ assert.equal(continuity.newRoads,0);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/italska-west-block-5239-mobile.png'});
