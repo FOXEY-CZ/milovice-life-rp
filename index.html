@@ -8964,7 +8964,8 @@ function rpAppendOSMElements(elements,regionId='old'){
  // footways, clipped against the SAME carriageway index as pavement.
  // This adds no geometry; all regional chunks append only new OSM ways.
  osmAmbientPedestrianSegments5243.push(...planMappedAmbientSegments5243({
-  ways:roadWays,regionId,widths:roadWidths,toWorld:osmPoint,
+  ways:roadWays,buildings:buildingWays,regionId,
+  widths:roadWidths,toWorld:osmPoint,
   clip:safePedestrianPieces,carriageway:osmCarriagewayClearance
  }));
  // 5.195: one batched physical trim on two verified OSM service lanes
