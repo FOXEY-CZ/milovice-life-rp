@@ -8468,7 +8468,9 @@ function rpAppendOSMElements(elements,regionId='old'){
  const visnovaLongPlan5228=planVisnovaLongSidewalk5228(regionId,roadWays);
  if(visnovaLongPlan5228){
   const audit=window.__miloviceVisnovaLongAudit5228={
-   ...visnovaLongPlan5228,encounteredSourceIds:[],renderedOriginalSegments:0
+   ...visnovaLongPlan5228,encounteredSourceIds:[],renderedOriginalSegments:0,
+   processedSourceEdges:0,drawnSourceEdges:0,fullyGuardedSourceEdges:0,
+   duplicateSourceEdges:0,unclassifiedSourceEdges:0,sourceEdgeSafetyAudit:[]
   };
   window.__miloviceVisnovaLongRuntime5228=()=>{
    const priorWest=window.__miloviceVisnovaEstatePaversAudit5220;
@@ -8476,7 +8478,10 @@ function rpAppendOSMElements(elements,regionId='old'){
    return {...audit,
     ready:window.__miloviceAreasLoaded?.includes('mlada')===true&&
      audit.encounteredSourceIds.length===3&&
-     audit.renderedOriginalSegments===audit.neutralOriginalSegments&&
+     audit.processedSourceEdges===audit.neutralOriginalSegments&&
+     audit.sourceEdgeSafetyAudit.length===audit.neutralOriginalSegments&&
+     audit.drawnSourceEdges>0&&audit.renderedOriginalSegments===6&&
+     audit.unclassifiedSourceEdges===0&&
      priorWest?.sourceWayIds?.includes('1005977571')===true&&
      priorEast?.sourceWayIds?.includes('1044078121')===true&&
      Boolean(osmMappedSurfaceMaterials[audit.neutralMaterial]),
@@ -8932,8 +8937,6 @@ function rpAppendOSMElements(elements,regionId='old'){
   }
   const prubeznaDrawBefore=(prubeznaPaver||prubeznaResurfaced||prubeznaLink||sportovniSidewalk||visnovaService5211)?
    osmSurfaceAudit.drawnSegments:0;
-  const visnovaLongDrawBefore5228=visnovaLongNeutral5228?
-   osmSurfaceAudit.drawnSegments:0;
   const lesniEastDrawBefore5227=lesniEastNeutral5227?
    osmSurfaceAudit.drawnSegments:0;
   const lesniBranchesDrawBefore5226=lesniBranchesNeutral5226?
@@ -8957,12 +8960,37 @@ function rpAppendOSMElements(elements,regionId='old'){
     sidewalkGeometryStats.photoOuterFootwaySegmentsReplaced++;
     continue;
    }
+   // 5.228.1: audit source centreline edges separately from actual rendered
+   // SAFE pieces. The carriageway guard can intentionally suppress some
+   // original footway intervals; forcing all ten over asphalt is unsafe.
+   const beforeLong5228=visnovaLongNeutral5228?{
+    drawn:osmSurfaceAudit.drawnSegments,
+    clipped:sidewalkGeometryStats.clippedByCarriageway,
+    duplicate:sidewalkGeometryStats.duplicateWaySegmentsSkipped
+   }:null;
    osmRoadSegment(points[i-1],points[i],width,kind,surfacePlan);
+   if(beforeLong5228){
+    const a=window.__miloviceVisnovaLongAudit5228,
+     drawn=osmSurfaceAudit.drawnSegments-beforeLong5228.drawn,
+     guarded=sidewalkGeometryStats.clippedByCarriageway-beforeLong5228.clipped,
+     duplicate=sidewalkGeometryStats.duplicateWaySegmentsSkipped-beforeLong5228.duplicate;
+    a.processedSourceEdges++;
+    a.renderedOriginalSegments+=drawn;
+    if(drawn>0)a.drawnSourceEdges++;
+    else if(guarded>0)a.fullyGuardedSourceEdges++;
+    else if(duplicate>0)a.duplicateSourceEdges++;
+    else a.unclassifiedSourceEdges++;
+    a.sourceEdgeSafetyAudit.push({
+     edgeIndex:i,renderedSafePieces:drawn,
+     carriagewayClipReported:guarded>0,
+     deduplicatedPieces:duplicate,
+     outcome:drawn>0?'drawn-safe-piece':
+      guarded>0?'carriageway-guard':
+      duplicate>0?'deduped':'unexpected-missing'
+    });
+   }
    // Unsafe per-segment roadside object generator is disabled.
   }
-  if(visnovaLongNeutral5228)
-   window.__miloviceVisnovaLongAudit5228.renderedOriginalSegments+=
-    osmSurfaceAudit.drawnSegments-visnovaLongDrawBefore5228;
   if(lesniEastNeutral5227)
    window.__miloviceLesniEastAudit5227.renderedOriginalSegments+=
     osmSurfaceAudit.drawnSegments-lesniEastDrawBefore5227;
