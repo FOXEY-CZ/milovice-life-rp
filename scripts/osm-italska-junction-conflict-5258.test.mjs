@@ -64,6 +64,47 @@ assert.equal(caps.has(8),false,'Release only after clearing node');
 assert.equal(zone.ownerId,8);
 assert(model.audit().yieldFrames>=3);
 assert(model.audit().fullStops>=2);
+// Multi-frame approach using the actual source OSM branches (traffic-only
+// model, not a running browser or a physical collision certification).
+const frameModel=createItalskaJunctionGuard5258({roadPlan,segments:all});
+const frameZone=frameModel.zones[0];
+const frameNarrow=frameZone.arms.find(a=>a.segment.osmId===8590284).segment;
+const frameCross=frameZone.arms.find(a=>a.segment.osmId===8585601).segment;
+const leader=actor(101,frameNarrow,frameZone.node,12,true,6);
+const follower=actor(102,frameCross,frameZone.node,13,true,6);
+const frameDt=.1;
+const distanceToNode=(car,segment)=>{
+ const atBeginning=start(segment,frameZone.node);
+ return (atBeginning?car.progress:1-car.progress)*segment.len;
+};
+let framesYielded=0,minimumFollowerDistance=Infinity;
+for(let frame=0;frame<28;frame++){
+ const frameCaps=frameModel.evaluate([leader,follower]);
+ const allowance=Math.min(leader.speed*frameDt,frameCaps.get(leader.id)??Infinity);
+ leader.progress+=leader.direction*allowance/leader.seg.len;
+ const otherAllowance=Math.min(follower.speed*frameDt,
+  frameCaps.get(follower.id)??Infinity);
+ follower.progress+=follower.direction*otherAllowance/follower.seg.len;
+ const remaining=distanceToNode(follower,frameCross);
+ minimumFollowerDistance=Math.min(minimumFollowerDistance,remaining);
+ if(frameCaps.has(follower.id))framesYielded++;
+ assert(remaining>=C.stopCenterMetres-1e-6,
+  'Conflicting NPC must remain outside the model stop line while first approaches');
+}
+assert(framesYielded>=20,'Both NPCs should interact during successive snapshots');
+assert(Math.abs(minimumFollowerDistance-C.stopCenterMetres)<.001,
+ 'Conflicting NPC should reach the hold position without crossing it');
+assert.equal(frameZone.ownerId,leader.id,'Reservation stays with first approaching NPC');
+// Simulate the same leader having passed through to a mapped outbound arm.
+const frameExit=frameZone.arms.find(a=>a.segment.osmId===8585601&&
+ a.segment!==frameCross).segment;
+leader.seg=frameExit;
+leader.direction=start(frameExit,frameZone.node)?1:-1;
+leader.progress=start(frameExit,frameZone.node)?10/frameExit.len:1-10/frameExit.len;
+const afterExit=frameModel.evaluate([leader,follower]);
+assert.equal(afterExit.has(follower.id),false,
+ 'Second NPC can resume after leader is more than 9m beyond mapped node');
+assert.equal(frameZone.ownerId,follower.id);
 const busModel=createItalskaJunctionGuard5258({roadPlan,segments:all});
 const car=actor(10,n,zone.node,6.4,true,5),
  bus={...actor(20,branch,zone.node,9,true,3),service:'432'};
