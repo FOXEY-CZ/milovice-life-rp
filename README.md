@@ -1,3 +1,13 @@
+## Milovice RP 5.240 — Italská: správný přístup civilní dopravy na původních OSM cestách (21. 11. 2026)
+
+Běžná auta NPC nyní respektují přístupová omezení původních mapovaných silnic: **motor_vehicle, vehicle, access** (například no, private, permit, destination) a výslovné service=emergency_access. Předchozí graf používal jen základní access a některé náhodně řízené automobily mohl směrovat na cesty, kde veřejný motorový provoz není povolen. **Mění se pouze civilní NPC routing**, nikoli samotné mapové silnice: hráč, povrchy, budovy, kolize a původní GPS zůstávají beze změny.
+
+Konkrétní zdroj: [požární přístupová komunikace OSM 1272081401](https://www.openstreetmap.org/way/1272081401) u Italské (highway=service, motor_vehicle=permit, service=emergency_access, emergency=designated). Originální **9bodová GPS trasa, hash 01f91763 a délka 86,464 m** zůstávají součástí mapy, ale náhodná civilní auta ji nemají ve svém silničním grafu. Nejsou přidány nové silnice, chodníky, bariéry, značení, kolize ani požární auta. Jde o **OSM zdroj, ne fotoověření vzhledu**.
+
+Zdrojové pojistky: scripts/osm-traffic-access-5240.js, scripts/osm-traffic-access-5240.test.mjs, window.__miloviceTrafficAccessRuntime5240() a rychlý příkaz node scripts/dev-check.mjs italska. Stávající mobilní Chromium/SwiftShader test bloku Italské 5.239 navíc kontroluje, že je původní cesta stále na mapě, ale není v civilním grafu. **CI a GitHub Pages této revize zatím nebyly potvrzené jako úspěšné.**
+
+---
+
 ## Milovice RP 5.235 — Italská: dva velké obytné domy, 6 + 3 podlaží (21. 11. 2026)
 
 Nové source-locked fasády na **dvou původních RÚIAN/OSM obytných domech** v okolí Italské. Nejde o nové domy ani nové zdi: pro skutečné [OSM 61979295](https://www.openstreetmap.org/way/61979295) jsou původně mapována **6 podlaží, 56 bytů**, RÚIAN **27222098**, 25 GPS uzlů, hash `ed941342`, půdorys přibližně **1178,715 m²**; pro [OSM 53865838](https://www.openstreetmap.org/way/53865838) jde o **3 podlaží, 33 bytů**, RÚIAN **26207796**, 19 uzlů, hash `91432581`, půdorys přibližně **1171,235 m²**. Přesné půdorysy a původní OSM počet podlaží se nemění.
