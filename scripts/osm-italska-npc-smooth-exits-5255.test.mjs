@@ -94,5 +94,7 @@ for(const token of [
  'advanceItalskaSmoothNpcExit5255(',
  'window.__miloviceItalskaSmoothNpcRuntime5255=()=>'
 ])assert(html.includes(token),'Missing 5.255 game integration: '+token);
+assert(html.includes('Math.min(movingMetres,dt*3.25)'),
+ 'Smooth NPC junction must keep conservative 3.25 m/s modeled corner pace');
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),raw);
 console.log('PASS 5.255: two verified OSM NPC exit curves smooth, two unsafe exits unchanged, original sidewalk and GPS intact');
