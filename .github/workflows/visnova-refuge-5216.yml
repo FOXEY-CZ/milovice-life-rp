@@ -1,0 +1,40 @@
+name: Milovice 5.216 mapped Višňová Armádní refuge island and zebra WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - data/regions/mlada.json
+      - scripts/osm-visnova-refuge-5216.js
+      - scripts/osm-visnova-refuge-5216.test.mjs
+      - scripts/osm-visnova-refuge-webgl-5216.mjs
+      - scripts/osm-visnova-continuous-walker-5215.test.mjs
+      - .github/workflows/visnova-refuge-5216.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify real original OSM island geometry and 5.215 predecessor
+        run: |
+          node scripts/osm-visnova-continuous-walker-5215.test.mjs
+          node scripts/osm-visnova-refuge-5216.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Mobile Chromium real WebGL source-locked zebra and refuge
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-visnova-refuge-webgl-5216.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visnova-refuge-5216
+          path: browser-artifacts/visnova-refuge-5216-mobile.png
+          if-no-files-found: ignore
