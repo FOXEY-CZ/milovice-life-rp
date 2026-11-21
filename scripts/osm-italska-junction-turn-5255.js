@@ -63,12 +63,16 @@ const straightPose=(seg,dir,metres)=>{
  return {x:a.x+vx*metres,y:a.y+vy*metres,yaw:heading(seg,dir)};
 };
 function blendPose(turn,metres){
- const d=clamp(metres,0,TURN_METRES),t=d/TURN_METRES;
- const ease=t*t*(3-2*t);
- const next=straightPose(turn.to,turn.nextDirection,d);
- return {x:next.x+(turn.oldAnchor.x-turn.newAnchor.x)*(1-ease),
-  y:next.y+(turn.oldAnchor.y-turn.newAnchor.y)*(1-ease),
-  yaw:turn.fromYaw+angleDelta(turn.fromYaw,turn.toYaw)*ease};
+ // A cubic Hermite-like Bezier has the *actual incoming tangent* at its
+ // first point and the mapped departing tangent at its final point.
+ // It prevents the heading/velocity disagreement of linear lane snapping.
+ const t=clamp(metres/TURN_METRES,0,1),q=1-t;
+ const [p0,p1,p2,p3]=turn.bezier;
+ const x=q*q*q*p0.x+3*q*q*t*p1.x+3*q*t*t*p2.x+t*t*t*p3.x;
+ const y=q*q*q*p0.y+3*q*q*t*p1.y+3*q*t*t*p2.y+t*t*t*p3.y;
+ const vx=3*q*q*(p1.x-p0.x)+6*q*t*(p2.x-p1.x)+3*t*t*(p3.x-p2.x);
+ const vy=3*q*q*(p1.y-p0.y)+6*q*t*(p2.y-p1.y)+3*t*t*(p3.y-p2.y);
+ return {x,y,yaw:Math.atan2(-vx,-vy)};
 }
 function cornersClear(pose,from,to,width,length,margin){
  const forward={x:-Math.sin(pose.yaw),y:-Math.cos(pose.y)};
@@ -98,18 +102,35 @@ export function planItalskaTurn5255({
   turnMetres:TURN_METRES,speedCapMps:MODEL_TURN_SPEED_MPS,
   physicalSteeringVerified:false,roadMeshCollisionVerified:false,
   renderedCurveOnly:true};
+ const end=straightPose(to,nextDirection,TURN_METRES);
+ const incoming={x:(from.b.x-from.a.x)*direction/from.len,
+  y:(from.b.y-from.a.y)*direction/from.len};
+ const outgoing={x:(to.b.x-to.a.x)*nextDirection/to.len,
+  y:(to.b.y-to.a.y)*nextDirection/to.len};
+ const tangentialMetres=1.8; // estimated visual control, NOT surveyed radius
+ candidate.bezier=[
+  {x:candidate.oldAnchor.x,y:candidate.oldAnchor.y},
+  {x:candidate.oldAnchor.x+incoming.x*tangentialMetres,
+   y:candidate.oldAnchor.y+incoming.y*tangentialMetres},
+  {x:end.x-outgoing.x*tangentialMetres,
+   y:end.y-outgoing.y*tangentialMetres},
+  {x:end.x,y:end.y}
+ ];
  if(!(modelWidth>0&&modelWidth<=2.4&&modelLength>=3.5&&modelLength<=5.1))
   return {...candidate,visualBlendSafe:false,checkedBodySamples:0};
  const n=24;
- let passed=true;
+ let passed=true,checked=0,arc=0,previous=null;
  for(let i=0;i<=n;i++){
   const pose=blendPose(candidate,TURN_METRES*i/n);
+  if(previous)arc+=Math.hypot(pose.x-previous.x,pose.y-previous.y);
+  previous=pose;checked++;
   if(!cornersClear(pose,from,to,modelWidth,modelLength,.1)){
    passed=false;break;
   }
  }
  return {...candidate,visualBlendSafe:passed,
-  checkedBodySamples:n+1,
+  checkedBodySamples:checked,
+  visualPathLengthMetres:passed?arc:null,
   modelRoadTubeProxyOnly:true};
 }
 export function sampleItalskaTurn5255({turn,segment,direction,progress}={}){
@@ -123,8 +144,13 @@ export function capItalskaExit5255({turn,segment,direction,progress}={}){
  if(!turn?.sourceLocked||turn.to!==segment||
   turn.nextDirection!==direction)return Infinity;
  const distance=traveled(segment,direction,progress);
- return distance>=0&&distance<=APPROACH_METRES?
-  MODEL_TURN_SPEED_MPS:Infinity;
+ if(!(distance>=0&&distance<=APPROACH_METRES))return Infinity;
+ // The Bezier arc can be longer than the four metres of road progress;
+ // scale the exit rate to keep the actual visual motion <= model cap.
+ if(distance<TURN_METRES&&turn.visualBlendSafe&&
+   turn.visualPathLengthMetres>TURN_METRES)
+  return MODEL_TURN_SPEED_MPS*TURN_METRES/turn.visualPathLengthMetres;
+ return MODEL_TURN_SPEED_MPS;
 }
 export const ITALSKA_TURN_MOTION_5255=Object.freeze({
  speedCapMps:MODEL_TURN_SPEED_MPS,turnMetres:TURN_METRES,
