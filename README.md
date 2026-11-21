@@ -1,3 +1,13 @@
+## Milovice RP 5.248 — detail nástupišť podle originálních OSM obrysů (21. 11. 2026)
+
+**Viditelná oprava u nádraží:** Žlutý hmatový pás a úzký obrubník se předtím kladly na celou hranu nástupiště, jakmile **prostředek** hrany ležel poblíž kolejí. Při dlouhých hranách a výřezech půdorysu to nemuselo platit po celé délce. Nová verze přísně kontroluje každý úsek do **70 cm** oproti originálním OSM obrysům obou nástupišť `549346219` a `994855884` a skutečným mapovaným kolejím. Průběžně hlídá, aby žlutá dlažba **nepřečnívala mimo polygon nástupiště** (včetně zalomení a vykousnutých částí) a aby hrana skutečně byla u trati. Sousední prověřené části se zase spojí do dlouhých 3D pásů kvůli mobilnímu výkonu.
+
+Na aktuálním originálním exportu Mladá je výsledkem **26 smysluplně spojených pásů o souhrnné délce přibližně 501 m**. Oproti předchozímu algoritmu nejde o změnu GPS, tvaru či výšky nástupiště, budovy, kolejí, střechy, fyzických kolizí ani polohy nádraží. Stávající žlutý povrch je **foto-inspirovaná modelová textura**; přesný materiál a rozměry reálné dlažby tím nejsou potvrzeny.
+
+Kód: `scripts/osm-station-platform-edging-5248.js`, zdrojově uzamčený test `scripts/osm-station-platform-edging-5248.test.mjs`, `node scripts/dev-check.mjs nadrazi`, `station-photo-webgl.yml` (Node + Chromium/SwiftShader). Herní diagnostika: `window.__milovicePlatformEdgingRuntime5248()`. [Otevřít Milovice RP u nádraží](https://foxey-cz.github.io/milovice-life-rp/?v=524800). **GitHub CI, mobilní/desktop Chromium a Pages deployment zatím nemají potvrzený PASS.**
+
+---
+
 ## Milovice RP 5.247 — chodci už neprojdou ani úzkým zásahem silnice mezi kontrolními body (21. 11. 2026)
 
 V předchozí verzi se průběžně ověřovaly všechny původní hrany budov, ale vzdálenost běžného modelového chodce od silnice se kontrolovala v **pěti bodových vzorcích** na fragmentu. Menší vozovka přesně mezi dvěma vzorky mohla uniknout. **5.247 posuzuje každé místo celé pěší trasy proti existujícím modelovaným šířkám skutečných OSM vozovek:** rozděluje každou trasu na úseky do 0,7 m a kontroluje jejich střed s konzervativním odstupem rozšířeným o půl délky úseku. Matematicky tak zajistí bezpečnost celé středové čáry chodce, nejen bodů.
