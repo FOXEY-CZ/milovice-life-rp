@@ -1,4 +1,4 @@
-name: Milovice 5.235 original Italska two apartment blocks mobile WebGL
+name: Milovice 5.239 source-locked Italska blocks mobile WebGL
 on:
   push:
     paths:
@@ -8,6 +8,10 @@ on:
       - scripts/osm-italska-apartments-5235.test.mjs
       - scripts/osm-italska-tower-5238.js
       - scripts/osm-italska-tower-5238.test.mjs
+      - scripts/osm-italska-tower-webgl-5238.mjs
+      - scripts/osm-italska-west-block-5239.js
+      - scripts/osm-italska-west-block-5239.test.mjs
+      - scripts/osm-italska-west-block-webgl-5239.mjs
       - scripts/osm-italska-apartments-webgl-5235.mjs
       - scripts/osm-visnova-residential-5192.js
       - scripts/osm-visnova-residential-5192.test.mjs
@@ -29,6 +33,7 @@ jobs:
           node scripts/osm-visnova-residential-5192.test.mjs
           node scripts/osm-italska-apartments-5235.test.mjs
           node scripts/osm-italska-tower-5238.test.mjs
+          node scripts/osm-italska-west-block-5239.test.mjs
           node scripts/osm-italska-walkers-5234.test.mjs
       - run: npm install --no-save --no-package-lock playwright-core
       - name: Actual mobile Chromium SwiftShader facade drawing and 6.5s LOD
@@ -37,9 +42,14 @@ jobs:
         run: |
           python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
           node scripts/osm-italska-apartments-webgl-5235.mjs
+          node scripts/osm-italska-tower-webgl-5238.mjs
+          node scripts/osm-italska-west-block-webgl-5239.mjs
       - if: always()
         uses: actions/upload-artifact@v4
         with:
           name: italska-apartments-5235
-          path: browser-artifacts/italska-apartments-5235-mobile.png
+          path: |
+            browser-artifacts/italska-apartments-5235-mobile.png
+            browser-artifacts/italska-tower-5238-mobile.png
+            browser-artifacts/italska-west-block-5239-mobile.png
           if-no-files-found: ignore
