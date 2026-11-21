@@ -51,7 +51,8 @@ export function inspectItalskaCurveSweep5255(p){
   centerlineBufferProxyOnly:true,actualAsphaltMeshVerified:false,
   physicalSteeringVerified:false};
 }
-export function planItalskaNpcTurn5255({roadPlan,from,fromDirection,to,toDirection,car}={}){
+export function planItalskaNpcTurn5255({roadPlan,from,fromDirection,to,toDirection,car,candidateGate=null}={}){
+ if(candidateGate!==null&&typeof candidateGate!=='function')return null;
  if(!car||car.driven!==false||car.parked===true||
   car.service||car.wideModel5254===true||
   !narrowItalskaRoad5253(roadPlan,from)||
@@ -77,7 +78,8 @@ export function planItalskaNpcTurn5255({roadPlan,from,fromDirection,to,toDirecti
    const attempt={from,to,toDirection,metres,p0,p3,
     p1:add(p0,incoming,metres*gain),p2:add(p3,outgoing,-metres*gain)};
    const check=inspectItalskaCurveSweep5255(attempt);
-   if(check.accepted&&check.reserveMetres>mostReserve){
+   if(check.accepted&&check.reserveMetres>mostReserve&&
+   (!candidateGate||candidateGate(attempt))){
     mostReserve=check.reserveMetres;
     best={...attempt,sourceOSMId:'8590284',
      namedOSMId:String(to.osmId),angleDegrees:+angle.toFixed(2),
