@@ -25,6 +25,8 @@ on:
       - scripts/osm-ambient-reuse-5244.test.mjs
       - scripts/osm-ambient-building-clearance-5245.js
       - scripts/osm-ambient-building-clearance-5245.test.mjs
+      - scripts/osm-italska-junction-smoothing-5255.js
+      - scripts/osm-italska-junction-smoothing-5255.test.mjs
       - scripts/osm-italska-turn-envelope-5254.js
       - scripts/osm-italska-turn-envelope-5254.test.mjs
       - scripts/osm-italska-car-clearance-5254.js
@@ -63,6 +65,8 @@ on:
       - scripts/osm-mapped-ambient-walkers-5243.js
       - scripts/osm-mapped-ambient-walkers-5243.test.mjs
       - scripts/osm-italska-west-residence-webgl-5242.mjs
+      - scripts/osm-italska-junction-smoothing-5255.js
+      - scripts/osm-italska-junction-smoothing-5255.test.mjs
       - scripts/osm-italska-turn-envelope-5254.js
       - scripts/osm-italska-turn-envelope-5254.test.mjs
       - scripts/osm-italska-car-clearance-5254.js
@@ -97,6 +101,7 @@ jobs:
           node-version: '22'
       - name: Check both Italska blocks, material cache and original Visnova facades
         run: |
+          node scripts/osm-italska-junction-smoothing-5255.test.mjs
           node scripts/osm-italska-turn-envelope-5254.test.mjs
           node scripts/osm-italska-car-clearance-5254.test.mjs
           node scripts/osm-italska-narrow-npc-5253.test.mjs
