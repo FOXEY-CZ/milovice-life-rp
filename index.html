@@ -11393,7 +11393,7 @@ function improveMiloviceVisuals(){
  // Both their ground planes and their contours already exist; use only
  // estimated close-up grass sprites, clipped by ALL mapped street/footway,
  // building and water clearances. No invented plantations or new polygons.
- const courtyardPlan5231=planLesniCourtyardLawns5231(osmPlaygroundLawnWays,{
+ const courtyardPlan5231=planLesniCourtyardLawns5231(lesniCourtyardGrassSource5231,{
   regionId:'mlada',toWorld:osmPoint,
   roads:osmCarriagewayClearance,pedestrians:osmPedestrianClearance,
   buildings:taggedSidewalkBuildings,water:osmWaterVegetationClearance,
