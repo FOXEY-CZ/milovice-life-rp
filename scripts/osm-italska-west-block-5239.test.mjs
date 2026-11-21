@@ -75,5 +75,6 @@ const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const runtime=html.match(/const BUILD_ID='([^']+)'/)?.[1];
 const hud=html.split('id="build-label">')[1]?.split('</strong>')[0];
 assert(meta&&meta===runtime&&runtime===hud);
-assert(html.includes('Verze 5.239'));
+assert(Number(html.match(/Verze 5[.]([0-9]+)/)?.[1])>=239,
+ 'future game versions must keep the original 5.239 facade');
 console.log('PASS 5.239: RUIAN 2-floor / 38 flats original shell, 68 unsurveyed model windows, zero new roads/volumes');
