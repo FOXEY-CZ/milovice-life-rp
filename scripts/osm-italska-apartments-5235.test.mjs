@@ -154,6 +154,7 @@ const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const runtime=html.match(/const BUILD_ID='([^']+)'/)?.[1];
 const hud=html.split('id="build-label">')[1]?.split('</strong>')[0];
 assert(meta&&meta===runtime&&runtime===hud);
-assert(html.includes('Verze 5.235'));
+assert(Number(html.match(/Verze (\\d+)\\.(\\d+)/)?.[2])>=235,
+ 'later HUD versions must preserve the 5.235 facade integration');
 console.log('PASS 5.235 original Italska two RUIAN block shells, '+windows+
  ' explicitly unverified model windows / '+triangles+' triangles, no new building volumes');
