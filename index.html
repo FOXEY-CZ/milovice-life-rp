@@ -6860,8 +6860,12 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
  const baseWallMat=isArmClinic?clinicPhotoWalls:tags.shop==='supermarket'?(tags.name==='Tesco'?tescoCorrugation:tags.name==='Penny'?pennyFacade:groceryCladding):isBlueStar?blueStarWalls:isMirova36?mirova36Walls:isGrocer74?grocerWalls:isSchool?schoolWalls:isChurch?churchWalls:isStation?stationWalls:isPhotoGarage?garagePhotoWalls:isGarage?garageWalls:isPanelBlock&&!topolovaMasonry?panelFacadeMaterials[braniborska?1:rakouska?3:(regionalStyle?.panelIndex??Math.abs(osmId||index)%panelFacadeMaterials.length)]:isCommerce?commerceFacadeMaterials[Math.abs(osmId||index)%commerceFacadeMaterials.length]:isIndustrial?workWalls:genericMasonryWall;
  if(topolovaMasonry)window.__miloviceTopolovaResidentialAudit.wallMaterialFromCSU=
   baseWallMat===genericMasonryWall;
+ // The legacy generic masonry map is tan, so merely tinting it white
+ // still produced beige walls in the actual mobile screenshot. A separate
+ // uniform matte plaster material is photo-closer and has no copied pixels.
  const wallMat=italskaVojenskeZatisiPlan5249?
-  localArchitectureMaterial(baseWallMat,italskaVojenskeZatisiPlan5249.wallHex):
+  new THREE.MeshStandardMaterial({color:italskaVojenskeZatisiPlan5249.wallHex,
+   roughness:.97,metalness:0}):
   visnovaTaggedPlan5217?visnovaTaggedMaterials5217.facade:
   topolova646Photo?localArchitectureMaterial(baseWallMat,'#e9ded2'):
   modelCard?.facadeColor?localArchitectureMaterial(baseWallMat,modelCard.facadeColor):baseWallMat;
