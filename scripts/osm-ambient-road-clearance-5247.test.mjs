@@ -93,8 +93,9 @@ for(const token of [
  "from './scripts/osm-ambient-continuity-5246.js?v=524700'",
  'roadCorridorClearance:(a,b)=>mappedFootwayAvoidsRoads5247(',
  'window.__miloviceMappedRoadCorridorRuntime5247=()=>',
- 'Verze 5.247'
 ])assert(html.includes(token),'missing 5.247 integration '+token);
+assert(Number(html.match(/Verze 5[.](\d+)/)?.[1])>=247,
+ 'Version must not regress below 5.247');
 const id=html.match(/const BUILD_ID='([^']+)'/)?.[1];
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const hud=html.split('id="build-label">')[1]?.split('</strong>')[0];
