@@ -1,3 +1,13 @@
+## Milovice RP 5.221 — další původní sedmipodlažní bytový dům na severovýchodní Višňové (21. 11. 2026)
+
+Pokračování **existující RÚIAN/OSM zástavby**: [budova 53866112](https://www.openstreetmap.org/way/53866112), oficiální RÚIAN `27246191`, má původní uzamčený 5uzlový půdorys (hash `4328a486`, cca 1790,88 m²), `building:levels=7`, `building:flats=69`, zdroj `cuzk:ruian` a `start_date=2009-03-25`. Již existující 3D stěny, střecha, DEM terén a fyzikální kolize **se nemění**. U původních čtyř obvodových hran dlouhých 42,084 / 42,496 / 42,334 / 42,363 m přidáváme pouze **schematický modelový rastr 12 oken na fasádu a podlaží**, tedy **336 výslovně odhadovaných oken**. Kompaktní čtyřmesh renderer 5.192 vytváří 4 vizuální meshe a 4712 trojúhelníků včetně modelového soklu.
+
+**Pozor na skutečnost:** skutečný počet/poloha/vzhled oken, materiály a podoba fasády **nejsou fotoověřené**; model se nesmí označit za architektonicky přesnou rekonstrukci. Nejsou přidány balkon, dveře, cesta, obrubník, parkoviště, strom, nová stavba, kolize ani úprava střechy. Modul `scripts/osm-visnova-north-block-5221.js` se při jakémkoli rozdílu OSM ID, RÚIAN, GPS hash, počtu podlaží, bytů, tagů nebo stran vypne (fail-closed). Kontrolní pohled `?v=522100&streetAudit=visnova-north-block-5221` je na originálním uzlu footway/1460019797 `50.2300221, 14.8705303`, azimut 10° je jen technický odhad, **nikoliv panorama**. Runtime `window.__miloviceVisnovaNorthBlockRuntime5221()` ověřuje skutečné připojení a LOD viditelnost modelových detailů.
+
+**Ověřování nové verze:** zdrojový Node test, regresní 5.220 a skutečný mobilní Chromium/SwiftShader WebGL test jsou připravené ve workflow `.github/workflows/visnova-north-block-5221.yml`. Výsledek CI a GitHub Pages je nutné **teprve odečíst ze skutečných běhů**; tento zápis sám o sobě nepotvrzuje jejich úspěch.
+
+---
+
 ## Milovice RP 5.220 — 372 metrů originálních dlážděných chodníků u východní Višňové (21. 11. 2026)
 
 Nová verze zlepšuje **ulici mezi původními bytovými bloky, nikoli další samostatnou budovu**. OSM [pěší cesta 1005977571](https://www.openstreetmap.org/way/1005977571) má 7 původních mapových uzlů, hash `263e12b3` a délku cca **301,17 m**; [pěší cesta 1057549994](https://www.openstreetmap.org/way/1057549994) má 6 původních uzlů, hash `02767378` a délku cca **70,465 m**. U obou původní OSM jednoznačně obsahuje `highway=footway`, `footway=sidewalk`, `lit=yes` a zejména **`surface=paving_stones`**. Jsou to dva samostatné mapové chodníky, nikoli nově vytvořené přímé spojení.
