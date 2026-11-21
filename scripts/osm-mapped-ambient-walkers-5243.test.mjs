@@ -85,7 +85,7 @@ for(const token of [
  'const osmAmbientPedestrianSegments5243=[];',
  'osmAmbientPedestrianSegments5243.push(...planMappedAmbientSegments5243({',
  'osmAmbientPedestrianSegments5243.length=0;',
- 'ways:roadWays,buildings:buildingWays,regionId,'
+ 'ways:roadWays,buildings:buildingWays,regionId,',
  "rpSpawnMappedAmbientWalkers5243('old',30);",
  'rpSpawnMappedAmbientWalkers5243(area.id,8,center);',
  'window.__miloviceMappedAmbientWalkersRuntime5243=()=>',
