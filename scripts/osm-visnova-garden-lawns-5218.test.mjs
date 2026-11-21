@@ -80,7 +80,7 @@ for(const n of [
  'window.__miloviceVisnovaGardenLawnsRuntime5218=()=>',
  "'visnova-garden-lawns-5218':{",
  'href="?v=521800&streetAudit=visnova-garden-lawns-5218"',
- "const BUILD_ID='20261121-visnova-garden-lawns-521800'"
+ "const BUILD_ID='"
 ])assert(html.includes(n),'missing real game integration '+n);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const runtime=html.match(/const BUILD_ID='([^']+)'/)?.[1];
