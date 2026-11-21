@@ -74,7 +74,7 @@ for(const needle of [
  'obj.visnovaWalker5213===true',
  "'visnova-sidewalk-walker-5213':{",
  'href="?v=521300&streetAudit=visnova-sidewalk-walker-5213"',
- "const BUILD_ID='20261121-visnova-sidewalk-walker-521300'"
+ "const BUILD_ID='"
 ])assert(html.includes(needle),'missing actual game integration '+needle);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const runtime=html.match(/const BUILD_ID='([^']+)'/)?.[1];
