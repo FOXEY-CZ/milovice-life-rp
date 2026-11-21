@@ -96,6 +96,8 @@ for(const q of [
  'renderVisnovaPaverCorners5205(THREE,{',
  "osmMappedSurfaceMaterials['visnova-tagged-paving-stones']",
  '__miloviceVisnovaPaverCornersRuntime5205',
+ "'visnova-paver-corners-5205':{",
+ 'href="?v=520500&streetAudit=visnova-paver-corners-5205"',
  'const BUILD_ID='
 ])assert(html.includes(q),'missing in-game source '+q);
 console.log('PASS 5.205: 12 source-locked paved corner wedges/1 mesh, road+building guard, no invented footways');
