@@ -48,12 +48,12 @@ try{
  assert(Math.abs(report.site.originalAreaSquareMetres-913.64)<.03);
  assert.equal(report.site.modelFloorCount,2);
  assert.equal(report.site.osmFloorCountUnspecified,true);
- assert.equal(report.site.renderedPhotoFacingEdges,12);
+ assert.equal(report.site.renderedPhotoFacingEdges,18);
  assert.equal(report.site.originalPhotoFacingCandidates,15);
  assert.equal(report.site.selfOccludedFacadeEdgesRemoved,3);
  assert.equal(report.site.photoSightlineModelApproximate,true);
  assert.equal((await page.evaluate(()=>window.__miloviceItalskaSightlineRuntime5250?.()))?.visibilityIsGeometricEstimate,true);
- assert.equal(report.site.estimatedWearPatches,11);
+ assert.equal(report.site.estimatedWearPatches,16);
  assert.equal(report.site.drawMeshes,2);
  assert.equal(report.site.visibleAfterLOD,2);
  assert.equal(report.site.wallMaterialColor,'#eeeae4');
@@ -74,5 +74,5 @@ try{
   path:'browser-artifacts/italska-vojen-zatisi-5249-mobile.png'
  });
  console.log('PASS 5.249 actual 393px mobile WebGL photo style, 2 batches, '+
-  '12 unoccluded original facades and 6.6s LOD');
+  '18 photo-facing original facades including north and 6.6s LOD');
 }finally{await browser.close()}
