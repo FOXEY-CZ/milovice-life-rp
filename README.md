@@ -6,7 +6,7 @@ Nová verze rozšiřuje již modelovaný veřejný prostor východní Višňové
 
 **Ověřené mobilní WebGL:** GitHub Actions [5.218 source + mobile test](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44904549530) = **SUCCESS**. Node planner vytvořil při neomezujících bezpečnostních kontrolách 118 kandidátů (14 + 39 + 65); skutečná běžící hra vykreslila po kontrolách silnic/budov/vody **112 trsů ve dvou GPU instancovaných meshech**, oba viditelné a připojené do scény ještě po 6,5 sekundy a LOD. Historický 5.217 test prošel také. Nové `__miloviceVisnovaGardenLawnsRuntime5218()` poskytuje počty pro každou původní plochu, míru bezpečnostního ořezu a skutečnou LOD viditelnost.
 
-Otevři technický pohled `?v=521800&streetAudit=visnova-garden-lawns-5218` z původního mapovaného bodu OSM přechodu `1057549995` (50.229278, 14.8701521). Azimut 10° je **technický odhad**, nikoliv fotografie ani panorama. Hlavní projektová CI a nasazení GitHub Pages na tento build se v době prvního zápisu teprve ověřují.
+Otevři technický pohled `?v=521800&streetAudit=visnova-garden-lawns-5218` z původního mapovaného bodu OSM přechodu `1057549995` (50.229278, 14.8701521). Azimut 10° je **technický odhad**, nikoliv fotografie ani panorama. **Ověřeno také v hlavním projektu:** kompletní CI validace \`44904553674\` **SUCCESS**, GitHub Pages nasazení \`44904656300\` **SUCCESS**. Poslední úprava nového regresního testu pouze předchází zastarávání BUILD_ID v dalších verzích, geometrie hry se nemění; případné následující Pages běhy mají svůj vlastní stav.
 
 ---
 
