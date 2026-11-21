@@ -14,11 +14,11 @@
 - **Další místa:** Višňová/Lesní, nádraží/Bike Tower, Topolová, Sportovní/Průběžná, Školská, kostel, garáže, Milten, Juventský les: průběžné modelové rekonstrukce, nikoliv hotové. Cíl 60 FPS není zaručená hodnota. Všechny domy/ulice navrhovat jako CELKY, bez vymyšlených vstupů či zebry.
 - Stávající NPC auta respektují původní OSM trasy 5.240–5.241; generičtí chodci jen bezpečné mapované pěší trasy 5.243–5.247. Nová 5.252 upravuje ŠÍŘKU modelové silnice, nikoliv její GPS nebo povolené směry.
 
-## Další krok
+## Další krok — aktualizováno po merge 5.253 (21. 11. 2026)
 
-1. Ověřit 5.252 Node, mobilní WebGL po 6,8 s LOD a manuální screenshot z OSM pěší kamery; pak všech pět PR GitHub Actions, merge, Pages. Nekontrolované věci NEoznačovat PASS.
-2. Pokračovat Italská–Rakouská jako celý celek: **zdrojové pěší plochy, provoz reálnými auty na 5m modelu, nemalované přechody**, sousední skutečné budovy a jejich dokumentovaná fasáda. Nepřidávat fiktivní reliéf, stromy či vchody bez podkladu.
-3. Stále používat pouze původní OSM/RÚIAN GPS a přesně odlišovat *doloženou mapovou polohu* od *modelové šířky/barvy/okna*.
+1. **Hotové, neopakovat:** 5.252 a 5.253 mají po pěti finálních PR CI/WebGL PASS a jsou sloučené do `main`; 5.252 má potvrzené Pages PASS. U 5.253 zůstává neověřené Pages nasazení a samostatná ruční vizuální kontrola screenshotu. Starší instrukce znovu mergeovat 5.252 byla zastaralá.
+2. **První věcný krok 5.254:** změřit/otestovat v aktuálním dopravním modelu **obousměrné míjení osobních NPC aut na modelově 5,0m úseku OSM 8590284** a jejich boční odstup od obnovené původní pěší trasy 1484073943. Kontrolovat skutečné rozměry a průběh vozidel v runtime, nikoli pouze možnost výběru trasy. Současná 5.253 zaručuje filtr autobusu 432 a procedurálního parkování, **nikoli prokázanou bezpečnou geometrii míjení aut**. Pokud test odhalí konflikt, opravit jen zdrojově ukotvené chování NPC, ne GPS/OSM nebo modelovou šířku naslepo. Změnu uzavřít cíleným Node a mobilním Chromium/WebGL testem s LOD, následně CI a Pages; nic neoznačit PASS před ověřením.
+3. Potom pokračovat **Italská–Rakouská jako celá ulice**: sousední zdrojové pěší plochy a existující budovy/fasády, dokumentované nemalované přechody 1484073944/3946. Nepřidávat fiktivní reliéf, stromy, zaparkovaná auta, přechody ani vstupy bez podkladu. Původní OSM/RÚIAN GPS beze změny, 5,0 m zůstává *modelová*, nikoli zaměřená šířka.
 
 Hra: https://foxey-cz.github.io/milovice-life-rp/
 Repo: https://github.com/FOXEY-CZ/milovice-life-rp
