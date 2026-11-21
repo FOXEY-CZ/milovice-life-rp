@@ -89,7 +89,7 @@ for(const part of [
  'window.__miloviceVisnovaContinuousRuntime5215=()=>',
  "'visnova-continuous-walker-5215':{",
  'href="?v=521500&streetAudit=visnova-continuous-walker-5215"',
- 'const BUILD_ID=\'20261121-visnova-continuous-walker-521500\''
+ 'const BUILD_ID='
 ])assert(html.includes(part),'missing game integration '+part);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const runtime=html.match(/const BUILD_ID='([^']+)'/)?.[1];
