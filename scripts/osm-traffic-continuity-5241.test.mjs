@@ -67,9 +67,10 @@ for(const marker of [
  'const decision=planNpcJunction5241({',
  'obj.trafficTerminal5241',
  'planOffscreenNpcRecycle5241({',
- 'window.__miloviceTrafficContinuityRuntime5241=()=>',
- "Verze 5.241"
+ 'window.__miloviceTrafficContinuityRuntime5241=()=>'
 ])assert(html.includes(marker),'missing integrated 5.241 routing '+marker);
+assert(Number(html.match(/Verze 5[.]([0-9]+)/)?.[1])>=241,
+ 'future game builds must keep the original 5.241 routing');
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const runtime=html.match(/const BUILD_ID='([^']+)'/)?.[1];
 const hud=html.split('id="build-label">')[1]?.split('</strong>')[0];
