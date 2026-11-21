@@ -92,9 +92,9 @@ for(const token of [
  "from './scripts/osm-mapped-ambient-walkers-5243.js?v=524500'",
  'prepareMappedBuildingFootprints5245(buildingWays,osmPoint)',
  'buildingClearance:(a,b)=>mappedFootwayAvoidsBuildings5245(',
- 'window.__miloviceMappedBuildingClearanceRuntime5245=()=>',
- "Verze 5.245"
+ 'window.__miloviceMappedBuildingClearanceRuntime5245=()=>'
 ])assert(html.includes(token),'5.245 integration missing '+token);
+assert(Number(html.match(/Verze 5[.](\d+)/)?.[1])>=245);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const id=html.match(/const BUILD_ID='([^']+)'/)?.[1];
 const hud=html.split('id="build-label">')[1]?.split('</strong>')[0];

@@ -79,7 +79,18 @@ try{
   buildingClearance.mappedOriginalFootwayFragments);
  assert.equal(buildingClearance.noNewBuildings,true);
  assert.equal(buildingClearance.noNewFootways,true);
- assert.equal(buildingClearance.newColliders,0);
+ assert.equal(buildingClearance.noNewColliders,true);
+ const continuation=await page.evaluate(()=>
+  window.__miloviceMappedAmbientContinuityRuntime5246?.());
+ assert(continuation?.ready,
+  '5.246 source-verified junction links survive mobile WebGL/LOD');
+ assert(continuation.linkedOriginalOSMJunctions>0);
+ assert(continuation.sourceFootwayFragments>0);
+ assert.equal(continuation.originalGeometryPreserved,true);
+ assert.equal(continuation.newSidewalks,0);
+ assert.equal(continuation.newCrossings,0);
+ assert.equal(continuation.newColliders,0);
+ assert.equal(continuation.specialWalkersUnchanged,true);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/italska-west-residence-5242-mobile.png'});
