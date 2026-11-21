@@ -101,6 +101,7 @@ export function planMappedAmbientSegments5243({
      sourceEdgeIndex:i-1,sourceHighway:way.tags.highway,
      regionId,clippedFromOriginalRoadSafePiece:true,
      roadShoulder:false,noMappedBuildingOverlap:true,
+     fullBoundaryClearance5245:Boolean(buildingClearance),
      newPavement:0,newCrossings:0});
    }
   }
