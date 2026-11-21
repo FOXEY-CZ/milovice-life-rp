@@ -1,3 +1,13 @@
+## Milovice RP 5.216 — mapovaná zebra s ostrůvkem u východního konce Višňové (21. 11. 2026)
+
+**Viditelná oprava skutečného uličního objektu:** původní OSM [přechod/1044078120](https://www.openstreetmap.org/way/1044078120) v ulici Armádní poblíž Višňové má explicitní `crossing:island=yes`, `crossing:markings=zebra`, a tři původní GPS uzly. Jeho prostřední uzel `50.2291512,14.8694981` přesně odpovídá původnímu prostřednímu uzlu OSM [silnice/1331897686](https://www.openstreetmap.org/way/1331897686). Dřívější univerzální kreslení zebry nerozlišovalo ostrůvek. Verze 5.216 zachová obě původní pěší ramena (cca 5,04 m a 6,81 m), na přesném mapovaném středu vykreslí **jeden nízký osmiúhelníkový 3D model ostrůvku / 24 trojúhelníků** a vodorovné značení rozdělí na dvě části tak, aby neprocházelo přes středový model. Použitá geometrie i stávající modelový materiál jsou GPU úsporné.
+
+**Rozlišení zdroje a odhadu:** existenci ostrůvku, přechodu a jeho GPS středu potvrzuje uložený originální OSM; ale tvar/rozměry 2,4 × 0,8 m, 0,16m výška, barva i počet bílých pruhů jsou schematické **odhady pro hru, nikoli fotografie tohoto konkrétního ostrůvku**. Fotografie jiných přechodů Armádní se za něj nevydávají. Původní silnice, chodníky, přechody, jejich označení, dopravní logika, kolize, NPC ani parkování se nijak nemění. Nový model neobsahuje dopravní značku, zábradlí ani nový fyzický neprůchozí collider.
+
+Modul `scripts/osm-visnova-refuge-5216.js` fail-closed zamyká přesné mapové hashe `097b2218` a `b19851ee`, původní tagy a shodný prostřední uzel; doplňuje pouze model ostrova a filtraci pruhů ze stávajícího `planZebraPieces`. Technický pohled `?v=521600&streetAudit=visnova-refuge-5216` stojí na původním mapovaném uzlu (50.2291072, 14.8694816), směr 14° je technický odhad. Getter `window.__miloviceVisnovaRefugeRuntime5216()` vrací skutečné kreslení / 2 skupiny pruhů / viditelnost / souřadnice po LOD. Nové Node source-lock a mobilní Chromium/WebGL CI jsou přidány; **závěrečný PASS bude potvrzen až z dokončených běhů**.
+
+---
+
 ## Milovice RP 5.215 — jeden chodec, tři skutečné navazující úseky Višňové (21. 11. 2026)
 
 Původní simulovaný východní chodec 5.214 už nemá končit po jediném přímém úseku. Nyní používá **tři na sebe přímo navazující segmenty původní OSM pěší cesty [way/1044078118](https://www.openstreetmap.org/way/1044078118)**, její uzly 0→1→2→3, včetně původních zalomení. Z geodeticky nepřesného, ale zdrojově daného GPS převodu vychází celková délka cca 53 m, po odříznutí 3,3 m na každém konci asi **46,45 m skutečně animované trasy**. Dál nepokračuje z bezpečnostních důvodů: následující části jsou v původní mapě blíž vozovce/budovám.
