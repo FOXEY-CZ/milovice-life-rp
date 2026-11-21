@@ -70,7 +70,7 @@ const frameModel=createItalskaJunctionGuard5258({roadPlan,segments:all});
 const frameZone=frameModel.zones[0];
 const frameNarrow=frameZone.arms.find(a=>a.segment.osmId===8590284).segment;
 const frameCross=frameZone.arms.find(a=>a.segment.osmId===8585601).segment;
-const leader=actor(101,frameNarrow,frameZone.node,12,true,6);
+const leader=actor(101,frameNarrow,frameZone.node,2.5,true,.5);
 const follower=actor(102,frameCross,frameZone.node,13,true,6);
 const frameDt=.1;
 const distanceToNode=(car,segment)=>{
