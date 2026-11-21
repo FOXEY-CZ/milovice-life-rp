@@ -90,6 +90,10 @@ const packs=Object.freeze({
   'osm-prubezna-bends-5138.test.mjs',
   'osm-sportovni-sidewalk-5139.test.mjs'
  ],
+ italska:[
+  'osm-italska-walk-chain-5233.test.mjs',
+  'osm-italska-flat-roof-5232.test.mjs'
+ ],
  budovy:[
   'osm-italska-flat-roof-5232.test.mjs',
   'facade-anchors.test.mjs',
