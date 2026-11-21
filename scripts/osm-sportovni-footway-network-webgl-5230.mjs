@@ -39,7 +39,7 @@ try{
  assert.equal(x.processedSourceEdges,13);
  assert.equal(x.sourceEdgeSafetyAudit.length,13);
  assert.equal(x.sourceFootwayMeters,111.298);
- assert.equal(x.renderedSafePieces>0);
+ assert(x.renderedSafePieces>0,'safe original pedestrian pieces are drawn');
  assert.equal(x.unclassifiedSourceEdges,0);
  assert.equal(x.encounteredSourceIds.length,6);
  assert.equal(x.neutralMaterialAvailable,true);
