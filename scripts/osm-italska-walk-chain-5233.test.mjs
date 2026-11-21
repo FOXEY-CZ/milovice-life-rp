@@ -71,5 +71,7 @@ const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const js=html.match(/const BUILD_ID='([^']+)'/)?.[1];
 const hud=html.split('id="build-label">')[1]?.split('</strong>')[0];
 assert(meta&&meta===js&&js===hud,'meta HUD runtime build');
-assert(html.includes('Verze 5.233'));
+const version=html.match(/Verze ([0-9]+)[.]([0-9]+) · build/);
+ assert(version&&Number(version[1])===5&&Number(version[2])>=233,
+  'later game versions must retain 5.233 original OSM chain');
 console.log('PASS 5.233 OSM Italská 534.368m original connected footway graph, exact GPS and two unmarked crossings');

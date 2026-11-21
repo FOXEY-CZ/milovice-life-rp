@@ -1,0 +1,41 @@
+name: Milovice 5.234 real Italska sidewalk simulated pedestrians WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - data/regions/mlada.json
+      - scripts/osm-italska-walkers-5234.js
+      - scripts/osm-italska-walkers-5234.test.mjs
+      - scripts/osm-italska-walkers-webgl-5234.mjs
+      - scripts/osm-italska-walk-chain-5233.js
+      - scripts/osm-italska-walk-chain-5233.test.mjs
+      - .github/workflows/italska-walkers-5234.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mapped-pedestrian-models:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify exact original GPS and safe actor routes
+        run: |
+          node scripts/osm-italska-walk-chain-5233.test.mjs
+          node scripts/osm-italska-walkers-5234.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Actual mobile Chrome SwiftShader two moving pedestrians
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-italska-walkers-webgl-5234.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: italska-walkers-5234
+          path: browser-artifacts/italska-walkers-5234-mobile.png
+          if-no-files-found: ignore
