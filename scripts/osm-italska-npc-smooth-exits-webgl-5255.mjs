@@ -18,9 +18,15 @@ try{
   const runtime=window.__miloviceItalskaSmoothNpcRuntime5255?.();
   return window.__miloviceItalskaRoadFootwayRuntime5252?.()?.ready===true&&
    runtime?.ready===true&&runtime.fixtureTurnActive===true&&
+   runtime.fixtureTurnProgressMetres>=1.5&&
+   runtime.fixtureTurnProgressMetres<=4.0&&
    window.__miloviceStreetAuditRendered?.view==='italska-road-footway-5252';
  },null,{timeout:120000});
  await mkdir('browser-artifacts',{recursive:true});
+ const midTurnProgress=await page.evaluate(()=>
+  window.__miloviceItalskaSmoothNpcRuntime5255?.()?.fixtureTurnProgressMetres);
+ assert(midTurnProgress>=1.5&&midTurnProgress<=4.0,
+  'Screenshot must capture actual mid-turn progress, not a static initial pose');
  await page.screenshot({path:'browser-artifacts/italska-smooth-npc-exit-5255-turn.png'});
  await page.waitForFunction(()=>
   window.__miloviceItalskaSmoothNpcRuntime5255?.()?.fixtureCompleted===true,
