@@ -8,6 +8,7 @@ on:
       - scripts/osm-italska-apartments-5235.test.mjs
       - scripts/osm-italska-apartments-webgl-5235.mjs
       - scripts/osm-visnova-residential-5192.js
+      - scripts/osm-visnova-residential-5192.test.mjs
       - .github/workflows/italska-apartments-5235.yml
   workflow_dispatch:
 permissions:
@@ -21,8 +22,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Check cadastral source and both original window batches
+      - name: Check both Italska blocks, material cache and original Visnova facades
         run: |
+          node scripts/osm-visnova-residential-5192.test.mjs
           node scripts/osm-italska-apartments-5235.test.mjs
           node scripts/osm-italska-walkers-5234.test.mjs
       - run: npm install --no-save --no-package-lock playwright-core
