@@ -25,8 +25,9 @@ class BufferGeometry {
 class Float32BufferAttribute {
  constructor(array,itemSize){this.array=array;this.itemSize=itemSize}
 }
+let materialConstructions=0;
 class MeshStandardMaterial {
- constructor(options){this.options=options}
+ constructor(options){this.options=options;materialConstructions++}
 }
 class Mesh {
  constructor(geometry,material){
@@ -35,6 +36,7 @@ class Mesh {
  }
 }
 const THREE={Mesh,MeshStandardMaterial,BufferGeometry,Float32BufferAttribute,DoubleSide:2};
+let sharedFacadeMaterials=null;
 const toWorld=p=>({
  x:(p.lon-14.889)*111320*Math.cos(50.226*Math.PI/180),
  y:-(p.lat-50.226)*111320
@@ -92,6 +94,14 @@ for(const c of cases){
  assert.equal(result.addedColliders,0);
  assert.equal(result.addedDoors,0);
  assert.equal(layer.children.length,4);
+ const materialSet=layer.children.map(m=>m.material);
+ assert.equal(new Set(materialSet).size,4,'one material for each of 4 facade layers');
+ if(sharedFacadeMaterials){
+  materialSet.forEach((mat,i)=>assert.strictEqual(mat,sharedFacadeMaterials[i],
+   'same THREE context must reuse material '+i));
+ }else sharedFacadeMaterials=materialSet;
+ assert.equal(materialConstructions,4,
+  'rendering more buildings must not allocate redundant GPU materials');
  const triangles=layer.children.reduce((sum,m)=>sum+
   m.geometry.position.array.length/9,0);
  assert.equal(triangles,c.triangles);
