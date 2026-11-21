@@ -13218,8 +13218,13 @@ function rpNextStreet(car){
   car.progress=car.direction===1?1:0;car.trafficTerminal5241=true;
   trafficContinuityStats5241.terminals++;return;
  }
- // 5.255: source-locked, footprint-checked cubic ONLY on safe exits
- // from the real mapped Italska 5m model road. Never move map geometry.
+ // 5.255: preserve overshoot in the very frame the original NPC graph
+ // crosses an OSM node, instead of re-snapping to the start of the curve.
+ // A positive carried distance keeps the rendered actor moving forward.
+ const junctionOverrun5255=decision.mode==='connected'?
+  Math.max(0,(car.direction===1?car.progress-1:-car.progress)*car.seg.len):0;
+ // Source-locked, footprint-checked cubic ONLY on safe original exits.
+ // The existing original OSM roads and pedestrian geometry never move.
  const smooth=decision.mode==='connected'?
   planItalskaSmoothNpcExit5255({
    roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
@@ -13229,6 +13234,9 @@ function rpNextStreet(car){
  car.seg=decision.segment;car.direction=decision.direction;
  car.progress=decision.progress;car.turns+=decision.turnIncrement;
  if(smooth){
+  // The main loop already advanced the previous segment by movingMetres.
+  // Carry only its excess beyond the OSM junction onto this validated arc.
+  advanceItalskaSmoothNpcExit5255(smooth,junctionOverrun5255);
   car.smoothTurn5255=smooth;
   italskaSmoothStats5255.planned++;
  }
