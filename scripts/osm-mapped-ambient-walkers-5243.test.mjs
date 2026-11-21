@@ -44,7 +44,9 @@ assert.equal(plan({ways:[way(11,{highway:'footway'},geo)],
  regionId:'mlada',widths:new Map([['11',1.8]]),
  toWorld:projection,clip:()=>[],carriageway:free}).length,0);
 const raw=readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8');
-const ways=JSON.parse(raw).elements.filter(e=>e.tags?.highway&&e.geometry?.length);
+const elements=JSON.parse(raw).elements;
+const ways=elements.filter(e=>e.tags?.highway&&e.geometry?.length);
+const buildings=elements.filter(e=>e.tags?.building&&e.geometry?.length>=4);
 const widths=new Map();
 const carriageway=createRoadClearance();
 for(const w of ways){
@@ -56,7 +58,7 @@ for(const w of ways){
  if(isCarriageway(kind))
   carriageway.addRoad({id:w.id,points:w.geometry.map(projection),width,kind});
 }
-const candidates=plan({ways,regionId:'mlada',widths,
+const candidates=plan({ways,buildings,regionId:'mlada',widths,
  toWorld:projection,clip:safePedestrianPieces,carriageway});
 assert(candidates.length>100,'original Mlada OSM should provide ample safe walking routes');
 const ids=new Set(candidates.map(c=>c.sourceOSMWayId));
@@ -66,6 +68,7 @@ for(const segment of candidates){
  const origin=origins.get(segment.sourceOSMWayId);
  assert(origin&&eligible(origin.tags),'every walker derives from original allowed OSM footway');
  assert.equal(segment.roadShoulder,false);
+ assert.equal(segment.noMappedBuildingOverlap,true);
  assert.equal(segment.width,0);
  assert(segment.len>=9.5&&Number.isFinite(segment.len));
  for(const t of [0,.25,.5,.75,1]){
@@ -82,6 +85,7 @@ for(const token of [
  'const osmAmbientPedestrianSegments5243=[];',
  'osmAmbientPedestrianSegments5243.push(...planMappedAmbientSegments5243({',
  'osmAmbientPedestrianSegments5243.length=0;',
+ 'ways:roadWays,buildings:buildingWays,regionId,'
  "rpSpawnMappedAmbientWalkers5243('old',30);",
  'rpSpawnMappedAmbientWalkers5243(area.id,8,center);',
  'window.__miloviceMappedAmbientWalkersRuntime5243=()=>',
