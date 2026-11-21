@@ -1,0 +1,40 @@
+name: Milovice 5.223 source-paved Lesni living street mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - data/regions/mlada.json
+      - scripts/osm-lesni-paved-living-street-5223.js
+      - scripts/osm-lesni-paved-living-street-5223.test.mjs
+      - scripts/osm-lesni-paved-living-street-webgl-5223.mjs
+      - scripts/osm-lesni-courtyard-blocks-5222.test.mjs
+      - .github/workflows/lesni-paved-living-street-5223.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify source OSM road and previous Lesni RUIAN buildings
+        run: |
+          node scripts/osm-lesni-courtyard-blocks-5222.test.mjs
+          node scripts/osm-lesni-paved-living-street-5223.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Real mobile Chromium WebGL original Lesni surface, 9 segments
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-lesni-paved-living-street-webgl-5223.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lesni-paved-living-street-5223
+          path: browser-artifacts/lesni-paved-living-street-5223-mobile.png
+          if-no-files-found: ignore

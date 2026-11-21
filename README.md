@@ -1,3 +1,15 @@
+## Milovice RP 5.223 — původní 294metrová dlážděná obytná ulice Lesní (21. 11. 2026)
+
+Pokračování skutečné uliční sítě kolem předchozích RÚIAN obytných domů. V uloženém OSM exportu je **[Lesní way 83026442](https://www.openstreetmap.org/way/83026442)**, přesně původní **10bodová** polyline, hash `9cc757ea`, 9 segmentů, geometrická délka přibližně **293,563 m**, s tagy **`highway=living_street`**, **`name=Lesní`**, **`surface=paving_stones`**, **`motor_vehicle=destination`**. OSM prokazuje druh povrchu a pravidlo přístupu, nikoliv fotografickou barvu, vzor a výšku dlažby.
+
+Nynější 3D model již správnou silnici měl; dosud ale obecný výběr mapového materiálu nedával tomuto konkrétnímu zdrojově doloženému úseku návazný jednotný materiál z předchozích úprav Višňové. Verze 5.223 používá na **všech původních devíti herních segmentech** už existující **jediný modelový `visnova-tagged-paving-stones`**, žádná další textura nebo 3D objekt. Zůstávají beze změn původní GPS uzly, orientace a délky, modelové šířky vozovky, herní doprava i originální tag `motor_vehicle=destination`. Žádná nová odbočka, chodník, obrubník, parkoviště, dopravní značení, most, strom, budova ani kolize.
+
+Samostatný fail-closed planner `scripts/osm-lesni-paved-living-street-5223.js` vyžaduje přesné OSM ID, oblast Mladá, všechny 4 zdrojové tagy, GPS hash, 10 uzlů, 9 správných segmentů a celkovou délku. Audit `window.__miloviceLesniPavedStreetRuntime5223()` ověřuje 9 opravdu překreslených mapových segmentů, společný GPU materiál a stav oblasti. Kontrolní pohled `?v=522300&streetAudit=lesni-paved-living-street-5223` používá původní OSM uzel `50.2297847,14.8727618`, směr 65° je **pouze technický odhad**, nikoliv fotografie nebo panorama.
+
+Přibyl Node test, regresní test předchozí verze 5.222, skutečný mobilní Chromium/SwiftShader WebGL test a samostatná GitHub Actions pipeline `.github/workflows/lesni-paved-living-street-5223.yml`. Výsledek CI/Pages musí být ověřen po dokončení skutečných běhů.
+
+---
+
 ## Milovice RP 5.222 — dva navazující původní bytové domy v prostoru Lesní / Višňová (21. 11. 2026)
 
 Další souvislá část skutečné zástavby u původní obslužné komunikace [OSM 1049828501](https://www.openstreetmap.org/way/1049828501) v oblasti Lesní: **[RÚIAN/OSM 53866101](https://www.openstreetmap.org/way/53866101)** (RÚIAN `25789848`, mapovaná **2 podlaží / 12 bytů**, 13 originálních uzlů, GPS hash `88bbda35`, původní obrys cca 337,47 m²) a **[RÚIAN/OSM 194679566](https://www.openstreetmap.org/way/194679566)** (RÚIAN `27382141`, mapovaná **4 podlaží / 26 bytů**, 29 originálních uzlů včetně malých výstupků, GPS hash `88a04945`, původní obrys cca 583,83 m²). Všechny původní RÚIAN/OSM uzly, všechny délky půdorysných hran, `source=cuzk:ruian`, původní data, podlaží, počet bytů a celý polygon kontroluje fail-closed modul `scripts/osm-lesni-courtyard-blocks-5222.js`.
