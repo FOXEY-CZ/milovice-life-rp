@@ -329,6 +329,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <a href="?v=519700&streetAudit=visnova-neighbor-5197">🏢 Višňová · sousední 11podlažní dům (RÚIAN)</a>
 <a href="?v=519800&streetAudit=visnova-eight-floor-5198">🏢 Višňová · navazující osmipodlažní blok (RÚIAN)</a>
 <a href="?v=520200&streetAudit=visnova-parking-house-5202">🅿️ Višňová · mapovaný dvoupodlažní parkovací dům</a>
+<a href="?v=520500&streetAudit=visnova-paver-corners-5205">🚶 Višňová · spojité rohy původních dlážděných cest</a>
 <a href="?v=514800&streetAudit=topolova-residential-5148">🏢 Topolová · šestipodlažní RÚIAN dům (model)</a>
 <a href="?v=514900&streetAudit=topolova-masonry-5149">🏠 Topolová 647 · zděný dům dle ČSÚ (model fasády)</a>
  <a href="?v=517000&streetAudit=topolova-entry-616-east-5170">🔎 Topolová 616 · východní přízemí</a>
@@ -1284,6 +1285,16 @@ const rpStreetAuditViews={
   author:'© OpenStreetMap contributors / ČÚZK RÚIAN',
   technical:true,streetLevel:true,estimatedHeading:true,
   note:'Originální polygon RÚIAN/OSM 53865848 (5 hran, 5 mapovaných podlaží, 84 bytů) je bez změn. Všechny čtyři delší původní stěny včetně dvou čel mají modelové okenní rámy a nízký sokl, bez spekulativních balkonů či vchodů. Počet a poloha každého okna jsou odhady. Kamera stojí na původním uzlu chodníku 1316882852, azimut 200° je technický odhad.'
+ },
+ 'visnova-paver-corners-5205':{
+  label:'Višňová · původní dlážděné pěší zatáčky bez mezer',
+  // Camera at the fourth ORIGINAL mapped source vertex of OSM 1314665579.
+  camera:{lat:50.2292542,lon:14.8689738},heading:200,
+  source:'https://www.openstreetmap.org/way/1314665579',
+  regionId:'mlada',osmLandmarkId:'1314665579',
+  author:'© OpenStreetMap contributors',
+  technical:true,streetLevel:true,estimatedHeading:true,
+  note:'Kamera stojí přímo na původním OSM chodníku 1314665579. Modelové tiny wedge záplaty 5.205 uzavírají jen viditelné spáry v zatáčkách EXISTUJÍCÍCH cest. Azimut 200° i konkrétní barva dlažby jsou herní odhady; žádná nová pěší cesta, přechod ani parkovací stání.'
  },
  'visnova-parking-house-5202':{
   label:'Višňová · původní mapovaný parkovací dům',
