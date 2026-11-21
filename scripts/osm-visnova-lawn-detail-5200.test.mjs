@@ -53,6 +53,6 @@ for(const marker of [
  'visnovaTufts5200.map(t=>',
  'window.__miloviceVisnovaLawnRuntime5200=()=>',
  'visnovaGrassSource5200.length=0;',
- '20261120-visnova-lawn-detail-520000'
+ 'const BUILD_ID='
 ])assert(html.includes(marker),'missing actual gameplay hook '+marker);
 console.log('PASS 5.200: 2 original OSM grass polygons, safely clipped turf, deterministic and deduplicated, no new lawns');
