@@ -45,6 +45,18 @@ try{
  assert.equal(block.windowLocationsPhotoVerified,false);
  assert.equal(block.newColliders,0);
  assert.equal(block.newEntrances,0);
+ // 5.240: same actual mobile browser, verify real routing graph at Italska.
+ const traffic=await page.evaluate(()=>
+  window.__miloviceTrafficAccessRuntime5240?.());
+ assert(traffic?.ready,'source-verified fire lane must be excluded from NPC graph');
+ assert.equal(traffic.sourceOSMId,'1272081401');
+ assert.equal(traffic.sourceVerified,true);
+ assert.equal(traffic.mappedRoadStillPresent,true);
+ assert.equal(traffic.excludedFromNpcGraph,true);
+ assert(traffic.restrictedWays>=1);
+ assert(traffic.publicTrafficSegments>0);
+ assert.equal(traffic.roadsAndCollisionsUnchanged,true);
+ assert.equal(traffic.playerMovementUnchanged,true);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/italska-west-block-5239-mobile.png'});
