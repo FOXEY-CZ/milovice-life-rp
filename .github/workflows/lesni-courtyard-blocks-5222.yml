@@ -1,0 +1,40 @@
+name: Milovice 5.222 real Lesni two RUIAN residential facades mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - data/regions/mlada.json
+      - scripts/osm-lesni-courtyard-blocks-5222.js
+      - scripts/osm-lesni-courtyard-blocks-5222.test.mjs
+      - scripts/osm-lesni-courtyard-blocks-webgl-5222.mjs
+      - scripts/osm-visnova-north-block-5221.test.mjs
+      - .github/workflows/lesni-courtyard-blocks-5222.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source lock two residential buildings and 5.221 regression
+        run: |
+          node scripts/osm-visnova-north-block-5221.test.mjs
+          node scripts/osm-lesni-courtyard-blocks-5222.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Actual mobile WebGL both facade models and both audit cameras
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-lesni-courtyard-blocks-webgl-5222.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lesni-courtyard-5222
+          path: browser-artifacts/lesni-courtyard-5222-mobile.png
+          if-no-files-found: ignore

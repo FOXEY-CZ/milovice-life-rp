@@ -1,4 +1,4 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.221 Višňová, další sedmipodlažní RÚIAN bytový dům</title><meta name="milovice-build" content="20261121-visnova-north-block-522100"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
+<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.222 Lesní, dva sousední bytové domy RÚIAN</title><meta name="milovice-build" content="20261121-lesni-courtyard-522200"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
 #realmap{position:fixed;inset:0;z-index:100;background:#101e2c;display:none;flex-direction:column;color:#fff;font-family:system-ui}#realmap.open{display:flex}#maphead{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#142c3e}#maphead button{flex:0 0 auto;min-height:40px}#osmmap{flex:1;min-height:0;touch-action:pan-x pan-y}#mapfoot{padding:8px 12px;background:#142c3e;font-size:12px;line-height:1.4}#maplaunch{position:fixed;right:12px;top:75px;z-index:45;background:#193d58;border:1px solid #93b4c7;box-shadow:0 2px 8px #0006}#realmap .leaflet-container{background:#d7e5da}#realmap a{color:#aedbff} @media(max-width:700px){#maplaunch{top:72px;right:8px;padding:7px 10px;font-size:12px;min-height:36px}#maphead{font-size:13px}}
 </style><style>#perf{position:fixed;top:10px;right:10px;z-index:42;background:#102437e8;border:1px solid #77a7b6;border-radius:10px;padding:7px 10px;color:#c8f6d4;font:600 12px system-ui;pointer-events:none;min-width:100px;text-align:center}#perf small{display:block;color:#c9d5dd;font-size:10px;font-weight:400}@media(max-width:700px){#perf{top:8px;right:8px;padding:5px 7px;font-size:11px}#maplaunch{top:100px!important}}</style><style id="milovice-modern-ui">
 #hud{background:linear-gradient(145deg,rgba(9,24,39,.88),rgba(20,44,61,.82));backdrop-filter:blur(12px);border:1px solid rgba(176,214,235,.3);box-shadow:0 10px 30px #061b2b33;border-radius:18px}
@@ -339,6 +339,8 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <a href="?v=521700&streetAudit=visnova-tagged-colors-5217">🏘️ Višňová · skutečné mapované barvy fasády a střechy</a>
 <a href="?v=521800&streetAudit=visnova-garden-lawns-5218">🌿 Višňová · další tři mapované travnaté plochy</a>
 <a href="?v=521900&streetAudit=visnova-seven-floor-row-5219">🏢 Višňová · tři sousední sedmipodlažní bytové bloky</a>
+<a href="?v=522200&streetAudit=lesni-courtyard-north-5222">🏘️ Lesní · čtyřpodlažní RÚIAN bytový blok od ulice</a>
+<a href="?v=522200&streetAudit=lesni-courtyard-south-5222">🏘️ Lesní · dvoupodlažní RÚIAN bytový dům od ulice</a>
 <a href="?v=522100&streetAudit=visnova-north-block-5221">🏢 Višňová · další sedmipodlažní bytový dům RÚIAN</a>
 <a href="?v=522000&streetAudit=visnova-estate-pavers-5220">🧱 Višňová · 372 m skutečně mapovaných dlážděných chodníků</a>
 <a href="?v=514800&streetAudit=topolova-residential-5148">🏢 Topolová · šestipodlažní RÚIAN dům (model)</a>
@@ -388,7 +390,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <strong>📸 Milovice nádraží · fotoaudit 5.80</strong>
 <span>Pohled podle GPS a směru fotoaparátu z 30. 5. 2024. Velikost a poloha automatů jsou odhady, nikoliv geodetické zaměření.</span>
 <div><a href="https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_automaty_na_j%C3%ADzdenky.jpg" target="_blank" rel="noopener noreferrer">Původní fotografie · ŠJů · CC BY 4.0</a> · <a href="./?v=5800">Zpět do hry</a></div>
-</aside><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.221 · build <strong id="build-label">20261121-visnova-north-block-522100</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="topolova-foot-job-hud" hidden>🚶 Pěší doručení: <strong id="topolova-foot-job-progress">0 / 3</strong> · <strong id="topolova-foot-job-distance">–</strong> · Směr: <strong id="topolova-foot-job-direction" aria-label="Směr dalšího kontrolního bodu">↑</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="rp-camera-gps-toggle" type="button" aria-expanded="false">📍 GPS kamery</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
+</aside><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.222 · build <strong id="build-label">20261121-lesni-courtyard-522200</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="topolova-foot-job-hud" hidden>🚶 Pěší doručení: <strong id="topolova-foot-job-progress">0 / 3</strong> · <strong id="topolova-foot-job-distance">–</strong> · Směr: <strong id="topolova-foot-job-direction" aria-label="Směr dalšího kontrolního bodu">↑</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="rp-camera-gps-toggle" type="button" aria-expanded="false">📍 GPS kamery</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
 <button id="osm-inspect-toggle" type="button" aria-pressed="false" title="Klepnutím na konkrétní budovu zjistíš její OSM identitu">🔎 Objekt</button>
 <section id="osm-inspect-result" role="status" aria-live="polite" hidden>
 <strong id="osm-inspect-title">Identifikace objektu</strong>
@@ -591,6 +593,7 @@ import {planVisnovaNeighbor5197} from './scripts/osm-visnova-neighbor-5197.js?v=
 import {planVisnovaEightFloor5198} from './scripts/osm-visnova-eight-floor-5198.js?v=519800';
 import {VISNOVA_SEVEN_FLOOR_ROW_5219,planVisnovaSevenFloorRow5219} from './scripts/osm-visnova-seven-floor-row-5219.js?v=521900';
 import {VISNOVA_NORTH_BLOCK_5221,planVisnovaNorthBlock5221} from './scripts/osm-visnova-north-block-5221.js?v=522100';
+import {LESNI_COURTYARD_BLOCKS_5222,planLesniCourtyardBlock5222} from './scripts/osm-lesni-courtyard-blocks-5222.js?v=522200';
 import {planVisnovaMappedWalk5199} from './scripts/osm-visnova-mapped-walks-5199.js?v=519900';
 import {planVisnovaLawnDetail5200} from './scripts/osm-visnova-lawn-detail-5200.js?v=520000';
 import {planVisnovaEastLawns5212} from './scripts/osm-visnova-east-lawns-5212.js?v=521200';
@@ -693,7 +696,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261121-visnova-north-block-522100';
+const BUILD_ID='20261121-lesni-courtyard-522200';
 // Keep the visible HUD build and runtime declaration in sync for photo audits.
 document.getElementById('build-label').textContent=BUILD_ID;
 const rpStationRoofAuditCamera=new URLSearchParams(location.search).has('roofAudit');
@@ -1403,6 +1406,24 @@ const rpStreetAuditViews={
   author:'© OpenStreetMap contributors / ČÚZK RÚIAN',
   technical:true,streetLevel:true,estimatedHeading:true,
   note:'Původní RÚIAN polygon vícepatrového parkovacího domu, 2 podlaží, modelová tmavší horní stěna a pásy. Kamera z OSM pěší cesty 1456361927, azimut odhad. Fasáda NENÍ fotoověřená; žádné rampy, vchody, stání ani nové kolize.'
+ },
+ 'lesni-courtyard-north-5222':{
+  label:'Lesní · původní čtyřpodlažní RÚIAN bytový dům',
+  camera:{lat:50.2305662,lon:14.8713563},heading:5,
+  source:'https://www.openstreetmap.org/way/194679566',
+  regionId:'mlada',osmLandmarkId:'194679566',
+  author:'© OpenStreetMap contributors / ČÚZK RÚIAN',
+  technical:true,streetLevel:true,estimatedHeading:true,
+  note:'Zdrojový OSM obrys budovy 194679566, RÚIAN 27382141, 4 podlaží, 26 bytů, 29 mapových uzlů. Pět původních delších stěn má 68 výslovně ODHADOVANÝCH modelových oken, bez dekorování četných malých recessů. Poloha skutečných oken, barvy, balkony, vchody ani střecha nejsou fotograficky ověřené. Kamera stojí na originálním šestém uzlu servisní OSM cesty 1049828501 a heading 5° je technický odhad.'
+ },
+ 'lesni-courtyard-south-5222':{
+  label:'Lesní · původní dvoupodlažní RÚIAN bytový dům',
+  camera:{lat:50.2305259,lon:14.8712021},heading:115,
+  source:'https://www.openstreetmap.org/way/53866101',
+  regionId:'mlada',osmLandmarkId:'53866101',
+  author:'© OpenStreetMap contributors / ČÚZK RÚIAN',
+  technical:true,streetLevel:true,estimatedHeading:true,
+  note:'Zdrojový OSM obrys budovy 53866101, RÚIAN 25789848, 2 podlaží, 12 bytů, 13 mapových uzlů. Pět delších původních stěn má 38 odhadovaných modelových oken; malé obvodové zářezy nedostaly fiktivní fasádní otvory. Dveře, balkony, skutečná okna ani barvy nejsou fotografie. Kamera na původním bodu servisní komunikace OSM 1049828501, směr 115° pouze technický odhad.'
  },
  'visnova-north-block-5221':{
   label:'Višňová · původní sedmipodlažní RÚIAN bytový dům',
@@ -2649,6 +2670,7 @@ const visnovaNeighborRenderCache5197=new Map();
 const visnovaEightFloorRenderCache5198=new Map();
 const visnovaSevenFloorRenderCache5219=new Map();
 const visnovaNorthBlockRenderCache5221=new Map();
+const lesniCourtyardRenderCache5222=new Map();
 const visnovaParkingHouseCache5202=new Map();
 window.__miloviceVisnovaParkingMapRuntime5203=()=>({
  version:'5.203',ready:Boolean(visnovaParkingMap5203),
@@ -2667,6 +2689,42 @@ window.__miloviceVisnovaParkingHouseRuntime5202=()=>{
   triangles:rows[0]?.triangles||0,meshCount:rows[0]?.meshCount||0,
   visibleMeshes:rows[0]?.visibleMeshes()||0,photoVerified:false,
   newParkingSpaces:0,newEntrances:0,newColliders:0};
+};
+// 5.222: two unique ORIGINAL RÚIAN residential footprints in Lesní.
+window.__miloviceLesniCourtyardRuntime5222=()=>{
+ const buildings=LESNI_COURTYARD_BLOCKS_5222.buildings.map(spec=>{
+  const r=lesniCourtyardRenderCache5222.get(spec.id);
+  return {
+   sourceOSMId:r?.sourceOSMId||spec.id,
+   sourceRUIANId:r?.sourceRUIANId||spec.ruian,
+   originalFloors:spec.levels,originalFlats:spec.flats,
+   modelWindows:r?.estimatedWindowsRendered||0,
+   facadeEdges:r?.longFacadesRendered||0,
+   plinthEdges:r?.plinthEdgesRendered||0,
+   meshCount:r?.meshCount||0,triangles:r?.totalTriangles||0,
+   inScene:r?.allInScene()||false,
+   visibleAfterLOD:r?.visibleAfterLOD()||0,
+   photoVerified:false
+  };
+ });
+ return {
+  version:'5.222',
+  ready:window.__miloviceAreasLoaded?.includes('mlada')===true&&
+   buildings.every((b,i)=>b.modelWindows===(i===0?38:68)&&
+    b.inScene&&b.visibleAfterLOD===4),
+  sourceBuildingIds:buildings.map(b=>b.sourceOSMId),
+  originalFloors:buildings.map(b=>b.originalFloors),
+  originalFlats:buildings.map(b=>b.originalFlats),
+  estimatedWindows:buildings.reduce((n,b)=>n+b.modelWindows,0),
+  facadeEdges:buildings.reduce((n,b)=>n+b.facadeEdges,0),
+  originalPlinthEdges:buildings.reduce((n,b)=>n+b.plinthEdges,0),
+  meshCount:buildings.reduce((n,b)=>n+b.meshCount,0),
+  triangles:buildings.reduce((n,b)=>n+b.triangles,0),
+  buildings,photoVerified:false,
+  newBuildings:0,newRoads:0,newFootways:0,newColliders:0,
+  newEntrances:0,newBalconies:0,changedRoofShapes:0,
+  changedBuildingFootprints:0
+ };
 };
 // 5.221: source-locked original 7-floor RÚIAN shell; unverified glazing.
 window.__miloviceVisnovaNorthBlockRuntime5221=()=>{
@@ -6269,6 +6327,14 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
   photoReviewed:photoDecision.photographicApproval===true,
   approvedArchitecture:Boolean(modelCard)
  });
+ // 5.222: two separate source-locked RÚIAN shells on Lesní service lane.
+ // Estimated window surfaces only; no new physical volume or access.
+ const lesniCourtyardPlan5222=planLesniCourtyardBlock5222({
+  id:osmId,regionId,tags,geometry:points,
+  modelFloors:floors,modelHeight:h,
+  photoReviewed:photoDecision.photographicApproval===true,
+  approvedArchitecture:Boolean(modelCard)
+ });
  const visnovaParkingHousePlan5202=planVisnovaParkingHouse5202({
   id:osmId,regionId,tags,geometry:points,modelFloors:floors,modelHeight:h,
   photoReviewed:photoDecision.photographicApproval===true,
@@ -6537,6 +6603,13 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
   }):null;
  if(visnovaNorthBlockRendered5221)
   visnovaNorthBlockRenderCache5221.set(String(osmId),visnovaNorthBlockRendered5221);
+ const lesniCourtyardRendered5222=lesniCourtyardPlan5222?
+  renderVisnovaResidential5192(THREE,{
+   plan:lesniCourtyardPlan5222,toWorld:osmPoint,
+   baseHeight,layer:osmLayer
+  }):null;
+ if(lesniCourtyardRendered5222)
+  lesniCourtyardRenderCache5222.set(String(osmId),lesniCourtyardRendered5222);
  const visnovaParkingHouseRendered5202=visnovaParkingHousePlan5202?
   renderVisnovaParkingHouse5202(THREE,{
    plan:visnovaParkingHousePlan5202,toWorld:osmPoint,
@@ -11190,7 +11263,7 @@ osmBtn.onclick=async()=>{
  if(osmLoading)return;
  osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';osmMessage('Načítám místní soubor mapy ze stejného GitHub Pages webu…');
  try{
- const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();streetFrontage.reset();osmRoadClearance.reset();osmCarriagewayClearance.reset();osmWaterVegetationClearance.reset();taggedSidewalkBuildings.reset();cityAreaAhead=null;lastCityStreamingX=Infinity;lastCityStreamingZ=Infinity;legacyRealityAudit.reset();renderedPedestrianPieces.clear();collisionWorld.reset();heroBuildings.reset();photoStreetBlock.reset();photoStreetEnvironment.reset();mirovaPhotoStreet586.reset();skolskaWestGreen588.reset();skolskaTailGreen590.reset();photoPionyruVerge.reset();photoChurchSidewalk2022.reset();photoChurchStreet2022.reset();stationPhotoForecourt.reset();stationPhotoParking.reset();bikeTowerEntryPaving.reset();stationTicketMachines.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmStreetLightWays.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;landscapeZones.length=0;visnovaGrassSource5200.length=0;visnovaEastGrassSource5212.length=0;visnovaGardenGrassSource5218.length=0;visnovaResidentialRenderCache5192.clear();visnovaNeighborRenderCache5197.clear();visnovaEightFloorRenderCache5198.clear();visnovaSevenFloorRenderCache5219.clear();visnovaNorthBlockRenderCache5221.clear();visnovaParkingHouseCache5202.clear();visnovaParkingMap5203=null;window.__miloviceVisnovaMappedWalkRuntime5199=null;window.__miloviceVisnovaTaggedPaversRuntime5204=null;window.__miloviceVisnovaPaverCornersRuntime5205=null;
+ const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();streetFrontage.reset();osmRoadClearance.reset();osmCarriagewayClearance.reset();osmWaterVegetationClearance.reset();taggedSidewalkBuildings.reset();cityAreaAhead=null;lastCityStreamingX=Infinity;lastCityStreamingZ=Infinity;legacyRealityAudit.reset();renderedPedestrianPieces.clear();collisionWorld.reset();heroBuildings.reset();photoStreetBlock.reset();photoStreetEnvironment.reset();mirovaPhotoStreet586.reset();skolskaWestGreen588.reset();skolskaTailGreen590.reset();photoPionyruVerge.reset();photoChurchSidewalk2022.reset();photoChurchStreet2022.reset();stationPhotoForecourt.reset();stationPhotoParking.reset();bikeTowerEntryPaving.reset();stationTicketMachines.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmStreetLightWays.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;landscapeZones.length=0;visnovaGrassSource5200.length=0;visnovaEastGrassSource5212.length=0;visnovaGardenGrassSource5218.length=0;visnovaResidentialRenderCache5192.clear();visnovaNeighborRenderCache5197.clear();visnovaEightFloorRenderCache5198.clear();visnovaSevenFloorRenderCache5219.clear();visnovaNorthBlockRenderCache5221.clear();lesniCourtyardRenderCache5222.clear();visnovaParkingHouseCache5202.clear();visnovaParkingMap5203=null;window.__miloviceVisnovaMappedWalkRuntime5199=null;window.__miloviceVisnovaTaggedPaversRuntime5204=null;window.__miloviceVisnovaPaverCornersRuntime5205=null;
   if(trafficGroup.parent!==osmLayer)osmLayer.add(trafficGroup);
   if(visualDetails.parent!==osmLayer)osmLayer.add(visualDetails);for(const batch of facadeBatches)batch.clear();
  window.__miloviceMassStreetBlock583=null;
