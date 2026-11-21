@@ -4,6 +4,7 @@ on:
     paths:
       - index.html
       - data/regions/mlada.json
+      - scripts/osm-visnova-east-walker-5214.test.mjs
       - scripts/osm-visnova-continuous-walker-5215.js
       - scripts/osm-visnova-continuous-walker-5215.test.mjs
       - scripts/osm-visnova-continuous-walker-webgl-5215.mjs
