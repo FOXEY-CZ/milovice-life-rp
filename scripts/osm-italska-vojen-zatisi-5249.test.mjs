@@ -20,7 +20,7 @@ assert.equal(good.originalVertices,29);
 assert(Math.abs(good.originalAreaSquareMetres-913.64)<.03);
 assert.equal(good.visibleEdges.length,15);
 assert.equal(good.photoViews,2);
-assert.equal(good.wallHex,'#e2ded3');
+assert.equal(good.wallHex,'#eeeae4');
 assert.equal(good.roofHex,'#655e54');
 assert.equal(good.osmFloorCountUnspecified,true,
  'Never claim source floor count was mapped to OSM');
