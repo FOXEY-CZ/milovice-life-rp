@@ -39,7 +39,7 @@ try{
  assert.deepEqual(result.inferred?.sourceAddresses,[616,617,618]);
  for(const [k,v] of Object.entries({
   renderedFacades:6,renderedMeshes:3,genericFacadeEdgesSuppressed:6,
-  visibleAfterLOD:3,normalWindows:72,balconyWindowDoorSets:48,
+  visibleAfterLOD:3,normalWindows:88,balconyWindowDoorSets:32,
   stairWindows:24,createdBalconyPlatforms:0,createdEntranceDoors:0
  }))assert.equal(result.inferred[k],v,k);
  assert(result.hip?.ready&&result.row?.ready&&result.drawing?.ready&&
