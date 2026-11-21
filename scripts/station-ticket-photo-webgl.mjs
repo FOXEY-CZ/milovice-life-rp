@@ -25,10 +25,21 @@ try{
   panelVisible:!!document.getElementById('ticket-photo-audit')?.offsetWidth,
   spawnHidden:getComputedStyle(document.getElementById('rp-spawn')).display==='none',
   rendererActive:window.__miloviceStarted===true,
+  platformEdging:window.__milovicePlatformEdgingRuntime5248?.(),
   build:document.getElementById('build-label')?.textContent
  }));
  console.log('5.80 photo WebGL view:',JSON.stringify(report,null,2));
  assert.equal(report.rendererActive,true);
+ assert(report.platformEdging?.ready,
+  '5.248 original two station platforms require source-checked tactile bands');
+ assert.equal(report.platformEdging.originalOSMPlatforms,2);
+ assert.equal(report.platformEdging.sourceCheckedPaintedStrips,26);
+ assert(report.platformEdging.paintedMetres>=500&&
+  report.platformEdging.paintedMetres<=505);
+ assert(report.platformEdging.rejectedUnsafeCells>250);
+ assert.equal(report.platformEdging.originalPlatformGeometryPreserved,true);
+ assert.equal(report.platformEdging.originalRailwayGeometryPreserved,true);
+ assert.equal(report.platformEdging.newColliders,0);
  assert.equal(report.audit.machineCount,2);
  assert.equal(report.audit.projectionCount,2);
  assert.equal(report.audit.inFrameCount,2,
