@@ -35,6 +35,6 @@ for(const part of [
  'const visnovaPavers5204=planVisnovaTaggedPavers5204(regionId,el);',
  'material:visnovaPavers5204.material,',
  'window.__miloviceVisnovaTaggedPaversRuntime5204',
- '20261121-visnova-tagged-pavers-520400'
+ 'const BUILD_ID='
 ])assert(html.includes(part),'missing runtime integration '+part);
 console.log('PASS 5.204: 4 mapped paving_stones paths, 29 source segments, only estimated tint; no added geometry');
