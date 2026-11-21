@@ -58,6 +58,46 @@ for(let i=0;i<bs.length;i++){
  assert.equal(r.plinthEdgesRendered,spec.nodes-1);
  assert.equal(r.meshCount,4);
  assert.equal(r.totalTriangles,14*modelWindows+2*(spec.nodes-1));
+ // Exterior-facing frame offsets: reversing the same closed polygon must
+ // still place glazing/frames outside, never through the existing walls.
+ const centroid=w.geometry.slice(0,-1).map(toWorld).reduce(
+  (c,p)=>({x:c.x+p.x/(w.geometry.length-1),
+   y:c.y+p.y/(w.geometry.length-1)}),{x:0,y:0});
+ const outside=(mesh,edgeA,edgeB)=>{
+  const xyz=mesh.geometry.position.array;
+  const p={x:xyz[0],y:xyz[2]};
+  const mid={x:(edgeA.x+edgeB.x)/2,y:(edgeA.y+edgeB.y)/2};
+  const dx=edgeB.x-edgeA.x,dz=edgeB.y-edgeA.y;
+  const signed=(p.x-edgeA.x)*dz-(p.y-edgeA.y)*dx;
+  const polygonArea=w.geometry.slice(0,-1).reduce((sum,g,j)=>{
+   const q=w.geometry[j+1],a=toWorld(g),b=toWorld(q);
+   return sum+a.x*b.y-a.y*b.x;
+  },0);
+  return signed*Math.sign(polygonArea)>0;
+ };
+ const firstPlinth=layer.children[3];
+ const sideA=toWorld(w.geometry[0]),sideB=toWorld(w.geometry[1]);
+ assert(outside(firstPlinth,sideA,sideB),
+  'plinth must offset outside original polygon '+spec.id);
+ const reversedPlan={...p,sourceGeometry:[...p.sourceGeometry].reverse(),
+  facades:p.facades.map(f=>({...f,
+   edgeIndex:p.sourceGeometry.length-2-f.edgeIndex}))};
+ const reverseLayer={children:[],visible:true,add(m){m.parent=this;this.children.push(m);}};
+ const reverseRender=render(THREE,{plan:reversedPlan,toWorld,baseHeight:112,
+  layer:reverseLayer});
+ assert(reverseRender,'reversed winding must render');
+ assert.equal(reverseRender.estimatedWindowsRendered,modelWindows);
+ const reverseStart=toWorld(reversedPlan.sourceGeometry[0]);
+ const reverseNext=toWorld(reversedPlan.sourceGeometry[1]);
+ const reverseFirst=reverseLayer.children[3].geometry.position.array;
+ const reverseCross=(reverseFirst[0]-reverseStart.x)*
+  (reverseNext.y-reverseStart.y)-
+  (reverseFirst[2]-reverseStart.y)*(reverseNext.x-reverseStart.x);
+ const firstCross=(firstPlinth.geometry.position.array[0]-sideA.x)*
+  (sideB.y-sideA.y)-
+  (firstPlinth.geometry.position.array[2]-sideA.y)*(sideB.x-sideA.x);
+ assert(firstCross*reverseCross<0,
+  'outward offset must flip consistently with polygon winding');
  assert(r.allInScene());
  assert.equal(r.visibleAfterLOD(),4);
  assert(layer.children.every(m=>m.userData.estimatedWindows&&
