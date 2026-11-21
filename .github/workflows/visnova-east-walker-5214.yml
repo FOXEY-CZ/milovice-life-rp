@@ -1,0 +1,39 @@
+name: Milovice 5.214 two safe Višňová pedestrians mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - data/regions/mlada.json
+      - scripts/osm-visnova-east-walker-5214.js
+      - scripts/osm-visnova-east-walker-5214.test.mjs
+      - scripts/osm-visnova-east-walker-webgl-5214.mjs
+      - .github/workflows/visnova-east-walker-5214.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify distinct actual OSM sidewalks and no road/house intrusion
+        run: |
+          node scripts/osm-visnova-sidewalk-walker-5213.test.mjs
+          node scripts/osm-visnova-east-walker-5214.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Mobile Chrome WebGL after 6.5s two source-locked walking NPCs
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-visnova-east-walker-webgl-5214.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visnova-two-walkers-5214
+          path: browser-artifacts/visnova-two-walkers-5214-mobile.png
+          if-no-files-found: ignore
