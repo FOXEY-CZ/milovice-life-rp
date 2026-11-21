@@ -66,7 +66,8 @@ for(const token of [
  'const italskaWestBlockPlan5239=planItalskaWestBlock5239({',
  'italskaWestBlockRenderCache5239.set(String(osmId)',
  'italskaWestBlockRenderCache5239.clear();',
- 'italskaWestBlockRendered5239||visnovaParkingHouseRendered5202',
+ 'italskaWestBlockRendered5239||',
+ 'italskaWestResidenceRendered5242||visnovaParkingHouseRendered5202',
  'window.__miloviceItalskaWestBlockRuntime5239=()=>',
  "'italska-west-block-5239':{",
  'href="?v=523900&streetAudit=italska-west-block-5239"'
