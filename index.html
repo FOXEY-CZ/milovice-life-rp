@@ -12477,11 +12477,11 @@ function rpBuildRoadGraph(){
  italskaRoadHeightModel5257=terrainGrid?createItalskaRoadHeight5257({
   roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
   segments:driveSegments,terrainAt
- }):null
+ }):null;
  italskaJunctionGuard5258=createItalskaJunctionGuard5258({
   roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
   segments:driveSegments
- });;
+ });
 }
 // Never invent painted zebras at road intersections. OSM marked crossings
 // are rendered in rpAppendOSMElements where actual road occupancy is known.
@@ -13337,7 +13337,7 @@ function rpAnimateTraffic(dt){
   const movingMetres=Math.min(obj.speed*eased*dt*
    (rightOfWay?.factor??1),rightOfWay?.capMetres??Infinity,
    obj.italskaTurn5255?3.5*dt:Infinity,
-  conflictCaps5258?.get(obj.id)??Infinity);
+   conflictCaps5258?.get(obj.id)??Infinity);
   obj.topolovaYielding5166=rightOfWay?.yielding===true;
   if(obj.topolovaYielding5166)
    obj.topolovaYieldFrames5166=(obj.topolovaYieldFrames5166||0)+1;
