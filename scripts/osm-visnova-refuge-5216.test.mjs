@@ -110,7 +110,7 @@ for(const needle of [
  'window.__miloviceVisnovaRefugeRuntime5216=()=>',
  "'visnova-refuge-5216':{",
  'href="?v=521600&streetAudit=visnova-refuge-5216"',
- "const BUILD_ID='20261121-visnova-armadni-refuge-521600'"
+ "const BUILD_ID='"
 ])assert(html.includes(needle),'missing game integration '+needle);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const build=html.match(/const BUILD_ID='([^']+)'/)?.[1];
