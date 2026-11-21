@@ -1,3 +1,13 @@
+## Milovice RP 5.245 — žádné procházení budovou mezi kontrolními body (21. 11. 2026)
+
+**Ochrana pro budoucí mapu:** Předchozí běžní chodci ze skutečných OpenStreetMap cest měli kontrolu budov jen v pěti místech každého segmentu. Kratší stavební objekt ležící mezi vzorky tak mohl uniknout. V 5.245 se **celá originální pěší trasa kontroluje proti všem skutečným hranám RÚIAN/OSM budov z načtené oblasti**, včetně přímých průsečíků, dotyku s hranou a modelového odstupu 35 cm od stěny. Zrychlení zajišťují jednoduché prostorové obálky budov, aby se přesná matematika nepouštěla pro vzdálené objekty.
+
+Na původních datech regionu Mladá je **1196 budov a 648 vhodných pěších fragmentů**; zpřísněná kontrola **ponechala všech 648**. Neznamená to, že mapa byla chybně zakreslená. Úprava opravuje slabinu algoritmu, kterou nový test jednoznačně demonstruje na úzké modelové budově mezi původními pěti vzorky. Každá cesta zůstává originálním OpenStreetMap úsekem; **žádný nový chodník, budova, průchod, přechod ani kolize**. Zůstává i stávající recyklace neviditelných generických NPC (5.244) a ručně speciálně vedení chodci z dřívějších verzí.
+
+Zdroj `scripts/osm-ambient-building-clearance-5245.js`, test `scripts/osm-ambient-building-clearance-5245.test.mjs`, kontrola `node scripts/dev-check.mjs italska` a GitHub Actions `italska-apartments-5235.yml` včetně mobilního WebGL testu. Diagnostika: `window.__miloviceMappedBuildingClearanceRuntime5245()`. [Otevřít testovací kameru u Italské](https://foxey-cz.github.io/milovice-life-rp/?v=524500&streetAudit=italska-west-residence-5242). **Nový test kompletně prošel v izolovaném JavaScriptovém ověření; Node CLI, reálný mobilní Chromium/SwiftShader, CI a nasazení Pages zatím nemají potvrzený PASS.**
+
+---
+
 ## Milovice RP 5.244 — chodci se inteligentně přesouvají mezi načtenými oblastmi (21. 11. 2026)
 
 Verze 5.243 odstranila falešné generické chodníky tím, že běžné NPC chodce přesunula na původní OSM pěší cesty. Při dlouhém průchodu Milovicemi však NPC lidé z prvních oblastí dál zabírali modelovou kapacitu, ačkoli byli už stovky metrů od hráče; po dosažení limitu 65 osob se tak mohly v nové oblasti přestat objevovat běžné modelové postavy.
