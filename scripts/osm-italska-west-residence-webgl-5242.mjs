@@ -61,6 +61,15 @@ try{
  assert.equal(walkers.noNewCrossings,true);
  assert.equal(walkers.noNewColliders,true);
  assert.equal(walkers.unphotographedPeopleModels,true);
+ const ambientReuse=await page.evaluate(()=>
+  window.__miloviceAmbientReuseRuntime5244?.());
+ assert(ambientReuse?.ready,'5.244 source-mapped actor reuse must initialize');
+ assert.equal(ambientReuse.visibleRelocations,0);
+ assert.equal(ambientReuse.specialActorsRelocated,0);
+ assert.equal(ambientReuse.actorGeometryReused,true);
+ assert.equal(ambientReuse.newWalkways,0);
+ assert.equal(ambientReuse.newRoads,0);
+ assert.equal(ambientReuse.newColliders,0);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/italska-west-residence-5242-mobile.png'});
