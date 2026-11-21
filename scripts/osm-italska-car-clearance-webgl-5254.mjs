@@ -28,6 +28,7 @@ try{
   npc:window.__miloviceItalskaNpcClearanceRuntime5253?.(),
   cars:window.__miloviceItalskaCarClearanceRuntime5254?.(),
   envelope:window.__miloviceItalskaTurnEnvelopeRuntime5254?.(),
+  junctionMotion:window.__miloviceItalskaJunctionMotionRuntime5255?.(),
   view:window.__miloviceStreetAuditRendered,
   meta:document.querySelector('meta[name="milovice-build"]')?.content,
   build:document.getElementById('build-label')?.textContent,
@@ -58,6 +59,13 @@ try{
  assert.equal(result.envelope.physicalSteeringVerified,false);
  assert.equal(result.envelope.actualRoadMeshNotVerified,true);
  assert.equal(result.envelope.originalGpsUnchanged,true);
+ assert.equal(result.junctionMotion?.ready,true);
+ assert.equal(result.junctionMotion.junctions.mappedTurnOptions,4);
+ assert.equal(result.junctionMotion.modelApproachSpeedMps,2.6);
+ assert.equal(result.junctionMotion.visualTurnMetres,4);
+ assert.equal(result.junctionMotion.originalGpsUnchanged,true);
+ assert.equal(result.junctionMotion.roadMeshUnchanged,true);
+ assert.equal(result.junctionMotion.fullPhysicalSteeringVerified,false);
  assert.equal(result.envelope.junctions?.ready,true);
  assert.equal(result.envelope.junctions.mappedTurnOptions,4);
  assert.equal(result.envelope.junctions.turnsOver75Degrees,4);
@@ -73,6 +81,7 @@ try{
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/italska-car-clearance-5254-mobile.png'});
+ await page.screenshot({path:'browser-artifacts/italska-junction-turn-5255-mobile.png'});
  console.log('PASS 5.254 mobile SwiftShader 7.2s LOD: '+result.cars.narrowSegments+
  ' modeled 5m segments, 0 wide NPC vans on them, standard pair '+result.cars.standardPair.passingGapMetres+
  'm; swept corners intentionally not certified');
