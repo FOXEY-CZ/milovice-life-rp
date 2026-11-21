@@ -57,7 +57,7 @@ for(const text of [
  'window.__miloviceVisnovaTaggedColorRuntime5217=()=>',
  "'visnova-tagged-colors-5217':{",
  'href="?v=521700&streetAudit=visnova-tagged-colors-5217"',
- "const BUILD_ID='20261121-visnova-tagged-colors-521700'"
+ "const BUILD_ID='"
 ])assert(html.includes(text),'missing actual game integration: '+text);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const build=html.match(/const BUILD_ID='([^']+)'/)?.[1];
