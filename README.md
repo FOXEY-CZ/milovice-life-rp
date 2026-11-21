@@ -1,3 +1,13 @@
+## Milovice RP 5.247 — chodci už neprojdou ani úzkým zásahem silnice mezi kontrolními body (21. 11. 2026)
+
+V předchozí verzi se průběžně ověřovaly všechny původní hrany budov, ale vzdálenost běžného modelového chodce od silnice se kontrolovala v **pěti bodových vzorcích** na fragmentu. Menší vozovka přesně mezi dvěma vzorky mohla uniknout. **5.247 posuzuje každé místo celé pěší trasy proti existujícím modelovaným šířkám skutečných OSM vozovek:** rozděluje každou trasu na úseky do 0,7 m a kontroluje jejich střed s konzervativním odstupem rozšířeným o půl délky úseku. Matematicky tak zajistí bezpečnost celé středové čáry chodce, nejen bodů.
+
+Stejnou kontrolu mají i obě mezery u původního OSM uzlu, přes který od verze 5.246 procházejí běžní NPC chodci. **Na stávajícím OSM regionu Mladá zůstalo v modelovém auditu všech 648 dřívějších bezpečných pěších fragmentů a 288 ověřených návazností**. Nový syntetický test ukazuje úzké křížení, které stará pětibodová metoda přehlédne. Výsledky nevypovídají o fotograficky ověřené přesnosti každého chodníku; jde o ochranu modelové mapy před vozovkami. Nezměnily se originální GPS, žádná silnice, chodník, přechod, budova, NPC model, kolizní překážka ani zvláštní naprogramovaní chodci Topolová/Višňová/Italská.
+
+Modul: `scripts/osm-ambient-road-clearance-5247.js`, automatický test `scripts/osm-ambient-road-clearance-5247.test.mjs`, kontrola `node scripts/dev-check.mjs italska`, GitHub Actions `italska-apartments-5235.yml`, mobilní Chromium/SwiftShader s 6,5s LOD. Herní diagnostika: `window.__miloviceMappedRoadCorridorRuntime5247()`. [Technický herní pohled u Italské](https://foxey-cz.github.io/milovice-life-rp/?v=524700&streetAudit=italska-west-residence-5242). **GitHub CI, skutečný mobilní WebGL a nasazení GitHub Pages zatím nejsou potvrzeny.**
+
+---
+
 ## Milovice RP 5.246 — navazující chodci bez otáčení na každém OSM uzlu (21. 11. 2026)
 
 **Běžní modeloví chodci mohou nyní plynule projít zatáčkou po dvou sousedních úsecích téže původní OpenStreetMap pěší cesty**, místo aby se na konci každého úseku bezdůvodně otočili. Původní 5.243 trasy se kvůli bezpečnému odstupu od křižovatek zkracovaly na obou koncích o 1,1 m; 5.246 doplňuje možnost projít tyto krátké mezery **přes přesnou původní souřadnici OSM uzlu, po původních dvou směrech hrany**. Chodec tak neřeže zatáčku napříč neexistující cestou a mezi segmenty neteleportuje.

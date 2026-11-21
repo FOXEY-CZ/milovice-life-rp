@@ -11,12 +11,14 @@ import {prepareMappedBuildingFootprints5245 as footprints,
  from './osm-ambient-building-clearance-5245.js';
 import {createRoadClearance} from './road-clearance.js';
 import {safePedestrianPieces,isCarriageway} from './reality-walkways.js';
+import {mappedFootwayAvoidsRoads5247 as roadSafe} from './osm-ambient-road-clearance-5247.js';
 const p=(x,y)=>({x,y});
 const points=[p(0,0),p(40,0),p(40,25),p(63,25)];
 const seg=(index,a,b)=>({kind:'mapped-footway',a,b,
  len:Math.hypot(b.x-a.x,b.y-a.y),sourceOSMWayId:'7',
  sourceEdgeIndex:index,sourceHighway:'footway',regionId:'mlada',
- fullBoundaryClearance5245:true,clippedFromOriginalRoadSafePiece:true,
+ fullBoundaryClearance5245:true,fullRoadCorridorClearance5247:true,
+ clippedFromOriginalRoadSafePiece:true,
  noMappedBuildingOverlap:true,roadShoulder:false});
 const first=seg(0,p(1.1,0),p(38.9,0)),
  second=seg(1,p(40,1.1),p(40,23.9)),
@@ -24,7 +26,7 @@ const first=seg(0,p(1.1,0),p(38.9,0)),
 const originalWays=[{id:7,tags:{highway:'footway'},geometry:points}];
 const synthetic={segments:[first,second,third],ways:originalWays,
  toWorld:q=>q,carriageway:{isClear:()=>true},
- buildingClearance:()=>true};
+ buildingClearance:()=>true,roadCorridorClearance:()=>true};
 const connected=connect(synthetic);
 assert.equal(connected.size,3);
 assert.equal(connected.get(first).forward.segment,second);
@@ -92,7 +94,8 @@ const buildingsXY=footprints(buildings,world);
 assert(buildingsXY.length>700,'real regional original buildings loaded');
 const routes=paths({ways,buildings,regionId:'mlada',widths,
  toWorld:world,clip:safePedestrianPieces,carriageway:road,
- buildingClearance:(a,b)=>clear(a,b,buildingsXY)});
+ buildingClearance:(a,b)=>clear(a,b,buildingsXY),
+ roadCorridorClearance:(a,b)=>roadSafe(a,b,road)});
 assert(routes.length>100,'no regression: sufficient mapped safe walkways');
 assert(routes.every(s=>s.fullBoundaryClearance5245===true));
 assert(routes.some(s=>s.sourceOSMWayId==='1005977571'));
@@ -103,8 +106,8 @@ for(const route of routes){
 }
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),raw);
 const realLinks=connect({segments:routes,ways,toWorld:world,
- carriageway:road,
- buildingClearance:(a,b)=>clear(a,b,buildingsXY)});
+ carriageway:road,buildingClearance:(a,b)=>clear(a,b,buildingsXY),
+ roadCorridorClearance:(a,b)=>roadSafe(a,b,road)});
 assert(realLinks.size>0,'at least one source-verified footway connection in Mlada');
 for(const [s,directions] of realLinks){
  assert(s.fullBoundaryClearance5245===true);
@@ -119,13 +122,13 @@ for(const [s,directions] of realLinks){
 }
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const token of [
- "from './scripts/osm-ambient-continuity-5246.js?v=524600'",
+ "from './scripts/osm-ambient-continuity-5246.js?v=524700'",
  'const osmAmbientFootwayLinks5246=new Map();',
  'planMappedAmbientConnections5246({',
  'advanceMappedAmbientWalker5246({',
  'window.__miloviceMappedAmbientContinuityRuntime5246=()=>',
- 'Verze 5.246'
 ])assert(html.includes(token),'5.246 integration missing '+token);
+assert(Number(html.match(/Verze 5[.](\d+)/)?.[1])>=246);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const id=html.match(/const BUILD_ID='([^']+)'/)?.[1];
 const hud=html.split('id="build-label">')[1]?.split('</strong>')[0];
