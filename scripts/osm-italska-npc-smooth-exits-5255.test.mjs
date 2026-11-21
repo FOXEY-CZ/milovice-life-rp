@@ -135,7 +135,8 @@ for(const token of [
  'window.__miloviceItalskaSmoothNpcRuntime5255=()=>'
 ])assert(html.includes(token),'Missing 5.255 game integration: '+token);
 for(const runtimeToken of ['observedCurveFrames:','maxFrameStepMetres:',
- 'maxFrameYawRadians:','fixtureTurnActive:'])
+ 'maxFrameYawRadians:','fixtureTurnActive:',
+ 'fixtureTurnProgressMetres:'])
  assert(html.includes(runtimeToken),'Missing live NPC curve movement telemetry: '+runtimeToken);
 assert(html.includes('junctionOverrun5255')&&
  html.includes('advanceItalskaSmoothNpcExit5255(smooth,junctionOverrun5255)'),
