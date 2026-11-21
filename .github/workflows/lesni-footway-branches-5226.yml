@@ -1,0 +1,40 @@
+name: Milovice 5.226 original Lesni footway branches mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - data/regions/mlada.json
+      - scripts/osm-lesni-footway-branches-5226.js
+      - scripts/osm-lesni-footway-branches-5226.test.mjs
+      - scripts/osm-lesni-footway-branches-webgl-5226.mjs
+      - scripts/osm-lesni-walk-chain-5225.test.mjs
+      - .github/workflows/lesni-footway-branches-5226.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source GPS locks for two real road branches, 5.225 regression
+        run: |
+          node scripts/osm-lesni-walk-chain-5225.test.mjs
+          node scripts/osm-lesni-footway-branches-5226.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Actual mobile Chromium WebGL mapped connections and safe corner
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-lesni-footway-branches-webgl-5226.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lesni-footway-branches-5226
+          path: browser-artifacts/lesni-footway-branches-5226-mobile.png
+          if-no-files-found: ignore
