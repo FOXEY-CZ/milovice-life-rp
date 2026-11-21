@@ -1,0 +1,40 @@
+name: Milovice 5.230 Sportovni authentic footway network mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - data/regions/mlada.json
+      - scripts/osm-sportovni-footway-network-5230.js
+      - scripts/osm-sportovni-footway-network-5230.test.mjs
+      - scripts/osm-sportovni-footway-network-webgl-5230.mjs
+      - scripts/osm-lesni-north-branches-5229.test.mjs
+      - .github/workflows/sportovni-footway-network-5230.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Node original source locks and 5.229 regression
+        run: |
+          node scripts/osm-lesni-north-branches-5229.test.mjs
+          node scripts/osm-sportovni-footway-network-5230.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Mobile Chromium SwiftShader WebGL real 3D and LOD
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-sportovni-footway-network-webgl-5230.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sportovni-footway-network-5230
+          path: browser-artifacts/sportovni-footway-network-5230-mobile.png
+          if-no-files-found: ignore
