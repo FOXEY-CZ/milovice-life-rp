@@ -8,6 +8,7 @@ import {fileURLToPath} from 'node:url';
 const scriptDir=dirname(fileURLToPath(import.meta.url));
 const packs=Object.freeze({
  sportovni:[
+  'osm-visnova-estate-pavers-5220.test.mjs',
   'osm-visnova-seven-floor-row-5219.test.mjs',
   'osm-visnova-garden-lawns-5218.test.mjs',
   'osm-visnova-tagged-colors-5217.test.mjs',
