@@ -57,7 +57,7 @@ assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const t of [
  "from './scripts/osm-lesni-courtyard-lawns-5231.js?v=523100'",
- 'const courtyardPlan5231=planLesniCourtyardLawns5231(osmPlaygroundLawnWays,',
+ 'const courtyardPlan5231=planLesniCourtyardLawns5231(lesniCourtyardGrassSource5231,',
  'pedestrians:osmPedestrianClearance',
  'window.__miloviceLesniCourtyardLawnsRuntime5231=()=>',
  'window.__miloviceLesniCourtyardLawnsRuntime5231=null;',
