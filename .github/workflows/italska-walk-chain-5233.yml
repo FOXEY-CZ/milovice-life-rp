@@ -5,6 +5,7 @@ on:
       - index.html
       - data/regions/mlada.json
       - scripts/osm-italska-walk-chain-5233.js
+      - scripts/osm-italska-flat-roof-5232.test.mjs
       - scripts/osm-italska-walk-chain-5233.test.mjs
       - scripts/osm-italska-walk-chain-webgl-5233.mjs
       - .github/workflows/italska-walk-chain-5233.yml
