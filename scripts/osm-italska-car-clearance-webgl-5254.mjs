@@ -64,6 +64,10 @@ try{
  assert.equal(result.junctionMotion.mappedTurnCandidates,4);
  assert(result.junctionMotion.safeVisualTurnCandidates>=0);
  assert(result.junctionMotion.safeVisualTurnCandidates<=4);
+ assert(result.junctionMotion.shortCarSafeVisualTurnCandidates>=0);
+ assert(result.junctionMotion.shortCarSafeVisualTurnCandidates<=4);
+ assert(result.junctionMotion.shortCarSafeVisualTurnCandidates>=
+  result.junctionMotion.safeVisualTurnCandidates);
  assert(result.junctionMotion.sourceCandidatePreviews.every(x=>
   x.fromOSM==='8590284'&&
   ['8585601','1107814416'].includes(x.toOSM)));
