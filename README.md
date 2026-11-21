@@ -1,3 +1,15 @@
+## Milovice RP 5.220 — 372 metrů originálních dlážděných chodníků u východní Višňové (21. 11. 2026)
+
+Nová verze zlepšuje **ulici mezi původními bytovými bloky, nikoli další samostatnou budovu**. OSM [pěší cesta 1005977571](https://www.openstreetmap.org/way/1005977571) má 7 původních mapových uzlů, hash `263e12b3` a délku cca **301,17 m**; [pěší cesta 1057549994](https://www.openstreetmap.org/way/1057549994) má 6 původních uzlů, hash `02767378` a délku cca **70,465 m**. U obou původní OSM jednoznačně obsahuje `highway=footway`, `footway=sidewalk`, `lit=yes` a zejména **`surface=paving_stones`**. Jsou to dva samostatné mapové chodníky, nikoli nově vytvořené přímé spojení.
+
+Dosavadní herní pěší 3D pruhy i jejich původní souřadnice zůstávají. Zdrojově ověřený renderer používá na těchto dvou trasách stávající jednotný materiál `visnova-tagged-paving-stones` z 5.204 namísto nevýrazného všeobecného chodníkového povrchu. **Skutečná barva, vzor a rozměry jednotlivých dlaždic nejsou změřené ani fotograficky potvrzené.** Pouze u některých ostrých zatáček kratší 70,5m trasy je možné doplnit až tři drobné trojúhelníky mezi již existujícími pěšími pásy. Konkrétní trojúhelníky musí být mimo mapované vozovky a budovy, jinak se nevytvoří. Původní přibližně rovné vrcholy dlouhé trasy se nevymýšlí ani nekorigují.
+
+Fail-closed modul `scripts/osm-visnova-estate-pavers-5220.js` kontroluje **každý původní GPS bod, zdrojové tagy, OSM ID, délky segmentů a hash**, nepřepíše OSM export, nemění šířku ani kolize, nevytváří nové chodníky, přechody, obrubníky, stromy či parkovací místa. Runtime `window.__miloviceVisnovaEstatePaversRuntime5220()` vrací při skutečném vykreslení počet zdrojových a vykreslených segmentů, přidružený sdílený materiál a LOD stav případných 3D výplní. Kontrolní kamera z originálního OSM uzlu 1005977571 na `50.2288905, 14.8710178` je `?v=522000&streetAudit=visnova-estate-pavers-5220`; směr 20° je technický odhad, není to panorama.
+
+Automatické GitHub Actions: samostatný Node zdrojový test, skutečný mobilní Chromium/SwiftShader WebGL test, celoprojektová validace, Pages. **Výsledky CI/Pages po ověření doplnit, nikdy nepředjímat PASS.**
+
+---
+
 ## Milovice RP 5.219 — tři původní sedmipodlažní bytové domy Višňové (21. 11. 2026)
 
 **Nová souvislá část zástavby:** tři na sebe navazující skutečné OSM/RÚIAN budovy [53865704](https://www.openstreetmap.org/way/53865704), [53865910](https://www.openstreetmap.org/way/53865910) a [53865911](https://www.openstreetmap.org/way/53865911) poblíž východní Višňové/Armádní mají každá explicitně mapovaných **7 podlaží, 48 bytů a vlastní uzavřený pětiuzlový půdorys** přibližně 33 × 12,5 m. Jejich 3D hmoty, střešní tvar a kolizní polygon už ve hře existovaly. Verze 5.219 přidává jen **viditelné návrhové okenní rastry a nízký sokl** po všech **12 původních obvodových stěnách**. Na jednu budovu vychází 168 *modelových* oken (3+9+3+9 × 7 pater), celkem **504 odhadovaných oken / 12 vizuálních meshů / 7080 trojúhelníků** přes již otestovaný čtyřmateriálový renderer 5.192.
