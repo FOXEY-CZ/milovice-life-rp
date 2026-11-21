@@ -41,7 +41,20 @@ try{
  assert.deepEqual(x.sourceHashes,['26506719','263e12b3','4dc63734']);
  assert.equal(x.neutralWayId,'1044078118');
  assert.equal(x.neutralOriginalSegments,10);
- assert.equal(x.renderedOriginalSegments,10);
+ assert.equal(x.processedSourceEdges,10,
+  'all ten original GPS edges must be processed');
+ // Carriageway clearance deliberately removes four unsafe visual strips.
+ // Do not force-render OSM centreline pavement into mapped vehicle lanes.
+ assert.equal(x.renderedOriginalSegments,6);
+ assert.equal(x.sourceEdgeSafetyAudit.length,10);
+ assert.equal(x.unclassifiedSourceEdges,0,'every unpainted source edge must be explained');
+ assert(x.drawnSourceEdges>0&&x.drawnSourceEdges<=6);
+ assert.equal(x.drawnSourceEdges+x.fullyGuardedSourceEdges+
+  x.duplicateSourceEdges+x.unclassifiedSourceEdges,10);
+ for(const a of x.sourceEdgeSafetyAudit)
+  assert(['drawn-safe-piece','carriageway-guard','deduped'].includes(a.outcome));
+ assert(x.sourceEdgeSafetyAudit.every((a,i)=>a.edgeIndex===i+1));
+
  assert.equal(x.neutralOriginalMeters,199.405);
  assert.equal(x.originalNetworkSegments,19);
  assert.equal(x.originalNetworkMeters,532.650);
@@ -58,5 +71,5 @@ try{
  assert.deepEqual(errors,[],'no JS page errors after LOD');
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/visnova-long-sidewalk-5228-mobile.png'});
- console.log('PASS 5.228 mobile WebGL: 199.405m and ten original 3D strips, two exact tagged-paver joins, LOD stable');
+ console.log('PASS 5.228 mobile WebGL: 10 original source edges, 6 safety-clipped rendered strips, two exact tagged-paver joins, LOD stable');
 }finally{await browser.close()}
