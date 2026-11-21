@@ -46,6 +46,9 @@ try{
  assert(result.cars.standardPair.passingGapMetres>.4);
  assert(result.cars.widePair.passingGapMetres<.2);
  assert.equal(result.cars.idealStraightLaneOnly,true);
+ assert(result.cars.roadBends?.interiorBends>0);
+ assert.equal(result.cars.roadBends.turningSweptBodyValidated,false);
+ assert.equal(result.cars.roadBends.originalGpsUnchanged,true);
  assert.equal(result.cars.curvesAndJunctionsNotValidated,true);
  assert.equal(result.cars.roadWidthModelledNotSurveyed,true);
  assert.equal(result.cars.physicalRoadAndSidewalkUnchanged,true);
