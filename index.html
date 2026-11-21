@@ -13334,8 +13334,9 @@ function rpAnimateTraffic(dt){
   if(obj.topolovaYielding5166)
    obj.topolovaYieldFrames5166=(obj.topolovaYieldFrames5166||0)+1;
   if(obj.smoothTurn5255){
+   // Modelled corner pace cap (~12 km/h); no real sign or speed limit claimed.
    const sample=advanceItalskaSmoothNpcExit5255(
-    obj.smoothTurn5255,movingMetres);
+    obj.smoothTurn5255,Math.min(movingMetres,dt*3.25));
    if(sample){
     rpSpinWheels(obj,sample.metresMoved);
     g.position.set(sample.x,terrainAt(sample.x,sample.z)+.045,sample.z);
