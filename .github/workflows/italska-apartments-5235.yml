@@ -1,4 +1,4 @@
-name: Milovice 5.243 Italska original buildings, safe ambient footways and mobile WebGL
+name: Milovice 5.244 Italska pedestrian reuse and source-mapped mobile WebGL
 on:
   push:
     paths:
@@ -21,6 +21,8 @@ on:
       - scripts/osm-italska-west-residence-webgl-5242.mjs
       - scripts/osm-mapped-ambient-walkers-5243.js
       - scripts/osm-mapped-ambient-walkers-5243.test.mjs
+      - scripts/osm-ambient-reuse-5244.js
+      - scripts/osm-ambient-reuse-5244.test.mjs
       - scripts/reality-walkways.js
       - scripts/road-clearance.js
       - scripts/osm-italska-apartments-webgl-5235.mjs
@@ -41,6 +43,7 @@ jobs:
           node-version: '22'
       - name: Check both Italska blocks, material cache and original Visnova facades
         run: |
+          node scripts/osm-ambient-reuse-5244.test.mjs
           node scripts/osm-mapped-ambient-walkers-5243.test.mjs
           node scripts/osm-italska-west-residence-5242.test.mjs
           node scripts/osm-traffic-continuity-5241.test.mjs
@@ -51,7 +54,7 @@ jobs:
           node scripts/osm-italska-west-block-5239.test.mjs
           node scripts/osm-italska-walkers-5234.test.mjs
       - run: npm install --no-save --no-package-lock playwright-core
-      - name: Actual mobile Chromium SwiftShader facades, source-clipped NPC walkways, traffic and 6.5s LOD
+      - name: Actual mobile Chromium SwiftShader facades, offscreen NPC reuse, walkways and 6.5s LOD
         env:
           CHROME_BIN: /usr/bin/google-chrome
         run: |
