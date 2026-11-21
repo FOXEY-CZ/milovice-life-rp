@@ -622,6 +622,7 @@ import {RAKOUSKA_NORTH_PHOTO_5251,extendRakouskaNorthPhoto5251} from './scripts/
 import {ITALSKA_ROAD_SIDEWALK_5252,planItalskaRoadSidewalk5252} from './scripts/osm-italska-road-sidewalk-5252.js?v=525200';
 import {filterItalskaNpcTurns5253,permitItalskaParking5253,inspectItalskaNpcClearance5253} from './scripts/osm-italska-narrow-npc-5253.js?v=525300';
 import {filterItalskaWideCarTurns5254,filterItalskaWideRecycle5254,inspectItalskaCarClearance5254} from './scripts/osm-italska-car-clearance-5254.js?v=525400';
+import {inspectItalskaTurnEnvelope5254} from './scripts/osm-italska-turn-envelope-5254.js?v=525400';
 import {ITALSKA_EMERGENCY_ACCESS_5240,inspectItalskaEmergencyAccess5240,classifyPublicNpcRoad5240} from './scripts/osm-traffic-access-5240.js?v=524000';
 import {planNpcJunction5241,planOffscreenNpcRecycle5241} from './scripts/osm-traffic-continuity-5241.js?v=524100';
 import {planMappedAmbientSegments5243} from './scripts/osm-mapped-ambient-walkers-5243.js?v=524700';
@@ -12469,6 +12470,10 @@ function rpBuildRoadGraph(){
 }
 // Never invent painted zebras at road intersections. OSM marked crossings
 // are rendered in rpAppendOSMElements where actual road occupancy is known.
+window.__miloviceItalskaTurnEnvelopeRuntime5254=()=>inspectItalskaTurnEnvelope5254({
+ roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
+ segments:driveSegments
+});
 window.__miloviceItalskaCarClearanceRuntime5254=()=>inspectItalskaCarClearance5254({
  roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
  segments:driveSegments,cars:trafficCars
