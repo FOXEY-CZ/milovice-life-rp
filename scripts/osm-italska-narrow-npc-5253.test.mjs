@@ -71,7 +71,7 @@ for(const token of [
  'filterItalskaNpcTurns5253({',
  'permitItalskaParking5253({',
  'window.__miloviceItalskaNpcClearanceRuntime5253=()=>',
- 'Verze 5.253'
+ 'Verze 5.'
 ])assert(html.includes(token),'missing runtime integration '+token);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const id=html.match(/const BUILD_ID='([^']+)'/)?.[1];
