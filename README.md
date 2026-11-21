@@ -6,7 +6,7 @@ Hlavní footway dále přesně končí v `50.2292850,14.8700204`, kde se potkáv
 
 Nový fail-closed `scripts/osm-lesni-north-branches-5229.js` přesně zamyká čtyři OSM ways, souřadnice a GPS hashe, délky a tagy. Renderer má per-edge audit `window.__miloviceLesniNorthRuntime5229()`: odděluje zdrojové čtyři úseky od skutečně bezpečně vykreslených klipovaných částí (žádné zásahy do vozovek). Technická kamera `?v=522900&streetAudit=lesni-north-branches-5229` používá skutečný uzel 50.229418,14.8700503 a odhadovaný azimut 350° (NENÍ panorama). **Nula nových silnic, pěších tras, přechodů, pruhů, kolizí, stromů, vchodů, lamp či budov.**
 
-Přidány Node fail-closed/regresní 5.228 testy, mobilní Chromium/SwiftShader WebGL + 6,5s LOD workflow `lesni-north-branches-5229.yml` a registrace dev-check `sportovni`. **Výsledek 5.229 CI a Pages zatím není ověřen.**
+Přidány Node fail-closed/regresní 5.228 testy, mobilní Chromium/SwiftShader WebGL + 6,5s LOD workflow `lesni-north-branches-5229.yml` a registrace dev-check `sportovni`. **OVĚŘENO PASS na herním commitu `e28a0357`:** [5.229 originální OSM GPS Node + regresní 5.228 + skutečný mobilní Chromium/SwiftShader WebGL 6,5s LOD](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44917452653) **SUCCESS**. [Hlavní CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44917452173) **SUCCESS**. [5.228 bezpečné vykreslení 10 zdrojových úseků s 6 skutečnými 3D díly](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44917452691) **SUCCESS**. GitHub Pages nasazení 5.229 zatím neověřeno.
 
 ---
 
@@ -18,7 +18,7 @@ Přesné mapované napojení **na začátku 50.2290044,14.8702188** je stejný G
 
 Nový `scripts/osm-visnova-long-sidewalk-5228.js` je fail-closed zdrojová kontrola všech tří původních OSM ways: přesný počet a pořadí GPS bodů, mapový hash, geometrii, source surface a dvě totožné souřadnice původních spojení. **Nepřibývá žádná nová cesta, chodecké propojení, obrubník, zebra, přechod, strom, světlo, budova, vchod, parkovací plocha nebo collider.** Audit `window.__miloviceVisnovaLongRuntime5228()` kontroluje všechna tři původní ID, deset mapových úseků z nichž poslední mobilní audit vykreslil 6 bezpečných 3D částí a načtení obou už existujících dlažebních částí. Technická kamera `?v=522800&streetAudit=visnova-long-sidewalk-5228` stojí na originálním uzlu GPS 50.2288859,14.8687264, azimut 270° je odhad, ne foto orientace.
 
-Doplněny Node fail-closed a regresní 5.227 testy, skutečný mobilní Chromium/SwiftShader WebGL test s 6,5s LOD, samostatná GitHub Actions CI `visnova-long-sidewalk-5228.yml`, registrace do `scripts/dev-check.mjs sportovni`. **Aktuální stav: kód a testy zapsané na GitHub; SUCCESS CI, skutečné mobilní vykreslení a Pages nasazení nebyly zatím nezávisle ověřeny.**
+Doplněny Node fail-closed a regresní 5.227 testy, skutečný mobilní Chromium/SwiftShader WebGL test s 6,5s LOD, samostatná GitHub Actions CI `visnova-long-sidewalk-5228.yml`, registrace do `scripts/dev-check.mjs sportovni`. **Výsledek opravy:** [Mobile WebGL test 5.228](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44917238645) **SUCCESS** po opravě falešného předpokladu 10 vykreslených místo 10 zdrojových segmentů; skutečný renderer bezpečně vykreslí 6 dílů a ostatní ořízne nebo deduplikuje. Opakovaně [PASS na herním commitu 5.229](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44917452691). Hlavní CI 5.229 **SUCCESS**, GitHub Pages této herní revize zatím není potvrzené.
 
 ---
 
