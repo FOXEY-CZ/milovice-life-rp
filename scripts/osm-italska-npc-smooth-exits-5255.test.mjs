@@ -55,6 +55,30 @@ for(const end of [
   assert.equal(turn.sweptDynamicsValidated,false);
   assert(turn.angleDegrees>75&&turn.angleDegrees<110);
   assert(turn.totalMetres>3&&turn.totalMetres<15);
+  // No teleport at hand-off: entry MUST equal the old mapped lane endpoint,
+  // and exit MUST equal the target mapped lane 4m beyond the junction.
+  const srcNode=end.direction===1?end.from.b:end.from.a;
+  const sourceX=(end.from.b.x-end.from.a.x)/end.from.len,
+   sourceY=(end.from.b.y-end.from.a.y)/end.from.len,
+   sourceOffset=end.direction*end.from.width*.25;
+  const expectedEntry={
+   x:srcNode.x-sourceY*sourceOffset,
+   z:srcNode.y+sourceX*sourceOffset};
+  const startSample=advanceItalskaSmoothNpcExit5255(turn,0);
+  assert(Math.hypot(startSample.x-expectedEntry.x,
+   startSample.z-expectedEntry.z)<.00001,
+   'Curve must meet existing source lane without teleporting');
+  const exitNode=dir===1?to.a:to.b,
+   tx=(to.b.x-to.a.x)/to.len,
+   ty=(to.b.y-to.a.y)/to.len,
+   exitOffset=dir*to.width*.25;
+  const expectedExit={
+   x:exitNode.x+tx*dir*4-ty*exitOffset,
+   z:exitNode.y+ty*dir*4+tx*exitOffset};
+  assert(Math.hypot(turn.controls[3].x-expectedExit.x,
+   turn.controls[3].y-expectedExit.z)<.00001,
+   'Curve must end on the unchanged original destination lane');
+  const departureHeading=Math.atan2(-tx*dir,-ty*dir);
   let last=null,travelled=0,maxStep=0,steps=0,finished=false;
   while(!finished&&steps++<250){
    const p=advanceItalskaSmoothNpcExit5255(turn,.13);
@@ -74,6 +98,11 @@ for(const end of [
   assert(Math.abs(travelled-turn.totalMetres)<1e-6);
   assert(Math.abs(last.destinationProgress-
    (dir===1?4/to.len:1-4/to.len))<1e-8);
+  assert(Math.hypot(last.x-expectedExit.x,last.z-expectedExit.z)<.00001,
+   'Final curve pose must seamlessly meet the standard mapped lane');
+  const departureDelta=Math.abs(last.yaw-departureHeading);
+  assert(Math.min(departureDelta,2*Math.PI-departureDelta)<.00001,
+   'Final curve yaw must match original NPC segment rotation');
   assert.equal(advanceItalskaSmoothNpcExit5255(turn,0).finished,true);
   assert.equal(planItalskaSmoothNpcExit5255({
    ...params,car:{service:'432'}}),null);
