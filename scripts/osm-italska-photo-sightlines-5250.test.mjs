@@ -58,7 +58,7 @@ for(const token of [
  "from './scripts/osm-italska-photo-sightlines-5250.js?v=525000'",
  'filterItalskaPhotoSightlines5250({',
  'window.__miloviceItalskaSightlineRuntime5250=()=>',
- 'Verze 5.252'
+ 'Verze 5.253'
 ])assert(html.includes(token),'missing 5.250 integration: '+token);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const id=html.match(/const BUILD_ID='([^']+)'/)?.[1];

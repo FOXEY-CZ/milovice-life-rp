@@ -95,7 +95,7 @@ for(const token of [
  'renderItalskaVojenskeZatisi5249(THREE,{',
  'window.__miloviceItalskaVojenskeZatisiRuntime5249=()=>',
  "'italska-vojen-zatisi-5249':{",
- 'Verze 5.252'
+ 'Verze 5.253'
 ])assert(html.includes(token),'5.249 integration missing '+token);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const id=html.match(/const BUILD_ID='([^']+)'/)?.[1];
