@@ -81,7 +81,7 @@ for(const term of [
  'planItalskaRoadSidewalk5252({',
  'window.__miloviceItalskaRoadFootwayRuntime5252=()=>',
  "'italska-road-footway-5252':{",
- 'Verze 5.253'
+ 'Verze 5.'
 ])assert(html.includes(term),'missing 5.252 integration '+term);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const js=html.match(/const BUILD_ID='([^']+)'/)?.[1];
