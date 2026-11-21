@@ -31,4 +31,12 @@ assert.equal(report.wideNpcCarsOnNarrow,0);
 assert.equal(report.curvesAndJunctionsNotValidated,true);
 assert.equal(inspectItalskaCarClearance5254({roadPlan:plan,segments:[narrow],cars:[{seg:narrow,wideModel5254:true}]}).ready,false);
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),raw);
+const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+for(const token of [
+ "from './scripts/osm-italska-car-clearance-5254.js?v=525400'",
+ 'wideModel5254:type!==7&&index%8===6',
+ 'filterItalskaWideCarTurns5254({',
+ 'filterItalskaWideRecycle5254({',
+ 'window.__miloviceItalskaCarClearanceRuntime5254=()=>'
+])assert(html.includes(token),'missing in-game 5.254 integration '+token);
 console.log('PASS 5.254: standard-car model envelope fits straight 5m lane; wide van cannot claim adequate passing clearance; source GPS untouched');
