@@ -131,6 +131,8 @@ for(const [from,direction,wayId] of [
 assert.equal(cases.length,4);
 assert.equal(cases.every(x=>x.modelLength===5.08),true);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+assert(html.includes('Verze 5.255'));
+assert(html.includes('20261121-italska-junction-turn-525500'));
 for(const tag of ['osm-italska-junction-turn-5255.js?v=525500',
  'window.__miloviceItalskaJunctionMotionRuntime5255',
  'capItalskaApproach5255({','planItalskaTurn5255({',
