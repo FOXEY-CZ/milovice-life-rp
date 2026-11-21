@@ -1,3 +1,13 @@
+## Milovice RP 5.215 — jeden chodec, tři skutečné navazující úseky Višňové (21. 11. 2026)
+
+Původní simulovaný východní chodec 5.214 už nemá končit po jediném přímém úseku. Nyní používá **tři na sebe přímo navazující segmenty původní OSM pěší cesty [way/1044078118](https://www.openstreetmap.org/way/1044078118)**, její uzly 0→1→2→3, včetně původních zalomení. Z geodeticky nepřesného, ale zdrojově daného GPS převodu vychází celková délka cca 53 m, po odříznutí 3,3 m na každém konci asi **46,45 m skutečně animované trasy**. Dál nepokračuje z bezpečnostních důvodů: následující části jsou v původní mapě blíž vozovce/budovám.
+
+Nový modul `scripts/osm-visnova-continuous-walker-5215.js` vyžaduje zdrojový hash `26506719`, 11 uzlů a správné původní tagy, kontroluje původní mapované automobilové osy a domy podél všech tří úseků a při kolizi či změně zdroje odmítne rozšíření. OSM way **nemá surface tag**, takže si nedovozujeme dlažbu. Postava je jen **herní simulace**, nikoliv fotograficky doložený skutečný člověk. Kreslení používá stále původní druhý NPC rig 5.214, pohybové animace, DEM a LOD. **Žádný nový NPC, mesh chodníku, spojovací cesta, přechod, silnice, vchod, stavba ani kolize**.
+
+Technická kamera: `?v=521500&streetAudit=visnova-continuous-walker-5215` na původním GPS uzlu 50.2290436, 14.8699847; azimut je herní odhad. Diagnostika `window.__miloviceVisnovaContinuousRuntime5215()` sleduje reálnou polohu a index úseku. Přibyl source-lock Node test i samostatný mobilní Chromium/WebGL workflow; skutečný PASS nové 5.215 verze je nutno vyčíst až z dokončeného GitHub Actions/Pages běhu. Starý 5.214 test zůstává součástí regresní sady.
+
+---
+
 ## Milovice RP 5.193 — úplná hlavní fasádní obálka bytovek Višňová 572 a 573 (20. 11. 2026)
 
 **Konkrétní viditelná oprava dvou existujících domů:** předchozí model 5.192 vykresloval modelová okna na 4 dlouhých původních hranách **Višňová 572** a 2 dlouhých hranách **Višňová 573**, zatímco skutečné **čelní stěny** půdorysů RÚIAN zůstaly zcela prázdné. Nová 5.193 doplňuje na původní (GPS neměněné) koncové obvodové hrany další **4 hlavní fasády**: dům 572 na RÚIAN hranách `12` (~15,953 m) a `20` (~15,793 m), dům 573 na hranách `0` (~17,124 m) a `3` (~17,133 m). Tím získávají modelová okna **všechny výrazné hlavní vnější stěny obou domů**: celkem 6 fasád u 572 a 4 fasády u 573. Drobná zalomení půdorysu zůstávají stále plnými stěnami.
