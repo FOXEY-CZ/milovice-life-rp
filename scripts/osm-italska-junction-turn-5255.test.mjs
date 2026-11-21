@@ -5,6 +5,12 @@ import {ITALSKA_TURN_MOTION_5255 as constants,
  isItalskaSourceTurn5255,planItalskaTurn5255,
  capItalskaApproach5255,capItalskaExit5255,
  sampleItalskaTurn5255} from './osm-italska-junction-turn-5255.js';
+const modelSource=readFileSync(new URL('./world-models.js',import.meta.url),'utf8');
+assert(modelSource.includes(
+ 'const length=[4.45,4.15,4.75,4.28,4.62,4.86,5.08,4.34][variant];'),
+ '3D model lengths drifted; recheck guarded visual turn envelope');
+assert.deepEqual(constants.modelBodyLengthsMetres,
+ [4.45,4.15,4.75,4.28,4.62,4.86,5.08,4.34]);
 const raw=readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8');
 const region=JSON.parse(raw).elements;
 const road=region.find(x=>x.id===8590284),sidewalk=region.find(x=>x.id===1484073943);
@@ -45,6 +51,14 @@ assert(sharp?.sourceLocked);
 assert.equal(sharp.originalGPSUnchanged,true);
 assert.equal(sharp.physicalSteeringVerified,false);
 assert.equal(sharp.roadMeshCollisionVerified,false);
+const shortCar=planItalskaTurn5255({...params,
+ modelLength:constants.modelBodyLengthsMetres[1]});
+assert(shortCar?.sourceLocked);
+assert.equal(shortCar.visualBlendSafe,true,
+ 'Short source-model car should pass this synthetic 90 degree model-lane envelope');
+assert.equal(shortCar.checkedBodySamples,25);
+assert.equal(shortCar.modelLength,4.15);
+
 const sharpExitSpeed=capItalskaExit5255({
  turn:sharp,segment:next,direction:1,progress:.2
 });
@@ -120,7 +134,8 @@ const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const tag of ['osm-italska-junction-turn-5255.js?v=525500',
  'window.__miloviceItalskaJunctionMotionRuntime5255',
  'capItalskaApproach5255({','planItalskaTurn5255({',
- 'sampleItalskaTurn5255({','capItalskaExit5255({'])
+ 'sampleItalskaTurn5255({','capItalskaExit5255({',
+ 'bodyLength5255:type===7?null:ITALSKA_TURN_MOTION_5255.modelBodyLengthsMetres[index%8]'])
  assert(html.includes(tag),'missing gameplay integration '+tag);
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),raw);
 console.log('PASS 5.255: 4 original map junction arms, modeled low-speed NPC turns, visual blends only with 25 body-corner proxy samples, original GPS untouched');
