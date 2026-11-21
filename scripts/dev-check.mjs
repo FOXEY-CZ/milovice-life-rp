@@ -91,6 +91,7 @@ const packs=Object.freeze({
   'osm-sportovni-sidewalk-5139.test.mjs'
  ],
  budovy:[
+  'osm-italska-flat-roof-5232.test.mjs',
   'facade-anchors.test.mjs',
   'facade-perimeter.test.mjs',
   'entrance-grade.test.mjs',

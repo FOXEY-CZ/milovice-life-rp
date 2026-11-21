@@ -1,0 +1,39 @@
+name: Milovice 5.232 OSM Italska mapped flat roof mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - data/regions/mlada.json
+      - scripts/osm-italska-flat-roof-5232.js
+      - scripts/osm-italska-flat-roof-5232.test.mjs
+      - scripts/osm-italska-flat-roof-webgl-5232.mjs
+      - .github/workflows/italska-flat-roof-5232.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-roof-and-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: OSM RUIAN exact flat roof source and previous grass regression
+        run: |
+          node scripts/osm-lesni-courtyard-lawns-5231.test.mjs
+          node scripts/osm-italska-flat-roof-5232.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Real mobile Chrome SwiftShader roof with LOD
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-italska-flat-roof-webgl-5232.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: italska-flat-roof-5232
+          path: browser-artifacts/italska-flat-roof-5232-mobile.png
+          if-no-files-found: ignore

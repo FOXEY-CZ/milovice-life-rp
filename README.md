@@ -1,3 +1,13 @@
+## Milovice RP 5.232 — Italská: skutečný OSM tvar ploché střechy (21. 11. 2026)
+
+Na původním OSM/RÚIAN domě [1112779894](https://www.openstreetmap.org/way/1112779894) na ulici Italská je explicitní **`roof:shape=flat`**, dále **2 podlaží / 1 byt**, RÚIAN `108055060`; původní 5 GPS bodů, FNV `e0c358f5`, mapovaný půdorys přibližně **169,226 m²**. Dřívější obecné modelování mohlo tomuto domu přidělit odhadnutou šikmou střechu. **5.232 nyní upřednostní skutečný OSM typ ploché střechy**, pouze pro tento přesně ověřený zdroj, a použije stávající původní plochý střešní cap (ShapeGeometry); nevytváří nový střešní objem ani kolize.
+
+`scripts/osm-italska-flat-roof-5232.js` fail-closed ověřuje přesné OSM tagy, počet a uzavření uzlů, GPS hash i přibližnou plochu. Ručně či fotograficky schválená architektura má přednost a není přepsána. **OSM stavba, půdorys, původní stěny, výška modelu, cesta, chodník, okna, dveře, vozidla a hráčské kolize beze změny**. Tvar `flat` je mapově doložený; **reálná výška, barvy, detaily fasády ani střešní vybavení nejsou fotograficky ověřené**.
+
+Přímý technický pohled: `?v=523200&streetAudit=italska-flat-roof-5232` z existujícího OSM pěšího uzlu **50.2264572, 14.8767305**, odhad heading 18° (není shoda s panoramatem). Audit `window.__miloviceItalskaFlatRoofRuntime5232()` kontroluje skutečné vykreslení existující ploché střechy včetně mobilního LOD. Zdrojový Node test včetně mutací GPS/tagů, předchozí regrese 5.231 a samostatný mobilní Chromium/SwiftShader WebGL + 6,5s LOD workflow `italska-flat-roof-5232.yml`. Nový test je i v `node scripts/dev-check.mjs budovy`. **Při implementaci CI a nasazení teprve čekají na ověření.**
+
+---
+
 ## Milovice RP 5.231 — 206,33 m² původních travnatých dvorů Lesní / Višňová (21. 11. 2026)
 
 Původní OSM `landuse=grass` v okolí poslední pěší sítě doplňuje trojice skutečných zdrojových polygonů: [1460019789](https://www.openstreetmap.org/way/1460019789) (**69,50 m²**, 7 GPS uzlů, hash `b977361a`), [1460019790](https://www.openstreetmap.org/way/1460019790) (**53,22 m²**, 5 uzlů, hash `70d93254`) a [1460019792](https://www.openstreetmap.org/way/1460019792) (**83,61 m²**, 7 uzlů, hash `e17fd422`). Celkem **206,33 m²** stávající zeleně. Mapový půdorys / typ plochy jsou ze zdrojových OSM souřadnic; přesný travní porost, druh, výška a poloha jednotlivých stébel **nejsou fotoověřené**.
