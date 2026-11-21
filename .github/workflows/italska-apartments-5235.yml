@@ -1,4 +1,4 @@
-name: Milovice 5.245 original building-edge clearance and mobile NPC WebGL
+name: Milovice 5.246 original footway continuity and mobile NPC WebGL
 on:
   push:
     paths:
@@ -25,6 +25,8 @@ on:
       - scripts/osm-ambient-reuse-5244.test.mjs
       - scripts/osm-ambient-building-clearance-5245.js
       - scripts/osm-ambient-building-clearance-5245.test.mjs
+      - scripts/osm-ambient-continuity-5246.js
+      - scripts/osm-ambient-continuity-5246.test.mjs
       - scripts/reality-walkways.js
       - scripts/road-clearance.js
       - scripts/osm-italska-apartments-webgl-5235.mjs
@@ -45,6 +47,7 @@ jobs:
           node-version: '22'
       - name: Check both Italska blocks, material cache and original Visnova facades
         run: |
+          node scripts/osm-ambient-continuity-5246.test.mjs
           node scripts/osm-ambient-building-clearance-5245.test.mjs
           node scripts/osm-ambient-reuse-5244.test.mjs
           node scripts/osm-mapped-ambient-walkers-5243.test.mjs
