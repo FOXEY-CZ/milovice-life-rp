@@ -1,3 +1,13 @@
+## Milovice RP 5.241 — auta NPC už nepřeskakují z konce jednosměrky na cizí ulici (21. 11. 2026)
+
+Oprava napojení dopravy: dřívější systém na konci jednosměrné komunikace bez výjezdu přesměroval běžné NPC auto na libovolný úplně jiný segment z městské silniční sítě. Nově **každá další trasa musí skutečně geometricky navazovat** a respektovat směr jednosměrky. Když na konci jednosměrky navazující povolená trasa není, NPC zastaví. Neviditelné auto lze recyklovat na jiném původním povoleném úseku pouze při odstupu **více než 360 m od hráče i od všech aktivních technických kamer** pro staré a nové místo; v záběru nedochází k náhlému přeskoku. Dvousměrné slepé cesty zachovávají dosavadní otočení.
+
+Změna pracuje výhradně se stávajícím grafem civilní NPC dopravy po OSM 5.240; tedy **žádná nová vymyšlená ulice, odbočka, chodník, zebra, značka, kolize ani úprava GPS**. Zůstává zachována požární přístupová komunikace u Italské [OSM 1272081401](https://www.openstreetmap.org/way/1272081401) mimo civilní routing. Původní 3D svět i hráčské ovládání zůstávají stejné.
+
+Zdroj: `scripts/osm-traffic-continuity-5241.js` a `scripts/osm-traffic-continuity-5241.test.mjs`. V konzoli `window.__miloviceTrafficContinuityRuntime5241()` vrací počet zastavených koncových aut a recyklací mimo dohled. Kontrola `node scripts/dev-check.mjs italska` a workflow `italska-apartments-5235.yml` navazují na 5.240 i předchozí budovy; mobilní Chromium/SwiftShader 5.239 má dodatečnou kontrolu. **15 cílených kontrol logiky/napojení prošlo; GitHub Actions a Pages se zatím nepodařilo potvrdit jako PASS na nejnovější revizi.** Přímý technický pohled na Italskou: [otevřít kameru](https://foxey-cz.github.io/milovice-life-rp/?v=524100&streetAudit=italska-west-block-5239).
+
+---
+
 ## Milovice RP 5.240 — Italská: správný přístup civilní dopravy na původních OSM cestách (21. 11. 2026)
 
 Běžná auta NPC nyní respektují přístupová omezení původních mapovaných silnic: **motor_vehicle, vehicle, access** (například no, private, permit, destination) a výslovné service=emergency_access. Předchozí graf používal jen základní access a některé náhodně řízené automobily mohl směrovat na cesty, kde veřejný motorový provoz není povolen. **Mění se pouze civilní NPC routing**, nikoli samotné mapové silnice: hráč, povrchy, budovy, kolize a původní GPS zůstávají beze změny.
