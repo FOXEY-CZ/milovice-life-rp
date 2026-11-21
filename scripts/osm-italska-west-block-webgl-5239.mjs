@@ -1,4 +1,4 @@
-// Milovice 5.239 — actual mobile WebGL + 6.5s LOD on original 12-floor RUIAN shell.
+// Milovice 5.239 — actual mobile WebGL + 6.5s LOD on original 2-floor RUIAN shell.
 import assert from 'node:assert/strict';
 import {mkdir} from 'node:fs/promises';
 import {chromium} from 'playwright-core';
