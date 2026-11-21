@@ -94,6 +94,9 @@ for(const token of [
  'advanceItalskaSmoothNpcExit5255(',
  'window.__miloviceItalskaSmoothNpcRuntime5255=()=>'
 ])assert(html.includes(token),'Missing 5.255 game integration: '+token);
+for(const runtimeToken of ['observedCurveFrames:','maxFrameStepMetres:',
+ 'maxFrameYawRadians:','fixtureTurnActive:'])
+ assert(html.includes(runtimeToken),'Missing live NPC curve movement telemetry: '+runtimeToken);
 assert(html.includes('Math.min(movingMetres,dt*3.25)'),
  'Smooth NPC junction must keep conservative 3.25 m/s modeled corner pace');
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),raw);
