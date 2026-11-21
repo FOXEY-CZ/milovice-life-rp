@@ -1,3 +1,13 @@
+## Milovice RP 5.217 — původní žlutá fasáda a hnědá střecha jedné skutečně mapované budovy u Višňové (21. 11. 2026)
+
+**Konkrétní zdrojově doložená úprava zástavby:** v původním OSM exportu pro Mladou je budova [way/1456361921](https://www.openstreetmap.org/way/1456361921) poblíž Višňové/Armádní s explicitními tagy `building=yes`, `building:levels=3`, `building:colour=#fec700`, `roof:colour=#583400`. Zamčený 5uzlový polygon má hash `28e92fa9` a přibližnou plochu 181,31 m². Dříve tento konkrétní objekt dědil náhodně vybrané fasádní a střešní odstíny z obecné palety. Nyní stejná původní budova skutečně používá **žlutou fasádu #FEC700 a hnědou střechu #583400** přímo ze zdrojových tagů, se dvěma sdílenými vlastními materiály bez náhodných barevných textur.
+
+**Žádná další vymyšlená stavba nebo vstup:** modul `scripts/osm-visnova-tagged-colors-5217.js` nejprve ověří původní OSM geometrii/tagy/oblast a nezasáhne do schváleného fotografického či manuálního modelu. Zůstávají stejné původní GPS stěny, 3 podlaží, původní modelová výška i herní střešní tvar, vozovky, chodníky, NPC a collidery. OSM barvy **nejsou aktuální fotografický průzkum**; z těchto tagů neznáme přesný typ střechy, polohy oken, vstupní dveře ani stav budovy v roce 2026. Nejsou proto v této úpravě domýšlené.
+
+Technický herní pohled z existujícího OSM uzlu chodníku: `?v=521700&streetAudit=visnova-tagged-colors-5217`; jeho azimut 235° je pouze odhad směru k mapovanému obrysu. `window.__miloviceVisnovaTaggedColorRuntime5217()` kontroluje zdrojovou geometrii, skutečné barvy materiálů ve scéně, typ střechy jako nepodložený OSM a viditelnost po LOD. Nové Node source-lock a mobilní WebGL testy + GitHub Actions workflow jsou přidané, ale jejich **PASS je potřeba potvrdit až po doběhnutí**.
+
+---
+
 ## Milovice RP 5.216 — mapovaná zebra s ostrůvkem u východního konce Višňové (21. 11. 2026)
 
 **Viditelná oprava skutečného uličního objektu:** původní OSM [přechod/1044078120](https://www.openstreetmap.org/way/1044078120) v ulici Armádní poblíž Višňové má explicitní `crossing:island=yes`, `crossing:markings=zebra`, a tři původní GPS uzly. Jeho prostřední uzel `50.2291512,14.8694981` přesně odpovídá původnímu prostřednímu uzlu OSM [silnice/1331897686](https://www.openstreetmap.org/way/1331897686). Dřívější univerzální kreslení zebry nerozlišovalo ostrůvek. Verze 5.216 zachová obě původní pěší ramena (cca 5,04 m a 6,81 m), na přesném mapovaném středu vykreslí **jeden nízký osmiúhelníkový 3D model ostrůvku / 24 trojúhelníků** a vodorovné značení rozdělí na dvě části tak, aby neprocházelo přes středový model. Použitá geometrie i stávající modelový materiál jsou GPU úsporné.
