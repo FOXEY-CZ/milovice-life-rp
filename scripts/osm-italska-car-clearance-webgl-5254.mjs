@@ -58,6 +58,10 @@ try{
  assert.equal(result.envelope.physicalSteeringVerified,false);
  assert.equal(result.envelope.actualRoadMeshNotVerified,true);
  assert.equal(result.envelope.originalGpsUnchanged,true);
+ assert.equal(result.envelope.junctions?.ready,true);
+ assert.equal(result.envelope.junctions.mappedTurnOptions,4);
+ assert.equal(result.envelope.junctions.turnsOver75Degrees,4);
+ assert.equal(result.envelope.junctions.intersectionClearanceVerified,false);
  assert.equal(result.cars.physicalRoadAndSidewalkUnchanged,true);
  assert.equal(result.cars.playerVehiclesUnchanged,true);
  assert.equal(result.cars.originalGpsUnchanged,true);
