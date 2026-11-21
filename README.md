@@ -1,3 +1,13 @@
+## Milovice RP 5.246 — navazující chodci bez otáčení na každém OSM uzlu (21. 11. 2026)
+
+**Běžní modeloví chodci mohou nyní plynule projít zatáčkou po dvou sousedních úsecích téže původní OpenStreetMap pěší cesty**, místo aby se na konci každého úseku bezdůvodně otočili. Původní 5.243 trasy se kvůli bezpečnému odstupu od křižovatek zkracovaly na obou koncích o 1,1 m; 5.246 doplňuje možnost projít tyto krátké mezery **přes přesnou původní souřadnici OSM uzlu, po původních dvou směrech hrany**. Chodec tak neřeže zatáčku napříč neexistující cestou a mezi segmenty neteleportuje.
+
+Přechod je povolen jen tehdy, když obě strany patří **stejnému originálnímu OSM way a sousedním původním hranám**, přesně navazují na původní OSM uzel (max. 4,5 cm tolerance), jsou již označené bezpečnostní 5.245 kontrolou celé trasy vůči budovám a **každý kousek 1,1m mezery zvlášť** projde souvislou kontrolou proti originálním obrysům budov a po nejvýše 20cm vzorcích proti vozovkám. Pokud mapová cesta u uzlu nepokračuje nebo byla oříznuta u vozovky, zůstává dosavadní bezpečné otočení. Modeloví **speciální chodci Topolová, Višňová a Italská** zůstávají beze změny, stejně jako recyklace generických modelů mimo záběr 5.244. Počítačové oblečení, počet a motivace postav nejsou fotografická dokumentace reality.
+
+**Žádné nové OSM GPS body, chodníky, silnice, přechody, stavební objekty ani kolize.** Implementace: `scripts/osm-ambient-continuity-5246.js`, test `scripts/osm-ambient-continuity-5246.test.mjs`, `node scripts/dev-check.mjs italska`, GitHub workflow `italska-apartments-5235.yml` a mobilní Chromium/SwiftShader test 5.242 po 6,5s LOD. Herní diagnostika `window.__miloviceMappedAmbientContinuityRuntime5246()` vypisuje počet zdrojově ověřených napojení a skutečných přechodů NPC. [Vyzkoušet technický pohled u Italské](https://foxey-cz.github.io/milovice-life-rp/?v=524600&streetAudit=italska-west-residence-5242). **Izolovaný Node test syntetických napojení prošel; testy nad úplným původním Mladá OSM exportem, reálný mobilní WebGL, CI a GitHub Pages zatím čekají na potvrzení.**
+
+---
+
 ## Milovice RP 5.245 — žádné procházení budovou mezi kontrolními body (21. 11. 2026)
 
 **Ochrana pro budoucí mapu:** Předchozí běžní chodci ze skutečných OpenStreetMap cest měli kontrolu budov jen v pěti místech každého segmentu. Kratší stavební objekt ležící mezi vzorky tak mohl uniknout. V 5.245 se **celá originální pěší trasa kontroluje proti všem skutečným hranám RÚIAN/OSM budov z načtené oblasti**, včetně přímých průsečíků, dotyku s hranou a modelového odstupu 35 cm od stěny. Zrychlení zajišťují jednoduché prostorové obálky budov, aby se přesná matematika nepouštěla pro vzdálené objekty.
