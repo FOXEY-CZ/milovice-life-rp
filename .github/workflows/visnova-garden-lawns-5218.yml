@@ -1,0 +1,40 @@
+name: Milovice 5.218 three more source-locked Višňová lawns mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - data/regions/mlada.json
+      - scripts/osm-visnova-garden-lawns-5218.js
+      - scripts/osm-visnova-garden-lawns-5218.test.mjs
+      - scripts/osm-visnova-garden-lawns-webgl-5218.mjs
+      - scripts/osm-visnova-tagged-colors-5217.test.mjs
+      - .github/workflows/visnova-garden-lawns-5218.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify exact three ORIGINAL OSM lawn polygons and 5.217 facade colours
+        run: |
+          node scripts/osm-visnova-tagged-colors-5217.test.mjs
+          node scripts/osm-visnova-garden-lawns-5218.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Mobile Chromium real WebGL source-mapped lawns/terrain/LOD
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-visnova-garden-lawns-webgl-5218.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visnova-garden-lawns-5218
+          path: browser-artifacts/visnova-garden-lawns-5218-mobile.png
+          if-no-files-found: ignore
