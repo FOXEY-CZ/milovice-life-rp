@@ -61,6 +61,12 @@ try{
  assert.equal(result.envelope.originalGpsUnchanged,true);
  assert.equal(result.junctionMotion?.ready,true);
  assert.equal(result.junctionMotion.junctions.mappedTurnOptions,4);
+ assert.equal(result.junctionMotion.mappedTurnCandidates,4);
+ assert(result.junctionMotion.safeVisualTurnCandidates>=0);
+ assert(result.junctionMotion.safeVisualTurnCandidates<=4);
+ assert(result.junctionMotion.sourceCandidatePreviews.every(x=>
+  x.fromOSM==='8590284'&&
+  ['8585601','1107814416'].includes(x.toOSM)));
  assert.equal(result.junctionMotion.modelApproachSpeedMps,2.6);
  assert.equal(result.junctionMotion.visualTurnMetres,4);
  assert.equal(result.junctionMotion.originalGpsUnchanged,true);
