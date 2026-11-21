@@ -622,7 +622,8 @@ import {RAKOUSKA_NORTH_PHOTO_5251,extendRakouskaNorthPhoto5251} from './scripts/
 import {ITALSKA_ROAD_SIDEWALK_5252,planItalskaRoadSidewalk5252} from './scripts/osm-italska-road-sidewalk-5252.js?v=525200';
 import {filterItalskaNpcTurns5253,permitItalskaParking5253,inspectItalskaNpcClearance5253} from './scripts/osm-italska-narrow-npc-5253.js?v=525300';
 import {filterItalskaWideCarTurns5254,filterItalskaWideRecycle5254,inspectItalskaCarClearance5254} from './scripts/osm-italska-car-clearance-5254.js?v=525400';
-import {inspectItalskaTurnEnvelope5254} from './scripts/osm-italska-turn-envelope-5254.js?v=525400';
+import {inspectItalskaTurnEnvelope5254,inspectItalskaJunctionAngles5254} from './scripts/osm-italska-turn-envelope-5254.js?v=525400';
+import {ITALSKA_TURN_MOTION_5255,isItalskaSourceTurn5255,capItalskaApproach5255,planItalskaTurn5255,sampleItalskaTurn5255,capItalskaExit5255} from './scripts/osm-italska-junction-turn-5255.js?v=525500';
 import {ITALSKA_EMERGENCY_ACCESS_5240,inspectItalskaEmergencyAccess5240,classifyPublicNpcRoad5240} from './scripts/osm-traffic-access-5240.js?v=524000';
 import {planNpcJunction5241,planOffscreenNpcRecycle5241} from './scripts/osm-traffic-continuity-5241.js?v=524100';
 import {planMappedAmbientSegments5243} from './scripts/osm-mapped-ambient-walkers-5243.js?v=524700';
@@ -12470,6 +12471,23 @@ function rpBuildRoadGraph(){
 }
 // Never invent painted zebras at road intersections. OSM marked crossings
 // are rendered in rpAppendOSMElements where actual road occupancy is known.
+const italskaTurnStats5255={approachFrames:0,exitFrames:0,sourceTurns:0,visualBlends:0,safeFallbacks:0};
+window.__miloviceItalskaJunctionMotionRuntime5255=()=>{
+ const plan=window.__miloviceItalskaRoadFootwayAudit5252;
+ const junctions=inspectItalskaJunctionAngles5254({roadPlan:plan,segments:driveSegments});
+ return {version:'5.255',modelOnly:true,sourceOSMId:'8590284',
+  junctions,approachFrames:italskaTurnStats5255.approachFrames,
+  exitFrames:italskaTurnStats5255.exitFrames,
+  sourceTurns:italskaTurnStats5255.sourceTurns,
+  visuallyEasedTurns:italskaTurnStats5255.visualBlends,
+  unsafeEasingFallbacks:italskaTurnStats5255.safeFallbacks,
+  modelApproachSpeedMps:ITALSKA_TURN_MOTION_5255.speedCapMps,
+  visualTurnMetres:ITALSKA_TURN_MOTION_5255.turnMetres,
+  originalGpsUnchanged:true,roadMeshUnchanged:true,
+  fullPhysicalSteeringVerified:false,photoMeasuredRoadWidth:false,
+  ready:window.__miloviceAreasLoaded?.includes('mlada')===true&&
+   junctions.ready===true&&junctions.mappedTurnOptions===4};
+};
 window.__miloviceItalskaTurnEnvelopeRuntime5254=()=>inspectItalskaTurnEnvelope5254({
  roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
  segments:driveSegments
@@ -13182,21 +13200,38 @@ window.__miloviceTrafficContinuityRuntime5241=()=>({
  ready:window.__miloviceTrafficAccessRuntime5240?.()?.ready===true&&
   driveSegments.length>0&&trafficContinuityStats5241.visibleTeleports===0
 });
+function rpNpcOutgoingAt5255(car,point){
+ return filterItalskaWideCarTurns5254({
+  roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,car,
+  outgoing:filterItalskaNpcTurns5253({
+   roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
+   car,outgoing:driveGraph.get(roadNode(point))||[]
+  })
+ });
+}
 function rpNextStreet(car){
+ const previousSegment=car.seg,previousDirection=car.direction;
  const point=car.direction===1?car.seg.b:car.seg.a;
  const decision=planNpcJunction5241({
   segment:car.seg,direction:car.direction,turns:car.turns,
-  outgoing:filterItalskaWideCarTurns5254({
-   roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,car,
-   outgoing:filterItalskaNpcTurns5253({
-    roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
-    car,outgoing:driveGraph.get(roadNode(point))||[]
-   })
-  })
+  outgoing:rpNpcOutgoingAt5255(car,point)
  });
  if(!decision){
+  car.italskaTurn5255=null;
   car.progress=car.direction===1?1:0;car.trafficTerminal5241=true;
   trafficContinuityStats5241.terminals++;return;
+ }
+ const transition=decision.mode==='connected'&&!car.service&&!car.driven?
+  planItalskaTurn5255({
+   roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
+   from:previousSegment,direction:previousDirection,
+   to:decision.segment,nextDirection:decision.direction
+  }):null;
+ car.italskaTurn5255=transition;
+ if(transition){
+  italskaTurnStats5255.sourceTurns++;
+  if(transition.visualBlendSafe)italskaTurnStats5255.visualBlends++;
+  else italskaTurnStats5255.safeFallbacks++;
  }
  car.seg=decision.segment;car.direction=decision.direction;
  car.progress=decision.progress;car.turns+=decision.turnIncrement;
@@ -13279,8 +13314,31 @@ function rpAnimateTraffic(dt){
   const eased=frontDist<5?0:frontDist<13?Math.max(0,(frontDist-5)/8):1;
   const rightOfWay=topolovaYieldCar5166(
    topolovaPriorityControls5166,obj,intent5166,dt);
+  let approachSpeedCap=Infinity;
+  const remainingToNode=(obj.direction===1?1-obj.progress:obj.progress)*obj.seg.len;
+  if(!obj.service&&remainingToNode>=0&&remainingToNode<=
+   ITALSKA_TURN_MOTION_5255.approachMetres&&
+   ['8590284','8585601','1107814416'].includes(String(obj.seg.osmId))){
+   const point=obj.direction===1?obj.seg.b:obj.seg.a;
+   const next=planNpcJunction5241({
+    segment:obj.seg,direction:obj.direction,turns:obj.turns,
+    outgoing:rpNpcOutgoingAt5255(obj,point)
+   });
+   approachSpeedCap=capItalskaApproach5255({
+    roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
+    from:obj.seg,direction:obj.direction,progress:obj.progress,
+    decision:next
+   });
+   if(Number.isFinite(approachSpeedCap))italskaTurnStats5255.approachFrames++;
+  }
+  const exitSpeedCap=capItalskaExit5255({
+   turn:obj.italskaTurn5255,segment:obj.seg,
+   direction:obj.direction,progress:obj.progress
+  });
+  if(Number.isFinite(exitSpeedCap))italskaTurnStats5255.exitFrames++;
   const movingMetres=Math.min(obj.speed*eased*dt*
-   (rightOfWay?.factor??1),rightOfWay?.capMetres??Infinity);
+   (rightOfWay?.factor??1),rightOfWay?.capMetres??Infinity,
+   approachSpeedCap*dt,exitSpeedCap*dt);
   obj.topolovaYielding5166=rightOfWay?.yielding===true;
   if(obj.topolovaYielding5166)
    obj.topolovaYieldFrames5166=(obj.topolovaYieldFrames5166||0)+1;
@@ -13337,8 +13395,15 @@ function rpAnimateTraffic(dt){
   const seg=obj.seg,dir=obj.direction;
   const dx=(seg.b.x-seg.a.x)/seg.len,dz=(seg.b.y-seg.a.y)/seg.len;
   const side=dir*Math.min(2.25,seg.width*.25);
-  g.position.set(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,terrainAt(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side)+.045,seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side);
-  g.rotation.y=Math.atan2(-dx*dir,-dz*dir);
+  const defaultX=seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side;
+  const defaultZ=seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side;
+  const visualTurn=sampleItalskaTurn5255({
+   turn:obj.italskaTurn5255,segment:seg,
+   direction:dir,progress:obj.progress
+  });
+  const carX=visualTurn?.x??defaultX,carZ=visualTurn?.y??defaultZ;
+  g.position.set(carX,terrainAt(carX,carZ)+.045,carZ);
+  g.rotation.y=visualTurn?.yaw??Math.atan2(-dx*dir,-dz*dir);
   g.visible=Math.hypot(g.position.x-playerX,g.position.z-playerZ)<Math.min(270,OSM_VIEW*.52);
   if((obj.encounter5167||obj.northEncounter5168)&&rpStreetAuditCameraWorld)
    g.visible=Math.hypot(g.position.x-rpStreetAuditCameraWorld.x,
