@@ -76,8 +76,9 @@ for(const key of [
  "from './scripts/osm-station-platform-edging-5248.js?v=524800'",
  'planMappedPlatformEdging5248({outline:points,tracks:rails})',
  'window.__milovicePlatformEdgingRuntime5248=()=>',
- 'Verze 5.248'
 ])assert(html.includes(key),'Missing 5.248 scene integration '+key);
+assert(Number(html.match(/Verze 5[.](\d+)/)?.[1])>=248,
+ 'Newer game builds must preserve the 5.248 station regression');
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const build=html.match(/const BUILD_ID='([^']+)'/)?.[1];
 const hud=html.split('id="build-label">')[1]?.split('</strong>')[0];
