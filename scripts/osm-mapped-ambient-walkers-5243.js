@@ -15,7 +15,9 @@ export function canUseMappedAmbientWay5243(tags){
   value(tags.bridge)==='yes'||value(tags.covered)==='yes'||
   rejectAccess.has(value(tags.access))||
   rejectAccess.has(value(tags.foot))||
-  value(tags.foot)==='no'||value(tags.motor_vehicle)==='yes')return false;
+  value(tags.foot)==='no'||
+  (value(tags.motor_vehicle)!==''&&value(tags.motor_vehicle)!=='no')||
+  (value(tags.vehicle)!==''&&value(tags.vehicle)!=='no'))return false;
  return true;
 }
 export function planMappedAmbientSegments5243({
