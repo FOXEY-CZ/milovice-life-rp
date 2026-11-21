@@ -1,4 +1,4 @@
-name: Milovice 5.239 source-locked Italska blocks mobile WebGL
+name: Milovice 5.240 source-locked Italska and traffic access mobile WebGL
 on:
   push:
     paths:
@@ -12,6 +12,8 @@ on:
       - scripts/osm-italska-west-block-5239.js
       - scripts/osm-italska-west-block-5239.test.mjs
       - scripts/osm-italska-west-block-webgl-5239.mjs
+      - scripts/osm-traffic-access-5240.js
+      - scripts/osm-traffic-access-5240.test.mjs
       - scripts/osm-italska-apartments-webgl-5235.mjs
       - scripts/osm-visnova-residential-5192.js
       - scripts/osm-visnova-residential-5192.test.mjs
@@ -30,13 +32,14 @@ jobs:
           node-version: '22'
       - name: Check both Italska blocks, material cache and original Visnova facades
         run: |
+          node scripts/osm-traffic-access-5240.test.mjs
           node scripts/osm-visnova-residential-5192.test.mjs
           node scripts/osm-italska-apartments-5235.test.mjs
           node scripts/osm-italska-tower-5238.test.mjs
           node scripts/osm-italska-west-block-5239.test.mjs
           node scripts/osm-italska-walkers-5234.test.mjs
       - run: npm install --no-save --no-package-lock playwright-core
-      - name: Actual mobile Chromium SwiftShader facade drawing and 6.5s LOD
+      - name: Actual mobile Chromium SwiftShader facades, routing and 6.5s LOD
         env:
           CHROME_BIN: /usr/bin/google-chrome
         run: |
