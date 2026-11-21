@@ -79,7 +79,7 @@ try{
   buildingClearance.mappedOriginalFootwayFragments);
  assert.equal(buildingClearance.noNewBuildings,true);
  assert.equal(buildingClearance.noNewFootways,true);
- assert.equal(buildingClearance.newColliders,0);
+ assert.equal(buildingClearance.noNewColliders,true);
  const continuation=await page.evaluate(()=>
   window.__miloviceMappedAmbientContinuityRuntime5246?.());
  assert(continuation?.ready,
