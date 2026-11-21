@@ -62,5 +62,7 @@ const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const js=html.match(/const BUILD_ID='([^']+)'/)?.[1];
 const hud=html.split('id="build-label">')[1]?.split('</strong>')[0];
 assert(meta&&meta===js&&js===hud,'matching build labels');
-assert(html.includes('Verze 5.234'));
+const match=html.match(/Verze ([0-9]+)[.]([0-9]+) · build/);
+assert(match&&Number(match[1])===5&&Number(match[2])>=234,
+ 'later game HUD versions must not break the 5.234 safety regression');
 console.log('PASS 5.234 2 real mapped original sidewalk segments, 202.523m safe for simulated pedestrians');

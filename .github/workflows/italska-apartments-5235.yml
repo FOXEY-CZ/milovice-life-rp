@@ -1,0 +1,40 @@
+name: Milovice 5.235 original Italska two apartment blocks mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - data/regions/mlada.json
+      - scripts/osm-italska-apartments-5235.js
+      - scripts/osm-italska-apartments-5235.test.mjs
+      - scripts/osm-italska-apartments-webgl-5235.mjs
+      - scripts/osm-visnova-residential-5192.js
+      - .github/workflows/italska-apartments-5235.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-osm-apartments-and-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check cadastral source and both original window batches
+        run: |
+          node scripts/osm-italska-apartments-5235.test.mjs
+          node scripts/osm-italska-walkers-5234.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Actual mobile Chromium SwiftShader facade drawing and 6.5s LOD
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-italska-apartments-webgl-5235.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: italska-apartments-5235
+          path: browser-artifacts/italska-apartments-5235-mobile.png
+          if-no-files-found: ignore
