@@ -13231,8 +13231,9 @@ function rpNextStreet(car){
  if(decision.mode==='terminal')trafficContinuityStats5241.terminals++;
  if(decision.mode==='connected')trafficContinuityStats5241.turnsOnConnectedRoads++;
 }
+const italskaSmoothAuditRequested5255=new URLSearchParams(location.search).get('turnTest')==='1';
 function rpSeedItalskaSmoothAudit5255(){
- if(new URLSearchParams(location.search).get('turnTest')!=='1'||
+ if(!italskaSmoothAuditRequested5255||
   rpStreetAuditId!=='italska-road-footway-5252'||
   trafficCars.some(c=>c.italskaSmoothAudit5255))return;
  const source=driveSegments.find(s=>
