@@ -65,11 +65,11 @@ assert.equal(zone.ownerId,8);
 assert(model.audit().yieldFrames>=3);
 assert(model.audit().fullStops>=2);
 const busModel=createItalskaJunctionGuard5258({roadPlan,segments:all});
-const car=actor(10,n,zone.node,8,true,5),
+const car=actor(10,n,zone.node,6.4,true,5),
  bus={...actor(20,branch,zone.node,9,true,3),service:'432'};
 caps=busModel.evaluate([car,bus]);
 assert.equal(caps.has(20),false,'Bus remains on legacy movement');
-assert(Math.abs(caps.get(10)-2.2)<.001);
+assert(Math.abs(caps.get(10)-.6)<.001);
 const parkedModel=createItalskaJunctionGuard5258({roadPlan,segments:all});
 assert.equal(parkedModel.evaluate([car,{...bus,parked:true,service:null}]).size,0);
 assert.equal(parkedModel.evaluate([{...car,driven:true},bus]).size,0);
