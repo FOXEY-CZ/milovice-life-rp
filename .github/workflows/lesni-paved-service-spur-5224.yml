@@ -1,0 +1,41 @@
+name: Milovice 5.224 original connected Lesni service spur mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - data/regions/mlada.json
+      - scripts/osm-lesni-paved-service-spur-5224.js
+      - scripts/osm-lesni-paved-service-spur-5224.test.mjs
+      - scripts/osm-lesni-paved-service-spur-webgl-5224.mjs
+      - scripts/osm-lesni-paved-living-street-5223.js
+      - scripts/osm-lesni-paved-living-street-5223.test.mjs
+      - .github/workflows/lesni-paved-service-spur-5224.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source lock original Lesni junction and 5.223 regression
+        run: |
+          node scripts/osm-lesni-paved-living-street-5223.test.mjs
+          node scripts/osm-lesni-paved-service-spur-5224.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Actual mobile WebGL source road surface and real OSM junction
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-lesni-paved-service-spur-webgl-5224.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lesni-paved-service-spur-5224
+          path: browser-artifacts/lesni-original-spur-5224-mobile.png
+          if-no-files-found: ignore
