@@ -4,7 +4,7 @@
 
 **Žádná další vymyšlená stavba nebo vstup:** modul `scripts/osm-visnova-tagged-colors-5217.js` nejprve ověří původní OSM geometrii/tagy/oblast a nezasáhne do schváleného fotografického či manuálního modelu. Zůstávají stejné původní GPS stěny, 3 podlaží, původní modelová výška i herní střešní tvar, vozovky, chodníky, NPC a collidery. OSM barvy **nejsou aktuální fotografický průzkum**; z těchto tagů neznáme přesný typ střechy, polohy oken, vstupní dveře ani stav budovy v roce 2026. Nejsou proto v této úpravě domýšlené.
 
-Technický herní pohled z existujícího OSM uzlu chodníku: `?v=521700&streetAudit=visnova-tagged-colors-5217`; jeho azimut 235° je pouze odhad směru k mapovanému obrysu. `window.__miloviceVisnovaTaggedColorRuntime5217()` kontroluje zdrojovou geometrii, skutečné barvy materiálů ve scéně, typ střechy jako nepodložený OSM a viditelnost po LOD. Nové Node source-lock a mobilní WebGL testy + GitHub Actions workflow jsou přidané, ale jejich **PASS je potřeba potvrdit až po doběhnutí**.
+Technický herní pohled z existujícího OSM uzlu chodníku: `?v=521700&streetAudit=visnova-tagged-colors-5217`; jeho azimut 235° je pouze odhad směru k mapovanému obrysu. `window.__miloviceVisnovaTaggedColorRuntime5217()` kontroluje zdrojovou geometrii, skutečné barvy materiálů ve scéně, typ střechy jako nepodložený OSM a viditelnost po LOD. **PASS je potvrzený pro samostatné Node + skutečné mobilní Chromium/SwiftShader WebGL testy** v GitHub Actions \`44898676584\`: půdorys 181,314 m², barvy #fec700/#583400 z původního OSM, 3 podlaží, 1 stěnový mesh a 1 střešní mesh viditelné po 6,5 s, původní budova bez nových kolizí. Hlavní celoprojektová validace a GitHub Pages na poslední dokumentační verzi se ještě ověřují.
 
 ---
 
