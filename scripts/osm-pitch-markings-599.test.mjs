@@ -68,7 +68,6 @@ assert(batch.groups.every(g=>g.items.every(e=>e.renderMaterial===g.renderMateria
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const text of [
  "import {planOSMPitchMarkings} from './scripts/osm-pitch-markings-599.js?v=59900'",
- "from './scripts/landscapes.js?v=59900'",
  'window.__miloviceSportPitchAudit=',
  'window.__miloviceSportPitchCameraAudit=',
  'court.cameraEye.x',
@@ -76,6 +75,8 @@ for(const text of [
  "streetAudit=pitch-multi-599",
  'camera.lookAt(c.x,terrainAt(c.x,c.z)+.14,c.z);'
 ])assert(game.includes(text),'Sport pitch runtime integration missing: '+text);
+assert(/from ['"]\\.\\/scripts\\/landscapes\\.js\\?v=\\d+['"]/.test(game),
+ 'Sport pitch runtime must import current landscapes.js module');
 const meta=game.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const runtime=game.match(/const BUILD_ID='([^']+)'/)?.[1];
 const hud=game.split('id="build-label">')[1]?.split('</strong>')[0];
