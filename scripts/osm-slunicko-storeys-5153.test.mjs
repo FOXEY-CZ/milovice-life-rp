@@ -45,6 +45,6 @@ for(const key of [
  'window.__miloviceSlunickoRuntime=()=>{',
  'camera:{lat:50.2294884,lon:14.8662864},heading:50',
  "'topolova-slunicko-5153':{",
- '!sportovniHall&&!slunickoPlan&&!slepaUtility'
+ 'if(slunickoPlan)h=slunickoPlan.modelHeightMeters;'
 ])assert(html.includes(key),'Missing game hook '+key);
 console.log('PASS 5.153 school source-locked 4-storey visual mass; all OSM data unchanged');
