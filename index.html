@@ -12472,7 +12472,8 @@ function rpBuildRoadGraph(){
 // Never invent painted zebras at road intersections. OSM marked crossings
 // are rendered in rpAppendOSMElements where actual road occupancy is known.
 const italskaSmoothStats5255={planned:0,completed:0,fixtureSpawned:false,
- fixtureCompleted:false};
+ fixtureCompleted:false,observedCurveFrames:0,
+ maxFrameStepMetres:0,maxFrameYawRadians:0};
 window.__miloviceItalskaSmoothNpcRuntime5255=()=>({
  ...inspectItalskaSmoothNpcExits5255({
   roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
@@ -12483,6 +12484,10 @@ window.__miloviceItalskaSmoothNpcRuntime5255=()=>({
  activeTurns:trafficCars.filter(c=>c.smoothTurn5255).length,
  fixtureSpawned:italskaSmoothStats5255.fixtureSpawned,
  fixtureCompleted:italskaSmoothStats5255.fixtureCompleted,
+ fixtureTurnActive:trafficCars.some(c=>c.italskaSmoothAudit5255&&c.smoothTurn5255),
+ observedCurveFrames:italskaSmoothStats5255.observedCurveFrames,
+ maxFrameStepMetres:+italskaSmoothStats5255.maxFrameStepMetres.toFixed(4),
+ maxFrameYawRadians:+italskaSmoothStats5255.maxFrameYawRadians.toFixed(4),
  playerControlUnchanged:true,originalGpsUnchanged:true
 });
 window.__miloviceItalskaTurnEnvelopeRuntime5254=()=>inspectItalskaTurnEnvelope5254({
@@ -13338,6 +13343,19 @@ function rpAnimateTraffic(dt){
    const sample=advanceItalskaSmoothNpcExit5255(
     obj.smoothTurn5255,Math.min(movingMetres,dt*3.25));
    if(sample){
+    const last=obj.smoothTurn5255.lastRenderedPose5255;
+    if(last){
+     const deltaMetres=Math.hypot(sample.x-last.x,sample.z-last.z);
+     const rawAngle=Math.abs(sample.yaw-last.yaw);
+     const deltaYaw=Math.min(rawAngle,Math.abs(2*Math.PI-rawAngle));
+     italskaSmoothStats5255.observedCurveFrames++;
+     italskaSmoothStats5255.maxFrameStepMetres=Math.max(
+      italskaSmoothStats5255.maxFrameStepMetres,deltaMetres);
+     italskaSmoothStats5255.maxFrameYawRadians=Math.max(
+      italskaSmoothStats5255.maxFrameYawRadians,deltaYaw);
+    }
+    obj.smoothTurn5255.lastRenderedPose5255={
+     x:sample.x,z:sample.z,yaw:sample.yaw};
     rpSpinWheels(obj,sample.metresMoved);
     g.position.set(sample.x,terrainAt(sample.x,sample.z)+.045,sample.z);
     g.rotation.y=sample.yaw;
