@@ -55,6 +55,17 @@ for(const end of [
   assert.equal(turn.sweptDynamicsValidated,false);
   assert(turn.angleDegrees>75&&turn.angleDegrees<110);
   assert(turn.totalMetres>3&&turn.totalMetres<15);
+  // A frame can cross the OSM endpoint by a few centimetres. Preserve
+  // this distance when the vehicle enters the smooth curve.
+  const carried=planItalskaSmoothNpcExit5255(params);
+  const carriedPose=advanceItalskaSmoothNpcExit5255(carried,.12);
+  assert(Math.abs(carried.travelledMetres-.12)<1e-9);
+  assert.equal(carriedPose.finished,false);
+  const furtherPose=advanceItalskaSmoothNpcExit5255(carried,.13);
+  assert.equal(furtherPose.metresMoved,.13);
+  assert(Math.hypot(furtherPose.x-carriedPose.x,
+   furtherPose.z-carriedPose.z)<.145);
+
   // No teleport at hand-off: entry MUST equal the old mapped lane endpoint,
   // and exit MUST equal the target mapped lane 4m beyond the junction.
   const srcNode=end.direction===1?end.from.b:end.from.a;
@@ -126,6 +137,9 @@ for(const token of [
 for(const runtimeToken of ['observedCurveFrames:','maxFrameStepMetres:',
  'maxFrameYawRadians:','fixtureTurnActive:'])
  assert(html.includes(runtimeToken),'Missing live NPC curve movement telemetry: '+runtimeToken);
+assert(html.includes('junctionOverrun5255')&&
+ html.includes('advanceItalskaSmoothNpcExit5255(smooth,junctionOverrun5255)'),
+ 'Crossing an OSM node must carry overshoot into the visual curve');
 assert(html.includes('Math.min(movingMetres,dt*3.25)'),
  'Smooth NPC junction must keep conservative 3.25 m/s modeled corner pace');
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),raw);
