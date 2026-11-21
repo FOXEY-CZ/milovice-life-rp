@@ -89,7 +89,7 @@ assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const token of [
  "from './scripts/osm-ambient-building-clearance-5245.js?v=524500'",
- "from './scripts/osm-mapped-ambient-walkers-5243.js?v=524500'",
+ "from './scripts/osm-mapped-ambient-walkers-5243.js?v=524700'",
  'prepareMappedBuildingFootprints5245(buildingWays,osmPoint)',
  'buildingClearance:(a,b)=>mappedFootwayAvoidsBuildings5245(',
  'window.__miloviceMappedBuildingClearanceRuntime5245=()=>'
