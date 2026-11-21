@@ -25,7 +25,8 @@ try{
  await mkdir('browser-artifacts',{recursive:true});
  const midTurnProgress=await page.evaluate(()=>
   window.__miloviceItalskaSmoothNpcRuntime5255?.()?.fixtureTurnProgressMetres);
- assert(midTurnProgress>=1.5&&midTurnProgress<=4.0,
+ // A frame may advance between Playwright's poll and page.evaluate.
+ assert(midTurnProgress>=1.5&&midTurnProgress<=5.0,
   'Screenshot must capture actual mid-turn progress, not a static initial pose');
  await page.screenshot({path:'browser-artifacts/italska-smooth-npc-exit-5255-turn.png'});
  await page.waitForFunction(()=>
