@@ -621,6 +621,7 @@ import {filterItalskaPhotoSightlines5250} from './scripts/osm-italska-photo-sigh
 import {RAKOUSKA_NORTH_PHOTO_5251,extendRakouskaNorthPhoto5251} from './scripts/osm-rakouska-north-photo-5251.js?v=525100';
 import {ITALSKA_ROAD_SIDEWALK_5252,planItalskaRoadSidewalk5252} from './scripts/osm-italska-road-sidewalk-5252.js?v=525200';
 import {filterItalskaNpcTurns5253,permitItalskaParking5253,inspectItalskaNpcClearance5253} from './scripts/osm-italska-narrow-npc-5253.js?v=525300';
+import {filterItalskaWideCarTurns5254,filterItalskaWideRecycle5254,inspectItalskaCarClearance5254} from './scripts/osm-italska-car-clearance-5254.js?v=525400';
 import {ITALSKA_EMERGENCY_ACCESS_5240,inspectItalskaEmergencyAccess5240,classifyPublicNpcRoad5240} from './scripts/osm-traffic-access-5240.js?v=524000';
 import {planNpcJunction5241,planOffscreenNpcRecycle5241} from './scripts/osm-traffic-continuity-5241.js?v=524100';
 import {planMappedAmbientSegments5243} from './scripts/osm-mapped-ambient-walkers-5243.js?v=524700';
@@ -12468,6 +12469,10 @@ function rpBuildRoadGraph(){
 }
 // Never invent painted zebras at road intersections. OSM marked crossings
 // are rendered in rpAppendOSMElements where actual road occupancy is known.
+window.__miloviceItalskaCarClearanceRuntime5254=()=>inspectItalskaCarClearance5254({
+ roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
+ segments:driveSegments,cars:trafficCars
+});
 window.__miloviceItalskaNpcClearanceRuntime5253=()=>({
  ...(inspectItalskaNpcClearance5253({
   roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
@@ -12491,7 +12496,7 @@ function makeTrafficCar(index,segment){
  const g=vehicle.group;trafficGroup.add(g);
  return {id:nextTrafficId++,g,seg:segment,progress:(index*.137)%1,direction:index%2?-1:1,
   speed:type===7?6:5+(index%5)*1.15,turns:0,driven:false,parked:false,
-  type,wheels:vehicle.wheels||[],service:type===7?'432':null,modelName:vehicle.kind||'regionální autobus'};
+  type,wideModel5254:type!==7&&index%8===6,wheels:vehicle.wheels||[],service:type===7?'432':null,modelName:vehicle.kind||'regionální autobus'};
 }
 // Parked cars use a separate fixed position; they are never moved by traffic AI.
 // 5.214: one more resident on the separate original, source-locked
@@ -13176,9 +13181,12 @@ function rpNextStreet(car){
  const point=car.direction===1?car.seg.b:car.seg.a;
  const decision=planNpcJunction5241({
   segment:car.seg,direction:car.direction,turns:car.turns,
-  outgoing:filterItalskaNpcTurns5253({
-   roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
-   car,outgoing:driveGraph.get(roadNode(point))||[]
+  outgoing:filterItalskaWideCarTurns5254({
+   roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,car,
+   outgoing:filterItalskaNpcTurns5253({
+    roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
+    car,outgoing:driveGraph.get(roadNode(point))||[]
+   })
   })
  });
  if(!decision){
@@ -13229,7 +13237,10 @@ function rpAnimateTraffic(dt){
    if(oldSpotOutOfView&&elapsed>=(obj.recycleRetryAt5241||0)){
     obj.recycleRetryAt5241=elapsed+3.5;
     const target=planOffscreenNpcRecycle5241({
-     segments:driveSegments,observers,
+     segments:filterItalskaWideRecycle5254({
+      roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
+      car:obj,segments:driveSegments
+     }),observers,
      seed:obj.id+obj.turns*31,currentSegment:obj.seg,minDistance:360
     });
     if(target?.offscreenOnly){
