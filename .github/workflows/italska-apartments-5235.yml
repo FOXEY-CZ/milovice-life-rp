@@ -33,6 +33,16 @@ on:
       - scripts/osm-visnova-residential-5192.js
       - scripts/osm-visnova-residential-5192.test.mjs
       - .github/workflows/italska-apartments-5235.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - index.html
+      - scripts/osm-ambient-*.js
+      - scripts/osm-ambient-*.test.mjs
+      - scripts/osm-mapped-ambient-walkers-5243.js
+      - scripts/osm-mapped-ambient-walkers-5243.test.mjs
+      - scripts/osm-italska-west-residence-webgl-5242.mjs
+      - .github/workflows/italska-apartments-5235.yml
   workflow_dispatch:
 permissions:
   contents: read
