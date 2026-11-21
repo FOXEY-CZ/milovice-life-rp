@@ -52,7 +52,7 @@ try{
  assert.equal(report.site.estimatedWearPatches,13);
  assert.equal(report.site.drawMeshes,2);
  assert.equal(report.site.visibleAfterLOD,2);
- assert.equal(report.site.wallMaterialColor,'#e2ded3');
+ assert.equal(report.site.wallMaterialColor,'#eeeae4');
  assert.equal(report.site.roofMaterialColor,'#655e54');
  assert.equal(report.site.originalFootprintPreserved,true);
  assert.equal(report.site.originalRoofGeometryPreserved,true);
