@@ -28,6 +28,7 @@ try{
   npc:window.__miloviceItalskaNpcClearanceRuntime5253?.(),
   cars:window.__miloviceItalskaCarClearanceRuntime5254?.(),
   envelope:window.__miloviceItalskaTurnEnvelopeRuntime5254?.(),
+  smooth:window.__miloviceItalskaSmoothTurnRuntime5255?.(),
   view:window.__miloviceStreetAuditRendered,
   meta:document.querySelector('meta[name="milovice-build"]')?.content,
   build:document.getElementById('build-label')?.textContent,
@@ -52,6 +53,12 @@ try{
  assert.equal(result.cars.roadBends.originalGpsUnchanged,true);
  assert.equal(result.cars.curvesAndJunctionsNotValidated,true);
  assert.equal(result.cars.roadWidthModelledNotSurveyed,true);
+ assert.equal(result.smooth?.ready,true,JSON.stringify(result.smooth));
+ assert.equal(result.smooth?.connectedSharpTurnArms,4);
+ assert.equal(result.smooth?.modelBufferedCurvesAccepted,4);
+ assert(result.smooth?.minimumModelReserveMetres>=.10);
+ assert.equal(result.smooth?.actualAsphaltMeshVerified,false);
+ assert.equal(result.smooth?.physicalSteeringVerified,false);
  assert.equal(result.envelope?.ready,true);
  assert(result.envelope.joinCount>0);
  assert(result.envelope.poseSamples>0);
