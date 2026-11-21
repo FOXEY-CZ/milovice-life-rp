@@ -4,6 +4,18 @@ import {planItalskaRoadSidewalk5252} from './osm-italska-road-sidewalk-5252.js';
 import {ITALSKA_CAR_CLEARANCE_5254 as C,inspectItalskaCarPair5254,
  filterItalskaWideCarTurns5254,filterItalskaWideRecycle5254,
  inspectItalskaCarClearance5254} from './osm-italska-car-clearance-5254.js';
+// Keep the modeled envelope bound to the actual current geometry.
+const models=readFileSync(new URL('./world-models.js',import.meta.url),'utf8');
+assert(models.includes('const width=isVan?2.04:1.81;'),
+ 'Car body widths changed; re-audit modeled passing gaps');
+assert(models.includes('const variant=index%8,group=new THREE.Group(),isVan=variant===6;'),
+ 'Wide NPC variant mapping changed');
+assert(models.includes('side*width*.56,1.22')&&
+ models.includes('new THREE.BoxGeometry(.06,.12,.19)'),
+ 'Mirror extents changed; re-audit exterior car width');
+const htmlSource=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+assert(htmlSource.includes('Math.min(2.25,seg.width*.25)'),
+ 'NPC lane offset changed; re-audit 5m road passing gaps');
 const raw=readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8');
 const E=JSON.parse(raw).elements;
 const road=E.find(x=>x.id===8590284),sidewalk=E.find(x=>x.id===1484073943);
