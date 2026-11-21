@@ -26,6 +26,8 @@ jobs:
         run: |
           npm init -y >/dev/null 2>&1
           npm install --no-save --no-package-lock playwright-core@1.57.0
+      - name: Verify source-locked platform tactile band geometry
+        run: node scripts/osm-station-platform-edging-5248.test.mjs
       - name: Run Chromium WebGL station photo test
         run: |
           CHROME_BIN="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"

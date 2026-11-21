@@ -115,6 +115,7 @@ const packs=Object.freeze({
   'osm-ruian-party-walls-5133.test.mjs'
  ],
  nadrazi:[
+  'osm-station-platform-edging-5248.test.mjs',
   'station-forecourt-pass.test.mjs',
   'station-roof-geometry.test.mjs',
   'station-platform-canopy.test.mjs',
