@@ -3,7 +3,7 @@ import {readFileSync} from 'node:fs';
 import {planItalskaRoadSidewalk5252} from './osm-italska-road-sidewalk-5252.js';
 import {ITALSKA_CAR_CLEARANCE_5254 as C,inspectItalskaCarPair5254,
  filterItalskaWideCarTurns5254,filterItalskaWideRecycle5254,
- inspectItalskaCarClearance5254} from './osm-italska-car-clearance-5254.js';
+ inspectItalskaRoadBends5254,inspectItalskaCarClearance5254} from './osm-italska-car-clearance-5254.js';
 // Keep the modeled envelope bound to the actual current geometry.
 const models=readFileSync(new URL('./world-models.js',import.meta.url),'utf8');
 assert(models.includes('const width=isVan?2.04:1.81;'),
@@ -37,10 +37,38 @@ assert.equal(filterItalskaWideCarTurns5254({roadPlan:plan,car:normal,outgoing:ch
 assert.equal(filterItalskaWideCarTurns5254({roadPlan:plan,car:{...van,driven:true},outgoing:choices}),choices);
 assert.deepEqual(filterItalskaWideRecycle5254({roadPlan:plan,car:van,segments:[narrow,other]}),[other]);
 assert.deepEqual(filterItalskaWideCarTurns5254({roadPlan:{...plan,roadGeometryHash:'invalid'},car:van,outgoing:choices}),choices);
+// 90-degree turn on one original-style 5m way: a bend is found,
+// but is explicitly NOT certified as drivable by the envelope arithmetic.
+const bendSegments=[
+ {...narrow,a:{x:0,y:0},b:{x:10,y:0}},
+ {...narrow,a:{x:10,y:0},b:{x:10,y:12}},
+ {...other,a:{x:10,y:12},b:{x:15,y:12}}
+];
+const bendAudit=inspectItalskaRoadBends5254({
+ roadPlan:plan,segments:bendSegments});
+assert.equal(bendAudit.interiorBends,1);
+assert.equal(bendAudit.maxBendDegrees,90);
+assert.equal(bendAudit.bendsAbove30Degrees,1);
+assert.equal(bendAudit.turningSweptBodyValidated,false);
+assert.equal(inspectItalskaRoadBends5254({
+ roadPlan:{...plan,roadGeometryHash:'changed'},segments:bendSegments
+}).interiorBends,0);
+const project=g=>({x:g.lon*111320*Math.cos(50.226*Math.PI/180),
+ y:-g.lat*111320});
+const originalSegments=road.geometry.slice(1).map((point,i)=>{
+ const a=project(road.geometry[i]),b=project(point);
+ return {...narrow,a,b,len:Math.hypot(b.x-a.x,b.y-a.y)};
+}).filter(s=>s.len>=2.5&&s.len<=175);
+const sourceBends=inspectItalskaRoadBends5254({
+ roadPlan:plan,segments:originalSegments});
+assert(sourceBends.interiorBends>0,'OSM narrow road source bends required');
+assert.equal(sourceBends.turningSweptBodyValidated,false);
+assert.equal(sourceBends.originalGpsUnchanged,true);
 const report=inspectItalskaCarClearance5254({roadPlan:plan,segments:[narrow,other],cars:[{seg:narrow,wideModel5254:false}]});
 assert.equal(report.ready,true);
 assert.equal(report.wideNpcCarsOnNarrow,0);
 assert.equal(report.curvesAndJunctionsNotValidated,true);
+assert.equal(report.roadBends.turningSweptBodyValidated,false);
 assert.equal(inspectItalskaCarClearance5254({roadPlan:plan,segments:[narrow],cars:[{seg:narrow,wideModel5254:true}]}).ready,false);
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),raw);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
