@@ -47,6 +47,20 @@ try{
  assert.equal(r.windowLocationsPhotoVerified,false);
  assert.equal(r.newColliders,0);
  assert.equal(r.newEntrances,0);
+ // 5.243: on the same actual mobile scene, ambient walkers stay strictly
+ // on existing OSM walking surfaces rather than generated road shoulders.
+ const walkers=await page.evaluate(()=>
+  window.__miloviceMappedAmbientWalkersRuntime5243?.());
+ assert(walkers?.ready,'5.243 mapped footway NPCs must be on-source');
+ assert(walkers.sourceMappedFragments>0);
+ assert(walkers.sourceMappedOSMWays>0);
+ assert(walkers.activeAmbientWalkers>0);
+ assert(walkers.maxCentrelineOffsetMetres<.055);
+ assert.equal(walkers.anyOnDrivingGraph,false);
+ assert.equal(walkers.noNewPaths,true);
+ assert.equal(walkers.noNewCrossings,true);
+ assert.equal(walkers.noNewColliders,true);
+ assert.equal(walkers.unphotographedPeopleModels,true);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/italska-west-residence-5242-mobile.png'});
