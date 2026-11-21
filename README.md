@@ -1,3 +1,13 @@
+## Milovice RP 5.231 — 206,33 m² původních travnatých dvorů Lesní / Višňová (21. 11. 2026)
+
+Původní OSM `landuse=grass` v okolí poslední pěší sítě doplňuje trojice skutečných zdrojových polygonů: [1460019789](https://www.openstreetmap.org/way/1460019789) (**69,50 m²**, 7 GPS uzlů, hash `b977361a`), [1460019790](https://www.openstreetmap.org/way/1460019790) (**53,22 m²**, 5 uzlů, hash `70d93254`) a [1460019792](https://www.openstreetmap.org/way/1460019792) (**83,61 m²**, 7 uzlů, hash `e17fd422`). Celkem **206,33 m²** stávající zeleně. Mapový půdorys / typ plochy jsou ze zdrojových OSM souřadnic; přesný travní porost, druh, výška a poloha jednotlivých stébel **nejsou fotoověřené**.
+
+Nová scéna pouze jemně doplňuje 3D instancovaná stébla **UVNITŘ původních travnatých polygonů** a používá současnou GPU/LOD optimalizaci. Nezdvojuje původní travnaté plochy ani neodvozuje nové hranice; reálné OSM vozovky, **pěší cesty**, budovy a vodní prvky jsou prostorovými bezpečnostními zábranami, které nepovolí stébla přes překážky. Zamezuje i dvojímu blízkému detailu předchozích zelených polygonů v jiných verzích. Zdrojový modul `scripts/osm-lesni-courtyard-lawns-5231.js` fail-closed kontroluje 3 původní polygony, přesné GPS hashe, počet uzlů, typ `landuse`, uzavření a skutečnou plochu. **Žádné nové stromy, keře, zahrádky, silnice, chodníky, parkoviště, kolize ani mobiliář.**
+
+Přímý technický pohled: `?v=523100&streetAudit=lesni-courtyard-lawns-5231` (GPS zdroj 50.2295458,14.8692602, odhad azimutu 280°; není panorama). Runtime `window.__miloviceLesniCourtyardLawnsRuntime5231()` hlídá 3 zdrojová ID, opravdu vykreslené instance, připojené a viditelné 3D meshe po 6,5 sekundách LOD. Node fail-closed + regrese 5.230, mobilní Chromium/SwiftShader WebGL, workflow `lesni-courtyard-lawns-5231.yml`, dev-check `sportovni`. **Stav CI a Pages 5.231 zatím NEOVĚŘEN.**
+
+---
+
 ## Milovice RP 5.230 — 111,298 m skutečných pěších propojení Sportovní / Lesní (21. 11. 2026)
 
 Nový zdrojově uzamčený celek tvoří **tři původní OSM pěší trasy**: [`1037952219`](https://www.openstreetmap.org/way/1037952219) (6 uzlů / 5 dílů / **32,250 m**, hash `f4a36b91`), [`1352859039`](https://www.openstreetmap.org/way/1352859039) (8 uzlů / 7 dílů / **51,972 m**, hash `bba90a45`) a [`1460019771`](https://www.openstreetmap.org/way/1460019771) (2 uzly / 1 díl / **27,076 m**, hash `8859fb77`). Dohromady **111,298 m / 13 původních úseků**. Jsou to zdrojové `highway=footway` bez `surface` tagu. Jejich skutečný povrch **není fotograficky ověřen**, proto používají pouze neutrální herní materiál `visnova-footway-model` na již existujících 3D pěších pruzích. Model sám bezpečně ořezává místa, kde by zasahovaly do vozovek, původní GPS zůstávají nedotčené.
