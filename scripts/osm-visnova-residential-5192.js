@@ -91,6 +91,10 @@ export function planVisnovaResidential5192({
   newBuildingVolumes:0,newFootways:0,newRoads:0,newColliders:0
  };
 }
+// Shared across every source-locked house in the same THREE runtime.
+// WeakMap keeps tests/independent renderers isolated and avoids duplicating
+// four identical GPU materials for each newly streamed-in residential shell.
+const facadeMaterialCache5192=new WeakMap();
 export function renderVisnovaResidential5192(THREE,{
  plan,toWorld,baseHeight,layer
 }={}){
@@ -163,11 +167,15 @@ export function renderVisnovaResidential5192(THREE,{
   }
  }
  if(windows!==plan.estimatedWindows)return null;
- const palette=[0xd4d4d1,0x7996a5,0xbcb8b0,0x96958f];
- const materials=palette.map((color,i)=>new THREE.MeshStandardMaterial({
-  color,metalness:i===1?.08:0,roughness:i===1?.43:.87,
-  side:THREE.DoubleSide
- }));
+ let materials=facadeMaterialCache5192.get(THREE);
+ if(!materials){
+  const palette=[0xd4d4d1,0x7996a5,0xbcb8b0,0x96958f];
+  materials=palette.map((color,i)=>new THREE.MeshStandardMaterial({
+   color,metalness:i===1?.08:0,roughness:i===1?.43:.87,
+   side:THREE.DoubleSide
+  }));
+  facadeMaterialCache5192.set(THREE,materials);
+ }
  const meshes=positions.map((vertices,i)=>{
   const geometry=new THREE.BufferGeometry();
   geometry.setAttribute('position',
