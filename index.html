@@ -11398,8 +11398,9 @@ async function rpLoadCityArea(id){
  }
 }
 function rpPopulateRegionalTraffic(area){
- if(trafficCars.length>=79)return;
  const center=osmPoint({lat:area.center[0],lon:area.center[1]});
+ rpSpawnMappedAmbientWalkers5243(area.id,8,center);
+ if(trafficCars.length>=79)return;
  const segments=driveSegments.filter(s=>s.len>10&&s.width>=6&&Math.hypot((s.a.x+s.b.x)*.5-center.x,(s.a.y+s.b.y)*.5-center.y)<820);
  const max=Math.min(7,79-trafficCars.length);
  for(let i=0;i<max&&segments.length;i++){
@@ -11409,7 +11410,6 @@ function rpPopulateRegionalTraffic(area){
   trafficCars.push(car);
  }
  rpSeedParkedCars(center,5);
- rpSpawnMappedAmbientWalkers5243(area.id,8,center);
 }
 let lastCityStreamingX=Infinity,lastCityStreamingZ=Infinity;
 function maybeStreamCityAreas(){
@@ -12785,14 +12785,20 @@ function rpSpinWheels(car,distance){
 // individual people, clothing and daily paths are game models, not surveyed.
 function rpSpawnMappedAmbientWalkers5243(regionId,requested=30,center=null){
  if(!osmAmbientPedestrianSegments5243.length)return 0;
+ const focus=rpStreetAuditCameraWorld??rpAuditCameraWorld??
+  (center?{x:center.x,z:center.y}:{x:walking?px:x,z:walking?pz:z});
  const candidates=osmAmbientPedestrianSegments5243.filter(s=>
   s.regionId===regionId&&(!center||
    Math.hypot((s.a.x+s.b.x)*.5-center.x,
-    (s.a.y+s.b.y)*.5-center.y)<820));
+    (s.a.y+s.b.y)*.5-center.y)<820)).sort((a,b)=>
+  Math.hypot((a.a.x+a.b.x)*.5-focus.x,
+   (a.a.y+a.b.y)*.5-focus.z)-
+  Math.hypot((b.a.x+b.b.x)*.5-focus.x,
+   (b.a.y+b.b.y)*.5-focus.z));
  const available=Math.min(requested,Math.max(0,65-trafficPeople.length),
   candidates.length);
  for(let i=0;i<available;i++){
-  const seg=candidates[(7+i)%candidates.length];
+  const seg=candidates[i];
   const ordinal=trafficPeople.length;
   const rig=makeHumanRig(THREE,ordinal+120,
    npcClothes[ordinal%npcClothes.length].color.getHex());
