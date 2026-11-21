@@ -102,4 +102,10 @@ for(const str of [
  'window.__miloviceTopolovaInferredRuntime=()=>{',
  "'topolova-inferred-616618-5161':{"
 ])assert(html.includes(str),'Missing 5.161 integration '+str);
+// 5.209: the live browser readiness gate must track the 5.184 model
+// change for house 616; keep the historical 72/48 gate from returning.
+assert(html.includes('audit.normalWindows===88&&audit.balconyWindowDoorSets===32&&'),
+ 'Topolova 616–618 runtime readiness must match the rendered 88/32 facade model');
+assert(!html.includes('audit.normalWindows===72&&audit.balconyWindowDoorSets===48&&'),
+ 'Old 72/48 facade readiness gate would wrongly reject active walkers');
 console.log('PASS 5.161: 3 source-locked houses, 6 provisional facades, 3 GPU meshes; mapped road and walkway preserved');
