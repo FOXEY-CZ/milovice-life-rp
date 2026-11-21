@@ -46,7 +46,8 @@ assert.equal(classify({osmId:25,kind:'service',access:'yes',motorVehicle:'no'}).
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const token of [
  "from './scripts/osm-traffic-access-5240.js?v=524000'",
- 'sourceVerifiedEmergency5240:Boolean(inspectItalskaEmergencyAccess5240(el))',
+ 'sourceVerifiedEmergency5240:String(el.id)===ITALSKA_EMERGENCY_ACCESS_5240.id?',
+ 'Boolean(inspectItalskaEmergencyAccess5240(el))',
  'const rule=classifyPublicNpcRoad5240(road);',
  'if(!rule.allowed){',
  'window.__miloviceTrafficAccessRuntime5240=()=>',
