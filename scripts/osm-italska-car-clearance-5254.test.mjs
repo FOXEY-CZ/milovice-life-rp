@@ -36,6 +36,11 @@ assert.deepEqual(filterItalskaWideCarTurns5254({roadPlan:plan,car:van,outgoing:c
 assert.equal(filterItalskaWideCarTurns5254({roadPlan:plan,car:normal,outgoing:choices}),choices);
 assert.equal(filterItalskaWideCarTurns5254({roadPlan:plan,car:{...van,driven:true},outgoing:choices}),choices);
 assert.deepEqual(filterItalskaWideRecycle5254({roadPlan:plan,car:van,segments:[narrow,other]}),[other]);
+// A 432 bus cannot reappear on the narrow 5m road through offscreen recycle.
+const bus={service:'432',driven:false};
+assert.deepEqual(filterItalskaWideRecycle5254({roadPlan:plan,car:bus,segments:[narrow,other]}),[other]);
+assert.deepEqual(filterItalskaWideRecycle5254({roadPlan:plan,car:{...bus,driven:true},segments:[narrow,other]}),[narrow,other]);
+assert.deepEqual(filterItalskaWideRecycle5254({roadPlan:{...plan,roadGeometryHash:'changed'},car:bus,segments:[narrow,other]}),[narrow,other]);
 assert.deepEqual(filterItalskaWideCarTurns5254({roadPlan:{...plan,roadGeometryHash:'invalid'},car:van,outgoing:choices}),choices);
 // 90-degree turn on one original-style 5m way: a bend is found,
 // but is explicitly NOT certified as drivable by the envelope arithmetic.

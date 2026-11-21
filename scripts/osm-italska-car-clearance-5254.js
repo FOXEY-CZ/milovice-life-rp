@@ -30,7 +30,10 @@ export function filterItalskaWideCarTurns5254({roadPlan,car,outgoing}={}){
 }
 export function filterItalskaWideRecycle5254({roadPlan,car,segments}={}){
  if(!Array.isArray(segments))return [];
- if(!isWideNpcCar5254(car))return segments;
+ // The 5.253 bus rule applies to connected turns, but offscreen recycling
+ // also needs this same exclusion. Player-controlled vehicles stay exempt.
+ const npcBus=car?.service==='432'&&car.driven!==true;
+ if(!isWideNpcCar5254(car)&&!npcBus)return segments;
  return segments.filter(s=>!narrowItalskaRoad5253(roadPlan,s));
 }
 // Model geometry audit: interior direction changes on the unchanged OSM road.
