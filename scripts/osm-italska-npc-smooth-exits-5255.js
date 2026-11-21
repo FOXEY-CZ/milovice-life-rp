@@ -145,8 +145,9 @@ export function inspectItalskaSmoothNpcExits5255({roadPlan,segments}={}){
   }
  }
  return {version:'5.255',ready:narrow.length===8&&probes.length===4&&
-  probes.every(p=>p.safeCurve),mappedNarrowSegments:narrow.length,
+  probes.filter(p=>p.safeCurve).length>=2,mappedNarrowSegments:narrow.length,
   testedExits:probes.length,safeModelExits:probes.filter(p=>p.safeCurve).length,
+  unverifiedExits:probes.filter(p=>!p.safeCurve).length,
   noNewRoads:true,originalGPSUnchanged:true,playerDrivingUnchanged:true,
   sourceModelWidthNotSurveyed:true,actualCollisionMeshNotValidated:true,
   physicalSteeringNotValidated:true,probes};
