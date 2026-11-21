@@ -56,8 +56,8 @@ export function planOffscreenNpcRecycle5241({
  const count=segments.length;
  const start=((Math.floor(seed)*19+7)%count+count)%count;
  for(let i=0;i<count;i++){
-  const s=segments[(start+i*37)%count];
-  // When segment count is a multiple of 37, probe every road eventually.
+  const s=segments[(start+i)%count];
+  // Sequential wraparound visits every eligible graph segment exactly once.
   // Reusing the same filtered graph guarantees no permission regression.
   if(!s||s===currentSegment||!finitePoint(s.a)||!finitePoint(s.b)||
    !Number.isFinite(s.len)||s.len<12||!(s.width>=6)||
