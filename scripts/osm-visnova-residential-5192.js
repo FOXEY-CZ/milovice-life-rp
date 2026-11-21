@@ -102,6 +102,13 @@ export function renderVisnovaResidential5192(THREE,{
  if(coords.some(p=>!Number.isFinite(p?.x)||!Number.isFinite(p?.y)))return null;
  // Frames protrude beyond glazing; mullions sit just proud of the frames.
  // All depths are model approximations, not photo-measured.
+ const signedArea2=coords.slice(0,-1).reduce((sum,p,i)=>{
+  const q=coords[i+1];return sum+p.x*q.y-p.y*q.x;
+ },0);
+ // Winding can vary across imported outlines. Facade offsets must always
+ // face the exterior, regardless of clockwise/counter-clockwise source order.
+ if(!Number.isFinite(signedArea2)||Math.abs(signedArea2)<.01)return null;
+ const exteriorSign=Math.sign(signedArea2);
  const positions=[[],[],[],[]]; // frame, glass, sill, low plinth
  const rectangle=(buffer,a,b,low,high,out,nx,nz)=>{
   const p=(t,y)=>({
@@ -124,7 +131,7 @@ export function renderVisnovaResidential5192(THREE,{
   const a=coords[edge],b=coords[edge+1],dx=b.x-a.x,dz=b.y-a.y;
   const len=Math.hypot(dx,dz);
   if(len<.08)continue;
-  const nx=dz/len,nz=-dx/len; // source polygon is CCW
+  const nx=exteriorSign*dz/len,nz=-exteriorSign*dx/len;
   geoRect(3,a,b,0,1,.02,.69,.036,nx,nz);plinthEdges++;
   const face=facesByIndex.get(edge);
   if(!face)continue;
