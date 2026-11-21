@@ -102,7 +102,7 @@ export function planItalskaTurn5255({
   turnMetres:TURN_METRES,speedCapMps:MODEL_TURN_SPEED_MPS,
   physicalSteeringVerified:false,roadMeshCollisionVerified:false,
   renderedCurveOnly:true};
- const end=straightPose(to,nextDirection,TURN_METRES);
+ const destinationPose=straightPose(to,nextDirection,TURN_METRES);
  const incoming={x:(from.b.x-from.a.x)*direction/from.len,
   y:(from.b.y-from.a.y)*direction/from.len};
  const outgoing={x:(to.b.x-to.a.x)*nextDirection/to.len,
@@ -112,9 +112,9 @@ export function planItalskaTurn5255({
   {x:candidate.oldAnchor.x,y:candidate.oldAnchor.y},
   {x:candidate.oldAnchor.x+incoming.x*tangentialMetres,
    y:candidate.oldAnchor.y+incoming.y*tangentialMetres},
-  {x:end.x-outgoing.x*tangentialMetres,
-   y:end.y-outgoing.y*tangentialMetres},
-  {x:end.x,y:end.y}
+  {x:destinationPose.x-outgoing.x*tangentialMetres,
+   y:destinationPose.y-outgoing.y*tangentialMetres},
+  {x:destinationPose.x,y:destinationPose.y}
  ];
  if(!(modelWidth>0&&modelWidth<=2.4&&modelLength>=3.5&&modelLength<=5.1))
   return {...candidate,visualBlendSafe:false,checkedBodySamples:0};
