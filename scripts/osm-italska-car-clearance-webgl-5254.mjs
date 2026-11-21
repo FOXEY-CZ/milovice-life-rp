@@ -30,6 +30,7 @@ try{
   envelope:window.__miloviceItalskaTurnEnvelopeRuntime5254?.(),
   smooth:window.__miloviceItalskaSmoothTurnRuntime5255?.(),
   renderedTurn:window.__miloviceItalskaRenderedTurnRuntime5256?.(),
+  roadHeight:window.__miloviceItalskaRoadHeightRuntime5257?.(),
   view:window.__miloviceStreetAuditRendered,
   meta:document.querySelector('meta[name="milovice-build"]')?.content,
   build:document.getElementById('build-label')?.textContent,
@@ -68,6 +69,13 @@ try{
   4-result.renderedTurn.planarStripAccepted);
  assert.equal(result.renderedTurn.roadTriangleRaycastNotPerformed,true);
  assert.equal(result.renderedTurn.DEMHeightNotChecked,true);
+ assert.equal(result.roadHeight?.ready,true,JSON.stringify(result.roadHeight));
+ assert.equal(result.roadHeight.narrowSegments,8);
+ assert(result.roadHeight.wholeWheelProbeCount>=2);
+ assert(result.roadHeight.baselineWheelEmbeddingMetres>.05);
+ assert.equal(result.roadHeight.plannedVisualAirMetres,.006);
+ assert.equal(result.roadHeight.realMeshRaycast,false);
+ assert.equal(result.roadHeight.playerTrafficUnchanged,true);
  assert.equal(result.envelope?.ready,true);
  assert(result.envelope.joinCount>0);
  assert(result.envelope.poseSamples>0);
