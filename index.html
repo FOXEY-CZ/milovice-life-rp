@@ -582,6 +582,7 @@ import {planVisnovaLawnDetail5200} from './scripts/osm-visnova-lawn-detail-5200.
 import {planVisnovaParkingHouse5202,renderVisnovaParkingHouse5202} from './scripts/osm-visnova-parking-house-5202.js?v=520200';
 import {planVisnovaParkingMap5203} from './scripts/osm-visnova-parking-map-5203.js?v=520300';
 import {planVisnovaTaggedPavers5204} from './scripts/osm-visnova-tagged-pavers-5204.js?v=520400';
+import {planVisnovaPaverCorners5205,renderVisnovaPaverCorners5205} from './scripts/osm-visnova-paver-corners-5205.js?v=520500';
 import {planVisnovaLaneEdges5195,renderVisnovaLaneEdges5195} from './scripts/osm-visnova-service-edge-5195.js?v=519600';
 import {planTopolovaPanelRow5155} from './scripts/osm-topolova-panel-row-5155.js?v=515500';
 import {planTopolovaContinuousHip5160,renderTopolovaContinuousHip5160} from './scripts/osm-topolova-continuous-hip-5160.js?v=516000';
@@ -669,7 +670,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261121-visnova-tagged-pavers-520400';
+const BUILD_ID='20261121-visnova-paver-corners-520500';
 // Keep the visible HUD build and runtime declaration in sync for photo audits.
 document.getElementById('build-label').textContent=BUILD_ID;
 const rpStationRoofAuditCamera=new URLSearchParams(location.search).has('roofAudit');
@@ -8316,6 +8317,36 @@ function rpAppendOSMElements(elements,regionId='old'){
    if(!planned.pieces.length)taggedSidewalkAudit.blockedByRoadsOrBuildings++;
   }
  }
+ // 5.205 — use the original OSM/RUIAN parking-house centroid as a
+ // source-verified anchor to seal ONLY real bends of four already-rendered
+ // paving_stones footways. The old 5.106 playground anchor is >600m away.
+ // Road/building clearance can legitimately reject any/all candidates.
+ if(regionId==='mlada'){
+  const sourceParkingHouse=buildingWays.find(w=>String(w.id)==='1025752710');
+  const visnovaPaverCorners5205=planVisnovaPaverCorners5205({
+   regionId,ways:roadWays,parkingHouse:sourceParkingHouse,toWorld:osmPoint,
+   roads:osmCarriagewayClearance,buildings:taggedSidewalkBuildings
+  });
+  const rendered5205=visnovaPaverCorners5205?
+   renderVisnovaPaverCorners5205(THREE,{
+    plan:visnovaPaverCorners5205,layer:osmLayer,terrainAt,
+    material:osmMappedSurfaceMaterials['visnova-tagged-paving-stones']
+   }):null;
+  window.__miloviceVisnovaPaverCornersRuntime5205=()=>({
+   version:'5.205',ready:Boolean(rendered5205?.ready),
+   sourceParkingHouseId:visnovaPaverCorners5205?.sourceParkingHouseId||null,
+   sourceWayIds:visnovaPaverCorners5205?.sourcePaverWayIds||[],
+   sealedCornerWayIds:visnovaPaverCorners5205?.renderedCornerWayIds||[],
+   candidateTriangles:visnovaPaverCorners5205?.plannedTriangles||0,
+   renderedTriangles:rendered5205?.triangles||0,
+   drawMeshes:rendered5205?.drawMeshes||0,
+   visibleMeshes:rendered5205?.visibleMeshes()||0,
+   rejectedNearRoads:visnovaPaverCorners5205?.rejectedRoad||0,
+   rejectedNearBuildings:visnovaPaverCorners5205?.rejectedBuilding||0,
+   changedMappedPaths:0,newCrossings:0,newColliders:0,
+   photoVerifiedPaverColours:false
+  });
+ }
  // 5.106: the butt ends of the EXISTING mapped OSM pedestrian ribbons
  // leave small triangular holes at bends. Seal only those missing wedges,
  // never paint generic square tiles, new footpaths or invented zebras.
@@ -10631,7 +10662,7 @@ osmBtn.onclick=async()=>{
  if(osmLoading)return;
  osmLoading=true;osmBtn.textContent='⏳ Načítám ulice…';osmMessage('Načítám místní soubor mapy ze stejného GitHub Pages webu…');
  try{
- const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();streetFrontage.reset();osmRoadClearance.reset();osmCarriagewayClearance.reset();osmWaterVegetationClearance.reset();taggedSidewalkBuildings.reset();cityAreaAhead=null;lastCityStreamingX=Infinity;lastCityStreamingZ=Infinity;legacyRealityAudit.reset();renderedPedestrianPieces.clear();collisionWorld.reset();heroBuildings.reset();photoStreetBlock.reset();photoStreetEnvironment.reset();mirovaPhotoStreet586.reset();skolskaWestGreen588.reset();skolskaTailGreen590.reset();photoPionyruVerge.reset();photoChurchSidewalk2022.reset();photoChurchStreet2022.reset();stationPhotoForecourt.reset();stationPhotoParking.reset();bikeTowerEntryPaving.reset();stationTicketMachines.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmStreetLightWays.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;landscapeZones.length=0;visnovaGrassSource5200.length=0;visnovaResidentialRenderCache5192.clear();visnovaNeighborRenderCache5197.clear();visnovaEightFloorRenderCache5198.clear();visnovaParkingHouseCache5202.clear();visnovaParkingMap5203=null;window.__miloviceVisnovaMappedWalkRuntime5199=null;window.__miloviceVisnovaTaggedPaversRuntime5204=null;
+ const elements=await fetchMiloviceOSM();await rpLoadTerrain();await loadCityAreaManifest();seenCityOSMWays.clear();streetFrontage.reset();osmRoadClearance.reset();osmCarriagewayClearance.reset();osmWaterVegetationClearance.reset();taggedSidewalkBuildings.reset();cityAreaAhead=null;lastCityStreamingX=Infinity;lastCityStreamingZ=Infinity;legacyRealityAudit.reset();renderedPedestrianPieces.clear();collisionWorld.reset();heroBuildings.reset();photoStreetBlock.reset();photoStreetEnvironment.reset();mirovaPhotoStreet586.reset();skolskaWestGreen588.reset();skolskaTailGreen590.reset();photoPionyruVerge.reset();photoChurchSidewalk2022.reset();photoChurchStreet2022.reset();stationPhotoForecourt.reset();stationPhotoParking.reset();bikeTowerEntryPaving.reset();stationTicketMachines.reset();loadedCityAreas.clear();loadedCityAreas.add('old');cityRegionGrids=[];foundationPositions.length=0;foundationFaces.length=0;for(const queue of Object.values(architectureQueues))queue.length=0;osmRoads=[];osmDriveRoads.length=0;osmStreetLightWays.length=0;osmRailways.length=0;osmNamedRoads=[];osmLandmarks=[];osmBuildings=0;landscapeZones.length=0;visnovaGrassSource5200.length=0;visnovaResidentialRenderCache5192.clear();visnovaNeighborRenderCache5197.clear();visnovaEightFloorRenderCache5198.clear();visnovaParkingHouseCache5202.clear();visnovaParkingMap5203=null;window.__miloviceVisnovaMappedWalkRuntime5199=null;window.__miloviceVisnovaTaggedPaversRuntime5204=null;window.__miloviceVisnovaPaverCornersRuntime5205=null;
   if(trafficGroup.parent!==osmLayer)osmLayer.add(trafficGroup);
   if(visualDetails.parent!==osmLayer)osmLayer.add(visualDetails);for(const batch of facadeBatches)batch.clear();
  window.__miloviceMassStreetBlock583=null;
