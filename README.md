@@ -6,7 +6,7 @@ Dosavadní herní pěší 3D pruhy i jejich původní souřadnice zůstávají. 
 
 Fail-closed modul `scripts/osm-visnova-estate-pavers-5220.js` kontroluje **každý původní GPS bod, zdrojové tagy, OSM ID, délky segmentů a hash**, nepřepíše OSM export, nemění šířku ani kolize, nevytváří nové chodníky, přechody, obrubníky, stromy či parkovací místa. Runtime `window.__miloviceVisnovaEstatePaversRuntime5220()` vrací při skutečném vykreslení počet zdrojových a vykreslených segmentů, přidružený sdílený materiál a LOD stav případných 3D výplní. Kontrolní kamera z originálního OSM uzlu 1005977571 na `50.2288905, 14.8710178` je `?v=522000&streetAudit=visnova-estate-pavers-5220`; směr 20° je technický odhad, není to panorama.
 
-Automatické GitHub Actions: samostatný Node zdrojový test, skutečný mobilní Chromium/SwiftShader WebGL test, celoprojektová validace, Pages. **Výsledky CI/Pages po ověření doplnit, nikdy nepředjímat PASS.**
+**Všechny testy verze 5.220 PASS:** [Node a skutečné mobilní Chromium/SwiftShader WebGL](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44906988179) **SUCCESS** (11 originálních pěších segmentů, 371,637 m, 3 zdrojově omezené výplně zatáček v jednom extra meshi, viditelném i po 6,5 s/LOD, žádné přidané pěší trasy a kolize). [Celoprojektová validace](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44907005069) **SUCCESS**. [GitHub Pages veřejné nasazení](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44907087574) **SUCCESS**. Poslední dokumentační update po těchto výsledcích má vlastní Pages běh; žádné nové herní soubory už se neměnily.
 
 ---
 
