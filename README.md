@@ -1,3 +1,13 @@
+## Milovice RP 5.242 — další skutečný dvoupodlažní obytný dům (21. 11. 2026)
+
+Na západní straně mapovaného okolí Italské přibyl **nový detail původní již existující** rezidenční budovy [OSM 53865923](https://www.openstreetmap.org/way/53865923), RÚIAN **25610473**: zdrojový 13bodový půdorys cca **544,506 m²**, 2 podlaží, 10 bytů. Model podle skutečných hran půdorysu nyní ukazuje **32 odhadovaných modelových oken** na dvou dlouhých stranách 32,473 a 33,051 m. Využívá stávající čtyřbatchový renderer a jeho sdílené materiály. **Nejde o fotograficky reprodukovanou fasádu**; okna, rozteče, barvy, parapety a skutečné vchody nebyly ověřeny na místě ani panoramatem. Další krátké stěny nedostávají náhodné spekulativní dveře a okna.
+
+**Původní zdi, střecha, výška modelu, půdorys, GPS, silnice, chodníky, kolize a počet budov se nemění.** Pouze na dvě existující fasádní hrany přibývají modelové 3D vrstvy (32 oken / 4 meshe / 472 trojúhelníků). Source-lock `scripts/osm-italska-west-residence-5242.js` odmítá změněné RÚIAN ID, tags, GPS, podlaží a modelovou výšku. Přímý [technický herní pohled](https://foxey-cz.github.io/milovice-life-rp/?v=524200&streetAudit=italska-west-residence-5242) používá **původní OSM uzel chodníku 1005977571 (50.2283502, 14.8741049)** a **odhadovaný** směr 200°, nikoliv panorama.
+
+Zdrojový test `scripts/osm-italska-west-residence-5242.test.mjs`, workflow `.github/workflows/italska-apartments-5235.yml` a mobilní skutečný Chromium/SwiftShader test `scripts/osm-italska-west-residence-webgl-5242.mjs` se screenshotem a kontrolou po 6,5 s LOD jsou připravené; `node scripts/dev-check.mjs italska` obsahuje i předchozí dopravní regresi 5.240–5.241. **Pro novou 5.242 byla přímo ověřena zdrojová geometrie a mock-renderer; výsledky GitHub Actions/Pages zatím nejsou potvrzené jako PASS.**
+
+---
+
 ## Milovice RP 5.241 — auta NPC už nepřeskakují z konce jednosměrky na cizí ulici (21. 11. 2026)
 
 Oprava napojení dopravy: dřívější systém na konci jednosměrné komunikace bez výjezdu přesměroval běžné NPC auto na libovolný úplně jiný segment z městské silniční sítě. Nově **každá další trasa musí skutečně geometricky navazovat** a respektovat směr jednosměrky. Když na konci jednosměrky navazující povolená trasa není, NPC zastaví. Neviditelné auto lze recyklovat na jiném původním povoleném úseku pouze při odstupu **více než 360 m od hráče i od všech aktivních technických kamer** pro staré a nové místo; v záběru nedochází k náhlému přeskoku. Dvousměrné slepé cesty zachovávají dosavadní otočení.
