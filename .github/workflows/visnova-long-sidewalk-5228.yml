@@ -1,0 +1,40 @@
+name: Milovice 5.228 original Visnova long sidewalk mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - data/regions/mlada.json
+      - scripts/osm-visnova-long-sidewalk-5228.js
+      - scripts/osm-visnova-long-sidewalk-5228.test.mjs
+      - scripts/osm-visnova-long-sidewalk-webgl-5228.mjs
+      - scripts/osm-lesni-east-link-5227.test.mjs
+      - .github/workflows/visnova-long-sidewalk-5228.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify original 199m sidewalk and regression 5.227
+        run: |
+          node scripts/osm-lesni-east-link-5227.test.mjs
+          node scripts/osm-visnova-long-sidewalk-5228.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Mobile Chromium SwiftShader WebGL 3D and LOD
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-visnova-long-sidewalk-webgl-5228.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visnova-long-sidewalk-5228
+          path: browser-artifacts/visnova-long-sidewalk-5228-mobile.png
+          if-no-files-found: ignore
