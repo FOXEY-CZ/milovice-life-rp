@@ -12,7 +12,8 @@ const old=JSON.stringify(bs);
 class BufferGeometry{setAttribute(n,v){this[n]=v;}
  computeVertexNormals(){} computeBoundingSphere(){}}
 class Float32BufferAttribute{constructor(array,size){this.array=array;this.size=size;}}
-class MeshStandardMaterial{constructor(options){this.options=options;}}
+let materialCreations=0;
+class MeshStandardMaterial{constructor(options){this.options=options;materialCreations++;}}
 class Mesh{constructor(geo,mat){this.geometry=geo;this.material=mat;this.userData={};
  this.visible=true;this.parent=null;}}
 const THREE={BufferGeometry,Float32BufferAttribute,MeshStandardMaterial,Mesh,
@@ -20,6 +21,7 @@ const THREE={BufferGeometry,Float32BufferAttribute,MeshStandardMaterial,Mesh,
 const toWorld=p=>({x:(p.lon-14.889)*111320*Math.cos(50.226*Math.PI/180),
  y:-(p.lat-50.226)*111320});
 let windows=0,faces=0,triangles=0;
+let firstMaterials=null;
 for(let i=0;i<bs.length;i++){
  const w=bs[i][0],spec=C.buildings[i],
   opts={id:w.id,regionId:'mlada',tags:w.tags,geometry:w.geometry,
@@ -57,16 +59,19 @@ for(let i=0;i<bs.length;i++){
  assert.equal(r.longFacadesRendered,spec.facades.length);
  assert.equal(r.plinthEdgesRendered,spec.nodes-1);
  assert.equal(r.meshCount,4);
+ const currentMaterials=layer.children.map(m=>m.material);
+ assert.equal(new Set(currentMaterials).size,4,'four distinct facade material types');
+ if(firstMaterials){
+  assert.deepEqual(currentMaterials,firstMaterials,
+   'all houses share the same four material instances');
+ }else firstMaterials=currentMaterials;
+ assert.equal(materialCreations,4,'no duplicate material allocation across houses');
  assert.equal(r.totalTriangles,14*modelWindows+2*(spec.nodes-1));
  // Exterior-facing frame offsets: reversing the same closed polygon must
  // still place glazing/frames outside, never through the existing walls.
- const centroid=w.geometry.slice(0,-1).map(toWorld).reduce(
-  (c,p)=>({x:c.x+p.x/(w.geometry.length-1),
-   y:c.y+p.y/(w.geometry.length-1)}),{x:0,y:0});
  const outside=(mesh,edgeA,edgeB)=>{
   const xyz=mesh.geometry.position.array;
   const p={x:xyz[0],y:xyz[2]};
-  const mid={x:(edgeA.x+edgeB.x)/2,y:(edgeA.y+edgeB.y)/2};
   const dx=edgeB.x-edgeA.x,dz=edgeB.y-edgeA.y;
   const signed=(p.x-edgeA.x)*dz-(p.y-edgeA.y)*dx;
   const polygonArea=w.geometry.slice(0,-1).reduce((sum,g,j)=>{
@@ -87,6 +92,8 @@ for(let i=0;i<bs.length;i++){
   layer:reverseLayer});
  assert(reverseRender,'reversed winding must render');
  assert.equal(reverseRender.estimatedWindowsRendered,modelWindows);
+ assert.deepEqual(reverseLayer.children.map(m=>m.material),currentMaterials);
+ assert.equal(materialCreations,4);
  const reverseStart=toWorld(reversedPlan.sourceGeometry[0]);
  const reverseNext=toWorld(reversedPlan.sourceGeometry[1]);
  const reverseFirst=reverseLayer.children[3].geometry.position.array;
