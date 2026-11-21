@@ -623,6 +623,7 @@ import {ITALSKA_ROAD_SIDEWALK_5252,planItalskaRoadSidewalk5252} from './scripts/
 import {filterItalskaNpcTurns5253,permitItalskaParking5253,inspectItalskaNpcClearance5253} from './scripts/osm-italska-narrow-npc-5253.js?v=525300';
 import {filterItalskaWideCarTurns5254,filterItalskaWideRecycle5254,inspectItalskaCarClearance5254} from './scripts/osm-italska-car-clearance-5254.js?v=525400';
 import {inspectItalskaTurnEnvelope5254} from './scripts/osm-italska-turn-envelope-5254.js?v=525400';
+import {planItalskaSmoothNpcExit5255,advanceItalskaSmoothNpcExit5255,inspectItalskaSmoothNpcExits5255} from './scripts/osm-italska-npc-smooth-exits-5255.js?v=525500';
 import {ITALSKA_EMERGENCY_ACCESS_5240,inspectItalskaEmergencyAccess5240,classifyPublicNpcRoad5240} from './scripts/osm-traffic-access-5240.js?v=524000';
 import {planNpcJunction5241,planOffscreenNpcRecycle5241} from './scripts/osm-traffic-continuity-5241.js?v=524100';
 import {planMappedAmbientSegments5243} from './scripts/osm-mapped-ambient-walkers-5243.js?v=524700';
@@ -12470,6 +12471,20 @@ function rpBuildRoadGraph(){
 }
 // Never invent painted zebras at road intersections. OSM marked crossings
 // are rendered in rpAppendOSMElements where actual road occupancy is known.
+const italskaSmoothStats5255={planned:0,completed:0,fixtureSpawned:false,
+ fixtureCompleted:false};
+window.__miloviceItalskaSmoothNpcRuntime5255=()=>({
+ ...inspectItalskaSmoothNpcExits5255({
+  roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
+  segments:driveSegments
+ }),
+ plannedTurns:italskaSmoothStats5255.planned,
+ completedTurns:italskaSmoothStats5255.completed,
+ activeTurns:trafficCars.filter(c=>c.smoothTurn5255).length,
+ fixtureSpawned:italskaSmoothStats5255.fixtureSpawned,
+ fixtureCompleted:italskaSmoothStats5255.fixtureCompleted,
+ playerControlUnchanged:true,originalGpsUnchanged:true
+});
 window.__miloviceItalskaTurnEnvelopeRuntime5254=()=>inspectItalskaTurnEnvelope5254({
  roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
  segments:driveSegments
@@ -13198,14 +13213,47 @@ function rpNextStreet(car){
   car.progress=car.direction===1?1:0;car.trafficTerminal5241=true;
   trafficContinuityStats5241.terminals++;return;
  }
+ // 5.255: source-locked, footprint-checked cubic ONLY on safe exits
+ // from the real mapped Italska 5m model road. Never move map geometry.
+ const smooth=decision.mode==='connected'?
+  planItalskaSmoothNpcExit5255({
+   roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
+   from:car.seg,direction:car.direction,
+   to:decision.segment,nextDirection:decision.direction,car
+  }):null;
  car.seg=decision.segment;car.direction=decision.direction;
  car.progress=decision.progress;car.turns+=decision.turnIncrement;
+ if(smooth){
+  car.smoothTurn5255=smooth;
+  italskaSmoothStats5255.planned++;
+ }
  car.trafficTerminal5241=decision.mode==='terminal';
  if(decision.mode==='terminal')trafficContinuityStats5241.terminals++;
  if(decision.mode==='connected')trafficContinuityStats5241.turnsOnConnectedRoads++;
 }
+function rpSeedItalskaSmoothAudit5255(){
+ if(new URLSearchParams(location.search).get('turnTest')!=='1'||
+  rpStreetAuditId!=='italska-road-footway-5252'||
+  trafficCars.some(c=>c.italskaSmoothAudit5255))return;
+ const source=driveSegments.find(s=>
+  narrowItalskaRoad5253(window.__miloviceItalskaRoadFootwayAudit5252,s));
+ if(!source||source.len<6)return;
+ const car=makeTrafficCar(8,source); // actual standard passenger NPC model
+ car.direction=-1;car.progress=.58;car.speed=5.6;
+ car.italskaSmoothAudit5255=true;
+ const dx=(source.b.x-source.a.x)/source.len,
+  dz=(source.b.y-source.a.y)/source.len;
+ const side=-Math.min(2.25,source.width*.25);
+ const px=source.a.x+(source.b.x-source.a.x)*car.progress-dz*side,
+  pz=source.a.y+(source.b.y-source.a.y)*car.progress+dx*side;
+ car.g.position.set(px,terrainAt(px,pz)+.045,pz);
+ car.g.rotation.y=Math.atan2(dx,dz);
+ trafficCars.push(car);
+ italskaSmoothStats5255.fixtureSpawned=true;
+}
 function rpAnimateTraffic(dt){
  if(!osmActive)return;
+ rpSeedItalskaSmoothAudit5255();
  if(elapsed>=nextAmbientReuse5244){
   nextAmbientReuse5244=elapsed+6;
   rpRebalanceMappedAmbient5244();
@@ -13284,6 +13332,29 @@ function rpAnimateTraffic(dt){
   obj.topolovaYielding5166=rightOfWay?.yielding===true;
   if(obj.topolovaYielding5166)
    obj.topolovaYieldFrames5166=(obj.topolovaYieldFrames5166||0)+1;
+  if(obj.smoothTurn5255){
+   const sample=advanceItalskaSmoothNpcExit5255(
+    obj.smoothTurn5255,movingMetres);
+   if(sample){
+    rpSpinWheels(obj,sample.metresMoved);
+    g.position.set(sample.x,terrainAt(sample.x,sample.z)+.045,sample.z);
+    g.rotation.y=sample.yaw;
+    if(sample.finished){
+     obj.progress=sample.destinationProgress;
+     obj.smoothTurn5255=null;
+     italskaSmoothStats5255.completed++;
+     if(obj.italskaSmoothAudit5255)
+      italskaSmoothStats5255.fixtureCompleted=true;
+    }
+    g.visible=Math.hypot(g.position.x-playerX,g.position.z-playerZ)<
+     Math.min(270,OSM_VIEW*.52);
+    if(obj.italskaSmoothAudit5255&&rpStreetAuditCameraWorld)
+     g.visible=Math.hypot(g.position.x-rpStreetAuditCameraWorld.x,
+      g.position.z-rpStreetAuditCameraWorld.z)<135;
+    continue;
+   }
+   obj.smoothTurn5255=null;
+  }
   obj.progress+=obj.direction*movingMetres/obj.seg.len;
   rpSpinWheels(obj,movingMetres);
   if(obj.encounter5167){
@@ -13337,9 +13408,20 @@ function rpAnimateTraffic(dt){
   const seg=obj.seg,dir=obj.direction;
   const dx=(seg.b.x-seg.a.x)/seg.len,dz=(seg.b.y-seg.a.y)/seg.len;
   const side=dir*Math.min(2.25,seg.width*.25);
-  g.position.set(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,terrainAt(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side)+.045,seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side);
-  g.rotation.y=Math.atan2(-dx*dir,-dz*dir);
+  if(obj.smoothTurn5255){
+   const initial=advanceItalskaSmoothNpcExit5255(obj.smoothTurn5255,0);
+   if(initial){
+    g.position.set(initial.x,terrainAt(initial.x,initial.z)+.045,initial.z);
+    g.rotation.y=initial.yaw;
+   }
+  }else{
+   g.position.set(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,terrainAt(seg.a.x+(seg.b.x-seg.a.x)*obj.progress-dz*side,seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side)+.045,seg.a.y+(seg.b.y-seg.a.y)*obj.progress+dx*side);
+   g.rotation.y=Math.atan2(-dx*dir,-dz*dir);
+  }
   g.visible=Math.hypot(g.position.x-playerX,g.position.z-playerZ)<Math.min(270,OSM_VIEW*.52);
+  if(obj.italskaSmoothAudit5255&&rpStreetAuditCameraWorld)
+   g.visible=Math.hypot(g.position.x-rpStreetAuditCameraWorld.x,
+    g.position.z-rpStreetAuditCameraWorld.z)<135;
   if((obj.encounter5167||obj.northEncounter5168)&&rpStreetAuditCameraWorld)
    g.visible=Math.hypot(g.position.x-rpStreetAuditCameraWorld.x,
     g.position.z-rpStreetAuditCameraWorld.z)<135;
