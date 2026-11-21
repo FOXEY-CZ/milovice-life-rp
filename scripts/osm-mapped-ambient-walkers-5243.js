@@ -22,12 +22,13 @@ export function canUseMappedAmbientWay5243(tags){
 }
 export function planMappedAmbientSegments5243({
  ways,buildings=[],regionId,widths,toWorld,clip,carriageway,
- buildingClearance=null
+ buildingClearance=null,roadCorridorClearance=null
 }={}){
  if(!Array.isArray(ways)||!regionId||typeof widths?.get!=='function'||
   typeof toWorld!=='function'||typeof clip!=='function'||
   typeof carriageway?.isClear!=='function'||
-  (buildingClearance!==null&&typeof buildingClearance!=='function'))return [];
+  (buildingClearance!==null&&typeof buildingClearance!=='function')||
+  (roadCorridorClearance!==null&&typeof roadCorridorClearance!=='function'))return [];
  // Reject any candidate that enters an EXISTING mapped building polygon.
  // Bounding boxes keep the check cheap for regional streaming on phones.
  const originalBuildings=Array.isArray(buildings)?buildings.filter(b=>
@@ -90,7 +91,8 @@ export function planMappedAmbientSegments5243({
     });
     // 5.245: defend the FULL route, not only five evenly spaced samples.
     // The callback can check every original building edge incl. thin walls.
-    if(!safe||(buildingClearance&&!buildingClearance(start,end)))continue;
+    if(!safe||(buildingClearance&&!buildingClearance(start,end))||
+     (roadCorridorClearance&&!roadCorridorClearance(start,end)))continue;
     const key=[String(way.id),i,
      Math.round(start.x*4),Math.round(start.y*4),
      Math.round(end.x*4),Math.round(end.y*4)].join(':');
@@ -102,6 +104,7 @@ export function planMappedAmbientSegments5243({
      regionId,clippedFromOriginalRoadSafePiece:true,
      roadShoulder:false,noMappedBuildingOverlap:true,
      fullBoundaryClearance5245:Boolean(buildingClearance),
+     fullRoadCorridorClearance5247:Boolean(roadCorridorClearance),
      newPavement:0,newCrossings:0});
    }
   }
