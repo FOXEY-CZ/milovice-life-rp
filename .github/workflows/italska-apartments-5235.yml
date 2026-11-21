@@ -154,5 +154,6 @@ jobs:
             browser-artifacts/italska-road-footway-5252-mobile.png
             browser-artifacts/italska-narrow-npc-5253-mobile.png
             browser-artifacts/italska-car-clearance-5254-mobile.png
+            browser-artifacts/italska-smooth-npc-exit-5255-turn.png
             browser-artifacts/italska-smooth-npc-exit-5255-mobile.png
           if-no-files-found: ignore
