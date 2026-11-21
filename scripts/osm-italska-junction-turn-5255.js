@@ -7,6 +7,8 @@ import {narrowItalskaRoad5253} from './osm-italska-narrow-npc-5253.js';
 const NEIGHBORS=new Set(['8585601','1107814416']);
 const EXTERIOR_WIDTH=2*(1.81*.56+.03);
 const MAX_LENGTH=5.08,TURN_METRES=4,APPROACH_METRES=6;
+// Exact makeRoadCar variant index%8 lengths, source-checked in unit tests.
+const MODEL_LENGTHS=Object.freeze([4.45,4.15,4.75,4.28,4.62,4.86,5.08,4.34]);
 const MODEL_TURN_SPEED_MPS=2.6;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const point=p=>Number.isFinite(p?.x)&&Number.isFinite(p?.y);
@@ -156,5 +158,6 @@ export const ITALSKA_TURN_MOTION_5255=Object.freeze({
  speedCapMps:MODEL_TURN_SPEED_MPS,turnMetres:TURN_METRES,
  approachMetres:APPROACH_METRES,modelExteriorWidthMetres:EXTERIOR_WIDTH,
  modelMaxBodyLengthMetres:MAX_LENGTH,
+ modelBodyLengthsMetres:MODEL_LENGTHS,
  mappedJunctionWayIds:['8585601','1107814416']
 });
