@@ -12475,8 +12475,31 @@ const italskaTurnStats5255={approachFrames:0,exitFrames:0,sourceTurns:0,visualBl
 window.__miloviceItalskaJunctionMotionRuntime5255=()=>{
  const plan=window.__miloviceItalskaRoadFootwayAudit5252;
  const junctions=inspectItalskaJunctionAngles5254({roadPlan:plan,segments:driveSegments});
+ const candidates=[];
+ if(plan?.version==='5.252'){
+  for(const source of driveSegments.filter(s=>String(s.osmId)==='8590284'&&s.width===5)){
+   for(const direction of [-1,1]){
+    const node=direction===1?source.b:source.a;
+    for(const outgoing of driveGraph.get(roadNode(node))||[]){
+     const target=outgoing.segment,nextDirection=outgoing.direction;
+     if(!isItalskaSourceTurn5255({
+      roadPlan:plan,from:source,direction,to:target,nextDirection
+     }))continue;
+     const preview=planItalskaTurn5255({
+      roadPlan:plan,from:source,direction,to:target,nextDirection
+     });
+     if(preview)candidates.push({fromOSM:String(source.osmId),
+      toOSM:String(target.osmId),visualBlendSafe:preview.visualBlendSafe,
+      modelOnly:true});
+    }
+   }
+  }
+ }
  return {version:'5.255',modelOnly:true,sourceOSMId:'8590284',
-  junctions,approachFrames:italskaTurnStats5255.approachFrames,
+  junctions,mappedTurnCandidates:candidates.length,
+  safeVisualTurnCandidates:candidates.filter(c=>c.visualBlendSafe).length,
+  sourceCandidatePreviews:candidates,
+  approachFrames:italskaTurnStats5255.approachFrames,
   exitFrames:italskaTurnStats5255.exitFrames,
   sourceTurns:italskaTurnStats5255.sourceTurns,
   visuallyEasedTurns:italskaTurnStats5255.visualBlends,
@@ -12486,7 +12509,8 @@ window.__miloviceItalskaJunctionMotionRuntime5255=()=>{
   originalGpsUnchanged:true,roadMeshUnchanged:true,
   fullPhysicalSteeringVerified:false,photoMeasuredRoadWidth:false,
   ready:window.__miloviceAreasLoaded?.includes('mlada')===true&&
-   junctions.ready===true&&junctions.mappedTurnOptions===4};
+   junctions.ready===true&&junctions.mappedTurnOptions===4&&
+   candidates.length===4};
 };
 window.__miloviceItalskaTurnEnvelopeRuntime5254=()=>inspectItalskaTurnEnvelope5254({
  roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
