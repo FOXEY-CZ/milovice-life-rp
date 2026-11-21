@@ -81,7 +81,7 @@ for(const segment of candidates){
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),raw);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const token of [
- "from './scripts/osm-mapped-ambient-walkers-5243.js?v=524500'",
+ "from './scripts/osm-mapped-ambient-walkers-5243.js?v=524700'",
  'const osmAmbientPedestrianSegments5243=[];',
  'const mappedRegionSegments5246=planMappedAmbientSegments5243({',
  'osmAmbientPedestrianSegments5243.push(...mappedRegionSegments5246);',
