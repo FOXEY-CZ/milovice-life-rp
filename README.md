@@ -1,3 +1,15 @@
+## Milovice RP 5.228 — 199 m autentického chodníku Višňová a dvě původní dlážděná napojení (21. 11. 2026)
+
+V původním uloženém OpenStreetMap exportu je [OSM chodník 1044078118](https://www.openstreetmap.org/way/1044078118) s přesnými **11 původními GPS uzly / 10 dílčími 3D úseky / 199,405 m**, hash `26506719`, původními tagy `highway=footway`, `footway=sidewalk`, `lit=yes` a **bez záznamu `surface`**. Verze 5.228 přebarvuje pouze všech deset již existujících vykreslovaných úseků sdíleným neutrálním herním materiálem `visnova-footway-model`; skutečný povrch, barva ani vzor **NEJSOU fotograficky doloženy**. Původní GPS, šířka chodníku a veškeré kolize se nemění.
+
+Přesné mapované napojení **na začátku 50.2290044,14.8702188** je stejný GPS bod jako poslední bod původního [301,172m chodníku 1005977571](https://www.openstreetmap.org/way/1005977571) (`surface=paving_stones`, 7 uzlů, 6 segmentů, hash `263e12b3`). Druhé **původní spojení na uzlu index 4 v GPS 50.2289889,14.8692466** je přesně stejné jako konec [32,073m dlážděného footway 1044078121](https://www.openstreetmap.org/way/1044078121) (4 uzly, 3 segmenty, `surface=paving_stones`, hash `4dc63734`). Celkem tato existující trojice mapových cest tvoří **532,650 m / 19 zdrojových segmentů** v jedné mapově napojené síti. Obě dlážděné cesty už byly řešeny v 5.220/5.204 a dostávají **nulové duplicitní přebarvení** v této verzi. Skutečná textura originálních dlaždic nebyla fotoověřena.
+
+Nový `scripts/osm-visnova-long-sidewalk-5228.js` je fail-closed zdrojová kontrola všech tří původních OSM ways: přesný počet a pořadí GPS bodů, mapový hash, geometrii, source surface a dvě totožné souřadnice původních spojení. **Nepřibývá žádná nová cesta, chodecké propojení, obrubník, zebra, přechod, strom, světlo, budova, vchod, parkovací plocha nebo collider.** Audit `window.__miloviceVisnovaLongRuntime5228()` kontroluje všechna tři původní ID, deset skutečně vykreslených starých segmentů a načtení obou už existujících dlažebních částí. Technická kamera `?v=522800&streetAudit=visnova-long-sidewalk-5228` stojí na originálním uzlu GPS 50.2288859,14.8687264, azimut 270° je odhad, ne foto orientace.
+
+Doplněny Node fail-closed a regresní 5.227 testy, skutečný mobilní Chromium/SwiftShader WebGL test s 6,5s LOD, samostatná GitHub Actions CI `visnova-long-sidewalk-5228.yml`, registrace do `scripts/dev-check.mjs sportovni`. **Aktuální stav: kód a testy zapsané na GitHub; SUCCESS CI, skutečné mobilní vykreslení a Pages nasazení nebyly zatím nezávisle ověřeny.**
+
+---
+
 ## Milovice RP 5.227 — původní pěší spojka mezi dvěma přechody (21. 11. 2026)
 
 Navazující skutečná mapovaná trasa [OSM 1057549996](https://www.openstreetmap.org/way/1057549996) má **5 původních GPS uzlů / 4 segmenty / 41,608 m** (hash `53198096`) a v uložené mapě tagy `highway=footway`, `footway=sidewalk`, `lit=yes`. **Chybí jí údaj `surface`**, proto dostává výhradně neutrální odhadovaný herní materiál `visnova-footway-model` (není to potvrzený beton ani dlažba). Skutečné mapové souřadnice, původní vykreslované délky a šířka zůstaly beze změn.
