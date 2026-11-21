@@ -20,7 +20,7 @@
 export const ITALSKA_VOJENSKE_ZATISI_5249=Object.freeze({
  regionId:'mlada',osmId:'53865882',ruianId:'40057411',
  sourceHash:'7aec42bc',vertices:29,areaMin:912,areaMax:916,
- approximateWall:'#e2ded3',approximateRoof:'#655e54',
+ approximateWall:'#eeeae4',approximateRoof:'#655e54',
  photoVerifiedSiteStyle:true,photoMeasuredDetails:false,
  cameras:Object.freeze([
   Object.freeze({lat:50.225218,lon:14.874681,source:'04'}),
@@ -128,15 +128,16 @@ export function renderItalskaVojenskeZatisi5249(THREE,{
   const lo=.09/len,hi=1-lo;
   quad(trim,at(lo,2.97),at(hi,2.97),at(hi,3.10),at(lo,3.10));
   trimEdges++;
-  // Only longer PHOTO-FACING walls get any wear; no guessed patterned
-  // doors, windows, balconies, arches, fences, kerbs or entrances.
+  // Photo evidence supports missing plaster but NOT surveyed patch bays.
+  // Keep all patches strictly under the lowest generic model window sill
+  // (around 1.1m), rather than overlaying synthetic glazing or doors.
   if(len<4.4)continue;
   const count=Math.min(3,Math.floor(len/8)+1);
   for(let j=0;j<count;j++){
    const t=(j+1)/(count+1)+(e.edge%3-1)*.022;
    const width=Math.min(1.4,len*.12),halfT=width/(2*len);
-   const y=.58+((e.edge*3+j*5)%7)*.19;
-   const span=.60+((e.edge+j)%3)*.13;
+   const y=.20+((e.edge*3+j*5)%5)*.065;
+   const span=.26+((e.edge+j)%3)*.055;
    const seed=(e.edge*17+j*23)%5;
    const poly=[
     at(t-halfT,y+.12,.044),
