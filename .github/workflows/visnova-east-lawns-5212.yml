@@ -1,0 +1,37 @@
+name: Milovice 5.212 source-locked Višňová east lawns WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - data/regions/mlada.json
+      - scripts/osm-visnova-east-lawns-5212.js
+      - scripts/osm-visnova-east-lawns-5212.test.mjs
+      - scripts/osm-visnova-east-lawns-webgl-5212.mjs
+      - .github/workflows/visnova-east-lawns-5212.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify two unmodified mapped grass polygons and safe placements
+        run: node scripts/osm-visnova-east-lawns-5212.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Mobile Chrome WebGL after 6.1s LOD, no duplicate lawns
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-visnova-east-lawns-webgl-5212.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visnova-east-lawns-5212
+          path: browser-artifacts/visnova-east-lawns-5212-mobile.png
+          if-no-files-found: ignore
