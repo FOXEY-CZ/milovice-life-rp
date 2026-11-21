@@ -26,6 +26,40 @@ assert(p.tufts.length>0&&p.tufts.length<=168,'small original grass patches only'
 assert(p.tufts.every(t=>p.sourceLawnIds.includes(t.sourceOSMId) &&
  t.positionEstimated===true));
 assert.equal(Object.values(p.byPolygon).reduce((a,b)=>a+b,0),p.tufts.length);
+
+// Deterministic placement must remain entirely within the original closed
+// source polygons, with the physical tuft footprint inside the safety inset.
+const inside=(x,z,poly)=>{
+ let yes=false;
+ for(let i=0,j=poly.length-1;i<poly.length;j=i++){
+  const a=poly[i],b=poly[j];
+  if((a.z>z)!==(b.z>z) &&
+   x<(b.x-a.x)*(z-a.z)/(b.z-a.z)+a.x)yes=!yes;
+ }
+ return yes;
+};
+const edgeDistance=(x,z,a,b)=>{
+ const dx=b.x-a.x,dz=b.z-a.z,t=Math.max(0,Math.min(1,
+  ((x-a.x)*dx+(z-a.z)*dz)/(dx*dx+dz*dz)));
+ return Math.hypot(x-(a.x+t*dx),z-(a.z+t*dz));
+};
+const outlines=new Map(selected.map(group=>{
+ const w=group[0];
+ return [String(w.id),w.geometry.slice(0,-1).map(g=>toWorld(g))];
+}));
+for(const tuft of p.tufts){
+ const poly=outlines.get(tuft.sourceOSMId);
+ assert(poly&&inside(tuft.x,tuft.z,poly),'tuft inside original OSM GPS lawn');
+ const minEdge=Math.min(...poly.map((a,i)=>
+  edgeDistance(tuft.x,tuft.z,a,poly[(i+1)%poly.length])));
+ assert(minEdge+1e-9>=C.inset,'tuft respects polygon boundary inset');
+ assert(Number.isFinite(tuft.height)&&tuft.height>0);
+ assert(Number.isFinite(tuft.spread)&&tuft.spread>0);
+ assert(tuft.spread<C.inset,'rendered tuft fits within the safe inset');
+}
+const pAgain=plan(ways,opts);
+assert.deepEqual(pAgain?.tufts,p.tufts,'stable reproducible grass positioning');
+
 for(const v of ['originalOSMPolygonsUnchanged','actualBladeLocationsUnknown',
  'estimatedBladesOnly','roadsAndFootwaysCleared'])assert.equal(p[v],true);
 for(const v of ['newGrassPolygons','newTrees','newShrubs','newFootways',
