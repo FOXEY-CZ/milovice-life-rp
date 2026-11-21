@@ -17,9 +17,14 @@ try{
  await page.waitForFunction(()=>{
   const runtime=window.__miloviceItalskaSmoothNpcRuntime5255?.();
   return window.__miloviceItalskaRoadFootwayRuntime5252?.()?.ready===true&&
-   runtime?.ready===true&&runtime.fixtureCompleted===true&&
+   runtime?.ready===true&&runtime.fixtureTurnActive===true&&
    window.__miloviceStreetAuditRendered?.view==='italska-road-footway-5252';
  },null,{timeout:120000});
+ await mkdir('browser-artifacts',{recursive:true});
+ await page.screenshot({path:'browser-artifacts/italska-smooth-npc-exit-5255-turn.png'});
+ await page.waitForFunction(()=>
+  window.__miloviceItalskaSmoothNpcRuntime5255?.()?.fixtureCompleted===true,
+  null,{timeout:120000});
  await page.waitForTimeout(7200);
  const result=await page.evaluate(()=>({
   sidewalk:window.__miloviceItalskaRoadFootwayRuntime5252?.(),
@@ -38,6 +43,13 @@ try{
  assert.equal(result.smooth.fixtureCompleted,true);
  assert(result.smooth.plannedTurns>=1);
  assert(result.smooth.completedTurns>=1);
+ assert(result.smooth.observedCurveFrames>=4);
+ assert(result.smooth.maxFrameStepMetres>0);
+ assert(result.smooth.maxFrameStepMetres<.75,
+  'Actual rendered NPC turn must not jump between frames');
+ assert(result.smooth.maxFrameYawRadians>0);
+ assert(result.smooth.maxFrameYawRadians<.4,
+  'Actual rendered car yaw must rotate gradually');
  assert.equal(result.smooth.playerControlUnchanged,true);
  assert.equal(result.smooth.originalGpsUnchanged,true);
  assert.equal(result.smooth.physicalSteeringNotValidated,true);
@@ -54,7 +66,6 @@ try{
  assert.equal(result.view?.view,'italska-road-footway-5252');
  assert.equal(result.build,result.meta);
  assert.deepEqual(errors,[]);
- await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/italska-smooth-npc-exit-5255-mobile.png'});
  console.log('PASS 5.255 mobile SwiftShader 7.2s LOD: animated real standard NPC exits mapped narrow Italska, 2 safe curves, 2 rejected, sidewalks preserved');
 }finally{await browser.close()}
