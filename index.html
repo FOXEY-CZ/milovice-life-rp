@@ -12485,6 +12485,9 @@ window.__miloviceItalskaSmoothNpcRuntime5255=()=>({
  fixtureSpawned:italskaSmoothStats5255.fixtureSpawned,
  fixtureCompleted:italskaSmoothStats5255.fixtureCompleted,
  fixtureTurnActive:trafficCars.some(c=>c.italskaSmoothAudit5255&&c.smoothTurn5255),
+ fixtureTurnProgressMetres:trafficCars.find(c=>
+  c.italskaSmoothAudit5255&&c.smoothTurn5255)
+  ?.smoothTurn5255.travelledMetres??null,
  observedCurveFrames:italskaSmoothStats5255.observedCurveFrames,
  maxFrameStepMetres:+italskaSmoothStats5255.maxFrameStepMetres.toFixed(4),
  maxFrameYawRadians:+italskaSmoothStats5255.maxFrameYawRadians.toFixed(4),
