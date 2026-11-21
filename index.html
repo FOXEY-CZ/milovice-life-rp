@@ -12725,6 +12725,10 @@ function rpSpinWheels(car,distance){
  car.wheelMeters=(car.wheelMeters||0)+Math.abs(distance);
 }
 function rpPopulate(){
+ trafficContinuityStats5241.terminals=0;
+ trafficContinuityStats5241.offscreenRecycles=0;
+ trafficContinuityStats5241.turnsOnConnectedRoads=0;
+ trafficContinuityStats5241.visibleTeleports=0;
  glbHumans.resetPeople();glbVehicles.reset();
  trafficGroup.clear();trafficCars.length=0;trafficPeople.length=0;
  rpBuildRoadGraph();
