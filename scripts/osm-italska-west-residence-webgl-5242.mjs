@@ -70,6 +70,16 @@ try{
  assert.equal(ambientReuse.newWalkways,0);
  assert.equal(ambientReuse.newRoads,0);
  assert.equal(ambientReuse.newColliders,0);
+ const buildingClearance=await page.evaluate(()=>
+  window.__miloviceMappedBuildingClearanceRuntime5245?.());
+ assert(buildingClearance?.ready,
+  '5.245 all mapped pedestrian routes require whole-building-edge checks');
+ assert(buildingClearance.mappedOriginalFootwayFragments>0);
+ assert.equal(buildingClearance.fullyBoundaryCheckedFragments,
+  buildingClearance.mappedOriginalFootwayFragments);
+ assert.equal(buildingClearance.noNewBuildings,true);
+ assert.equal(buildingClearance.noNewFootways,true);
+ assert.equal(buildingClearance.newColliders,0);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/italska-west-residence-5242-mobile.png'});
