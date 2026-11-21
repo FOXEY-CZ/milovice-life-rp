@@ -8,6 +8,7 @@ import {fileURLToPath} from 'node:url';
 const scriptDir=dirname(fileURLToPath(import.meta.url));
 const packs=Object.freeze({
  sportovni:[
+  'osm-lesni-north-branches-5229.test.mjs',
   'osm-visnova-long-sidewalk-5228.test.mjs',
   'osm-lesni-east-link-5227.test.mjs',
   'osm-lesni-footway-branches-5226.test.mjs',
