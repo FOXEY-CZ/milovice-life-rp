@@ -27,6 +27,7 @@ try{
   sidewalk:window.__miloviceItalskaRoadFootwayRuntime5252?.(),
   npc:window.__miloviceItalskaNpcClearanceRuntime5253?.(),
   cars:window.__miloviceItalskaCarClearanceRuntime5254?.(),
+  envelope:window.__miloviceItalskaTurnEnvelopeRuntime5254?.(),
   view:window.__miloviceStreetAuditRendered,
   meta:document.querySelector('meta[name="milovice-build"]')?.content,
   build:document.getElementById('build-label')?.textContent,
@@ -51,6 +52,12 @@ try{
  assert.equal(result.cars.roadBends.originalGpsUnchanged,true);
  assert.equal(result.cars.curvesAndJunctionsNotValidated,true);
  assert.equal(result.cars.roadWidthModelledNotSurveyed,true);
+ assert.equal(result.envelope?.ready,true);
+ assert(result.envelope.joinCount>0);
+ assert(result.envelope.poseSamples>0);
+ assert.equal(result.envelope.physicalSteeringVerified,false);
+ assert.equal(result.envelope.actualRoadMeshNotVerified,true);
+ assert.equal(result.envelope.originalGpsUnchanged,true);
  assert.equal(result.cars.physicalRoadAndSidewalkUnchanged,true);
  assert.equal(result.cars.playerVehiclesUnchanged,true);
  assert.equal(result.cars.originalGpsUnchanged,true);
