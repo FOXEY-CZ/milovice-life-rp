@@ -29,6 +29,7 @@ try{
   cars:window.__miloviceItalskaCarClearanceRuntime5254?.(),
   envelope:window.__miloviceItalskaTurnEnvelopeRuntime5254?.(),
   smooth:window.__miloviceItalskaSmoothTurnRuntime5255?.(),
+  renderedTurn:window.__miloviceItalskaRenderedTurnRuntime5256?.(),
   view:window.__miloviceStreetAuditRendered,
   meta:document.querySelector('meta[name="milovice-build"]')?.content,
   build:document.getElementById('build-label')?.textContent,
@@ -59,6 +60,14 @@ try{
  assert(result.smooth?.minimumModelReserveMetres>=.10);
  assert.equal(result.smooth?.actualAsphaltMeshVerified,false);
  assert.equal(result.smooth?.physicalSteeringVerified,false);
+ assert.equal(result.renderedTurn?.ready,true,JSON.stringify(result.renderedTurn));
+ assert.equal(result.renderedTurn.mappedOutboundTurnArms,4);
+ assert(result.renderedTurn.planarStripAccepted>=1&&
+  result.renderedTurn.planarStripAccepted<4);
+ assert.equal(result.renderedTurn.planarStripRejected,
+  4-result.renderedTurn.planarStripAccepted);
+ assert.equal(result.renderedTurn.roadTriangleRaycastNotPerformed,true);
+ assert.equal(result.renderedTurn.DEMHeightNotChecked,true);
  assert.equal(result.envelope?.ready,true);
  assert(result.envelope.joinCount>0);
  assert(result.envelope.poseSamples>0);

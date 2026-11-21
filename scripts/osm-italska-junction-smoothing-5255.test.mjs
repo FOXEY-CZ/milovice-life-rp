@@ -55,11 +55,11 @@ for(const from of [narrow[0],narrow[narrow.length-1]])for(const fromDirection of
 assert.equal(checked,4);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const token of [
- 'osm-italska-junction-smoothing-5255.js?v=525500',
+ 'osm-italska-junction-smoothing-5255.js?v=',
  'planItalskaNpcTurn5255({',
  'sampleItalskaNpcTurn5255(obj.italskaTurn5255',
  'window.__miloviceItalskaSmoothTurnRuntime5255=()=>',
- "const BUILD_ID='20261121-italska-smooth-turns-525500'"
+ "const BUILD_ID='"
 ])assert(html.includes(token),'Missing 5.255 game integration '+token);
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),original);
 console.log('PASS 5.255: four mapped NPC exit curves with 31x4 body corners and 10cm model buffer; no physical steering or asphalt claim');
