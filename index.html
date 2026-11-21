@@ -12488,8 +12488,13 @@ window.__miloviceItalskaJunctionMotionRuntime5255=()=>{
      const preview=planItalskaTurn5255({
       roadPlan:plan,from:source,direction,to:target,nextDirection
      });
-     if(preview)candidates.push({fromOSM:String(source.osmId),
+     const shortPreview=planItalskaTurn5255({
+      roadPlan:plan,from:source,direction,to:target,nextDirection,
+      modelLength:ITALSKA_TURN_MOTION_5255.modelBodyLengthsMetres[1]
+     });
+     if(preview&&shortPreview)candidates.push({fromOSM:String(source.osmId),
       toOSM:String(target.osmId),visualBlendSafe:preview.visualBlendSafe,
+      shortCarVisualBlendSafe:shortPreview.visualBlendSafe,
       modelOnly:true});
     }
    }
@@ -12498,6 +12503,7 @@ window.__miloviceItalskaJunctionMotionRuntime5255=()=>{
  return {version:'5.255',modelOnly:true,sourceOSMId:'8590284',
   junctions,mappedTurnCandidates:candidates.length,
   safeVisualTurnCandidates:candidates.filter(c=>c.visualBlendSafe).length,
+  shortCarSafeVisualTurnCandidates:candidates.filter(c=>c.shortCarVisualBlendSafe).length,
   sourceCandidatePreviews:candidates,
   approachFrames:italskaTurnStats5255.approachFrames,
   exitFrames:italskaTurnStats5255.exitFrames,
@@ -12543,7 +12549,9 @@ function makeTrafficCar(index,segment){
  const g=vehicle.group;trafficGroup.add(g);
  return {id:nextTrafficId++,g,seg:segment,progress:(index*.137)%1,direction:index%2?-1:1,
   speed:type===7?6:5+(index%5)*1.15,turns:0,driven:false,parked:false,
-  type,wideModel5254:type!==7&&index%8===6,wheels:vehicle.wheels||[],service:type===7?'432':null,modelName:vehicle.kind||'regionální autobus'};
+  type,wideModel5254:type!==7&&index%8===6,
+  bodyLength5255:type===7?null:ITALSKA_TURN_MOTION_5255.modelBodyLengthsMetres[index%8],
+  wheels:vehicle.wheels||[],service:type===7?'432':null,modelName:vehicle.kind||'regionální autobus'};
 }
 // Parked cars use a separate fixed position; they are never moved by traffic AI.
 // 5.214: one more resident on the separate original, source-locked
@@ -13245,11 +13253,12 @@ function rpNextStreet(car){
   car.progress=car.direction===1?1:0;car.trafficTerminal5241=true;
   trafficContinuityStats5241.terminals++;return;
  }
- const transition=decision.mode==='connected'&&!car.service&&!car.driven?
+ const transition=decision.mode==='connected'&&!car.service&&!car.driven&&!car.wideModel5254?
   planItalskaTurn5255({
    roadPlan:window.__miloviceItalskaRoadFootwayAudit5252,
    from:previousSegment,direction:previousDirection,
-   to:decision.segment,nextDirection:decision.direction
+   to:decision.segment,nextDirection:decision.direction,
+   modelLength:car.bodyLength5255
   }):null;
  car.italskaTurn5255=transition;
  if(transition){
@@ -13340,7 +13349,7 @@ function rpAnimateTraffic(dt){
    topolovaPriorityControls5166,obj,intent5166,dt);
   let approachSpeedCap=Infinity;
   const remainingToNode=(obj.direction===1?1-obj.progress:obj.progress)*obj.seg.len;
-  if(!obj.service&&remainingToNode>=0&&remainingToNode<=
+  if(!obj.service&&!obj.wideModel5254&&remainingToNode>=0&&remainingToNode<=
    ITALSKA_TURN_MOTION_5255.approachMetres&&
    ['8590284','8585601','1107814416'].includes(String(obj.seg.osmId))){
    const point=obj.direction===1?obj.seg.b:obj.seg.a;
