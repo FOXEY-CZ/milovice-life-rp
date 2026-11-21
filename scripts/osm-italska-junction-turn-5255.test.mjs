@@ -45,9 +45,10 @@ assert(sharp?.sourceLocked);
 assert.equal(sharp.originalGPSUnchanged,true);
 assert.equal(sharp.physicalSteeringVerified,false);
 assert.equal(sharp.roadMeshCollisionVerified,false);
-assert.equal(capItalskaExit5255({
+const sharpExitSpeed=capItalskaExit5255({
  turn:sharp,segment:next,direction:1,progress:.2
-}),constants.speedCapMps);
+});
+assert(sharpExitSpeed>0&&sharpExitSpeed<=constants.speedCapMps);
 assert.equal(capItalskaExit5255({
  turn:sharp,segment:next,direction:1,progress:.8
 }),Infinity);
@@ -69,6 +70,18 @@ const spacious=segment(8585601,{x:0,y:0},{x:0,y:14},16);
 const widePlan=planItalskaTurn5255({...params,to:spacious});
 assert(widePlan);
 assert.equal(widePlan.visualBlendSafe,true);
+assert.equal(widePlan.checkedBodySamples,25);
+assert(widePlan.visualPathLengthMetres>4);
+const wideCap=capItalskaExit5255({
+ turn:widePlan,segment:spacious,direction:1,progress:1/14
+});
+assert(wideCap>0&&wideCap<constants.speedCapMps);
+const wideStart=sampleItalskaTurn5255({
+ turn:widePlan,segment:spacious,direction:1,progress:0
+});
+assert(wideStart);
+assert(Math.abs(Math.sin(wideStart.yaw-widePlan.fromYaw))<1e-8,
+ 'Curve starts tangent to inbound original OSM segment');
 const sample=sampleItalskaTurn5255({
  turn:widePlan,segment:spacious,direction:1,progress:1.5/14});
 assert(sample&&Number.isFinite(sample.yaw));
