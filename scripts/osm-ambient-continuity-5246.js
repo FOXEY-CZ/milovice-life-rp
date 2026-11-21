@@ -17,17 +17,20 @@ function inspectGap(a,b,clearRoad,clearBuilding){
  return true;
 }
 export function planMappedAmbientConnections5246({
- segments,ways,toWorld,carriageway,buildingClearance
+ segments,ways,toWorld,carriageway,buildingClearance,
+ roadCorridorClearance
 }={}){
  const links=new Map();
  if(!Array.isArray(segments)||!Array.isArray(ways)||
   typeof toWorld!=='function'||
   typeof carriageway?.isClear!=='function'||
-  typeof buildingClearance!=='function')return links;
+  typeof buildingClearance!=='function'||
+  typeof roadCorridorClearance!=='function')return links;
  const indexed=new Map();
  for(const s of segments){
   if(s?.kind!=='mapped-footway'||
    s.fullBoundaryClearance5245!==true||
+   s.fullRoadCorridorClearance5247!==true||
    s.clippedFromOriginalRoadSafePiece!==true||
    s.noMappedBuildingOverlap!==true||s.roadShoulder!==false||
    !KINDS.has(s.sourceHighway)||
@@ -69,7 +72,9 @@ export function planMappedAmbientConnections5246({
     distance({x:nextStart.x-outgoing.x*1.1,
      y:nextStart.y-outgoing.y*1.1},node)>.045)continue;
    if(!inspectGap(prevEnd,node,carriageway,buildingClearance)||
-    !inspectGap(node,nextStart,carriageway,buildingClearance))continue;
+    !inspectGap(node,nextStart,carriageway,buildingClearance)||
+    !roadCorridorClearance(prevEnd,node)||
+    !roadCorridorClearance(node,nextStart))continue;
    const first=distance(prevEnd,node),second=distance(node,nextStart);
    links.set(prev,{...links.get(prev),forward:{segment:next,
     distanceToNode:first,distanceFromNode:second}});
