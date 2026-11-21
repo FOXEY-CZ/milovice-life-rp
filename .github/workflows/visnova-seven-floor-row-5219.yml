@@ -1,0 +1,40 @@
+name: Milovice 5.219 three real RUIAN 7-floor Višňová blocks mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - data/regions/mlada.json
+      - scripts/osm-visnova-seven-floor-row-5219.js
+      - scripts/osm-visnova-seven-floor-row-5219.test.mjs
+      - scripts/osm-visnova-seven-floor-row-webgl-5219.mjs
+      - scripts/osm-visnova-garden-lawns-5218.test.mjs
+      - .github/workflows/visnova-seven-floor-row-5219.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source-lock three RUIAN 7-floor blocks and preserve 5.218 lawns
+        run: |
+          node scripts/osm-visnova-garden-lawns-5218.test.mjs
+          node scripts/osm-visnova-seven-floor-row-5219.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Actual mobile Chromium WebGL three-building facade and LOD
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-visnova-seven-floor-row-webgl-5219.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visnova-seven-floor-row-5219
+          path: browser-artifacts/visnova-seven-floor-row-5219-mobile.png
+          if-no-files-found: ignore
