@@ -21,11 +21,39 @@ export function canUseMappedAmbientWay5243(tags){
  return true;
 }
 export function planMappedAmbientSegments5243({
- ways,regionId,widths,toWorld,clip,carriageway
+ ways,buildings=[],regionId,widths,toWorld,clip,carriageway
 }={}){
  if(!Array.isArray(ways)||!regionId||typeof widths?.get!=='function'||
   typeof toWorld!=='function'||typeof clip!=='function'||
   typeof carriageway?.isClear!=='function')return [];
+ // Reject any candidate that enters an EXISTING mapped building polygon.
+ // Bounding boxes keep the check cheap for regional streaming on phones.
+ const originalBuildings=Array.isArray(buildings)?buildings.filter(b=>
+  b?.tags?.building&&b.tags.building!=='roof'&&
+  Array.isArray(b.geometry)&&b.geometry.length>=4).map(b=>{
+   const pts=b.geometry.map(toWorld);
+   if(pts.some(p=>!validPoint(p)))return null;
+   return {pts,minX:Math.min(...pts.map(p=>p.x)),
+    maxX:Math.max(...pts.map(p=>p.x)),
+    minY:Math.min(...pts.map(p=>p.y)),
+    maxY:Math.max(...pts.map(p=>p.y))};
+  }).filter(Boolean):[];
+ const insideExistingBuilding=(x,y)=>{
+  for(const area of originalBuildings){
+   if(x<area.minX||x>area.maxX||
+    y<area.minY||y>area.maxY)continue;
+   let inside=false;
+   for(let i=0,j=area.pts.length-1;i<area.pts.length;j=i++){
+    const a=area.pts[i],b=area.pts[j];
+    if((a.y>y)!==(b.y>y)){
+     const hitX=(b.x-a.x)*(y-a.y)/(b.y-a.y)+a.x;
+     if(x<hitX)inside=!inside;
+    }
+   }
+   if(inside)return true;
+  }
+  return false;
+ };
  const out=[],dedup=new Set();
  for(const way of ways){
   if(!canUseMappedAmbientWay5243(way?.tags)||
@@ -52,9 +80,12 @@ export function planMappedAmbientSegments5243({
     const end={x:pb.x-ux*1.1,y:pb.z-uz*1.1};
     const walkLen=len-2.2;
     if(walkLen<9.5)continue;
-    const safe=[0,.25,.5,.75,1].every(t=>
-     carriageway.isClear(start.x+(end.x-start.x)*t,
-      start.y+(end.y-start.y)*t,.25,.08));
+    const safe=[0,.25,.5,.75,1].every(t=>{
+     const x=start.x+(end.x-start.x)*t,
+      y=start.y+(end.y-start.y)*t;
+     return carriageway.isClear(x,y,.25,.08)&&
+      !insideExistingBuilding(x,y);
+    });
     if(!safe)continue;
     const key=[String(way.id),i,
      Math.round(start.x*4),Math.round(start.y*4),
@@ -65,7 +96,8 @@ export function planMappedAmbientSegments5243({
      kind:'mapped-footway',sourceOSMWayId:String(way.id),
      sourceEdgeIndex:i-1,sourceHighway:way.tags.highway,
      regionId,clippedFromOriginalRoadSafePiece:true,
-     roadShoulder:false,newPavement:0,newCrossings:0});
+     roadShoulder:false,noMappedBuildingOverlap:true,
+     newPavement:0,newCrossings:0});
    }
   }
  }
