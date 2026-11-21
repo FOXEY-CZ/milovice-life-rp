@@ -83,7 +83,7 @@ for(const token of [
  'createItalskaRoadHeight5257({',
  'window.__miloviceItalskaRoadHeightRuntime5257=()=>',
  'italskaRoadHeightModel5257?.wheelSupport({',
- "const BUILD_ID='20261121-italska-npc-wheel-height-525700'",
+ "const BUILD_ID='",
  'const along=Math.max(1,Math.ceil(len/(width>=2?4:7))),across=width>=3?4:1;',
  'vertices.push(xx,terrainAt(xx,zz)+y,zz);',
  'indices.push(k,k+1,next,k+1,next+1,next);',

@@ -25,6 +25,8 @@ on:
       - scripts/osm-ambient-reuse-5244.test.mjs
       - scripts/osm-ambient-building-clearance-5245.js
       - scripts/osm-ambient-building-clearance-5245.test.mjs
+      - scripts/osm-italska-junction-conflict-5258.js
+      - scripts/osm-italska-junction-conflict-5258.test.mjs
       - scripts/osm-italska-strip-wheel-height-5257.js
       - scripts/osm-italska-strip-wheel-height-5257.test.mjs
       - scripts/osm-italska-rendered-strip-safety-5256.js
@@ -69,6 +71,8 @@ on:
       - scripts/osm-mapped-ambient-walkers-5243.js
       - scripts/osm-mapped-ambient-walkers-5243.test.mjs
       - scripts/osm-italska-west-residence-webgl-5242.mjs
+      - scripts/osm-italska-junction-conflict-5258.js
+      - scripts/osm-italska-junction-conflict-5258.test.mjs
       - scripts/osm-italska-strip-wheel-height-5257.js
       - scripts/osm-italska-strip-wheel-height-5257.test.mjs
       - scripts/osm-italska-rendered-strip-safety-5256.js
@@ -109,6 +113,7 @@ jobs:
           node-version: '22'
       - name: Check both Italska blocks, material cache and original Visnova facades
         run: |
+          node scripts/osm-italska-junction-conflict-5258.test.mjs
           node scripts/osm-italska-strip-wheel-height-5257.test.mjs
           node scripts/osm-italska-rendered-strip-safety-5256.test.mjs
           node scripts/osm-italska-junction-smoothing-5255.test.mjs
