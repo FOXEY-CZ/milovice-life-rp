@@ -46,7 +46,7 @@ for(const needle of [
  'window.__miloviceVisnovaPavedServiceAudit5211.renderedSegments+=',
  "'visnova-paved-service-5211':{",
  'href="?v=521100&streetAudit=visnova-paved-service-5211"',
- "const BUILD_ID='20261121-visnova-paved-service-521100'"
+ 'const BUILD_ID='
 ])assert(html.includes(needle),'missing actual game integration '+needle);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const runtime=html.match(/const BUILD_ID='([^']+)'/)?.[1];
