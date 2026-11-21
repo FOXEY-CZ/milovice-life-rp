@@ -57,7 +57,7 @@ const js=html.match(/const BUILD_ID='([^']+)'/)?.[1];
 const hud=html.split('id="build-label">')[1]?.split('</strong>')[0];
 assert(meta&&meta===js&&js===hud,'meta/HUD/runtime version');
 // Newer versions must keep this source-locked 5.232 roof regression.
-const displayedVersion=html.match(/Verze (\\d+)\\.(\\d+) · build/);
+const displayedVersion=html.match(/Verze ([0-9]+)[.]([0-9]+) · build/);
 assert(displayedVersion&&(Number(displayedVersion[1])>5||
  Number(displayedVersion[1])===5&&Number(displayedVersion[2])>=232),
  'HUD version must not regress below 5.232');
