@@ -56,5 +56,9 @@ const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const js=html.match(/const BUILD_ID='([^']+)'/)?.[1];
 const hud=html.split('id="build-label">')[1]?.split('</strong>')[0];
 assert(meta&&meta===js&&js===hud,'meta/HUD/runtime version');
-assert.equal(html.includes("Verze 5.232"),true);
+// Newer versions must keep this source-locked 5.232 roof regression.
+const displayedVersion=html.match(/Verze (\\d+)\\.(\\d+) · build/);
+assert(displayedVersion&&(Number(displayedVersion[1])>5||
+ Number(displayedVersion[1])===5&&Number(displayedVersion[2])>=232),
+ 'HUD version must not regress below 5.232');
 console.log('PASS 5.232 original OSM Italská flat roof 169.226m2, correct source shape, no new structure');
