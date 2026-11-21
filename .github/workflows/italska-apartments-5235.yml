@@ -1,4 +1,4 @@
-name: Milovice 5.240 source-locked Italska and traffic access mobile WebGL
+name: Milovice 5.241 Italska traffic continuity and source-locked WebGL
 on:
   push:
     paths:
