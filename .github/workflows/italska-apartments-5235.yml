@@ -1,4 +1,4 @@
-name: Milovice 5.247 continuous road-corridor safety and mobile NPC WebGL
+name: Milovice 5.249 photo-backed historical Italská and mobile WebGL
 on:
   push:
     paths:
@@ -25,6 +25,9 @@ on:
       - scripts/osm-ambient-reuse-5244.test.mjs
       - scripts/osm-ambient-building-clearance-5245.js
       - scripts/osm-ambient-building-clearance-5245.test.mjs
+      - scripts/osm-italska-vojen-zatisi-5249.js
+      - scripts/osm-italska-vojen-zatisi-5249.test.mjs
+      - scripts/osm-italska-vojen-zatisi-webgl-5249.mjs
       - scripts/osm-ambient-road-clearance-5247.js
       - scripts/osm-ambient-road-clearance-5247.test.mjs
       - scripts/osm-ambient-continuity-5246.js
@@ -44,6 +47,9 @@ on:
       - scripts/osm-mapped-ambient-walkers-5243.js
       - scripts/osm-mapped-ambient-walkers-5243.test.mjs
       - scripts/osm-italska-west-residence-webgl-5242.mjs
+      - scripts/osm-italska-vojen-zatisi-5249.js
+      - scripts/osm-italska-vojen-zatisi-5249.test.mjs
+      - scripts/osm-italska-vojen-zatisi-webgl-5249.mjs
       - .github/workflows/italska-apartments-5235.yml
   workflow_dispatch:
 permissions:
@@ -59,6 +65,7 @@ jobs:
           node-version: '22'
       - name: Check both Italska blocks, material cache and original Visnova facades
         run: |
+          node scripts/osm-italska-vojen-zatisi-5249.test.mjs
           node scripts/osm-ambient-road-clearance-5247.test.mjs
           node scripts/osm-ambient-continuity-5246.test.mjs
           node scripts/osm-ambient-building-clearance-5245.test.mjs
@@ -82,6 +89,7 @@ jobs:
           node scripts/osm-italska-tower-webgl-5238.mjs
           node scripts/osm-italska-west-block-webgl-5239.mjs
           node scripts/osm-italska-west-residence-webgl-5242.mjs
+          node scripts/osm-italska-vojen-zatisi-webgl-5249.mjs
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -91,4 +99,5 @@ jobs:
             browser-artifacts/italska-tower-5238-mobile.png
             browser-artifacts/italska-west-block-5239-mobile.png
             browser-artifacts/italska-west-residence-5242-mobile.png
+            browser-artifacts/italska-vojen-zatisi-5249-mobile.png
           if-no-files-found: ignore

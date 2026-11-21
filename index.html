@@ -1,4 +1,4 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.248 bezpečné nástupištní pásy podle OSM</title><meta name="milovice-build" content="20261121-station-platform-edging-524800"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
+<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.249 Italská historické Vojenské zátiší</title><meta name="milovice-build" content="20261121-italska-vojen-zatisi-524900"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
 #realmap{position:fixed;inset:0;z-index:100;background:#101e2c;display:none;flex-direction:column;color:#fff;font-family:system-ui}#realmap.open{display:flex}#maphead{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#142c3e}#maphead button{flex:0 0 auto;min-height:40px}#osmmap{flex:1;min-height:0;touch-action:pan-x pan-y}#mapfoot{padding:8px 12px;background:#142c3e;font-size:12px;line-height:1.4}#maplaunch{position:fixed;right:12px;top:75px;z-index:45;background:#193d58;border:1px solid #93b4c7;box-shadow:0 2px 8px #0006}#realmap .leaflet-container{background:#d7e5da}#realmap a{color:#aedbff} @media(max-width:700px){#maplaunch{top:72px;right:8px;padding:7px 10px;font-size:12px;min-height:36px}#maphead{font-size:13px}}
 </style><style>#perf{position:fixed;top:10px;right:10px;z-index:42;background:#102437e8;border:1px solid #77a7b6;border-radius:10px;padding:7px 10px;color:#c8f6d4;font:600 12px system-ui;pointer-events:none;min-width:100px;text-align:center}#perf small{display:block;color:#c9d5dd;font-size:10px;font-weight:400}@media(max-width:700px){#perf{top:8px;right:8px;padding:5px 7px;font-size:11px}#maplaunch{top:100px!important}}</style><style id="milovice-modern-ui">
 #hud{background:linear-gradient(145deg,rgba(9,24,39,.88),rgba(20,44,61,.82));backdrop-filter:blur(12px);border:1px solid rgba(176,214,235,.3);box-shadow:0 10px 30px #061b2b33;border-radius:18px}
@@ -342,6 +342,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <a href="?v=523400&streetAudit=italska-walkers-5234">🚶 Italská · dva modeloví chodci na bezpečných původních chodnících</a>
 <a href="?v=523500&streetAudit=italska-apartments-six-5235">🏢 Italská · šestipodlažní dům, 56 bytů a modelové fasády</a>
 <a href="?v=523900&streetAudit=italska-west-block-5239">🏢 Italská · skutečný dvoupodlažní obytný blok, 38 bytů</a>
+<a href="?v=524900&streetAudit=italska-vojen-zatisi-5249">🏛️ Italská · Vojenské zátiší · fasáda podle fotek 2025</a>
 <a href="?v=524200&streetAudit=italska-west-residence-5242">🏢 Okolí Italské · původní dvoupodlažní obytný dům, 10 bytů</a>
 <a href="?v=523800&streetAudit=italska-tower-5238">🏢 Italská · dvanáctipodlažní budova, původní půdorys a modelové fasády</a>
 <a href="?v=523500&streetAudit=italska-apartments-three-5235">🏢 Italská · třípodlažní dům, 33 bytů a modelové fasády</a>
@@ -407,7 +408,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <strong>📸 Milovice nádraží · fotoaudit 5.80</strong>
 <span>Pohled podle GPS a směru fotoaparátu z 30. 5. 2024. Velikost a poloha automatů jsou odhady, nikoliv geodetické zaměření.</span>
 <div><a href="https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_automaty_na_j%C3%ADzdenky.jpg" target="_blank" rel="noopener noreferrer">Původní fotografie · ŠJů · CC BY 4.0</a> · <a href="./?v=5800">Zpět do hry</a></div>
-</aside><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.248 · build <strong id="build-label">20261121-station-platform-edging-524800</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="topolova-foot-job-hud" hidden>🚶 Pěší doručení: <strong id="topolova-foot-job-progress">0 / 3</strong> · <strong id="topolova-foot-job-distance">–</strong> · Směr: <strong id="topolova-foot-job-direction" aria-label="Směr dalšího kontrolního bodu">↑</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="rp-camera-gps-toggle" type="button" aria-expanded="false">📍 GPS kamery</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
+</aside><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.249 · build <strong id="build-label">20261121-italska-vojen-zatisi-524900</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="topolova-foot-job-hud" hidden>🚶 Pěší doručení: <strong id="topolova-foot-job-progress">0 / 3</strong> · <strong id="topolova-foot-job-distance">–</strong> · Směr: <strong id="topolova-foot-job-direction" aria-label="Směr dalšího kontrolního bodu">↑</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="rp-camera-gps-toggle" type="button" aria-expanded="false">📍 GPS kamery</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
 <button id="osm-inspect-toggle" type="button" aria-pressed="false" title="Klepnutím na konkrétní budovu zjistíš její OSM identitu">🔎 Objekt</button>
 <section id="osm-inspect-result" role="status" aria-live="polite" hidden>
 <strong id="osm-inspect-title">Identifikace objektu</strong>
@@ -615,6 +616,7 @@ import {ITALSKA_APARTMENTS_5235,planItalskaApartments5235} from './scripts/osm-i
 import {ITALSKA_TOWER_5238,planItalskaTower5238} from './scripts/osm-italska-tower-5238.js?v=523800';
 import {ITALSKA_WEST_BLOCK_5239,planItalskaWestBlock5239} from './scripts/osm-italska-west-block-5239.js?v=523900';
 import {ITALSKA_WEST_RESIDENCE_5242,planItalskaWestResidence5242} from './scripts/osm-italska-west-residence-5242.js?v=524200';
+import {ITALSKA_VOJENSKE_ZATISI_5249,planItalskaVojenskeZatisi5249,renderItalskaVojenskeZatisi5249} from './scripts/osm-italska-vojen-zatisi-5249.js?v=524900';
 import {ITALSKA_EMERGENCY_ACCESS_5240,inspectItalskaEmergencyAccess5240,classifyPublicNpcRoad5240} from './scripts/osm-traffic-access-5240.js?v=524000';
 import {planNpcJunction5241,planOffscreenNpcRecycle5241} from './scripts/osm-traffic-continuity-5241.js?v=524100';
 import {planMappedAmbientSegments5243} from './scripts/osm-mapped-ambient-walkers-5243.js?v=524700';
@@ -737,7 +739,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261121-station-platform-edging-524800';
+const BUILD_ID='20261121-italska-vojen-zatisi-524900';
 // Keep the visible HUD build and runtime declaration in sync for photo audits.
 document.getElementById('build-label').textContent=BUILD_ID;
 const rpStationRoofAuditCamera=new URLSearchParams(location.search).has('roofAudit');
@@ -1361,6 +1363,17 @@ const rpStreetAuditViews={
   author:'© OpenStreetMap contributors',
   technical:true,streetLevel:true,estimatedHeading:true,
   note:'Tři samostatné skutečné OSM landuse=grass polygony 1460019798, 1460019800 a 1460019801 doplněné pouze drobnou GPU instancovanou nízkou modelovou trávou. Polohy, výšky, druh a barvy jednotlivých stébel nejsou fotograficky ověřené. U všech instancí je kontrolována hranice původního polygonu a odstup od cest, domů a vody. Žádné stromy, keře, živé ploty, mobiliář, chodníky nebo nové trávníky. Kamera je na původním uzlu mapovaného přechodu 1057549995, heading 10° je technický odhad, není to panorama.'
+ },
+ // 5.249: source photographs from August 2025, photo GPS is the camera,
+ // NOT the surveyed entrance or photo-calibrated building facade.
+ 'italska-vojen-zatisi-5249':{
+  label:'Italská · bývalé Vojenské zátiší · omítka podle veřejných fotografií 2025',
+  camera:{lat:50.225548,lon:14.875192},heading:274,
+  source:'https://commons.wikimedia.org/wiki/File:Italsk%C3%A1,_Milovice_05.jpg',
+  date:'2025-08-20',author:'Stanislav Doronenko · CC BY-SA 4.0',
+  regionId:'mlada',osmLandmarkId:'53865882',
+  technical:true,streetLevel:true,estimatedHeading:true,
+  note:'Zdroje Italská Milovice 04 a 05, Doronenko, CC BY-SA 4.0: bíle poškozená omítka a vodorovná římsa na existující budově OSM 53865882 / RÚIAN 40057411. GPS fotoaparátu je zdokumentovaná; zvolený směr 274° je pouze technický odhad. Přesná poloha opadané omítky, oken, dveří a výška budovy nejsou zaměřené, a OSM půdorys, fyzická kolize i silnice zůstávají.'
  },
  'italska-west-residence-5242':{
   label:'Okolí Italské · původní dvoupodlažní obytný dům, 10 bytů',
@@ -6453,6 +6466,13 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
   photoReviewed:photoDecision.photographicApproval===true,
   approvedArchitecture:Boolean(modelCard)
  });
+ // 5.249: historical Italská building, only if its exact original RÚIAN
+ // polygon matches. No replacement for user-approved architecture.
+ const italskaVojenskeZatisiPlan5249=planItalskaVojenskeZatisi5249({
+  regionId,building:{id:osmId,tags,geometry:points},
+  photoReviewed:photoDecision.photographicApproval===true,
+  approvedArchitecture:Boolean(modelCard)
+ });
  // 5.232: a single actual Italská roof:shape=flat tag overrides ONLY the
  // inferred roof shape. Photo-approved or manual architecture wins.
  const italskaFlatRoofPlan5232=planItalskaFlatRoof5232({
@@ -6840,7 +6860,13 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
  const baseWallMat=isArmClinic?clinicPhotoWalls:tags.shop==='supermarket'?(tags.name==='Tesco'?tescoCorrugation:tags.name==='Penny'?pennyFacade:groceryCladding):isBlueStar?blueStarWalls:isMirova36?mirova36Walls:isGrocer74?grocerWalls:isSchool?schoolWalls:isChurch?churchWalls:isStation?stationWalls:isPhotoGarage?garagePhotoWalls:isGarage?garageWalls:isPanelBlock&&!topolovaMasonry?panelFacadeMaterials[braniborska?1:rakouska?3:(regionalStyle?.panelIndex??Math.abs(osmId||index)%panelFacadeMaterials.length)]:isCommerce?commerceFacadeMaterials[Math.abs(osmId||index)%commerceFacadeMaterials.length]:isIndustrial?workWalls:genericMasonryWall;
  if(topolovaMasonry)window.__miloviceTopolovaResidentialAudit.wallMaterialFromCSU=
   baseWallMat===genericMasonryWall;
- const wallMat=visnovaTaggedPlan5217?visnovaTaggedMaterials5217.facade:
+ // The legacy generic masonry map is tan, so merely tinting it white
+ // still produced beige walls in the actual mobile screenshot. A separate
+ // uniform matte plaster material is photo-closer and has no copied pixels.
+ const wallMat=italskaVojenskeZatisiPlan5249?
+  new THREE.MeshStandardMaterial({color:italskaVojenskeZatisiPlan5249.wallHex,
+   roughness:.97,metalness:0}):
+  visnovaTaggedPlan5217?visnovaTaggedMaterials5217.facade:
   topolova646Photo?localArchitectureMaterial(baseWallMat,'#e9ded2'):
   modelCard?.facadeColor?localArchitectureMaterial(baseWallMat,modelCard.facadeColor):baseWallMat;
  // Ordinary buildings are solid on the ground floor; the open station is handled
@@ -7003,7 +7029,9 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
  if(isSkolskaRoof&&photoRoofFeatures.length!==2)
   throw Error('Školská: source-backed roof profile incomplete');
  const baseRoofMat=isPhotoGarage?garagePhotoRoof:isSchool?schoolRoofMetal:oldCenter?osmRoofPalette[0]:osmRoofPalette[regionalStyle?.roofIndex??(index%osmRoofPalette.length)];
- const roofMat=visnovaTaggedPlan5217?visnovaTaggedMaterials5217.roof:
+ const roofMat=italskaVojenskeZatisiPlan5249?
+  localArchitectureMaterial(baseRoofMat,italskaVojenskeZatisiPlan5249.roofHex):
+  visnovaTaggedPlan5217?visnovaTaggedMaterials5217.roof:
   topolova646Photo?localArchitectureMaterial(baseRoofMat,'#743438'):
   modelCard?.roofColor?localArchitectureMaterial(baseRoofMat,modelCard.roofColor):baseRoofMat;
  const roofPreference=italskaFlatRoofPlan5232?'flat':
@@ -7035,6 +7063,34 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
  // Fixed a major regression: the standard building branch used to put
  // a FLAT roof through every gable or hip, producing intersecting roof skins.
  const pitchedSurface=pitched||hip;
+ // 5.249: two photo-visible, already-existing Italská exterior walls
+ // receive shallow decorative trim / approximate weathering, no new shell.
+ const vojenskeZatisiRendered5249=italskaVojenskeZatisiPlan5249?
+  renderItalskaVojenskeZatisi5249(THREE,{
+   plan:italskaVojenskeZatisiPlan5249,layer:osmLayer,
+   baseHeight,roofHeight:h
+  }):null;
+ if(vojenskeZatisiRendered5249){
+  const plan=italskaVojenskeZatisiPlan5249;
+  window.__miloviceItalskaVojenskeZatisiRuntime5249=()=>({
+   version:'5.249',ready:vojenskeZatisiRendered5249.inScene()&&
+    vojenskeZatisiRendered5249.visibleAfterLOD()>0&&
+    window.__miloviceAreasLoaded?.includes('mlada')===true,
+   sourceOSMId:plan.sourceOsmId,sourceRUIANId:plan.sourceRuianId,
+   sourceGeometryHash:plan.sourceHash,originalVertices:plan.originalVertices,
+   originalAreaSquareMetres:plan.originalAreaSquareMetres,
+   renderedPhotoFacingEdges:plan.visibleEdges.length,
+   modelFloorCount:floors,osmFloorCountUnspecified:true,
+   originalFootprintPreserved:true,originalRoofGeometryPreserved:true,
+   wallMaterialColor:plan.wallHex,roofMaterialColor:plan.roofHex,
+   estimatedWearPatches:vojenskeZatisiRendered5249.wearPatches,
+   visibleAfterLOD:vojenskeZatisiRendered5249.visibleAfterLOD(),
+   drawMeshes:vojenskeZatisiRendered5249.drawMeshes,
+   actualWindowPositionsUnverified:true,
+   noNewBuildings:true,newWindows:0,newEntrances:0,
+   newColliders:0,newRoads:0,newFootways:0,newFences:0
+  });
+ }
  const drawingRendered=topolovaDrawingPlan?
   renderTopolovaDrawing5159(THREE,{
    plan:topolovaDrawingPlan,outline:pts,baseY:baseHeight,layer:osmLayer
