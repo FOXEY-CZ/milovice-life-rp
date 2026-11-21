@@ -12,7 +12,7 @@
 export const VISNOVA_SEVEN_FLOOR_ROW_5219=Object.freeze({
  region:'mlada',levels:'7',flats:'48',
  floorHeightModel:3.05,windowWidthModel:1.46,windowHeightModel:1.52,
- bayPitchModel:3.60,
+ bayPitchModel:3.60,modelBays:Object.freeze([3,9,3,9]),
  buildings:Object.freeze([
   Object.freeze({id:'53865704',ruian:'18198571',nodes:5,
    hash:'680a840e',area:[410,422],edgeLengths:[12.565,33.060,12.572,33.052]}),
@@ -63,9 +63,13 @@ export function planVisnovaSevenFloorRow5219({
    length=Math.hypot(b.x-a.x,b.z-a.z);
   doubleArea+=a.x*b.z-b.x*a.z;
   if(Math.abs(length-spec.edgeLengths[i])>.14)return null;
-  const bays=Math.round(length/c.bayPitchModel);
+  // 3 short + 9 long on each 7-floor source building. Using a
+  // uniform round(length/3.6) is unstable on 12.60 m end walls and
+  // adds one unverified extra axis on the second RÚIAN footprint.
+  const bays=c.modelBays[i];
   if(bays<3||bays>10||
-   length/bays<c.windowWidthModel+.70)return null;
+   length/bays<c.windowWidthModel+.70||
+   length/bays>4.4)return null;
   facades.push({
    edgeIndex:i,sourceLengthMetres:+length.toFixed(3),
    bays,windowWidthMetres:c.windowWidthModel
