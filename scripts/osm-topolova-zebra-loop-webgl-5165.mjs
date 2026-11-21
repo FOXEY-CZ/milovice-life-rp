@@ -62,8 +62,20 @@ try{
  assert(a?.distanceMoved>9.7);
  assert.equal(a?.createdCrossings,0);
  assert.equal(a?.createdFootways,0);
- assert(state.connected?.ready&&state.promenade?.ready&&
-  state.walkers?.ready&&state.roof?.ready&&state.facade?.ready);
+ const dependents={connected:state.connected?.ready,
+  promenade:state.promenade?.ready,walkers:state.walkers?.ready,
+  roof:state.roof?.ready,facade:state.facade?.ready};
+ console.log('5.165 prior systems readiness:',JSON.stringify(dependents));
+ assert(Object.values(dependents).every(Boolean),
+  '5.165 dependent systems readiness '+JSON.stringify(dependents)+
+  ' metrics '+JSON.stringify({
+   connected:state.connected&&{visible:state.connected.visibleInScene,
+    onSource:state.connected.onSourceMappedRoute,
+    preservedOther:state.connected.preservedOtherLocalNPCs},
+   promenade:state.promenade&&{visible:state.promenade.visibleInScene},
+   walkers:state.walkers&&{visible:state.walkers.visibleInScene},
+   roof:state.roof&&{visible:state.roof.visibleAfterLOD},
+   facade:state.facade&&{visible:state.facade.visibleAfterLOD}}));
  assert(state.menu<150);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
