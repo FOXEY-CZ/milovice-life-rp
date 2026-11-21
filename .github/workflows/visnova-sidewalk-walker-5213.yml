@@ -1,0 +1,37 @@
+name: Milovice 5.213 Višňová paved sidewalk walking NPC WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - data/regions/mlada.json
+      - scripts/osm-visnova-sidewalk-walker-5213.js
+      - scripts/osm-visnova-sidewalk-walker-5213.test.mjs
+      - scripts/osm-visnova-sidewalk-walker-webgl-5213.mjs
+      - .github/workflows/visnova-sidewalk-walker-5213.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check exact mapped pedestrian route, source hash and all roadway/house clearances
+        run: node scripts/osm-visnova-sidewalk-walker-5213.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Mobile Chrome/WebGL after 6.5s NPC walks real mapped sidewalk
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-visnova-sidewalk-walker-webgl-5213.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visnova-sidewalk-walker-5213
+          path: browser-artifacts/visnova-walker-5213-mobile.png
+          if-no-files-found: ignore
