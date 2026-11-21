@@ -1,3 +1,15 @@
+## Milovice RP 5.218 — další tři skutečné travnaté plochy Višňové (21. 11. 2026)
+
+Nová verze rozšiřuje již modelovaný veřejný prostor východní Višňové a blízké Armádní: přesně původní OSM [travní polygon 1460019798](https://www.openstreetmap.org/way/1460019798), [1460019800](https://www.openstreetmap.org/way/1460019800) a [1460019801](https://www.openstreetmap.org/way/1460019801), všechna tři `landuse=grass`, zamčená na původní hash souřadnic `775f191a`, `67035867`, `d8808821`. Původní půdní podklad a obrysy se nemění. Uvnitř těchto konkrétních původních polygonů přibylo několik nízkých 3D trsů trávy, vykreslených přes existující společnou geometrii `createLawnBlades` a `visualBatch` s reálným terénním DEM a LOD. Pro nový kód nevznikají budovy, silnice, přechody, dopravní značky, keře, stromy ani další collidery.
+
+**Kontroly reality:** každé zdrojové pole kontroluje OSM ID/tagy/uzly/GPS hash; každý trs musí být uvnitř mapované hranice s odstupem alespoň 0,95 m a současně projít bezpečnostní kontrolou skutečných silnic a pěších cest, stávajících budov a vodních toků. Již hotové plochy z 5.104/5.200/5.212 se nezdvojují. Konkrétní výška, druh, barva a rozložení drobných trsů **nejsou fotodokumentovaná botanika**, jen herní blízký vizuální detail. Cíl jsou propojené celé ulice při rozumných GPU nárocích, ne nezdokumentované vysazování stromů.
+
+**Ověřené mobilní WebGL:** GitHub Actions [5.218 source + mobile test](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/44904549530) = **SUCCESS**. Node planner vytvořil při neomezujících bezpečnostních kontrolách 118 kandidátů (14 + 39 + 65); skutečná běžící hra vykreslila po kontrolách silnic/budov/vody **112 trsů ve dvou GPU instancovaných meshech**, oba viditelné a připojené do scény ještě po 6,5 sekundy a LOD. Historický 5.217 test prošel také. Nové `__miloviceVisnovaGardenLawnsRuntime5218()` poskytuje počty pro každou původní plochu, míru bezpečnostního ořezu a skutečnou LOD viditelnost.
+
+Otevři technický pohled `?v=521800&streetAudit=visnova-garden-lawns-5218` z původního mapovaného bodu OSM přechodu `1057549995` (50.229278, 14.8701521). Azimut 10° je **technický odhad**, nikoliv fotografie ani panorama. Hlavní projektová CI a nasazení GitHub Pages na tento build se v době prvního zápisu teprve ověřují.
+
+---
+
 ## Milovice RP 5.217 — původní žlutá fasáda a hnědá střecha jedné skutečně mapované budovy u Višňové (21. 11. 2026)
 
 **Konkrétní zdrojově doložená úprava zástavby:** v původním OSM exportu pro Mladou je budova [way/1456361921](https://www.openstreetmap.org/way/1456361921) poblíž Višňové/Armádní s explicitními tagy `building=yes`, `building:levels=3`, `building:colour=#fec700`, `roof:colour=#583400`. Zamčený 5uzlový polygon má hash `28e92fa9` a přibližnou plochu 181,31 m². Dříve tento konkrétní objekt dědil náhodně vybrané fasádní a střešní odstíny z obecné palety. Nyní stejná původní budova skutečně používá **žlutou fasádu #FEC700 a hnědou střechu #583400** přímo ze zdrojových tagů, se dvěma sdílenými vlastními materiály bez náhodných barevných textur.
