@@ -6,6 +6,8 @@ on:
       - data/regions/mlada.json
       - scripts/osm-italska-apartments-5235.js
       - scripts/osm-italska-apartments-5235.test.mjs
+      - scripts/osm-italska-tower-5238.js
+      - scripts/osm-italska-tower-5238.test.mjs
       - scripts/osm-italska-apartments-webgl-5235.mjs
       - scripts/osm-visnova-residential-5192.js
       - scripts/osm-visnova-residential-5192.test.mjs
@@ -26,6 +28,7 @@ jobs:
         run: |
           node scripts/osm-visnova-residential-5192.test.mjs
           node scripts/osm-italska-apartments-5235.test.mjs
+          node scripts/osm-italska-tower-5238.test.mjs
           node scripts/osm-italska-walkers-5234.test.mjs
       - run: npm install --no-save --no-package-lock playwright-core
       - name: Actual mobile Chromium SwiftShader facade drawing and 6.5s LOD
