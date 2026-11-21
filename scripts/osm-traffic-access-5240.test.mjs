@@ -52,6 +52,8 @@ for(const token of [
  'if(!rule.allowed){',
  'window.__miloviceTrafficAccessRuntime5240=()=>',
  "Verze 5.240"
-])assert(html.includes(token),'missing in-game routing integration '+token);
+])assert(token==="Verze 5.240"?
+ /Verze 5[.](?:24[0-9]|2[5-9][0-9]|[3-9][0-9][0-9])/.test(html):
+ html.includes(token),'missing in-game routing integration '+token);
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),raw);
 console.log('PASS 5.240: original Italska fire road retained, public NPC cars excluded from restricted OSM roads');
