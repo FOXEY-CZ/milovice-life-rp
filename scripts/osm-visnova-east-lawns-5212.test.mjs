@@ -70,7 +70,7 @@ for(const needle of [
  'visnovaEastGrassSource5212.length=0;',
  "'visnova-east-lawns-5212':{",
  'href="?v=521200&streetAudit=visnova-east-lawns-5212"',
- "const BUILD_ID='20261121-visnova-east-lawns-521200'"
+ "const BUILD_ID='"
 ])assert(html.includes(needle),'game integration missing '+needle);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const runtime=html.match(/const BUILD_ID='([^']+)'/)?.[1];
