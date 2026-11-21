@@ -1,0 +1,39 @@
+name: Milovice 5.215 continuous Višňová OSM sidewalk mobile WebGL
+on:
+  push:
+    paths:
+      - index.html
+      - data/regions/mlada.json
+      - scripts/osm-visnova-continuous-walker-5215.js
+      - scripts/osm-visnova-continuous-walker-5215.test.mjs
+      - scripts/osm-visnova-continuous-walker-webgl-5215.mjs
+      - .github/workflows/visnova-continuous-walker-5215.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify original GPS, safety, existing walker and all turns
+        run: |
+          node scripts/osm-visnova-east-walker-5214.test.mjs
+          node scripts/osm-visnova-continuous-walker-5215.test.mjs
+      - run: npm install --no-save --no-package-lock playwright-core
+      - name: Real mobile Chromium WebGL route and pedestrian animation
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          node scripts/osm-visnova-continuous-walker-webgl-5215.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visnova-continuous-walker-5215
+          path: browser-artifacts/visnova-continuous-walker-5215-mobile.png
+          if-no-files-found: ignore
