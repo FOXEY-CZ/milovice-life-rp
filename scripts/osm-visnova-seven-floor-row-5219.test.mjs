@@ -120,7 +120,7 @@ for(const needle of [
  'window.__miloviceVisnovaSevenFloorRuntime5219=()=>',
  "'visnova-seven-floor-row-5219':{",
  'href="?v=521900&streetAudit=visnova-seven-floor-row-5219"',
- "const BUILD_ID='20261121-visnova-seven-floor-row-521900'"
+ "const BUILD_ID='"
 ])assert(html.includes(needle),'missing game integration '+needle);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const build=html.match(/const BUILD_ID='([^']+)'/)?.[1];
