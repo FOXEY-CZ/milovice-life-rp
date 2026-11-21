@@ -91,6 +91,19 @@ try{
  assert.equal(continuation.newCrossings,0);
  assert.equal(continuation.newColliders,0);
  assert.equal(continuation.specialWalkersUnchanged,true);
+ const roadCorridor=await page.evaluate(()=>
+  window.__miloviceMappedRoadCorridorRuntime5247?.());
+ assert(roadCorridor?.ready,
+  '5.247 every mapped ambient path checked against continuous road corridor after LOD');
+ assert(roadCorridor.sourceFootwayFragments>0);
+ assert.equal(roadCorridor.fullCarriagewayCorridorChecked,
+  roadCorridor.sourceFootwayFragments);
+ assert.equal(roadCorridor.unverifiedFragments,0);
+ assert.equal(roadCorridor.cellMaxMetres,.7);
+ assert.equal(roadCorridor.sourceGeometryUnchanged,true);
+ assert.equal(roadCorridor.newRoads,0);
+ assert.equal(roadCorridor.newFootways,0);
+ assert.equal(roadCorridor.newColliders,0);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/italska-west-residence-5242-mobile.png'});
