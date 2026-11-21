@@ -91,6 +91,7 @@ const packs=Object.freeze({
   'osm-sportovni-sidewalk-5139.test.mjs'
  ],
  italska:[
+  'osm-italska-narrow-npc-5253.test.mjs',
   'osm-italska-road-sidewalk-5252.test.mjs',
   'osm-rakouska-north-photo-5251.test.mjs',
   'osm-italska-photo-sightlines-5250.test.mjs',
