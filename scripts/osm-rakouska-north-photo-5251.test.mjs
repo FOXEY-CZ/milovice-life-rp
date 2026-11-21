@@ -75,7 +75,7 @@ for(const token of [
  'extendRakouskaNorthPhoto5251({',
  "window.__miloviceRakouskaNorthPhotoRuntime5251=()=>",
  "'rakouska-vojen-zatisi-5251':{",
- 'Verze 5.251'
+ 'Verze 5.252'
 ])assert(html.includes(token),'missing 5.251 game integration '+token);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const build=html.match(/const BUILD_ID='([^']+)'/)?.[1];

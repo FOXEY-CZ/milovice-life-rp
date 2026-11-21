@@ -1,4 +1,4 @@
-name: Milovice 5.251 Rakouská northern photo facade and mobile WebGL
+name: Milovice 5.252 Italská road/sidewalk clipping and mobile WebGL
 on:
   push:
     paths:
@@ -25,6 +25,9 @@ on:
       - scripts/osm-ambient-reuse-5244.test.mjs
       - scripts/osm-ambient-building-clearance-5245.js
       - scripts/osm-ambient-building-clearance-5245.test.mjs
+      - scripts/osm-italska-road-sidewalk-5252.js
+      - scripts/osm-italska-road-sidewalk-5252.test.mjs
+      - scripts/osm-italska-road-sidewalk-webgl-5252.mjs
       - scripts/osm-rakouska-north-photo-5251.js
       - scripts/osm-rakouska-north-photo-5251.test.mjs
       - scripts/osm-rakouska-north-photo-webgl-5251.mjs
@@ -52,6 +55,9 @@ on:
       - scripts/osm-mapped-ambient-walkers-5243.js
       - scripts/osm-mapped-ambient-walkers-5243.test.mjs
       - scripts/osm-italska-west-residence-webgl-5242.mjs
+      - scripts/osm-italska-road-sidewalk-5252.js
+      - scripts/osm-italska-road-sidewalk-5252.test.mjs
+      - scripts/osm-italska-road-sidewalk-webgl-5252.mjs
       - scripts/osm-rakouska-north-photo-5251.js
       - scripts/osm-rakouska-north-photo-5251.test.mjs
       - scripts/osm-rakouska-north-photo-webgl-5251.mjs
@@ -75,6 +81,7 @@ jobs:
           node-version: '22'
       - name: Check both Italska blocks, material cache and original Visnova facades
         run: |
+          node scripts/osm-italska-road-sidewalk-5252.test.mjs
           node scripts/osm-rakouska-north-photo-5251.test.mjs
           node scripts/osm-italska-photo-sightlines-5250.test.mjs
           node scripts/osm-italska-vojen-zatisi-5249.test.mjs
@@ -103,6 +110,7 @@ jobs:
           node scripts/osm-italska-west-residence-webgl-5242.mjs
           node scripts/osm-italska-vojen-zatisi-webgl-5249.mjs
           node scripts/osm-rakouska-north-photo-webgl-5251.mjs
+          node scripts/osm-italska-road-sidewalk-webgl-5252.mjs
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -114,4 +122,5 @@ jobs:
             browser-artifacts/italska-west-residence-5242-mobile.png
             browser-artifacts/italska-vojen-zatisi-5249-mobile.png
             browser-artifacts/rakouska-vojen-zatisi-5251-mobile.png
+            browser-artifacts/italska-road-footway-5252-mobile.png
           if-no-files-found: ignore
