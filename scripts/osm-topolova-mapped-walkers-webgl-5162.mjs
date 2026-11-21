@@ -47,8 +47,20 @@ try{
   p.metresFromRoadEndpoint<=28));
  assert(initial?.positions.every((p,i)=>Math.hypot(
   p.x-a.positions[i].x,p.z-a.positions[i].z)>.6));
- assert(snapshot.row?.ready&&snapshot.hip?.ready&&
-  snapshot.inferred?.ready&&snapshot.drawing?.ready);
+ const historical={row:snapshot.row?.ready,hip:snapshot.hip?.ready,
+  inferred:snapshot.inferred?.ready,drawing:snapshot.drawing?.ready};
+ console.log('5.162 historical facade readiness:',JSON.stringify(historical));
+ assert(Object.values(historical).every(Boolean),
+  '5.162 historical facade readiness '+JSON.stringify(historical)+
+  ' metrics '+JSON.stringify({
+   row:snapshot.row&&{visible:snapshot.row.visibleAfterLOD,
+    attached:snapshot.row.allInScene,partyWallReady:snapshot.row.partyWallReady},
+   hip:snapshot.hip&&{visible:snapshot.hip.visibleAfterLOD,
+    attached:snapshot.hip.allInScene},
+   inferred:snapshot.inferred&&{visible:snapshot.inferred.visibleAfterLOD,
+    attached:snapshot.inferred.allInScene},
+   drawing:snapshot.drawing&&{visible:snapshot.drawing.visibleMeshesAfterLOD,
+    attached:snapshot.drawing.allInScene}}));
  assert(snapshot.menu<150);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
