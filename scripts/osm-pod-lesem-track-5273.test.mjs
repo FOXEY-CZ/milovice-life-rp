@@ -50,6 +50,6 @@ for(const token of [
  'osmRoadSegment(points[i-1],points[i],width,kind,surfacePlan);',
  "window.__milovicePodLesemTrackRuntime5273=()=>({",
  "'pod-lesem-track-seam-5273':{",
- "const BUILD_ID='20261122-pod-lesem-west-join-527800'"
+ "const BUILD_ID='20261122-pod-lesem-branch-walker-527900'"
  ])assert(html.includes(token),'missing 5.273 integration '+token);
 console.log('PASS 5.273 mapped compacted track paint trimmed ~3.05m at 6m asphalt edge, no graph/OSM changes');

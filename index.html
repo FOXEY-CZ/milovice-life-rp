@@ -1,4 +1,4 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.276 předvídavější chodec Pod Lesem, městem doložený přechod Pod Lesem × Armádní</title><meta name="milovice-build" content="20261122-pod-lesem-west-join-527800"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
+<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.276 předvídavější chodec Pod Lesem, městem doložený přechod Pod Lesem × Armádní</title><meta name="milovice-build" content="20261122-pod-lesem-branch-walker-527900"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
 #realmap{position:fixed;inset:0;z-index:100;background:#101e2c;display:none;flex-direction:column;color:#fff;font-family:system-ui}#realmap.open{display:flex}#maphead{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#142c3e}#maphead button{flex:0 0 auto;min-height:40px}#osmmap{flex:1;min-height:0;touch-action:pan-x pan-y}#mapfoot{padding:8px 12px;background:#142c3e;font-size:12px;line-height:1.4}#maplaunch{position:fixed;right:12px;top:75px;z-index:45;background:#193d58;border:1px solid #93b4c7;box-shadow:0 2px 8px #0006}#realmap .leaflet-container{background:#d7e5da}#realmap a{color:#aedbff} @media(max-width:700px){#maplaunch{top:72px;right:8px;padding:7px 10px;font-size:12px;min-height:36px}#maphead{font-size:13px}}
 </style><style>#perf{position:fixed;top:10px;right:10px;z-index:42;background:#102437e8;border:1px solid #77a7b6;border-radius:10px;padding:7px 10px;color:#c8f6d4;font:600 12px system-ui;pointer-events:none;min-width:100px;text-align:center}#perf small{display:block;color:#c9d5dd;font-size:10px;font-weight:400}@media(max-width:700px){#perf{top:8px;right:8px;padding:5px 7px;font-size:11px}#maplaunch{top:100px!important}}</style><style id="milovice-modern-ui">
 #hud{background:linear-gradient(145deg,rgba(9,24,39,.88),rgba(20,44,61,.82));backdrop-filter:blur(12px);border:1px solid rgba(176,214,235,.3);box-shadow:0 10px 30px #061b2b33;border-radius:18px}
@@ -341,7 +341,8 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <a href="?v=527300&streetAudit=pod-lesem-track-seam-5273">🛤️ Pod Lesem · štěrková cesta bezpečně napojená na asfalt (OSM)</a>
 <a href="?v=527300&streetAudit=pod-lesem-bends-5272">🛣️ Pod Lesem × Armádní · opravené vnitřní spáry vozovky (OSM)</a>
 <a href="?v=527800&streetAudit=pod-lesem-pedestrian-5275">🚶 Pod Lesem × Armádní · chodec po 267 m původních chodníků</a>
-<a href="?v=527800&streetAudit=pod-lesem-west-sidewalk-5278">🚶 Pod Lesem · západní OSM chodník (technická kamera)</a>
+<a href="?v=527900&streetAudit=pod-lesem-west-sidewalk-5278">🚶 Pod Lesem · západní OSM chodník (technická kamera)</a>
+<a href="?v=527900&streetAudit=pod-lesem-branch-5279">🚶 Pod Lesem · další chodec po původní OSM odbočce</a>
 <a href="?v=527600&streetAudit=pod-lesem-municipal-crossing-5270">🚸 Pod Lesem × Armádní · 2025 doložený přechod (odhad polohy)</a>
 <a href="?v=526900&streetAudit=rakouska-granite-5269">🧱 Rakouská × Pod Lesem · městem doložená žulová dlažba (2025)</a>
 <a href="?v=526800&streetAudit=rakouska-walk-link-5268">🧭 Rakouská × Italská · skutečné chodníky a neznačené přechody (TECHNICKÁ kontrola)</a>
@@ -415,7 +416,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <strong>📸 Milovice nádraží · fotoaudit 5.80</strong>
 <span>Pohled podle GPS a směru fotoaparátu z 30. 5. 2024. Velikost a poloha automatů jsou odhady, nikoliv geodetické zaměření.</span>
 <div><a href="https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_automaty_na_j%C3%ADzdenky.jpg" target="_blank" rel="noopener noreferrer">Původní fotografie · ŠJů · CC BY 4.0</a> · <a href="./?v=5800">Zpět do hry</a></div>
-</aside><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.276 · build <strong id="build-label">20261122-pod-lesem-west-join-527800</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="topolova-foot-job-hud" hidden>🚶 Pěší doručení: <strong id="topolova-foot-job-progress">0 / 3</strong> · <strong id="topolova-foot-job-distance">–</strong> · Směr: <strong id="topolova-foot-job-direction" aria-label="Směr dalšího kontrolního bodu">↑</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="rp-camera-gps-toggle" type="button" aria-expanded="false">📍 GPS kamery</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
+</aside><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.276 · build <strong id="build-label">20261122-pod-lesem-branch-walker-527900</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="topolova-foot-job-hud" hidden>🚶 Pěší doručení: <strong id="topolova-foot-job-progress">0 / 3</strong> · <strong id="topolova-foot-job-distance">–</strong> · Směr: <strong id="topolova-foot-job-direction" aria-label="Směr dalšího kontrolního bodu">↑</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="rp-camera-gps-toggle" type="button" aria-expanded="false">📍 GPS kamery</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
 <button id="osm-inspect-toggle" type="button" aria-pressed="false" title="Klepnutím na konkrétní budovu zjistíš její OSM identitu">🔎 Objekt</button>
 <section id="osm-inspect-result" role="status" aria-live="polite" hidden>
 <strong id="osm-inspect-title">Identifikace objektu</strong>
@@ -650,6 +651,8 @@ import {planPodLesemSidewalkChain5277,advancePodLesemSidewalkChain5277}
  from './scripts/osm-pod-lesem-sidewalk-chain-5277.js?v=527800';
 import {planPodLesemWestJoin5278}
  from './scripts/osm-pod-lesem-west-join-5278.js?v=527800';
+import {planPodLesemBranch5279,advancePodLesemBranch5279}
+ from './scripts/osm-pod-lesem-branch-walker-5279.js?v=527900';
 import {planPodLesemBends5272}
  from './scripts/osm-pod-lesem-road-bends-5272.js?v=527200';
 import {planPodLesemTrack5273}
@@ -786,7 +789,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261122-pod-lesem-west-join-527800';
+const BUILD_ID='20261122-pod-lesem-branch-walker-527900';
 // Strictly opt-in traffic diagnostic; no NPC spawning changes in normal play.
 const rpItalskaNpcEncounterMode5259=
  new URLSearchParams(location.search).get('npcAudit')==='italska-encounter-5259';
@@ -1460,6 +1463,15 @@ const rpStreetAuditViews={
   date:'2026-11-22',author:'© OpenStreetMap contributors',
   technical:true,streetLevel:true,estimatedHeading:true,
   note:'Kamera stojí přesně na původním společném uzlu obou chodníků, ale směr 258° je technický odhad, ne panorama. Chodec nově pokračuje dalších 70,8 m po mapované pěší cestě. Otočí se před skutečnou servisní vozovkou, protože její pěší převedení není doložené. Povrch a další neznámé detaily nejsou vymyšlené.'
+ },
+ 'pod-lesem-branch-5279':{
+  label:'Pod Lesem · skutečná 109m pěší odbočka s chodcem · 5.279',
+  camera:{lat:50.2288905,lon:14.8710178},heading:185,
+  regionId:'mlada',osmLandmarkId:'1272081412',
+  source:'https://www.openstreetmap.org/way/1272081412',
+  date:'2026-11-22',author:'© OpenStreetMap contributors · simulovaná postava',
+  technical:true,streetLevel:true,estimatedHeading:true,
+  note:'Druhý modelový chodec prochází původní OSM pěší cestu 1272081412, pouze uzly 8 až 1 (~109 m). Před skutečnou ulicí Pod Lesem se otočí: poslední uzel je 14,8 m od mapované osy silnice. Path je v OSM lit=no, materiál neurčen, žádné nové světlo, chodník, přechod nebo kolize. Kamera je technický odhad, nikoliv fotografie.'
  },
  'pod-lesem-municipal-crossing-5270':{
   label:'Pod Lesem × Armádní · model zebry zarovnaný se skutečným OSM chodníkem · 5.274',
@@ -3728,7 +3740,8 @@ let visnovaParkingMap5203=null; // in-game map ONLY, source polygon centroid; no
 rpUpdateRenderBudget(); // All OSM and render-budget dependencies are initialized.
 const osmDriveRoads=[];
 const osmAmbientPedestrianSegments5243=[];
-let podLesemWalkRoute5275=null,podLesemWalkRoute5277=null,podLesemWalkRoute5278=null; // existing OSM sidewalk, no new graph
+let podLesemWalkRoute5275=null,podLesemWalkRoute5277=null,podLesemWalkRoute5278=null;
+let podLesemBranchRoute5279=null; // independent source-locked fork, never a new mapped path // existing OSM sidewalk, no new graph
 const osmAmbientFootwayLinks5246=new Map();
 const osmStreetLightWays=[]; // only OSM lit=yes streets with names, no random untagged poles
 const photoClinicNoFurnitureZones=[]; // 5.128 source-gated real clinic paver cells only
@@ -10879,6 +10892,8 @@ function rpAppendOSMElements(elements,regionId='old'){
   planPodLesemSidewalkChain5277({regionId,ways:roadWays,crossing:podLesemCrossPlan5270}):null;
  const podLesemWalkCandidate5278=podLesemCrossPlan5270?
   planPodLesemWestJoin5278({regionId,ways:roadWays,crossing:podLesemCrossPlan5270}):null;
+ const podLesemBranchCandidate5279=podLesemWalkCandidate5278?
+  planPodLesemBranch5279({regionId,ways:roadWays,parentRoute:podLesemWalkCandidate5278}):null;
  if(podLesemCrossPlan5270){
   const bars=planZebraPieces(podLesemCrossPlan5270.modelFootwayAxis,
    osmCarriagewayClearance,{
@@ -10895,6 +10910,7 @@ function rpAppendOSMElements(elements,regionId='old'){
    podLesemWalkRoute5275=allSafe?podLesemWalkCandidate5275:null;
    podLesemWalkRoute5277=allSafe?podLesemWalkCandidate5277:null;
    podLesemWalkRoute5278=allSafe?podLesemWalkCandidate5278:null;
+   podLesemBranchRoute5279=allSafe?podLesemBranchCandidate5279:null;
   }
   if(allSafe){
    for(const piece of bars){
@@ -12210,6 +12226,7 @@ function rpPopulateRegionalTraffic(area){
  const center=osmPoint({lat:area.center[0],lon:area.center[1]});
  rpSpawnMappedAmbientWalkers5243(area.id,8,center);
  rpSpawnPodLesemWalker5275(area.id);
+ rpSpawnPodLesemBranch5279(area.id);
  if(area.id==='mlada'&&rpSeedItalskaNpcEncounter5259())return;
  if(trafficCars.length>=79)return;
  const segments=driveSegments.filter(s=>s.len>10&&s.width>=6&&Math.hypot((s.a.x+s.b.x)*.5-center.x,(s.a.y+s.b.y)*.5-center.y)<820);
@@ -13735,6 +13752,38 @@ function rpSpawnPodLesemWalker5275(regionId){
   window.__milovicePodLesemWalkerRuntime5275;
  return true;
 }
+// 5.279: one extra simulated person on ORIGINAL OSM branch path 1272081412.
+// Path stops 14.8 m before the real Pod Lesem road; no inferred crossing.
+function rpSpawnPodLesemBranch5279(regionId){
+ const route=podLesemBranchRoute5279;
+ if(regionId!=='mlada'||!route||trafficPeople.length>=65||
+  trafficPeople.some(p=>p.podLesemBranch5279))return false;
+ const initial=6.3;
+ const step=advancePodLesemBranch5279(route,initial,1,0);
+ if(!step)return false;
+ const n=trafficPeople.length,rig=makeHumanRig(THREE,n+120,
+  npcClothes[n%npcClothes.length].color.getHex()),g=rig.group;
+ g.position.set(step.x,terrainAt(step.x,step.z),step.z);
+ g.rotation.y=Math.atan2(-step.tangentX,-step.tangentZ);
+ trafficGroup.add(g);
+ const actor={g,rig,seg:{a:{x:route.routePoints[0].x,y:route.routePoints[0].z},
+  b:{x:route.routePoints.at(-1).x,y:route.routePoints.at(-1).z},
+  len:route.totalMetres},progress:initial/route.totalMetres,
+  direction:1,side:0,speed:.94,phase:n*.87,
+  legs:rig.legs,arms:rig.arms,
+  podLesemBranch5279:true,route5279:route,distance5279:initial,
+  turnaroundCount5279:0};
+ trafficPeople.push(actor);
+ window.__milovicePodLesemBranchRuntime5279=()=>({
+  ...route,actorCount:trafficPeople.filter(p=>p.podLesemBranch5279).length,
+  distance:actor.distance5279,
+  turnaroundCount:actor.turnaroundCount5279,
+  actorWorld:{x:actor.g.position.x,z:actor.g.position.z},
+  ready:window.__miloviceAreasLoaded?.includes('mlada')===true&&
+   trafficPeople.includes(actor)
+ });
+ return true;
+}
 // 5.243: ambient walkers bounce along ORIGINAL safe OSM footway fragments;
 // individual people, clothing and daily paths are game models, not surveyed.
 function rpSpawnMappedAmbientWalkers5243(regionId,requested=30,center=null){
@@ -14226,6 +14275,32 @@ function rpAnimateTraffic(dt){
   if(a.samples.length>320)a.samples.shift();
  }
  for(const obj of trafficPeople){
+  // 5.279 — mapped fork NPC follows original OSM vertices 8..1 only,
+  // always turning around before the source road-shared vertex 0.
+  if(obj.podLesemBranch5279){
+   const state=advancePodLesemBranch5279(
+    obj.route5279,obj.distance5279,obj.direction,dt*obj.speed);
+   if(!state)continue;
+   if(state.turnsBeforeRoad)obj.turnaroundCount5279++;
+   obj.distance5279=state.distance;
+   obj.direction=state.direction;
+   obj.progress=state.distance/obj.route5279.totalMetres;
+   const g=obj.g;
+   g.position.set(state.x,terrainAt(state.x,state.z),state.z);
+   g.rotation.y=Math.atan2(-state.tangentX,-state.tangentZ);
+   const focusX=rpStreetAuditCameraWorld?.x??playerX;
+   const focusZ=rpStreetAuditCameraWorld?.z??playerZ;
+   const proximity=Math.hypot(g.position.x-focusX,g.position.z-focusZ);
+   g.visible=proximity<135;
+   if(g.visible){
+    obj.rig.high.visible=!g.userData.cc0Active&&proximity<64;
+    obj.rig.low.visible=!g.userData.cc0Active&&proximity>=64;
+    const swing=Math.sin(elapsed*6+obj.phase)*.48;
+    obj.legs[0].rotation.x=swing;obj.legs[1].rotation.x=-swing;
+    obj.arms[0].rotation.x=-swing*.67;obj.arms[1].rotation.x=swing*.67;
+   }
+   continue;
+  }
   // 5.275: one source-locked resident uses a model zebra across its
   // ORIGINAL sidewalk, yielding BEFORE entering the road if a car is near.
   if(obj.podLesemWalker5275){

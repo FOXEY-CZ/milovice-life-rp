@@ -59,6 +59,6 @@ for(const marker of ['planPodLesemWestJoin5278({',
  'podLesemWalkRoute5278||podLesemWalkRoute5277',
  'window.__milovicePodLesemWalkerRuntime5278=',
  "'pod-lesem-west-sidewalk-5278':{",
- "const BUILD_ID='20261122-pod-lesem-west-join-527800'"])
+ "const BUILD_ID='20261122-pod-lesem-branch-walker-527900'"])
  assert(html.includes(marker),marker);
 console.log('PASS 5.278 +70.8m joined OSM sidewalk, service-road stop, predictive yield');

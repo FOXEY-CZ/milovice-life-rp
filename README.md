@@ -1,3 +1,14 @@
+## Milovice RP 5.279 — druhý chodec na skutečné pěší odbočce Pod Lesem (22. 11. 2026; PR/CI/Pages zatím neověřeny)
+
+**Nová změna v běžné hře:** vedle jednoho stávajícího 267,4m chodce verze 5.278 se u Pod Lesem objevuje **druhý simulovaný obyvatel**. Ten chodí po původní mapované `highway=path`, `lit=no`, OSM **1272081412**. Z jejího skutečného společného uzlu s chodníkem `1005977571` (GPS `50.2288905,14.8710178`) využije osm původních uzlů **8 až 1**, což je přibližně **109 m**. Tam se otočí: od původní osy ulice Pod Lesem zbývá téměř **14,8 m**. Uzel 0 je přímo součástí OSM vozovky a modelový chodec na něj **nikdy nevstoupí**, protože zde nebyl potvrzen pěší přechod.
+
+**Původní geografie:** path má devět GPS uzlů (hash `69d970c5`); vozovka Pod Lesem OSM `83076185` původní hash `63325626`, oba mají přesné původní tagy a společný road-node. Modul `scripts/osm-pod-lesem-branch-walker-5279.js` přijme pouze existující 5.278 pěší osu a ověří původní souřadnice, neprotnutí dalších automobilových cest a minimální vzdálenost od nich. Žádná nová silnice, přechod, chodník, textura, obrubník, kolize, osvětlení ani vstup do budovy. Tag `lit=no` není záminka pro domyšlené lampy a materiál `surface` OSM vůbec neuvádí. Lidé jsou čistě herní NPC, nikoliv skutečně pozorované osoby.
+
+**Regrese:** `scripts/osm-pod-lesem-branch-walker-5279.test.mjs` hlídá původní geohash, délku, otočku, zákaz přechodu, nově vložené křížící se vozovky, neměnnost OSM a zachování 5.278. `scripts/osm-pod-lesem-branch-webgl-5279.mjs` má mobilní a široký Chromium/SwiftShader screenshot po 7,2s LOD; integrováno do Italská CI. V době vytvoření větve výsledky automatického ověření, PR a nasazení **čekají**.
+
+Kontrolní technická kamera: `?v=527900&streetAudit=pod-lesem-branch-5279`. Kamera na skutečném společném GPS uzlu má technicky odhadnutý směr 185°, nikoliv fotogrammetricky ověřený úhel.
+
+---
 ## Milovice RP 5.278 — +70,8 m navazujícího OSM chodníku na západ (22. 11. 2026; PR #62 sloučen, CI 60/60 PASS, Pages čeká)
 
 **Běžná hra:** jediný původní chodec Pod Lesem × Armádní nově pokračuje z cca 196,6 m trasy verze 5.277 na další původní OSM `highway=footway, footway=sidewalk` **1044078118**, přesně navazující v GPS `50.2290044,14.8702188`. Využívá jeho první čtyři skutečné segmenty (70,806 m), celkem **267,399 m** původních chodníků. Na původním uzlu 4 se otočí, **9,6 m před OSM servisní silnicí 1456361936**, protože její pěší převedení není ověřené. Východní pokračování přes Zátopkovu také zůstává zablokované.

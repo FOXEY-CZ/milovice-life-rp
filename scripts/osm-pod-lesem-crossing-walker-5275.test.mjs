@@ -81,6 +81,6 @@ for(const item of ["from './scripts/osm-pod-lesem-crossing-walker-5275.js?v=5278
  'advancePodLesemWalker5275)(route,initial,1,0)', 'if(obj.podLesemWalker5275){',
  "window.__milovicePodLesemWalkerRuntime5275=()=>({",
  "'pod-lesem-pedestrian-5275':{",
- "const BUILD_ID='20261122-pod-lesem-west-join-527800'"])
+ "const BUILD_ID='20261122-pod-lesem-branch-walker-527900'"])
  assert(html.includes(item),'5.275 integration '+item);
 console.log('PASS 5.277 retains original 5.276 predictive yield and source-locked 5.275 short fallback');
