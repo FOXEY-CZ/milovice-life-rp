@@ -7214,7 +7214,7 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
  const italskaPhotoRedPlinthRendered5262=italskaPhotoRedPlinthPlan5262?
   renderItalskaPhotoRedPlinth5262(THREE,{
    plan:italskaPhotoRedPlinthPlan5262,layer:osmLayer,
-   baseHeight,roofHeight:h
+   baseHeight,roofHeight:h,terrainAt
   }):null;
  if(italskaPhotoRedPlinthRendered5262){
   const photo=italskaPhotoRedPlinthPlan5262;
@@ -7228,6 +7228,10 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
    renderedOriginalWallEdges:italskaPhotoRedPlinthRendered5262.renderedOriginalWallEdges,
    paintBandTriangles:italskaPhotoRedPlinthRendered5262.paintBandTriangles,
    wornAreaTriangles:italskaPhotoRedPlinthRendered5262.wornAreaTriangles,
+   terrainDrapedLowerPaint:italskaPhotoRedPlinthRendered5262.terrainDrapedLowerPaint,
+   groundSamples:italskaPhotoRedPlinthRendered5262.groundSamples,
+   maxBottomGapMetres:italskaPhotoRedPlinthRendered5262.maxBottomGapMetres,
+   minBottomGapMetres:italskaPhotoRedPlinthRendered5262.minBottomGapMetres,
    estimatedWornAreas:italskaPhotoRedPlinthRendered5262.estimatedWornAreas,
    drawMeshes:italskaPhotoRedPlinthRendered5262.drawMeshes,
    visibleAfterLOD:italskaPhotoRedPlinthRendered5262.visibleAfterLOD(),
