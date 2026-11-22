@@ -93,6 +93,6 @@ for(const token of [
  'planPodLesemCross5270({',
  'window.__milovicePodLesemCrossRuntime5270=()=>',
  "'pod-lesem-municipal-crossing-5270':{",
- "const BUILD_ID='20261122-pod-lesem-sidewalk-chain-527700'"])
+ "const BUILD_ID='20261122-pod-lesem-west-join-527800'"])
  assert(html.includes(token),'Missing 5.270 integration '+token);
 console.log('PASS 5.274 municipality-backed Pod Lesem crossing aligned to original OSM sidewalk vertex 8.782m before Armadni, no new paths or surveyed-paint claim');

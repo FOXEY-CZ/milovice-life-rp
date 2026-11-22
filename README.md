@@ -1,3 +1,15 @@
+## Milovice RP 5.278 — +70,8 m navazujícího OSM chodníku na západ (22. 11. 2026; CI/PR/Pages čekají)
+
+**Běžná hra:** jediný původní chodec Pod Lesem × Armádní nově pokračuje z cca 196,6 m trasy verze 5.277 na další původní OSM `highway=footway, footway=sidewalk` **1044078118**, přesně navazující v GPS `50.2290044,14.8702188`. Využívá jeho první čtyři skutečné segmenty (70,806 m), celkem **267,399 m** původních chodníků. Na původním uzlu 4 se otočí, **9,6 m před OSM servisní silnicí 1456361936**, protože její pěší převedení není ověřené. Východní pokračování přes Zátopkovu také zůstává zablokované.
+
+**Ochrana zdrojů:** OSM 1044078118 má 11 GPS uzlů, doložené `lit=yes`, nikoli materiál povrchu, geohash `26506719`; servisní cesta se musí potkat s původním uzlem chodníku 5. Nově zmapovaná motorová komunikace protínající pokračování ho vypne a zachová fallback 5.277/5.275. Ponechána 4s predikce vozidel před vstupem na stávající modelovou zebru, stále jediný NPC, žádné nové silnice, chodníky, přechody, obruby, kolize, stavby ani parkoviště.
+
+**Ověření:** nový Node `scripts/osm-pod-lesem-west-join-5278.test.mjs` pro společné uzly, cca 267 m a bezpečné zastavení před service road; rozšířené Chromium/SwiftShader mobile + wide po 7,2s LOD včetně západní technické kamery. Automatické testy, screenshoty, PR a Pages v době přípravy čekají na ověření.
+
+Technické kamery: `?v=527800&streetAudit=pod-lesem-pedestrian-5275`, `?v=527800&streetAudit=pod-lesem-west-sidewalk-5278`. Kamery **nejsou** fotografická shoda.
+
+---
+
 ## Milovice RP 5.277 — chodec po cca 197 m originální OSM trasy s předvídáním aut (22. 11. 2026; CI čeká)
 
 **V běžné hře:** jediný původní modelový chodec u Pod Lesem × Armádní sleduje cca 196,6m původní mapovaný sidewalk 1005977571: 11m východní nástup, již existující modelová zebra a tři západní OSM segmenty až na mapovaný západní konec. Místo 22m smyčky se na koncích otočí a jde po skutečných lomech OSM. Zachovává z 5.276 predikci přijíždějících aut z jejich změřené simulované rychlosti s horizontem 4s; už zahájené přecházení nezamrzne uprostřed silnice.

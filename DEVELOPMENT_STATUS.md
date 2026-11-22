@@ -1,22 +1,25 @@
 # Milovice RP — aktuální handoff
 
-> **5.277 (22. 11. 2026; vývojová větev, CI/PR/Pages nepotvrzeny)** — chodec u Pod Lesem × Armádní nyní využívá cca 196,6m originální sidewalk OSM 1005977571 místo 22m úseku, ale stále předvídá přijíždějící auta podle ověřené 5.276 predikce na 4 s. Pouze jedna původní postava, bez nového OSM grafu, přechodů, obrub, kolizí, komunikací nebo staveb.
+> **5.278 (22. 11. 2026; vývojová větev, CI/PR/Pages čekají)** — jediný simulovaný chodec Pod Lesem × Armádní používá 267,4 m propojených původních OSM chodníků místo 196,6 m ve verzi 5.277.
 
-## Geometrie, zdroje a chování
+## Zdrojová data a hotová změna
 
-- Původních sedm OSM GPS uzlů a hash 263e12b3 zůstává. Nová trasa se skládá z 11 m před modelem zebry a tří skutečných západních dílů sidewalk 1005977571 (indexy 4,5,6). Východní pokračování k ulici Zátopkova se kvůli nedoloženému převedení nepoužívá.
-- scripts/osm-pod-lesem-sidewalk-chain-5277.js navazuje na 5.275/5.276 plán; zajišťuje lomený průběh a otočení na koncích. Stejný výpočet 5.276 podLesemVehicleThreat5276 předvídá pohyb aut při čekání na vstup na stávající zebru. Nezastavuje toho, kdo již přechází. OSM přidaná vozidlová cesta protínající novou západní trasu prodloužení bezpečně zruší.
-- Původní vozovka Pod Lesem má motor_vehicle=no. Pruhy zebry jsou městem doložený MODEL, geodetická skutečná poloha není ověřená, žádné další uliční prvky nevymýšlet.
-- Unit: scripts/osm-pod-lesem-sidewalk-chain-5277.test.mjs plus staré testy. Mobile/wide Chromium/SwiftShader po 7,2s LOD v .github/workflows/italska-apartments-5235.yml. **CI, screenshot, merge a Pages čekají na ověření.**
-- Kamera po nasazení: https://foxey-cz.github.io/milovice-life-rp/?v=527700&streetAudit=pod-lesem-pedestrian-5275
+- +**70,806 m** z původního `highway=footway, footway=sidewalk, lit=yes` OSM **1044078118**, 11 GPS uzlů, hash `26506719`. Původní 1005977571 se s ním potkává přesně v `50.2290044,14.8702188`; využijí se pouze čtyři první segmenty přidané cesty.
+- Jeden chodec se otočí na jejím zdrojovém uzlu index 4, **9,6 m před servisní vozovkou OSM 1456361936** na uzlu 5. Ta není doložena jako pěší přechod; další část chodníku se nepřechází. Žádná vymyšlená trasa přes Zátopkovu, nové cesty, přechody, kolize, obruby, budovy, lampy či parkování.
+- Procházení zebry z 5.274 a 4s predikce aut z 5.276 zůstávají. Pokud se nová motorová OSM komunikace střetne se segmentem prodloužení, 5.278 se bezpečně deaktivuje a použije 5.277/5.275.
+- Ověřené jsou OSM GPS a tagy. Materiál chodníku, skutečná poloha malby zebry, fasády a úhel technické kamery **nejsou fotograficky/geodeticky doložené**.
+
+## Ověření
+
+- Nový `scripts/osm-pod-lesem-west-join-5278.js` s `.test.mjs`, úpravy původní logiky 5.277 a predikce 5.276, Chromium mobile + wide a druhá technická kamera po 7,2 s LOD. **5.278 CI/PR/Pages zatím nepotvrzeny.**
+- Kamera na západním napojení: https://foxey-cz.github.io/milovice-life-rp/?v=527800&streetAudit=pod-lesem-west-sidewalk-5278
+- Kamera u zebry: https://foxey-cz.github.io/milovice-life-rp/?v=527800&streetAudit=pod-lesem-pedestrian-5275
+- **5.277 PR #61 sloučen do main** jako `a58f719`, **5/5 hlavních CI PASS** na PR commitu `0cf22ccd` včetně mobilního Chromium/WebGL, screenshot artefakt `italska-apartments-5235`. Stav Pages po sloučení ověřit samostatně.
+- **5.276 PR #59** sloučen, cílené Node/Chromium PASS a Pages PASS.
 
 ## Další krok
 
-Ověřit cílené Node/WebGL a screenshot, následně PR a Pages. Poté doplnit doložené fasády a skutečné pěší návaznosti Pod Lesem–Armádní podle oprávněných zdrojů, ne generických odhadů.
-
-## Předchozí ověřený základ
-
-**5.276:** PR #59 sloučen do main v d740536, cílené Node+Chromium PASS, předvídání přijíždějících aut. **5.275:** PR #58, 5/5 hlavních CI PASS a Pages PASS. **5.274:** PR #57, zebra zarovnána s OSM společným uzlem.
+Dokončit CI a screenshot 5.278, merge při úspěchu, ověřit Pages. Následnou servisní silnici nepřecházet bez podkladů o skutečném převedení. Sedmipodlažní domy OSM 53865704, 53865910 a 53865911 již byly modelovány ve 5.219; nevytvářet duplicity.
 
 Repo: https://github.com/FOXEY-CZ/milovice-life-rp
-Pravidla: AGENTS.md, docs/DEVELOPMENT_WORKFLOW.md, docs/STREET_WORKFLOW.md
+Postup: AGENTS.md, docs/DEVELOPMENT_WORKFLOW.md, docs/STREET_WORKFLOW.md
