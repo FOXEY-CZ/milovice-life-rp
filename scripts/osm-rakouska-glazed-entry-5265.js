@@ -6,21 +6,21 @@
  *
  * The photograph shows a glass-fronted entrance vestibule, thin glazed
  * wall bays and a broad flat canopy immediately BELOW a small upper balcony.
- * We use only the already mapped source wall 7 of OSM way 53865882,
+ * We use only the already mapped source wall 2 of OSM way 53865882,
  * RÚIAN 40057411; the exact vestibule location, projection, roof pitch,
  * bay count, balcony and materials are photo-informed MODEL ESTIMATES.
  * No original OSM edits, player-accessible entrance, collision or path.
  */
 export const RAKOUSKA_GLAZED_ENTRY_5265=Object.freeze({
  regionId:'mlada',osmId:'53865882',ruianId:'40057411',
- footprintHash:'7aec42bc',wallEdge:7,
+ footprintHash:'7aec42bc',wallEdge:2,
  sourcePhoto:'https://commons.wikimedia.org/wiki/File:Rakousk%C3%A1_(Milovice)_15.jpg',
  photoAuthor:'Stanislav Doronenko',photoDate:'2025-08-20',
  licence:'CC BY-SA 4.0',
  wallFrom:.07,wallTo:.93,projectionMetres:2.55,
  roofProjectionMetres:3.03,roofOverhangMetres:.34,
  roofFrontHeight:2.88,roofBackHeight:2.99,
- upperBalconyFrom:.65,upperBalconyTo:.975,
+ upperBalconyFrom:.05,upperBalconyTo:.385,
  photoMeasuredDimensions:false
 });
 const finite=p=>Number.isFinite(p?.x)&&Number.isFinite(p?.z);
@@ -60,7 +60,7 @@ export function planRakouskaGlazedEntry5265({upperPlan,windowPlan}={}){
  const shape=upperPlan.perimeter,sign=Math.sign(signedArea(shape));
  if(sign!==1)return null;
  const a=shape[C.wallEdge],b=shape[C.wallEdge+1],len=dist(a,b);
- if(!(len>5.30&&len<5.33)||cross(shape[0],a,b)===0)return null;
+ if(!(len>5.66&&len<5.68)||cross(shape[0],a,b)===0)return null;
  const normal={x:sign*(b.z-a.z)/len,z:-sign*(b.x-a.x)/len};
  const coord=(t,projection)=>({
   x:a.x+(b.x-a.x)*t+normal.x*projection,
@@ -107,7 +107,7 @@ export function planRakouskaGlazedEntry5265({upperPlan,windowPlan}={}){
 export function renderRakouskaGlazedEntry5265(THREE,{
  plan,layer,baseHeight,roofHeight
 }={}){
- if(plan?.version!=='5.265'||plan.originalWallEdge!==7||
+ if(plan?.version!=='5.265'||plan.originalWallEdge!==2||
   plan.visualAttachmentCount!==1||plan.newColliders!==0||
   !THREE||!layer||!Number.isFinite(baseHeight)||
   !Number.isFinite(roofHeight)||roofHeight<4||roofHeight>16)return null;

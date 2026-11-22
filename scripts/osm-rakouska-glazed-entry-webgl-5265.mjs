@@ -31,7 +31,7 @@ try{
  assert.equal(x?.ready,true,JSON.stringify(actual));
  assert.equal(x.sourceOsmId,'53865882');
  assert.equal(x.sourceHash,'7aec42bc');
- assert.equal(x.originalWallEdge,7);
+ assert.equal(x.originalWallEdge,2);
  assert.equal(x.drawMeshes,5);assert.equal(x.visibleAfterLOD,5);
  assert.equal(x.frontGlazingBays,6);assert.equal(x.sideGlazingBays,6);
  assert.equal(x.glassTriangles,24);assert.equal(x.canopyTriangles,12);
