@@ -11,7 +11,7 @@ try{
  const page=await browser.newPage({viewport:{width:393,height:852},
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
- await page.goto('http://127.0.0.1:8080/?v=527500&streetAudit=pod-lesem-pedestrian-5275',
+ await page.goto('http://127.0.0.1:8080/?v=527600&streetAudit=pod-lesem-pedestrian-5275',
   {waitUntil:'domcontentloaded',timeout:35000});
  await page.waitForFunction(()=>
   window.__milovicePodLesemWalkerRuntime5275?.()?.ready===true&&
@@ -30,14 +30,18 @@ try{
  assert.equal(r.walker?.ready,true,JSON.stringify(r));
  assert.equal(r.walker?.sourceFootwayId,'1005977571');
  assert.equal(r.walker?.actorCount,1);
- assert(r.walker?.distance>=0&&r.walker?.distance<=22);
+ assert.equal(r.walker?.version,'5.276');
+ assert(r.walker?.distance>=0&&r.walker?.distance<=r.walker?.totalMetres);
+ assert(r.walker?.totalMetres>195&&r.walker?.totalMetres<199);
+ assert.equal(r.walker?.routePoints?.length,5);
+ assert.equal(r.walker?.otherVehicleRoadCrossings,0);
  assert.equal(r.walker?.newFootways,0);
  assert.equal(r.walker?.newColliders,0);
  assert.equal(r.zebra?.ready,true);
  assert(r.zebra?.paintedBars>=4);
  assert.equal(r.bends?.ready,true);
  assert.equal(r.track?.ready,true);
- assert.equal(r.build,'20261122-pod-lesem-crossing-walker-527500');
+ assert.equal(r.build,'20261122-pod-lesem-sidewalk-chain-527600');
  assert.equal(r.build,r.hud);
  assert.equal(r.view,'pod-lesem-pedestrian-5275');
  assert.deepEqual(errors,[]);
@@ -46,5 +50,5 @@ try{
  await page.setViewportSize({width:1280,height:720});
  await page.waitForTimeout(950);
  await page.screenshot({path:'browser-artifacts/pod-lesem-pedestrian-5275-wide.png'});
- console.log('PASS 5.275 mapped sidewalk NPC crosses Pod Lesem, mobile+wide Chromium after 7.2s LOD');
+ console.log('PASS 5.276 mapped sidewalk chain extends west from Pod Lesem, mobile+wide Chromium after 7.2s LOD');
 }finally{await browser.close()}

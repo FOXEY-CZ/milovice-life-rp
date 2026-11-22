@@ -1,3 +1,14 @@
+## Milovice RP 5.276 — chodec na cca 197 m původního OSM chodníku Pod Lesem × Armádní (22. 11. 2026; CI a nasazení čeká)
+
+**Viditelná změna:** modelový obyvatel z 5.275 už nechodí pouze po 22metrovém úseku. Nyní může přejít již existující modelovou zebru a pokračovat po třech původních západních segmentech OSM sidewalk 1005977571 na její západní mapovaný konec. Celý modelový průchod po zdrojové ose má cca 196,6 m; chodec se na obou koncích otáčí, na blízké vozidlo před zebrou čeká.
+
+**Omezení a zdroje:** trasa používá nezměněných sedm GPS uzlů původní OSM cesty (hash 263e12b3). Východní pokračování přes Zátopkovu nebylo přidáno, protože další bezpečné převedení není doložené. Při budoucím OSM protnutí novou motoristickou komunikací se rozšířená trasa vypne a zůstane 22m bezpečný model 5.275. Původní podklad, budovy, chodníky, přechody, obruby, kolize a provozní graf se nemění. Zebra je stále městem doložený model s geodeticky neověřenou polohou.
+
+**Kontroly:** nový unit test scripts/osm-pod-lesem-sidewalk-chain-5276.test.mjs testuje geometrii, obousměrné čekání na vozidla, celé otočení a nebezpečné nové křížení; 5.275 regrese zůstává. Dosavadní mobile+wide Chromium/SwiftShader po 7,2 s LOD nyní kontroluje 5.276. Testy zaregistrovány v Italská workflow. CI, vizuální screenshot a Pages v době commitu čekají.
+
+Technická herní kamera: ?v=527600&streetAudit=pod-lesem-pedestrian-5275
+
+---
 ## Milovice RP 5.275 — přecházející NPC na existujícím chodníku Pod Lesem × Armádní (22. 11. 2026; PR #58 sloučen, 5/5 CI PASS, Pages PASS)
 
 **Viditelná změna běžné hry:** obecný systém 5.243–5.247 úmyslně brání generickým chodcům vstupovat na vozovku. Na Pod Lesem ale už existuje městem doložená modelová zebra, zarovnaná ve verzi 5.274 na původní OSM chodník [1005977571](https://www.openstreetmap.org/way/1005977571) u šestimetrové ulice [128087258](https://www.openstreetmap.org/way/128087258). Jeden nový simulovaný obyvatel proto může v běžném RP přejít po původní mapované pěší ose mezi dvěma body **11 m před a 11 m za společným OSM uzlem**. Nejde o nový chodník, nové OSM `footway=crossing` ani geodetické potvrzení skutečné polohy namalovaných pruhů; jde o herní simulaci na doložené pěší linii.

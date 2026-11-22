@@ -55,6 +55,6 @@ for(const item of ["from './scripts/osm-pod-lesem-crossing-walker-5275.js?v=5275
  'advancePodLesemWalker5275(', 'if(obj.podLesemWalker5275){',
  "window.__milovicePodLesemWalkerRuntime5275=()=>({",
  "'pod-lesem-pedestrian-5275':{",
- "const BUILD_ID='20261122-pod-lesem-crossing-walker-527500'"])
+ "const BUILD_ID='20261122-pod-lesem-sidewalk-chain-527600'"])
  assert(html.includes(item),'5.275 integration '+item);
 console.log('PASS 5.275 one source-locked sidewalk NPC with vehicle wait, no new mapped routes');
