@@ -85,7 +85,8 @@ for(const token of [
  'const italskaWestResidencePlan5242=planItalskaWestResidence5242({',
  'italskaWestResidenceRenderCache5242.set(String(osmId)',
  'italskaWestResidenceRenderCache5242.clear();',
- 'italskaWestResidenceRendered5242||visnovaParkingHouseRendered5202',
+ 'italskaWestResidenceRendered5242||',
+ 'visnovaParkingHouseRendered5202',
  "'italska-west-residence-5242':{",
  'href="?v=524200&streetAudit=italska-west-residence-5242"'
 ])assert(html.includes(token),'missing actual game integration '+token);

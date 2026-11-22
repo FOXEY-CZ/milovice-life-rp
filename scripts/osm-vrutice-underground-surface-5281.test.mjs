@@ -47,6 +47,6 @@ for(const marker of [
  'if(undergroundPlan5281){',
  'window.__miloviceUndergroundSurfaceRuntime5281=',
  "'vrutice-underground-path-5281':{",
- "const BUILD_ID='20261122-vrutice-underground-528100'"
+ "const BUILD_ID='20261122-armadni-houses-528200'"
 ])assert(html.includes(marker),marker);
 console.log('PASS 5.281 five exact OSM tunnel=-1 paths, 11 false DEM segments suppressed, ~136m unchanged source');

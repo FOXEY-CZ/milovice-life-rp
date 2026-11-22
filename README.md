@@ -1,3 +1,13 @@
+## Milovice RP 5.282 — čtyři původní bytové domy Armádní 886–891 (22. 11. 2026; kandidát, CI/merge/Pages čekají)
+
+**Viditelná změna celého bloku:** OSM/RÚIAN domy Armádní **886, 887, 890, 891** mají 4 mapovaná podlaží a 25 bytů každý; jedná se o **čtyři již existující** 3D obytné objemy, ne nové budovy. Source-locked modul `scripts/osm-armadni-houses-5282.js` používá původní GPS polygon + přesné hashe a sdílený modelový renderer 5.192. Na **26 původních fasádních hranách** vizuálně doplní cca **360 modelových oken a sokly přes 16 GPU meshů**. Původní obvodové zdi, podlaží, střechy, kolize, cesty a ostatní město beze změny. Nejsou přidávány domy, balkony, vchody ani skutečná čísla/křivky oken; vzhled fasád **nebyl fotograficky zaměřen** a modelový rastr není považován za autentické rozměry.
+
+**Zdroje:** OSM `1164238465`, `1164238466`, `1047406190`, `1047406191` (ČÚZK RÚIAN půdorysy a meta tagy). ČÚZK/ČSÚ a veřejné adresní evidence mapují domy 886, 887, 890 a 891 na příslušná čísla stavebních objektů. Zápis Rady města Milovice 29/2024 potvrzuje projekt C15/C16 pro 890/891: https://milovice.hlasenirozhlasu.cz/files/milovice/attachments/249858/Anonymizovany-Zapis-z-jednani-29-2024-2547.pdf . Realitní fotografie nebyly kopírované do assetů ani zaměněné za prokazatelnou fasádu konkrétního OSM domu.
+
+**Kontroly:** Node `scripts/osm-armadni-houses-5282.test.mjs` kontroluje originální GPS hashe, 100 bytů, 360 modelových oken, 16 sdílených render meshů a nulové nové budovy/kolize. Mobilní + široký Chromium/SwiftShader test `scripts/osm-armadni-houses-5282-webgl.mjs` po 7,1 s LOD ověří přítomnost čtyř obytných bloků v aktuální scéně. Technické kamery `?v=528200&streetAudit=armadni-houses-east-5282` a `?v=528200&streetAudit=armadni-houses-west-5282`. **Výsledek CI, merge a Pages zatím nepotvrzený.**
+
+---
+
 ## Milovice RP 5.281 — odstranění falešných povrchových chodníků u podzemních cest (22. 11. 2026; PR #66 sloučen, CI 5/5 PASS, Pages PASS #45050325323)
 
 **Vizuální oprava celé mapované lokality:** pět původních OSM pěších cest `435045331`, `435050519`, `1330579585`, `1330579586`, `1330579587` u „Nadzemí podzemí“ je zdrojově označeno `highway=path`, `tunnel=yes` a `layer=-1`. Dosavadní univerzální renderer je kreslil jako povrchový chodník přímo na terénu (DEM). **Verze 5.281 potlačuje 11 těchto falešných povrchových úseků, přibližně 136 m**, podle všech pěti původních souřadnicových OSM geometrií a jejich hashů. Původní pěší trasy, GPS, mapové podklady a podmínky přístupu se nemění. Nejde o skutečně vymodelovaný tunel — hloubka, konkrétní průřez, povrch i vchody jsou zatím neověřené; bez zdrojových dat je nevymýšlíme.

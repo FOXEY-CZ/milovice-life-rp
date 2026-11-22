@@ -251,3 +251,5 @@ jobs:
         run: python3 scripts/validate_regions.py
       - name: Verify 5.281 five source-locked underground footways do not create fake DEM sidewalks
         run: node scripts/osm-vrutice-underground-surface-5281.test.mjs
+      - name: Validate 5.282 four original Armadni RUIAN apartment blocks, 100 flats and source-locked model windows
+        run: node scripts/osm-armadni-houses-5282.test.mjs
