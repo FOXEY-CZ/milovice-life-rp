@@ -14,7 +14,7 @@ try{
  const page=await browser.newPage({viewport:{width:393,height:852},
   isMobile:true,hasTouch:true,deviceScaleFactor:1});
  const errors=[];page.on('pageerror',error=>errors.push(String(error.stack||error)));
- await page.goto('http://127.0.0.1:8080/?v=525900&streetAudit=italska-road-footway-5252&npcAudit=italska-encounter-5259',
+ await page.goto('http://127.0.0.1:8080/?v=526000&streetAudit=italska-road-footway-5252&npcAudit=italska-encounter-5259',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>
@@ -44,7 +44,7 @@ try{
   'Both actual 3D NPC meshes must project inside the screenshot camera: '+
   JSON.stringify(screenshotState));
  await mkdir('browser-artifacts',{recursive:true});
- await page.screenshot({path:'browser-artifacts/italska-encounter-5259-mobile.png'});
+ await page.screenshot({path:'browser-artifacts/italska-body-envelope-5260-mobile.png'});
  // SwiftShader on a low-power mobile viewport may need far longer than
  // seven wall-clock seconds to finish 80 genuine animation frames.
  // Count engine frames, not elapsed wall time; never manufacture motion.
@@ -57,16 +57,24 @@ try{
   pageErrors:window.__miloviceRuntimeErrors||null,
   visibleBuild:document.getElementById('build-label')?.textContent,
   metaBuild:document.querySelector('meta[name="milovice-build"]')?.content,
-  view:window.__miloviceStreetAuditRendered?.view
+  view:window.__miloviceStreetAuditRendered?.view,
+  body:window.__miloviceItalskaBodyEnvelopeRuntime5260?.()
  }));
  const a=result.audit;
+ assert.equal(result.body?.ready,true,JSON.stringify(result.body));
+ assert(result.body.framesAudited>=80,'Full two-car animated body trace required');
+ assert(Number.isFinite(result.body.minimumProxyBodyGapMetres));
+ assert(Number.isFinite(result.body.minimumBufferedBodyGapMetres));
+ assert.equal(result.body.bodyOverlapFrames,0,'Rendered two-car model bodies must not intersect at sampled frames: '+JSON.stringify(result.body));
+ assert.equal(result.body.realMeshTriangleCollisionCertified,false);
+ console.log('5.260 body-envelope evidence: '+JSON.stringify(result.body));
  console.log('5.259 WebGL measured: '+JSON.stringify({
   frames:a?.frames,actors:a?.actors, yieldedFrames:a?.yieldedFrames,
   stoppedFrames:a?.stoppedFrames,heldAtStopLine:a?.heldAtStopLine,
   leadCleared:a?.leadCleared,followerResumed:a?.followerResumed,
   minCenterDistance:a?.minimumCenterDistanceMetres,
   visibleFrames:a?.visibleFrames,guard:result.guard?.ready,
-  view:result.view,errors
+  view:result.view,errors,body:result.body
  }));
  assert.equal(a?.ready,true,JSON.stringify(a));
  assert.equal(a.diagnosticOnly,true);
@@ -83,7 +91,11 @@ try{
  assert.equal(result.view,'italska-road-footway-5252');
  assert.equal(result.visibleBuild,result.metaBuild);
  assert.deepEqual(errors,[],'No JS page errors');
- console.log('PASS 5.259 two original 3D NPCs, '+a.frames+' game frames, '+
+ console.log('PASS 5.260: actual oriented 3D model-body samples='+result.body.framesAudited+
+  ', min measured model-body gap='+result.body.minimumProxyBodyGapMetres+
+  ' m, 10cm buffered min gap='+result.body.minimumBufferedBodyGapMetres+
+  ' m; no claim of real mesh collision certification');
+ console.log('PASS 5.259 two original 3D NPCs, +a.frames+' game frames, '+
   a.yieldedFrames+' yielding frames, held='+a.heldAtStopLine+
   ', first exited='+a.leadCleared+', second resumed='+a.followerResumed+
   ', min center distance='+a.minimumCenterDistanceMetres+' m. '+
