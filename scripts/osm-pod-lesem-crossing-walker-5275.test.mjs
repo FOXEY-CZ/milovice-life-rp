@@ -52,7 +52,7 @@ assert.equal(JSON.stringify(E),snapshot);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const item of ["from './scripts/osm-pod-lesem-crossing-walker-5275.js?v=527500'",
  'planPodLesemWalker5275({','rpSpawnPodLesemWalker5275(area.id);',
- 'advancePodLesemWalker5275(', 'if(obj.podLesemWalker5275){',
+ 'advancePodLesemWalker5275)(route,initial,1,0)', 'if(obj.podLesemWalker5275){',
  "window.__milovicePodLesemWalkerRuntime5275=()=>({",
  "'pod-lesem-pedestrian-5275':{",
  "const BUILD_ID='20261122-pod-lesem-sidewalk-chain-527600'"])
