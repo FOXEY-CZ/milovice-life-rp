@@ -1,3 +1,13 @@
+## Milovice RP 5.279 — bezpečný souběh chodníku a nově mapované motorové silnice (22. 11. 2026; PR #64 MERGED, CI 5/5 PASS, Pages neověřeno)
+
+**Oprava podkladové bezpečnostní podmínky, nikoli nová geometrie:** pěší trasa 5.278 na původním OSM chodníku 1044078118 byla chráněna před novou motorovou cestou, která ji protne. Dvě přesně souběžné a překrývající se úsečky však původní test průniku nezachytil. Kontrola v `scripts/osm-pod-lesem-west-join-5278.js` teď navíc detekuje **plný i částečný kolineární překryv**; při takové změně zdrojové mapy se prodloužení odmítne a funguje původní fallback 5.277/5.275. Příslušný regresní test přibyl do `scripts/osm-pod-lesem-west-join-5278.test.mjs`.
+
+**Beze změn pro běžnou hru:** dosavadní 267,399 m pěší trasy, zastavení cca 9,6 m před OSM servisní silnicí 1456361936, simulovaná dopravní predikce, GPS, OSM export, mapa, objekty, vozovky, FPS limit a rozpočet NPC jsou zachovány. Nedochází k fyzickému stavění a žádné skutečné nové křížení není geodeticky potvrzeno.
+
+**Ověření:** všech 5 GitHub Actions PR workflow **PASS**: [Validate](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45045544270), [Station photo](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45045544166), [Nádražní](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45045544231), [blok 5.82](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45045544157) a [Italská mobilní WebGL](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45045544273). [PR #64](https://github.com/FOXEY-CZ/milovice-life-rp/pull/64) sloučen do `main` jako `7d07ee1`. GitHub Pages pro tuto aktualizaci zatím nejsou potvrzené. Screenshoty nebyly samostatně obrazově přezkoumány.
+
+---
+
 ## Milovice RP 5.278 — +70,8 m navazujícího OSM chodníku na západ (22. 11. 2026; PR #62 sloučen, CI 60/60 PASS, Pages čeká)
 
 **Běžná hra:** jediný původní chodec Pod Lesem × Armádní nově pokračuje z cca 196,6 m trasy verze 5.277 na další původní OSM `highway=footway, footway=sidewalk` **1044078118**, přesně navazující v GPS `50.2290044,14.8702188`. Využívá jeho první čtyři skutečné segmenty (70,806 m), celkem **267,399 m** původních chodníků. Na původním uzlu 4 se otočí, **9,6 m před OSM servisní silnicí 1456361936**, protože její pěší převedení není ověřené. Východní pokračování přes Zátopkovu také zůstává zablokované.
