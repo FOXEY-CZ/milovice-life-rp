@@ -1,3 +1,13 @@
+## Milovice RP 5.264 — severní nároží: modelová horní okna a poškozená omítka (22. 11. 2026; PR/CI zatím neověřené)
+
+Zdroj: [Rakouská (Milovice) 15.jpg](https://commons.wikimedia.org/wiki/File:Rakousk%C3%A1_(Milovice)_15.jpg) od Stanislava Doronenka (20. 8. 2025, CC BY-SA 4.0) a doplňkový pohled [Italská, Milovice 05.jpg](https://commons.wikimedia.org/wiki/File:Italsk%C3%A1,_Milovice_05.jpg). Severní vyšší nároží Vojenského zátiší na fotografii obsahuje řadu temných oken, tmavší/kovové rámy a silně opadanou omítku; původní vizuální model 5.263 měl tato horní průčelí hladká.
+
+Kód `scripts/osm-rakouska-upper-windows-5264.js` pouze přikládá **6 tmavých modelových oken** (2 na původní OSM hraně 0, 3 na hraně 2, 1 vysoké boční na hraně 7), jemné rámy a **8 přibližně umístěných poškozených omítek**. Reálně jde o čtyři instancovaně/ručně dávkované dekorativní meshe (tmavé výplně, rámy, šedá a červená omítka), nikoliv nová architektonická otvory. Nezměnila se původní OSM/RÚIAN geometrie 53865882 / 40057411, střecha 5.263, původní sokl 5.262, kolize, cesty ani provoz. Podmínka přesného hash OSM zabraňuje rozšíření na jiné objekty, a neexistující spojovací stěna modelu **edge 8** zůstává zcela bez oken.
+
+**Omezení věrnosti:** z fotografie nelze bez kalibrace odvodit centimetry; přesný počet šesti modelových oken, jejich rozteče, šířky, výšky i kontury omítky jsou **odhad**, nikoliv přesně změřená fasáda. Nový kontrolní pohled `?v=526400&streetAudit=rakouska-upper-windows-5264` používá geotagovanou GPS fotografii, ale odhad azimutu 168°. Node test kontroluje 3 skutečné originální stěny, šest oken, poškození, absence fyzických otvorů a zachování zdrojových dat. Mobilní Chromium/SwiftShader test kontroluje 6,8 s LOD a ukládá mobilní i široký screenshot. **Zatím nebylo CI vyhodnoceno ani fotografie oproti 3D ručně ověřena, Pages deploy též není potvrzen.**
+
+---
+
 ## Milovice RP 5.263 — foto-doložené vyšší severní nároží Vojenského zátiší (22. 11. 2026; [PR #46](https://github.com/FOXEY-CZ/milovice-life-rp/pull/46) sloučen, CI **5/5 PASS**)
 
 Podklady: [Rakouská (Milovice) 15.jpg](https://commons.wikimedia.org/wiki/File:Rakousk%C3%A1_(Milovice)_15.jpg) a [Italská, Milovice 05.jpg](https://commons.wikimedia.org/wiki/File:Italsk%C3%A1,_Milovice_05.jpg), Stanislav Doronenko, 20. 8. 2025, CC BY-SA 4.0. Ve skutečnosti má bývalé Vojenské zátiší výrazně vyšší severní část, kterou dosavadní obecný dvoupodlažní model neměl. Změna přidává pouze dva dekorativní 3D meshe nad podmnožinou uzlů 0–8 stávajícího půdorysu OSM 53865882 / RÚIAN 40057411: 18 trojúhelníků stěn a 7 střešních trojúhelníků. Nástavba je omezena přesným hashem polygonu; nevytváří novou zastavěnou plochu, kolider ani cestu. Původní roof mesh je pod navrženou vyšší hmotou zachován.
