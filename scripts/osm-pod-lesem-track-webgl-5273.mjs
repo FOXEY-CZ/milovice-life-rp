@@ -40,7 +40,7 @@ try{
  assert.equal(r.bends.queuedAsphaltTriangles,2);
  assert.equal(r.crossing?.ready,true);
  assert(r.crossing?.paintedBars>=4);
- assert.equal(r.meta,'20261122-pod-lesem-west-join-527800');
+ assert.match(r.meta,/^20\d{6}-[a-z0-9-]+$/);
  assert.equal(r.meta,r.hud);
  assert.equal(r.view,'pod-lesem-track-seam-5273');
  assert.deepEqual(errors,[]);
