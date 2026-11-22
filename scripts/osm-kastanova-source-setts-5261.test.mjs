@@ -49,7 +49,7 @@ for(const token of [
  "from './scripts/osm-kastanova-source-setts-5261.js?v=526100'",
  "const kastanovaSetts5261=planKastanovaSourceSetts5261({",
  "'kastanova-source-setts-5261':cityMatte(",
- "sourceSetts5261?xx/settledTile5261:",
+ "uvs[uvs.length-2]=xx/settledTile5261;",
  "'kastanova-setts-5261':{",
  "window.__miloviceKastanovaSettRuntime5261=()=>",
  "const BUILD_ID='20261122-kastanova-source-setts-526100'"
