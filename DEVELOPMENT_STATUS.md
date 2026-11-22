@@ -1,6 +1,6 @@
 # Milovice RP — aktuální handoff
 
-> **5.281 (22. 11. 2026; PR #66 MERGED, 5/5 CI PASS, Pages čeká na potvrzení)** — pět původních pěších úseků u „Nadzemí podzemí“, OSM `435045331`, `435050519`, `1330579585`, `1330579586` a `1330579587`, je označeno `tunnel=yes; layer=-1`. Oprava skrývá jejich **11 nesprávných povrchových pásů (cca 136 m)** na DEM; neodstraňuje jejich mapové GPS, cesty ani původní metadata. Podzemní fyzický 3D tunel (hloubka, vchody, průřez) nebyl bez podkladů vymyšlen. **5/5 PASS** na závěrečném commitu `fba66e4`: Validate #45049498971, Station #45049498952, Nádražní #45049499045, blok 5.82 #45049498956 (**nový mobilní+široký Chromium test Vrutice PASS po LOD**), Italská #45049498963. PR https://github.com/FOXEY-CZ/milovice-life-rp/pull/66 sloučen do `main` jako `7e5f5b6`. Build `20261122-vrutice-underground-528100`. Publikování Pages pro 5.281 dosud nepotvrzené a screenshoty nebyly samostatně fotograficky posouzeny.
+> **5.281 (22. 11. 2026; PR #66 MERGED, 5/5 CI PASS, Pages PASS #45050325323)** — pět původních pěších úseků u „Nadzemí podzemí“, OSM `435045331`, `435050519`, `1330579585`, `1330579586` a `1330579587`, je označeno `tunnel=yes; layer=-1`. Oprava skrývá jejich **11 nesprávných povrchových pásů (cca 136 m)** na DEM; neodstraňuje jejich mapové GPS, cesty ani původní metadata. Podzemní fyzický 3D tunel (hloubka, vchody, průřez) nebyl bez podkladů vymyšlen. **5/5 PASS** na závěrečném commitu `fba66e4`: Validate #45049498971, Station #45049498952, Nádražní #45049499045, blok 5.82 #45049498956 (**nový mobilní+široký Chromium test Vrutice PASS po LOD**), Italská #45049498963. PR https://github.com/FOXEY-CZ/milovice-life-rp/pull/66 sloučen do `main` jako `7e5f5b6`. Build `20261122-vrutice-underground-528100`. Nasazení Pages https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45050325323 **completed/success** na commitu `799e3f2`; živý runtime webu ani screenshoty nebyly nezávisle fotograficky přezkoumány.
 
 > **5.280 Pages GitHub Actions PASS** — nasazení https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45048472704 skončilo `completed/success` na commitu `5330b753` dne 22. 11. 2026. Přímý runtime v uživatelském prohlížeči nebyl nezávisle prohlédnut.
 
@@ -31,7 +31,7 @@
 
 ## Další přesný krok
 
-Ověřit GitHub Pages pro 5.281 (build `20261122-vrutice-underground-528100`) a technickou kameru Vrutice, poté navázat celým zdrojově doloženým blokem budov či ulic z veřejných fotografií a OSM místo dalších neviditelných mikroúprav. Podzemní cesty nemají namodelované chybějící tunely nebo vchody. Při stavění domů nevytvářet duplicity: tři sedmipodlažní RÚIAN domy `53865704`, `53865910`, `53865911` jsou **už v 5.219**. Fotky fasád chybí, nejsou potvrzené.
+GitHub Pages workflow pro 5.281 je PASS. Prohlédnout živou technickou kameru Vrutice (build `20261122-vrutice-underground-528100`) a pokračovat celým doloženým blokem budov či ulic z veřejných fotografií a OSM místo dalších neviditelných mikroúprav. Podzemní cesty nemají namodelované chybějící tunely nebo vchody. Při stavění domů nevytvářet duplicity: tři sedmipodlažní RÚIAN domy `53865704`, `53865910`, `53865911` jsou **už v 5.219**. Fotky fasád chybí, nejsou potvrzené.
 
 Zdroj: https://github.com/FOXEY-CZ/milovice-life-rp
 Pravidla: AGENTS.md, docs/DEVELOPMENT_WORKFLOW.md, docs/STREET_WORKFLOW.md
