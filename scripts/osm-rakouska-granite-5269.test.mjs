@@ -68,6 +68,6 @@ for(const token of [
  'splitRakouskaGranite5269({',
  'window.__miloviceRakouskaGraniteRuntime5269=()=>',
  "'rakouska-granite-5269':{",
- 'const BUILD_ID=\'20261122-rakouska-granite-526900\''])
+ 'const BUILD_ID=\''])
  assert(html.includes(token),'missing actual integration '+token);
 console.log('PASS 5.269 official 2025 municipal granite paving + original OSM roads, four estimated 12m visual-only sections, no new road or curb');

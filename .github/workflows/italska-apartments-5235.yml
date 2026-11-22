@@ -34,6 +34,9 @@ on:
       - scripts/osm-rakouska-fenced-frontage-5266.js
       - scripts/osm-rakouska-fenced-frontage-5266.test.mjs
       - scripts/osm-rakouska-fenced-frontage-webgl-5266.mjs
+      - scripts/osm-pod-lesem-municipal-crossing-5270.js
+      - scripts/osm-pod-lesem-municipal-crossing-5270.test.mjs
+      - scripts/osm-pod-lesem-municipal-crossing-webgl-5270.mjs
       - scripts/osm-rakouska-granite-5269.js
       - scripts/osm-rakouska-granite-5269.test.mjs
       - scripts/osm-rakouska-granite-webgl-5269.mjs
@@ -112,6 +115,9 @@ on:
       - scripts/osm-rakouska-fenced-frontage-5266.js
       - scripts/osm-rakouska-fenced-frontage-5266.test.mjs
       - scripts/osm-rakouska-fenced-frontage-webgl-5266.mjs
+      - scripts/osm-pod-lesem-municipal-crossing-5270.js
+      - scripts/osm-pod-lesem-municipal-crossing-5270.test.mjs
+      - scripts/osm-pod-lesem-municipal-crossing-webgl-5270.mjs
       - scripts/osm-rakouska-granite-5269.js
       - scripts/osm-rakouska-granite-5269.test.mjs
       - scripts/osm-rakouska-granite-webgl-5269.mjs
@@ -189,12 +195,15 @@ jobs:
           node --check scripts/osm-rakouska-glazed-entry-webgl-5265.mjs
           node --check scripts/osm-rakouska-fenced-frontage-5266.js
           node --check scripts/osm-rakouska-fenced-frontage-webgl-5266.mjs
+          node --check scripts/osm-pod-lesem-municipal-crossing-5270.js
+          node --check scripts/osm-pod-lesem-municipal-crossing-webgl-5270.mjs
           node --check scripts/osm-rakouska-granite-5269.js
           node --check scripts/osm-rakouska-granite-webgl-5269.mjs
           node --check scripts/osm-rakouska-walk-link-5268.js
           node --check scripts/osm-rakouska-walk-link-webgl-5268.mjs
           node --check scripts/osm-rakouska-cross-frontage-5267.js
           node --check scripts/osm-rakouska-cross-frontage-webgl-5267.mjs
+          node scripts/osm-pod-lesem-municipal-crossing-5270.test.mjs
           node scripts/osm-rakouska-granite-5269.test.mjs
           node scripts/osm-rakouska-walk-link-5268.test.mjs
           node scripts/osm-topolova-foot-lifecycle-5183.test.mjs
@@ -249,6 +258,7 @@ jobs:
           node scripts/osm-italska-car-clearance-webgl-5254.mjs
           node scripts/osm-italska-encounter-webgl-5259.mjs
           node scripts/osm-kastanova-source-setts-webgl-5261.mjs
+          node scripts/osm-pod-lesem-municipal-crossing-webgl-5270.mjs
           node scripts/osm-rakouska-granite-webgl-5269.mjs
           node scripts/osm-rakouska-walk-link-webgl-5268.mjs
           node scripts/osm-rakouska-cross-frontage-webgl-5267.mjs
@@ -274,6 +284,8 @@ jobs:
             browser-artifacts/italska-encounter-5259-mobile.png
             browser-artifacts/italska-body-envelope-5260-mobile.png
             browser-artifacts/kastanova-setts-5261-mobile.png
+            browser-artifacts/pod-lesem-municipal-crossing-5270-mobile.png
+            browser-artifacts/pod-lesem-municipal-crossing-5270-wide.png
             browser-artifacts/rakouska-granite-5269-mobile.png
             browser-artifacts/rakouska-granite-5269-wide.png
             browser-artifacts/rakouska-walk-link-5268-mobile.png
