@@ -11,7 +11,7 @@ try{
  const page=await browser.newPage({viewport:{width:393,height:852},
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
- await page.goto('http://127.0.0.1:8080/?v=527800&streetAudit=pod-lesem-pedestrian-5275',
+ await page.goto('http://127.0.0.1:8080/?v=528000&streetAudit=pod-lesem-pedestrian-5275',
   {waitUntil:'domcontentloaded',timeout:35000});
  await page.waitForFunction(()=>
   window.__milovicePodLesemWalkerRuntime5275?.()?.ready===true&&
@@ -30,6 +30,10 @@ try{
  assert.equal(r.walker?.ready,true,JSON.stringify(r));
  assert.equal(r.walker?.sourceFootwayId,'1005977571');
  assert.equal(r.walker?.actorCount,1);
+ assert.equal(r.walker?.smoothTurn5280,true);
+ assert.equal(r.walker?.strideLinked5280,true);
+ assert.equal(r.walker?.waitingIdle5280,true);
+ assert(Number.isFinite(r.walker?.actorFacingYaw5280));
  assert.equal(r.walker?.predictiveVehicleSafety5276,true);
  assert.equal(r.walker?.forecastSeconds5276,4);
  assert.equal(r.walker?.version,'5.278');
@@ -46,7 +50,7 @@ try{
  assert(r.zebra?.paintedBars>=4);
  assert.equal(r.bends?.ready,true);
  assert.equal(r.track?.ready,true);
- assert.equal(r.build,'20261122-pod-lesem-west-join-527800');
+ assert.equal(r.build,'20261122-pod-lesem-walker-pose-528000');
  assert.equal(r.build,r.hud);
  assert.equal(r.view,'pod-lesem-pedestrian-5275');
  assert.deepEqual(errors,[]);
@@ -55,7 +59,7 @@ try{
  await page.setViewportSize({width:1280,height:720});
  await page.waitForTimeout(950);
  await page.screenshot({path:'browser-artifacts/pod-lesem-pedestrian-5275-wide.png'});
- await page.goto('http://127.0.0.1:8080/?v=527800&streetAudit=pod-lesem-west-sidewalk-5278',
+ await page.goto('http://127.0.0.1:8080/?v=528000&streetAudit=pod-lesem-west-sidewalk-5278',
   {waitUntil:'domcontentloaded',timeout:35000});
  await page.waitForFunction(()=>
   window.__milovicePodLesemWalkerRuntime5278?.()?.ready===true&&
@@ -64,8 +68,10 @@ try{
  await page.waitForTimeout(7200);
  const west=await page.evaluate(()=>window.__milovicePodLesemWalkerRuntime5278?.());
  assert.equal(west?.version,'5.278');
+ assert.equal(west?.smoothTurn5280,true);
+ assert(Number.isFinite(west?.actorFacingYaw5280));
  assert(west?.extendedByMetres>70&&west?.extendedByMetres<72);
  assert.deepEqual(errors,[]);
  await page.screenshot({path:'browser-artifacts/pod-lesem-west-sidewalk-5278-wide.png'});
- console.log('PASS 5.278 joined 267m walker, predictive yield and western camera mobile+wide Chromium after LOD');
+ console.log('PASS 5.280 smooth pedestrian pose on 267m OSM sidewalk, mobile+wide Chromium after LOD');
 }finally{await browser.close()}
