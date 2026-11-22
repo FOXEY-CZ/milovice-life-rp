@@ -1,4 +1,4 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.260 Kontrola obrysů NPC na Italské</title><meta name="milovice-build" content="20261122-italska-body-envelope-526000"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
+<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.261 Kaštanová podle OSM dlažby</title><meta name="milovice-build" content="20261122-kastanova-source-setts-526100"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
 #realmap{position:fixed;inset:0;z-index:100;background:#101e2c;display:none;flex-direction:column;color:#fff;font-family:system-ui}#realmap.open{display:flex}#maphead{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#142c3e}#maphead button{flex:0 0 auto;min-height:40px}#osmmap{flex:1;min-height:0;touch-action:pan-x pan-y}#mapfoot{padding:8px 12px;background:#142c3e;font-size:12px;line-height:1.4}#maplaunch{position:fixed;right:12px;top:75px;z-index:45;background:#193d58;border:1px solid #93b4c7;box-shadow:0 2px 8px #0006}#realmap .leaflet-container{background:#d7e5da}#realmap a{color:#aedbff} @media(max-width:700px){#maplaunch{top:72px;right:8px;padding:7px 10px;font-size:12px;min-height:36px}#maphead{font-size:13px}}
 </style><style>#perf{position:fixed;top:10px;right:10px;z-index:42;background:#102437e8;border:1px solid #77a7b6;border-radius:10px;padding:7px 10px;color:#c8f6d4;font:600 12px system-ui;pointer-events:none;min-width:100px;text-align:center}#perf small{display:block;color:#c9d5dd;font-size:10px;font-weight:400}@media(max-width:700px){#perf{top:8px;right:8px;padding:5px 7px;font-size:11px}#maplaunch{top:100px!important}}</style><style id="milovice-modern-ui">
 #hud{background:linear-gradient(145deg,rgba(9,24,39,.88),rgba(20,44,61,.82));backdrop-filter:blur(12px);border:1px solid rgba(176,214,235,.3);box-shadow:0 10px 30px #061b2b33;border-radius:18px}
@@ -408,7 +408,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <strong>📸 Milovice nádraží · fotoaudit 5.80</strong>
 <span>Pohled podle GPS a směru fotoaparátu z 30. 5. 2024. Velikost a poloha automatů jsou odhady, nikoliv geodetické zaměření.</span>
 <div><a href="https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_automaty_na_j%C3%ADzdenky.jpg" target="_blank" rel="noopener noreferrer">Původní fotografie · ŠJů · CC BY 4.0</a> · <a href="./?v=5800">Zpět do hry</a></div>
-</aside><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.260 · build <strong id="build-label">20261122-italska-body-envelope-526000</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="topolova-foot-job-hud" hidden>🚶 Pěší doručení: <strong id="topolova-foot-job-progress">0 / 3</strong> · <strong id="topolova-foot-job-distance">–</strong> · Směr: <strong id="topolova-foot-job-direction" aria-label="Směr dalšího kontrolního bodu">↑</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="rp-camera-gps-toggle" type="button" aria-expanded="false">📍 GPS kamery</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
+</aside><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.261 · build <strong id="build-label">20261122-kastanova-source-setts-526100</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="topolova-foot-job-hud" hidden>🚶 Pěší doručení: <strong id="topolova-foot-job-progress">0 / 3</strong> · <strong id="topolova-foot-job-distance">–</strong> · Směr: <strong id="topolova-foot-job-direction" aria-label="Směr dalšího kontrolního bodu">↑</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="rp-camera-gps-toggle" type="button" aria-expanded="false">📍 GPS kamery</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
 <button id="osm-inspect-toggle" type="button" aria-pressed="false" title="Klepnutím na konkrétní budovu zjistíš její OSM identitu">🔎 Objekt</button>
 <section id="osm-inspect-result" role="status" aria-live="polite" hidden>
 <strong id="osm-inspect-title">Identifikace objektu</strong>
@@ -704,6 +704,7 @@ import {makePionyru2023Verge} from './scripts/street-pionyru-photo-2023.js?v=585
 import {createRoadClearance} from './scripts/road-clearance.js?v=5262';
 import {isCarriageway,isPedestrianWay,safePedestrianPieces,pedestrianPieceKey,markedCrossing,planZebraPieces,planStationPassage} from './scripts/reality-walkways.js?v=515200';
 import {classifyMappedRoadSurface,mappedRoadWidth} from './scripts/osm-road-surfaces.js?v=59400';
+import {KASTANOVA_SOURCE_SETTS_5261,planKastanovaSourceSetts5261} from './scripts/osm-kastanova-source-setts-5261.js?v=526100';
 import {planPrubezna2025Pavers,isPrubezna2025PaverWay} from './scripts/osm-prubezna-renovation-5134.js?v=513400';
 import {planPrubeznaRoadRenewal,isPrubeznaRenovatedRoad} from './scripts/osm-prubezna-road-5135.js?v=513500';
 import {planPrubeznaPedestrianLinks,isPrubeznaPedestrianLink} from './scripts/osm-prubezna-links-5137.js?v=513700';
@@ -750,7 +751,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261122-italska-body-envelope-526000';
+const BUILD_ID='20261122-kastanova-source-setts-526100';
 // Strictly opt-in traffic diagnostic; no NPC spawning changes in normal play.
 const rpItalskaNpcEncounterMode5259=
  new URLSearchParams(location.search).get('npcAudit')==='italska-encounter-5259';
@@ -1451,6 +1452,15 @@ const rpStreetAuditViews={
   author:'© OpenStreetMap contributors',
   technical:true,streetLevel:true,estimatedHeading:true,
   note:'Dva simulovaní herní chodci, nikoliv fotografovaní lidé. Jeden na původním OSM chodníku 1484073945, druhý na první bezpečné části dlážděného OSM 1484073947. Obracejí se před křižovatkami a dvěma neoznačenými přechody. Body tras jsou ze skutečných GPS, vzhled postav je herní odhad. Všechny pozice kontrolovány vůči vozovkám a domům. Kamera 50.2264572,14.8767305 s odhadem 32°, není panorama.'
+ },
+ 'kastanova-setts-5261':{
+  label:'Kaštanová · doložené OSM kostky · technická kamera',
+  camera:{lat:50.2265364,lon:14.8731768},heading:220,
+  source:'https://www.openstreetmap.org/way/1107814416',
+  regionId:'mlada',osmRoadId:'1107814416',
+  author:'© OpenStreetMap contributors',
+  technical:true,streetLevel:true,estimatedHeading:true,
+  note:'Oba původní navazující OSM úseky 8878402 a 1107814416 mají surface=sett. Jejich modelový povrch se liší od betonových chodníků, ale kameny, odstíny, přesná výška a fotografie nejsou změřené. Kamera stojí na OSM uzlu uprostřed Kaštanové; 220° je pouze technický směr podle OSM osy, ne fotografie. Vozovka, kolize, GPS ani doprava nezměněny.'
  },
  'italska-road-footway-5252':{
   label:'Italská × Rakouská · opravená návaznost skutečného chodníku',
@@ -3689,12 +3699,42 @@ function milovicePavingTexture(){
  tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.repeat.set(1,1);tex.anisotropy=4;
  return tex;
 }
+// 5.261: one original procedural SETT pattern for only two exact OSM
+// Kaštanová source ways. All dimensions and pigment are a MODEL inference,
+// not a photo measurement; no texture files or extra scene meshes needed.
+function kastanovaSettTexture5261(){
+ const canvas=document.createElement('canvas');canvas.width=canvas.height=256;
+ const g=canvas.getContext('2d');
+ g.fillStyle='#555552';g.fillRect(0,0,256,256);
+ const palette=['#92918b','#858581','#96958d','#777976',
+  '#a19d94','#8c8d88','#7c807e','#aaa49a'];
+ for(let y=0;y<256;y+=16){
+  const row=y/16;
+  for(let x=-16;x<272;x+=16){
+   const col=Math.floor(x/16);
+   const xx=x+(row%2)*8;
+   const seed=(row*37+col*19+Math.abs(row-col)*3)&7;
+   g.fillStyle=palette[seed];g.fillRect(xx+1,y+1,14,14);
+   g.fillStyle='rgba(234,227,212,.11)';
+   g.fillRect(xx+2,y+2,11,1);
+   g.fillStyle='rgba(32,37,35,.12)';
+   g.fillRect(xx+2,y+13,12,1);
+  }
+ }
+ const tex=new THREE.CanvasTexture(canvas);
+ tex.colorSpace=THREE.SRGBColorSpace;
+ tex.wrapS=tex.wrapT=THREE.RepeatWrapping;
+ tex.repeat.set(1,1);tex.anisotropy=4;
+ return tex;
+}
 const osmSidewalkMat=cityMatte(0xffffff,citySurfaceKit.paving,.91),osmRoofMat=mat(0x666a68),osmWindowMat=mat(0x4b7683);
 // Share just THREE extra materials and the original procedural textures
 // across ALL roads/paths tagged by OSM. No per-way textures, geometry moves
 // or guessed sidewalk bands.
 const osmMappedSurfaceMaterials={
  asphalt:osmRoadMaterial,
+ 'kastanova-source-setts-5261':cityMatte(0xffffff,
+  kastanovaSettTexture5261(),.96,THREE.DoubleSide),
  paving:osmSidewalkMat,
  // 5.134: city-specified concrete pavers, dedicated subtly lighter
  // procedural material on FIVE pre-existing OSM footways (5.134+5.137+5.139). The tint is
@@ -3712,6 +3752,26 @@ const osmMappedSurfaceMaterials={
  aggregate:cityMatte(0xc3c0b6,citySurfaceKit.ballast,.98,THREE.DoubleSide),
  earth:cityMatte(0xb69a7e,citySurfaceKit.ballast,.99,THREE.DoubleSide),
  grass:cityMatte(0xbccaaa,citySurfaceKit.grass,.98,THREE.DoubleSide)
+};
+const kastanovaSettAudit5261=window.__miloviceKastanovaSettAudit5261={
+ version:'5.261',sourceOSMIds:['8878402','1107814416'],
+ encounteredWayIds:[],renderedRoadSegments:0,sourceRoadMetres:0,
+ sourceSurface:'sett',material:'kastanova-source-setts-5261',
+ modelStoneSizeEstimated:true,modelTintEstimated:true,
+ originalRoadWidthsUntouched:true,originalRoadsAndFootwaysUntouched:true,
+ normalTrafficUnchanged:true,addedRoads:0,addedSidewalks:0
+};
+window.__miloviceKastanovaSettRuntime5261=()=>{
+ const a=kastanovaSettAudit5261;
+ const material=osmMappedSurfaceMaterials[a.material];
+ const meshCount=osmLayer.children.filter(o=>o.material===material).length;
+ return {...a,sourceRoadMetres:+a.sourceRoadMetres.toFixed(3),
+  textureReady:Boolean(material?.map),
+  materialMeshCount:meshCount,
+  worldAlignedUV:true,textureTileModelMetres:
+   KASTANOVA_SOURCE_SETTS_5261.textureTileMetres,
+  ready:a.encounteredWayIds.length===2&&a.renderedRoadSegments===13&&
+   meshCount>0&&Boolean(material?.map)};
 };
 const osmSurfaceAudit=window.__miloviceOSMSurfaceAudit={
  version:'5.94',mappedSurfaceWays:0,explicitSurfaceWays:0,drawnSegments:0,
@@ -3917,6 +3977,11 @@ function osmStrip(a,b,width,material,y=.15){
  const along=Math.max(1,Math.ceil(len/(width>=2?4:7))),across=width>=3?4:1;
  const nx=-dz/len,nz=dx/len,vertices=[],uvs=[],indices=[];
  const worldAlignedAsphalt=material===osmRoadMaterial;
+ const sourceSetts5261=material===
+  osmMappedSurfaceMaterials['kastanova-source-setts-5261'];
+ // The legacy 7m asphalt UVs and all other surfaces remain unchanged;
+ // source-tagged setts need their own model-scale stable world tiling.
+ const settledTile5261=KASTANOVA_SOURCE_SETTS_5261.textureTileMetres;
  for(let i=0;i<=along;i++){
   const t=i/along,cx=a.x+dx*t,cz=a.y+dz*t;
   for(let j=0;j<=across;j++){
@@ -3924,7 +3989,9 @@ function osmStrip(a,b,width,material,y=.15){
    vertices.push(xx,terrainAt(xx,zz)+y,zz);
    // Only the asphalt UVs change. DEM heights, road vertices, vehicle
    // clearances and all sidewalk/rail/parking textures are untouched.
-   uvs.push(worldAlignedAsphalt?xx/ROAD_ASPHALT_TILE_METERS:u,
+   uvs.push(sourceSetts5261?xx/settledTile5261:
+    worldAlignedAsphalt?xx/ROAD_ASPHALT_TILE_METERS:u,
+    sourceSetts5261?zz/settledTile5261:
     worldAlignedAsphalt?zz/ROAD_ASPHALT_TILE_METERS:t*len/8);
    if(i<along&&j<across){
     const k=i*(across+1)+j,next=k+across+1;
@@ -9304,6 +9371,16 @@ function rpAppendOSMElements(elements,regionId='old'){
    osmStreetLightWays.push({id:el.id,tags:el.tags,points,regionId});
   const kind=el.tags.highway;
   const mappedSurfacePlan=classifyMappedRoadSurface(el.tags);
+  const kastanovaSetts5261=planKastanovaSourceSetts5261({
+   regionId,way:el
+  });
+  if(kastanovaSetts5261){
+   const audit=kastanovaSettAudit5261;
+   if(!audit.encounteredWayIds.includes(kastanovaSetts5261.sourceWayId)){
+    audit.encounteredWayIds.push(kastanovaSetts5261.sourceWayId);
+    audit.sourceRoadMetres+=kastanovaSetts5261.originalLengthMetres;
+   }
+  }
   const topolovaPaving5177=planTopolovaPaving5177(regionId,el);
   if(topolovaPaving5177){
    const audit=window.__miloviceTopolovaPaving5177 ||=
@@ -9460,7 +9537,11 @@ function rpAppendOSMElements(elements,regionId='old'){
   const prubeznaLink=isPrubeznaPedestrianLink(prubeznaLinkPlan,el);
   const sportovniSidewalk=isSportovni2025Sidewalk(sportovniSidewalkPlan,el);
   const prubeznaResurfaced=isPrubeznaRenovatedRoad(prubeznaRoadPlan,el);
-  const surfacePlan=prubeznaResurfaced?
+  const surfacePlan=kastanovaSetts5261?
+   {...mappedSurfacePlan,material:kastanovaSetts5261.material,
+    originalOSMSurfaceTag:'sett',modelStoneSizeEstimated:true,
+    sourceVerifiedBy:'source-locked OSM Kaštanová way geometry'}:
+   prubeznaResurfaced?
    {...mappedSurfacePlan,material:'prubezna-repaired-asphalt',
     originalOSMSurfaceTag:mappedSurfacePlan?.surfaceTag||null,
     visualSource:'Milovice 2025 Průběžná road resurfacing public contract',
@@ -9586,6 +9667,7 @@ function rpAppendOSMElements(elements,regionId='old'){
     sidewalkGeometryStats.photoOuterFootwaySegmentsReplaced++;
     continue;
    }
+   if(kastanovaSetts5261)kastanovaSettAudit5261.renderedRoadSegments++;
    const beforeItalska5233=italskaWay5233?{
     drawn:osmSurfaceAudit.drawnSegments,
     clipped:sidewalkGeometryStats.clippedByCarriageway,
