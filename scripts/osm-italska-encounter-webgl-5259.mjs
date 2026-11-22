@@ -95,7 +95,7 @@ try{
   ', min measured model-body gap='+result.body.minimumProxyBodyGapMetres+
   ' m, 10cm buffered min gap='+result.body.minimumBufferedBodyGapMetres+
   ' m; no claim of real mesh collision certification');
- console.log('PASS 5.259 two original 3D NPCs, +a.frames+' game frames, '+
+ console.log('PASS 5.259 two original 3D NPCs, '+a.frames+' game frames, '+
   a.yieldedFrames+' yielding frames, held='+a.heldAtStopLine+
   ', first exited='+a.leadCleared+', second resumed='+a.followerResumed+
   ', min center distance='+a.minimumCenterDistanceMetres+' m. '+
