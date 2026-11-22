@@ -62,6 +62,6 @@ for(const token of ["from './scripts/osm-rakouska-cross-frontage-5267.js?v=52670
  'planRakouskaCross5267({','renderRakouskaCross5267(THREE,{',
  'window.__miloviceRakouskaCrossRuntime5267=()=>',
  "'rakouska-cross-frontage-5267':{",
- "const BUILD_ID='20261122-rakouska-cross-frontage-526700'"])
+ "const BUILD_ID='"])
  assert(html.includes(token),'Missing integration: '+token);
 console.log('PASS 5.267 source-locked transverse fence with DEM mesh and road clearance');

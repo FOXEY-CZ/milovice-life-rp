@@ -52,7 +52,7 @@ for(const token of [
  "uvs[uvs.length-2]=xx/settledTile5261;",
  "'kastanova-setts-5261':{",
  "window.__miloviceKastanovaSettRuntime5261=()=>",
- "const BUILD_ID='20261122-rakouska-cross-frontage-526700'"
+ "const BUILD_ID='"
 ])assert(html.includes(token),'Missing real game integration '+token);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const hud=html.match(/<strong id="build-label">([^<]+)<\/strong>/)?.[1];

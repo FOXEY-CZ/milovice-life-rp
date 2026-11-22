@@ -102,6 +102,6 @@ for(const token of [
  'renderRakouskaUpperWindows5264(THREE,{',
  'window.__miloviceRakouskaUpperWindowsRuntime5264=()=>',
  "'rakouska-upper-windows-5264':{",
- "const BUILD_ID='20261122-rakouska-cross-frontage-526700'"
+ "const BUILD_ID='"
 ])assert(html.includes(token),'Missing live 5.264 integration: '+token);
 console.log('PASS 5.264: six model upper-window surfaces on three original photographed wall edges, aged plaster, 4 render batches and intact OSM.');

@@ -12,8 +12,8 @@ assert(resetStart>=0&&resetEnd>resetStart);
 assert(begin>=0&&marker>begin);
 const spawn=html.slice(spawnStart,spawnEnd);
 const reset=html.slice(resetStart,resetEnd);
-assert.match(spawn,/rpCloseOverlays\(\);rpClearGameplayStops\(\);open=false;speed=0;cam=0;busJob=null;\s*\/\/ 5\.183:[^\n]+\n topolovaFootJob5179=null;pass=0;/);
-assert.match(reset,/busJob=null;topolovaFootJob5179=null;walkCam=0;/);
+assert.match(spawn,/rpCloseOverlays\(\);rpClearGameplayStops\(\);open=false;speed=0;cam=0;busJob=null;\s*\/\/ 5\.183:[^\n]+\n topolovaFootJob5179=null;topolovaFootBeacon5188\?\.update\(null,elapsed\);pass=0;/);
+assert.match(reset,/busJob=null;topolovaFootJob5179=null;topolovaFootBeacon5188\?\.update\(null,elapsed\);walkCam=0;/);
 assert(spawn.indexOf('topolovaFootJob5179=null;')<
  spawn.indexOf('if(kind===\'walking\')'));
 assert(reset.indexOf('topolovaFootJob5179=null;')<
