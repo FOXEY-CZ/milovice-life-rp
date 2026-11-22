@@ -33,6 +33,16 @@ try{
    JSON.stringify({state,pageErrors:errors,original:String(error)}));
  }
  await page.waitForTimeout(2300);
+ const screenshotState=await page.evaluate(()=>({
+  audit:window.__miloviceItalskaNpcEncounterRuntime5259?.(),
+  cameraMode:window.__miloviceStreetAuditRendered?.cameraMode
+ }));
+ assert.equal(screenshotState.cameraMode,'technical-osm-traffic-overhead',
+  'Opt-in audit must point at the mapped source junction');
+ assert(screenshotState.audit?.actors?.length===2&&
+  screenshotState.audit.actors.every(c=>c.inFrame&&c.visible),
+  'Both actual 3D NPC meshes must project inside the screenshot camera: '+
+  JSON.stringify(screenshotState));
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/italska-encounter-5259-mobile.png'});
  // SwiftShader on a low-power mobile viewport may need far longer than
