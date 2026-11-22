@@ -42,7 +42,8 @@ assert.equal(plan({regionId:'vrutice',way:grade}),null);
 assert.equal(JSON.stringify(vrutice),orig);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const marker of [
- 'planVruticeUndergroundSurface5281({regionId,way:el})',
+ 'const undergroundPlan5281=planVruticeUndergroundSurface5281({',
+ 'regionId,way:el',
  'if(undergroundPlan5281){',
  'window.__miloviceUndergroundSurfaceRuntime5281=',
  "'vrutice-underground-path-5281':{",
