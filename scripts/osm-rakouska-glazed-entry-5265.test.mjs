@@ -85,6 +85,6 @@ for(const token of [
  'planRakouskaGlazedEntry5265({','renderRakouskaGlazedEntry5265(THREE,{',
  'window.__miloviceRakouskaGlazedEntryRuntime5265=()=>',
  "'rakouska-glazed-entry-5265':{",
- "const BUILD_ID='20261122-rakouska-glazed-entry-526500'"
+ "const BUILD_ID='20261122-rakouska-fenced-frontage-526600'"
 ])assert(html.includes(token),'Missing runtime: '+token);
 console.log('PASS 5.265 photo-backed glass vestibule with balcony, 5 batches and road centerline separation '+shortest.toFixed(2)+'m');
