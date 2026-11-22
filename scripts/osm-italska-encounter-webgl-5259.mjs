@@ -14,7 +14,7 @@ try{
  const page=await browser.newPage({viewport:{width:393,height:852},
   isMobile:true,hasTouch:true,deviceScaleFactor:1});
  const errors=[];page.on('pageerror',error=>errors.push(String(error.stack||error)));
- await page.goto('http://127.0.0.1:8080/?v=526100&streetAudit=italska-road-footway-5252&npcAudit=italska-encounter-5259',
+ await page.goto('http://127.0.0.1:8080/?v=526200&streetAudit=italska-road-footway-5252&npcAudit=italska-encounter-5259',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>
