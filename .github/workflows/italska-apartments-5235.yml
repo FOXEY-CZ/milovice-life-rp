@@ -27,6 +27,8 @@ on:
       - scripts/osm-ambient-building-clearance-5245.test.mjs
       - scripts/osm-italska-junction-conflict-5258.js
       - scripts/osm-italska-junction-conflict-5258.test.mjs
+      - scripts/osm-italska-body-envelope-5260.js
+      - scripts/osm-italska-body-envelope-5260.test.mjs
       - scripts/osm-italska-encounter-webgl-5259.mjs
       - scripts/osm-italska-strip-wheel-height-5257.js
       - scripts/osm-italska-strip-wheel-height-5257.test.mjs
@@ -74,6 +76,8 @@ on:
       - scripts/osm-italska-west-residence-webgl-5242.mjs
       - scripts/osm-italska-junction-conflict-5258.js
       - scripts/osm-italska-junction-conflict-5258.test.mjs
+      - scripts/osm-italska-body-envelope-5260.js
+      - scripts/osm-italska-body-envelope-5260.test.mjs
       - scripts/osm-italska-encounter-webgl-5259.mjs
       - scripts/osm-italska-strip-wheel-height-5257.js
       - scripts/osm-italska-strip-wheel-height-5257.test.mjs
@@ -115,6 +119,7 @@ jobs:
           node-version: '22'
       - name: Check both Italska blocks, material cache and original Visnova facades
         run: |
+          node scripts/osm-italska-body-envelope-5260.test.mjs
           node scripts/osm-italska-junction-conflict-5258.test.mjs
           node scripts/osm-italska-strip-wheel-height-5257.test.mjs
           node scripts/osm-italska-rendered-strip-safety-5256.test.mjs
@@ -170,4 +175,5 @@ jobs:
             browser-artifacts/italska-narrow-npc-5253-mobile.png
             browser-artifacts/italska-car-clearance-5254-mobile.png
             browser-artifacts/italska-encounter-5259-mobile.png
+            browser-artifacts/italska-body-envelope-5260-mobile.png
           if-no-files-found: ignore
