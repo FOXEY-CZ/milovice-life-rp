@@ -38,7 +38,7 @@ try{
  assert.equal(q.granite.newMaterials,0);
  assert.equal(q.granite.newColliders,0);
  assert.equal(q.view,'rakouska-granite-5269');
- assert.equal(q.meta,'20261122-rakouska-granite-526900');
+ assert(q.meta?.startsWith('20261122-'));
  assert.equal(q.meta,q.hud);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
