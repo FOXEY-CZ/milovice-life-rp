@@ -1,5 +1,9 @@
 # Milovice RP — aktuální handoff
 
+> **5.279 návrh (22. 11. 2026; čeká CI/merge)** — větev `fix/pod-lesem-collinear-road-5279` opravuje ochranu západní pěší trasy proti motorové komunikaci vedené přesně souběžně po stejném segmentu OSM chodníku. V 5.278 se detekovala pouze nekolineární křížení; nové regresní testy přidávají plný i částečný překryv. Nemění se GPS, scéna, NPC rozpočet ani geometrie. Ověření a nasazení zatím nepotvrzeno.
+
+> **Poznámka k Pages 5.278:** při kontrole Actions běhu #45043547046 build PASS, deploy CANCELLED; tento běh není potvrzením nasazení. Mohlo dojít k nahrazení novějším deployem, který zatím nebyl ověřen.
+
 > **5.278 (22. 11. 2026; PR #62 sloučen, CI 60/60 PASS, Pages čeká)** — jeden simulovaný chodec u Pod Lesem × Armádní nyní chodí po **267,4 m** dvou propojených původních OSM chodníků (5.277: 196,6 m).
 
 ## Co je ve hře
