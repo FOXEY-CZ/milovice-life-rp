@@ -1,22 +1,22 @@
-## Milovice RP 5.278 — +70,8 m navazujícího OSM chodníku na západ (22. 11. 2026; CI/PR/Pages čekají)
+## Milovice RP 5.278 — +70,8 m navazujícího OSM chodníku na západ (22. 11. 2026; PR #62 sloučen, CI 60/60 PASS, Pages čeká)
 
 **Běžná hra:** jediný původní chodec Pod Lesem × Armádní nově pokračuje z cca 196,6 m trasy verze 5.277 na další původní OSM `highway=footway, footway=sidewalk` **1044078118**, přesně navazující v GPS `50.2290044,14.8702188`. Využívá jeho první čtyři skutečné segmenty (70,806 m), celkem **267,399 m** původních chodníků. Na původním uzlu 4 se otočí, **9,6 m před OSM servisní silnicí 1456361936**, protože její pěší převedení není ověřené. Východní pokračování přes Zátopkovu také zůstává zablokované.
 
 **Ochrana zdrojů:** OSM 1044078118 má 11 GPS uzlů, doložené `lit=yes`, nikoli materiál povrchu, geohash `26506719`; servisní cesta se musí potkat s původním uzlem chodníku 5. Nově zmapovaná motorová komunikace protínající pokračování ho vypne a zachová fallback 5.277/5.275. Ponechána 4s predikce vozidel před vstupem na stávající modelovou zebru, stále jediný NPC, žádné nové silnice, chodníky, přechody, obruby, kolize, stavby ani parkoviště.
 
-**Ověření:** nový Node `scripts/osm-pod-lesem-west-join-5278.test.mjs` pro společné uzly, cca 267 m a bezpečné zastavení před service road; rozšířené Chromium/SwiftShader mobile + wide po 7,2s LOD včetně západní technické kamery. Automatické testy, screenshoty, PR a Pages v době přípravy čekají na ověření.
+**Ověření:** nový Node `scripts/osm-pod-lesem-west-join-5278.test.mjs` pro společné uzly, cca 267 m a bezpečné zastavení před service road; rozšířené Chromium/SwiftShader mobile + wide po 7,2s LOD včetně západní technické kamery. **60/60 GitHub Actions PASS** (55 push + 5 PR); zdrojový Node i mobilní/široký Chromium/SwiftShader včetně západní technické kamery po 7,2 s LOD výslovně logují PASS 5.278. CI uložilo screenshoty do artefaktu italska-apartments-5235 (#45042659993). [PR #62](https://github.com/FOXEY-CZ/milovice-life-rp/pull/62) sloučen do main jako `a850a53` po všech 60 PASS; nové [GitHub Pages #45043547046](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45043547046) zatím čeká na dokončení. Screenshoty automaticky vytvořeny, nikoli nezávisle vizuálně prohlédnuty.
 
 Technické kamery: `?v=527800&streetAudit=pod-lesem-pedestrian-5275`, `?v=527800&streetAudit=pod-lesem-west-sidewalk-5278`. Kamery **nejsou** fotografická shoda.
 
 ---
 
-## Milovice RP 5.277 — chodec po cca 197 m originální OSM trasy s předvídáním aut (22. 11. 2026; CI čeká)
+## Milovice RP 5.277 — chodec po cca 197 m originální OSM trasy s předvídáním aut (22. 11. 2026; PR #61 sloučen, CI 5/5 PASS, Pages PASS)
 
 **V běžné hře:** jediný původní modelový chodec u Pod Lesem × Armádní sleduje cca 196,6m původní mapovaný sidewalk 1005977571: 11m východní nástup, již existující modelová zebra a tři západní OSM segmenty až na mapovaný západní konec. Místo 22m smyčky se na koncích otočí a jde po skutečných lomech OSM. Zachovává z 5.276 predikci přijíždějících aut z jejich změřené simulované rychlosti s horizontem 4s; už zahájené přecházení nezamrzne uprostřed silnice.
 
 **Ochrana skutečnosti:** vstupní GPS v OSM, 7 uzlů, hash 263e12b3, OSM vozovka s motor_vehicle=no, žádná nová komunikace, obruba, přechod, kolize ani budova. Východní pokračování přes Zátopkovu není aktivováno bez dalšího podkladu. Protnutí prodloužené trasy nově přidanou motoristickou OSM cestou vypne prodloužení a umožní původní bezpečný 22m model. Městem doložené pruhy zebry mají stále modelovou, nikoli geodeticky zaměřenou polohu.
 
-**Testy:** scripts/osm-pod-lesem-sidewalk-chain-5277.test.mjs ověřuje původní uzly, 197m trasu, odvrácení před přijíždějícím vozidlem, chůzi po zahájeném přechodu, otočení na konci a ochranu před další protínající OSM cestou. Zachována regrese predikce 5.276 a mobilní/široký Chromium/SwiftShader po 7,2s LOD. Rozšířené workflow Italská; CI, vizuální screenshot a Pages zatím nepotvrzeny.
+**Testy:** scripts/osm-pod-lesem-sidewalk-chain-5277.test.mjs ověřuje původní uzly, 197m trasu, odvrácení před přijíždějícím vozidlem, chůzi po zahájeném přechodu, otočení na konci a ochranu před další protínající OSM cestou. Zachována regrese predikce 5.276 a mobilní/široký Chromium/SwiftShader po 7,2s LOD. Rozšířené workflow Italská — **5/5 hlavních PR CI PASS**, mobilní+wide Chromium/WebGL PASS (#45039718557); [PR #61](https://github.com/FOXEY-CZ/milovice-life-rp/pull/61) sloučen jako `a58f719`. GitHub Pages [#45041782043](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45041782043) **PASS** na merge commitu. Browserový artefakt vytvořen; jeho screenshot nebyl samostatně obrazově prohlédnut.
 
 Technická kamera: ?v=527700&streetAudit=pod-lesem-pedestrian-5275
 
