@@ -11,7 +11,7 @@ try{
  const page=await browser.newPage({viewport:{width:393,height:852},
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
- await page.goto('http://127.0.0.1:8080/?v=528300&streetAudit=armadni-houses-east-5282',
+ await page.goto('http://127.0.0.1:8080/?v=528301&streetAudit=armadni-houses-east-5282',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>

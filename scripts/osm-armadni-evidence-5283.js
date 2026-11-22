@@ -3,10 +3,10 @@
  * Do not copy third-party pictures into assets or invent balcony coordinates.
  */
 export const ARMADNI_EVIDENCE_5283=Object.freeze({
- project:{houses:['890','891'],kind:'project-concept-only',
+ project:{houses:['890','891'],assignments:Object.freeze({C15:'890',C16:'891'}),kind:'project-concept-only',
   title:'STAKO C15/C16 — projektová vizualizace, ne fotografie',
   url:'https://www.stakohk.cz/MILOVICE-Bydleni-v-zeleniBD-C-15-a-C-16.html'},
- city:{title:'Město Milovice — zápis rady 29/2024, dvojice C15/C16',
+ city:{title:'Město Milovice — zápis rady 29/2024: BD C15 = č.p. 890, BD C16 = č.p. 891',
   url:'https://milovice.hlasenirozhlasu.cz/files/milovice/attachments/249858/Anonymizovany-Zapis-z-jednani-29-2024-2547.pdf'},
  houses:[
   {house:'886',osmId:'1164238465',ruian:'119003791',
@@ -15,10 +15,10 @@ export const ARMADNI_EVIDENCE_5283=Object.freeze({
   {house:'887',osmId:'1164238466',ruian:'119001071',
    note:'Bez jednoznačně přiřazené fotografie exteriéru.',url:null},
   {house:'891',osmId:'1047406190',ruian:'107125749',
-   note:'Projekt C15/C16 jako dvojice, inzerovaná teráska; poloha neověřena.',
-   url:'https://reality.mesec.cz/pronajem/byty/byty-1-kk/milovice/pronajem-bytu-1-kk-a-garsoniery-33-m2-armadni-3899440.html'},
+   note:'BD C16 = č.p. 891 doloženo zápisem 29/2024. Archivní inzerát je smazán; skutečné balkony a fasáda nejsou zaměřeny.',
+   url:null},
   {house:'890',osmId:'1047406191',ruian:'107124980',
-   note:'Projekt C15/C16 jako dvojice, inzerovaná terasa; poloha neověřena.',
+   note:'BD C15 = č.p. 890 doloženo zápisem 29/2024. Text inzerátu uvádí předzahrádku s terasou, nikoli její fasádní hranu.',
    url:'https://www.bezrealitky.cz/nemovitosti-byty-domy/719934-nabidka-pronajem-bytu-armadni-milovice'}
  ]
 });
@@ -42,7 +42,7 @@ export function mountArmadniEvidence5283(doc,search=''){
   p('Armádní '+house+': '+h.note);if(h.url)a('Otevřít zdroj k č. '+house,h.url);
  }
  if(east){
-  p('C15/C16 jsou doložené jako dvojice. Projektový obrázek neurčuje reálnou fasádu, jednotlivé číslo C15/C16 ani skutečnou polohu balkonů.');
+  p('Městský zápis 29/2024 jednoznačně uvádí C15 = č.p. 890 a C16 = č.p. 891. STAKO je projektová vizualizace, nikoli skutečná fotografie; umístění balkonů stále nebylo zaměřeno.');
   a(ARMADNI_EVIDENCE_5283.project.title,ARMADNI_EVIDENCE_5283.project.url);
   a(ARMADNI_EVIDENCE_5283.city.title,ARMADNI_EVIDENCE_5283.city.url);
  }
