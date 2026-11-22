@@ -5,6 +5,7 @@ import {planPodLesemSidewalkChain5277 as old,
  advancePodLesemSidewalkChain5277 as step} from './osm-pod-lesem-sidewalk-chain-5277.js';
 import {POD_LESEM_WEST_JOIN_5278 as S,planPodLesemWestJoin5278 as plan}
  from './osm-pod-lesem-west-join-5278.js';
+import {stepPodLesemWalkerPose5280 as pose5280} from './osm-pod-lesem-walker-pose-5280.js';
 const E=JSON.parse(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8')).elements;
 const orig=JSON.stringify(E),crossing=planPodLesemCross5270({regionId:'mlada',ways:E});
 const opts={regionId:'mlada',ways:E,crossing},base=old(opts),route=plan(opts);
@@ -63,11 +64,31 @@ assert.equal(plan({...opts,ways:E.filter(x=>String(x.id)!=='1456361936')}),null)
 assert.equal(plan({...opts,ways:E.map(w=>String(w.id)===S.id?
  {...w,geometry:w.geometry.map((v,i)=>i===4?{...v,lon:v.lon+.0000001}:v)}:w)}),null);
 assert.equal(JSON.stringify(E),orig);
+// 5.280: facing changes at a bounded angular speed; gait follows metres,
+// and waiting at the mapped crossing does not march in place.
+const poseStart=pose5280({yaw:0,targetYaw:Math.PI,dt:1/60,
+ movedMetres:.1,phase:0,swing:0,waiting:false});
+assert(poseStart&&Math.abs(poseStart.yaw)<=4.6/60+.000001);
+assert(poseStart.phase>0&&poseStart.phase<1);
+assert(poseStart.sourceGeometryUntouched);
+const crossWrap=pose5280({yaw:Math.PI-.02,targetYaw:-Math.PI+.02,dt:.05,
+ movedMetres:.05,phase:poseStart.phase,swing:poseStart.swing});
+assert(crossWrap.turnRadians>0&&crossWrap.turnRadians<.05);
+let idle={yaw:poseStart.yaw,phase:poseStart.phase,swing:.42};
+for(let i=0;i<20;i++){
+ idle=pose5280({yaw:idle.yaw,targetYaw:Math.PI/2,dt:.05,
+  movedMetres:0,phase:idle.phase,swing:idle.swing,waiting:true});
+}
+assert(Math.abs(idle.swing)<.001&&idle.phase===poseStart.phase);
+assert(Math.abs(idle.yaw-Math.PI/2)<.01);
+assert.equal(pose5280({yaw:NaN,targetYaw:1,dt:0,movedMetres:0,
+ phase:0,swing:0}),null);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const marker of ['planPodLesemWestJoin5278({',
  'podLesemWalkRoute5278||podLesemWalkRoute5277',
  'window.__milovicePodLesemWalkerRuntime5278=',
  "'pod-lesem-west-sidewalk-5278':{",
- "const BUILD_ID='20261122-pod-lesem-west-join-527800'"])
+ "const BUILD_ID='20261122-pod-lesem-walker-pose-528000'",
+ 'smoothTurn5280:true,strideLinked5280:true,waitingIdle5280:true'])
  assert(html.includes(marker),marker);
-console.log('PASS 5.278 +70.8m joined OSM sidewalk, service-road stop, predictive yield');
+console.log('PASS 5.280 smooth yaw, distance-linked gait, idle at crossing; 5.278 mapped route intact');
