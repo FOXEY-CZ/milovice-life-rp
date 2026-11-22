@@ -79,6 +79,6 @@ for(const token of [
  'planPodLesemCross5270({',
  'window.__milovicePodLesemCrossRuntime5270=()=>',
  "'pod-lesem-municipal-crossing-5270':{",
- "const BUILD_ID='20261122-pod-lesem-road-bends-527200'"])
+ "const BUILD_ID='20261122-pod-lesem-track-seam-527300'"])
  assert(html.includes(token),'Missing 5.270 integration '+token);
 console.log('PASS 5.271 segment-aware duplicate guard for 5.270 municipal 2025 crossing on original Pod Lesem 6m asphalt, 10.5m estimated from Armadni, strict non-duplicate OSM lock and no new path');

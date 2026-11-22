@@ -52,6 +52,6 @@ for(const token of [
  'queueRoadStrip(geo,osmRoadMaterial,midX,midZ);',
  "window.__milovicePodLesemBendsRuntime5272=()=>({",
  "'pod-lesem-bends-5272':{",
- "const BUILD_ID='20261122-pod-lesem-road-bends-527200'"
+ "const BUILD_ID='20261122-pod-lesem-track-seam-527300'"
 ])assert(html.includes(token),'missing 5.272 integration '+token);
 console.log('PASS 5.272 Pod Lesem source-locked pair of existing asphalt bend seams; no new roads/kerbs/colliders');

@@ -40,6 +40,9 @@ on:
       - scripts/osm-pod-lesem-road-bends-5272.js
       - scripts/osm-pod-lesem-road-bends-5272.test.mjs
       - scripts/osm-pod-lesem-road-bends-webgl-5272.mjs
+      - scripts/osm-pod-lesem-track-5273.js
+      - scripts/osm-pod-lesem-track-5273.test.mjs
+      - scripts/osm-pod-lesem-track-webgl-5273.mjs
       - scripts/osm-rakouska-granite-5269.js
       - scripts/osm-rakouska-granite-5269.test.mjs
       - scripts/osm-rakouska-granite-webgl-5269.mjs
@@ -124,6 +127,9 @@ on:
       - scripts/osm-pod-lesem-road-bends-5272.js
       - scripts/osm-pod-lesem-road-bends-5272.test.mjs
       - scripts/osm-pod-lesem-road-bends-webgl-5272.mjs
+      - scripts/osm-pod-lesem-track-5273.js
+      - scripts/osm-pod-lesem-track-5273.test.mjs
+      - scripts/osm-pod-lesem-track-webgl-5273.mjs
       - scripts/osm-rakouska-granite-5269.js
       - scripts/osm-rakouska-granite-5269.test.mjs
       - scripts/osm-rakouska-granite-webgl-5269.mjs
@@ -205,6 +211,8 @@ jobs:
           node --check scripts/osm-pod-lesem-municipal-crossing-webgl-5270.mjs
           node --check scripts/osm-pod-lesem-road-bends-5272.js
           node --check scripts/osm-pod-lesem-road-bends-webgl-5272.mjs
+          node --check scripts/osm-pod-lesem-track-5273.js
+          node --check scripts/osm-pod-lesem-track-webgl-5273.mjs
           node --check scripts/osm-rakouska-granite-5269.js
           node --check scripts/osm-rakouska-granite-webgl-5269.mjs
           node --check scripts/osm-rakouska-walk-link-5268.js
@@ -213,6 +221,7 @@ jobs:
           node --check scripts/osm-rakouska-cross-frontage-webgl-5267.mjs
           node scripts/osm-pod-lesem-municipal-crossing-5270.test.mjs
           node scripts/osm-pod-lesem-road-bends-5272.test.mjs
+          node scripts/osm-pod-lesem-track-5273.test.mjs
           node scripts/osm-rakouska-granite-5269.test.mjs
           node scripts/osm-rakouska-walk-link-5268.test.mjs
           node scripts/osm-topolova-foot-lifecycle-5183.test.mjs
@@ -269,6 +278,7 @@ jobs:
           node scripts/osm-kastanova-source-setts-webgl-5261.mjs
           node scripts/osm-pod-lesem-municipal-crossing-webgl-5270.mjs
           node scripts/osm-pod-lesem-road-bends-webgl-5272.mjs
+          node scripts/osm-pod-lesem-track-webgl-5273.mjs
           node scripts/osm-rakouska-granite-webgl-5269.mjs
           node scripts/osm-rakouska-walk-link-webgl-5268.mjs
           node scripts/osm-rakouska-cross-frontage-webgl-5267.mjs
@@ -298,6 +308,8 @@ jobs:
             browser-artifacts/pod-lesem-municipal-crossing-5270-wide.png
             browser-artifacts/pod-lesem-road-bends-5272-mobile.png
             browser-artifacts/pod-lesem-road-bends-5272-wide.png
+            browser-artifacts/pod-lesem-track-seam-5273-mobile.png
+            browser-artifacts/pod-lesem-track-seam-5273-wide.png
             browser-artifacts/rakouska-granite-5269-mobile.png
             browser-artifacts/rakouska-granite-5269-wide.png
             browser-artifacts/rakouska-walk-link-5268-mobile.png

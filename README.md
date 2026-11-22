@@ -1,3 +1,15 @@
+## Milovice RP 5.273 — Pod Lesem: původní zpevněná cesta už nezasahuje graficky do asfaltu (22. 11. 2026; CI a Pages čekají)
+
+Na skutečných mobilních+wide WebGL screenech 5.272 jsme přímo **obrazově otevřeli** výstupy z artefaktu [Actions #45031300115](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45031300115): viditelná hnědá **stávající OSM cesta `1011197688` (`highway=track`, `surface=compacted`, `tracktype=grade1`) přetéká na tmavý asfalt Pod Lesem** u místa napojení. Její původní OSM uzel (`50.2285270,14.8726788`) leží uvnitř silnice `128087258` (`width=6`). Nebyl doložen půdorys obrub ani přesný tvar reálné hrany.
+
+Ve 5.273 nový `scripts/osm-pod-lesem-track-5273.js` drží hash OSM `00b3e58a` pro 11 uzlů cesty a hash `6e14ec02` pro čtyřuzlovou ulici. Z původní místní geometrie spočítá **pouze vizuální oříznutí prvního hnědého OSM materiálu asi o 3,05 m**, aby nezačínal uprostřed již vykresleného šestimetrového asfaltu. Držena je původní modelová šířka cesty 3,2 m a modelová **mezera 5 cm** proti texturovému z-fightingu. Není to geodetické tvrzení o skutečné krajnici. Zbytek 10 původních úseků se vykreslí nezměněně; původní OSM graf, fyzické kolize, vozidlový provoz, skutečné hodnoty GPS a materiál `compacted` se nikde nemění. Přechod 5.271 a dvě vnitřní asfaltové výplně 5.272 zůstanou zachovány. Žádný nový chodník, bariéra, křižovatka ani značka.
+
+Nový Node regresní test + Chromium/SwiftShader mobil+wide po 7,2 s LOD jsou zapojeny v Italská CI workflow. Důsledně odlišovat **úspěch automatického ověření** od **fotografického potvrzení skutečnosti**. Nová technická kamera: `?v=527300&streetAudit=pod-lesem-track-seam-5273`.
+
+**Další důležitý zdroj:** archiv úřední desky Lysá nad Labem zveřejnil **24. 8. 2026 stanovení místní úpravy provozu č. 29/26** pro Rakouskou, Kaštanovou, Pod Lesem a bezejmennou (`MULNL-SC/54044/2026/Uh/132`): https://ud.mestolysa.cz/archiv.html. Samotné situační přílohy se nepodařilo zobrazit, takže **žádné nové přechody, obrubníky ani značení nejsou podle tohoto dokumentu modelovány**.
+
+---
+
 ## Milovice RP 5.272 — Pod Lesem: dvě skutečné OSM zatáčky, modelové spojení asfaltových hran (22. 11. 2026; PR #55 sloučen, 5/5 hlavních CI PASS, Pages PASS)
 
 **Oprava skutečně viditelné konstrukční příčiny:** původní 3D engine vykresluje každý rovný úsek existující silnice jako samostatný obdélníkový asfaltový pás. Na poslední cestě [OSM Pod Lesem 128087258](https://www.openstreetmap.org/way/128087258) (původní 4 uzly, `width=6`, `surface=asphalt`, `motor_vehicle=no`) jsou před připojením k Armádní **dvě změny směru**. Na jejich vnitřních hranách může mezi pruhy zůstat geometrická trojúhelníková spára. V 5.272 `scripts/osm-pod-lesem-road-bends-5272.js` ověřuje hash silnice `6e14ec02`, pokračujícího úseku Pod Lesem `83076185` (`63325626`) a hlavní Armádní `1331897690` (`197dbea8`), přesné GPS společných uzlů a původní OSM tagy, včetně zakázaného motorového provozu. Oprava **doplňuje pouze dva malinké vnitřní trojúhelníky asfaltu** v existujících lomových OSM uzlech: plochy a přesné hranice jsou geometricky dopočtený **MODEL, nikoli nové geodetické zaměření reálných hran**.
