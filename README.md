@@ -1,3 +1,11 @@
+## Milovice RP 5.263 — foto-doložené vyšší severní nároží Vojenského zátiší (22. 11. 2026; PR/CI nepotvrzené)
+
+Podklady: [Rakouská (Milovice) 15.jpg](https://commons.wikimedia.org/wiki/File:Rakousk%C3%A1_(Milovice)_15.jpg) a [Italská, Milovice 05.jpg](https://commons.wikimedia.org/wiki/File:Italsk%C3%A1,_Milovice_05.jpg), Stanislav Doronenko, 20. 8. 2025, CC BY-SA 4.0. Ve skutečnosti má bývalé Vojenské zátiší výrazně vyšší severní část, kterou dosavadní obecný dvoupodlažní model neměl. Změna přidává pouze dva dekorativní 3D meshe nad podmnožinou uzlů 0–8 stávajícího půdorysu OSM 53865882 / RÚIAN 40057411: 18 trojúhelníků stěn a 7 střešních trojúhelníků. Nástavba je omezena přesným hashem polygonu; nevytváří novou zastavěnou plochu, kolider ani cestu. Původní roof mesh je pod navrženou vyšší hmotou zachován.
+
+**Jde o pracovní model, nikoli fotogrammetrii.** Výběr lokální podmnožiny půdorysu, plocha asi 56,4 m², navýšení 2,4 m, materiály i azimut z foto-GPS na Rakouské 168° jsou odhady. Fotografie potvrzují existenci vyšší hmoty, ale ne tyto přesné rozměry. Záměrně zatím nepřidáváme nová okna, dveře, chodníky, ploty, krajinný inventář ani žádné změny NPC. Testy: scripts/osm-rakouska-photo-upper-5263.test.mjs a scripts/osm-rakouska-photo-upper-webgl-5263.mjs (mobilní Chromium/SwiftShader se 6,7s LOD). Kontrolní URL po případném nasazení: ?v=526300&streetAudit=rakouska-photo-upper-5263. **PR, CI, screenshot a Pages ještě nejsou ověřené.**
+
+---
+
 ## Milovice RP 5.262 — Vojenské zátiší: fotograficky doložený červený spodní sokl (22. 11. 2026; [PR #45](https://github.com/FOXEY-CZ/milovice-life-rp/pull/45) sloučen, CI **5/5 PASS**)
 
 Podle [Wikimedia Commons fotografie **Italská, Milovice 05.jpg**](https://commons.wikimedia.org/wiki/File:Italsk%C3%A1,_Milovice_05.jpg) od Stanislava Doronenka, pořízené 20. srpna 2025 (CC BY-SA 4.0, 50.225548 N / 14.875192 E), byla na existujících pěti původních stěnách OSM **53865882** / RÚIAN **40057411** doplněna vybledlá červenorůžová spodní omítka. Výběr stěn **[11,12,13,14,16]** je podmíněný přesným geohashem původního OSM polygonu, 5.250 kontrolou foto-occlusion a GPS fotoaparátu. Používají se pouze dva dekorativní batched meshe: modelové zabarvení a jemné odhady opadané omítky. Žádné nové budovy, okna, vchody, silnice, chodníky, kolize ani změny navigace.

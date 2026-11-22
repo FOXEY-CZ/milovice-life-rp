@@ -103,6 +103,6 @@ for(const token of [
  'renderItalskaPhotoRedPlinth5262(THREE,{',
  'window.__miloviceItalskaPhotoRedPlinthRuntime5262=()=>',
  "'italska-photo-red-plinth-5262':{",
- "const BUILD_ID='20261122-italska-photo-red-plinth-526200'"
+ "const BUILD_ID='20261122-rakouska-photo-upper-526300'"
 ])assert(html.includes(token),'Missing 5.262 3D integration '+token);
 console.log('PASS 5.262: genuine 2025 photo red-base evidence, exactly 5 original visible façades, 2 decorative batches, untouched OSM, no invented doors');
