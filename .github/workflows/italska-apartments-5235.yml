@@ -29,6 +29,9 @@ on:
       - scripts/osm-italska-junction-conflict-5258.test.mjs
       - scripts/osm-italska-body-envelope-5260.js
       - scripts/osm-italska-body-envelope-5260.test.mjs
+      - scripts/osm-kastanova-source-setts-5261.js
+      - scripts/osm-kastanova-source-setts-5261.test.mjs
+      - scripts/osm-kastanova-source-setts-webgl-5261.mjs
       - scripts/osm-italska-encounter-webgl-5259.mjs
       - scripts/osm-italska-strip-wheel-height-5257.js
       - scripts/osm-italska-strip-wheel-height-5257.test.mjs
@@ -78,6 +81,9 @@ on:
       - scripts/osm-italska-junction-conflict-5258.test.mjs
       - scripts/osm-italska-body-envelope-5260.js
       - scripts/osm-italska-body-envelope-5260.test.mjs
+      - scripts/osm-kastanova-source-setts-5261.js
+      - scripts/osm-kastanova-source-setts-5261.test.mjs
+      - scripts/osm-kastanova-source-setts-webgl-5261.mjs
       - scripts/osm-italska-encounter-webgl-5259.mjs
       - scripts/osm-italska-strip-wheel-height-5257.js
       - scripts/osm-italska-strip-wheel-height-5257.test.mjs
@@ -120,6 +126,8 @@ jobs:
       - name: Check both Italska blocks, material cache and original Visnova facades
         run: |
           node --check scripts/osm-italska-encounter-webgl-5259.mjs
+          node --check scripts/osm-kastanova-source-setts-webgl-5261.mjs
+          node scripts/osm-kastanova-source-setts-5261.test.mjs
           node --check scripts/osm-italska-body-envelope-5260.js
           node scripts/osm-italska-body-envelope-5260.test.mjs
           node scripts/osm-italska-junction-conflict-5258.test.mjs
@@ -162,6 +170,7 @@ jobs:
           node scripts/osm-italska-narrow-npc-webgl-5253.mjs
           node scripts/osm-italska-car-clearance-webgl-5254.mjs
           node scripts/osm-italska-encounter-webgl-5259.mjs
+          node scripts/osm-kastanova-source-setts-webgl-5261.mjs
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -178,4 +187,5 @@ jobs:
             browser-artifacts/italska-car-clearance-5254-mobile.png
             browser-artifacts/italska-encounter-5259-mobile.png
             browser-artifacts/italska-body-envelope-5260-mobile.png
+            browser-artifacts/kastanova-setts-5261-mobile.png
           if-no-files-found: ignore
