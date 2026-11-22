@@ -34,6 +34,9 @@ on:
       - scripts/osm-rakouska-fenced-frontage-5266.js
       - scripts/osm-rakouska-fenced-frontage-5266.test.mjs
       - scripts/osm-rakouska-fenced-frontage-webgl-5266.mjs
+      - scripts/osm-rakouska-cross-frontage-5267.js
+      - scripts/osm-rakouska-cross-frontage-5267.test.mjs
+      - scripts/osm-rakouska-cross-frontage-webgl-5267.mjs
       - scripts/osm-rakouska-glazed-entry-5265.js
       - scripts/osm-rakouska-glazed-entry-5265.test.mjs
       - scripts/osm-rakouska-glazed-entry-webgl-5265.mjs
@@ -101,6 +104,9 @@ on:
       - scripts/osm-rakouska-fenced-frontage-5266.js
       - scripts/osm-rakouska-fenced-frontage-5266.test.mjs
       - scripts/osm-rakouska-fenced-frontage-webgl-5266.mjs
+      - scripts/osm-rakouska-cross-frontage-5267.js
+      - scripts/osm-rakouska-cross-frontage-5267.test.mjs
+      - scripts/osm-rakouska-cross-frontage-webgl-5267.mjs
       - scripts/osm-rakouska-glazed-entry-5265.js
       - scripts/osm-rakouska-glazed-entry-5265.test.mjs
       - scripts/osm-rakouska-glazed-entry-webgl-5265.mjs
@@ -167,6 +173,9 @@ jobs:
           node --check scripts/osm-rakouska-glazed-entry-webgl-5265.mjs
           node --check scripts/osm-rakouska-fenced-frontage-5266.js
           node --check scripts/osm-rakouska-fenced-frontage-webgl-5266.mjs
+          node --check scripts/osm-rakouska-cross-frontage-5267.js
+          node --check scripts/osm-rakouska-cross-frontage-webgl-5267.mjs
+          node scripts/osm-rakouska-cross-frontage-5267.test.mjs
           node scripts/osm-rakouska-fenced-frontage-5266.test.mjs
           node scripts/osm-rakouska-glazed-entry-5265.test.mjs
           node scripts/osm-rakouska-upper-windows-5264.test.mjs
@@ -216,6 +225,7 @@ jobs:
           node scripts/osm-italska-car-clearance-webgl-5254.mjs
           node scripts/osm-italska-encounter-webgl-5259.mjs
           node scripts/osm-kastanova-source-setts-webgl-5261.mjs
+          node scripts/osm-rakouska-cross-frontage-webgl-5267.mjs
           node scripts/osm-rakouska-fenced-frontage-webgl-5266.mjs
           node scripts/osm-rakouska-glazed-entry-webgl-5265.mjs
           node scripts/osm-rakouska-upper-windows-webgl-5264.mjs
@@ -238,6 +248,8 @@ jobs:
             browser-artifacts/italska-encounter-5259-mobile.png
             browser-artifacts/italska-body-envelope-5260-mobile.png
             browser-artifacts/kastanova-setts-5261-mobile.png
+            browser-artifacts/rakouska-cross-frontage-5267-mobile.png
+            browser-artifacts/rakouska-cross-frontage-5267-wide.png
             browser-artifacts/rakouska-fenced-frontage-5266-mobile.png
             browser-artifacts/rakouska-fenced-frontage-5266-wide.png
             browser-artifacts/rakouska-glazed-entry-5265-mobile.png
