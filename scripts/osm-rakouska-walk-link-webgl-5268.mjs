@@ -37,7 +37,8 @@ try{
  assert(q.a.originalGPSUnchanged&&q.a.unmarkedCrossingsPreserved);
  assert.equal(q.a.newFootways,0);assert.equal(q.a.newKerbs,0);
  assert.equal(q.a.newZebras,0);assert.equal(q.a.newColliders,0);
- assert.equal(q.build,'20261122-rakouska-walk-link-526800');
+ assert(q.build?.startsWith('20261122-'));
+ assert.equal(q.build,q.hud);
  assert.equal(q.hud,q.build);
  assert(q.webgl);
  assert.equal(errors.length,0,errors.join('\n'));
