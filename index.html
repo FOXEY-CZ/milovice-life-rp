@@ -1,4 +1,4 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.258 Koordinace NPC v křižovatkách Italské</title><meta name="milovice-build" content="20261122-italska-junction-yield-525800"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
+<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milovice RP – 5.259 Test provozu NPC na Italské</title><meta name="milovice-build" content="20261122-italska-encounter-audit-525900"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
 #realmap{position:fixed;inset:0;z-index:100;background:#101e2c;display:none;flex-direction:column;color:#fff;font-family:system-ui}#realmap.open{display:flex}#maphead{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#142c3e}#maphead button{flex:0 0 auto;min-height:40px}#osmmap{flex:1;min-height:0;touch-action:pan-x pan-y}#mapfoot{padding:8px 12px;background:#142c3e;font-size:12px;line-height:1.4}#maplaunch{position:fixed;right:12px;top:75px;z-index:45;background:#193d58;border:1px solid #93b4c7;box-shadow:0 2px 8px #0006}#realmap .leaflet-container{background:#d7e5da}#realmap a{color:#aedbff} @media(max-width:700px){#maplaunch{top:72px;right:8px;padding:7px 10px;font-size:12px;min-height:36px}#maphead{font-size:13px}}
 </style><style>#perf{position:fixed;top:10px;right:10px;z-index:42;background:#102437e8;border:1px solid #77a7b6;border-radius:10px;padding:7px 10px;color:#c8f6d4;font:600 12px system-ui;pointer-events:none;min-width:100px;text-align:center}#perf small{display:block;color:#c9d5dd;font-size:10px;font-weight:400}@media(max-width:700px){#perf{top:8px;right:8px;padding:5px 7px;font-size:11px}#maplaunch{top:100px!important}}</style><style id="milovice-modern-ui">
 #hud{background:linear-gradient(145deg,rgba(9,24,39,.88),rgba(20,44,61,.82));backdrop-filter:blur(12px);border:1px solid rgba(176,214,235,.3);box-shadow:0 10px 30px #061b2b33;border-radius:18px}
@@ -408,7 +408,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <strong>📸 Milovice nádraží · fotoaudit 5.80</strong>
 <span>Pohled podle GPS a směru fotoaparátu z 30. 5. 2024. Velikost a poloha automatů jsou odhady, nikoliv geodetické zaměření.</span>
 <div><a href="https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_automaty_na_j%C3%ADzdenky.jpg" target="_blank" rel="noopener noreferrer">Původní fotografie · ŠJů · CC BY 4.0</a> · <a href="./?v=5800">Zpět do hry</a></div>
-</aside><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.258 · build <strong id="build-label">20261122-italska-junction-yield-525800</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="topolova-foot-job-hud" hidden>🚶 Pěší doručení: <strong id="topolova-foot-job-progress">0 / 3</strong> · <strong id="topolova-foot-job-distance">–</strong> · Směr: <strong id="topolova-foot-job-direction" aria-label="Směr dalšího kontrolního bodu">↑</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="rp-camera-gps-toggle" type="button" aria-expanded="false">📍 GPS kamery</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
+</aside><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ MILOVICE LIFE RP</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.259 · build <strong id="build-label">20261122-italska-encounter-audit-525900</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Skutečné ulice Milovic (OSM)</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="topolova-foot-job-hud" hidden>🚶 Pěší doručení: <strong id="topolova-foot-job-progress">0 / 3</strong> · <strong id="topolova-foot-job-distance">–</strong> · Směr: <strong id="topolova-foot-job-direction" aria-label="Směr dalšího kontrolního bodu">↑</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Singleplayer RP, nikoliv přesná mapa Milovic.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="rp-camera-gps-toggle" type="button" aria-expanded="false">📍 GPS kamery</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Skutečná mapa</button>
 <button id="osm-inspect-toggle" type="button" aria-pressed="false" title="Klepnutím na konkrétní budovu zjistíš její OSM identitu">🔎 Objekt</button>
 <section id="osm-inspect-result" role="status" aria-live="polite" hidden>
 <strong id="osm-inspect-title">Identifikace objektu</strong>
@@ -749,7 +749,10 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261122-italska-junction-yield-525800';
+const BUILD_ID='20261122-italska-encounter-audit-525900';
+// Strictly opt-in traffic diagnostic; no NPC spawning changes in normal play.
+const rpItalskaNpcEncounterMode5259=
+ new URLSearchParams(location.search).get('npcAudit')==='italska-encounter-5259';
 // Keep the visible HUD build and runtime declaration in sync for photo audits.
 document.getElementById('build-label').textContent=BUILD_ID;
 const rpStationRoofAuditCamera=new URLSearchParams(location.search).has('roofAudit');
@@ -11583,6 +11586,7 @@ async function rpLoadCityArea(id){
 function rpPopulateRegionalTraffic(area){
  const center=osmPoint({lat:area.center[0],lon:area.center[1]});
  rpSpawnMappedAmbientWalkers5243(area.id,8,center);
+ if(area.id==='mlada'&&rpSeedItalskaNpcEncounter5259())return;
  if(trafficCars.length>=79)return;
  const segments=driveSegments.filter(s=>s.len>10&&s.width>=6&&Math.hypot((s.a.x+s.b.x)*.5-center.x,(s.a.y+s.b.y)*.5-center.y)<820);
  const max=Math.min(7,79-trafficCars.length);
@@ -12385,6 +12389,7 @@ osmBtn.onclick=async()=>{
 // Pedestrians remain on sidewalks; vehicles occupy the correct half of a two-way road.
 const trafficGroup=new THREE.Group();osmLayer.add(trafficGroup);
 const trafficCars=[],trafficPeople=[],driveSegments=[],driveGraph=new Map(),osmParkingLots=[];
+let rpItalskaNpcEncounter5259=null;
 let topolovaPriorityControls5166=null;
  // Upgrade 5.3.0: licensed, skinned GLB human models and full walk/idle animation clips.
  // A few near-field NPCs at a time preserve the existing mobile draw-call budget.
@@ -12488,6 +12493,32 @@ function rpBuildRoadGraph(){
 const italskaTurnStats5255={started:0,finished:0};
 window.__miloviceItalskaJunctionConflictRuntime5258=()=>
  inspectItalskaJunctionGuard5258(italskaJunctionGuard5258);
+window.__miloviceItalskaNpcEncounterRuntime5259=()=>{
+ const a=rpItalskaNpcEncounter5259;
+ return {version:'5.259',ready:!!a,diagnosticOnly:rpItalskaNpcEncounterMode5259,
+  sourceOSMIds:['8590284','8585601'],
+  mappedRegionLoaded:window.__miloviceAreasLoaded?.includes('mlada')===true,
+  guardReady:italskaJunctionGuard5258?.ready===true,
+  actorPoolSize:trafficCars.length,
+  frames:a?.frames||0,
+  yieldedFrames:a?.yieldedFrames||0,stoppedFrames:a?.stoppedFrames||0,
+  heldAtStopLine:a?.heldAtStopLine||false,leadCleared:a?.leadCleared||false,
+  followerResumed:a?.followerResumed||false,
+  minimumCenterDistanceMetres:a?.minCenterDistance??null,
+  visibleFrames:a?.visibleFrames||0,
+  actors:a?.actors.map(c=>{
+   const ndc=new THREE.Vector3(c.g.position.x,c.g.position.y+.8,
+    c.g.position.z).project(camera);
+   return {id:c.id,osmId:String(c.seg.osmId),
+    progress:c.progress,direction:c.direction,speed:c.speed,
+    position:{x:c.g.position.x,z:c.g.position.z},visible:c.g.visible,
+    screen:{x:ndc.x,y:ndc.y,z:ndc.z},
+    inFrame:ndc.z>=-1&&ndc.z<=1&&Math.abs(ndc.x)<.92&&Math.abs(ndc.y)<.92};
+  })||[],
+  lastSamples:a?.samples.slice(-12)||[],
+  roadOrFootwayGeometryChanged:false,normalTrafficChanged:false,
+  physicalCollisionCertified:false,trafficPriorityLawVerified:false};
+};
 window.__miloviceItalskaRoadHeightRuntime5257=()=>({
  ...inspectItalskaRoadHeight5257(italskaRoadHeightModel5257,driveSegments),
  correctedNpcFrames:italskaHeightStats5257.correctedFrames,
@@ -13174,6 +13205,37 @@ window.__miloviceMappedAmbientWalkersRuntime5243=()=>{
    !people.some(p=>driveSegments.includes(p.seg))
  };
 };
+function rpSeedItalskaNpcEncounter5259(){
+ if(!rpItalskaNpcEncounterMode5259||rpItalskaNpcEncounter5259)return false;
+ const zone5259=italskaJunctionGuard5258?.zones?.[0];
+ const narrowArm5259=zone5259?.arms.find(a=>String(a.segment.osmId)==='8590284');
+ const crossArm5259=zone5259?.arms.find(a=>
+  String(a.segment.osmId)==='8585601'&&a.segment.len>12);
+ if(!narrowArm5259||!crossArm5259||narrowArm5259.segment.len<=5)return false;
+ // Regional data are now present. This explicitly opt-in scene replaces
+ // ambient cars only; the original OSM graph, terrain, people and normal
+ // traffic logic are not altered.
+ for(const car of trafficCars)trafficGroup.remove(car.g);
+ trafficCars.length=0;
+  for(const [index,arm,distance] of [[0,narrowArm5259,4.8],[1,crossArm5259,12]]){
+   const seg=arm.segment,car=makeTrafficCar(index,seg);
+   car.direction=arm.atStart?-1:1;
+   car.progress=arm.atStart?distance/seg.len:1-distance/seg.len;
+   car.italskaEncounter5259=true;
+   const dx=(seg.b.x-seg.a.x)/seg.len,dz=(seg.b.y-seg.a.y)/seg.len;
+   const side=car.direction*Math.min(2.25,seg.width*.25);
+   const cx=seg.a.x+(seg.b.x-seg.a.x)*car.progress-dz*side;
+   const cz=seg.a.y+(seg.b.y-seg.a.y)*car.progress+dx*side;
+   car.g.position.set(cx,terrainAt(cx,cz)+.045,cz);
+   car.g.rotation.y=Math.atan2(-dx*car.direction,-dz*car.direction);
+   trafficCars.push(car);
+  }
+ rpItalskaNpcEncounter5259={zone:zone5259,actors:trafficCars.slice(),
+  frames:0,yieldedFrames:0,stoppedFrames:0,heldAtStopLine:false,
+  leadCleared:false,followerResumed:false,minCenterDistance:Infinity,
+  visibleFrames:0,samples:[]};
+ return true;
+}
 function rpPopulate(){
  ambientContinuityStats5246.transitions=0;
  ambientReuseStats5244.reuseCount=0;
@@ -13187,6 +13249,7 @@ function rpPopulate(){
  trafficContinuityStats5241.visibleTeleports=0;
  glbHumans.resetPeople();glbVehicles.reset();
  trafficGroup.clear();trafficCars.length=0;trafficPeople.length=0;
+ rpItalskaNpcEncounter5259=null;
  rpBuildRoadGraph();
  rpBuildCrosswalks();
  const segments=driveSegments.filter(s=>s.len>9&&s.width>=6);
@@ -13419,9 +13482,43 @@ function rpAnimateTraffic(dt){
   if(supported)italskaHeightStats5257.correctedFrames++;
   else if(localized&&!obj.service&&!obj.wideModel5254)italskaHeightStats5257.rejectedFrames++;
   g.visible=Math.hypot(g.position.x-playerX,g.position.z-playerZ)<Math.min(270,OSM_VIEW*.52);
+  if(obj.italskaEncounter5259&&rpStreetAuditCameraWorld)
+   g.visible=Math.hypot(g.position.x-rpStreetAuditCameraWorld.x,
+    g.position.z-rpStreetAuditCameraWorld.z)<135;
   if((obj.encounter5167||obj.northEncounter5168)&&rpStreetAuditCameraWorld)
    g.visible=Math.hypot(g.position.x-rpStreetAuditCameraWorld.x,
     g.position.z-rpStreetAuditCameraWorld.z)<135;
+ }
+ if(rpItalskaNpcEncounter5259){
+  const a=rpItalskaNpcEncounter5259;
+  const [lead,follow]=a.actors;
+  const pose=car=>{
+   const arm=a.zone.arms.find(p=>p.segment===car.seg);
+   if(!arm)return null;
+   return {distance:(arm.atStart?car.progress:1-car.progress)*car.seg.len,
+    toward:arm.atStart?car.direction===-1:car.direction===1};
+  };
+  const leadNode=pose(lead),followNode=pose(follow);
+  const held=conflictCaps5258?.has(follow.id)===true;
+  if(held)a.yieldedFrames++;
+  if(held&&followNode?.distance<=5.805&&followNode.distance>=5.795){
+   a.heldAtStopLine=true;
+   if((conflictCaps5258?.get(follow.id)??Infinity)<.01)a.stoppedFrames++;
+  }
+  if(leadNode&&!leadNode.toward&&leadNode.distance>=9)
+   a.leadCleared=true;
+  if(a.heldAtStopLine&&followNode?.toward&&followNode.distance<5.65)
+   a.followerResumed=true;
+  const centerDistance=Math.hypot(lead.g.position.x-follow.g.position.x,
+   lead.g.position.z-follow.g.position.z);
+  a.minCenterDistance=Math.min(a.minCenterDistance,centerDistance);
+  if(lead.g.visible&&follow.g.visible)a.visibleFrames++;
+  a.frames++;
+  a.samples.push({frame:a.frames,leadNode,followNode,held,
+   centerDistance,leadSegment:String(lead.seg.osmId),
+   followSegment:String(follow.seg.osmId),
+   leadVisible:lead.g.visible,followVisible:follow.g.visible});
+  if(a.samples.length>320)a.samples.shift();
  }
  for(const obj of trafficPeople){
     if(obj.zebraLoop5165){
@@ -14006,7 +14103,15 @@ if(rpStreetAuditCameraWorld&&rpStreetAuditView){
   window.__milovicePlaygroundCameraAudit:null;
  const estateCamera=rpStreetAuditView.osmEstateId?
   window.__miloviceMladaEstateCameraAudit:null;
- if(estateCamera?.ready){
+ if(rpItalskaNpcEncounterMode5259&&rpItalskaNpcEncounter5259){
+  // Audit ONLY: an OSM-derived overhead camera makes both genuine 3D
+  // vehicles visible. No invented photo angle, objects or road geometry.
+  const n=rpItalskaNpcEncounter5259.zone.node;
+  const surface=terrainAt(n.x,n.y);
+  camera.up.set(0,0,-1);
+  camera.position.set(n.x,surface+58,n.y);
+  camera.lookAt(n.x,surface+.15,n.y);
+ }else if(estateCamera?.ready){
   camera.up.set(0,1,0);
   camera.position.set(eye.x,ground+1.68,eye.z);
   const target=estateCamera.target;
@@ -14165,7 +14270,8 @@ if(rpStreetAuditCameraWorld&&rpStreetAuditView){
  const status=photoStreetEnvironment.status();
  window.__miloviceStreetAuditRendered={
   active:true,view:rpStreetAuditId,
-  cameraMode:rpStreetAuditView.publicPhotoCamera&&!rpStreetAuditView.estimatedHeading?'documented-photo-gps-and-heading':rpStreetAuditView.streetLevel?'technical-osm-street-axis':rpStreetAuditView.technical?'technical-osm-overhead':rpStreetAuditView.estimatedHeading?'public-photo-gps-inferred-osm-direction':'documented-photo-gps-and-heading',
+  cameraMode:rpItalskaNpcEncounterMode5259&&rpItalskaNpcEncounter5259?
+   'technical-osm-traffic-overhead':rpStreetAuditView.publicPhotoCamera&&!rpStreetAuditView.estimatedHeading?'documented-photo-gps-and-heading':rpStreetAuditView.streetLevel?'technical-osm-street-axis':rpStreetAuditView.technical?'technical-osm-overhead':rpStreetAuditView.estimatedHeading?'public-photo-gps-inferred-osm-direction':'documented-photo-gps-and-heading',
   technicalStreetLevel:rpStreetAuditView.streetLevel===true&&!rpStreetAuditView.publicPhotoCamera,
   sourceDate:rpStreetAuditView.date,source:rpStreetAuditView.source,
   photoCameraIsObjectSurvey:false,estimatedObjectLocations:true,

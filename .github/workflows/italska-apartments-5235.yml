@@ -27,6 +27,7 @@ on:
       - scripts/osm-ambient-building-clearance-5245.test.mjs
       - scripts/osm-italska-junction-conflict-5258.js
       - scripts/osm-italska-junction-conflict-5258.test.mjs
+      - scripts/osm-italska-encounter-webgl-5259.mjs
       - scripts/osm-italska-strip-wheel-height-5257.js
       - scripts/osm-italska-strip-wheel-height-5257.test.mjs
       - scripts/osm-italska-rendered-strip-safety-5256.js
@@ -73,6 +74,7 @@ on:
       - scripts/osm-italska-west-residence-webgl-5242.mjs
       - scripts/osm-italska-junction-conflict-5258.js
       - scripts/osm-italska-junction-conflict-5258.test.mjs
+      - scripts/osm-italska-encounter-webgl-5259.mjs
       - scripts/osm-italska-strip-wheel-height-5257.js
       - scripts/osm-italska-strip-wheel-height-5257.test.mjs
       - scripts/osm-italska-rendered-strip-safety-5256.js
@@ -152,6 +154,7 @@ jobs:
           node scripts/osm-italska-road-sidewalk-webgl-5252.mjs
           node scripts/osm-italska-narrow-npc-webgl-5253.mjs
           node scripts/osm-italska-car-clearance-webgl-5254.mjs
+          node scripts/osm-italska-encounter-webgl-5259.mjs
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -166,4 +169,5 @@ jobs:
             browser-artifacts/italska-road-footway-5252-mobile.png
             browser-artifacts/italska-narrow-npc-5253-mobile.png
             browser-artifacts/italska-car-clearance-5254-mobile.png
+            browser-artifacts/italska-encounter-5259-mobile.png
           if-no-files-found: ignore
