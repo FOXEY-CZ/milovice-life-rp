@@ -31,6 +31,9 @@ on:
       - scripts/osm-italska-body-envelope-5260.test.mjs
       - scripts/osm-kastanova-source-setts-5261.js
       - scripts/osm-kastanova-source-setts-5261.test.mjs
+      - scripts/osm-rakouska-upper-windows-5264.js
+      - scripts/osm-rakouska-upper-windows-5264.test.mjs
+      - scripts/osm-rakouska-upper-windows-webgl-5264.mjs
       - scripts/osm-rakouska-photo-upper-5263.js
       - scripts/osm-rakouska-photo-upper-5263.test.mjs
       - scripts/osm-rakouska-photo-upper-webgl-5263.mjs
@@ -89,6 +92,9 @@ on:
       - scripts/osm-italska-body-envelope-5260.test.mjs
       - scripts/osm-kastanova-source-setts-5261.js
       - scripts/osm-kastanova-source-setts-5261.test.mjs
+      - scripts/osm-rakouska-upper-windows-5264.js
+      - scripts/osm-rakouska-upper-windows-5264.test.mjs
+      - scripts/osm-rakouska-upper-windows-webgl-5264.mjs
       - scripts/osm-rakouska-photo-upper-5263.js
       - scripts/osm-rakouska-photo-upper-5263.test.mjs
       - scripts/osm-rakouska-photo-upper-webgl-5263.mjs
@@ -143,6 +149,9 @@ jobs:
           node --check scripts/osm-italska-photo-red-plinth-5262.js
           node --check scripts/osm-rakouska-photo-upper-5263.js
           node --check scripts/osm-rakouska-photo-upper-webgl-5263.mjs
+          node --check scripts/osm-rakouska-upper-windows-5264.js
+          node --check scripts/osm-rakouska-upper-windows-webgl-5264.mjs
+          node scripts/osm-rakouska-upper-windows-5264.test.mjs
           node scripts/osm-rakouska-photo-upper-5263.test.mjs
           node scripts/osm-italska-photo-red-plinth-5262.test.mjs
           node scripts/osm-kastanova-source-setts-5261.test.mjs
@@ -189,6 +198,7 @@ jobs:
           node scripts/osm-italska-car-clearance-webgl-5254.mjs
           node scripts/osm-italska-encounter-webgl-5259.mjs
           node scripts/osm-kastanova-source-setts-webgl-5261.mjs
+          node scripts/osm-rakouska-upper-windows-webgl-5264.mjs
           node scripts/osm-rakouska-photo-upper-webgl-5263.mjs
           node scripts/osm-italska-photo-red-plinth-webgl-5262.mjs
       - if: always()
@@ -208,6 +218,8 @@ jobs:
             browser-artifacts/italska-encounter-5259-mobile.png
             browser-artifacts/italska-body-envelope-5260-mobile.png
             browser-artifacts/kastanova-setts-5261-mobile.png
+            browser-artifacts/rakouska-upper-windows-5264-mobile.png
+            browser-artifacts/rakouska-upper-windows-5264-wide.png
             browser-artifacts/rakouska-photo-upper-5263-mobile.png
             browser-artifacts/italska-photo-red-plinth-5262-mobile.png
           if-no-files-found: ignore
