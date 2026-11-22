@@ -39,7 +39,7 @@ try{
  assert.equal(r.p.newCrossingMarks,0);
  assert.equal(r.crossing?.ready,true,'5.271 model zebra remains visible');
  assert(r.crossing?.paintedBars>=4,'original 5.270 bars retained');
- assert.equal(r.meta,'20261122-pod-lesem-walk-aligned-527400');
+ assert.equal(r.meta,'20261122-pod-lesem-crossing-walker-527500');
  assert.equal(r.meta,r.hud);
  assert.equal(r.view,'pod-lesem-bends-5272');
  assert.deepEqual(errors,[]);
