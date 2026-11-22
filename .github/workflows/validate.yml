@@ -249,3 +249,5 @@ jobs:
         run: node scripts/osm-zebra-v7-5152.test.mjs
       - name: Validate expanded Milovice districts and real elevation data
         run: python3 scripts/validate_regions.py
+      - name: Verify 5.281 five source-locked underground footways do not create fake DEM sidewalks
+        run: node scripts/osm-vrutice-underground-surface-5281.test.mjs
