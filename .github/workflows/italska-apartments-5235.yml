@@ -119,6 +119,8 @@ jobs:
           node-version: '22'
       - name: Check both Italska blocks, material cache and original Visnova facades
         run: |
+          node --check scripts/osm-italska-encounter-webgl-5259.mjs
+          node --check scripts/osm-italska-body-envelope-5260.js
           node scripts/osm-italska-body-envelope-5260.test.mjs
           node scripts/osm-italska-junction-conflict-5258.test.mjs
           node scripts/osm-italska-strip-wheel-height-5257.test.mjs
