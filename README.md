@@ -1,3 +1,13 @@
+## Milovice RP 5.271 — přechod Pod Lesem: zabránění duplicitě při novém OSM úseku (22. 11. 2026; kontrola PR CI čeká)
+
+**Oprava reálné chyby ochranné podmínky:** dosavadní 5.270 kontrolovala nový `footway=crossing` pouze podle vrcholů jeho OSM geometrie. Delší přechod mohl mít oba koncové body dál než 22 m od modelové zebry, ale protnout její místo mezi nimi. Při pozdější aktualizaci OSM by tak hra mohla chybně vykreslit i původní odhadnuté bílé pruhy vedle/na nové přesnější geometrii. V 5.271 se proto hledá **nejkratší vzdálenost od celé lomené čáry**: body i segmenty. Pokud některý segment vede blíž než 22 m, model 5.270 se bezpečně vypne. Poškozené souřadnice se ignorují.
+
+**Změna v běžné hře:** pro současný zamčený OSM export zůstává grafika i pozice přechodu stejná; nová podmínka se projeví teprve při zmapování skutečné blízké pěší trasy. Nejsou přidána žádná fiktivní značení, chodníky, obrubníky ani kolize; GPS a cestní síť i 60FPS rozpočty zůstávají beze změny. Nejde o geodetické potvrzení polohy zebry, která dál zůstává modelovým odhadem.
+
+**Regrese:** `scripts/osm-pod-lesem-municipal-crossing-5270.test.mjs` doplňuje pozitivní průnik přímého i blízkého dlouhého segmentu s oběma konci mimo 22 m, negativní případ vzdáleného segmentu a neplatné souřadnice. Stávající mobilní i široký WebGL test po 7,2 s LOD kontroluje build 5.271. **CI a Pages nutno potvrdit až z GitHub Actions**. Oprava nenahrazuje kontrolu skutečné vozovky proti fotografii/situačnímu plánu.
+
+---
+
 ## Milovice RP 5.270 — městem doložený model přechodu Pod Lesem × Armádní (22. 11. 2026; [PR #53](https://github.com/FOXEY-CZ/milovice-life-rp/pull/53) sloučen, 5/5 PR CI PASS)
 
 **Nový konkrétní zdroj uliční bezpečnosti:** [oficiální veřejná zakázka Milovice 2025, P25V00000049](https://zakazky.mesto-milovice.cz/contract_display_85.html) uvádí **4 přechody pro chodce v ulicích Rakouská, Kaštanová, Pod Lesem a bezejmenné u Armádní**, úpravy přilehlých chodníků, snížené obrubníky a osvětlení. Profil zakázky uvádí **plnění smlouvy ukončeno 7. 1. 2026** a částku 1 418 416,45 Kč včetně DPH. [Nymburský deník – bilance roku 2025](https://nymbursky.denik.cz/zpravy_region/milovice-rok-2025-pumptrack-psi-park-opravy-investice.html) nezávisle píše, že v ulici Armádní nové přechody skutečně vznikly. [Smlouva s rozpočtem](https://zakazky.mesto-milovice.cz/document_1117/b4e740fe7811b68ef8bf3ef68919717c-smlouva-o-dilo_redigovano-pdf) zahrnuje bílé vodorovné značení V7a, obrubníky a osvětlení. **Nejde však o geodetické zaměření přesných pruhů.** Archivní OSM v této hře zatím nemá samostatný `footway=crossing` v samotném napojení Pod Lesem, proto nelze předstírat mapovou přesnost.
