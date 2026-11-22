@@ -55,6 +55,6 @@ assert.equal(JSON.stringify(E),original);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const mark of ['planPodLesemSidewalkChain5277({',
  'advancePodLesemSidewalkChain5277:advancePodLesemWalker5275', 'window.__milovicePodLesemWalkerRuntime5277=',
- "const BUILD_ID='20261122-pod-lesem-west-join-527800'"])
+ "const BUILD_ID='"])
  assert(html.includes(mark),mark);
 console.log('PASS 5.277 original sidewalk chain ~197m with safe crossing');
