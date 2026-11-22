@@ -1,3 +1,11 @@
+## Milovice RP 5.283 — Armádní: panel zdrojů fasád ve dvou 3D kamerách (22. 11. 2026; CI/Pages čeká)
+
+V technických kamerách \`armadni-houses-east-5282\` a \`armadni-houses-west-5282\` je rozbalitelný panel **„📷 Armádní — zdroje a nejistoty“** pro původní budovy 886, 887, 890 a 891. Odkazuje na [vizualizaci STAKO C15/C16](https://www.stakohk.cz/MILOVICE-Bydleni-v-zeleniBD-C-15-a-C-16.html), [zápis města](https://milovice.hlasenirozhlasu.cz/files/milovice/attachments/249858/Anonymizovany-Zapis-z-jednani-29-2024-2547.pdf), a adresní nabídky [886](https://reality.idnes.cz/detail/prodej/byt/milovice-armadni/6ad32c2feb13dfe0ed01b097/), [890](https://www.bezrealitky.cz/nemovitosti-byty-domy/719934-nabidka-pronajem-bytu-armadni-milovice), [891](https://reality.mesec.cz/pronajem/byty/byty-1-kk/milovice/pronajem-bytu-1-kk-a-garsoniery-33-m2-armadni-3899440.html). Pro 887 nebylo přesné foto potvrzeno. Projektové vizualizace **nejsou** fotografie hotové fasády, umístění skutečných balkonů stále není známé. Cizí obrázky nejsou kopírované do assetů.
+
+**Žádné nové fyzické objekty:** Původní GPS/půdorysy/4 podlaží, 360 odhadnutých oken, střechy a kolize 5.282 zůstávají beze změn. Nový source manifest \`scripts/osm-armadni-evidence-5283.js\`, Node test a rozšířený mobilní/široký Chromium/SwiftShader test panelu po 7,1s LOD. CI a nasazení zatím neověřené. Další: skutečně přiřadit fotografii ke konkrétní fasádní OSM hraně před 3D modelováním balkonů.
+
+---
+
 ## Milovice RP 5.282 — čtyři původní bytové domy Armádní 886–891 (22. 11. 2026; PR #67 sloučen, CI 5/5 PASS, Pages PASS #45052283109)
 
 **Viditelná změna celého bloku:** OSM/RÚIAN domy Armádní **886, 887, 890, 891** mají 4 mapovaná podlaží a 25 bytů každý; jedná se o **čtyři již existující** 3D obytné objemy, ne nové budovy. Source-locked modul `scripts/osm-armadni-houses-5282.js` používá původní GPS polygon + přesné hashe a sdílený modelový renderer 5.192. Na **26 původních fasádních hranách** vizuálně doplní cca **360 modelových oken a sokly přes 16 GPU meshů**. Původní obvodové zdi, podlaží, střechy, kolize, cesty a ostatní město beze změny. Nejsou přidávány domy, balkony, vchody ani skutečná čísla/křivky oken; vzhled fasád **nebyl fotograficky zaměřen** a modelový rastr není považován za autentické rozměry.
