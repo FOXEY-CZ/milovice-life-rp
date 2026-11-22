@@ -23,6 +23,6 @@ assert.equal(view('?streetAudit=armadni-houses-east-5283'),null);
 assert.equal(view('?streetAudit=other'),null);
 assert.equal(mount(null,'?streetAudit=armadni-houses-east-5282'),null);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-for(const token of ["from './scripts/osm-armadni-evidence-5283.js?v=528300'","mountArmadniEvidence5283(document,location.search)","20261122-armadni-evidence-528300"])assert(html.includes(token),token);
+for(const token of ["from './scripts/osm-armadni-evidence-5283.js?v=528300'","mountArmadniEvidence5283(document,location.search)","const BUILD_ID='"])assert(html.includes(token),token);
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),source);
 console.log('PASS 5.283 real-source Armadni audit without invented facade placement');

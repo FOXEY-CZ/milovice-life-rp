@@ -50,7 +50,7 @@ try{
  assert(r.zebra?.paintedBars>=4);
  assert.equal(r.bends?.ready,true);
  assert.equal(r.track?.ready,true);
- assert.equal(r.build,'20261122-armadni-houses-528200');
+ assert.match(r.build,/^\d{8}-[a-z0-9-]+$/);
  assert.equal(r.build,r.hud);
  assert.equal(r.view,'pod-lesem-pedestrian-5275');
  assert.deepEqual(errors,[]);

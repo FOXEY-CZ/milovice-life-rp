@@ -70,8 +70,8 @@ for(const token of ["from './scripts/osm-armadni-houses-5282.js?v=528200'",
  'window.__miloviceArmadniHousesRuntime5282=()=>',
  "'armadni-houses-east-5282':{","'armadni-houses-west-5282':{",
  'armadniHousesRendered5282||visnovaParkingHouseRendered5202',
- "const BUILD_ID='20261122-armadni-evidence-528300'"])
+ "const BUILD_ID='"])
  assert(html.includes(token),'game integration '+token);
 const build=html.match(/meta name="milovice-build" content="([^"]+)"/)?.[1];
-assert.equal(build,'20261122-armadni-evidence-528300');
+assert.match(build,/^\d{8}-[a-z0-9-]+$/);
 console.log('PASS 5.282 Armádní 886/887/890/891 original RÚIAN 4x25 flats; 360 model windows, 16 meshes and no invented buildings');

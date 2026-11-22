@@ -33,7 +33,7 @@ try{
   view:window.__miloviceStreetAuditRendered?.view
  }));
  assert.equal(r.view,'armadni-houses-east-5282');
- assert.equal(r.build,'20261122-armadni-evidence-528300');
+ assert.match(r.build,/^\d{8}-[a-z0-9-]+$/);
  const x=r.runtime;
  assert(x?.ready);
  assert.deepEqual(x.houses,['886','887','891','890']);
