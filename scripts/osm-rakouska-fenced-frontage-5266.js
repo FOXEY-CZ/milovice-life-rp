@@ -6,17 +6,17 @@
  * between former Vojenské zátiší and the road.
  *
  * Photo does NOT survey fence endpoints, precise vegetation or parcel boundary.
- * FENCE LINE IS AN ESTIMATE offset from original OSM highway way 8590286,
+ * FENCE LINE IS AN ESTIMATE offset from original Rakouská way 8590288,
  * NOT a claim of a mapped barrier; NO colliders, gates, roads, GPS edits.
  * Conservative 2D footprint exclusion and photograph-grounded stylistic choices.
  */
 export const RAKOUSKA_FRONTAGE_5266=Object.freeze({
  buildingId:'53865882',ruian:'40057411',buildingHash:'7aec42bc',
- roadId:'8590286',roadHash:'916afa20',
+ roadId:'8590288',roadHash:'7486fd8b',
  photo:'https://commons.wikimedia.org/wiki/File:Rakousk%C3%A1_(Milovice)_15.jpg',
  author:'Stanislav Doronenko',license:'CC BY-SA 4.0',
  referenceDate:'2025-08-20',
- roadStartFraction:.25,roadEndFraction:.80,
+ roadStartFraction:.12,roadEndFraction:.78,
  fenceModelOffsetMetres:4.8,
  fenceModelHeightMetres:1.16,
  fenceApproximate:true,plantedPositionsEstimated:true
@@ -66,8 +66,9 @@ export function planRakouskaFrontage5266({
   building.tags?.['ref:ruian:building']!==S.ruian||
   Object.keys(building.tags).length!==3||
   road.tags?.highway!=='residential'||
-  Object.keys(road.tags).length!==1||
-  !validGeo(g)||g.length!==29||!validGeo(rg)||rg.length!==3||
+  road.tags?.name!=='Rakouská'||road.tags?.lit!=='yes'||
+  road.tags?.maxspeed!=='30'||Object.keys(road.tags).length!==4||
+  !validGeo(g)||g.length!==29||!validGeo(rg)||rg.length!==19||
   g[0].lat!==g.at(-1).lat||g[0].lon!==g.at(-1).lon||
   hash(g)!==S.buildingHash||hash(rg)!==S.roadHash||
   entryPlan?.version!=='5.265'||
@@ -79,25 +80,25 @@ export function planRakouskaFrontage5266({
   !Array.isArray(entryPlan.canopyCorners)||
   entryPlan.canopyCorners.length!==4)return null;
  const poly=g.slice(0,-1).map(world),base=rg.map(world),
-  roadLength=len(base[0],base[1]);
- if(roadLength<66.7||roadLength>66.8)return null;
- const dx=(base[1].x-base[0].x)/roadLength,
-  dz=(base[1].z-base[0].z)/roadLength,
-  normal={x:-dz,z:dx};
+  roadLength=len(base[5],base[6]);
+ if(roadLength<57.2||roadLength>57.3)return null;
+ const dx=(base[6].x-base[5].x)/roadLength,
+  dz=(base[6].z-base[5].z)/roadLength,
+  normal={x:dz,z:-dx};
  const location=(fraction,offset)=>({
-  x:base[0].x+(base[1].x-base[0].x)*fraction+
+  x:base[5].x+(base[6].x-base[5].x)*fraction+
    normal.x*offset,
-  z:base[0].z+(base[1].z-base[0].z)*fraction+
+  z:base[5].z+(base[6].z-base[5].z)*fraction+
    normal.z*offset
  });
  const start=location(S.roadStartFraction,S.fenceModelOffsetMetres),
   end=location(S.roadEndFraction,S.fenceModelOffsetMetres);
  const fenceLength=len(start,end),samples=[];
- if(fenceLength<36.6||fenceLength>36.8)return null;
+ if(fenceLength<37.7||fenceLength>37.9)return null;
  for(let i=0;i<=96;i++){
   const u=i/96,p={x:start.x+(end.x-start.x)*u,
    z:start.z+(end.z-start.z)*u};
-  const fromRoad=distLine(p,base[0],base[1]),
+  const fromRoad=distLine(p,base[5],base[6]),
    fromBuilding=edgeDistance(p,poly),
    fromCanopy=Math.min(...entryPlan.canopyCorners.map((q,j)=>
     distLine(p,q,entryPlan.canopyCorners[(j+1)%4])));
@@ -110,7 +111,7 @@ export function planRakouskaFrontage5266({
  // Vegetation occupies the photographically observed frontage band.
  // No precise shrub coordinate is implied by the photo.
  for(let i=0;i<260;i++){
-  const fraction=.265+seed()*.515,offset=5.5+seed()*2.6,
+  const fraction=.135+seed()*.630,offset=5.5+seed()*2.6,
    candidate=location(fraction,offset);
   if(inside(candidate,poly)||
    inside(candidate,entryPlan.canopyCorners)||

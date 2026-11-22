@@ -12,7 +12,7 @@ import {RAKOUSKA_FRONTAGE_5266 as SOURCE,
 const raw=readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8');
 const features=JSON.parse(raw).elements;
 const building=features.find(e=>e.id===53865882);
-const road=features.find(e=>e.id===8590286);
+const road=features.find(e=>e.id===8590288);
 assert(building&&road);
 const b=init({regionId:'mlada',building});
 const s=sight({plan:b,geometry:building.geometry});
@@ -25,9 +25,9 @@ const p=plan(args);
 assert(p,'Expected exact original building, photographed vestibule and mapped road');
 assert.equal(p.version,'5.266');
 assert.equal(p.buildingId,'53865882');
-assert.equal(p.roadId,'8590286');
+assert.equal(p.roadId,'8590288');
 assert.equal(p.originalHash,'7aec42bc');
-assert.equal(p.roadHash,'916afa20');
+assert.equal(p.roadHash,'7486fd8b');
 assert.equal(p.photo,SOURCE.photo);
 assert.equal(p.author,'Stanislav Doronenko');
 assert.equal(p.license,'CC BY-SA 4.0');
@@ -44,7 +44,7 @@ assert.equal(p.newRoads,0);
 assert.equal(p.newFootways,0);
 assert.equal(p.newTrafficChanges,0);
 assert.equal(p.newColliders,0);
-assert(p.fenceLengthMetres>36.6&&p.fenceLengthMetres<36.8);
+assert(p.fenceLengthMetres>37.7&&p.fenceLengthMetres<37.9);
 assert(p.minRoadCentrelineGapMetres>=4.79);
 assert(p.minBuildingGapMetres>1.5);
 assert(p.minCanopyGapMetres>1.2);
@@ -52,7 +52,7 @@ assert.equal(p.weeds.length,86);
 assert.equal(p.shrubs.length,10);
 assert(p.weeds.every(x=>x.p.x<-970&&x.p.x>-1040&&x.p.z>-10&&x.p.z<70));
 assert.equal(plan({...args,regionId:'old'}),null);
-assert.equal(plan({...args,road:{...road,id:8590288}}),null);
+assert.equal(plan({...args,road:{...road,id:8590286}}),null);
 assert.equal(plan({...args,building:{...building,id:53865877}}),null);
 assert.equal(plan({...args,entryPlan:{...entrance,originalWallEdge:7}}),null);
 assert.equal(plan({...args,entryPlan:{...entrance,newColliders:1}}),null);
@@ -113,4 +113,4 @@ for(const token of [
  "'rakouska-fenced-frontage-5266':{",
  "const BUILD_ID='20261122-rakouska-fenced-frontage-526600'"
 ])assert(html.includes(token),'Missing 5.266 integration '+token);
-console.log('PASS 5.266: original OSM residential road 8590286 frontage + photo fence & overgrowth, DEM vegetation and 0 collisions, 3 batches');
+console.log('PASS 5.266: original OSM residential road 8590288 frontage + photo fence & overgrowth, DEM vegetation and 0 collisions, 3 batches');

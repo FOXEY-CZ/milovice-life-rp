@@ -32,13 +32,13 @@ try{
  const f=data.fence;
  assert.equal(f?.ready,true,JSON.stringify(data));
  assert.equal(f.buildingId,'53865882');
- assert.equal(f.sourceRoadId,'8590286');
+ assert.equal(f.sourceRoadId,'8590288');
  assert.equal(f.drawMeshes,3);
  assert.equal(f.visibleAfterLOD,3);
  assert.equal(f.weedClusters,86);
  assert.equal(f.bushClusters,10);
  assert(f.fencePickets>150);
- assert(f.fenceLengthMetres>36.6&&f.fenceLengthMetres<36.8);
+ assert(f.fenceLengthMetres>37.7&&f.fenceLengthMetres<37.9);
  assert(f.minRoadCentrelineGapMetres>=4.79);
  assert(f.minBuildingGapMetres>1.5);
  assert(f.minCanopyGapMetres>1.2);

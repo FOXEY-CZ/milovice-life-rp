@@ -1407,7 +1407,7 @@ const rpStreetAuditViews={
   date:'2025-08-20',author:'Stanislav Doronenko · CC BY-SA 4.0',
   regionId:'mlada',osmLandmarkId:'53865882',
   technical:true,streetLevel:true,estimatedHeading:true,
-  note:'Na fotografii Rakouská 15 je před budovou skutečný nízký zelený železný plot a přerostlá tráva s keři. Původní OSM plot v datovém exportu NENÍ, proto je pozice pouze modelově navázaná na původní OSM osu komunikace 8590286 s pracovní vzdáleností 4,8 m. Segmenty, konce, výšky, pruty, plevel a keře nejsou geodeticky zaměřené. Nejsou přidány fyzické kolize, brány, průchody, stromy, GPS změny ani nové silnice/chodníky. Kamera je technický odhad směru 168° ze skutečné GPS fotografie.'
+  note:'Na fotografii Rakouská 15 je před budovou skutečný nízký zelený železný plot a přerostlá tráva s keři. Původní OSM plot v datovém exportu NENÍ, proto je pozice pouze modelově navázaná na původní OSM osu Rakouské 8590288, v její odbočce západně od křižovatky, s pracovní vzdáleností 4,8 m. Segmenty, konce, výšky, pruty, plevel a keře nejsou geodeticky zaměřené. Nejsou přidány fyzické kolize, brány, průchody, stromy, GPS změny ani nové silnice/chodníky. Kamera je technický odhad směru 168° ze skutečné GPS fotografie.'
  },
  'rakouska-glazed-entry-5265':{
   label:'Rakouská · prosklené historické zádveří · 5.265',
@@ -11632,7 +11632,7 @@ function rpAppendOSMElements(elements,regionId='old'){
  for(const el of buildingWays){
   osmBuilding(el.geometry,el.tags,osmBuildings,el.id,regionId,
    slepaStreet,regionId==='mlada'&&String(el.id)==='53865882'?
-   roadWays.find(w=>String(w.id)==='8590286')||null:null);
+   roadWays.find(w=>String(w.id)==='8590288')||null:null);
   osmAddLandmark(el);
  }
  if(topolovaEntrySurveyPlan){
