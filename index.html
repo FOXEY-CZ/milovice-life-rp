@@ -3991,10 +3991,14 @@ function osmStrip(a,b,width,material,y=.15){
    vertices.push(xx,terrainAt(xx,zz)+y,zz);
    // Only the asphalt UVs change. DEM heights, road vertices, vehicle
    // clearances and all sidewalk/rail/parking textures are untouched.
-   uvs.push(sourceSetts5261?xx/settledTile5261:
-    worldAlignedAsphalt?xx/ROAD_ASPHALT_TILE_METERS:u,
-    sourceSetts5261?zz/settledTile5261:
+   uvs.push(worldAlignedAsphalt?xx/ROAD_ASPHALT_TILE_METERS:u,
     worldAlignedAsphalt?zz/ROAD_ASPHALT_TILE_METERS:t*len/8);
+   // Only the exact Kaštanová OSM material gets a world-aligned sett UV.
+   // Keep the original asphalt expression byte-identical for 5.81.3.
+   if(sourceSetts5261){
+    uvs[uvs.length-2]=xx/settledTile5261;
+    uvs[uvs.length-1]=zz/settledTile5261;
+   }
    if(i<along&&j<across){
     const k=i*(across+1)+j,next=k+across+1;
     indices.push(k,k+1,next,k+1,next+1,next);
