@@ -120,9 +120,9 @@ export function renderRakouskaUpperWindows5264(THREE,{plan,layer,
   const count=f.edge===7?2:3;
   for(let j=0;j<count;j++){
    const t=(j+1)/(count+1)+(f.edge%2?-.012:.009);
-   const half=Math.min(.39,len*.085)/len;
-   const top=2.19+((j+f.edge)%2)*.07;
-   const low=1.99+((j+f.edge)%3)*.024;
+   const half=Math.min(.55,len*.105)/len;
+   const top=2.27+((j+f.edge)%2)*.05;
+   const low=(f.edge===7?2.16:1.925)+((j+f.edge)%3)*.025;
    const dest=(j+f.edge)%2?brick:weather;
    triangle(dest,at(t-half,low,.082),
     at(t+half,low+.038,.082),
@@ -143,8 +143,8 @@ export function renderRakouskaUpperWindows5264(THREE,{plan,layer,
  for(const [kind,coords,color] of [
   ['photographed-dark-upper-windows',pane,'#263035'],
   ['estimated-aged-window-frames',frame,'#9e9992'],
-  ['approximate-plaster-loss',weather,'#978b7f'],
-  ['approximate-exposed-red-brick',brick,'#a67d77']
+  ['approximate-plaster-loss',weather,'#85796e'],
+  ['approximate-exposed-red-brick',brick,'#9c6960']
  ]){
   if(!coords.length)continue;
   const geometry=new THREE.BufferGeometry();
