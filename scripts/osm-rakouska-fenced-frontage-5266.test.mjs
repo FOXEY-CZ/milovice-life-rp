@@ -50,7 +50,15 @@ assert(p.minBuildingGapMetres>1.5);
 assert(p.minCanopyGapMetres>1.2);
 assert.equal(p.weeds.length,86);
 assert.equal(p.shrubs.length,10);
-assert(p.weeds.every(x=>x.p.x<-970&&x.p.x>-1040&&x.p.z>-10&&x.p.z<70));
+// The fence moved from the side street to named Rakouská; verify
+// vegetation within the actual original road segment 5->6 corridor.
+assert(p.weeds.every(({p:q})=>{
+ const a=p.road[5],b=p.road[6];
+ const dx=b.x-a.x,dz=b.z-a.z,segment2=dx*dx+dz*dz;
+ const t=((q.x-a.x)*dx+(q.z-a.z)*dz)/segment2;
+ const side=((q.x-a.x)*dz-(q.z-a.z)*dx)/Math.sqrt(segment2);
+ return t>.12&&t<.79&&side>5.49&&side<8.11;
+}),"All weeds must remain on the modeled Rakouská frontage, not the side road");
 assert.equal(plan({...args,regionId:'old'}),null);
 assert.equal(plan({...args,road:{...road,id:8590286}}),null);
 assert.equal(plan({...args,building:{...building,id:53865877}}),null);
