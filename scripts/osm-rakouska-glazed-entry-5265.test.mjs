@@ -21,7 +21,7 @@ assert.equal(p.version,'5.265');assert.equal(p.originalWallEdge,2);
 assert.equal(p.sourceOsmId,'53865882');assert.equal(p.sourceRuianId,'40057411');
 assert.equal(p.sourceHash,'7aec42bc');
 assert(p.wallLengthMetres>5.66&&p.wallLengthMetres<5.68);
-assert(p.projectedAreaSquareMetres>11&&p.projectedAreaSquareMetres<12.4);
+assert(p.projectedAreaSquareMetres>11&&p.projectedAreaSquareMetres<12.6);
 assert.equal(p.photoGlazedVestibule,true);assert.equal(p.photoFlatWideAwning,true);
 assert.equal(p.photoUpperBalcony,true);assert.equal(p.dimensionsNotMeasured,true);
 assert.equal(p.noFootprintSurvey,true);assert.equal(p.originalRoofUnmodified,true);

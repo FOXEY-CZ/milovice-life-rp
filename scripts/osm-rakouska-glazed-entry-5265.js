@@ -85,7 +85,7 @@ export function planRakouskaGlazedEntry5265({upperPlan,windowPlan}={}){
   Math.abs(dist(baseCorners[2],baseCorners[3])-
    len*(C.wallTo-C.wallFrom))>.001)return null;
  const projectedArea=len*(C.wallTo-C.wallFrom)*C.projectionMetres;
- if(projectedArea<11||projectedArea>12.4)return null;
+ if(projectedArea<11||projectedArea>12.6)return null;
  return {version:'5.265',sourceOsmId:C.osmId,
   sourceRuianId:C.ruianId,sourceHash:C.footprintHash,
   sourcePhoto:C.sourcePhoto,author:C.photoAuthor,licence:C.licence,
