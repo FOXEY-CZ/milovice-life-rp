@@ -48,7 +48,12 @@ try{
  assert.equal(p.renderedOriginalWallEdges,5);
  assert.equal(p.drawMeshes,2);
  assert.equal(p.visibleAfterLOD,2);
- assert.equal(p.paintBandTriangles,10);
+ assert(p.paintBandTriangles>30&&p.paintBandTriangles<80,
+  'The model red plinth must follow original terrain under each OSM facade');
+ assert.equal(p.terrainDrapedLowerPaint,true);
+ assert(p.groundSamples>=40);
+ assert(p.minBottomGapMetres>.04&&p.maxBottomGapMetres<.07,
+  'No hovering red lower plaster above model ground: '+JSON.stringify(p));
  assert(p.estimatedWornAreas>=4);
  assert.equal(p.heightPhotoMeasured,false);
  assert.equal(p.redColourPhotoMeasured,false);
