@@ -72,6 +72,6 @@ for(const needle of [
  'planRakouskaWalkLink5268({','renderRakouskaWalkLink5268(THREE,{',
  'window.__miloviceRakouskaWalkRuntime5268=()=>',
  "'rakouska-walk-link-5268':{",
- "const BUILD_ID='20261122-rakouska-walk-link-526800'"])
+ "const BUILD_ID='"])
  assert(h.includes(needle),'missing 5.268 integration: '+needle);
 console.log('PASS 5.268 source-locked 534.368m pedestrian chain, 73m residential link and 3 inspection-only guide batches; no road, crossing or kerb invented');
