@@ -131,7 +131,7 @@ for(const token of [
  'conflictCaps5258?.get(obj.id)??Infinity',
  'window.__miloviceItalskaNpcEncounterRuntime5259=()=>',
  "get('npcAudit')==='italska-encounter-5259'",
- "const BUILD_ID='20261122-italska-body-envelope-526000'"
+ "const BUILD_ID='20261122-kastanova-source-setts-526100'"
 ])assert(html.includes(token),'5.258 integration missing '+token);
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),source);
 console.log('PASS 5.258: two original 3-way junctions, sticky traffic reservations, old roads/buses/player unchanged');
