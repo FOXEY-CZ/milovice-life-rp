@@ -21,7 +21,7 @@ export const ITALSKA_PHOTO_RED_PLINTH_5262=Object.freeze({
  // AND survive 5.250 self-occlusion. Selection is geometric, not photo-fit.
  modelExteriorEdges:Object.freeze([11,12,13,14,16]),
  modelBaseHeightMetres:.12,modelTopHeightMetres:.84,
- modelRed:'#99545a',modelChipped:'#b59c92',
+ modelRed:'#a17677',modelChipped:'#c2afa5',
  heightPhotoMeasured:false,redColourPhotoMeasured:false
 });
 const fmt=p=>p.lat.toFixed(7)+','+p.lon.toFixed(7);
@@ -99,10 +99,11 @@ export function planItalskaPhotoRedPlinth5262({regionId,building,plan}={}){
   newRoads:0,newFootways:0,newColliders:0};
 }
 export function renderItalskaPhotoRedPlinth5262(THREE,{
- plan,layer,baseHeight,roofHeight
+ plan,layer,baseHeight,roofHeight,terrainAt
 }={}){
  if(plan?.version!=='5.262'||!Array.isArray(plan.walls)||
   plan.walls.length!==5||!THREE||!layer||
+  typeof terrainAt!=='function'||
   !Number.isFinite(baseHeight)||!Number.isFinite(roofHeight)||
   roofHeight<4||roofHeight>16)return null;
  const band=[],chips=[];
@@ -110,6 +111,7 @@ export function renderItalskaPhotoRedPlinth5262(THREE,{
   for(const p of [a,b,c,a,c,d])out.push(p.x,p.y,p.z);
  };
  let observedWalls=0,estimatedWornAreas=0;
+ let groundSamples=0,maxBottomGapMetres=0,minBottomGapMetres=Infinity;
  for(const wall of plan.walls){
   const {a,b,nx,nz,lengthMetres:len,edge}=wall;
   const at=(t,y,out=.067)=>({
@@ -117,11 +119,31 @@ export function renderItalskaPhotoRedPlinth5262(THREE,{
    y:baseHeight+y,
    z:a.z+(b.z-a.z)*t+nz*out
   });
+  // On sloping DEM the building foundation extends DOWN from its highest
+  // original corner. A fixed baseHeight strip would float above that
+  // foundation. Drape the *paint* to existing local terrain instead.
+  // No new basement, road grade, foundation geometry or colliders.
   const t0=.07/len,t1=1-t0;
-  quad(band,at(t0,plan.modelBaseHeightMetres),
-   at(t1,plan.modelBaseHeightMetres),
-   at(t1,plan.modelTopHeightMetres),
-   at(t0,plan.modelTopHeightMetres));
+  const segments=Math.max(1,Math.ceil(len/2.2));
+  for(let k=0;k<segments;k++){
+   const lo=t0+(t1-t0)*k/segments,hi=t0+(t1-t0)*(k+1)/segments;
+   const groundAt=t=>{
+    const p=at(t,0);
+    const ground=terrainAt(p.x-nx*.067,p.z-nz*.067);
+    if(!Number.isFinite(ground))return null;
+    const lower=Math.min(baseHeight+.10,ground+.055);
+    groundSamples++;
+    const gap=lower-ground;
+    minBottomGapMetres=Math.min(minBottomGapMetres,gap);
+    maxBottomGapMetres=Math.max(maxBottomGapMetres,gap);
+    return {...p,y:lower};
+   };
+   const left=groundAt(lo),right=groundAt(hi);
+   if(!left||!right)return null; // fail closed on invalid DEM
+   quad(band,left,right,
+    at(hi,plan.modelTopHeightMetres),
+    at(lo,plan.modelTopHeightMetres));
+  }
   observedWalls++;
   // Chipped plaster is photo-supported in principle, but its precise
   // contours and locations are deterministic MODELS, never photogrammetry.
@@ -160,6 +182,8 @@ export function renderItalskaPhotoRedPlinth5262(THREE,{
   selectedOriginalEdges:plan.selectedOriginalEdges,
   estimatedWornAreas,paintBandTriangles:band.length/9,
   wornAreaTriangles:chips.length/9,
+  terrainDrapedLowerPaint:true,groundSamples,
+  maxBottomGapMetres,minBottomGapMetres,
   originalGeometryPreserved:true,modelPlacementNotMeasured:true,
   photoMaterialCharacterObserved:true,newEntrances:0,
   newWindows:0,newColliders:0,
