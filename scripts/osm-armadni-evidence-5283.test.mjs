@@ -26,6 +26,7 @@ for(const h of E.houses){
 assert.equal(view('?streetAudit=armadni-houses-east-5282'),'armadni-houses-east-5282');
 assert.equal(view('?streetAudit=armadni-houses-west-5282'),'armadni-houses-west-5282');
 assert.equal(view('?streetAudit=armadni-houses-east-5283'),null);
+assert.equal(view('?streetAudit=armadni-891-south-balconies-5285'),'armadni-891-south-balconies-5285');
 assert.equal(view('?streetAudit=other'),null);
 assert.equal(mount(null,'?streetAudit=armadni-houses-east-5282'),null);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');

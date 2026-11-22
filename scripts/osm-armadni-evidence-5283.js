@@ -15,7 +15,7 @@ export const ARMADNI_EVIDENCE_5283=Object.freeze({
   {house:'887',osmId:'1164238466',ruian:'119001071',
    note:'Bez jednoznačně přiřazené fotografie exteriéru.',url:null},
   {house:'891',osmId:'1047406190',ruian:'107125749',
-   note:'BD C16 = č.p. 891. Nová adresní realitní fotogalerie ukazuje hotovou světlou horní fasádu, tmavé přízemí a balkony. Jde o skutečné fotky, ale nejsou georeferencované k jednotlivým OSM hranám; barvy a výška pásu ve hře jsou odhad. Starý smazaný inzerát se nepoužívá.',
+   note:'BD C16 = č.p. 891. Nová adresní realitní fotogalerie ukazuje hotovou světlou horní fasádu, tmavé přízemí a balkony. Jde o skutečné fotky, bez GPS/azimutu jednotlivých snímků; 5.285 orientačně přiřadila třípatrový balkonový sloupec k jižní OSM hraně 6 podle blízké parkovací komunikace na východě, nejde o zaměřenou polohu. Starý smazaný inzerát se nepoužívá.',
    url:'https://jirisimon.cz/milovice/'},
   {house:'890',osmId:'1047406191',ruian:'107124980',
    note:'BD C15 = č.p. 890 doloženo zápisem 29/2024. Text inzerátu uvádí předzahrádku s terasou, nikoli její fasádní hranu.',
@@ -24,7 +24,7 @@ export const ARMADNI_EVIDENCE_5283=Object.freeze({
 });
 export function armadniEvidenceView5283(search=''){
  const id=new URLSearchParams(search).get('streetAudit');
- return ['armadni-houses-east-5282','armadni-houses-west-5282'].includes(id)?id:null;
+ return ['armadni-houses-east-5282','armadni-houses-west-5282','armadni-891-south-balconies-5285'].includes(id)?id:null;
 }
 export function mountArmadniEvidence5283(doc,search=''){
  const id=armadniEvidenceView5283(search);
@@ -35,17 +35,17 @@ export function mountArmadniEvidence5283(doc,search=''){
  const title=doc.createElement('summary');title.textContent='📷 Armádní — zdroje a nejistoty';title.style.cssText='cursor:pointer;font-weight:700';panel.append(title);
  const p=s=>{const el=doc.createElement('p');el.textContent=s;el.style.margin='8px 0';panel.append(el)};
  const a=(s,u)=>{const el=doc.createElement('a');el.textContent=s;el.href=u;el.target='_blank';el.rel='noopener noreferrer';el.style.cssText='display:block;color:#9ddaff;margin:5px 0';panel.append(el)};
- const east=id==='armadni-houses-east-5282';
+ const east=id==='armadni-houses-east-5282'||id==='armadni-891-south-balconies-5285';
  p('RÚIAN půdorysy a 4 podlaží jsou ověřené. Okna na domech jsou modelový odhad, ne fotografie.');
  for(const house of east?['890','891']:['886','887']){
   const h=ARMADNI_EVIDENCE_5283.houses.find(h=>h.house===house);
   p('Armádní '+house+': '+h.note);if(h.url)a('Otevřít zdroj k č. '+house,h.url);
  }
  if(east){
-  p('Městský zápis 29/2024 jednoznačně uvádí C15 = č.p. 890 a C16 = č.p. 891. STAKO je projektová vizualizace, nikoli skutečná fotografie; umístění balkonů stále nebylo zaměřeno.');
+  p('Městský zápis 29/2024 jednoznačně uvádí C15 = č.p. 890 a C16 = č.p. 891. STAKO je projektová vizualizace, nikoli skutečná fotografie; přesné umístění balkonů stále nebylo zaměřeno.');
   a(ARMADNI_EVIDENCE_5283.project.title,ARMADNI_EVIDENCE_5283.project.url);
   a(ARMADNI_EVIDENCE_5283.city.title,ARMADNI_EVIDENCE_5283.city.url);
  }
- p('5.284: pouze č.p. 891 dostalo modelově barevně rozlišené stěny podle skutečné fotografie. Nebyly přidány žádné nové budovy, okna, balkony, vchody, chodníky ani kolize.');
+ p('5.285: u č.p. 891 byly přidány 3 modelové balkony na pravděpodobnou jižní fasádu podle fotografie a východní OSM ulice. Orientace je odvozená, jejich přesná poloha není zaměřena. Původní stěny, okna, střechy, chodníky, kolize a ostatní budovy zůstávají nedotčené.');
  doc.body.append(panel);return panel;
 }
