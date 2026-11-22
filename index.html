@@ -3756,6 +3756,7 @@ const osmMappedSurfaceMaterials={
 const kastanovaSettAudit5261=window.__miloviceKastanovaSettAudit5261={
  version:'5.261',sourceOSMIds:['8878402','1107814416'],
  encounteredWayIds:[],renderedRoadSegments:0,sourceRoadMetres:0,
+ worldAlignedUVSamples:0,maxWorldAlignedUVError:0,
  sourceSurface:'sett',material:'kastanova-source-setts-5261',
  modelStoneSizeEstimated:true,modelTintEstimated:true,
  originalRoadWidthsUntouched:true,originalRoadsAndFootwaysUntouched:true,
@@ -3771,6 +3772,7 @@ window.__miloviceKastanovaSettRuntime5261=()=>{
   worldAlignedUV:true,textureTileModelMetres:
    KASTANOVA_SOURCE_SETTS_5261.textureTileMetres,
   ready:a.encounteredWayIds.length===2&&a.renderedRoadSegments===13&&
+   a.worldAlignedUVSamples>0&&a.maxWorldAlignedUVError<.0002&&
    meshCount>0&&Boolean(material?.map)};
 };
 const osmSurfaceAudit=window.__miloviceOSMSurfaceAudit={
@@ -4012,6 +4014,16 @@ function osmStrip(a,b,width,material,y=.15){
     Math.abs(uv.getY(k)-position.getZ(k)/ROAD_ASPHALT_TILE_METERS));
    roadUvAudit.maxUVError=Math.max(roadUvAudit.maxUVError,err);
    roadUvAudit.sampledVertices++;
+  }
+ }
+ if(sourceSetts5261){
+  const audit=kastanovaSettAudit5261;
+  const v=geometry.getAttribute('position'),uv=geometry.getAttribute('uv');
+  for(const k of [0,Math.floor(v.count/2),v.count-1]){
+   const err=Math.max(Math.abs(uv.getX(k)-v.getX(k)/settledTile5261),
+    Math.abs(uv.getY(k)-v.getZ(k)/settledTile5261));
+   audit.maxWorldAlignedUVError=Math.max(audit.maxWorldAlignedUVError,err);
+   audit.worldAlignedUVSamples++;
   }
  }
  queueRoadStrip(geometry,material,(a.x+b.x)*.5,(a.y+b.y)*.5);
