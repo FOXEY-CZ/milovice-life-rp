@@ -1,4 +1,4 @@
-/** Milovice RP 5.270 — municipal 2025 crossing on Pod Lesem at Armadni.
+/** Milovice RP 5.271 safety patch — municipal 2025 crossing on Pod Lesem at Armadni.
  * Source: https://zakazky.mesto-milovice.cz/contract_display_85.html
  * Public contract: four new crossings on Rakouska, Kastanova, Pod Lesem,
  * unnamed street at Armadni. Contract performed/closed 2026-01-07.
@@ -66,12 +66,28 @@ export function planPodLesemCross5270({regionId,ways}={}){
  if(Math.abs(length(begin,end)-S.sourceWidthMetres)>.005)return null;
  // If this source export later acquires a real mapped crossing nearby,
  // refuse the inferred site, instead of drawing TWO sets of paint.
- const nearbyCrossings=ways.filter(w=>w.tags?.footway==='crossing'&&
-  Array.isArray(w.geometry)&&w.geometry.some(p=>{
-   const q=toWorld(p);return length(q,center)<22;
-  }));
- if(nearbyCrossings.length)return null;
- return {version:'5.270',sideRoadId:S.sideId,mainRoadId:S.mainId,
+ // A mapped crossing can run through this spot without ANY vertex in
+ // the 22m guard radius (for example one long two-node way). Check the
+ // entire OSM polyline, not just vertices. Invalid points cannot veto it.
+ const mappedCrossingNearby=ways.some(w=>{
+  if(w?.tags?.footway!=='crossing'||!Array.isArray(w.geometry)||
+   !w.geometry.length||
+   !w.geometry.every(p=>Number.isFinite(p?.lat)&&Number.isFinite(p?.lon)))
+   return false;
+  const line=w.geometry.map(toWorld);
+  if(line.some(point=>length(point,center)<22))return true;
+  return line.slice(1).some((end,i)=>{
+   const start=line[i],dx=end.x-start.x,dy=end.y-start.y;
+   const squared=dx*dx+dy*dy;
+   if(squared<=1e-9)return false;
+   const t=Math.max(0,Math.min(1,
+    ((center.x-start.x)*dx+(center.y-start.y)*dy)/squared));
+   return Math.hypot(center.x-start.x-t*dx,
+    center.y-start.y-t*dy)<22;
+  });
+ });
+ if(mappedCrossingNearby)return null;
+ return {version:'5.271',sideRoadId:S.sideId,mainRoadId:S.mainId,
   sideHash:S.sideHash,mainHash:S.mainHash,junctionGPS:{...side.geometry.at(-1)},
   centerWorld:center,modelFootwayAxis:[begin,end],roadWidthMetres:S.sourceWidthMetres,
   stripeLengthMetres:S.stripeLengthMetres,

@@ -7,7 +7,7 @@ const E=JSON.parse(raw).elements;
 const snapshot=JSON.stringify(E);
 const p=plan({regionId:'mlada',ways:E});
 assert(p,'source-locked existing Pod Lesem / Armadni junction');
-assert.equal(p.version,'5.270');
+assert.equal(p.version,'5.271');
 assert.equal(p.sideRoadId,'128087258');
 assert.equal(p.mainRoadId,'1331897690');
 assert.equal(p.sideHash,'6e14ec02');
@@ -42,14 +42,43 @@ const duplicate=[...E,{type:'way',id:999999999,tags:{
  {lat:50.22856,lon:14.87268}]}];
 assert.equal(plan({regionId:'mlada',ways:duplicate}),null,
  'never overlap future mapped crossing');
+// Regress 5.271: a mapped polyline may cross the model center even when
+// BOTH of its vertices are farther than the original 22m endpoint test.
+const toGps=point=>({
+ lat:50.226-point.y/111320,
+ lon:14.889+point.x/(111320*Math.cos(50.226*Math.PI/180))
+});
+const longCross=offset=>({
+ type:'way',id:999999998,tags:{highway:'footway',footway:'crossing'},
+ geometry:[
+  toGps({x:p.centerWorld.x-35,y:p.centerWorld.y+offset}),
+  toGps({x:p.centerWorld.x+35,y:p.centerWorld.y+offset})
+ ]
+});
+const longOnTop=longCross(0);
+for(const vertex of longOnTop.geometry){
+ const x=(vertex.lon-14.889)*111320*Math.cos(50.226*Math.PI/180);
+ const y=-(vertex.lat-50.226)*111320;
+ assert(Math.hypot(x-p.centerWorld.x,y-p.centerWorld.y)>22,
+  'both endpoints really are outside the old radius');
+}
+assert.equal(plan({regionId:'mlada',ways:[...E,longOnTop]}),null,
+ 'long mapped crossing must veto duplicate paint between vertices');
+assert.equal(plan({regionId:'mlada',ways:[...E,longCross(20)]}),null,
+ 'mapped line passing within 22m also vetoes duplicate paint');
+assert(plan({regionId:'mlada',ways:[...E,longCross(30)]}),
+ 'mapped line beyond 22m must not disable unrelated model');
+assert(plan({regionId:'mlada',ways:[...E,{...longOnTop,
+ geometry:[{lat:NaN,lon:14.8727}]}]}),
+ 'malformed mapped-crossing coordinates cannot create false veto');
 assert.equal(JSON.stringify(E),snapshot);
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),raw);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const token of [
- "from './scripts/osm-pod-lesem-municipal-crossing-5270.js?v=527000'",
+ "from './scripts/osm-pod-lesem-municipal-crossing-5270.js?v=527100'",
  'planPodLesemCross5270({',
  'window.__milovicePodLesemCrossRuntime5270=()=>',
  "'pod-lesem-municipal-crossing-5270':{",
- "const BUILD_ID='20261122-pod-lesem-crossing-527000'"])
+ "const BUILD_ID='20261122-pod-lesem-crossing-527100'"])
  assert(html.includes(token),'Missing 5.270 integration '+token);
-console.log('PASS 5.270 municipal 2025 crossing on original Pod Lesem 6m asphalt, 10.5m estimated from Armadni, strict non-duplicate OSM lock and no new path');
+console.log('PASS 5.271 segment-aware duplicate guard for 5.270 municipal 2025 crossing on original Pod Lesem 6m asphalt, 10.5m estimated from Armadni, strict non-duplicate OSM lock and no new path');
