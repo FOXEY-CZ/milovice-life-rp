@@ -16,10 +16,22 @@ try{
  const errors=[];page.on('pageerror',error=>errors.push(String(error.stack||error)));
  await page.goto('http://127.0.0.1:8080/?v=525900&streetAudit=italska-road-footway-5252&npcAudit=italska-encounter-5259',
   {waitUntil:'domcontentloaded',timeout:35000});
- await page.waitForFunction(()=>
-  window.__miloviceItalskaNpcEncounterRuntime5259?.()?.ready===true&&
-  window.__miloviceStreetAuditRendered?.view==='italska-road-footway-5252',
-  null,{timeout:120000});
+ try{
+  await page.waitForFunction(()=>
+   window.__miloviceItalskaNpcEncounterRuntime5259?.()?.ready===true&&
+   window.__miloviceStreetAuditRendered?.view==='italska-road-footway-5252',
+   null,{timeout:120000});
+ }catch(error){
+  const state=await page.evaluate(()=>({
+   scene:window.__miloviceItalskaNpcEncounterRuntime5259?.(),
+   guard:window.__miloviceItalskaJunctionConflictRuntime5258?.(),
+   loaded:window.__miloviceAreasLoaded,
+   camera:window.__miloviceStreetAuditRendered?.view,
+   status:document.getElementById('status')?.textContent
+  }));
+  throw new Error('5.259 real-NPC audit failed to initialize: '+
+   JSON.stringify({state,pageErrors:errors,original:String(error)}));
+ }
  await page.waitForTimeout(2300);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/italska-encounter-5259-mobile.png'});
