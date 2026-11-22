@@ -64,12 +64,18 @@ class Mesh{constructor(geometry,material){
 const THREE={BufferGeometry,Float32BufferAttribute,MeshStandardMaterial,Mesh,
  DoubleSide:'DoubleSide'};
 const layer={children:[],add(mesh){mesh.parent=this;this.children.push(mesh)}};
-const drawn=render(THREE,{plan:good,layer,baseHeight:4,roofHeight:6.1});
+const drawn=render(THREE,{plan:good,layer,baseHeight:4,roofHeight:6.1,
+ terrainAt:(x,z)=>2.50+.02*Math.sin(x/10+z/10)});
 assert(drawn);
 assert.equal(drawn.drawMeshes,2);
 assert.equal(drawn.renderedOriginalWallEdges,5);
 assert.deepEqual(drawn.selectedOriginalEdges,[11,12,13,14,16]);
-assert.equal(drawn.paintBandTriangles,10);
+assert(drawn.paintBandTriangles>30&&drawn.paintBandTriangles<80,
+ 'Draped lower plinth must follow multi-segment terrain');
+assert.equal(drawn.terrainDrapedLowerPaint,true);
+assert(drawn.groundSamples>=40);
+assert(Math.abs(drawn.maxBottomGapMetres-.055)<1e-9);
+assert(Math.abs(drawn.minBottomGapMetres-.055)<1e-9);
 assert(drawn.wornAreaTriangles>=8&&drawn.wornAreaTriangles<=24);
 assert.equal(drawn.visibleAfterLOD(),2);
 assert.equal(drawn.inScene(),true);
@@ -80,13 +86,14 @@ assert(layer.children.every(x=>x.geometry.position.array.length>0&&
 assert(layer.children.every(x=>x.userData.lodDetail===true));
 for(const mesh of layer.children){
  for(let i=1;i<mesh.geometry.position.array.length;i+=3)
-  assert(mesh.geometry.position.array[i]>=4.11&&
+  assert(mesh.geometry.position.array[i]>=2.45&&
    mesh.geometry.position.array[i]<=4.85,
-   'Never overpaint the first-floor model window bays or upper facade');
+   'Paint must extend to source terrain but never cover upper facade windows');
  mesh.visible=false;
 }
 assert.equal(drawn.visibleAfterLOD(),0);
-assert.equal(render(THREE,{plan:good,layer,baseHeight:4,roofHeight:2}),null);
+assert.equal(render(THREE,{plan:good,layer,baseHeight:4,roofHeight:2,terrainAt:()=>2.5}),null);
+assert.equal(render(THREE,{plan:good,layer,baseHeight:4,roofHeight:6,terrainAt:()=>NaN}),null);
 assert.equal(JSON.stringify(building),JSON.stringify(JSON.parse(raw).elements.find(e=>e.id===53865882)));
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),raw);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
