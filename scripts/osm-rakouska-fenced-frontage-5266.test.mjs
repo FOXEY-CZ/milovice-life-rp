@@ -119,6 +119,6 @@ for(const token of [
  'renderRakouskaFrontage5266(THREE,{',
  'window.__miloviceRakouskaFrontageRuntime5266=()=>',
  "'rakouska-fenced-frontage-5266':{",
- "const BUILD_ID='20261122-rakouska-fenced-frontage-526600'"
+ "const BUILD_ID='20261122-rakouska-cross-frontage-526700'"
 ])assert(html.includes(token),'Missing 5.266 integration '+token);
 console.log('PASS 5.266: original OSM residential road 8590288 frontage + photo fence & overgrowth, DEM vegetation and 0 collisions, 3 batches');
