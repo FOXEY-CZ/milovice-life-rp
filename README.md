@@ -1,3 +1,14 @@
+## Milovice RP 5.277 — chodec po cca 197 m originální OSM trasy s předvídáním aut (22. 11. 2026; CI čeká)
+
+**V běžné hře:** jediný původní modelový chodec u Pod Lesem × Armádní sleduje cca 196,6m původní mapovaný sidewalk 1005977571: 11m východní nástup, již existující modelová zebra a tři západní OSM segmenty až na mapovaný západní konec. Místo 22m smyčky se na koncích otočí a jde po skutečných lomech OSM. Zachovává z 5.276 predikci přijíždějících aut z jejich změřené simulované rychlosti s horizontem 4s; už zahájené přecházení nezamrzne uprostřed silnice.
+
+**Ochrana skutečnosti:** vstupní GPS v OSM, 7 uzlů, hash 263e12b3, OSM vozovka s motor_vehicle=no, žádná nová komunikace, obruba, přechod, kolize ani budova. Východní pokračování přes Zátopkovu není aktivováno bez dalšího podkladu. Protnutí prodloužené trasy nově přidanou motoristickou OSM cestou vypne prodloužení a umožní původní bezpečný 22m model. Městem doložené pruhy zebry mají stále modelovou, nikoli geodeticky zaměřenou polohu.
+
+**Testy:** scripts/osm-pod-lesem-sidewalk-chain-5277.test.mjs ověřuje původní uzly, 197m trasu, odvrácení před přijíždějícím vozidlem, chůzi po zahájeném přechodu, otočení na konci a ochranu před další protínající OSM cestou. Zachována regrese predikce 5.276 a mobilní/široký Chromium/SwiftShader po 7,2s LOD. Rozšířené workflow Italská; CI, vizuální screenshot a Pages zatím nepotvrzeny.
+
+Technická kamera: ?v=527700&streetAudit=pod-lesem-pedestrian-5275
+
+---
 ## Milovice RP 5.276 — Pod Lesem × Armádní: chodec předvídá přijíždějící vozidla (22. 11. 2026; PR #59 sloučen, cílené Node/WebGL CI PASS, Pages PASS)
 
 **Oprava skutečné slabiny chování simulace 5.275:** původní chodec na již existující OSM chodníkové ose `1005977571` čekal před modelovou zebrou Pod Lesem jen tehdy, pokud se **auto už nacházelo do 6,2 m od jejího středu**. Rychleji přijíždějící vůz byl mimo tento kruh a chodec mohl vstoupit přímo před něj. Verze 5.276 sbírá z předchozí a aktuální simulované pozice vozidla jeho 2D rychlost (jen při stabilní délce snímku), vypočítá **nejkratší předpokládanou vzdálenost k přechodu v dalších 4 sekundách** a chodce zdrží ještě před vstupem do vozovky, pokud tato vzdálenost klesne pod původní modelový bezpečnostní poloměr 6,2 m. Auto, které odjíždí, by ho naopak nemělo zbytečně blokovat. Výpadek rychlosti, teleport nebo velký jitter se ignorují; pro auta již blízko stále funguje původní vzdálenostní blokace.
