@@ -35,7 +35,12 @@ try{
  await page.waitForTimeout(2300);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/italska-encounter-5259-mobile.png'});
- await page.waitForTimeout(5000);
+ // SwiftShader on a low-power mobile viewport may need far longer than
+ // seven wall-clock seconds to finish 80 genuine animation frames.
+ // Count engine frames, not elapsed wall time; never manufacture motion.
+ await page.waitForFunction(()=>
+  (window.__miloviceItalskaNpcEncounterRuntime5259?.()?.frames??0)>=80,
+  null,{timeout:90000});
  const result=await page.evaluate(()=>({
   audit:window.__miloviceItalskaNpcEncounterRuntime5259?.(),
   guard:window.__miloviceItalskaJunctionConflictRuntime5258?.(),
@@ -45,6 +50,14 @@ try{
   view:window.__miloviceStreetAuditRendered?.view
  }));
  const a=result.audit;
+ console.log('5.259 WebGL measured: '+JSON.stringify({
+  frames:a?.frames,actors:a?.actors, yieldedFrames:a?.yieldedFrames,
+  stoppedFrames:a?.stoppedFrames,heldAtStopLine:a?.heldAtStopLine,
+  leadCleared:a?.leadCleared,followerResumed:a?.followerResumed,
+  minCenterDistance:a?.minimumCenterDistanceMetres,
+  visibleFrames:a?.visibleFrames,guard:result.guard?.ready,
+  view:result.view,errors
+ }));
  assert.equal(a?.ready,true,JSON.stringify(a));
  assert.equal(a.diagnosticOnly,true);
  assert.equal(a.actors.length,2,'Exactly two real 3D NPC cars in audit mode');
