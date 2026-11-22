@@ -1,6 +1,6 @@
 # Milovice RP — aktuální handoff
 
-> **5.280 kandidát (22. 11. 2026; CI/merge/Pages čekají)** — opravena vizuální animace jednoho chodce Pod Lesem: plynulé směrování těla, kroky podle skutečného pohybu a uvolnění rukou/nohou při čekání před přechodem. Žádné nové budovy, chodníky, přechody, GPS, trasy ani NPC; zachováno 267,399m originální OSM trasy a ochrany 5.279. Nový build `20261122-pod-lesem-walker-pose-528000`; Node a mobilní/široké Chromium regrese upraveny, **výsledek CI dosud není znám**. Další krok: vyhodnotit PR CI, případně sloučit a ověřit Pages.
+> **5.280 (22. 11. 2026; PR #65 MERGED, CI 5/5 PASS, Pages nepotvrzeno)** — jediný modelový chodec na původní 267,399m pěší trase Pod Lesem se nyní natáčí plynule (max. 4,6 rad/s), krokové pohyby váže na ušlou vzdálenost a při čekání na modelové zebře zklidní ruce/nohy. Nedotčeny OSM GPS, trasa, dopravní pravidla, ochrana 5.279, objekty, kolize, NPC limit a FPS rozpočty. Nový build marker `20261122-pod-lesem-walker-pose-528000`. **5/5 PASS**: Validate #45047702331, Station #45047702377, Nádražní #45047702338, blok 5.82 #45047702355, Italská mobilní/široký WebGL #45047702343. [PR #65](https://github.com/FOXEY-CZ/milovice-life-rp/pull/65) sloučen `969e716`; screenshoty CI nebyly nezávisle obrazově přezkoumány. Nasazení Pages zatím nepotvrzené.
 
 > **5.279 (22. 11. 2026; PR #64 MERGED, CI 5/5 PASS, Pages zatím neověřeno)** — západní trasa Pod Lesem nově odmítne i **plný či částečný souběžný překryv** s novou OSM motorovou komunikací; v 5.278 se odmítalo jen běžné protínání. Aktuální původní 267,4m trasa se nemění. **5/5 kontrol GitHub Actions PASS**: Validate #45045544270, Station photo #45045544166, Nádražní #45045544231, blok 5.82 #45045544157, Italská mobilní WebGL #45045544273. PR: https://github.com/FOXEY-CZ/milovice-life-rp/pull/64 ; merge commit `7d07ee1`. Nebyly vytvořeny nové GPS, objekty, silnice, chodníky, NPC ani kolize. Screenshoty nebyly nezávisle obrazově prověřeny.
 
@@ -27,7 +27,7 @@
 
 ## Další přesný krok
 
-Ověřit nové Pages vydání po merge 5.279 a dokumentaci. Potom pokračovat ulicí Pod Lesem nebo jiným původním OSM napojením bez improvizace pěšího křížení servisní silnice. Při stavění domů nevytvářet duplicity: tři sedmipodlažní RÚIAN domy `53865704`, `53865910`, `53865911` jsou **už v 5.219**. Fotky fasád chybí, nejsou potvrzené.
+Ověřit GitHub Pages pro 5.280 podle skutečného build markeru a vizuálně zkontrolovat chodce v technické kameře. Poté se vrátit ke komplexní rekonstrukci celé ulice/bloku podle veřejných fotografií a OSM, místo dalších neviditelných mikroúprav; bez improvizace pěšího křížení servisní silnice. Při stavění domů nevytvářet duplicity: tři sedmipodlažní RÚIAN domy `53865704`, `53865910`, `53865911` jsou **už v 5.219**. Fotky fasád chybí, nejsou potvrzené.
 
 Zdroj: https://github.com/FOXEY-CZ/milovice-life-rp
 Pravidla: AGENTS.md, docs/DEVELOPMENT_WORKFLOW.md, docs/STREET_WORKFLOW.md
