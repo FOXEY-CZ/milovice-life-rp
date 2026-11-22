@@ -31,6 +31,9 @@ on:
       - scripts/osm-italska-body-envelope-5260.test.mjs
       - scripts/osm-kastanova-source-setts-5261.js
       - scripts/osm-kastanova-source-setts-5261.test.mjs
+      - scripts/osm-rakouska-glazed-entry-5265.js
+      - scripts/osm-rakouska-glazed-entry-5265.test.mjs
+      - scripts/osm-rakouska-glazed-entry-webgl-5265.mjs
       - scripts/osm-rakouska-upper-windows-5264.js
       - scripts/osm-rakouska-upper-windows-5264.test.mjs
       - scripts/osm-rakouska-upper-windows-webgl-5264.mjs
@@ -92,6 +95,9 @@ on:
       - scripts/osm-italska-body-envelope-5260.test.mjs
       - scripts/osm-kastanova-source-setts-5261.js
       - scripts/osm-kastanova-source-setts-5261.test.mjs
+      - scripts/osm-rakouska-glazed-entry-5265.js
+      - scripts/osm-rakouska-glazed-entry-5265.test.mjs
+      - scripts/osm-rakouska-glazed-entry-webgl-5265.mjs
       - scripts/osm-rakouska-upper-windows-5264.js
       - scripts/osm-rakouska-upper-windows-5264.test.mjs
       - scripts/osm-rakouska-upper-windows-webgl-5264.mjs
@@ -151,6 +157,9 @@ jobs:
           node --check scripts/osm-rakouska-photo-upper-webgl-5263.mjs
           node --check scripts/osm-rakouska-upper-windows-5264.js
           node --check scripts/osm-rakouska-upper-windows-webgl-5264.mjs
+          node --check scripts/osm-rakouska-glazed-entry-5265.js
+          node --check scripts/osm-rakouska-glazed-entry-webgl-5265.mjs
+          node scripts/osm-rakouska-glazed-entry-5265.test.mjs
           node scripts/osm-rakouska-upper-windows-5264.test.mjs
           node scripts/osm-rakouska-photo-upper-5263.test.mjs
           node scripts/osm-italska-photo-red-plinth-5262.test.mjs
@@ -198,6 +207,7 @@ jobs:
           node scripts/osm-italska-car-clearance-webgl-5254.mjs
           node scripts/osm-italska-encounter-webgl-5259.mjs
           node scripts/osm-kastanova-source-setts-webgl-5261.mjs
+          node scripts/osm-rakouska-glazed-entry-webgl-5265.mjs
           node scripts/osm-rakouska-upper-windows-webgl-5264.mjs
           node scripts/osm-rakouska-photo-upper-webgl-5263.mjs
           node scripts/osm-italska-photo-red-plinth-webgl-5262.mjs
@@ -218,6 +228,8 @@ jobs:
             browser-artifacts/italska-encounter-5259-mobile.png
             browser-artifacts/italska-body-envelope-5260-mobile.png
             browser-artifacts/kastanova-setts-5261-mobile.png
+            browser-artifacts/rakouska-glazed-entry-5265-mobile.png
+            browser-artifacts/rakouska-glazed-entry-5265-wide.png
             browser-artifacts/rakouska-upper-windows-5264-mobile.png
             browser-artifacts/rakouska-upper-windows-5264-wide.png
             browser-artifacts/rakouska-photo-upper-5263-mobile.png

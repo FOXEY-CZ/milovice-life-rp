@@ -1,3 +1,13 @@
+## Milovice RP 5.265 — prosklené zádveří Vojenského zátiší pod balkonem (22. 11. 2026; PR a CI čekají)
+
+Zdroj přímo porovnaný s renderem 5.264: [Rakouská (Milovice) 15.jpg](https://commons.wikimedia.org/wiki/File:Rakousk%C3%A1_(Milovice)_15.jpg), Stanislav Doronenko, 20. 8. 2025, CC BY-SA 4.0. Na skutečné budově je prosklené vystupující zádveří s úzkými kovovými profily, před ním široká plochá stříška a nad částí stavby balkon s jednoduchým kovovým zábradlím. Ve hře 5.264 dosud zcela chybí; nevznikla tam ani náhodná budova.
+
+`scripts/osm-rakouska-glazed-entry-5265.js` implementuje **jednu dekorativní prosklenou přístavbu** na původní hranu **2** přesně source-locked stavby OSM **53865882** / RÚIAN **40057411** (hash `7aec42bc` a identita modelu 5.263/5.264). Navržená čelní šířka přibližně 4,88 m; projekce od zdi asi 2,55 m, střechy do 3,03 m; malý balkon nad částí přístřešku. 6 předních + 6 bočních prosklených polí, tenké kovové profily, plochá oboustranná markýza, boční lišta, balkonová plocha a zábradlí. **Celkem pět dávkovaných render meshů**, tedy žádný řetěz nezávislých vysokopolygonových modelů. Vše je **nepřesně, modelově odhadnuto z fotografie**, ne fotogrammetricky změřeno. Fyzický OSM půdorys, RÚIAN, budova, roof geometry, navmesh, auta, kolize, GPS, původní chodníky a silnice se nemění. Vizualizované sklo **není skutečně přístupný vstup ani nová fyzická budova**.
+
+Node test vyžaduje správný půdorys/zdrojovou fotku/hranici 7, odmítá cizí objekty, kontroluje půdorys vnějšího zádveří a vypočtený nejbližší odstup od skutečných OSM os komunikací v `data/regions/mlada.json`. Mobilní Chromium/SwiftShader test po 6,9 s LOD ověřuje všech 5 vykreslených meshů, předchozí horní část a okna, ukládá mobilní (393×852) a široký (1280×720) snímek pro ruční porovnání. Audit kamera je na GPS originálu (50.226027, 14.874584), směr 168° je stále pouze **odhad**, ne skutečně změřený azimut fotografie. **CI/ruční screenshot/Pages zatím neověřené; nefabulovat shodu bez inspekce.**
+
+---
+
 ## Milovice RP 5.264 — severní nároží: modelová horní okna a poškozená omítka (22. 11. 2026; [PR #47](https://github.com/FOXEY-CZ/milovice-life-rp/pull/47) sloučen, CI **5/5 PASS**)
 
 Zdroj: [Rakouská (Milovice) 15.jpg](https://commons.wikimedia.org/wiki/File:Rakousk%C3%A1_(Milovice)_15.jpg) od Stanislava Doronenka (20. 8. 2025, CC BY-SA 4.0) a doplňkový pohled [Italská, Milovice 05.jpg](https://commons.wikimedia.org/wiki/File:Italsk%C3%A1,_Milovice_05.jpg). Severní vyšší nároží Vojenského zátiší na fotografii obsahuje řadu temných oken, tmavší/kovové rámy a silně opadanou omítku; původní vizuální model 5.263 měl tato horní průčelí hladká.
