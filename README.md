@@ -1,3 +1,13 @@
+## Milovice RP 5.280 — plynulejší chodec Pod Lesem (22. 11. 2026; návrh, CI/merge/deploy čekají)
+
+**Viditelná herní změna:** dosavadní jediný NPC na původní 267,399 m OSM pěší trase Pod Lesem × Armádní už nemění natočení skokově v každém lomu trasy či na jejím západním konci. Nový malý modul `scripts/osm-pod-lesem-walker-pose-5280.js` omezuje rychlost otáčení na 4,6 rad/s (s pojistkou velkého délkového snímku), krokovou animaci váže na skutečnou uraženou vzdálenost místo běhu hodin a při čekání před modelem zebry zklidňuje ruce a nohy. Jde o herní animaci, nikoli fotometrické či pohybové zaměření reálných chodců.
+
+**Beze změn:** stejné GPS a ID OSM 1005977571/1044078118, stávající 9,6m stop před servisní silnicí 1456361936, ochrana 5.279 proti kolineárnímu překryvu vozovky, 4s predikce aut, jeden původní NPC, mapové vrstvy, kolize, budovy, vozidla i renderovací rozpočty. Nové modely ani trasy se nepřidávají.
+
+**Testování:** rozšířen Node test `osm-pod-lesem-west-join-5278.test.mjs` o úhlový wrap, mezní rychlost otáčení, krok po metrech a klid při čekání. Rozšířen mobilní + široký Chromium/SwiftShader test `osm-pod-lesem-crossing-walker-webgl-5275.mjs` po 7,2 s LOD o 5.280 runtime diagnostiku. Verze a výsledky GitHub Actions dosud **nejsou potvrzené**. Nový build marker `20261122-pod-lesem-walker-pose-528000` usnadní ověření nasazení; skutečný GitHub Pages deploy zatím nepotvrzen.
+
+---
+
 ## Milovice RP 5.279 — bezpečný souběh chodníku a nově mapované motorové silnice (22. 11. 2026; PR #64 MERGED, CI 5/5 PASS, Pages neověřeno)
 
 **Oprava podkladové bezpečnostní podmínky, nikoli nová geometrie:** pěší trasa 5.278 na původním OSM chodníku 1044078118 byla chráněna před novou motorovou cestou, která ji protne. Dvě přesně souběžné a překrývající se úsečky však původní test průniku nezachytil. Kontrola v `scripts/osm-pod-lesem-west-join-5278.js` teď navíc detekuje **plný i částečný kolineární překryv**; při takové změně zdrojové mapy se prodloužení odmítne a funguje původní fallback 5.277/5.275. Příslušný regresní test přibyl do `scripts/osm-pod-lesem-west-join-5278.test.mjs`.
