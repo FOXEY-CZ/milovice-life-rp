@@ -1,21 +1,17 @@
 # Milovice RP — aktuální handoff
 
-> **5.275 (22. 11. 2026; [PR #58](https://github.com/FOXEY-CZ/milovice-life-rp/pull/58) sloučen v `f41afa1`, 5/5 hlavních CI PASS, Pages zatím čekají)** — jeden modelový NPC chodec nově **projde po původní mapované pěší trase přes stávající zebru Pod Lesem × Armádní** i v normálním RP, ne pouze v auditu. Trasa má 22 m po OSM sidewalk 1005977571 se společným původním uzlem s Pod Lesem 128087258. Pokud je v blízkosti přechodu vozidlo (6,2m), chodec počká před vstupem. Není vytvořen žádný nový chodník, obruba, přechod, kolize ani dopravní graf.
+> **5.276 (22. 11. 2026; branch `fix/pod-lesem-predictive-walker-yield-5276`; CI a Pages zatím neověřené)** — simulovaný chodec verze 5.275 na **původní OSM trase** `1005977571` nově před vstupem na přechod Pod Lesem předvídá přijíždějící vozidlo podle jeho skutečného simulovaného pohybu v čase. Dosavadní reakce pouze na aktuální vzdálenost do 6,2m mohla pustit chodce před rychle přijíždějící auto. Výpočet nejbližšího přiblížení s horizontem 4 s používá změřené `vx/vz` z po sobě jdoucích pozic aut; při chybějícím nebo skokovém měření se vrací k bezpečnostnímu testu současné vzdálenosti. Chodec, který **už přešel obrubníkovou hranici**, se kvůli novému autu nikdy nezastaví uprostřed vozovky.
 
-## Implementace a neověřené předpoklady
+## Rozsah / testy 5.276
 
-- Modul `scripts/osm-pod-lesem-crossing-walker-5275.js` s OSM source-lock: footway 1005977571 hash `263e12b3` a road 128087258 hash `6e14ec02`, přesná shoda uzlu `50.2285685,14.8727322`, pevné tagy a plán 5.274 městem doložené **ale geodeticky nezaměřené** zebry. Ostatní modelové verze 5.272–5.274 zachovány, včetně `motor_vehicle=no`.
-- Funkce `rpSpawnPodLesemWalker5275` přidá nejvýše 1 standardní NPC rig při streamování regionu Mladá; v `rpAnimateTraffic` se pohybuje po původní sidewalk ose a může čekat na vozidlo. Generičtí chodci dál nepřejdou jinou nepodloženou vozovku. Přesné fyzické rozmístění skutečných pruhů a obrubníků stále neověřeno fotografiemi ani situačním plánem z úředního rozhodnutí 29/26.
-- `scripts/osm-pod-lesem-crossing-walker-5275.test.mjs` regresně testuje obě orientace, vyčkání na vozidla, původní GPS a nulu nových mapových tras. `scripts/osm-pod-lesem-crossing-walker-webgl-5275.mjs` otestuje Chromium/SwiftShader mobile+wide po 7,2 s LOD a zachování zebry/vozovky. CI rozšířené v Italská workflow. **5/5 hlavních CI PASS:** [Validate](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45036705189), [Italská a Pod Lesem mobile/wide Chromium/SwiftShader](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45036705135), [Station photo](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45036705159), [Nádražní](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45036705143), [blok 5.82](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45036705360). Log obsahuje Node PASS 5.275 a WebGL PASS 5.275 po 7,2s LOD. **Wide CI screenshot skutečně stažen a obrazově prohlédnut: chodec na přechodu.** PR #58 sloučen do main; Pages čeká na ověření.
-- Kontrolní odkaz po případném nasazení: https://foxey-cz.github.io/milovice-life-rp/?v=527500&streetAudit=pod-lesem-pedestrian-5275
+- Modul `scripts/osm-pod-lesem-crossing-walker-5275.js`: nová pure funkce `podLesemVehicleThreat5276` a napojení na již existující `advancePodLesemWalker5275`. `index.html` doplňuje 2D vzorkování rychlosti pro původní simulovaná auta (bez vytváření dalšího NPC či fyziky). Chodec i auta stále používají původní mapové OSM GPS, `motor_vehicle=no` u Pod Lesem, všechen starý terén, zebru a chodníky. **4sekundová predikce rovnoměrného pohybu není dopravně bezpečnostní certifikace.**
+- Regresní jednotkové testy: auto přijíždějící z 20 m, stejné auto odjíždějící, vzdálené auto, teleport 80 m/s, stojící blízké auto, obě pěší strany a nerušení přechodu po vstupu. Stávající Chromium mobile+wide po 7,2 s LOD testuje 5.276 build, původní modelovou zebru a přidává `predictiveVehicleSafety5276` runtime diagnostiku. **GitHub CI zatím neověřené**.
+- Technický odkaz až po schválení PR a Pages: https://foxey-cz.github.io/milovice-life-rp/?v=527600&streetAudit=pod-lesem-pedestrian-5275
+- Po úspěchu zkontrolovat screenshot, sloučit PR a ověřit Pages. Příští krok: bezpečné chování NPC v oblasti napojení Pod Lesem a Armádní, poté zástavba a chodníky celé ulice podle oprávněných fotek/situačních podkladů bez vymýšlení neexistujících staveb.
 
-## Další krok
+## Předchozí základ
 
-CI a vizuální kontrola 5.275 dokončeny úspěšně, PR #58 sloučen; zbývá ověřit GitHub Pages publikování. Potom pokračovat po celé pěší návaznosti a zástavbě Pod Lesem–Armádní podle oprávněných fotografií/mapy, bez vymýšlení obrub, lamp a přechodů.
-
-## Předchozí ověřený základ
-
-**5.274** [PR #57](https://github.com/FOXEY-CZ/milovice-life-rp/pull/57) 5/5 CI PASS, [Pages #45035522074](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45035522074) PASS. Zebra zarovnaná na OSM chodník 8,782m od Armádní, stále model. **5.273** [PR #56](https://github.com/FOXEY-CZ/milovice-life-rp/pull/56) zabráněno překryvu compacted cesty s asfaltem. **5.272** [PR #55](https://github.com/FOXEY-CZ/milovice-life-rp/pull/55) původní asfaltové zatáčky.
+**5.275** [PR #58](https://github.com/FOXEY-CZ/milovice-life-rp/pull/58), merge `f41afa1`, 5/5 hlavních CI PASS, [Pages #45037471858](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45037471858) PASS. Jeden modelový chodec přes již existující zebru na původní OSM sidewalk; čekal pouze na aktuální vzdálenost vozidla. **5.274** [PR #57](https://github.com/FOXEY-CZ/milovice-life-rp/pull/57), zobrazení zebry posunuté na společný OSM uzel. **5.273** [PR #56](https://github.com/FOXEY-CZ/milovice-life-rp/pull/56), úprava stopy compacted cesty. **5.272** [PR #55](https://github.com/FOXEY-CZ/milovice-life-rp/pull/55), asfaltové vnitřní lomy.
 
 Repo: https://github.com/FOXEY-CZ/milovice-life-rp
-Pravidla: `AGENTS.md`, `docs/DEVELOPMENT_WORKFLOW.md`, `docs/STREET_WORKFLOW.md`.
+Zdrojový workflow: `AGENTS.md`, `docs/DEVELOPMENT_WORKFLOW.md`, `docs/STREET_WORKFLOW.md`.

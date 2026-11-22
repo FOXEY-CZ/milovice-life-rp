@@ -53,9 +53,30 @@ export function planPodLesemWalker5275({regionId,ways,crossing}={}){
   sourceSharedGPS:{...walk.geometry[3]},crossingAt:L,totalMetres:2*L,
   crossingHalfWidth:S.roadHalf+S.curbMargin,
   vehicleRadius:S.vehicleRadius,originalFootwayLegs:2,
+  predictiveVehicleSafety5276:true,forecastSeconds5276:4,
   modelOnly:true,paintSurveyed:false,originalGPSUnchanged:true,
   originalGraphUnchanged:true,newFootways:0,newRoads:0,newCrossings:0,
   newColliders:0,newPavementMeshes:0};
+}
+/** 5.276: anticipate a moving car before entering the 6m carriageway.
+ * velocity is observed in the SIMULATION from consecutive real actor poses.
+ * No velocity => retain the existing near-vehicle guard. The forecast is
+ * conservative, and only a new crossing entry is held; don't stop someone
+ * halfway in traffic. This is game AI, NOT a road-safety guarantee.
+ */
+export function podLesemVehicleThreat5276(route,vehicle,forecastSeconds=4){
+ if(route?.version!=='5.275'||!Number.isFinite(vehicle?.x)||
+  !Number.isFinite(vehicle?.z)||!Number.isFinite(forecastSeconds)||
+  forecastSeconds<0||forecastSeconds>6)return false;
+ const dx=vehicle.x-route.center.x,dz=vehicle.z-route.center.z;
+ const current=Math.hypot(dx,dz),radius=route.vehicleRadius;
+ if(current<radius)return true;
+ if(!Number.isFinite(vehicle?.vx)||!Number.isFinite(vehicle?.vz))return false;
+ const speed2=vehicle.vx**2+vehicle.vz**2;
+ if(speed2<.09||speed2>30**2)return false;
+ const t=Math.max(0,Math.min(forecastSeconds,
+  -(dx*vehicle.vx+dz*vehicle.vz)/speed2));
+ return Math.hypot(dx+vehicle.vx*t,dz+vehicle.vz*t)<radius;
 }
 export function advancePodLesemWalker5275(route,at,heading,step,vehicles=[]){
  if(route?.version!=='5.275'||!Number.isFinite(at)||
@@ -63,8 +84,7 @@ export function advancePodLesemWalker5275(route,at,heading,step,vehicles=[]){
   !Number.isFinite(step)||step<0||step>3||!Array.isArray(vehicles))return null;
  let d=at+heading*step,dir=heading,waiting=false;
  const c=route.crossingAt,h=route.crossingHalfWidth;
- const blocker=vehicles.some(v=>Number.isFinite(v?.x)&&Number.isFinite(v?.z)&&
-  Math.hypot(v.x-route.center.x,v.z-route.center.z)<route.vehicleRadius);
+ const blocker=vehicles.some(v=>podLesemVehicleThreat5276(route,v,4));
  const entry=heading===1?c-h:c+h;
  if(blocker&&((heading===1&&at<=entry&&d>=entry)||
   (heading===-1&&at>=entry&&d<=entry))){
