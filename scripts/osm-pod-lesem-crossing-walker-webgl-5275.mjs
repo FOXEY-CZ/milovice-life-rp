@@ -50,7 +50,7 @@ try{
  assert(r.zebra?.paintedBars>=4);
  assert.equal(r.bends?.ready,true);
  assert.equal(r.track?.ready,true);
- assert.equal(r.build,'20261122-pod-lesem-walker-pose-528000');
+ assert.equal(r.build,'20261122-vrutice-underground-528100');
  assert.equal(r.build,r.hud);
  assert.equal(r.view,'pod-lesem-pedestrian-5275');
  assert.deepEqual(errors,[]);

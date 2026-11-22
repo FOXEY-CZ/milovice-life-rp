@@ -1,3 +1,11 @@
+## Milovice RP 5.281 — odstranění falešných povrchových chodníků u podzemních cest (22. 11. 2026; návrh, CI/merge/Pages čekají)
+
+**Vizuální oprava celé mapované lokality:** pět původních OSM pěších cest `435045331`, `435050519`, `1330579585`, `1330579586`, `1330579587` u „Nadzemí podzemí“ je zdrojově označeno `highway=path`, `tunnel=yes` a `layer=-1`. Dosavadní univerzální renderer je kreslil jako povrchový chodník přímo na terénu (DEM). **Verze 5.281 potlačuje 11 těchto falešných povrchových úseků, přibližně 136 m**, podle všech pěti původních souřadnicových OSM geometrií a jejich hashů. Původní pěší trasy, GPS, mapové podklady a podmínky přístupu se nemění. Nejde o skutečně vymodelovaný tunel — hloubka, konkrétní průřez, povrch i vchody jsou zatím neověřené; bez zdrojových dat je nevymýšlíme.
+
+**Rozsah a ověření:** vstupní data `data/regions/vrutice.json` a `westlink.json` jsou nezměněná, žádná nová silnice, chodník ani collider. `scripts/osm-vrutice-underground-surface-5281.js` chrání přesné OSM tagy/uzly pomocí hashů; test kontroluje zdroj, 11 nevykreslených povrchových segmentů a zachování 4 duplicitních regionálních záznamů. Nová technická kamera `?v=528100&streetAudit=vrutice-underground-path-5281` a mobilní/široký Chromium test po LOD. **Výsledky CI a vydání ještě nepotvrzené.**
+
+---
+
 ## Milovice RP 5.280 — plynulejší chodec Pod Lesem (22. 11. 2026; PR #65 sloučen, CI 5/5 PASS, Pages čeká na ověření)
 
 **Viditelná herní změna:** dosavadní jediný NPC na původní 267,399 m OSM pěší trase Pod Lesem × Armádní už nemění natočení skokově v každém lomu trasy či na jejím západním konci. Nový malý modul `scripts/osm-pod-lesem-walker-pose-5280.js` omezuje rychlost otáčení na 4,6 rad/s (s pojistkou velkého délkového snímku), krokovou animaci váže na skutečnou uraženou vzdálenost místo běhu hodin a při čekání před modelem zebry zklidňuje ruce a nohy. Jde o herní animaci, nikoli fotometrické či pohybové zaměření reálných chodců.

@@ -88,7 +88,7 @@ for(const marker of ['planPodLesemWestJoin5278({',
  'podLesemWalkRoute5278||podLesemWalkRoute5277',
  'window.__milovicePodLesemWalkerRuntime5278=',
  "'pod-lesem-west-sidewalk-5278':{",
- "const BUILD_ID='20261122-pod-lesem-walker-pose-528000'",
+ "const BUILD_ID='20261122-vrutice-underground-528100'",
  'smoothTurn5280:true,strideLinked5280:true,waitingIdle5280:true'])
  assert(html.includes(marker),marker);
 console.log('PASS 5.280 smooth yaw, distance-linked gait, idle at crossing; 5.278 mapped route intact');
