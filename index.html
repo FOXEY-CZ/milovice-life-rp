@@ -11586,6 +11586,7 @@ async function rpLoadCityArea(id){
 function rpPopulateRegionalTraffic(area){
  const center=osmPoint({lat:area.center[0],lon:area.center[1]});
  rpSpawnMappedAmbientWalkers5243(area.id,8,center);
+ if(area.id==='mlada'&&rpSeedItalskaNpcEncounter5259())return;
  if(trafficCars.length>=79)return;
  const segments=driveSegments.filter(s=>s.len>10&&s.width>=6&&Math.hypot((s.a.x+s.b.x)*.5-center.x,(s.a.y+s.b.y)*.5-center.y)<820);
  const max=Math.min(7,79-trafficCars.length);
@@ -12495,7 +12496,11 @@ window.__miloviceItalskaJunctionConflictRuntime5258=()=>
 window.__miloviceItalskaNpcEncounterRuntime5259=()=>{
  const a=rpItalskaNpcEncounter5259;
  return {version:'5.259',ready:!!a,diagnosticOnly:rpItalskaNpcEncounterMode5259,
-  sourceOSMIds:['8590284','8585601'],frames:a?.frames||0,
+  sourceOSMIds:['8590284','8585601'],
+  mappedRegionLoaded:window.__miloviceAreasLoaded?.includes('mlada')===true,
+  guardReady:italskaJunctionGuard5258?.ready===true,
+  actorPoolSize:trafficCars.length,
+  frames:a?.frames||0,
   yieldedFrames:a?.yieldedFrames||0,stoppedFrames:a?.stoppedFrames||0,
   heldAtStopLine:a?.heldAtStopLine||false,leadCleared:a?.leadCleared||false,
   followerResumed:a?.followerResumed||false,
@@ -13194,6 +13199,37 @@ window.__miloviceMappedAmbientWalkersRuntime5243=()=>{
    !people.some(p=>driveSegments.includes(p.seg))
  };
 };
+function rpSeedItalskaNpcEncounter5259(){
+ if(!rpItalskaNpcEncounterMode5259||rpItalskaNpcEncounter5259)return false;
+ const zone5259=italskaJunctionGuard5258?.zones?.[0];
+ const narrowArm5259=zone5259?.arms.find(a=>String(a.segment.osmId)==='8590284');
+ const crossArm5259=zone5259?.arms.find(a=>
+  String(a.segment.osmId)==='8585601'&&a.segment.len>12);
+ if(!narrowArm5259||!crossArm5259||narrowArm5259.segment.len<=5)return false;
+ // Regional data are now present. This explicitly opt-in scene replaces
+ // ambient cars only; the original OSM graph, terrain, people and normal
+ // traffic logic are not altered.
+ for(const car of trafficCars)trafficGroup.remove(car.g);
+ trafficCars.length=0;
+  for(const [index,arm,distance] of [[0,narrowArm5259,4.8],[1,crossArm5259,12]]){
+   const seg=arm.segment,car=makeTrafficCar(index,seg);
+   car.direction=arm.atStart?-1:1;
+   car.progress=arm.atStart?distance/seg.len:1-distance/seg.len;
+   car.italskaEncounter5259=true;
+   const dx=(seg.b.x-seg.a.x)/seg.len,dz=(seg.b.y-seg.a.y)/seg.len;
+   const side=car.direction*Math.min(2.25,seg.width*.25);
+   const cx=seg.a.x+(seg.b.x-seg.a.x)*car.progress-dz*side;
+   const cz=seg.a.y+(seg.b.y-seg.a.y)*car.progress+dx*side;
+   car.g.position.set(cx,terrainAt(cx,cz)+.045,cz);
+   car.g.rotation.y=Math.atan2(-dx*car.direction,-dz*car.direction);
+   trafficCars.push(car);
+  }
+ rpItalskaNpcEncounter5259={zone:zone5259,actors:trafficCars.slice(),
+  frames:0,yieldedFrames:0,stoppedFrames:0,heldAtStopLine:false,
+  leadCleared:false,followerResumed:false,minCenterDistance:Infinity,
+  visibleFrames:0,samples:[]};
+ return true;
+}
 function rpPopulate(){
  ambientContinuityStats5246.transitions=0;
  ambientReuseStats5244.reuseCount=0;
@@ -13212,40 +13248,14 @@ function rpPopulate(){
  rpBuildCrosswalks();
  const segments=driveSegments.filter(s=>s.len>9&&s.width>=6);
  if(!segments.length)return;
- const zone5259=rpItalskaNpcEncounterMode5259?italskaJunctionGuard5258?.zones?.[0]:null;
- const narrowArm5259=zone5259?.arms.find(a=>String(a.segment.osmId)==='8590284');
- const crossArm5259=zone5259?.arms.find(a=>
-  String(a.segment.osmId)==='8585601'&&a.segment.len>12);
- if(narrowArm5259&&crossArm5259&&narrowArm5259.segment.len>5){
-  // The original scene graph and original driving logic move two real car
-  // meshes. Only this explicit test URL replaces the ambient vehicle pool.
-  for(const [index,arm,distance] of [[0,narrowArm5259,4.8],[1,crossArm5259,12]]){
-   const seg=arm.segment,car=makeTrafficCar(index,seg);
-   car.direction=arm.atStart?-1:1;
-   car.progress=arm.atStart?distance/seg.len:1-distance/seg.len;
-   car.italskaEncounter5259=true;
-   const dx=(seg.b.x-seg.a.x)/seg.len,dz=(seg.b.y-seg.a.y)/seg.len;
-   const side=car.direction*Math.min(2.25,seg.width*.25);
-   const cx=seg.a.x+(seg.b.x-seg.a.x)*car.progress-dz*side;
-   const cz=seg.a.y+(seg.b.y-seg.a.y)*car.progress+dx*side;
-   car.g.position.set(cx,terrainAt(cx,cz)+.045,cz);
-   car.g.rotation.y=Math.atan2(-dx*car.direction,-dz*car.direction);
-   trafficCars.push(car);
-  }
-  rpItalskaNpcEncounter5259={zone:zone5259,actors:trafficCars.slice(),
-   frames:0,yieldedFrames:0,stoppedFrames:0,heldAtStopLine:false,
-   leadCleared:false,followerResumed:false,minCenterDistance:Infinity,
-   visibleFrames:0,samples:[]};
- }else{
-  for(let i=0;i<22;i++){
-   const seg=segments[(i*37+13)%segments.length];
-   const car=makeTrafficCar(i,seg);
-   // Respect OSM one-way tags from the moment each car is spawned.
-   if(seg.oneway!==0)car.direction=seg.oneway;
-   trafficCars.push(car);
-  }
-  rpSeedParkedCars({x:0,z:0},12);
+ for(let i=0;i<22;i++){
+  const seg=segments[(i*37+13)%segments.length];
+  const car=makeTrafficCar(i,seg);
+  // Respect OSM one-way tags from the moment each car is spawned.
+  if(seg.oneway!==0)car.direction=seg.oneway;
+  trafficCars.push(car);
  }
+ rpSeedParkedCars({x:0,z:0},12);
  // Spawn simulated residents on physically mapped pedestrian surfaces
  // only. No more generic pedestrians offset from driving lanes.
  rpSpawnMappedAmbientWalkers5243('old',30);
