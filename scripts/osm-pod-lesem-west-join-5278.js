@@ -26,8 +26,18 @@ const motor=new Set(['motorway','trunk','primary','secondary','tertiary',
 function crossing(a,b,c,d){
  const rx=b.x-a.x,rz=b.z-a.z,sx=d.x-c.x,sz=d.z-c.z;
  const det=rx*sz-rz*sx;
- if(Math.abs(det)<1e-9)return false;
  const dx=c.x-a.x,dz=c.z-a.z;
+ if(Math.abs(det)<1e-9){
+  // Parallel routes can still share a physical segment. A new motor road
+  // overlapping the mapped footway must invalidate this pedestrian extension.
+  const offset=dx*rz-dz*rx;
+  if(Math.abs(offset)>1e-7)return false;
+  const lengthSquared=rx*rx+rz*rz;
+  if(lengthSquared<1e-12)return false;
+  const u0=(dx*rx+dz*rz)/lengthSquared;
+  const u1=((d.x-a.x)*rx+(d.z-a.z)*rz)/lengthSquared;
+  return Math.max(0,Math.min(u0,u1))<=Math.min(1,Math.max(u0,u1));
+ }
  const t=(dx*sz-dz*sx)/det,u=(dx*rz-dz*rx)/det;
  return t>=0&&t<=1&&u>=0&&u<=1;
 }

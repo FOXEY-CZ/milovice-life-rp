@@ -49,6 +49,15 @@ const mid={lat:(a.lat+b.lat)/2,lon:(a.lon+b.lon)/2};
 const road={type:'way',id:99005278,tags:{highway:'service'},
  geometry:[{lat:mid.lat-.0001,lon:mid.lon},{lat:mid.lat+.0001,lon:mid.lon}]};
 assert.equal(plan({...opts,ways:[...E,road]}),null);
+// Regression: a newly imported vehicle way along an existing sidewalk
+// segment is a collision too, even if both line segments are collinear.
+const overlapRoad={type:'way',id:99005279,tags:{highway:'service'},
+ geometry:[{...a},{...b}]};
+assert.equal(plan({...opts,ways:[...E,overlapRoad]}),null);
+const partialRoad={...overlapRoad,id:99005280,
+ geometry:[{...a,lat:(3*a.lat+b.lat)/4,lon:(3*a.lon+b.lon)/4},
+ {...a,lat:(a.lat+3*b.lat)/4,lon:(a.lon+3*b.lon)/4}]};
+assert.equal(plan({...opts,ways:[...E,partialRoad]}),null);
 assert.equal(plan({...opts,ways:E.filter(x=>String(x.id)!==S.id)}),null);
 assert.equal(plan({...opts,ways:E.filter(x=>String(x.id)!=='1456361936')}),null);
 assert.equal(plan({...opts,ways:E.map(w=>String(w.id)===S.id?
