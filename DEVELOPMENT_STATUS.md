@@ -1,5 +1,7 @@
 # Milovice RP — aktuální handoff
 
+> **5.280 kandidát (22. 11. 2026; CI/merge/Pages čekají)** — opravena vizuální animace jednoho chodce Pod Lesem: plynulé směrování těla, kroky podle skutečného pohybu a uvolnění rukou/nohou při čekání před přechodem. Žádné nové budovy, chodníky, přechody, GPS, trasy ani NPC; zachováno 267,399m originální OSM trasy a ochrany 5.279. Nový build `20261122-pod-lesem-walker-pose-528000`; Node a mobilní/široké Chromium regrese upraveny, **výsledek CI dosud není znám**. Další krok: vyhodnotit PR CI, případně sloučit a ověřit Pages.
+
 > **5.279 (22. 11. 2026; PR #64 MERGED, CI 5/5 PASS, Pages zatím neověřeno)** — západní trasa Pod Lesem nově odmítne i **plný či částečný souběžný překryv** s novou OSM motorovou komunikací; v 5.278 se odmítalo jen běžné protínání. Aktuální původní 267,4m trasa se nemění. **5/5 kontrol GitHub Actions PASS**: Validate #45045544270, Station photo #45045544166, Nádražní #45045544231, blok 5.82 #45045544157, Italská mobilní WebGL #45045544273. PR: https://github.com/FOXEY-CZ/milovice-life-rp/pull/64 ; merge commit `7d07ee1`. Nebyly vytvořeny nové GPS, objekty, silnice, chodníky, NPC ani kolize. Screenshoty nebyly nezávisle obrazově prověřeny.
 
 > **Poznámka k Pages 5.278:** při kontrole Actions běhu #45043547046 build PASS, deploy CANCELLED; tento běh není potvrzením nasazení. Mohlo dojít k nahrazení novějším deployem, který zatím nebyl ověřen.
