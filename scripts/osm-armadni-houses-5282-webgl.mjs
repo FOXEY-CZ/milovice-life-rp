@@ -43,11 +43,11 @@ try{
  assert.equal(x.triangles,5136);
  assert(x.entries.every(b=>b.floors===4&&b.inScene&&b.visibleMeshes===4));
  for(const k of ['newBuildings','newDoors','newBalconies','newRoofs','newFootways','newRoads','newColliders'])assert.equal(x[k],0);
- const evidence=await page.evaluate(()=>window.__miloviceArmadniEvidenceRuntime5283?.());
- assert.equal(evidence?.panelMounted,true);
- assert.equal(evidence?.projectConceptOnly,true);
- assert.equal(evidence?.approvedFacadePhotos,0);
- assert.equal(evidence?.newBalconies,0);
+ const e=await page.evaluate(()=>window.__miloviceArmadniEvidenceRuntime5283?.());
+ assert.equal(e?.panelMounted,true);
+ assert.equal(e?.projectConceptOnly,true);
+ assert.equal(e?.approvedFacadePhotos,0);
+ assert.equal(e?.newBalconies,0);
  const panel=page.locator('#armadni-evidence-5283');
  await panel.locator('summary').click();
  assert.equal(await panel.locator('a[href*="stakohk.cz"]').count(),1);
