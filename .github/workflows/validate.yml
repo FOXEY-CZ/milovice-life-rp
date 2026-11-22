@@ -253,3 +253,5 @@ jobs:
         run: node scripts/osm-vrutice-underground-surface-5281.test.mjs
       - name: Validate 5.282 four original Armadni RUIAN apartment blocks, 100 flats and source-locked model windows
         run: node scripts/osm-armadni-houses-5282.test.mjs
+      - name: Validate 5.283 Armadni original-source facade audit without invented balcony coordinates
+        run: node scripts/osm-armadni-evidence-5283.test.mjs

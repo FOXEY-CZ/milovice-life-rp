@@ -11,7 +11,7 @@ try{
  const page=await browser.newPage({viewport:{width:393,height:852},
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
- await page.goto('http://127.0.0.1:8080/?v=528200&streetAudit=armadni-houses-east-5282',
+ await page.goto('http://127.0.0.1:8080/?v=528300&streetAudit=armadni-houses-east-5282',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>
@@ -33,7 +33,7 @@ try{
   view:window.__miloviceStreetAuditRendered?.view
  }));
  assert.equal(r.view,'armadni-houses-east-5282');
- assert.equal(r.build,'20261122-armadni-houses-528200');
+ assert.equal(r.build,'20261122-armadni-evidence-528300');
  const x=r.runtime;
  assert(x?.ready);
  assert.deepEqual(x.houses,['886','887','891','890']);
@@ -43,6 +43,16 @@ try{
  assert.equal(x.triangles,5136);
  assert(x.entries.every(b=>b.floors===4&&b.inScene&&b.visibleMeshes===4));
  for(const k of ['newBuildings','newDoors','newBalconies','newRoofs','newFootways','newRoads','newColliders'])assert.equal(x[k],0);
+ const evidence=await page.evaluate(()=>window.__miloviceArmadniEvidenceRuntime5283?.());
+ assert.equal(evidence?.panelMounted,true);
+ assert.equal(evidence?.projectConceptOnly,true);
+ assert.equal(evidence?.approvedFacadePhotos,0);
+ assert.equal(evidence?.newBalconies,0);
+ const panel=page.locator('#armadni-evidence-5283');
+ await panel.locator('summary').click();
+ assert.equal(await panel.locator('a[href*="stakohk.cz"]').count(),1);
+ assert.equal(await panel.locator('a[href*="hlasenirozhlasu.cz"]').count(),1);
+ await panel.locator('summary').click();
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/armadni-houses-5282-mobile.png'});
