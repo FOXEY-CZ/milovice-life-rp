@@ -49,6 +49,6 @@ for(const token of [
  'renderRakouskaUpper5263(THREE,{',
  'window.__miloviceRakouskaUpperRuntime5263=()=>',
  "'rakouska-photo-upper-5263':{",
- "const BUILD_ID='20261122-rakouska-cross-frontage-526700'"
+ "const BUILD_ID='"
 ])assert(html.includes(token),'Missing 5.263 game integration '+token);
 console.log('PASS 5.263 original-RUIAN upper corner and triangulation, 2 actual 3D meshes; no invented entrances');

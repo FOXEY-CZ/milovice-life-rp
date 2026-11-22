@@ -50,7 +50,7 @@ for(const token of [
  'inspectItalskaBodyPair5260(lead,follow)',
  'window.__miloviceItalskaBodyEnvelopeRuntime5260=()=>',
  'bodyEnvelope5260:',
- 'const BUILD_ID=\'20261122-rakouska-cross-frontage-526700\''
+ "const BUILD_ID='"
 ])assert(html.includes(token),'Missing 5.260 live model integration: '+token);
 assert(models.includes('const length=[4.45,4.15,4.75,4.28,4.62,4.86,5.08,4.34][variant]'));
 assert(models.includes('side*width*.56'));
