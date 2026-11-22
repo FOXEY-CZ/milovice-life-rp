@@ -47,7 +47,8 @@ assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const token of [
  "from './scripts/osm-pod-lesem-road-bends-5272.js?v=527200'",
- 'planPodLesemBends5272({regionId,ways:roadWays,widths:roadWidths})',
+ 'planPodLesemBends5272({',
+ 'regionId,ways:roadWays,widths:roadWidths',
  'queueRoadStrip(geo,osmRoadMaterial,midX,midZ);',
  "window.__milovicePodLesemBendsRuntime5272=()=>({",
  "'pod-lesem-bends-5272':{",
