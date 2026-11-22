@@ -44,7 +44,7 @@ try{
  assert.equal(r.plan.newKerbs,0);
  assert.equal(r.plan.newMaterials,0);
  assert.equal(r.view,'pod-lesem-municipal-crossing-5270');
- assert.equal(r.meta,'20261122-pod-lesem-crossing-walker-527500');
+ assert.equal(r.meta,'20261122-pod-lesem-sidewalk-chain-527600');
  assert.equal(r.meta,r.hud);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
