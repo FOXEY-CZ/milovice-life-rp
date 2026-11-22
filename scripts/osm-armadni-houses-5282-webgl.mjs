@@ -11,12 +11,12 @@ try{
  const page=await browser.newPage({viewport:{width:393,height:852},
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
- await page.goto('http://127.0.0.1:8080/?v=528400&streetAudit=armadni-houses-east-5282',
+ await page.goto('http://127.0.0.1:8080/?v=528500&streetAudit=armadni-891-south-balconies-5285',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>
    window.__miloviceArmadniHousesRuntime5282?.()?.ready===true&&
-   window.__miloviceStreetAuditRendered?.view==='armadni-houses-east-5282',
+   window.__miloviceStreetAuditRendered?.view==='armadni-891-south-balconies-5285',
    null,{timeout:120000});
  }catch(e){
   const state=await page.evaluate(()=>({
@@ -32,7 +32,7 @@ try{
   build:document.querySelector('meta[name="milovice-build"]')?.content,
   view:window.__miloviceStreetAuditRendered?.view
  }));
- assert.equal(r.view,'armadni-houses-east-5282');
+ assert.equal(r.view,'armadni-891-south-balconies-5285');
  assert.match(r.build,/^\d{8}-[a-z0-9-]+$/);
  const x=r.runtime;
  assert(x?.ready);
@@ -57,6 +57,16 @@ try{
  assert.equal(photo.wallEdges,10);
  assert.equal(photo.triangles,60);
  assert.equal(photo.newBalconies,0);
+ const balconies=await page.evaluate(()=>window.__miloviceArmadni891BalconiesRuntime5285?.());
+ assert(balconies?.ready,'three photo-inferred balcony meshes survived 7.1s LOD');
+ assert.equal(balconies.sourceOSMId,'1047406190');
+ assert.equal(balconies.sourceFacadeEdge,6);
+ assert.equal(balconies.modeledPhotoInferredBalconies,3);
+ assert.equal(balconies.exactPositionSurveyed,false);
+ assert.equal(balconies.meshCount,4);
+ assert.equal(balconies.triangles,324);
+ assert.equal(balconies.newBuildings,0);
+ assert.equal(balconies.newColliders,0);
  const panel=page.locator('#armadni-evidence-5283');
  await panel.locator('summary').click();
  assert.equal(await panel.locator('a[href*="stakohk.cz"]').count(),1);
@@ -69,5 +79,5 @@ try{
  await page.setViewportSize({width:1280,height:720});
  await page.waitForTimeout(950);
  await page.screenshot({path:'browser-artifacts/armadni-houses-5282-wide.png'});
- console.log('PASS 5.282 four Armádní RÚIAN apartments 100 flats, mobile+wide WebGL after 7.1s LOD');
+ console.log('PASS 5.285 three photo-inferred Armádní 891 balconies on original south wall, 100 flats, mobile+wide WebGL after 7.1s LOD');
 }finally{await browser.close()}

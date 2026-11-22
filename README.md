@@ -1,3 +1,13 @@
+## Milovice RP 5.285 — skutečné 3D balkonové objemy Armádní 891 na odvozené jižní fasádě (22. 11. 2026; PR/CI/Pages čekají)
+
+**Zdroj / výklad:** exteriérové fotografie stavby č.p. 891 (`01-93`, `milovice-20/23/24`) z [adresní fotogalerie](https://jirisimon.cz/milovice/) ukazují vertikální sloupec balkonů. V původním RÚIAN půdorysu `1047406190` je vedle východní hrany původní OSM komunikace `1046197816`; z parkování viditelného po pravé straně fotografie je jako nejpravděpodobnější kandidát odvozená **jižní obvodová hrana 6**. Fotografické snímky **neobsahují průkazný GPS azimut**; nejde o metrickou rekonstrukci a stranu lze později opravit. Geodeticky ověřený je jen půdorys, nikoli balkonové kotvy.
+
+**Herní 3D změna:** `scripts/osm-armadni-891-balconies-5285.js` vytváří **tři balkony nad přízemím** na jediné ověřené *původní* obvodové hraně 6: 3 nízké desky, modelové plné boční/čelní parapety, madla a 3 modelové skleněné balkonové dveře. Batched geometry: **4 meshe, 324 trojúhelníků**. Model šířky 2,65 m a vyložení 1,38 m není změřený; barva a přesné umístění otvorů zůstávají odhadem. Ostatní balkonové stěny nejsou domodelované z domněnek. Objekty nemají nové fyzikální kolize; nevznikají domy, silnice ani chodníky. Původní 4 bytové domy a jejich 100 bytů / 360 modelových oken zůstávají. Čtyři sdílené GPU materiály a 3 výškové úrovně drží malé zatížení vykreslování, fotoobrazy nejsou zabudované do hry.
+
+**Ověření:** nový Node `scripts/osm-armadni-891-balconies-5285.test.mjs` hlídá identitu OSM/RÚIAN + hash, 3 původní podlaží, původní východní silnici, konkrétní jižní hranu a vznik čtyř render meshů bez nových kolizí. Původní mobilní + široký Chromium/SwiftShader `scripts/osm-armadni-houses-5282-webgl.mjs` běží nově přímo v [kameře jižních balkonů](https://foxey-cz.github.io/milovice-life-rp/?v=528500&streetAudit=armadni-891-south-balconies-5285) po více než 7 s LOD. Source-panel dál obsahuje externí fotografickou galerii a vědomé omezení přesnosti. **5 hlavních CI a Pages zatím čekají na ověření.**
+
+---
+
 ## Milovice RP 5.284 — skutečná fotografie Armádní 891 a dvoubarevná fasáda (22. 11. 2026; PR #70 MERGED, CI 5/5 PASS, Pages čekají)
 
 **První zdrojově adresná fyzická fasáda tohoto bloku:** [galerie č.p. 891](https://jirisimon.cz/milovice/) výslovně uvádí Armádní 891 a obsahuje fotografie dokončené budovy s výrazně **světlými horními patry a tmavším přízemím**, balkony a terasou. Fotografie je reálný exteriér, nikoliv vizualizace projektu C16. Modelové barvy, hloubka barevné vrstvy a přibližná výška tmavého pásu **2,90 m** nejsou geodeticky ani kolorimetricky změřeny; fotografie neurčuje, která přesná hrana OSM půdorysu nese který balkon.

@@ -12,7 +12,8 @@ assert(E.city.title.includes('C15 = č.p. 890')&&E.city.title.includes('C16 = č
 assert(E.houses.find(x=>x.house==='890').note.includes('C15'));
 assert(E.houses.find(x=>x.house==='891').note.includes('C16'));
 assert.equal(E.houses.find(x=>x.house==='891').url,'https://jirisimon.cz/milovice/','real photos now available, no mapped balcony edge');
-assert(E.houses.find(x=>x.house==='891').note.includes('nejsou georeferencované'));
+assert(E.houses.find(x=>x.house==='891').note.includes('bez GPS/azimutu'));
+assert(E.houses.find(x=>x.house==='891').note.includes('jižní OSM hraně 6'));
 assert.equal(E.houses.filter(x=>x.url).length,3);
 for(const h of E.houses)if(h.url)assert(h.url.startsWith('https://'));
 const source=readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8');
@@ -26,6 +27,7 @@ for(const h of E.houses){
 assert.equal(view('?streetAudit=armadni-houses-east-5282'),'armadni-houses-east-5282');
 assert.equal(view('?streetAudit=armadni-houses-west-5282'),'armadni-houses-west-5282');
 assert.equal(view('?streetAudit=armadni-houses-east-5283'),null);
+assert.equal(view('?streetAudit=armadni-891-south-balconies-5285'),'armadni-891-south-balconies-5285');
 assert.equal(view('?streetAudit=other'),null);
 assert.equal(mount(null,'?streetAudit=armadni-houses-east-5282'),null);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
