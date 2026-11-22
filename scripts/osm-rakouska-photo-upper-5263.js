@@ -90,7 +90,7 @@ export function renderRakouskaUpper5263(THREE,{
   push(roof,plan.perimeter[i],y1+.012);
  const meshes=[];
  for(const [kind,positions,color] of [
-  ['photographed-higher-corner-walls',wall,'#c6c0b6'],
+  ['photographed-higher-corner-walls',wall,'#eeeae4'],
   ['estimated-flat-upper-roof',roof,'#625c56']
  ]){
   const g=new THREE.BufferGeometry();
