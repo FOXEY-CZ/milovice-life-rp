@@ -30,6 +30,8 @@ try{
  assert.equal(r.walker?.ready,true,JSON.stringify(r));
  assert.equal(r.walker?.sourceFootwayId,'1005977571');
  assert.equal(r.walker?.actorCount,1);
+ assert.equal(r.walker?.predictiveVehicleSafety5276,true);
+ assert.equal(r.walker?.forecastSeconds5276,4);
  assert(r.walker?.distance>=0&&r.walker?.distance<=22);
  assert.equal(r.walker?.newFootways,0);
  assert.equal(r.walker?.newColliders,0);
@@ -37,7 +39,7 @@ try{
  assert(r.zebra?.paintedBars>=4);
  assert.equal(r.bends?.ready,true);
  assert.equal(r.track?.ready,true);
- assert.equal(r.build,'20261122-pod-lesem-crossing-walker-527500');
+ assert.equal(r.build,'20261122-pod-lesem-predictive-yield-527600');
  assert.equal(r.build,r.hud);
  assert.equal(r.view,'pod-lesem-pedestrian-5275');
  assert.deepEqual(errors,[]);
@@ -46,5 +48,5 @@ try{
  await page.setViewportSize({width:1280,height:720});
  await page.waitForTimeout(950);
  await page.screenshot({path:'browser-artifacts/pod-lesem-pedestrian-5275-wide.png'});
- console.log('PASS 5.275 mapped sidewalk NPC crosses Pod Lesem, mobile+wide Chromium after 7.2s LOD');
+ console.log('PASS 5.276 predictive pedestrian yield and mapped crosswalk preserved in mobile+wide Chromium after 7.2s LOD');
 }finally{await browser.close()}

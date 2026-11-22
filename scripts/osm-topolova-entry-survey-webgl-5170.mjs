@@ -129,11 +129,16 @@ try{
   const after=window.__miloviceTopolovaFootJobRuntime5179?.();
   const beaconStarted=window.__miloviceTopolovaFootBeacon5188?.();
   const hud=document.getElementById('topolova-foot-job-hud');
+  // 5.276: measure active-job visibility BEFORE cancellation, then verify
+  // that cancelling really hides the HUD. The prior test read only afterward.
+  const hudHiddenWhileActive=hud?.hidden;
   const menuClosed=document.getElementById('rp-job-panel')?.hidden;
   document.getElementById('topolova-foot-job-end')?.click();
   const canceled=window.__miloviceTopolovaFootJobRuntime5179?.();
   const beaconCanceled=window.__miloviceTopolovaFootBeacon5188?.();
-  return {before,after,beaconStarted,beaconCanceled,hudHidden:hud?.hidden,menuClosed,canceled};
+  const hudHiddenAfterCancel=hud?.hidden;
+  return {before,after,beaconStarted,beaconCanceled,hudHiddenWhileActive,
+   hudHiddenAfterCancel,menuClosed,canceled};
  });
  assert.equal(footJob.before?.active,false,JSON.stringify(footJob));
  assert.equal(footJob.after?.active,true,JSON.stringify(footJob));
@@ -142,7 +147,8 @@ try{
  assert(['↑','↖','←','↙','↓','↘','→','↗','✓'].includes(footJob.after?.direction?.arrow),JSON.stringify(footJob));
  assert(Number.isFinite(footJob.after?.direction?.distanceMetres));
  assert.equal(footJob.after?.direction?.directBearingOnly,true);
- assert.equal(footJob.hudHidden,false,JSON.stringify(footJob));
+ assert.equal(footJob.hudHiddenWhileActive,false,JSON.stringify(footJob));
+ assert.equal(footJob.hudHiddenAfterCancel,true,JSON.stringify(footJob));
  assert.equal(footJob.menuClosed,true);
  assert.equal(footJob.canceled?.active,false);
  // 5.188: actual game-world marker stays in the streamed 3D scene for

@@ -1,3 +1,15 @@
+## Milovice RP 5.276 — Pod Lesem × Armádní: chodec předvídá přijíždějící vozidla (22. 11. 2026; CI/Pages zatím čekají)
+
+**Oprava skutečné slabiny chování simulace 5.275:** původní chodec na již existující OSM chodníkové ose `1005977571` čekal před modelovou zebrou Pod Lesem jen tehdy, pokud se **auto už nacházelo do 6,2 m od jejího středu**. Rychleji přijíždějící vůz byl mimo tento kruh a chodec mohl vstoupit přímo před něj. Verze 5.276 sbírá z předchozí a aktuální simulované pozice vozidla jeho 2D rychlost (jen při stabilní délce snímku), vypočítá **nejkratší předpokládanou vzdálenost k přechodu v dalších 4 sekundách** a chodce zdrží ještě před vstupem do vozovky, pokud tato vzdálenost klesne pod původní modelový bezpečnostní poloměr 6,2 m. Auto, které odjíždí, by ho naopak nemělo zbytečně blokovat. Výpadek rychlosti, teleport nebo velký jitter se ignorují; pro auta již blízko stále funguje původní vzdálenostní blokace.
+
+**Zachování přirozeného chování:** pokud chodec už na přechod vešel, **nezastaví se uprostřed** kvůli později objevenému autu. Jde o konzervativní herní algoritmus, nikoliv certifikovanou simulaci dopravní bezpečnosti: rovnoměrná predikce 4 sekund neumí předvídat náhlou změnu směru, brzdění nebo teleport vozu. Žádné nové chodníky, obrubníky, vozovky, kolize, značky ani NPC trasy; souřadnice, 22m cesta, jeden NPC, 5.274 zebra, 5.272 asfaltové výplně a 5.273 zpevněná cesta zůstávají.
+
+**Regrese:** `scripts/osm-pod-lesem-crossing-walker-5275.test.mjs` nyní testuje přijíždějící/odjíždějící vozidlo, vzdálené vozidlo, výkyv naměřené rychlosti, auto přímo u přechodu, obě pěší orientace a dokončení již započatého přechodu bez zastavení. Stávající Chromium/SwiftShader mobile+wide po 7,2 s LOD kontroluje nový build i diagnostiku `predictiveVehicleSafety5276`. Výsledek CI a Pages ověřit teprve po dokončení.
+
+**Podklady:** OSM chodník [1005977571](https://www.openstreetmap.org/way/1005977571) a ulice [Pod Lesem 128087258](https://www.openstreetmap.org/way/128087258) jsou zdrojově zamčené; samotnou existenci zebry dokládá [městská zakázka](https://zakazky.mesto-milovice.cz/contract_display_85.html). Poloha skutečně namalovaných pruhů není geodeticky ověřená. Nenahrazovat dochované schéma z úřední desky odhadem.
+
+---
+
 ## Milovice RP 5.275 — přecházející NPC na existujícím chodníku Pod Lesem × Armádní (22. 11. 2026; PR #58 sloučen, 5/5 CI PASS, Pages PASS)
 
 **Viditelná změna běžné hry:** obecný systém 5.243–5.247 úmyslně brání generickým chodcům vstupovat na vozovku. Na Pod Lesem ale už existuje městem doložená modelová zebra, zarovnaná ve verzi 5.274 na původní OSM chodník [1005977571](https://www.openstreetmap.org/way/1005977571) u šestimetrové ulice [128087258](https://www.openstreetmap.org/way/128087258). Jeden nový simulovaný obyvatel proto může v běžném RP přejít po původní mapované pěší ose mezi dvěma body **11 m před a 11 m za společným OSM uzlem**. Nejde o nový chodník, nové OSM `footway=crossing` ani geodetické potvrzení skutečné polohy namalovaných pruhů; jde o herní simulaci na doložené pěší linii.
