@@ -11,7 +11,7 @@ try{
  const page=await browser.newPage({viewport:{width:393,height:852},
   deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
- await page.goto('http://127.0.0.1:8080/?v=528301&streetAudit=armadni-houses-east-5282',
+ await page.goto('http://127.0.0.1:8080/?v=528400&streetAudit=armadni-houses-east-5282',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>
@@ -48,10 +48,20 @@ try{
  assert.equal(e?.projectConceptOnly,true);
  assert.equal(e?.approvedFacadePhotos,0);
  assert.equal(e?.newBalconies,0);
+ const photo=await page.evaluate(()=>window.__miloviceArmadni891PhotoRuntime5284?.());
+ assert(photo?.ready,'real 891 exterior two-tone remains in scene after LOD');
+ assert.equal(photo.sourceOSMId,'1047406190');
+ assert.equal(photo.observedTwoTone,true);
+ assert.equal(photo.estimatedOtherFaces,true);
+ assert.equal(photo.meshCount,2);
+ assert.equal(photo.wallEdges,10);
+ assert.equal(photo.triangles,60);
+ assert.equal(photo.newBalconies,0);
  const panel=page.locator('#armadni-evidence-5283');
  await panel.locator('summary').click();
  assert.equal(await panel.locator('a[href*="stakohk.cz"]').count(),1);
  assert.equal(await panel.locator('a[href*="hlasenirozhlasu.cz"]').count(),1);
+ assert.equal(await panel.locator('a[href*="jirisimon.cz/milovice"]').count(),1);
  await panel.locator('summary').click();
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});

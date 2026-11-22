@@ -15,8 +15,8 @@ export const ARMADNI_EVIDENCE_5283=Object.freeze({
   {house:'887',osmId:'1164238466',ruian:'119001071',
    note:'Bez jednoznačně přiřazené fotografie exteriéru.',url:null},
   {house:'891',osmId:'1047406190',ruian:'107125749',
-   note:'BD C16 = č.p. 891 doloženo zápisem 29/2024. Archivní inzerát je smazán; skutečné balkony a fasáda nejsou zaměřeny.',
-   url:null},
+   note:'BD C16 = č.p. 891. Nová adresní realitní fotogalerie ukazuje hotovou světlou horní fasádu, tmavé přízemí a balkony. Jde o skutečné fotky, ale nejsou georeferencované k jednotlivým OSM hranám; barvy a výška pásu ve hře jsou odhad. Starý smazaný inzerát se nepoužívá.',
+   url:'https://jirisimon.cz/milovice/'},
   {house:'890',osmId:'1047406191',ruian:'107124980',
    note:'BD C15 = č.p. 890 doloženo zápisem 29/2024. Text inzerátu uvádí předzahrádku s terasou, nikoli její fasádní hranu.',
    url:'https://www.bezrealitky.cz/nemovitosti-byty-domy/719934-nabidka-pronajem-bytu-armadni-milovice'}
@@ -46,6 +46,6 @@ export function mountArmadniEvidence5283(doc,search=''){
   a(ARMADNI_EVIDENCE_5283.project.title,ARMADNI_EVIDENCE_5283.project.url);
   a(ARMADNI_EVIDENCE_5283.city.title,ARMADNI_EVIDENCE_5283.city.url);
  }
- p('V 5.283 nejsou žádné nové budovy, okna, balkony, vchody, chodníky ani kolize.');
+ p('5.284: pouze č.p. 891 dostalo modelově barevně rozlišené stěny podle skutečné fotografie. Nebyly přidány žádné nové budovy, okna, balkony, vchody, chodníky ani kolize.');
  doc.body.append(panel);return panel;
 }
