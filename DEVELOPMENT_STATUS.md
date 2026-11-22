@@ -4,7 +4,7 @@
 
 ## Ověření 5.270 + otevřená rizika
 
-**5/5 hlavních PR CI PASS:** [hlavní validace](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45027460413), [Italská + modelový přechod](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45027460475), [Station photo](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45027460432), [Nádražní](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45027460449), [blok 5.82](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45027460500). [Druhý Italská push test](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45027440894) loguje `PASS 5.270` Node (zdrojové původní GPS a hash) i Chromium/SwiftShader mobil+wide **po 7,2 s LOD**. Oba `pod-lesem-municipal-crossing-5270-*.png` screenshoty skutečně staženy a otevřeny: zebra na asfaltu, po LOD zůstává, žádná očividná plovoucí deska. **Lokálně viditelné nedodělané hrany ulice** a **modelové (ne zaměřené) umístění zebry** jsou známá rizika. **GitHub Pages 5.270 ještě ověřit.**
+**5/5 hlavních PR CI PASS:** [hlavní validace](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45027460413), [Italská + modelový přechod](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45027460475), [Station photo](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45027460432), [Nádražní](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45027460449), [blok 5.82](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45027460500). [Druhý Italská push test](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45027440894) loguje `PASS 5.270` Node (zdrojové původní GPS a hash) i Chromium/SwiftShader mobil+wide **po 7,2 s LOD**. Oba `pod-lesem-municipal-crossing-5270-*.png` screenshoty skutečně staženy a otevřeny: zebra na asfaltu, po LOD zůstává, žádná očividná plovoucí deska. **Lokálně viditelné nedodělané hrany ulice** a **modelové (ne zaměřené) umístění zebry** jsou známá rizika. **GitHub Pages 5.270 ověřeno:** [pages build and deployment #45028108960](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45028108960) skončilo `success` dne 22. 11. 2026 v 13:35 UTC pro `main` HEAD `c0bb68871de15eea3ab4bdf778704dfd5fd14819` (zahrnuje merge 5.270). Jde o potvrzení nasazení, nikoli nové ruční prověření hraní z veřejné URL.
 
 ## Předchozí dokončená a nasazená práce
 
@@ -16,7 +16,7 @@
 
 ## Další krok 5.271
 
-Po potvrzení Pages pro 5.270 porovnat již prohlédnuté technické WebGL screenshoty s veřejně autorizovanou fotografií nebo půdorysným situačním plánem čtyř přechodů. Zpřesňovat polohy jen s podklady; ověřit v běžném hraní bezpečnou kolizi s vozidly a zda modelové pruhy zůstávají na povrchu. Poté pokračovat další celou ulicí a skutečně doloženými obrubami. Zachovat OSM GPS a 60FPS optimalizace.
+Pages pro 5.270 potvrzeny (viz výše). Dále porovnat již prohlédnuté technické WebGL screenshoty s veřejně autorizovanou fotografií nebo půdorysným situačním plánem čtyř přechodů. Zpřesňovat polohy jen s podklady; ověřit v běžném hraní bezpečnou kolizi s vozidly a zda modelové pruhy zůstávají na povrchu. Poté pokračovat další celou ulicí a skutečně doloženými obrubami. Zachovat OSM GPS a 60FPS optimalizace.
 
 Hra po nasazení 5.270: https://foxey-cz.github.io/milovice-life-rp/?v=527000&streetAudit=pod-lesem-municipal-crossing-5270
 
