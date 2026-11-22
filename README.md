@@ -1,10 +1,10 @@
-## Milovice RP 5.271 — přechod Pod Lesem: zabránění duplicitě při novém OSM úseku (22. 11. 2026; kontrola PR CI čeká)
+## Milovice RP 5.271 — přechod Pod Lesem: zabránění duplicitě při novém OSM úseku (22. 11. 2026; PR #54 sloučen, 5/5 hlavních CI PASS)
 
 **Oprava reálné chyby ochranné podmínky:** dosavadní 5.270 kontrolovala nový `footway=crossing` pouze podle vrcholů jeho OSM geometrie. Delší přechod mohl mít oba koncové body dál než 22 m od modelové zebry, ale protnout její místo mezi nimi. Při pozdější aktualizaci OSM by tak hra mohla chybně vykreslit i původní odhadnuté bílé pruhy vedle/na nové přesnější geometrii. V 5.271 se proto hledá **nejkratší vzdálenost od celé lomené čáry**: body i segmenty. Pokud některý segment vede blíž než 22 m, model 5.270 se bezpečně vypne. Poškozené souřadnice se ignorují.
 
 **Změna v běžné hře:** pro současný zamčený OSM export zůstává grafika i pozice přechodu stejná; nová podmínka se projeví teprve při zmapování skutečné blízké pěší trasy. Nejsou přidána žádná fiktivní značení, chodníky, obrubníky ani kolize; GPS a cestní síť i 60FPS rozpočty zůstávají beze změny. Nejde o geodetické potvrzení polohy zebry, která dál zůstává modelovým odhadem.
 
-**Regrese:** `scripts/osm-pod-lesem-municipal-crossing-5270.test.mjs` doplňuje pozitivní průnik přímého i blízkého dlouhého segmentu s oběma konci mimo 22 m, negativní případ vzdáleného segmentu a neplatné souřadnice. Stávající mobilní i široký WebGL test po 7,2 s LOD kontroluje build 5.271. **CI a Pages nutno potvrdit až z GitHub Actions**. Oprava nenahrazuje kontrolu skutečné vozovky proti fotografii/situačnímu plánu.
+**Regrese:** `scripts/osm-pod-lesem-municipal-crossing-5270.test.mjs` doplňuje pozitivní průnik přímého i blízkého dlouhého segmentu s oběma konci mimo 22 m, negativní případ vzdáleného segmentu a neplatné souřadnice. Stávající mobilní i široký WebGL test po 7,2 s LOD kontroluje build 5.271. **Hlavních 5 různých CI kontrol prošlo na zdrojovém commitu `648dba5`**, včetně skutečného mobilního Chromium/SwiftShader WebGL po 7,2 s LOD; [PR #54](https://github.com/FOXEY-CZ/milovice-life-rp/pull/54) sloučen do `main` jako `98cf32a`. **GitHub Pages ještě neměl potvrzený výsledný deploy v době tohoto zápisu.** Oprava nenahrazuje kontrolu skutečné vozovky proti fotografii/situačnímu plánu.
 
 ---
 
