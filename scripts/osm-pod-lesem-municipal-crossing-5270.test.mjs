@@ -7,7 +7,7 @@ const E=JSON.parse(raw).elements;
 const snapshot=JSON.stringify(E);
 const p=plan({regionId:'mlada',ways:E});
 assert(p,'source-locked existing Pod Lesem / Armadni junction');
-assert.equal(p.version,'5.271');
+assert.equal(p.version,'5.274');
 assert.equal(p.sideRoadId,'128087258');
 assert.equal(p.mainRoadId,'1331897690');
 assert.equal(p.sideHash,'6e14ec02');
@@ -15,7 +15,21 @@ assert.equal(p.mainHash,'197dbea8');
 assert.deepEqual(p.junctionGPS,{lat:50.2286371,lon:14.8727931});
 assert.equal(p.roadWidthMetres,6);
 assert.equal(p.stripeLengthMetres,3.4);
-assert.equal(p.modelDistanceFromJunctionMetres,10.5);
+assert(p.modelDistanceFromJunctionMetres>8.77&&
+ p.modelDistanceFromJunctionMetres<8.80,
+ 'source map footway intersection must be about 8.78 m from Armadni');
+assert.equal(p.oldEstimatedMetresFromJunction,10.5);
+assert(p.alignmentCorrectionMetres>1.70&&p.alignmentCorrectionMetres<1.73);
+assert.equal(p.sourceSidewalkOSMId,'1005977571');
+assert.equal(p.sourceSidewalkHash,'263e12b3');
+assert.deepEqual(p.sharedSidewalkRoadGPS,{lat:50.2285685,lon:14.8727322});
+assert(p.alignedToExistingOSMSidewalkVertex);
+assert(p.sidewalkTagsCrossingPaintNotProven);
+const world=p=>({x:(p.lon-14.889)*111320*Math.cos(50.226*Math.PI/180),
+ y:-(p.lat-50.226)*111320});
+const sharedWorld=world(p.sharedSidewalkRoadGPS);
+assert(Math.hypot(sharedWorld.x-p.centerWorld.x,sharedWorld.y-p.centerWorld.y)<1e-7,
+ 'paint model center is identical to shared original OSM vertex');
 assert.equal(p.sourceSegmentEndIndex,2);
 const d=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 assert(Math.abs(d(...p.modelFootwayAxis)-6)<1e-8);
@@ -28,7 +42,7 @@ for(const k of ['newMappedCrossingWays','newSidewalks','newKerbs',
  'newColliders','newRoads','newTrafficRoutes','newMaterials','newLights'])
  assert.equal(p[k],0,k);
 assert.equal(plan({regionId:'old',ways:E}),null);
-for(const id of [C.sideId,C.mainId]){
+for(const id of [C.sideId,C.mainId,C.sidewalkId]){
  assert.equal(plan({regionId:'mlada',ways:E.filter(w=>String(w.id)!==id)}),null);
  const bad=E.map(w=>String(w.id)===id?{...w,geometry:
   w.geometry.map((p,i)=>i===1?{...p,lon:p.lon+.0000001}:p)}:w);
@@ -75,10 +89,10 @@ assert.equal(JSON.stringify(E),snapshot);
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),raw);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const token of [
- "from './scripts/osm-pod-lesem-municipal-crossing-5270.js?v=527100'",
+ "from './scripts/osm-pod-lesem-municipal-crossing-5270.js?v=527400'",
  'planPodLesemCross5270({',
  'window.__milovicePodLesemCrossRuntime5270=()=>',
  "'pod-lesem-municipal-crossing-5270':{",
- "const BUILD_ID='20261122-pod-lesem-track-seam-527300'"])
+ "const BUILD_ID='20261122-pod-lesem-walk-aligned-527400'"])
  assert(html.includes(token),'Missing 5.270 integration '+token);
-console.log('PASS 5.271 segment-aware duplicate guard for 5.270 municipal 2025 crossing on original Pod Lesem 6m asphalt, 10.5m estimated from Armadni, strict non-duplicate OSM lock and no new path');
+console.log('PASS 5.274 municipality-backed Pod Lesem crossing aligned to original OSM sidewalk vertex 8.782m before Armadni, no new paths or surveyed-paint claim');
