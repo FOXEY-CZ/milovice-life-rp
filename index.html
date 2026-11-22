@@ -12506,9 +12506,15 @@ window.__miloviceItalskaNpcEncounterRuntime5259=()=>{
   followerResumed:a?.followerResumed||false,
   minimumCenterDistanceMetres:a?.minCenterDistance??null,
   visibleFrames:a?.visibleFrames||0,
-  actors:a?.actors.map(c=>({id:c.id,osmId:String(c.seg.osmId),
-   progress:c.progress,direction:c.direction,speed:c.speed,
-   position:{x:c.g.position.x,z:c.g.position.z},visible:c.g.visible}))||[],
+  actors:a?.actors.map(c=>{
+   const ndc=new THREE.Vector3(c.g.position.x,c.g.position.y+.8,
+    c.g.position.z).project(camera);
+   return {id:c.id,osmId:String(c.seg.osmId),
+    progress:c.progress,direction:c.direction,speed:c.speed,
+    position:{x:c.g.position.x,z:c.g.position.z},visible:c.g.visible,
+    screen:{x:ndc.x,y:ndc.y,z:ndc.z},
+    inFrame:ndc.z>=-1&&ndc.z<=1&&Math.abs(ndc.x)<.92&&Math.abs(ndc.y)<.92};
+  })||[],
   lastSamples:a?.samples.slice(-12)||[],
   roadOrFootwayGeometryChanged:false,normalTrafficChanged:false,
   physicalCollisionCertified:false,trafficPriorityLawVerified:false};
@@ -14097,7 +14103,15 @@ if(rpStreetAuditCameraWorld&&rpStreetAuditView){
   window.__milovicePlaygroundCameraAudit:null;
  const estateCamera=rpStreetAuditView.osmEstateId?
   window.__miloviceMladaEstateCameraAudit:null;
- if(estateCamera?.ready){
+ if(rpItalskaNpcEncounterMode5259&&rpItalskaNpcEncounter5259){
+  // Audit ONLY: an OSM-derived overhead camera makes both genuine 3D
+  // vehicles visible. No invented photo angle, objects or road geometry.
+  const n=rpItalskaNpcEncounter5259.zone.node;
+  const surface=terrainAt(n.x,n.y);
+  camera.up.set(0,0,-1);
+  camera.position.set(n.x,surface+58,n.y);
+  camera.lookAt(n.x,surface+.15,n.y);
+ }else if(estateCamera?.ready){
   camera.up.set(0,1,0);
   camera.position.set(eye.x,ground+1.68,eye.z);
   const target=estateCamera.target;
@@ -14256,7 +14270,8 @@ if(rpStreetAuditCameraWorld&&rpStreetAuditView){
  const status=photoStreetEnvironment.status();
  window.__miloviceStreetAuditRendered={
   active:true,view:rpStreetAuditId,
-  cameraMode:rpStreetAuditView.publicPhotoCamera&&!rpStreetAuditView.estimatedHeading?'documented-photo-gps-and-heading':rpStreetAuditView.streetLevel?'technical-osm-street-axis':rpStreetAuditView.technical?'technical-osm-overhead':rpStreetAuditView.estimatedHeading?'public-photo-gps-inferred-osm-direction':'documented-photo-gps-and-heading',
+  cameraMode:rpItalskaNpcEncounterMode5259&&rpItalskaNpcEncounter5259?
+   'technical-osm-traffic-overhead':rpStreetAuditView.publicPhotoCamera&&!rpStreetAuditView.estimatedHeading?'documented-photo-gps-and-heading':rpStreetAuditView.streetLevel?'technical-osm-street-axis':rpStreetAuditView.technical?'technical-osm-overhead':rpStreetAuditView.estimatedHeading?'public-photo-gps-inferred-osm-direction':'documented-photo-gps-and-heading',
   technicalStreetLevel:rpStreetAuditView.streetLevel===true&&!rpStreetAuditView.publicPhotoCamera,
   sourceDate:rpStreetAuditView.date,source:rpStreetAuditView.source,
   photoCameraIsObjectSurvey:false,estimatedObjectLocations:true,
