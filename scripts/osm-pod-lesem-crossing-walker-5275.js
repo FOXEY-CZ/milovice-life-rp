@@ -65,7 +65,7 @@ export function planPodLesemWalker5275({regionId,ways,crossing}={}){
  * halfway in traffic. This is game AI, NOT a road-safety guarantee.
  */
 export function podLesemVehicleThreat5276(route,vehicle,forecastSeconds=4){
- if((route?.version!=='5.275'&&route?.version!=='5.277')||!Number.isFinite(vehicle?.x)||
+ if((route?.version!=='5.275'&&route?.version!=='5.277'&&route?.version!=='5.278')||!Number.isFinite(vehicle?.x)||
   !Number.isFinite(vehicle?.z)||!Number.isFinite(forecastSeconds)||
   forecastSeconds<0||forecastSeconds>6)return false;
  const dx=vehicle.x-route.center.x,dz=vehicle.z-route.center.z;

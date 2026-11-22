@@ -50,8 +50,9 @@ export function planPodLesemSidewalkChain5277({regionId,ways,crossing}={}){
   modelOnly:true,paintSurveyed:false};
 }
 export function advancePodLesemSidewalkChain5277(route,at,direction,step,vehicles=[]){
- if(route?.version!=='5.277'||route.routePoints?.length!==5||
-  route.cumulativeMetres?.length!==5||!Number.isFinite(at)||
+ if(!['5.277','5.278'].includes(route?.version)||
+  route.routePoints?.length!==(route.version==='5.277'?5:9)||
+  route.cumulativeMetres?.length!==route.routePoints.length||!Number.isFinite(at)||
   at<0||at>route.totalMetres||![1,-1].includes(direction)||
   !Number.isFinite(step)||step<0||step>3||!Array.isArray(vehicles))return null;
  let distance=at+direction*step,heading=direction,waiting=false;

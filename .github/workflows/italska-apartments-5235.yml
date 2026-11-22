@@ -45,7 +45,11 @@ on:
       - scripts/osm-pod-lesem-track-webgl-5273.mjs
       - scripts/osm-pod-lesem-sidewalk-chain-5277.js
       - scripts/osm-pod-lesem-sidewalk-chain-5277.test.mjs
+      - scripts/osm-pod-lesem-west-join-5278.js
+      - scripts/osm-pod-lesem-west-join-5278.test.mjs
       - scripts/osm-pod-lesem-crossing-walker-5275.js
+      - scripts/osm-pod-lesem-west-join-5278.js
+      - scripts/osm-pod-lesem-west-join-5278.test.mjs
       - scripts/osm-pod-lesem-crossing-walker-5275.test.mjs
       - scripts/osm-pod-lesem-crossing-walker-webgl-5275.mjs
       - scripts/osm-rakouska-granite-5269.js
@@ -136,6 +140,8 @@ on:
       - scripts/osm-pod-lesem-track-5273.test.mjs
       - scripts/osm-pod-lesem-track-webgl-5273.mjs
       - scripts/osm-pod-lesem-crossing-walker-5275.js
+      - scripts/osm-pod-lesem-west-join-5278.js
+      - scripts/osm-pod-lesem-west-join-5278.test.mjs
       - scripts/osm-pod-lesem-crossing-walker-5275.test.mjs
       - scripts/osm-pod-lesem-crossing-walker-webgl-5275.mjs
       - scripts/osm-rakouska-granite-5269.js
@@ -222,6 +228,7 @@ jobs:
           node --check scripts/osm-pod-lesem-track-5273.js
           node --check scripts/osm-pod-lesem-track-webgl-5273.mjs
           node --check scripts/osm-pod-lesem-sidewalk-chain-5277.js
+          node --check scripts/osm-pod-lesem-west-join-5278.js
           node --check scripts/osm-pod-lesem-crossing-walker-5275.js
           node --check scripts/osm-pod-lesem-crossing-walker-webgl-5275.mjs
           node --check scripts/osm-rakouska-granite-5269.js
@@ -235,6 +242,7 @@ jobs:
           node scripts/osm-pod-lesem-track-5273.test.mjs
           node scripts/osm-pod-lesem-crossing-walker-5275.test.mjs
           node scripts/osm-pod-lesem-sidewalk-chain-5277.test.mjs
+          node scripts/osm-pod-lesem-west-join-5278.test.mjs
           node scripts/osm-rakouska-granite-5269.test.mjs
           node scripts/osm-rakouska-walk-link-5268.test.mjs
           node scripts/osm-topolova-foot-lifecycle-5183.test.mjs
@@ -326,6 +334,7 @@ jobs:
             browser-artifacts/pod-lesem-track-seam-5273-wide.png
             browser-artifacts/pod-lesem-pedestrian-5275-mobile.png
             browser-artifacts/pod-lesem-pedestrian-5275-wide.png
+            browser-artifacts/pod-lesem-west-sidewalk-5278-wide.png
             browser-artifacts/rakouska-granite-5269-mobile.png
             browser-artifacts/rakouska-granite-5269-wide.png
             browser-artifacts/rakouska-walk-link-5268-mobile.png
