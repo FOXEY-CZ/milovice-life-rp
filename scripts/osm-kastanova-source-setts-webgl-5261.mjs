@@ -13,7 +13,7 @@ try{
   isMobile:true,hasTouch:true,deviceScaleFactor:1});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
  await page.goto(
-  'http://127.0.0.1:8080/?v=526100&streetAudit=kastanova-setts-5261',
+  'http://127.0.0.1:8080/?v=526200&streetAudit=kastanova-setts-5261',
   {waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(()=>
