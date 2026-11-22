@@ -26,12 +26,16 @@ try{
   hud:document.getElementById('build-label')?.textContent
  }));
  assert.equal(r.plan?.ready,true,JSON.stringify(r));
- assert.equal(r.plan.version,'5.271');
+ assert.equal(r.plan.version,'5.274');
  assert.equal(r.plan.sideRoadId,'128087258');
  assert.equal(r.plan.mainRoadId,'1331897690');
  assert(r.plan.paintedBars>=4&&r.plan.paintedBars<=9);
  assert.equal(r.plan.roadWidthMetres,6);
- assert.equal(r.plan.modelDistanceFromJunctionMetres,10.5);
+ assert(r.plan.modelDistanceFromJunctionMetres>8.77&&
+  r.plan.modelDistanceFromJunctionMetres<8.80);
+ assert.equal(r.plan.sourceSidewalkOSMId,'1005977571');
+ assert.equal(r.plan.alignedToExistingOSMSidewalkVertex,true);
+ assert.equal(r.plan.sidewalkTagsCrossingPaintNotProven,true);
  assert.equal(r.plan.mappedCrossingFound,false);
  assert.equal(r.plan.geometryPlacementEstimated,true);
  assert.equal(r.plan.newMappedCrossingWays,0);
@@ -40,7 +44,7 @@ try{
  assert.equal(r.plan.newKerbs,0);
  assert.equal(r.plan.newMaterials,0);
  assert.equal(r.view,'pod-lesem-municipal-crossing-5270');
- assert.equal(r.meta,'20261122-pod-lesem-track-seam-527300');
+ assert.equal(r.meta,'20261122-pod-lesem-walk-aligned-527400');
  assert.equal(r.meta,r.hud);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
@@ -48,5 +52,5 @@ try{
  await page.setViewportSize({width:1280,height:720});
  await page.waitForTimeout(950);
  await page.screenshot({path:'browser-artifacts/pod-lesem-municipal-crossing-5270-wide.png'});
- console.log('PASS 5.271 Pod Lesem municipality backed model crossing, real Chromium mobile+wide after 7.2s LOD, no new OSM footways');
+ console.log('PASS 5.274 Pod Lesem crosswalk visual model re-aligned to original sidewalk vertex, Chromium mobile+wide after 7.2s LOD, zero new OSM paths');
 }finally{await browser.close()}
