@@ -128,8 +128,9 @@ export function renderArmadni891Balconies5285(THREE,{plan,toWorld,baseHeight,lay
   box(2,first,last,depth-.09,depth+.035,top+.83,top+1.00);
   box(2,first,first+.10,.22,depth+.035,top+.83,top+1.00);
   box(2,last-.10,last,.22,depth+.035,top+.83,top+1.00);
-  // Modeled balcony opening hides an incompatible part of the earlier
-  // provisional window grid; it is NOT a surveyed real door position.
+  // Translucent modeled door surface is laid in front of the provisional
+  // window grid; it does NOT physically cut a real opening in the wall.
+  // Door position and reflectance remain unverified approximations.
   box(3,plan.centerFromEastMetres-.77,
    plan.centerFromEastMetres+.77,.145,.157,top+.07,top+2.22);
   box(2,plan.centerFromEastMetres-.02,
@@ -140,7 +141,8 @@ export function renderArmadni891Balconies5285(THREE,{plan,toWorld,baseHeight,lay
   const colors=[0xc7c3bd,0xd9d6d1,0x767d81,0x586d78];
   materials=colors.map((color,i)=>new THREE.MeshStandardMaterial({
    color,side:THREE.DoubleSide,roughness:i===3?.42:.87,
-   metalness:i===2?.28:0
+   metalness:i===2?.28:0,
+   ...(i===3?{transparent:true,opacity:.58,depthWrite:false}:{})
   }));
   materialsCache.set(THREE,materials);
  }
