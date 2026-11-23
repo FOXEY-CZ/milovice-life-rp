@@ -61,18 +61,21 @@ const r=render(THREE,{plan:p,toWorld,baseHeight:110,layer});
 assert(r,'three anchored geometry levels in existing render');
 assert.equal(r.sourceFacadeEdge,6);
 assert.equal(r.balconyCount,3);
-assert.equal(r.meshCount,4);
-assert.equal(r.totalTriangles,324);
+assert.equal(r.meshCount,5);
+assert.equal(r.totalTriangles,360);
 assert.equal(r.photoOrientationInferred,true);
 assert.equal(r.exactPlacementSurveyed,false);
-assert.equal(r.visibleAfterLOD(),4);
+assert.equal(r.visibleAfterLOD(),5);
 assert(r.allInScene());
-assert.equal(materialCount,4);
+assert.equal(materialCount,5);
 const glass=layer.children.find(m=>m.name.includes('GlassDoor'));
 assert(glass,'glass-door mesh exists');
 assert.equal(glass.material.p.transparent,true);
 assert.equal(glass.material.p.opacity,.58);
 assert.equal(glass.material.p.depthWrite,false);
+const backing=layer.children.find(m=>m.name.includes('DoorBacking'));
+assert(backing,'opaque backing screens provisional window mesh');
+assert.equal(backing.material.p.transparent,undefined);
 for(const solid of layer.children.filter(m=>m!==glass)){
  assert.equal(solid.material.p.transparent,undefined,'solid parts must remain opaque');
 }
@@ -101,4 +104,4 @@ for(const token of [
 ])assert(html.includes(token),token);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 assert.equal(meta,'20261122-armadni-891-balconies-528500');
-console.log('PASS 5.285 real Armádní 891 3 photograph-inferred southern balconies, 4 batches/324 triangles, no altered OSM or collisions');
+console.log('PASS 5.285 Armádní 891 3 photo-inferred southern balconies, masked window overlays, 5 batches/360 triangles, no altered OSM or collisions');
