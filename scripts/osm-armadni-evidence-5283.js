@@ -27,6 +27,21 @@ export function armadniEvidenceView5283(search=''){
  const id=new URLSearchParams(search).get('streetAudit');
  return ['armadni-houses-east-5282','armadni-houses-west-5282','armadni-891-south-balconies-5285'].includes(id)?id:null;
 }
+// Three pre-existing technical views, with local search parameters preserved.
+export function armadniEvidenceNavigation5285(search=''){
+ const current=armadniEvidenceView5283(search);
+ if(!current)return [];
+ const options=[
+  ['armadni-houses-east-5282','890/891 — celý blok'],
+  ['armadni-houses-west-5282','886/887 — celý blok'],
+  ['armadni-891-south-balconies-5285','891 — detail balkonů']
+ ];
+ return options.map(([id,label])=>{
+  const params=new URLSearchParams(search);
+  params.set('streetAudit',id);
+  return {id,label,href:'?'+params.toString(),current:id===current};
+ });
+}
 export function mountArmadniEvidence5283(doc,search=''){
  const id=armadniEvidenceView5283(search);
  if(!id||!doc?.body||!doc?.createElement||!doc?.getElementById)return null;
@@ -36,6 +51,20 @@ export function mountArmadniEvidence5283(doc,search=''){
  const title=doc.createElement('summary');title.textContent='📷 Armádní — zdroje a nejistoty';title.style.cssText='cursor:pointer;font-weight:700';panel.append(title);
  const p=s=>{const el=doc.createElement('p');el.textContent=s;el.style.margin='8px 0';panel.append(el)};
  const a=(s,u)=>{const el=doc.createElement('a');el.textContent=s;el.href=u;el.target='_blank';el.rel='noopener noreferrer';el.style.cssText='display:block;color:#9ddaff;margin:5px 0';panel.append(el)};
+ const links=armadniEvidenceNavigation5285(search);
+ const nav=doc.createElement('nav');
+ nav.style.cssText='display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 10px';
+ for(const link of links){
+  const el=doc.createElement(link.current?'span':'a');
+  el.textContent=link.label;
+  if(!link.current){el.href=link.href;el.title='Zobrazit technickou kameru';}
+  else el.setAttribute?.('aria-current','page');
+  el.style.cssText='display:inline-block;border:1px solid #7394a7;border-radius:6px;padding:4px 6px;color:'+
+   (link.current?'#ffffff':'#9ddaff')+';background:'+
+   (link.current?'#315469':'#172e3d')+';text-decoration:none';
+  nav.append(el);
+ }
+ panel.append(nav);
  const east=id==='armadni-houses-east-5282'||id==='armadni-891-south-balconies-5285';
  p('RÚIAN půdorysy a 4 podlaží jsou ověřené. Okna na domech jsou modelový odhad, ne fotografie.');
  for(const house of east?['890','891']:['886','887']){
