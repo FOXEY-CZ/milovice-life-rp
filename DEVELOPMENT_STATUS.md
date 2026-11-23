@@ -2,6 +2,10 @@
 
 > **5.285 — [PR #71](https://github.com/FOXEY-CZ/milovice-life-rp/pull/71) MERGED jako `dc12da88`, CI 5/5 PASS, Pages po sloučení zatím čekají.** Poprvé skutečné balkonové **3D objemy** u originálního domu **Armádní 891**, OSM `1047406190`, RÚIAN `107125749`: **3 modelové balkony nad přízemím** na jeho původní **jižní hraně 6**. Jde o orientaci **odvozenou z exteriérových fotografií** domu (snímky `01-93`, `milovice-20/23/24` z https://jirisimon.cz/milovice/) a existující parkovací komunikace OSM `1046197816` **východně od budovy**. **Není to geotagované foto zaměření ani potvrzená přesná poloha balkonů; konkrétní velikosti a odstíny jsou odhad.**
 
+## Dílčí oprava 5.285 (23. 11. 2026; PR / CI čekají)
+
+- Modelová skleněná výplň balkonových dveří Armádní 891 už nemá stejný neprůhledný materiál jako beton. Samostatný čtvrtý sdílený mesh používá průsvitnost `0.58` a `depthWrite:false`, ostatní tři materiály zůstávají neprůhledné. Žádné změny GPS, velikostí, orientace, počtu balkonů, silnic či kolizí. Průsvitnost je **vizuální odhad**, ne doložené zasklení. Přidána materiálová regrese do Node testu; CI a mobilní/široký WebGL jsou zatím **neověřené**. Nadále se jedná o modelovou plochu **před** zdí, nikoli o stavebně vyříznuté dveře.
+
 ## Co je změněné
 
 - Nový source-only modul `scripts/osm-armadni-891-balconies-5285.js` povoluje balkony pouze po přesné kontrole originálního půdorysu `1047406190`, hash `e8e44d23`, 4 podlaží a identity z 5.284. Jeden sloupec **3 fyzicky viditelných balkonů** na jižním obvodovém OSM segmentu 6, ve výškových úrovních 1–3. Modelové betonové desky, boční/čelní plné parapety, tenká madla a výplně otvorů tvoří **4 sdílené meshe a 324 trojúhelníků**. Volná hloubka cca **1,38 m** a šířka **2,65 m** jsou odhad. Cizí fotografie nejsou součástí assetů.

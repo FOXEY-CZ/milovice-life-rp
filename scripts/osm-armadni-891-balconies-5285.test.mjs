@@ -68,6 +68,14 @@ assert.equal(r.exactPlacementSurveyed,false);
 assert.equal(r.visibleAfterLOD(),4);
 assert(r.allInScene());
 assert.equal(materialCount,4);
+const glass=layer.children.find(m=>m.name.includes('GlassDoor'));
+assert(glass,'glass-door mesh exists');
+assert.equal(glass.material.p.transparent,true);
+assert.equal(glass.material.p.opacity,.58);
+assert.equal(glass.material.p.depthWrite,false);
+for(const solid of layer.children.filter(m=>m!==glass)){
+ assert.equal(solid.material.p.transparent,undefined,'solid parts must remain opaque');
+}
 for(const mesh of layer.children){
  assert.equal(mesh.userData.sourceFacadeEdge,6);
  assert.equal(mesh.userData.exactPlacementSurveyed,false);
