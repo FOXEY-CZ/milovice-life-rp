@@ -76,6 +76,6 @@ for(const token of [
  'armadni891PhotoRenderCache5284.clear();',
  'window.__miloviceArmadni891PhotoRuntime5284=()=>',
  'armadni891PhotoRenderCache5284.set(String(osmId)',
- "const BUILD_ID='20261122-armadni-891-balconies-528500'"
+ "const BUILD_ID='20261123-armadni-891-window-overlays-528600'"
 ])assert(html.includes(token),token);
 console.log('PASS 5.284 Armádní 891 authentic address exterior two-tone, 60 triangles/2 batches, no guessed balconies or building changes');
