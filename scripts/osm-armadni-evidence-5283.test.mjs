@@ -10,6 +10,13 @@ assert.equal(E.project.kind,'project-concept-only');
 assert.deepEqual(E.project.assignments,{C15:'890',C16:'891'});
 assert(E.city.title.includes('C15 = č.p. 890')&&E.city.title.includes('C16 = č.p. 891'));
 assert(E.houses.find(x=>x.house==='890').note.includes('C15'));
+const terrace=E.houses.find(x=>x.house==='890').groundFloorTerraceEvidence;
+assert.equal(terrace.sourceType,'address-specific-listing');
+assert.equal(terrace.areaSquareMetres,13);
+assert.equal(terrace.advertisedOn,'2022-05-25');
+assert.equal(terrace.exactPlacementVerified,false);
+assert.equal(terrace.allUnitTerracesVerified,false);
+assert.equal(terrace.geometryAdded,false);
 assert(E.houses.find(x=>x.house==='891').note.includes('C16'));
 assert.equal(E.houses.find(x=>x.house==='891').url,'https://jirisimon.cz/milovice/','real photos now available, no mapped balcony edge');
 assert(E.houses.find(x=>x.house==='891').note.includes('bez GPS/azimutu'));
@@ -30,6 +37,26 @@ assert.equal(view('?streetAudit=armadni-houses-east-5283'),null);
 assert.equal(view('?streetAudit=armadni-891-south-balconies-5285'),'armadni-891-south-balconies-5285');
 assert.equal(view('?streetAudit=other'),null);
 assert.equal(mount(null,'?streetAudit=armadni-houses-east-5282'),null);
+// Audit panel must show only the houses visible in the selected block.
+function mockDoc(){
+ const elements=[];
+ const doc={body:{append(el){elements.push(el)}},createElement(tag){
+  return {tag,style:{},append(el){(this.children??=[]).push(el)},set textContent(t){this._text=t},get textContent(){return this._text??''}};
+ },getElementById(){return null}};
+ return {doc,elements};
+}
+const eastDoc=mockDoc();
+assert(mount(eastDoc.doc,'?streetAudit=armadni-houses-east-5282'));
+const eastText=JSON.stringify(eastDoc.elements);
+assert(eastText.includes('terasa 13 m²')||eastText.includes('13m²'));
+assert(eastText.includes('č.p. 891'));
+const westDoc=mockDoc();
+assert(mount(westDoc.doc,'?streetAudit=armadni-houses-west-5282'));
+const westText=JSON.stringify(westDoc.elements);
+assert(westText.includes('886/887'));
+assert(!westText.includes('5.285: u č.p. 891'));
+assert(!westText.includes('13m²'));
+
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const token of ["from './scripts/osm-armadni-evidence-5283.js?v=528301'","mountArmadniEvidence5283(document,location.search)","const BUILD_ID='"])assert(html.includes(token),token);
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),source);

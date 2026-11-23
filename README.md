@@ -1,3 +1,9 @@
+## Milovice RP 5.285 — ověřený zdroj terasy Armádní 890 a kontrolní panel (23. 11. 2026; CI čekají)
+
+Adresný [inzerát Armádní 890](https://www.bezrealitky.cz/nemovitosti-byty-domy/719934-nabidka-pronajem-bytu-armadni-milovice) potvrzuje přízemní byt s předzahrádkou a **terasou 13 m²** (zveřejněn 25. 5. 2022). Neprokazuje fasádní hranu ani polohu terasy, proto **žádná nová terasa, vchod, chodník či kolize nevzniká**. Panel zdrojů při východní kamerové kontrole nyní uvádí tento údaj a varování; západní kamera 886/887 už nezobrazuje nesouvisející sdělení o balkonech 891. Doplněný Node test ověřuje obě varianty panelu a epistemická omezení. OSM/RÚIAN data a runtime 3D geometrie se nemění.
+
+---
+
 ## Milovice RP 5.285 — modelové balkonové dveře bez prosvítání starých oken (23. 11. 2026; CI čekají)
 
 Oprava Armádní 891 řeší dvojité zasklení: za třemi průsvitnými modelovými dveřmi je nově tenký tmavý neprůhledný podklad (pátý sdílený mesh), který opticky zakrývá původní provizorní okno i parapet. Celá skupina balkonů má **5 meshů / 360 trojúhelníků**. Nevznikají stavební otvory, nové budovy ani kolize; původních 360 odhadovaných oken zůstává v modelových datech. Skutečné umístění dveří není fotozaměřeno. Aktualizovaný Node materiálový test a mobilní/široký WebGL test mají potvrdit vrstvení a LOD před merge.
