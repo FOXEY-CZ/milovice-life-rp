@@ -65,7 +65,7 @@ assert.equal(r.meshCount,5);
 assert.equal(r.totalTriangles,360);
 assert.equal(r.photoOrientationInferred,true);
 assert.equal(r.exactPlacementSurveyed,false);
-assert.equal(r.visibleAfterLOD(),4);
+assert.equal(r.visibleAfterLOD(),5);
 assert(r.allInScene());
 assert.equal(materialCount,5);
 const glass=layer.children.find(m=>m.name.includes('GlassDoor'));
