@@ -1,3 +1,9 @@
+## Milovice RP 5.285 — oprava modelového materiálu balkonových dveří (23. 11. 2026; CI čekají)
+
+Původní model tří balkonů na Armádní 891 zůstává geometricky beze změn. Čtvrtý sdílený materiál skleněných výplní je nyní částečně průsvitný (`opacity: 0.58`, `depthWrite: false`), zatímco betonové desky, parapety a kovová madla zůstávají neprůhledné. Jde o **modelovou grafickou opravu**, ne ověřený typ skla ani stavební otvor. Nový Node regresní test kontroluje, že průsvitnost nedopadá na tři pevné vrstvy. Očekává se CI a mobilní/široký Chromium/SwiftShader test před sloučením. Nezměněno: OSM/RÚIAN data, balkony, rozměry, počet meshů/trojúhelníků, nové kolize 0.
+
+---
+
 ## Milovice RP 5.285 — skutečné 3D balkonové objemy Armádní 891 na odvozené jižní fasádě (22. 11. 2026; PR #71 MERGED, 5/5 CI PASS, Pages čekají)
 
 **Zdroj / výklad:** exteriérové fotografie stavby č.p. 891 (`01-93`, `milovice-20/23/24`) z [adresní fotogalerie](https://jirisimon.cz/milovice/) ukazují vertikální sloupec balkonů. V původním RÚIAN půdorysu `1047406190` je vedle východní hrany původní OSM komunikace `1046197816`; z parkování viditelného po pravé straně fotografie je jako nejpravděpodobnější kandidát odvozená **jižní obvodová hrana 6**. Fotografické snímky **neobsahují průkazný GPS azimut**; nejde o metrickou rekonstrukci a stranu lze později opravit. Geodeticky ověřený je jen půdorys, nikoli balkonové kotvy.
