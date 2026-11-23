@@ -178,3 +178,46 @@ export function renderArmadni891Balconies5285(THREE,{plan,toWorld,baseHeight,lay
   allInScene:()=>meshes.every(m=>m.parent===layer),
   visibleAfterLOD:()=>meshes.filter(visible).length};
 }
+
+/** 5.286 — remove ONLY provisional source-window graphics that overlap the
+ * three photo-inferred balcony-door overlays. No actual wall openings.
+ * Invalid source/face/height combinations fail closed; other houses untouched.
+ */
+export function planArmadni891WindowOmissions5286(housePlan,balconyPlan){
+ const c=ARMADNI_891_BALCONIES_5285;
+ if(housePlan?.sourceFacadeVersion!=='5.282'||
+  housePlan.sourceOSMId!==c.sourceOSMId||
+  housePlan.sourceRUIANId!==c.sourceRUIANId||
+  housePlan.sourceHash!==c.sourceHash||
+  housePlan.sourceReportedFloors!==4||
+  housePlan.estimatedWindows!==92||
+  balconyPlan?.version!=='5.285'||
+  balconyPlan.sourceOSMId!==c.sourceOSMId||
+  balconyPlan.sourceRUIANId!==c.sourceRUIANId||
+  balconyPlan.sourceHash!==c.sourceHash||
+  balconyPlan.originalSouthEdgeIndex!==c.facadeEdgeIndex||
+  Math.abs(balconyPlan.originalSouthEdgeLengthMetres-c.sourceEdgeLengthMetres)>.18||
+  balconyPlan.centerFromEastMetres!==c.firstCentreFromEastMetres||
+  balconyPlan.widthMetres!==c.modelWidthMetres||
+  !Array.isArray(balconyPlan.floors)||
+  balconyPlan.floors.join(',')!==c.floors.join(','))return null;
+ const face=housePlan.facades.find(f=>f.edgeIndex===c.facadeEdgeIndex);
+ if(!face||face.bays!==5||
+  Math.abs(face.sourceLengthMetres-c.sourceEdgeLengthMetres)>.18)return null;
+ const doorLeft=balconyPlan.centerFromEastMetres-.77;
+ const doorRight=balconyPlan.centerFromEastMetres+.77;
+ const overlapping=[];
+ for(let bay=0;bay<face.bays;bay++){
+  const center=(bay+.5)*face.sourceLengthMetres/face.bays;
+  const left=center-housePlan.modelWindowWidthMetres/2;
+  const right=center+housePlan.modelWindowWidthMetres/2;
+  if(Math.min(right,doorRight)-Math.max(left,doorLeft)>.5)
+   overlapping.push(bay);
+ }
+ // Exactly one original *estimated* window bay overlaps the model door.
+ if(overlapping.length!==1||overlapping[0]!==0)return null;
+ return balconyPlan.floors.map(floor=>Object.freeze({
+  sourceOSMId:c.sourceOSMId,edgeIndex:c.facadeEdgeIndex,
+  floor,bay:overlapping[0]
+ }));
+}
