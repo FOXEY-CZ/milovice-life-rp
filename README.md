@@ -1,4 +1,4 @@
-## Milovice RP 5.286 — překrytá modelová okna za balkony č.p. 891 (23. 11. 2026; CI čekají)
+## Milovice RP 5.286 — překrytá modelová okna za balkony č.p. 891 (23. 11. 2026; PR #76 MERGED, 5/5 CI PASS; Pages neověřeny)
 
 Na jižní, fotograficky **odvozené** (nikoli zaměřené) OSM hraně 6 původního bytového domu Armádní 891 bylo za trojicí modelových balkonových dveří nadále zbytečně vykreslováno předchozí generické okno v prvním poli na podlažích 1–3. Nová kontrola odvozuje překryté okenní pole z původní OSM hrany a polohy modelových balkonových dveří. Sdílený renderer vynechá pouze **tři odhadnuté okenní overlaye** (kompletní rámy, zasklení, příčky a parapety); ostatní budovy ani neodhadovaná fyzická zeď se nemění.
 
@@ -6,7 +6,7 @@ Z původních **360 plánovaných okenních polí** se vykresluje **357**, půvo
 
 ---
 
-## Milovice RP 5.285 — přepínání tří technických pohledů Armádní (23. 11. 2026; CI čekají)
+## Milovice RP 5.285 — přepínání tří technických pohledů Armádní (23. 11. 2026; PR #75 MERGED, 4/4 CI PASS; Pages neověřeny)
 
 Kontrolní panel zdrojů má nyní tři přímé volby: blok 890/891, blok 886/887 a balkonový detail 891. Při přepnutí se používá pouze existující `streetAudit` URL předvolba a zachovávají se ostatní parametry (například `v`). Aktivní pohled nelze omylem znovu spustit; zůstává označený v panelu. Kontrola usnadňuje srovnání modelovaných domů se skutečnými exteriérovými podklady, **sama ale žádné foto umístění neověřuje**. Nulové změny 3D geometrie, OSM/RÚIAN dat, chodníků a kolizí. Node regresní test přepínání a vymezení zdrojového panelu.
 
