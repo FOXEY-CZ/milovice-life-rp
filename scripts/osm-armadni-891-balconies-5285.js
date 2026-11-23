@@ -94,7 +94,7 @@ export function renderArmadni891Balconies5285(THREE,{plan,toWorld,baseHeight,lay
  // Actual south-facing exterior normal is required, not a generic reversed
  // polygon winding: protects against wrong-side or inner-wall placement.
  if(nz<.95)return null;
- const positions=[[],[],[],[]]; // concrete, solid parapet, handrails, door glass
+ const positions=[[],[],[],[],[]]; // slab, parapet, rails, door glass, opaque door backing
  const pos=(along,protrusion,height)=>[
   a.x+ux*along+nx*protrusion,
   baseHeight+height,
@@ -128,9 +128,12 @@ export function renderArmadni891Balconies5285(THREE,{plan,toWorld,baseHeight,lay
   box(2,first,last,depth-.09,depth+.035,top+.83,top+1.00);
   box(2,first,first+.10,.22,depth+.035,top+.83,top+1.00);
   box(2,last-.10,last,.22,depth+.035,top+.83,top+1.00);
-  // Translucent modeled door surface is laid in front of the provisional
-  // window grid; it does NOT physically cut a real opening in the wall.
-  // Door position and reflectance remain unverified approximations.
+  // Mask the provisional windows/sills behind each modeled door. This is
+  // a dark backing panel, NOT a real wall cutout or surveyed door location.
+  // Its exterior face (+.140m) clears source-window sill (+.128m), while
+  // the translucent glass remains just in front (+.145m).
+  box(4,plan.centerFromEastMetres-.77,
+   plan.centerFromEastMetres+.77,.132,.140,top+.07,top+2.22);
   box(3,plan.centerFromEastMetres-.77,
    plan.centerFromEastMetres+.77,.145,.157,top+.07,top+2.22);
   box(2,plan.centerFromEastMetres-.02,
@@ -138,7 +141,7 @@ export function renderArmadni891Balconies5285(THREE,{plan,toWorld,baseHeight,lay
  }
  let materials=materialsCache.get(THREE);
  if(!materials){
-  const colors=[0xc7c3bd,0xd9d6d1,0x767d81,0x586d78];
+  const colors=[0xc7c3bd,0xd9d6d1,0x767d81,0x586d78,0x253841];
   materials=colors.map((color,i)=>new THREE.MeshStandardMaterial({
    color,side:THREE.DoubleSide,roughness:i===3?.42:.87,
    metalness:i===2?.28:0,
@@ -152,7 +155,7 @@ export function renderArmadni891Balconies5285(THREE,{plan,toWorld,baseHeight,lay
   geometry.computeVertexNormals();geometry.computeBoundingSphere();
   const mesh=new THREE.Mesh(geometry,materials[i]);
   mesh.name='Milovice_Armadni_891_PhotoInferredBalcony_'+
-   ['Slab','Parapet','Rail','GlassDoor'][i]+'_5285';
+   ['Slab','Parapet','Rail','GlassDoor','DoorBacking'][i]+'_5285';
   mesh.userData.sourceOSMId=plan.sourceOSMId;
   mesh.userData.sourceFacadeEdge=plan.originalSouthEdgeIndex;
   mesh.userData.sourcePhotoUrl=plan.sourcePhotoUrl;
