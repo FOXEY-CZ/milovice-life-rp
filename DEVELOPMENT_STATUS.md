@@ -1,10 +1,10 @@
-# Milovice RP — aktuální handoff (22. 11. 2026)
+# Milovice RP — aktuální handoff (23. 11. 2026)
 
 > **5.285 — [PR #71](https://github.com/FOXEY-CZ/milovice-life-rp/pull/71) MERGED jako `dc12da88`, CI 5/5 PASS, Pages po sloučení zatím čekají.** Poprvé skutečné balkonové **3D objemy** u originálního domu **Armádní 891**, OSM `1047406190`, RÚIAN `107125749`: **3 modelové balkony nad přízemím** na jeho původní **jižní hraně 6**. Jde o orientaci **odvozenou z exteriérových fotografií** domu (snímky `01-93`, `milovice-20/23/24` z https://jirisimon.cz/milovice/) a existující parkovací komunikace OSM `1046197816` **východně od budovy**. **Není to geotagované foto zaměření ani potvrzená přesná poloha balkonů; konkrétní velikosti a odstíny jsou odhad.**
 
-## Dílčí oprava 5.285 (23. 11. 2026; PR / CI čekají)
+## Dílčí oprava 5.285 (23. 11. 2026; PR #72 MERGED, 4/4 spuštěných CI PASS, Pages neověřeny)
 
-- Modelová skleněná výplň balkonových dveří Armádní 891 už nemá stejný neprůhledný materiál jako beton. Samostatný čtvrtý sdílený mesh používá průsvitnost `0.58` a `depthWrite:false`, ostatní tři materiály zůstávají neprůhledné. Žádné změny GPS, velikostí, orientace, počtu balkonů, silnic či kolizí. Průsvitnost je **vizuální odhad**, ne doložené zasklení. Přidána materiálová regrese do Node testu; CI a mobilní/široký WebGL jsou zatím **neověřené**. Nadále se jedná o modelovou plochu **před** zdí, nikoli o stavebně vyříznuté dveře.
+- Modelová skleněná výplň balkonových dveří Armádní 891 už nemá stejný neprůhledný materiál jako beton. Samostatný čtvrtý sdílený mesh používá průsvitnost `0.58` a `depthWrite:false`, ostatní tři materiály zůstávají neprůhledné. Žádné změny GPS, velikostí, orientace, počtu balkonů, silnic či kolizí. Průsvitnost je **vizuální odhad**, ne doložené zasklení. Přidána materiálová regrese do Node testu. [PR #72](https://github.com/FOXEY-CZ/milovice-life-rp/pull/72) byl sloučen do `main` jako `2b2f588`; všechny 4 spuštěné workflow jsou PASS: [Validate #45086481005](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45086481005), [street-block #45086480977](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45086480977), [Station #45086481018](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45086481018) a [Nádražní #45086493870](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45086493870). Páté Italská workflow se pro tento commit ve výpisu neobjevilo; **Pages nasazení po merge není potvrzené**. Nadále se jedná o modelovou plochu **před** zdí, nikoli o stavebně vyříznuté dveře.
 
 ## Co je změněné
 
