@@ -37,10 +37,14 @@ try{
  const x=r.runtime;
  assert(x?.ready);
  assert.deepEqual(x.houses,['886','887','891','890']);
- assert.equal(x.modelWindows,360);
+ assert.equal(x.modelWindows,357);
+ assert.equal(x.plannedModelWindows,360);
+ assert.equal(x.omittedModelWindows,3);
+ assert.equal(x.entries.find(e=>e.sourceOSMId==='1047406190')?.omittedWindows,3);
+ assert(x.entries.filter(e=>e.sourceOSMId!=='1047406190').every(e=>e.omittedWindows===0));
  assert.equal(x.modelFacades,26);
  assert.equal(x.meshCount,16);
- assert.equal(x.triangles,5136);
+ assert.equal(x.triangles,5094);
  assert(x.entries.every(b=>b.floors===4&&b.inScene&&b.visibleMeshes===4));
  for(const k of ['newBuildings','newDoors','newBalconies','newRoofs','newFootways','newRoads','newColliders'])assert.equal(x[k],0);
  const e=await page.evaluate(()=>window.__miloviceArmadniEvidenceRuntime5283?.());
@@ -79,5 +83,5 @@ try{
  await page.setViewportSize({width:1280,height:720});
  await page.waitForTimeout(950);
  await page.screenshot({path:'browser-artifacts/armadni-houses-5282-wide.png'});
- console.log('PASS 5.285 three photo-inferred Armádní 891 balconies on original south wall, 100 flats, mobile+wide WebGL after 7.1s LOD');
+ console.log('PASS 5.286 Armádní 891 3 redundant estimated windows omitted behind balconies, 357 model bays, mobile+wide WebGL after 7.1s LOD');
 }finally{await browser.close()}
