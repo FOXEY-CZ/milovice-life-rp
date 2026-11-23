@@ -130,7 +130,7 @@ assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const term of [
- "from './scripts/osm-visnova-residential-5192.js?v=519400'",
+ "from './scripts/osm-visnova-residential-5192.js?v=528600'",
  'const visnovaResidentialPlan5192=planVisnovaResidential5192({',
  'renderVisnovaResidential5192(THREE,{',
  'if(visnovaResidentialRendered5192){',
