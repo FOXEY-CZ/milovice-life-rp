@@ -96,12 +96,26 @@ export function planVisnovaResidential5192({
 // four identical GPU materials for each newly streamed-in residential shell.
 const facadeMaterialCache5192=new WeakMap();
 export function renderVisnovaResidential5192(THREE,{
- plan,toWorld,baseHeight,layer
+ plan,toWorld,baseHeight,layer,omitModelWindows=[]
 }={}){
  if(plan?.version!=='5.192'||!THREE?.Mesh||
   !THREE?.BufferGeometry||!THREE?.Float32BufferAttribute||
   !THREE?.MeshStandardMaterial||typeof toWorld!=='function'||
   !Number.isFinite(baseHeight)||!layer?.add)return null;
+ // Optional source-locked suppression concerns ESTIMATED glazing only. Never
+ // cut physical wall geometry, and reject stale/foreign facade slot IDs.
+ if(!Array.isArray(omitModelWindows)||omitModelWindows.length>12)return null;
+ const omittedSlots=new Set();
+ for(const slot of omitModelWindows){
+  const face=plan.facades.find(f=>f.edgeIndex===slot?.edgeIndex);
+  if(slot?.sourceOSMId!==plan.sourceOSMId||!face||
+   !Number.isInteger(slot.floor)||slot.floor<0||
+   slot.floor>=plan.sourceReportedFloors||
+   !Number.isInteger(slot.bay)||slot.bay<0||slot.bay>=face.bays)return null;
+  const key=slot.edgeIndex+':'+slot.floor+':'+slot.bay;
+  if(omittedSlots.has(key))return null;
+  omittedSlots.add(key);
+ }
  const coords=plan.sourceGeometry.map(toWorld);
  if(coords.some(p=>!Number.isFinite(p?.x)||!Number.isFinite(p?.y)))return null;
  // Frames protrude beyond glazing; mullions sit just proud of the frames.
@@ -130,7 +144,7 @@ export function renderVisnovaResidential5192(THREE,{
   rectangle(buffer,a,b,[start,y0],[stop,y1],out,nx,nz);
  };
  const facesByIndex=new Map(plan.facades.map(f=>[f.edgeIndex,f]));
- let windows=0,plinthEdges=0;
+ let windows=0,omitted=0,plinthEdges=0;
  for(let edge=0;edge<coords.length-1;edge++){
   const a=coords[edge],b=coords[edge+1],dx=b.x-a.x,dz=b.y-a.y;
   const len=Math.hypot(dx,dz);
@@ -148,6 +162,7 @@ export function renderVisnovaResidential5192(THREE,{
    if(high>plan.modelHeightMeters-.12)return null;
    const pad=.064;
    for(let bay=0;bay<face.bays;bay++){
+    if(omittedSlots.has(edge+':'+floor+':'+bay)){omitted++;continue;}
     const center=(bay+.5)/face.bays;
     const half=plan.modelWindowWidthMetres*.5/len;
     const left=center-half,right=center+half;
@@ -166,7 +181,7 @@ export function renderVisnovaResidential5192(THREE,{
    }
   }
  }
- if(windows!==plan.estimatedWindows)return null;
+ if(windows+omitted!==plan.estimatedWindows||omitted!==omittedSlots.size)return null;
  let materials=facadeMaterialCache5192.get(THREE);
  if(!materials){
   const palette=[0xd4d4d1,0x7996a5,0xbcb8b0,0x96958f];
@@ -198,7 +213,8 @@ export function renderVisnovaResidential5192(THREE,{
   sourceRUIANId:plan.sourceRUIANId,
   sourceReportedFloors:plan.sourceReportedFloors,
   longFacadesRendered:plan.facades.length,
-  estimatedWindowsRendered:windows,plinthEdgesRendered:plinthEdges,
+  estimatedWindowsRendered:windows,plannedModelWindowBays:plan.estimatedWindows,
+  omittedModelWindows:omitted,plinthEdgesRendered:plinthEdges,
   totalTriangles:positions.reduce((n,v)=>n+v.length/9,0),
   meshCount:meshes.length,
   genericFacadeEdgesSuppressed:plan.suppressedGenericFacadeEdges,

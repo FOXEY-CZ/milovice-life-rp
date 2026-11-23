@@ -1,3 +1,11 @@
+## Milovice RP 5.286 — překrytá modelová okna za balkony č.p. 891 (23. 11. 2026; CI čekají)
+
+Na jižní, fotograficky **odvozené** (nikoli zaměřené) OSM hraně 6 původního bytového domu Armádní 891 bylo za trojicí modelových balkonových dveří nadále zbytečně vykreslováno předchozí generické okno v prvním poli na podlažích 1–3. Nová kontrola odvozuje překryté okenní pole z původní OSM hrany a polohy modelových balkonových dveří. Sdílený renderer vynechá pouze **tři odhadnuté okenní overlaye** (kompletní rámy, zasklení, příčky a parapety); ostatní budovy ani neodhadovaná fyzická zeď se nemění.
+
+Z původních **360 plánovaných okenních polí** se vykresluje **357**, původních 16 batch meshů / 26 fasád zůstává, počet jejich trojúhelníků klesá z 5136 na 5094. Balkonové meshe zůstávají 5/360 trojúhelníků a krycí plochy jsou stále před zdí, bez skutečného otvoru. Zdrojově zamčené geometrii odpovídá Node a mobilní/široká Chromium WebGL regrese po LOD 7,1 s. Nepřibyly budovy, kolize ani chodníky; orientace a vzhled balkonů stále nejsou geodeticky nebo fotograficky pozicované přesně.
+
+---
+
 ## Milovice RP 5.285 — přepínání tří technických pohledů Armádní (23. 11. 2026; CI čekají)
 
 Kontrolní panel zdrojů má nyní tři přímé volby: blok 890/891, blok 886/887 a balkonový detail 891. Při přepnutí se používá pouze existující `streetAudit` URL předvolba a zachovávají se ostatní parametry (například `v`). Aktivní pohled nelze omylem znovu spustit; zůstává označený v panelu. Kontrola usnadňuje srovnání modelovaných domů se skutečnými exteriérovými podklady, **sama ale žádné foto umístění neověřuje**. Nulové změny 3D geometrie, OSM/RÚIAN dat, chodníků a kolizí. Node regresní test přepínání a vymezení zdrojového panelu.

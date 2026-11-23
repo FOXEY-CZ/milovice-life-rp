@@ -4,7 +4,8 @@ import {planArmadniHouses5282} from './osm-armadni-houses-5282.js';
 import {planArmadni891Photo5284} from './osm-armadni-891-photo-wall-5284.js';
 import {ARMADNI_891_BALCONIES_5285 as C,
  planArmadni891Balconies5285 as plan,
- renderArmadni891Balconies5285 as render} from './osm-armadni-891-balconies-5285.js';
+ renderArmadni891Balconies5285 as render,
+ planArmadni891WindowOmissions5286 as omitWindows} from './osm-armadni-891-balconies-5285.js';
 const raw=readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8');
 const elements=JSON.parse(raw).elements;
 const source=id=>{
@@ -25,6 +26,18 @@ assert.equal(p.exactPositionSurveyed,false);
 assert.deepEqual(p.floors,[1,2,3]);
 assert.equal(p.modelBalconyCount,3);
 assert.equal(p.addedBalconies,3);
+// 5.286: the source-locked provisional first window bay is visually
+// redundant beneath each modeled door. Other houses retain every model bay.
+const house891=planArmadniHouses5282({id:elements.find(w=>String(w.id)==='1047406190').id,
+ regionId:'mlada',tags:elements.find(w=>String(w.id)==='1047406190').tags,
+ geometry:elements.find(w=>String(w.id)==='1047406190').geometry,
+ modelFloors:4,modelHeight:12.2});
+const omitted=omitWindows(house891,p);
+assert.deepEqual(omitted.map(x=>[x.edgeIndex,x.floor,x.bay]),[[6,1,0],[6,2,0],[6,3,0]]);
+assert.equal(omitWindows({...house891,sourceHash:'wrong'},p),null);
+assert.equal(omitWindows(house891,{...p,centerFromEastMetres:4}),null);
+assert.equal(omitWindows(house891,{...p,originalSouthEdgeIndex:9}),null);
+assert.equal(omitWindows(house891,{...p,floors:[0,1,2]}),null);
 for(const k of ['addedBuildingShells','addedEntrances','addedRoofs',
  'addedRoads','addedFootways','addedColliders'])assert.equal(p[k],0);
 assert.equal(plan(source('1047406191')),null,'890 must not inherit 891 balcony');
@@ -93,15 +106,15 @@ layer.visible=false;assert.equal(r.visibleAfterLOD(),0);
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),raw);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const token of [
- "from './scripts/osm-armadni-891-balconies-5285.js?v=528500'",
+ "from './scripts/osm-armadni-891-balconies-5285.js?v=528600'",
  'planArmadni891Balconies5285(armadni891PhotoPlan5284)',
  'renderArmadni891Balconies5285(THREE,{',
  'armadni891BalconiesCache5285.clear();',
  'armadni891BalconiesCache5285.set(String(osmId)',
  'window.__miloviceArmadni891BalconiesRuntime5285=()=>',
  "'armadni-891-south-balconies-5285':{",
- "const BUILD_ID='20261122-armadni-891-balconies-528500'"
+ "const BUILD_ID='20261123-armadni-891-window-overlays-528600'"
 ])assert(html.includes(token),token);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
-assert.equal(meta,'20261122-armadni-891-balconies-528500');
-console.log('PASS 5.285 Armádní 891 3 photo-inferred southern balconies, masked window overlays, 5 batches/360 triangles, no altered OSM or collisions');
+assert.equal(meta,'20261123-armadni-891-window-overlays-528600');
+console.log('PASS 5.286 Armádní 891 three inferred balcony doors, three exact estimated window overlays omitted, unchanged original OSM');

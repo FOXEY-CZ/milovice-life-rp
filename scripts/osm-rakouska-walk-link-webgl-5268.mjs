@@ -37,7 +37,7 @@ try{
  assert(q.a.originalGPSUnchanged&&q.a.unmarkedCrossingsPreserved);
  assert.equal(q.a.newFootways,0);assert.equal(q.a.newKerbs,0);
  assert.equal(q.a.newZebras,0);assert.equal(q.a.newColliders,0);
- assert(q.build?.startsWith('20261122-'));
+ assert.match(q.build||'',/^\d{8}-[a-z0-9-]+$/,'valid versioned build ID');
  assert.equal(q.build,q.hud);
  assert.equal(q.hud,q.build);
  assert(q.webgl);

@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {ARMADNI_HOUSES_5282 as C,planArmadniHouses5282 as plan} from './osm-armadni-houses-5282.js';
 import {renderVisnovaResidential5192 as render} from './osm-visnova-residential-5192.js';
+import {planArmadni891Photo5284} from './osm-armadni-891-photo-wall-5284.js';
+import {planArmadni891Balconies5285,planArmadni891WindowOmissions5286} from './osm-armadni-891-balconies-5285.js';
 const raw=readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8');
 const elements=JSON.parse(raw).elements;
 class BufferGeometry{setAttribute(k,v){this[k]=v;}computeVertexNormals(){}computeBoundingSphere(){}}
@@ -12,7 +14,7 @@ class Mesh{constructor(g,m){this.geometry=g;this.material=m;this.userData={};thi
 const THREE={BufferGeometry,Float32BufferAttribute,MeshStandardMaterial,Mesh,DoubleSide:2};
 const toWorld=p=>({x:(p.lon-14.857)*111320*Math.cos(50.226*Math.PI/180),
  y:-(p.lat-50.23)*111320});
-let windows=0,faces=0,triangles=0,meshes=0;
+let windows=0,plannedWindows=0,omittedWindows=0,faces=0,triangles=0,meshes=0;
 for(const s of C.buildings){
  const found=elements.filter(w=>String(w.id)===s.id);
  assert.equal(found.length,1,s.house);
@@ -32,18 +34,28 @@ for(const s of C.buildings){
  for(const k of ['newBuildings','newDoors','newBalconies','newRoofs',
   'newFootways','newRoads','newColliders'])assert.equal(p[k],0);
  const layer={children:[],visible:true,add(m){m.parent=this;this.children.push(m);}};
- const r=render(THREE,{plan:p,toWorld,baseHeight:110,layer});
+ const balconyPlan=s.house==='891'?
+  planArmadni891Balconies5285(planArmadni891Photo5284(p)):null;
+ const omissions=balconyPlan?
+  planArmadni891WindowOmissions5286(p,balconyPlan):[];
+ assert(omissions,'source-locked exclusions must resolve');
+ assert.equal(omissions.length,s.house==='891'?3:0);
+ const r=render(THREE,{plan:p,toWorld,baseHeight:110,layer,
+  omitModelWindows:omissions});
  assert(r,'render original shell '+s.house);
- assert.equal(r.estimatedWindowsRendered,p.estimatedWindows);
+ assert.equal(r.estimatedWindowsRendered,p.estimatedWindows-omissions.length);
+ assert.equal(r.omittedModelWindows,omissions.length);
+ assert.equal(r.plannedModelWindowBays,p.estimatedWindows);
  assert.equal(r.plinthEdgesRendered,s.nodes-1);
  assert.equal(r.longFacadesRendered,s.edges.length);
- assert.equal(r.totalTriangles,14*p.estimatedWindows+2*(s.nodes-1));
+ assert.equal(r.totalTriangles,14*r.estimatedWindowsRendered+2*(s.nodes-1));
  assert.equal(r.meshCount,4);
  assert.equal(r.visibleAfterLOD(),4);
  assert(r.allInScene());
  assert(layer.children.every(m=>m.userData.lodDetail===false&&
   m.geometry.position.array.every(Number.isFinite)));
- windows+=r.estimatedWindowsRendered;faces+=r.longFacadesRendered;
+ windows+=r.estimatedWindowsRendered;plannedWindows+=r.plannedModelWindowBays;
+ omittedWindows+=r.omittedModelWindows;faces+=r.longFacadesRendered;
  triangles+=r.totalTriangles;meshes+=r.meshCount;
  for(const changes of [{id:123},{regionId:'centerlink'},
   {photoReviewed:true},{approvedArchitecture:true},{modelFloors:3},
@@ -58,9 +70,11 @@ for(const s of C.buildings){
   assert(plan({...o,regionId:region}),'source also available in '+region);
 }
 assert.equal(matCreated,4,'shared mesh materials');
-assert.equal(windows,360);
+assert.equal(windows,357);
+assert.equal(plannedWindows,360);
+assert.equal(omittedWindows,3);
 assert.equal(faces,26);
-assert.equal(triangles,5136);
+assert.equal(triangles,5094);
 assert.equal(meshes,16);
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),raw);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
@@ -74,4 +88,4 @@ for(const token of ["from './scripts/osm-armadni-houses-5282.js?v=528200'",
  assert(html.includes(token),'game integration '+token);
 const build=html.match(/meta name="milovice-build" content="([^"]+)"/)?.[1];
 assert.match(build,/^\d{8}-[a-z0-9-]+$/);
-console.log('PASS 5.282 Armádní 886/887/890/891 original RÚIAN 4x25 flats; 360 model windows, 16 meshes and no invented buildings');
+console.log('PASS 5.286 Armádní 4 RÚIAN houses; 360 provisional window slots, 3 omitted behind 891 balcony doors, 357 rendered, 16 meshes, unchanged source');

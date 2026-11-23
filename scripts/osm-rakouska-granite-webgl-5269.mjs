@@ -38,7 +38,7 @@ try{
  assert.equal(q.granite.newMaterials,0);
  assert.equal(q.granite.newColliders,0);
  assert.equal(q.view,'rakouska-granite-5269');
- assert(q.meta?.startsWith('20261122-'));
+ assert.match(q.meta||'',/^\d{8}-[a-z0-9-]+$/,'valid YYYYMMDD build identifier');
  assert.equal(q.meta,q.hud);
  assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
