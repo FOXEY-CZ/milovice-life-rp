@@ -1,3 +1,9 @@
+## Milovice RP 5.285 — modelové balkonové dveře bez prosvítání starých oken (23. 11. 2026; CI čekají)
+
+Oprava Armádní 891 řeší dvojité zasklení: za třemi průsvitnými modelovými dveřmi je nově tenký tmavý neprůhledný podklad (pátý sdílený mesh), který opticky zakrývá původní provizorní okno i parapet. Celá skupina balkonů má **5 meshů / 360 trojúhelníků**. Nevznikají stavební otvory, nové budovy ani kolize; původních 360 odhadovaných oken zůstává v modelových datech. Skutečné umístění dveří není fotozaměřeno. Aktualizovaný Node materiálový test a mobilní/široký WebGL test mají potvrdit vrstvení a LOD před merge.
+
+---
+
 ## Milovice RP 5.285 — oprava modelového materiálu balkonových dveří (23. 11. 2026; CI čekají)
 
 Původní model tří balkonů na Armádní 891 zůstává geometricky beze změn. Čtvrtý sdílený materiál skleněných výplní je nyní částečně průsvitný (`opacity: 0.58`, `depthWrite: false`), zatímco betonové desky, parapety a kovová madla zůstávají neprůhledné. Jde o **modelovou grafickou opravu**, ne ověřený typ skla ani stavební otvor. Nový Node regresní test kontroluje, že průsvitnost nedopadá na tři pevné vrstvy. Očekává se CI a mobilní/široký Chromium/SwiftShader test před sloučením. Nezměněno: OSM/RÚIAN data, balkony, rozměry, počet meshů/trojúhelníků, nové kolize 0.
