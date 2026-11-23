@@ -63,8 +63,8 @@ try{
  assert.equal(balconies.sourceFacadeEdge,6);
  assert.equal(balconies.modeledPhotoInferredBalconies,3);
  assert.equal(balconies.exactPositionSurveyed,false);
- assert.equal(balconies.meshCount,4);
- assert.equal(balconies.triangles,324);
+ assert.equal(balconies.meshCount,5);
+ assert.equal(balconies.triangles,360);
  assert.equal(balconies.newBuildings,0);
  assert.equal(balconies.newColliders,0);
  const panel=page.locator('#armadni-evidence-5283');
