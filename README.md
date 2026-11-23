@@ -1,3 +1,9 @@
+## Milovice RP 5.285 — přepínání tří technických pohledů Armádní (23. 11. 2026; CI čekají)
+
+Kontrolní panel zdrojů má nyní tři přímé volby: blok 890/891, blok 886/887 a balkonový detail 891. Při přepnutí se používá pouze existující `streetAudit` URL předvolba a zachovávají se ostatní parametry (například `v`). Aktivní pohled nelze omylem znovu spustit; zůstává označený v panelu. Kontrola usnadňuje srovnání modelovaných domů se skutečnými exteriérovými podklady, **sama ale žádné foto umístění neověřuje**. Nulové změny 3D geometrie, OSM/RÚIAN dat, chodníků a kolizí. Node regresní test přepínání a vymezení zdrojového panelu.
+
+---
+
 ## Milovice RP 5.285 — ověřený zdroj terasy Armádní 890 a kontrolní panel (23. 11. 2026; CI čekají)
 
 Adresný [inzerát Armádní 890](https://www.bezrealitky.cz/nemovitosti-byty-domy/719934-nabidka-pronajem-bytu-armadni-milovice) potvrzuje přízemní byt s předzahrádkou a **terasou 13 m²** (zveřejněn 25. 5. 2022). Neprokazuje fasádní hranu ani polohu terasy, proto **žádná nová terasa, vchod, chodník či kolize nevzniká**. Panel zdrojů při východní kamerové kontrole nyní uvádí tento údaj a varování; západní kamera 886/887 už nezobrazuje nesouvisející sdělení o balkonech 891. Doplněný Node test ověřuje obě varianty panelu a epistemická omezení. OSM/RÚIAN data a runtime 3D geometrie se nemění.
