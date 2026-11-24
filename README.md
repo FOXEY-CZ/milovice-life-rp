@@ -1,3 +1,9 @@
+## Milovice RP 5.291 — bezpečná obnova ~32 m původního chodníku Armádní (24. 11. 2026; CI/Pages čekají)
+
+U originálního OSM rezidenčního úseku `1373371687` defaultní modelová šířka 7,8 m skryla část již zmapovaného OSM chodníku `1468803914`. Nový zdrojově zamčený plán používá jen u tohoto úseku **procedurální odhad 5,0 m**, takže se přibližně 32 metrů původního chodníku může znovu bezpečně vykreslit. Skutečná šířka vozovky nebyla geodeticky ani fotograficky zaměřená.
+
+Zachovány GPS, pěší a automobilové trasy, jiné ulice, všechny budovy, zeleň, parkovací místa i kolize. Nejsou přidány žádné nové vozovky, přechody, zebry, chodníky, obrubníky ani místa k parkování. Přidán `scripts/osm-armadni-sidewalk-clearance-5291.js`, Node regresní test, CI krok Validate a runtime `__miloviceArmadniSidewalkRuntime5291`. **CI/WebGL/Pages zatím neověřeny.** Další krok: zdrojové fotografické srovnání celého předprostoru.
+
 ## Milovice RP 5.290 — 3D zeleň na čtyřech původních travnatých plochách Armádní (24. 11. 2026; PR #80 MERGED, 5/5 CI PASS; Pages neověřeny)
 
 Podle **skutečné OSM mapy**, nikoli vymyšlených pozemků, přidán drobný prostorový porost na čtyři již renderované polygony `landuse=grass`: `1468803911`, `1468803935` (poblíž Armádní 886/887) a `1468803941`, `1468803951` (poblíž Armádní 890/891). Jejich původní GPS souřadnice, obrysy, terén, chodníky a průjezdné komunikace **se nemění**. Jednotlivé vizuální trsy trávy mají modelový, nikoliv změřený odstín ani skutečně zaznamenaný počet či polohu. Každý stojí uvnitř původní travnaté plochy a mimo dosah všech známých cest a půdorysů budov.

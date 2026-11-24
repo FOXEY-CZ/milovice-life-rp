@@ -94,6 +94,12 @@ for(const term of [
  'planArmadniGreen5290({',
  'renderArmadniGreen5290(THREE,{',
  'window.__miloviceArmadniGreenRuntime5290=()=>',
- "const BUILD_ID='20261124-armadni-green-529000'"
+ "const BUILD_ID='"
 ])assert(html.includes(term),term);
+// Build IDs change each release; compare the live META, JS and HUD IDs.
+const runtimeBuild=html.match(/const BUILD_ID='([^']+)'/)?.[1];
+const metaBuild=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
+const hudBuild=html.split('id="build-label">')[1]?.split('</strong>')[0];
+assert(runtimeBuild&&runtimeBuild===metaBuild&&runtimeBuild===hudBuild,
+ 'live build identifiers must match');
 console.log('PASS 5.290 Armádní mapped OSM grass pockets: guarded deterministic low-poly vegetation, 1 mesh, no paths, roads or parking invented');

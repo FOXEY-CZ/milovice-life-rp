@@ -81,6 +81,12 @@ for(const item of [
  'renderArmadni890PairFacade5288(THREE,{',
  'armadni890FacadeCache5288.clear();',
  'window.__miloviceArmadni890FacadeRuntime5288=()=>',
- "const BUILD_ID='20261124-armadni-green-529000'"
+ "const BUILD_ID='"
 ])assert(html.includes(item),item);
+// Build IDs change each release; compare the live META, JS and HUD IDs.
+const runtimeBuild=html.match(/const BUILD_ID='([^']+)'/)?.[1];
+const metaBuild=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
+const hudBuild=html.split('id="build-label">')[1]?.split('</strong>')[0];
+assert(runtimeBuild&&runtimeBuild===metaBuild&&runtimeBuild===hudBuild,
+ 'live build identifiers must match');
 console.log('PASS 5.288 Armádní 890 C15 10 original source edges, 2 provisional project tone batches, 60 triangles, zero invented entrances/terraces');
