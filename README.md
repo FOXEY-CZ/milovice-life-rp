@@ -1,3 +1,7 @@
+## Milovice RP 5.292 — projektově doložená dlažba původních cest C13/C14 (24. 11. 2026; CI/Pages čekají)
+
+Podle [veřejného městského projektu DIO 2022](https://ud.mestolysa.cz/vr2022/vm12/MULL0B01AO22_0/MULL0B01AO3X/DIO.pdf) je pro pěší plochy C13/C14 navržená šedá betonová dlažba, pro vozovky asfalt a pro parkovací plochy oddělená konstrukce. **Projekt není fotografie skutečně postaveného stavu.** Proto pouze pět přesně OSM-zamčených původních pěších cest `1468803921`, `1468803937`, `1468803938`, `1468803907` a `1468803914` dostává jednu společnou decentní modelovou barevnou variantu procedurální dlažby. Souřadnice, trasy, dopravní síť, budovy, kolize i již opravená šířka 5.291 zůstávají nezměněné. **Žádná nová silnice, chodník, zebra, obrubník ani parkovací místo.** Source-lock modul + test 5.292, Validate CI a zdrojový odkaz v panelu západní Armádní. Skutečné barvy/rozměry dlažby nejsou potvrzené. CI/WebGL/Pages čekají.
+
 ## Milovice RP 5.291 — bezpečná obnova ~32 m původního chodníku Armádní (24. 11. 2026; CI/Pages čekají)
 
 U originálního OSM rezidenčního úseku `1373371687` defaultní modelová šířka 7,8 m skryla část již zmapovaného OSM chodníku `1468803914`. Nový zdrojově zamčený plán používá jen u tohoto úseku **procedurální odhad 5,0 m**, takže se přibližně 32 metrů původního chodníku může znovu bezpečně vykreslit. Skutečná šířka vozovky nebyla geodeticky ani fotograficky zaměřená.

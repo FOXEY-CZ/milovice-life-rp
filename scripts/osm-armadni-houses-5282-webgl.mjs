@@ -68,6 +68,26 @@ try{
  assert.equal(grass.visibleMeshes,1);
  for(const k of ['newLawnPolygons','newFootways','newRoads','newParkedCars','newTrees','newColliders'])
   assert.equal(grass[k],0);
+ // Full mobile WebGL check after 7.1s: 5.291 recovered source footway
+ // remains road-safe, 5.292 changes ONLY the material on exact mapped ways.
+ const recovered=await page.evaluate(()=>
+  window.__miloviceArmadniSidewalkRuntime5291?.());
+ assert(recovered?.ready,'5.291 authentic footway not preserved in mobile WebGL');
+ assert(recovered.safeOriginalFootwayMetres>90);
+ assert.equal(recovered.originalRoadAndFootwayGPSPreserved,true);
+ const pavers=await page.evaluate(()=>
+  window.__miloviceArmadniProjectPavingRuntime5292?.());
+ assert(pavers?.ready,'5.292 C13/C14 planned-grey original paths not rendered after 7.1s LOD');
+ assert.equal(pavers.version,'5.292');
+ assert.deepEqual([...pavers.sourceWayIds].sort(),[
+  '1468803921','1468803937','1468803938','1468803907','1468803914'
+ ].sort());
+ assert(pavers.sourceMetres>225&&pavers.sourceMetres<230);
+ assert.equal(pavers.seenWayIds.length,5);
+ assert(pavers.paintedSafePieces>0);
+ assert.equal(pavers.projectNotAsBuilt,true);
+ for(const key of ['newParking','newRoads','newFootways','newColliders'])
+  assert.equal(pavers[key],0);
  const west=await page.evaluate(()=>window.__miloviceArmadniWestRuntime5289?.());
  assert(west?.ready,'C13/C14 Armádní 886/887 provisional facades visible after 7.1s mobile LOD');
  assert.equal(west.version,'5.289');
@@ -136,5 +156,5 @@ try{
  await page.setViewportSize({width:1280,height:720});
  await page.waitForTimeout(950);
  await page.screenshot({path:'browser-artifacts/armadni-houses-5282-wide.png'});
- console.log('PASS 5.290 Armádní source-locked green pockets one low-poly mesh after 7.1s mobile LOD, plus 4 houses/357 model windows and wide WebGL');
+ console.log('PASS 5.292 Armádní real walking paving, 5.291 source road clipping and 5.290 source-locked green pockets one low-poly mesh after 7.1s mobile LOD, plus 4 houses/357 model windows and wide WebGL');
 }finally{await browser.close()}
