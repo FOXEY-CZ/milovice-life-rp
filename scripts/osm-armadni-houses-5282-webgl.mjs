@@ -60,6 +60,11 @@ try{
  assert.equal(photo.meshCount,2);
  assert.equal(photo.wallEdges,10);
  assert.equal(photo.triangles,60);
+ assert.equal(photo.groundBandToGrade,true);
+ assert.equal(photo.provisionalPlinthVisuallyCovered,true);
+ assert.equal(photo.physicalPlinthRemoved,false);
+ assert.equal(photo.groundLayerOffsetMetres,.039);
+ assert.equal(photo.seamLayerOffsetMetres,.041);
  assert.equal(photo.newBalconies,0);
  const balconies=await page.evaluate(()=>window.__miloviceArmadni891BalconiesRuntime5285?.());
  assert(balconies?.ready,'three photo-inferred balcony meshes survived 7.1s LOD');
