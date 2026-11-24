@@ -1,3 +1,4 @@
+import {inspectAthleticsOutline5300} from './osm-athletics-outline-5300.js';
 import {planOSMForestTreeInstances} from './forest-placement-597.js';
 import {classifyOSMPitch,planOSMPitchMarkings} from './osm-pitch-markings-599.js';
 import {makeMappedClayGrain5178} from './osm-clay-court-grain-5178.js';
@@ -54,7 +55,7 @@ export function addLanduseFeature(T,el,convert,terrain,osmLayer,zones){
  for(let i=0;i<p.count;i++)p.setY(i,terrain(p.getX(i),p.getZ(i))+.056);
  p.needsUpdate=true;geo.computeVertexNormals();
  const patch=new T.Mesh(geo,materials(T)[kind]);osmLayer.add(patch);
- if(kind==='pitch'){
+ if(kind==='pitch'&&!inspectAthleticsOutline5300(el)){
   const line=new T.LineLoop(new T.BufferGeometry().setFromPoints(
    pts.map(v=>new T.Vector3(v.x,terrain(v.x,v.y)+.14,v.y))),materials(T).pitchLine);
   osmLayer.add(line);
@@ -123,6 +124,7 @@ export function planCityLanduseBatches(elements,convert,{cellSize=180}={}){
    key,kind,renderMaterial,gx,gz,oversized,centerX,centerZ,items:[]
   });
   const entry={id:String(el.id),kind,renderMaterial,pts,area,key,oversized,
+   athleticsOutline5300:inspectAthleticsOutline5300(el),
    tags:el.tags||{},allowPlants:!['private','no'].includes(el.tags?.access)};
   groups.get(key).items.push(entry);
   entries.push(entry);
@@ -149,7 +151,7 @@ export function addCityLanduseBatches(T,elements,convert,terrain,osmLayer,zones,
  const materialsForCity=materials(T);
  let surfaceDrawMeshes=0,outlineDrawMeshes=0,sourcePitchLines=0;
  let courtMarkSegments=0,surfaceTaggedPitches=0,sportTaggedPitches=0;
- const sportPitchIds=[];
+ const sportPitchIds=[],suppressedAthleticsOutlines5300=[];
  let failedMerges=0;
  const batchMeshes=[];
  function annotate(object,g){
@@ -192,8 +194,10 @@ export function addCityLanduseBatches(T,elements,convert,terrain,osmLayer,zones,
     if(entry.tags.surface)surfaceTaggedPitches++;
     if(classifyOSMPitch(entry.tags)?.sportSourceConfirmed)sportTaggedPitches++;
     if(sportPitchIds.length<40)sportPitchIds.push(entry.id);
-    // Preserve every OSM perimeter; draw source-only polygon edges.
-    for(let i=0;i<pts.length;i++){
+    // Preserve source polygons, but do not mistake these two mapped athletics
+    // footprints for verified white paint. Other pitch rendering is unchanged.
+    if(entry.athleticsOutline5300)suppressedAthleticsOutlines5300.push(entry.athleticsOutline5300);
+    else for(let i=0;i<pts.length;i++){
      const a=pts[i],b=pts[(i+1)%pts.length];
      addMark(pitchPaintVertices,{x:a.x,z:a.y},{x:b.x,z:b.y},.10);
     }
@@ -257,7 +261,7 @@ export function addCityLanduseBatches(T,elements,convert,terrain,osmLayer,zones,
   meshesSaved:plan.sourcePolygons+plan.pitchOutlines-
    (surfaceDrawMeshes+outlineDrawMeshes),
   sourcePitchLines,courtMarkSegments,sportTaggedPitches,surfaceTaggedPitches,
-  sportPitchIds,failedMerges,
+  sportPitchIds,failedMerges,suppressedAthleticsOutlines5300,
   pitchColorsFromOSMSurface:true,inferredLineLayouts:true,
   noUndocumentedSportEquipment:true,
   oversizedPolygons:plan.entries.filter(e=>e.oversized).length,
