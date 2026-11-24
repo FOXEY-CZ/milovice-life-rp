@@ -76,6 +76,10 @@ try{
   assert.equal(swing.fallbackSwings,0);
   assert.equal(swing.originalPartsPerSwing,swing.partsPerCorrectedSwing);
   assert.equal(swing.newEquipment,0);assert.equal(swing.newMaterials,0);
+  const slide=state.equipment.slideFrame5298;
+  assert.equal(slide?.version,'5.298');
+  assert.equal(slide.correctedSlides+slide.fallbackSlides,slide.modeledSlides);
+  assert.equal(slide.partsPerSlide,15);assert.equal(slide.newEquipment,0);assert.equal(slide.newMaterials,0);
   if(region==='mlada'){
    assert(state.lawn,'No lawn audit loaded in Mladá');
    assert(state.lawn.mappedLawns>=10,'Mapped residential lawns unavailable');

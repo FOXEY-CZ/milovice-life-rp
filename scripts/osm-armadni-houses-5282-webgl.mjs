@@ -53,6 +53,10 @@ try{
  assert.equal(swing.fallbackSwings,0);
  assert.equal(swing.partsPerCorrectedSwing,11);
  assert.equal(swing.newEquipment,0);
+ const slide=await page.evaluate(()=>window.__milovicePlaygroundAudit?.slideFrame5298);
+ assert.equal(slide?.version,'5.298');
+ assert.equal(slide.correctedSlides+slide.fallbackSlides,slide.modeledSlides);
+ assert.equal(slide.partsPerSlide,15);assert.equal(slide.newEquipment,0);
  const e=await page.evaluate(()=>window.__miloviceArmadniEvidenceRuntime5283?.());
  assert.equal(e?.panelMounted,true);
  assert.equal(e?.projectConceptOnly,true);
