@@ -1,3 +1,13 @@
+## Milovice RP 5.288 — Armádní 890: provizorní dvoubarevný povrch C15 (24. 11. 2026; CI čekají)
+
+Bytový dům **Armádní 890** má nyní samostatnou barevnou 3D fasádu na všech 10 původních hranách (2 sdílené meshe / 60 trojúhelníků). Je součástí stejného projektu STAKO **C15/C16** jako sousední 891; identitu 890=C15 výslovně potvrzuje městský zápis rady 29/2024. **Odstíny a dělení tmavého přízemí / světlých horních podlaží jsou vizuální odhad převzatý z vlastního fotoověřeného návrhu 891; hotová fasáda 890 nebyla fotoověřena**. Není to automatické tvrzení, že dva domy vypadají shodně; pouze přechodný konzistentní model celé dvojice pro další ruční porovnání.
+
+Původní budova OSM `1047406191` / RÚIAN `107124980`, 4 podlaží, výška 12,2 m a 92 prozatímních okenních polí zůstávají nedotčené, stejně jako všechny cesty, stromy a kolize. Modelový tmavý pás v +0,039 m překrývá starý šedý vizuální sokl, ale leží za okny. **Žádné nové balkony, přízemní terasy, vchody či parkovací stání**. Kontrolní panel výslovně rozlišuje projektové podklady C15/C16 od fotograficky ověřené C16/891, Node a mobilní/široká WebGL regrese kontroluje přítomnost i nejistoty.
+
+Zdroje: [STAKO – C15/C16](https://www.stakohk.cz/MILOVICE-Bydleni-v-zeleniBD-C-15-a-C-16.html), [Město Milovice – zápis 29/2024](https://milovice.hlasenirozhlasu.cz/files/milovice/attachments/249858/Anonymizovany-Zapis-z-jednani-29-2024-2547.pdf), [fotogalerie sousední Armádní 891](https://jirisimon.cz/milovice/).
+
+---
+
 ## Milovice RP 5.287 — Armádní 891: souvislá tmavá fasáda přízemí (24. 11. 2026; PR #77 MERGED, 5/5 CI PASS; Pages neověřeny)
 
 V [adresné fotogalerii domu Armádní 891](https://jirisimon.cz/milovice/) je patrné tmavé přízemí a světlá vyšší podlaží. Původní barevná vrstva však v herní 3D scéně začínala až 70 cm nad terénem, proto dole prosvítal generický šedý sokl z provizorních fasád. Oprava protáhne stejný tmavý povrch až k modelové úrovni +0,02 m na všech původních deseti obvodových hranách a mírně jej vysune před generický sokl (+0,039 m proti +0,036 m). Nadále zůstává za okny (+0,044 m a více); světlá separační lišta zůstává viditelná. Barevné odstíny, výška pásu a nefotografované strany jsou **odhad**, ne 360° fotogrammetrie. Žádná změna půdorysů, průchodnosti, kolizí ani skutečných dveřních otvorů.

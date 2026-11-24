@@ -98,6 +98,6 @@ for(const token of [
  'armadni891PhotoRenderCache5284.clear();',
  'window.__miloviceArmadni891PhotoRuntime5284=()=>',
  'armadni891PhotoRenderCache5284.set(String(osmId)',
- "const BUILD_ID='20261124-armadni-891-ground-band-528700'"
+ "const BUILD_ID='20261124-armadni-890-pair-facade-528800'"
 ])assert(html.includes(token),token);
 console.log('PASS 5.287 Armádní 891 dark photo ground floor covers false grey plinth to grade without extra geometry, 60 triangles, 2 batches');

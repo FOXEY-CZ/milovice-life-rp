@@ -18,7 +18,7 @@ export const ARMADNI_EVIDENCE_5283=Object.freeze({
    note:'BD C16 = č.p. 891. Nová adresní realitní fotogalerie ukazuje hotovou světlou horní fasádu, tmavé přízemí a balkony. Jde o skutečné fotky, bez GPS/azimutu jednotlivých snímků; 5.285 orientačně přiřadila třípatrový balkonový sloupec k jižní OSM hraně 6 podle blízké parkovací komunikace na východě, nejde o zaměřenou polohu. Starý smazaný inzerát se nepoužívá.',
    url:'https://jirisimon.cz/milovice/'},
   {house:'890',osmId:'1047406191',ruian:'107124980',
-   note:'BD C15 = č.p. 890 doloženo zápisem 29/2024. Adresný inzerát ze dne 25. 5. 2022 potvrzuje byt 1+kk s předzahrádkou a terasou 13 m². Nedokládá počet teras v domě, polohu, hranu fasády ani stavební rozměry.',
+   note:'BD C15 = č.p. 890 doloženo zápisem 29/2024. Adresný inzerát ze dne 25. 5. 2022 potvrzuje byt 1+kk s předzahrádkou a terasou 13 m². Model 5.288 má PROVIZORNÍ dvoubarevný povrch odvozený od sousední C16/891, nikoli ověřenou fotografii 890. Nedokládá počet teras v domě, polohu, hranu fasády ani stavební rozměry.',
    groundFloorTerraceEvidence:Object.freeze({sourceType:'address-specific-listing',areaSquareMetres:13,advertisedOn:'2022-05-25',exactPlacementVerified:false,allUnitTerracesVerified:false,geometryAdded:false}),
    url:'https://www.bezrealitky.cz/nemovitosti-byty-domy/719934-nabidka-pronajem-bytu-armadni-milovice'}
  ]
@@ -79,6 +79,7 @@ export function mountArmadniEvidence5283(doc,search=''){
  if(east){
   p('5.285: u č.p. 891 byly přidány 3 modelové balkony na pravděpodobnou jižní fasádu podle fotografie a východní OSM komunikace. Orientace je odvozená, jejich přesná poloha není zaměřena. Průsvitné dveře mají modelový krycí podklad proti prosvítání starých oken; žádný fyzický otvor ve zdi.');
   p('Armádní 890: jedna 13m² přízemní terasa je doložená adresným inzerátem, ale není známa její poloha ani počet dalších teras. Proto nevznikla žádná nová modelová terasa, přístupová cesta ani kolize.');
+  p('5.288: Armádní 890 má PROVIZORNÍ dvoubarevný povrch navazující na sousední 891: společný projekt C15/C16 je potvrzen, barevnost a výška tmavého pásu 890 nikoli. Nejde o fotoověřenou fasádu ani kopii STAKO vizualizace.');
  }else{
   p('Armádní 886/887: bez doložených souřadnic balkonů a fasádních otvorů se nepřidávají žádné nové balkony, dveře ani příjezdy.');
  }

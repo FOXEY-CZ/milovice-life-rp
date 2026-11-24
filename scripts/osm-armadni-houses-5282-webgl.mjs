@@ -52,6 +52,20 @@ try{
  assert.equal(e?.projectConceptOnly,true);
  assert.equal(e?.approvedFacadePhotos,0);
  assert.equal(e?.newBalconies,0);
+ const pair=await page.evaluate(()=>window.__miloviceArmadni890FacadeRuntime5288?.());
+ assert(pair?.ready,'Armádní 890 C15 source footprint/provisional facade visible after 7.1s mobile LOD');
+ assert.equal(pair.version,'5.288');
+ assert.equal(pair.sourceOSMId,'1047406191');
+ assert.equal(pair.sourceRUIANId,'107124980');
+ assert.equal(pair.projectPairVerified,true);
+ assert.equal(pair.photoApproved,false);
+ assert.equal(pair.colorsAndBandEstimated,true);
+ assert.equal(pair.originalSourceFootprintRetained,true);
+ assert.equal(pair.meshCount,2);
+ assert.equal(pair.triangles,60);
+ assert.equal(pair.originalWallEdges,10);
+ assert.equal(pair.visibleMeshes,2);
+ for(const key of ['newBuildings','newBalconies','newTerraces','newDoors','newRoads','newFootways','newColliders'])assert.equal(pair[key],0);
  const photo=await page.evaluate(()=>window.__miloviceArmadni891PhotoRuntime5284?.());
  assert(photo?.ready,'real 891 exterior two-tone remains in scene after LOD');
  assert.equal(photo.sourceOSMId,'1047406190');
@@ -88,5 +102,5 @@ try{
  await page.setViewportSize({width:1280,height:720});
  await page.waitForTimeout(950);
  await page.screenshot({path:'browser-artifacts/armadni-houses-5282-wide.png'});
- console.log('PASS 5.286 Armádní 891 3 redundant estimated windows omitted behind balconies, 357 model bays, mobile+wide WebGL after 7.1s LOD');
+ console.log('PASS 5.288 Armádní 890 C15 provisional project-pair facade and 891 source photos, 357 model windows, mobile+wide WebGL after 7.1s LOD');
 }finally{await browser.close()}
