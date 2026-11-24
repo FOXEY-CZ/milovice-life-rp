@@ -81,6 +81,6 @@ for(const item of [
  'renderArmadni890PairFacade5288(THREE,{',
  'armadni890FacadeCache5288.clear();',
  'window.__miloviceArmadni890FacadeRuntime5288=()=>',
- "const BUILD_ID='20261124-armadni-west-c13-c14-facade-528900'"
+ "const BUILD_ID='20261124-armadni-green-529000'"
 ])assert(html.includes(item),item);
 console.log('PASS 5.288 Armádní 890 C15 10 original source edges, 2 provisional project tone batches, 60 triangles, zero invented entrances/terraces');
