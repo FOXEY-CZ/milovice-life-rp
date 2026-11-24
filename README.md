@@ -1,3 +1,7 @@
+## Milovice RP 5.299 — ochrana hranic mapovaných parkovišť a limitu aut (24. 11. 2026; CI čeká)
+
+Procedurální generátor parkování nyní nepřekročí limit ani při více řadách existujícího mapovaného parkoviště. Dříve samotný střed auta uvnitř polygonu nezaručil, že karoserie nepřesáhne jeho okraj; nově se vyžaduje konzervativní modelová rezerva 2,3 m od každé hrany. Funguje i u konkávních polygonů. Tato rezerva odpovídá přibližné obálce běžného modelového auta, nikoli skutečným rozměrům všech vozů nebo právnímu vymezení stání. Dosavadní roadside pravidla a ochrana Armádní zůstávají. Žádná nová parkoviště, souřadnice, geometrie ani kolize. Přidán Node test 30 seedů, 7 limitů a dvou polygonů; CI/WebGL/Pages čekají.
+
 ## Milovice RP 5.298 — návazná konstrukce existujících modelových skluzavek (24. 11. 2026; CI/Pages čekají)
 
 Existující modelové skluzavky dostávají společnou výškovou základnu: čtyři podpěry k lokální DEM, plošina, přístupové bočnice a tři stupně, souvislá skloněná skluzná plocha a dvě boční lišty. Na nepříznivém či nevalidním terénu zůstává původní fallback. Stejných 15 box instancí, materiály a původní odhadnuté polohy, bez nových zařízení, polygonů a kolizí. Není to fotoověřený vzhled ani fyzická bezpečnostní certifikace. Osm matematických kombinací terénu/yaw ověřeno v JS; Node/CI/WebGL/Pages čekají.

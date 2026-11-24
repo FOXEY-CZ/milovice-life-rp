@@ -12,7 +12,23 @@ function contained(p,poly){
  }
  return inside;
 }
+// 5.299: reserve a conservative model envelope around the car's centre.
+ // A centre alone is insufficient in narrow or concave mapped polygons.
+export function mappedParkingEnvelopeClear5299(p,poly,radius=2.3){
+ if(!Array.isArray(poly)||poly.length<4||!Number.isFinite(p?.x)||!Number.isFinite(p?.z)||!Number.isFinite(radius)||radius<=0||
+    poly.some(v=>!Number.isFinite(v?.x)||!Number.isFinite(v?.y)))return false;
+ if(!contained(p,poly))return false;
+ for(let i=0;i<poly.length;i++){
+  const a=poly[i],b=poly[(i+1)%poly.length],dx=b.x-a.x,dz=b.y-a.y;
+  const l2=dx*dx+dz*dz;
+  const t=l2>0?Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.z-a.y)*dz)/l2)):0;
+  if(Math.hypot(p.x-a.x-t*dx,p.z-a.y-t*dz)<radius)return false;
+ }
+ return true;
+}
 export function planMiloviceParking(segments,lots,{center,limit=12,seed=41,occupied=[],acceptSpot=()=>true}={}){
+ limit=Number.isFinite(limit)?Math.max(0,Math.floor(limit)):0;
+ if(!limit)return [];
  const random=rng((seed^Math.floor((center?.x||0)*171)^Math.floor((center?.z||0)*1337))>>>0);
  const out=[],blocked=[...occupied];
  const near=(x,z)=>!center||Math.hypot(x-center.x,z-center.z)<740;
@@ -21,7 +37,7 @@ export function planMiloviceParking(segments,lots,{center,limit=12,seed=41,occup
    blocked.every(p=>Math.hypot(p.x-spot.x,p.z-spot.z)>8.2);
  }
  function push(spot){
-  if(!available(spot))return false;
+  if(out.length>=limit||!available(spot))return false;
   out.push(spot);blocked.push(spot);return true;
  }
  // On mapped SURFACE parking lots, place cars within boundaries, in parallel rows.
@@ -39,7 +55,8 @@ export function planMiloviceParking(segments,lots,{center,limit=12,seed=41,occup
   const yaw=Math.atan2(-ux,-uz);
   for(let row of [-1,0,1])for(let spot=-2;spot<=2;spot++){
    const x=cx+ux*spot*6.1+nx*row*4.2,z=cz+uz*spot*6.1+nz*row*4.2;
-   if(!contained({x,z},lot.points))continue;
+   if(out.length>=limit)break;
+   if(!mappedParkingEnvelopeClear5299({x,z},lot.points))continue;
    if(push({x,z,yaw:yaw+(row===-1?Math.PI:0),type:'mapped-surface-parking',sourceId:lot.id})&&out.length>=limit)break;
   }
  }
