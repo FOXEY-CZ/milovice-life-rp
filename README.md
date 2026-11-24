@@ -5,6 +5,9 @@ Rada města 14/2025, str. 21, UR-226-14/25 ([PDF](https://www.mesto-milovice.cz/
 
 Kontrolní pohled `?streetAudit=pitch-juventa-5301` používá skutečný OSM polygon a stávající plánovač sportovní kamery. Městský katalog uvádí GPS 50°13′33.4″N 14°52′01.7″E jako polohu areálu, nikoli snímku; výsledné oko i cíl kamery jsou uvnitř polygonu. Sportengo potvrzuje běžecký ovál s umělým povrchem kolem hřiště, ale v dodaných OSM datech není jeho zaměřený obrys. Proto se ovál, lajny dráhy ani vybavení zatím nepřidávají. Matematický plán kamery ověřen na uloženém polygonu; skutečný WebGL pohled čeká na CI.
 
+
+Doplněn cílený mobilní Chromium/WebGL test Juventy spuštěný na konci existujícího street-block CI skriptu: reálný mesh umělého trávníku připojený ke scéně, správný materiál 0x3d7b52, kamera, dva potlačené atletické obrysy, 7,1s LOD, screenshot. Diagnostika prochází scénu pouze na vyžádání, nikoli v herní smyčce. Výsledek zatím čeká na CI.
+
 ## Milovice RP 5.300 — atletické plochy bez falešných obrysů (24. 11. 2026)
 
 Dvě původní OSM atletické plochy 1472419115 (vrh koulí, 21 bodů) a 1472419120 (skok daleký, 5 bodů) mají identické zdrojové geometrie v Mladé a Westlinku. Přesný source lock vypíná generický bílý obrys jen u nich: hranice mapovaného polygonu sama nedokládá skutečnou bílou čáru. Původní plochy, terén, materiály a ostatní hřiště zůstávají. Žádné nové objekty, kolize, GPS ani domnělé doskočiště nebo sektor. Runtime audit uvádí konkrétní vypnuté obrysy. Povrch a vybavení nejsou fotoověřené; CI/Pages čekají.

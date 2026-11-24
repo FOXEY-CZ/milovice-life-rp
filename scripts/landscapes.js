@@ -156,6 +156,10 @@ export function addCityLanduseBatches(T,elements,convert,terrain,osmLayer,zones,
  const sportPitchIds=[],suppressedAthleticsOutlines5300=[],juventaTurf5301=[];
  let failedMerges=0;
  const batchMeshes=[];
+ function annotateJuventa5301(mesh,entries){
+  const ids=entries.filter(e=>e.juventaTurf5301).map(e=>e.id);
+  if(ids.length)mesh.userData.juventaTurfSourceIds5301=ids;
+ }
  function annotate(object,g){
   if(g.oversized)return;
   object.userData.cityBatched=true;
@@ -228,14 +232,16 @@ export function addCityLanduseBatches(T,elements,convert,terrain,osmLayer,zones,
    if(parts.length>1)for(const p of parts)p.dispose();
    const mesh=new T.Mesh(combined,materialsForCity[group.renderMaterial]);
    annotate(mesh,group);
+   annotateJuventa5301(mesh,group.items);
    mesh.name='OSM_city_green_591_'+group.kind;
    osmLayer.add(mesh);
    batchMeshes.push(mesh);surfaceDrawMeshes++;
   }else{
    failedMerges++;
-   for(const geo of parts){
+   for(const [partIndex,geo] of parts.entries()){
     const mesh=new T.Mesh(geo,materialsForCity[group.renderMaterial]);
     annotate(mesh,group);
+    annotateJuventa5301(mesh,[group.items[partIndex]]);
     osmLayer.add(mesh);batchMeshes.push(mesh);surfaceDrawMeshes++;
    }
   }

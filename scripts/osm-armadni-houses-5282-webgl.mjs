@@ -219,3 +219,6 @@ try{
  await page.screenshot({path:'browser-artifacts/armadni-houses-5282-wide.png'});
  console.log('PASS 5.296 region-order-safe Armádní, 5.294 east source walking network, 5.293 north promenade and 5.292 paving, 5.291 source road clipping and 5.290 source-locked green pockets one low-poly mesh after 7.1s mobile LOD, plus 4 houses/357 model windows and wide WebGL');
 }finally{await browser.close()}
+
+// Keep the existing street-block CI job; run a dedicated Juventa page after Armadni.
+await import('./osm-juventa-turf-5301-webgl.mjs');
