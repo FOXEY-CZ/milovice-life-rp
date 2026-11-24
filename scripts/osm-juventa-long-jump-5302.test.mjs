@@ -51,8 +51,11 @@ for(const regionId of ['mlada','westlink']){
  const ways=JSON.parse(readFileSync(new URL('../data/regions/'+regionId+'.json',import.meta.url),'utf8')).elements;
  const plan=planJuventaAccess5304({regionId,ways,toWorld:toWorld5304});
  assert(plan);
- assert.deepEqual(plan.protectedWayIds,['1472419124','1472419127','1472419128']);
- assert.equal(plan.segments.length,6);
+ assert.deepEqual(plan.protectedWayIds,['1472419124','1472419127','1472419128','1076211056','1076211057','1076211058','1076211060']);
+ assert.equal(plan.segments.length,31);
+ assert.equal(plan.exactSourceJunctions,14);
+ assert.equal(plan.sourceCrossingId,'1076211056');
+ assert.equal(planJuventaAccess5304({regionId,ways:ways.map(w=>String(w.id)==='1076211056'?{...w,tags:{...w.tags,crossing:'unmarked'}}:w),toWorld:toWorld5304}),null);
  for(const {a,b} of plan.segments){
   assert.equal(permitJuventaParking5304(plan,a),false);
   assert.equal(permitJuventaParking5304(plan,{x:(a.x+b.x)/2,z:(a.z+b.z)/2}),false);
@@ -61,4 +64,30 @@ for(const regionId of ['mlada','westlink']){
  assert.equal(permitJuventaParking5304(plan,{x:NaN,z:0}),false);
  assert.equal(planJuventaAccess5304({regionId,ways:ways.filter(w=>String(w.id)!=='1472419127'),toWorld:toWorld5304}),null);
 }
-console.log('PASS 5.304: three exact original pedestrian approaches in both region copies');
+console.log('PASS 5.305: seven original pedestrian ways, 14 exact joins and existing crossing in both region copies');
+
+import {planMiloviceParking} from './parking-layout.js';
+const parkingWays5305=JSON.parse(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8')).elements;
+const parkingGuard5305=planJuventaAccess5304({regionId:'mlada',ways:parkingWays5305,toWorld:toWorld5304});
+const roadIds5305=['128087255','128087257','1472419121','1472419122','1472419123'];
+const roads5305=parkingWays5305.filter(w=>roadIds5305.includes(String(w.id))).flatMap(w=>{
+ const points=w.geometry.map(p=>{const q=toWorld5304(p);return {x:q.x,y:q.z}});
+ return points.slice(1).map((b,i)=>({a:points[i],b,len:Math.hypot(b.x-points[i].x,b.y-points[i].y),
+  kind:w.tags.highway,width:w.tags.highway==='service'?5:7.8,osmId:w.id,
+  access:w.tags.access,serviceTag:w.tags.service}));
+});
+assert(roads5305.length>0);
+const center5305=parkingGuard5305.segments[0].a;
+let rejected5305=0,accepted5305=0;
+for(let seed=1;seed<=30;seed++){
+ const options={center:center5305,limit:40,seed};
+ const baseline=planMiloviceParking(roads5305,[],options);
+ rejected5305+=baseline.filter(s=>!permitJuventaParking5304(parkingGuard5305,s)).length;
+ const guarded=planMiloviceParking(roads5305,[],{...options,acceptSpot:s=>permitJuventaParking5304(parkingGuard5305,s)});
+ assert(guarded.every(s=>permitJuventaParking5304(parkingGuard5305,s)));
+ assert(guarded.length<=options.limit);
+ accepted5305+=guarded.length;
+}
+assert(rejected5305>0,'baseline must contain conflicting parking candidates');
+assert(accepted5305>0,'guard must preserve safe parking candidates');
+console.log('PASS 5.305: actual parking generator, 30 seeds; '+rejected5305+' conflicting baseline slots, '+accepted5305+' safe generated slots (model widths)');
