@@ -91,6 +91,7 @@ export function mountArmadniEvidence5283(doc,search=''){
   a(ARMADNI_EVIDENCE_5283.westProject.title,ARMADNI_EVIDENCE_5283.westProject.url);
   a('Adresné přiřazení C14=886 a C13=887 (ITES / obchodní registr)',ARMADNI_EVIDENCE_5283.westProject.addressesUrl);
  }
+ p('5.290: drobné 3D trsy trávy jsou pouze modelový detail uvnitř ČTYŘ původních mapovaných OSM ploch landuse=grass (u 886/887: 1468803911 a 1468803935; u 890/891: 1468803941 a 1468803951). Umístění jednotlivých trsů ani druh trávy nejsou fotoověřené. Původní chodníky, vozovky, parkovací stání a kolize nebyly změněny.');
  p('Původní RÚIAN stěny, střechy, chodníky, kolize a ostatní budovy zůstávají nedotčené.');
  doc.body.append(panel);return panel;
 }

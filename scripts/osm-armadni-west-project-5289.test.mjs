@@ -89,6 +89,6 @@ for(const s of [
  'renderArmadniWestProject5289(THREE,{',
  'armadniWestRenderCache5289.clear();',
  'window.__miloviceArmadniWestRuntime5289=()=>',
- "const BUILD_ID='20261124-armadni-west-c13-c14-facade-528900'"
+ "const BUILD_ID='20261124-armadni-green-529000'"
 ])assert(html.includes(s),s);
 console.log('PASS 5.289: 886/C14 887/C13 original OSM facades, 2+2 shared batches, 168 triangles, no invented balcony coordinates');

@@ -1,3 +1,11 @@
+## Milovice RP 5.290 — 3D zeleň na čtyřech původních travnatých plochách Armádní (24. 11. 2026; CI čekají)
+
+Podle **skutečné OSM mapy**, nikoli vymyšlených pozemků, přidán drobný prostorový porost na čtyři již renderované polygony `landuse=grass`: `1468803911`, `1468803935` (poblíž Armádní 886/887) a `1468803941`, `1468803951` (poblíž Armádní 890/891). Jejich původní GPS souřadnice, obrysy, terén, chodníky a průjezdné komunikace **se nemění**. Jednotlivé vizuální trsy trávy mají modelový, nikoliv změřený odstín ani skutečně zaznamenaný počet či polohu. Každý stojí uvnitř původní travnaté plochy a mimo dosah všech známých cest a půdorysů budov.
+
+Všechny trsy ze čtyř ploch se vyrenderují v **jednom sdíleném 3D meshi a jednom materiálu**, maximálně 39 modelových trsů / 78 trojúhelníků, bez zbytečných GPU draw-callů, textur, animací a fyzických překážek. Zdrojové hash uzamčení brání přidávání detailů na chybný polygon. Regresní Node test + mobilní/široký Chromium WebGL kontrola po 7,1 s LOD. Původní 4 domy Armádní, 357 z 360 oken, balkony 891, všechny cesty, parkovací stání a NPC beze změn. U parkování zůstává potřeba ověřit skutečnou polohu a povrch z fotografií nebo aktualizované mapy, ne odhadovat.
+
+---
+
 ## Milovice RP 5.289 — Armádní 886/C14 a 887/C13: provizorní fasády západního bloku (24. 11. 2026; PR #79 MERGED, 5/5 CI PASS; Pages neověřeny)
 
 Po nových modelových fasádách domů C15/890 a C16/891 dostala i **západní dvojice C14/886 a C13/887** dvě vlastní optické fasádní vrstvy od přízemí ke střeše. Původní mapové půdorysy obou budov (**OSM 1164238465 / 1164238466**, **RÚIAN 119003791 / 119001071**), 4 podlaží, všechny objemy/střechy, 25 bytů v každém, okna a kolize zůstávají nezměněné. Nově 2 sdílené barevné meshe / 84 trojúhelníků na dům, tedy celkem **4 meshe / 168 trojúhelníků**, 2 opakovaně sdílené materiály.
