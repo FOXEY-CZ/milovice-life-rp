@@ -2,6 +2,9 @@
 
 Výroční zpráva ZŠ T. G. Masaryka 2018/2019 ([PDF, str. 48](https://zsmilovice.cz/wp-content/uploads/2019/10/V%C3%BDro%C4%8Dn%C3%AD%20zpr%C3%A1va%2018-19.pdf)) dokládá soutěž ve skoku dalekém pořádanou Juventou 25. 4. 2019. Textový index popisuje pískové doskočiště ve fotografické koláži; přímé zobrazení PDF se nezdařilo kvůli limitu velikosti. OSM 1472419120 je přesný přibližně 8 × 3 m polygon long_jump s hash 6f18862d v mlada/westlink. Použití stávajícího pitchSand je modelová inference, současný povrch ani konkrétní odstín nejsou fotoověřeny. Původní polygon, žádné nové vybavení, povrchové meshe nad rámec stávajícího batch systému ani kolize. Případný explicitní surface tag má přednost; vrh koulí se nemění. CI čeká.
 
+
+Doplněna kontrola skutečného pískového meshe v existujícím mobilním WebGL testu Juventy po 7,1 s LOD; ověřuje připojení ke scéně, modelovou barvu 0xc5aa78, viditelnost a původní OSM ID. Žádná další herní geometrie. Výsledek CI čeká.
+
 ## Milovice RP 5.301 — umělý povrch fotbalového hřiště Juventa (24. 11. 2026)
 
 Rada města 14/2025, str. 21, UR-226-14/25 ([PDF](https://www.mesto-milovice.cz/assets/File.ashx?id_dokumenty=17955&id_org=9519)) dokládá fotbalové hřiště s umělým povrchem při ZŠ Juventa; [městský katalog](https://hriste.mesto-milovice.cz/hriste-u-zs-juventa) lokalizuje areál a [Sportengo](https://sportengo.cz/sportoviste/sportovni-areal-u-zs-juventa) uvádí umělý trávník. Jediný přilehlý OSM polygon s `sport=soccer` 1472419116 má 6 bodů a identickou geometrii v Mladé/Westlinku, hash e5044ba5. Přiřazení polygonu ke skutečnému povrchu je podložená inference, nikoli zaměření. Reuse existujícího pitchTurf místo obecného pitch; odstín modelový, žádné nové materiály, objekty, GPS, značení nebo kolize. Explicitní OSM surface v budoucnu má přednost. CI/WebGL/Pages čekají.

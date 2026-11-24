@@ -161,6 +161,8 @@ export function addCityLanduseBatches(T,elements,convert,terrain,osmLayer,zones,
  function annotateJuventa5301(mesh,entries){
   const ids=entries.filter(e=>e.juventaTurf5301).map(e=>e.id);
   if(ids.length)mesh.userData.juventaTurfSourceIds5301=ids;
+  const jumpIds=entries.filter(e=>e.juventaLongJump5302).map(e=>e.id);
+  if(jumpIds.length)mesh.userData.juventaLongJumpSourceIds5302=jumpIds;
  }
  function annotate(object,g){
   if(g.oversized)return;
