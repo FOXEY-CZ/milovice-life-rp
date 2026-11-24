@@ -35,6 +35,12 @@ function materials(T){
  }
  return m;
 }
+// Keep single-feature and batched surface selection identical. Explicit OSM
+// surface tags are respected by the source-locked inspectors and classifier.
+export function selectLanduseRenderMaterial(el,kind){
+ if(kind!=='pitch')return kind;
+ return inspectJuventaLongJump5302(el)?.material||inspectJuventaTurf5301(el)?.material||classifyOSMPitch(el.tags)?.material||kind;
+}
 export function addLanduseFeature(T,el,convert,terrain,osmLayer,zones){
  const tags=el.tags||{};
  const kind=tags.landuse==='forest'?'forest':tags.landuse==='grass'?'grass':
@@ -56,7 +62,7 @@ export function addLanduseFeature(T,el,convert,terrain,osmLayer,zones){
  const p=geo.attributes.position;
  for(let i=0;i<p.count;i++)p.setY(i,terrain(p.getX(i),p.getZ(i))+.056);
  p.needsUpdate=true;geo.computeVertexNormals();
- const patch=new T.Mesh(geo,materials(T)[inspectJuventaLongJump5302(el)?.material||inspectJuventaTurf5301(el)?.material||kind]);osmLayer.add(patch);
+ const patch=new T.Mesh(geo,materials(T)[selectLanduseRenderMaterial(el,kind)]);osmLayer.add(patch);
  if(kind==='pitch'&&!inspectAthleticsOutline5300(el)){
   const line=new T.LineLoop(new T.BufferGeometry().setFromPoints(
    pts.map(v=>new T.Vector3(v.x,terrain(v.x,v.y)+.14,v.y))),materials(T).pitchLine);
@@ -117,10 +123,9 @@ export function planCityLanduseBatches(elements,convert,{cellSize=180}={}){
   // Large polygons remain separate and never use the cell's fake zero-radius
   // draw-distance rule; they may cross many city chunks.
   const gx=Math.floor(centerX/cellSize),gz=Math.floor(centerZ/cellSize);
-  const pitch=kind==='pitch'?classifyOSMPitch(el.tags):null;
   const juventaTurf5301=inspectJuventaTurf5301(el);
   const juventaLongJump5302=inspectJuventaLongJump5302(el);
-  const renderMaterial=juventaLongJump5302?.material||juventaTurf5301?.material||pitch?.material||kind;
+  const renderMaterial=selectLanduseRenderMaterial(el,kind);
   // Clay and asphalt cannot share a single merged mesh/material.
   const key=oversized?'oversized:'+String(el.id):
    renderMaterial+':'+gx+':'+gz;
