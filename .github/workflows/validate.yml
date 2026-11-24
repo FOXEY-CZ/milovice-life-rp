@@ -31,6 +31,8 @@ jobs:
         run: node scripts/osm-mlada-residential-5105.test.mjs
       - name: Validate 5.104 Mladá mapped lawns and low grass detail without road collisions
         run: node scripts/osm-playground-verges-5104.test.mjs
+      - name: Validate 5.297 grounded A-frame swing with unchanged part count
+        run: node scripts/playground-swing-frame-5297.test.mjs
       - name: Validate 5.102 OSM public playgrounds and safe modeled equipment
         run: node scripts/osm-playground-equipment-5102.test.mjs
       - name: Validate 5.101 compact categorized review menu preserves all 28 source views

@@ -47,6 +47,12 @@ try{
  assert.equal(x.triangles,5094);
  assert(x.entries.every(b=>b.floors===4&&b.inScene&&b.visibleMeshes===4));
  for(const k of ['newBuildings','newDoors','newBalconies','newRoofs','newFootways','newRoads','newColliders'])assert.equal(x[k],0);
+ const swing=await page.evaluate(()=>window.__milovicePlaygroundAudit?.swingFrame5297);
+ assert(swing?.version==='5.297','5.297 swing audit missing after LOD');
+ assert.equal(swing.correctedSwings,swing.modeledSwings);
+ assert.equal(swing.fallbackSwings,0);
+ assert.equal(swing.partsPerCorrectedSwing,11);
+ assert.equal(swing.newEquipment,0);
  const e=await page.evaluate(()=>window.__miloviceArmadniEvidenceRuntime5283?.());
  assert.equal(e?.panelMounted,true);
  assert.equal(e?.projectConceptOnly,true);

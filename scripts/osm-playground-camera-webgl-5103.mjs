@@ -70,6 +70,12 @@ try{
   assert(state.equipment.perArea[osmId]>=1,'Equipment must actually be modeled');
   assert(state.equipment.componentInstances>0);
   assert(state.equipment.drawMeshes>0,'Actual instanced 3D assets required');
+  const swing=state.equipment.swingFrame5297;
+  assert(swing?.version==='5.297');
+  assert(swing.modeledSwings>=1&&swing.correctedSwings===swing.modeledSwings);
+  assert.equal(swing.fallbackSwings,0);
+  assert.equal(swing.originalPartsPerSwing,swing.partsPerCorrectedSwing);
+  assert.equal(swing.newEquipment,0);assert.equal(swing.newMaterials,0);
   if(region==='mlada'){
    assert(state.lawn,'No lawn audit loaded in Mladá');
    assert(state.lawn.mappedLawns>=10,'Mapped residential lawns unavailable');
