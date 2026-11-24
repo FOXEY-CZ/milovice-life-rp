@@ -89,6 +89,12 @@ for(const s of [
  'renderArmadniWestProject5289(THREE,{',
  'armadniWestRenderCache5289.clear();',
  'window.__miloviceArmadniWestRuntime5289=()=>',
- "const BUILD_ID='20261124-armadni-green-529000'"
+ "const BUILD_ID='"
 ])assert(html.includes(s),s);
+// Build IDs change each release; compare the live META, JS and HUD IDs.
+const runtimeBuild=html.match(/const BUILD_ID='([^']+)'/)?.[1];
+const metaBuild=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
+const hudBuild=html.split('id="build-label">')[1]?.split('</strong>')[0];
+assert(runtimeBuild&&runtimeBuild===metaBuild&&runtimeBuild===hudBuild,
+ 'live build identifiers must match');
 console.log('PASS 5.289: 886/C14 887/C13 original OSM facades, 2+2 shared batches, 168 triangles, no invented balcony coordinates');
