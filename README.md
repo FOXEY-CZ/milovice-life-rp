@@ -1,3 +1,7 @@
+## Milovice RP 5.305 — propojené pěší přístupy Juventa
+
+5.305 — ochrana navazující pěší sítě Juventa: sedm původních OSM pěších ways (1472419124/127/128, 1076211056/57/58/60), 31 segmentů, 14 přesně shodných zdrojových spojů včetně značeného přechodu 1076211056 přes Komenského. Původní cesty, přechod, GPS i vozovky zůstávají beze změn; rozšíření modelového 4,25m odstupu pro generovaná parkovací auta, nikoli právní zákaz. Shoda hashů ve dvou regionálních souborech, rozšířené Node a mobilní WebGL testy; CI čeká. PR #95 MERGED 63d0e42, 5/5 CI PASS, Pages neověřeny. PR #96 nahrazen čistou větví z main po konfliktu squash historie; CI čeká. Běžecký ovál nadále bez přesného podkladu. Dál: ověřit CI nové větve a získat obrys oválu.
+
 ## Milovice RP 5.304 — pěší přístupy Juventa
 
 5.304 — Ochrana tří původních pěších přístupů Juventa (OSM 1472419124/127/128, 6 segmentů) před odhadnutými zaparkovanými vozidly: modelový odstup 4,25 m, nikoli právní či zaměřený zákaz. Přesné geometrie těchto cest a dvou souvisejících service ways 1472419121/122 jsou shodné v mlada a westlink; guard před deduplikací. Žádné nové cesty, kolize, parkoviště ani změny GPS. Node a mobilní WebGL regrese přidány, CI čeká. Oficiální ČÚZK ortofoto export nebyl dostupný ani alternativním přístupem; foto STRABAG potvrzuje červený ovál, ale přesný obrys stále nedoložený. 5.303 PR #94 MERGED f498e30, 5/5 CI PASS, Pages neověřeny. Dál: ověřit CI a získat půdorys oválu.
