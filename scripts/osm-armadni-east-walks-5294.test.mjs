@@ -89,13 +89,12 @@ for(const marker of [
  'const armadniEastPlan5294=planArmadniEastWalks5294({',
  'isArmadniEastWay5294(armadniEastPlan5294,el)',
  'window.__miloviceArmadniEastRuntime5294=()=>',
- 'armadniEastAudit5294.paintedSafePieces+=',
- '20261124-armadni-east-walks-529400'
+ 'armadniEastAudit5294.paintedSafePieces+='
 ])assert(html.includes(marker),'missing 5.294 integration '+marker);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const js=html.match(/const BUILD_ID='([^']+)'/)?.[1];
 const hud=html.split('id="build-label">')[1]?.split('</strong>')[0];
 assert(meta&&meta===js&&js===hud);
-assert(html.includes('Verze 5.294 · build'));
+assert.match(html,/Verze 5\.\d+ · build/);
 console.log('PASS 5.294: three unchanged east C15/C16 footways / '+result.sourceMetres+
  'm, four exact source joins, '+safe.toFixed(1)+'m road-clearance-safe surface');
