@@ -16,3 +16,7 @@ Rada města 14/2025, str. 21, UR-226-14/25 ([PDF](https://www.mesto-milovice.cz/
 ### Kontrolní kamera
 
 Kontrolní pohled `?streetAudit=pitch-juventa-5301` používá skutečný OSM polygon a stávající plánovač sportovní kamery. Městský katalog uvádí GPS 50°13′33.4″N 14°52′01.7″E jako polohu areálu, nikoli snímku; výsledné oko i cíl kamery jsou uvnitř polygonu. Sportengo potvrzuje běžecký ovál s umělým povrchem kolem hřiště, ale v dodaných OSM datech není jeho zaměřený obrys. Proto se ovál, lajny dráhy ani vybavení zatím nepřidávají. Matematický plán kamery ověřen na uloženém polygonu; skutečný WebGL pohled čeká na CI.
+
+## 5.302 — doskočiště
+
+Výroční zpráva ZŠ T. G. Masaryka 2018/2019 ([PDF, str. 48](https://zsmilovice.cz/wp-content/uploads/2019/10/V%C3%BDro%C4%8Dn%C3%AD%20zpr%C3%A1va%2018-19.pdf)) dokládá soutěž ve skoku dalekém pořádanou Juventou 25. 4. 2019. Textový index popisuje pískové doskočiště ve fotografické koláži; přímé zobrazení PDF se nezdařilo kvůli limitu velikosti. OSM 1472419120 je přesný přibližně 8 × 3 m polygon long_jump s hash 6f18862d v mlada/westlink. Použití stávajícího pitchSand je modelová inference, současný povrch ani konkrétní odstín nejsou fotoověřeny. Původní polygon, žádné nové vybavení, povrchové meshe nad rámec stávajícího batch systému ani kolize. Případný explicitní surface tag má přednost; vrh koulí se nemění. CI čeká.
