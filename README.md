@@ -1,4 +1,4 @@
-## Milovice RP 5.288 — Armádní 890: provizorní dvoubarevný povrch C15 (24. 11. 2026; CI čekají)
+## Milovice RP 5.288 — Armádní 890: provizorní dvoubarevný povrch C15 (24. 11. 2026; PR #78 MERGED, 5/5 CI PASS; Pages neověřeny)
 
 Bytový dům **Armádní 890** má nyní samostatnou barevnou 3D fasádu na všech 10 původních hranách (2 sdílené meshe / 60 trojúhelníků). Je součástí stejného projektu STAKO **C15/C16** jako sousední 891; identitu 890=C15 výslovně potvrzuje městský zápis rady 29/2024. **Odstíny a dělení tmavého přízemí / světlých horních podlaží jsou vizuální odhad převzatý z vlastního fotoověřeného návrhu 891; hotová fasáda 890 nebyla fotoověřena**. Není to automatické tvrzení, že dva domy vypadají shodně; pouze přechodný konzistentní model celé dvojice pro další ruční porovnání.
 
