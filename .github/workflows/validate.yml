@@ -269,5 +269,7 @@ jobs:
         run: node scripts/osm-armadni-project-paving-5292.test.mjs
       - name: Verify 5.293 exact original Armadni north-promenade OSM shared connections
         run: node scripts/osm-armadni-promenade-5293.test.mjs
+      - name: Verify 5.294 three source-locked C15/C16 east footways and four exact OSM junctions
+        run: node scripts/osm-armadni-east-walks-5294.test.mjs
       - name: Verify 5.285 Armadni 891 photo-inferred south balconies, original OSM, mobile-safe geometry
         run: node scripts/osm-armadni-891-balconies-5285.test.mjs

@@ -90,6 +90,21 @@ try{
  assert.equal(promenade.material,'armadni-c13c14-planned-pavers');
  assert.equal(promenade.unverifiedActualPavingColor,true);
  for(const key of ['newPaths','newParking','newColliders'])assert.equal(promenade[key],0);
+ const east=await page.evaluate(()=>
+  window.__miloviceArmadniEastRuntime5294?.());
+ assert(east?.ready,'5.294 original east footways missing after 7.1s mobile LOD');
+ assert.equal(east.version,'5.294');
+ assert.deepEqual(east.sourceWayIds,['1468803918','1468803919','1468803920']);
+ assert(east.sourceMetres>185&&east.sourceMetres<188);
+ assert.equal(east.exactMapJunctions,4);
+ assert.equal(east.northPromenadeSourceOSMId,'1373371686');
+ assert.deepEqual([...east.seenWayIds].sort(),[...east.sourceWayIds].sort());
+ assert(east.paintedSafePieces>0);
+ assert.equal(east.material,'armadni-c13c14-planned-pavers');
+ assert.equal(east.realPavingVerified,false);
+ assert.equal(east.originalGPSUnchanged,true);
+ for(const k of ['newFootways','newRoads','newCrossings','newKerbs',
+  'newParking','newColliders','newMeshes'])assert.equal(east[k],0);
  const pavers=await page.evaluate(()=>
   window.__miloviceArmadniProjectPavingRuntime5292?.());
  assert(pavers?.ready,'5.292 C13/C14 planned-grey original paths not rendered after 7.1s LOD');
@@ -171,5 +186,5 @@ try{
  await page.setViewportSize({width:1280,height:720});
  await page.waitForTimeout(950);
  await page.screenshot({path:'browser-artifacts/armadni-houses-5282-wide.png'});
- console.log('PASS 5.292 Armádní real walking paving, 5.291 source road clipping and 5.290 source-locked green pockets one low-poly mesh after 7.1s mobile LOD, plus 4 houses/357 model windows and wide WebGL');
+ console.log('PASS 5.294 Armádní east source walking network, 5.293 north promenade and 5.292 paving, 5.291 source road clipping and 5.290 source-locked green pockets one low-poly mesh after 7.1s mobile LOD, plus 4 houses/357 model windows and wide WebGL');
 }finally{await browser.close()}
