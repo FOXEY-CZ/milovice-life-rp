@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {inspectJuventaLongJump5302 as inspect} from './osm-juventa-long-jump-5302.js';
-import {planCityLanduseBatches,selectLanduseRenderMaterial} from './landscapes.js';
+import {planCityLanduseBatches,selectLanduseRenderMaterial,makePitchSandGrain5303} from './landscapes.js';
 for(const region of ['mlada','westlink']){
  const ways=JSON.parse(readFileSync(new URL('../data/regions/'+region+'.json',import.meta.url),'utf8')).elements;
  const matched=ways.map(inspect).filter(Boolean);
@@ -31,3 +31,16 @@ for(const region of ['mlada','westlink']){
  assert.equal(inspect(ways.find(w=>String(w.id)==='1472419115')),null);
 }
 console.log('PASS 5.302: exact long-jump polygon, inferred sand surface, no new geometry');
+
+const grain=makePitchSandGrain5303();
+assert.equal(grain.width,32);
+assert.equal(grain.height,32);
+assert.equal(grain.bytes,4096);
+assert.deepEqual(grain.data,makePitchSandGrain5303().data);
+assert(new Set(grain.data.filter((_,i)=>i%4===0)).size>20);
+for(let i=0;i<grain.data.length;i+=4){
+ assert.equal(grain.data[i],grain.data[i+1]);
+ assert.equal(grain.data[i],grain.data[i+2]);
+ assert.equal(grain.data[i+3],255);
+}
+console.log('PASS 5.303: deterministic shared neutral sand grain, 4 KiB');
