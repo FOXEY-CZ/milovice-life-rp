@@ -1,3 +1,7 @@
+## Milovice RP 5.304 — pěší přístupy Juventa
+
+5.304 — Ochrana tří původních pěších přístupů Juventa (OSM 1472419124/127/128, 6 segmentů) před odhadnutými zaparkovanými vozidly: modelový odstup 4,25 m, nikoli právní či zaměřený zákaz. Přesné geometrie těchto cest a dvou souvisejících service ways 1472419121/122 jsou shodné v mlada a westlink; guard před deduplikací. Žádné nové cesty, kolize, parkoviště ani změny GPS. Node a mobilní WebGL regrese přidány, CI čeká. Oficiální ČÚZK ortofoto export nebyl dostupný ani alternativním přístupem; foto STRABAG potvrzuje červený ovál, ale přesný obrys stále nedoložený. 5.303 PR #94 MERGED f498e30, 5/5 CI PASS, Pages neověřeny. Dál: ověřit CI a získat půdorys oválu.
+
 ## Milovice RP 5.303 — zrnitý povrch doskočiště
 
 Verze 5.303: stávající sdílený pitchSand má novou deterministickou neutrální 32×32 RGBA texturu (4096 B před mipmapami). Použije se i na ostatní existující plochy s tímto materiálem, bez nových meshů či kolizí; zrnitost je modelový odhad. Node a mobilní WebGL test po 7,1 s LOD rozšířeny, výsledky čekají. Český rozhlas 2016 ([zdroj](https://strednicechy.rozhlas.cz/skola-juventa-v-milovicich-ma-vlastni-hudebni-sal-i-atleticky-stadion-7252229)) cituje ředitele o čtyřdráhovém tartanovém oválu; fotografie STRABAG ukazuje červený povrch. Přesný obrys dráhy není v regionálních datech; pokus načíst ČÚZK ortofoto selhal. Žádný ovál ani lajny nevytvořeny. Dál: získat zaměřenou geometrii. PR #93 MERGED be54ab1, 4/4 spuštěné CI PASS, Italská nebyla ve výpisu; Pages neověřeny.

@@ -9,7 +9,7 @@ const browser=await chromium.launch({
 try{
  const view='pitch-juventa-5301',page=await browser.newPage({viewport:{width:393,height:852},deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
- await page.goto('http://127.0.0.1:8080/?v=530301&streetAudit='+view,{waitUntil:'domcontentloaded',timeout:35000});
+ await page.goto('http://127.0.0.1:8080/?v=530400&streetAudit='+view,{waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(view=>window.__miloviceAreasLoaded?.includes('mlada')&&
    window.__miloviceSportPitchCameraAudit?.targetInFrame===true&&
@@ -21,6 +21,7 @@ try{
  await page.waitForTimeout(7100);
  const state=await page.evaluate(()=>({camera:window.__miloviceSportPitchCameraAudit,render:window.__miloviceJuventaRender5301?.(),
   jump:window.__miloviceJuventaRender5301?.('long-jump'),
+  access:window.__miloviceJuventaAccess5304?.(),
   sport:window.__miloviceSportPitchAudit,selected:document.querySelector('#street-audit-nav a.selected')?.dataset.auditId,
   canvas:document.querySelector('canvas')?.clientWidth}));
  assert.equal(state.camera.pitchId,'1472419116');assert.equal(state.camera.sport,'soccer');
@@ -36,6 +37,8 @@ try{
  assert(state.jump.meshes.every(m=>m.textureBytes===4096),'5.303 actual sand mesh must retain the shared texture');
  assert(state.sport.juventaLongJump5302.some(x=>x.sourceOSMId==='1472419120'&&x.material==='pitchSand'&&x.currentSurfaceVerified===false));
  console.log('PASS 5.302 mobile Juventa actual attached sand mesh after 7.1s LOD',JSON.stringify(state.jump));
+ assert.deepEqual(state.access?.protectedWayIds,['1472419124','1472419127','1472419128']);
+ assert.equal(state.access.segments,6);assert.equal(state.access.newGeometry,0);
  assert.equal(state.selected,view);assert(state.canvas>0);assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/juventa-5301-mobile.png'});
