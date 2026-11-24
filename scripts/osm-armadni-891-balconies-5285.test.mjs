@@ -113,8 +113,8 @@ for(const token of [
  'armadni891BalconiesCache5285.set(String(osmId)',
  'window.__miloviceArmadni891BalconiesRuntime5285=()=>',
  "'armadni-891-south-balconies-5285':{",
- "const BUILD_ID='20261123-armadni-891-window-overlays-528600'"
+ "const BUILD_ID='20261124-armadni-891-ground-band-528700'"
 ])assert(html.includes(token),token);
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
-assert.equal(meta,'20261123-armadni-891-window-overlays-528600');
+assert.equal(meta,'20261124-armadni-891-ground-band-528700');
 console.log('PASS 5.286 Armádní 891 three inferred balcony doors, three exact estimated window overlays omitted, unchanged original OSM');
