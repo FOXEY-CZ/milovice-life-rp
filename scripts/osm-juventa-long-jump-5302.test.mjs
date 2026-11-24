@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {inspectJuventaLongJump5302 as inspect} from './osm-juventa-long-jump-5302.js';
-import {planCityLanduseBatches} from './landscapes.js';
+import {planCityLanduseBatches,selectLanduseRenderMaterial} from './landscapes.js';
 for(const region of ['mlada','westlink']){
  const ways=JSON.parse(readFileSync(new URL('../data/regions/'+region+'.json',import.meta.url),'utf8')).elements;
  const matched=ways.map(inspect).filter(Boolean);
@@ -12,6 +12,17 @@ for(const region of ['mlada','westlink']){
  const convert=p=>({x:(p.lon-14.866674)*71180,y:(50.225972-p.lat)*111320});
  const entry=planCityLanduseBatches([way],convert).entries[0];
  assert.equal(entry.renderMaterial,'pitchSand');
+ assert.equal(selectLanduseRenderMaterial(way,'pitch'),entry.renderMaterial);
+ for(const [surface,material] of [['grass','pitch'],['sand','pitchSand'],['clay','pitchClay'],['asphalt','pitchAsphalt'],['artificial_turf','pitchTurf']]){
+  const tagged={...way,tags:{...way.tags,surface}};
+  assert.equal(inspect(tagged),null);
+  assert.equal(selectLanduseRenderMaterial(tagged,'pitch'),material);
+  assert.equal(planCityLanduseBatches([tagged],convert).entries[0].renderMaterial,material);
+ }
+ const turf=ways.find(w=>String(w.id)==='1472419116');
+ assert.equal(selectLanduseRenderMaterial(turf,'pitch'),'pitchTurf');
+ assert.equal(selectLanduseRenderMaterial({...turf,tags:{...turf.tags,surface:'clay'}},'pitch'),'pitchClay');
+ assert.equal(selectLanduseRenderMaterial({tags:{landuse:'grass',surface:'sand'}},'grass'),'grass');
  assert.deepEqual(entry.pts,way.geometry.slice(0,-1).map(convert));
  assert.equal(inspect({...way,tags:{...way.tags,surface:'grass'}}),null);
  assert.equal(inspect({...way,id:1}),null);
