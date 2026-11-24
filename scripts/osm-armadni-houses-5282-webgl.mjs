@@ -52,6 +52,22 @@ try{
  assert.equal(e?.projectConceptOnly,true);
  assert.equal(e?.approvedFacadePhotos,0);
  assert.equal(e?.newBalconies,0);
+ const grass=await page.evaluate(()=>window.__miloviceArmadniGreenRuntime5290?.());
+ assert(grass?.ready,'four mapped Armádní green pockets still drawn after 7.1s mobile LOD');
+ assert.equal(grass.version,'5.290');
+ assert.deepEqual(grass.sourcePolygonIds,[
+  '1468803911','1468803935','1468803941','1468803951'
+ ]);
+ assert.equal(grass.originalMappedGrassPolygonCount,4);
+ assert.equal(grass.sourceLanduseVerified,true);
+ assert.equal(grass.positionsEstimated,true);
+ assert.equal(grass.exactSpeciesVerified,false);
+ assert(grass.tuftCount>8&&grass.tuftCount<=39);
+ assert.equal(grass.meshCount,1);
+ assert.equal(grass.triangles,grass.tuftCount*2);
+ assert.equal(grass.visibleMeshes,1);
+ for(const k of ['newLawnPolygons','newFootways','newRoads','newParkedCars','newTrees','newColliders'])
+  assert.equal(grass[k],0);
  const west=await page.evaluate(()=>window.__miloviceArmadniWestRuntime5289?.());
  assert(west?.ready,'C13/C14 Armádní 886/887 provisional facades visible after 7.1s mobile LOD');
  assert.equal(west.version,'5.289');
@@ -120,5 +136,5 @@ try{
  await page.setViewportSize({width:1280,height:720});
  await page.waitForTimeout(950);
  await page.screenshot({path:'browser-artifacts/armadni-houses-5282-wide.png'});
- console.log('PASS 5.289 Armádní 886/C14 887/C13 + 890/C15 provisional facades, 891 photo-backed, 357 model windows, mobile+wide WebGL after 7.1s LOD');
+ console.log('PASS 5.290 Armádní source-locked green pockets one low-poly mesh after 7.1s mobile LOD, plus 4 houses/357 model windows and wide WebGL');
 }finally{await browser.close()}
