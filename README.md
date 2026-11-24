@@ -1,3 +1,7 @@
+## Milovice RP 5.303 — modelové členění sektoru vrhu koulí Juventa (24. 11. 2026)
+
+OSM 1472419115 (21 bodů, hash 80b8c82f) má zřetelný zakulacený konec a rozšířený dopadový sektor. Přesný source lock ve dvou regionech; rozdělení podél tětivy mezi existujícími vrcholy 4 a 7 (nulové indexování) zachovává celou plochu cca 105,1 m²: sektor 97,6 m², zakulacená část 7,5 m². Sektor ponechán, zakulacená část používá existující šedý pitchAsphalt jako modelový odhad, nikoli potvrzený asfalt nebo normovaný vrhačský kruh. Jeden dodatečný povrchový mesh bez překryvu, žádný nový materiál, zařízení, kolize nebo GPS. Node a mobilní WebGL po 7,1 s LOD čekají.
+
 ## Milovice RP 5.302 — modelový pískový povrch doskočiště Juventa (24. 11. 2026)
 
 Výroční zpráva ZŠ T. G. Masaryka 2018/2019 ([PDF, str. 48](https://zsmilovice.cz/wp-content/uploads/2019/10/V%C3%BDro%C4%8Dn%C3%AD%20zpr%C3%A1va%2018-19.pdf)) dokládá soutěž ve skoku dalekém pořádanou Juventou 25. 4. 2019. Textový index popisuje pískové doskočiště ve fotografické koláži; přímé zobrazení PDF se nezdařilo kvůli limitu velikosti. OSM 1472419120 je přesný přibližně 8 × 3 m polygon long_jump s hash 6f18862d v mlada/westlink. Použití stávajícího pitchSand je modelová inference, současný povrch ani konkrétní odstín nejsou fotoověřeny. Původní polygon, žádné nové vybavení, povrchové meshe nad rámec stávajícího batch systému ani kolize. Případný explicitní surface tag má přednost; vrh koulí se nemění. CI čeká.

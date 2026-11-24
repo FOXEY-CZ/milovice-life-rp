@@ -1,3 +1,4 @@
+import {planJuventaShotPut5303} from './osm-juventa-shot-put-5303.js';
 import {inspectJuventaLongJump5302} from './osm-juventa-long-jump-5302.js';
 import {inspectJuventaTurf5301} from './osm-juventa-turf-5301.js';
 import {inspectAthleticsOutline5300} from './osm-athletics-outline-5300.js';
@@ -129,6 +130,7 @@ export function planCityLanduseBatches(elements,convert,{cellSize=180}={}){
   });
   const entry={id:String(el.id),kind,renderMaterial,pts,area,key,oversized,
    athleticsOutline5300:inspectAthleticsOutline5300(el),juventaTurf5301,juventaLongJump5302,
+   juventaShotPut5303:planJuventaShotPut5303(el,pts),
    tags:el.tags||{},allowPlants:!['private','no'].includes(el.tags?.access)};
   groups.get(key).items.push(entry);
   entries.push(entry);
@@ -155,7 +157,7 @@ export function addCityLanduseBatches(T,elements,convert,terrain,osmLayer,zones,
  const materialsForCity=materials(T);
  let surfaceDrawMeshes=0,outlineDrawMeshes=0,sourcePitchLines=0;
  let courtMarkSegments=0,surfaceTaggedPitches=0,sportTaggedPitches=0;
- const sportPitchIds=[],suppressedAthleticsOutlines5300=[],juventaTurf5301=[],juventaLongJump5302=[];
+ const sportPitchIds=[],suppressedAthleticsOutlines5300=[],juventaTurf5301=[],juventaLongJump5302=[],juventaShotPut5303=[];
  let failedMerges=0;
  const batchMeshes=[];
  function annotateJuventa5301(mesh,entries){
@@ -184,9 +186,27 @@ export function addCityLanduseBatches(T,elements,convert,terrain,osmLayer,zones,
   const parts=[],pitchPaintVertices=[];
   for(const entry of group.items){
    const pts=entry.pts;
+   const split=entry.juventaShotPut5303;
+   const surfacePts=split?.sector||pts;
+   if(split){
+    const shape=new T.Shape();
+    shape.moveTo(split.cap[0].x,-split.cap[0].y);
+    for(const v of split.cap.slice(1))shape.lineTo(v.x,-v.y);
+    shape.closePath();
+    const capGeo=new T.ShapeGeometry(shape);capGeo.rotateX(-Math.PI/2);
+    const position=capGeo.attributes.position;
+    for(let i=0;i<position.count;i++)position.setY(i,terrain(position.getX(i),position.getZ(i))+.056);
+    position.needsUpdate=true;capGeo.computeVertexNormals();
+    const cap=new T.Mesh(capGeo,materialsForCity[split.capMaterial]);
+    annotate(cap,group);cap.name='OSM_juventa_shot_put_cap_5303';
+    cap.userData.juventaShotPutSourceIds5303=[entry.id];
+    osmLayer.add(cap);batchMeshes.push(cap);surfaceDrawMeshes++;
+    const {sector,cap:capPoints,...audit}=split;
+    juventaShotPut5303.push({...audit,additionalSurfaceMeshes:1});
+   }
    const shape=new T.Shape();
-   shape.moveTo(pts[0].x,-pts[0].y);
-   for(let i=1;i<pts.length;i++)shape.lineTo(pts[i].x,-pts[i].y);
+   shape.moveTo(surfacePts[0].x,-surfacePts[0].y);
+   for(let i=1;i<surfacePts.length;i++)shape.lineTo(surfacePts[i].x,-surfacePts[i].y);
    shape.closePath();
    const geo=new T.ShapeGeometry(shape);
    geo.rotateX(-Math.PI/2);
@@ -275,7 +295,7 @@ export function addCityLanduseBatches(T,elements,convert,terrain,osmLayer,zones,
   meshesSaved:plan.sourcePolygons+plan.pitchOutlines-
    (surfaceDrawMeshes+outlineDrawMeshes),
   sourcePitchLines,courtMarkSegments,sportTaggedPitches,surfaceTaggedPitches,
-  sportPitchIds,failedMerges,suppressedAthleticsOutlines5300,juventaTurf5301,juventaLongJump5302,
+  sportPitchIds,failedMerges,suppressedAthleticsOutlines5300,juventaTurf5301,juventaLongJump5302,juventaShotPut5303,
   pitchColorsFromOSMSurface:true,inferredLineLayouts:true,
   noUndocumentedSportEquipment:true,
   oversizedPolygons:plan.entries.filter(e=>e.oversized).length,

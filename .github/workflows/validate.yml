@@ -285,5 +285,7 @@ jobs:
         run: node scripts/osm-juventa-turf-5301.test.mjs
       - name: Verify 5.302 exact mapped long-jump sand model
         run: node scripts/osm-juventa-long-jump-5302.test.mjs
+      - name: Verify 5.303 source shot-put area partition
+        run: node scripts/osm-juventa-shot-put-5303.test.mjs
       - name: Verify 5.285 Armadni 891 photo-inferred south balconies, original OSM, mobile-safe geometry
         run: node scripts/osm-armadni-891-balconies-5285.test.mjs
