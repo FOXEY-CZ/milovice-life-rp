@@ -2,6 +2,8 @@
  * Real exterior photos in the address-specific listing show a dark ground
  * floor and light upper walls. Unpictured faces, RGB and 2.90m band height
  * remain modeled approximations, NOT a surveyed facade reconstruction.
+ * 5.287: cover the generic grey lower plinth visually with the already
+ * source-backed dark ground-storey layer (color/height still estimates).
  * No third-party photo pixels/assets, balconies, entrances, roofs or collisions.
  */
 export const ARMADNI_891_PHOTO_5284=Object.freeze({
@@ -71,15 +73,19 @@ export function renderArmadni891Photo5284(THREE,{
   const len=Math.hypot(dx,dz);
   if(!(len>.15))return null;
   const nx=exterior*dz/len,nz=-exterior*dx/len;
-  // Existing 5.192 photo-UNVERIFIED windows sit at +.044m glass/+ .068m
-  // frames, so new wall colors at +.018m remain strictly behind both.
-  // Existing plinth (+.036m, below 0.69m) is left undisturbed.
-  rect(0,a,b,nx,nz,.70,plan.modelGroundTopMetres,.018);
+  // 5.287: the OLD generic 5.192 plinth occupies y=.02..69 at +.036m;
+  // photo-backed 891 has a dark ground-storey finish all the way down.
+  // Extend its two-tone ground layer to y=.02, and position it at +.039m
+  // just IN FRONT of the old provisional grey plinth, yet strictly BEHIND
+  // glass (+.044m) and frames (+.068m) on the original wall. No removal
+  // of physical shell or new polygon edges/colliders.
+  rect(0,a,b,nx,nz,.02,plan.modelGroundTopMetres,.039);
   rect(1,a,b,nx,nz,plan.modelGroundTopMetres,
    plan.modelRooflineMetres-.025,.018);
   // Thin light horizontal separation visible in exterior reference.
+  // Thin light seam must remain forward of the ground layer (+.039m).
   rect(1,a,b,nx,nz,plan.modelGroundTopMetres-.04,
-   plan.modelGroundTopMetres+.035,.031);
+   plan.modelGroundTopMetres+.035,.041);
   edgeCount++;
  }
  if(edgeCount!==ARMADNI_891_PHOTO_5284.sourceNodes-1)return null;
@@ -109,6 +115,9 @@ export function renderArmadni891Photo5284(THREE,{
  return {version:'5.284',sourceOSMId:plan.sourceOSMId,
   photographedAddress:true,photoObservedTwoTone:true,
   allSidesVerified:false,exactColorsVerified:false,
+  groundBandToGrade:true,provisionalPlinthVisuallyCovered:true,
+  groundLayerOffsetMetres:.039,seamLayerOffsetMetres:.041,
+  physicalPlinthRemoved:false,
   wallEdges:edgeCount,meshCount:meshes.length,
   triangles:buffer.reduce((sum,arr)=>sum+arr.length/9,0),
   addedBalconies:0,addedColliders:0,addedBuildings:0,
