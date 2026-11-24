@@ -76,10 +76,12 @@ const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const x of [
  "from './scripts/osm-armadni-promenade-5293.js?v=529300'",
  "const armadniPromenadePlan5293=planArmadniPromenadePaving5293({",
- "isArmadniPromenadeWay5293(armadniPromenadePlan5293,el)",
+ "isArmadniPromenadeWay5293(",
  "material:ARMADNI_PROMENADE_5293.material",
  "window.__miloviceArmadniPromenadeRuntime5293=()=>"
 ])assert(html.includes(x),'missing 5.293 runtime integration '+x);
+assert.match(html,/isArmadniPromenadeWay5293\(\s*armadniPromenadePlan5293,el\)/,
+ 'original OSM promenade matcher must be called with 5.293 plan and actual way');
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];
 const js=html.match(/const BUILD_ID='([^']+)'/)?.[1];
 const hud=html.split('id="build-label">')[1]?.split('</strong>')[0];
