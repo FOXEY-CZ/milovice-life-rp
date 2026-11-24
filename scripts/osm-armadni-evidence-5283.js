@@ -88,7 +88,8 @@ export function mountArmadniEvidence5283(doc,search=''){
   p('5.288: Armádní 890 má PROVIZORNÍ dvoubarevný povrch navazující na sousední 891: společný projekt C15/C16 je potvrzen, barevnost a výška tmavého pásu 890 nikoli. Nejde o fotoověřenou fasádu ani kopii STAKO vizualizace.');
  }else{
   p('5.289: Armádní 886 = projekt C14, Armádní 887 = projekt C13. Developer potvrzuje předzahrádky u přízemních bytů a balkony ostatních bytů až 12 m², ne však přesné souřadnice jednotlivých balkonů. Dvě fasádní barevné vrstvy na každé budově jsou PROVIZORNÍ, barevnost a dělicí pás nejsou fotograficky zaměřené. Nevznikají nové balkony, dveře, terasy, parkování ani kolize.');
-  p('5.292: městský projektový výkres DIO 2022 pro C13/C14 plánuje šedou betonovou dlažbu chodníků. Jediná nová barevná varianta je jen na pěti původních OSM pěších cestách. Projekt nevypovídá o přesné skutečné barvě nebo dokončených hranicích parkování; nic není přidáváno.');
+  p('5.293: severní pěší spojka OSM 1373371686 je EXISTUJÍCÍ původní mapa, 7 uzlů. Ve třech přesných mapových uzlech navazuje na originální chodníky 1468803921, 1468803914 a 1468803920. Doplňujeme jen stejný modelový materiál jako u 5.292; přesná skutečná dlažba na celé trase není ověřena, žádná nová cesta ani parkoviště.');
+   p('5.292: městský projektový výkres DIO 2022 pro C13/C14 plánuje šedou betonovou dlažbu chodníků. Jediná nová barevná varianta je jen na pěti původních OSM pěších cestách. Projekt nevypovídá o přesné skutečné barvě nebo dokončených hranicích parkování; nic není přidáváno.');
   a('Projektový výkres Armádní C13/C14 — DIO 2022 (PDF)','https://ud.mestolysa.cz/vr2022/vm12/MULL0B01AO22_0/MULL0B01AO3X/DIO.pdf');
   a(ARMADNI_EVIDENCE_5283.westProject.title,ARMADNI_EVIDENCE_5283.westProject.url);
   a('Adresné přiřazení C14=886 a C13=887 (ITES / obchodní registr)',ARMADNI_EVIDENCE_5283.westProject.addressesUrl);

@@ -75,6 +75,21 @@ try{
  assert(recovered?.ready,'5.291 authentic footway not preserved in mobile WebGL');
  assert(recovered.safeOriginalFootwayMetres>90);
  assert.equal(recovered.originalRoadAndFootwayGPSPreserved,true);
+ const promenade=await page.evaluate(()=>
+  window.__miloviceArmadniPromenadeRuntime5293?.());
+ assert(promenade?.ready,'5.293 source promenade not visible after 7.1s LOD');
+ assert.equal(promenade.sourceWayId,'1373371686');
+ assert.equal(promenade.sourceHash,'7134a638');
+ assert(promenade.sourceMetres>109&&promenade.sourceMetres<111);
+ assert.deepEqual(promenade.sharedSourceJunctions,[
+  '1468803921','1468803914','1468803920'
+ ]);
+ assert.equal(promenade.joinedAtOriginalOSMNodes,true);
+ assert.deepEqual(promenade.seenWayIds,['1373371686']);
+ assert(promenade.paintedSafePieces>0);
+ assert.equal(promenade.material,'armadni-c13c14-planned-pavers');
+ assert.equal(promenade.unverifiedActualPavingColor,true);
+ for(const key of ['newPaths','newParking','newColliders'])assert.equal(promenade[key],0);
  const pavers=await page.evaluate(()=>
   window.__miloviceArmadniProjectPavingRuntime5292?.());
  assert(pavers?.ready,'5.292 C13/C14 planned-grey original paths not rendered after 7.1s LOD');
