@@ -6,14 +6,20 @@ export const ARMADNI_EVIDENCE_5283=Object.freeze({
  project:{houses:['890','891'],assignments:Object.freeze({C15:'890',C16:'891'}),kind:'project-concept-only',
   title:'STAKO C15/C16 — projektová vizualizace, ne fotografie',
   url:'https://www.stakohk.cz/MILOVICE-Bydleni-v-zeleniBD-C-15-a-C-16.html'},
+ westProject:{houses:['886','887'],assignments:Object.freeze({C14:'886',C13:'887'}),
+  kind:'developer-project-description',url:'https://www.bydleni-milovice.cz/filosofie/',
+  title:'Projekt C13/C14: předzahrádky v přízemí, balkony ve vyšších podlažích do 12 m²',
+  addressesUrl:'https://www.finmag.cz/obchodni-rejstrik/zivnostensky-rejstrik/47539801-ites-spol-s-r-o',
+  exactBalconyLocationVerified:false,facadePhotoVerified:false,
+  colorsAndBandOnlyEstimated:true},
  city:{title:'Město Milovice — zápis rady 29/2024: BD C15 = č.p. 890, BD C16 = č.p. 891',
   url:'https://milovice.hlasenirozhlasu.cz/files/milovice/attachments/249858/Anonymizovany-Zapis-z-jednani-29-2024-2547.pdf'},
  houses:[
   {house:'886',osmId:'1164238465',ruian:'119003791',
-   note:'Inzerce uvádí balkon, nikoli jeho polohu či fasádní stranu.',
+   note:'Dům C14 = Armádní 886 podle adresného provozního registru. Oficiální projekt C13/C14 potvrzuje balkony vyšších podlaží (do 12 m²), nikoli jejich přesné polohy. Verze 5.289: PROVIZORNÍ dvoubarevná 3D fasáda, ne fotometricky ověřené barvy ani fasádní otvory.',
    url:'https://reality.idnes.cz/detail/prodej/byt/milovice-armadni/6ad32c2feb13dfe0ed01b097/'},
   {house:'887',osmId:'1164238466',ruian:'119001071',
-   note:'Bez jednoznačně přiřazené fotografie exteriéru.',url:null},
+   note:'Dům C13 = Armádní 887 podle adresného provozního registru. Oficiální projekt C13/C14 potvrzuje balkony vyšších podlaží (do 12 m²), ale ne jejich přesné souřadnice. Verze 5.289: PROVIZORNÍ dvoubarevná 3D fasáda, nikoli fotografie skutečného domu.',url:null},
   {house:'891',osmId:'1047406190',ruian:'107125749',
    note:'BD C16 = č.p. 891. Nová adresní realitní fotogalerie ukazuje hotovou světlou horní fasádu, tmavé přízemí a balkony. Jde o skutečné fotky, bez GPS/azimutu jednotlivých snímků; 5.285 orientačně přiřadila třípatrový balkonový sloupec k jižní OSM hraně 6 podle blízké parkovací komunikace na východě, nejde o zaměřenou polohu. Starý smazaný inzerát se nepoužívá.',
    url:'https://jirisimon.cz/milovice/'},
@@ -81,7 +87,9 @@ export function mountArmadniEvidence5283(doc,search=''){
   p('Armádní 890: jedna 13m² přízemní terasa je doložená adresným inzerátem, ale není známa její poloha ani počet dalších teras. Proto nevznikla žádná nová modelová terasa, přístupová cesta ani kolize.');
   p('5.288: Armádní 890 má PROVIZORNÍ dvoubarevný povrch navazující na sousední 891: společný projekt C15/C16 je potvrzen, barevnost a výška tmavého pásu 890 nikoli. Nejde o fotoověřenou fasádu ani kopii STAKO vizualizace.');
  }else{
-  p('Armádní 886/887: bez doložených souřadnic balkonů a fasádních otvorů se nepřidávají žádné nové balkony, dveře ani příjezdy.');
+  p('5.289: Armádní 886 = projekt C14, Armádní 887 = projekt C13. Developer potvrzuje předzahrádky u přízemních bytů a balkony ostatních bytů až 12 m², ne však přesné souřadnice jednotlivých balkonů. Dvě fasádní barevné vrstvy na každé budově jsou PROVIZORNÍ, barevnost a dělicí pás nejsou fotograficky zaměřené. Nevznikají nové balkony, dveře, terasy, parkování ani kolize.');
+  a(ARMADNI_EVIDENCE_5283.westProject.title,ARMADNI_EVIDENCE_5283.westProject.url);
+  a('Adresné přiřazení C14=886 a C13=887 (ITES / obchodní registr)',ARMADNI_EVIDENCE_5283.westProject.addressesUrl);
  }
  p('Původní RÚIAN stěny, střechy, chodníky, kolize a ostatní budovy zůstávají nedotčené.');
  doc.body.append(panel);return panel;
