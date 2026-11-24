@@ -52,6 +52,24 @@ try{
  assert.equal(e?.projectConceptOnly,true);
  assert.equal(e?.approvedFacadePhotos,0);
  assert.equal(e?.newBalconies,0);
+ const west=await page.evaluate(()=>window.__miloviceArmadniWestRuntime5289?.());
+ assert(west?.ready,'C13/C14 Armádní 886/887 provisional facades visible after 7.1s mobile LOD');
+ assert.equal(west.version,'5.289');
+ assert.deepEqual(west.houses,['886','887']);
+ assert.equal(west.projectDocumented,true);
+ assert.equal(west.facadeColorVerified,false);
+ assert.equal(west.projectedBalconiesDocumented,true);
+ assert.equal(west.exactBalconyPlacementKnown,false);
+ assert.equal(west.meshCount,4);
+ assert.equal(west.triangles,168);
+ assert.equal(west.visibleMeshes,4);
+ assert.deepEqual(west.entries.map(x=>x.project),['C14','C13']);
+ assert.deepEqual(west.entries.map(x=>x.osmId),['1164238465','1164238466']);
+ assert.deepEqual(west.entries.map(x=>x.ruian),['119003791','119001071']);
+ assert(west.entries.every(e=>e.ready&&e.meshCount===2&&e.triangles===84&&
+  e.visibleMeshes===2&&e.photoVerified===false&&
+  e.balconyPositionVerified===false&&e.originalFootprintRetained===true));
+ for(const k of ['newBuildings','newDoors','newBalconies','newTerraces','newRoads','newFootways','newColliders'])assert.equal(west[k],0);
  const pair=await page.evaluate(()=>window.__miloviceArmadni890FacadeRuntime5288?.());
  assert(pair?.ready,'Armádní 890 C15 source footprint/provisional facade visible after 7.1s mobile LOD');
  assert.equal(pair.version,'5.288');
@@ -102,5 +120,5 @@ try{
  await page.setViewportSize({width:1280,height:720});
  await page.waitForTimeout(950);
  await page.screenshot({path:'browser-artifacts/armadni-houses-5282-wide.png'});
- console.log('PASS 5.288 Armádní 890 C15 provisional project-pair facade and 891 source photos, 357 model windows, mobile+wide WebGL after 7.1s LOD');
+ console.log('PASS 5.289 Armádní 886/C14 887/C13 + 890/C15 provisional facades, 891 photo-backed, 357 model windows, mobile+wide WebGL after 7.1s LOD');
 }finally{await browser.close()}

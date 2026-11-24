@@ -1,3 +1,13 @@
+## Milovice RP 5.289 — Armádní 886/C14 a 887/C13: provizorní fasády západního bloku (24. 11. 2026; CI čekají)
+
+Po nových modelových fasádách domů C15/890 a C16/891 dostala i **západní dvojice C14/886 a C13/887** dvě vlastní optické fasádní vrstvy od přízemí ke střeše. Původní mapové půdorysy obou budov (**OSM 1164238465 / 1164238466**, **RÚIAN 119003791 / 119001071**), 4 podlaží, všechny objemy/střechy, 25 bytů v každém, okna a kolize zůstávají nezměněné. Nově 2 sdílené barevné meshe / 84 trojúhelníků na dům, tedy celkem **4 meshe / 168 trojúhelníků**, 2 opakovaně sdílené materiály.
+
+<underline>Co je doložené</underline>: [developer C13/C14](https://www.bydleni-milovice.cz/filosofie/) uvádí předzahrádky u přízemních bytů a balkony u ostatních do 12 m². [Adresný rejstřík ITES](https://www.finmag.cz/obchodni-rejstrik/zivnostensky-rejstrik/47539801-ites-spol-s-r-o) potvrzuje **886=C14 a 887=C13**. <underline>Co doložené není</underline>: přesný odstín přízemí/horní stěny, výška tmavého pásu, poloha balkonů, jejich počet na jednotlivých fasádách či zakreslené vstupy. Tyto barvy jsou vědomě provizorní, bez tvrzení o fotograficky přesné rekonstrukci. Nejsou přidány žádné neznámé balkony, terasy, dveře ani parkování.
+
+Kamera `streetAudit=armadni-houses-west-5282` má aktualizovaný kontrolní panel a runtime `__miloviceArmadniWestRuntime5289` dokumentuje oba původní domy, jejich nezměněný půdorys a počet renderovaných meshů i po LOD. Přidaný geohashově zamčený Node test a stávající mobilní/široký WebGL test.
+
+---
+
 ## Milovice RP 5.288 — Armádní 890: provizorní dvoubarevný povrch C15 (24. 11. 2026; PR #78 MERGED, 5/5 CI PASS; Pages neověřeny)
 
 Bytový dům **Armádní 890** má nyní samostatnou barevnou 3D fasádu na všech 10 původních hranách (2 sdílené meshe / 60 trojúhelníků). Je součástí stejného projektu STAKO **C15/C16** jako sousední 891; identitu 890=C15 výslovně potvrzuje městský zápis rady 29/2024. **Odstíny a dělení tmavého přízemí / světlých horních podlaží jsou vizuální odhad převzatý z vlastního fotoověřeného návrhu 891; hotová fasáda 890 nebyla fotoověřena**. Není to automatické tvrzení, že dva domy vypadají shodně; pouze přechodný konzistentní model celé dvojice pro další ruční porovnání.
