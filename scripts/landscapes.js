@@ -5,6 +5,18 @@ import {planOSMForestTreeInstances} from './forest-placement-597.js';
 import {classifyOSMPitch,planOSMPitchMarkings} from './osm-pitch-markings-599.js';
 import {makeMappedClayGrain5178} from './osm-clay-court-grain-5178.js';
 // Milovice 5.0 — open OSM landuse footprints, original procedural presentation.
+// 5.303: small deterministic neutral grain for the existing sand material.
+// Original procedural texture, not a photograph or a new mapped surface.
+export function makePitchSandGrain5303(){
+ const size=32,data=new Uint8Array(size*size*4);
+ for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+  let h=(Math.imul(x+37,73856093)^Math.imul(y+53,19349663))>>>0;
+  h^=h>>>13;h=Math.imul(h,1274126177)>>>0;h^=h>>>16;
+  const v=224+(h%32),i=(y*size+x)*4;
+  data[i]=data[i+1]=data[i+2]=v;data[i+3]=255;
+ }
+ return {data,width:size,height:size,bytes:data.byteLength};
+}
 const landscapeMat=new WeakMap();
 function materials(T){
  let m=landscapeMat.get(T);
@@ -28,6 +40,16 @@ function materials(T){
    clayTexture.needsUpdate=true;
    m.pitchClay.map=clayTexture;
    m.pitchClay.needsUpdate=true;
+  }
+  if(T.DataTexture){
+   const sand=makePitchSandGrain5303();
+   const tex=new T.DataTexture(sand.data,sand.width,sand.height,T.RGBAFormat);
+   tex.wrapS=tex.wrapT=T.RepeatWrapping;
+   tex.minFilter=T.LinearMipmapLinearFilter;
+   tex.magFilter=T.LinearFilter;
+   tex.generateMipmaps=true;tex.colorSpace=T.SRGBColorSpace;
+   tex.repeat.set(2,2);tex.needsUpdate=true;
+   m.pitchSand.map=tex;m.pitchSand.needsUpdate=true;
   }
   m.pitchLine=new T.LineBasicMaterial({color:0xe5e8dd});
   m.pitchPaint=new T.MeshBasicMaterial({color:0xf4eee1,side:T.DoubleSide});
