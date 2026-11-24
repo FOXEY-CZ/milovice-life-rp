@@ -9230,19 +9230,19 @@ let armadniParkingPlan5295=null;
 let armadniParkingAudit5295={checked:0,rejectedCrossing:0,rejectedFootway:0,rejectedNarrowRoad:0};
 function rpAppendOSMElements(elements,regionId='old'){
  // Source guard must see the original region before overlap deduplication.
- if(regionId==='mlada'){
+ if(!armadniParkingPlan5295&&['mlada','vrutice','westlink'].includes(regionId)){
   armadniParkingPlan5295=planArmadniParkingGuard5295({regionId,ways:elements,toWorld:osmPoint});
   if(armadniParkingPlan5295){
    const p=armadniParkingPlan5295;
    window.__miloviceArmadniParkingRuntime5295=()=>({
-    version:p.version,sourceCrossingIds:p.sourceCrossingIds,
+    version:p.version,sourceRegion:p.sourceRegion,sourceCrossingIds:p.sourceCrossingIds,
     sourceApproachIds:p.sourceApproachIds,exactSourceJunctions:p.exactSourceJunctions,
     protectedWayIds:p.protectedWayIds,modelClearRadius:p.clearRadius,
     actualParkingSurveyed:false,...armadniParkingAudit5295,
     unmarkedCrossingsRemainUnpainted:p.sourceCrossingIds.every(id=>
      !sidewalkGeometryStats.mappedMarkedCrossingOSMIds.includes(id)),
     newParking:0,newCrossings:0,newZebras:0,newKerbs:0,newColliders:0,
-    ready:window.__miloviceAreasLoaded?.includes('mlada')===true
+    ready:window.__miloviceAreasLoaded?.includes(p.sourceRegion)===true
    });
   }
  }

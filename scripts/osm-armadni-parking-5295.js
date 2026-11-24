@@ -47,7 +47,7 @@ const coord=p=>({x:(p.lon-14.889)*111320*Math.cos(50.226*Math.PI/180),
  z:-(p.lat-50.226)*111320});
 export function planArmadniParkingGuard5295({regionId,ways,toWorld=coord}={}){
  const c=ARMADNI_PARKING_5295;
- if(regionId!=='mlada'||!Array.isArray(ways)||typeof toWorld!=='function')return null;
+ if(!['mlada','vrutice','westlink'].includes(regionId)||!Array.isArray(ways)||typeof toWorld!=='function')return null;
  const byId=new Map(ways.map(w=>[String(w.id),w]));
  for(const [id,n,h] of c.roads){
   const w=byId.get(id);
@@ -83,7 +83,7 @@ export function planArmadniParkingGuard5295({regionId,ways,toWorld=coord}={}){
    a:Object.freeze(points[i-1]),b:Object.freeze(points[i]),
    crossing:sourceCrossingIds.includes(id)}));
  }
- return Object.freeze({version:'5.295',sourceCrossingIds:Object.freeze(sourceCrossingIds),
+ return Object.freeze({version:'5.295',sourceRegion:regionId,sourceCrossingIds:Object.freeze(sourceCrossingIds),
   sourceApproachIds:Object.freeze(sourceApproachIds),protectedWayIds:Object.freeze(protectedWayIds),
   exactSourceJunctions:21,sourceRoadIds:Object.freeze(c.roads.map(r=>r[0])),
   narrowRoadId:c.narrowRoadId,segments:Object.freeze(segments),clearRadius:c.clearRadius,

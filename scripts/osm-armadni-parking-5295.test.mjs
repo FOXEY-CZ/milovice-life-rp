@@ -22,6 +22,16 @@ assert.equal(inspect(p,{x:0,z:0,type:'roadside',sourceId:p.narrowRoadId}).reason
 assert(inspect(p,{x:0,z:0,type:'mapped-surface-parking',sourceId:'elsewhere'}).clear);
 assert(inspect(p,{x:0,z:0,type:'roadside',sourceId:'elsewhere'}).clear);
 assert.equal(plan({regionId:'old',ways}),null);
+for(const regionId of ['vrutice','westlink']){
+ const file=new URL('../data/regions/'+regionId+'.json',import.meta.url);
+ const regionWays=JSON.parse(readFileSync(file,'utf8')).elements;
+ const q=plan({regionId,ways:regionWays});
+ assert(q,'parking guard must load before first traffic in '+regionId);
+ assert.equal(q.sourceRegion,regionId);
+ assert.deepEqual(q.segments,p.segments);
+ assert.deepEqual(q.protectedWayIds,p.protectedWayIds);
+ assert.deepEqual(q.sourceRoadIds,p.sourceRoadIds);
+}
 for(const id of [...p.protectedWayIds,...p.sourceRoadIds,c.narrowRoadId]){
  const changed=ways.map(w=>String(w.id)===id?{...w,geometry:w.geometry.map(
   (q,i)=>i===0?{...q,lat:q.lat+.0000001}:q)}:w);
@@ -50,6 +60,7 @@ assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const marker of ['planArmadniParkingGuard5295({regionId,ways:elements,toWorld:osmPoint})',
  'inspectArmadniParking5295(armadniParkingPlan5295,spot)',
- 'window.__miloviceArmadniParkingRuntime5295=()=>'])
+ 'window.__miloviceArmadniParkingRuntime5295=()=>',
+ "if(!armadniParkingPlan5295&&['mlada','vrutice','westlink'].includes(regionId))"] )
  assert(html.includes(marker),'missing '+marker);
 console.log('PASS 5.295: 7 unmarked crossings, 13 approach footways, 21 exact joins; baseline '+unsafe+' conflicting candidates; '+safe+' guarded candidates across 30 seeds');
