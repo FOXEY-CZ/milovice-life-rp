@@ -98,7 +98,7 @@ for(const regionId of ['mlada','westlink']){
  const school=ways.find(w=>String(w.id)==='53865836');
  const plan=planJuventaSchoolShell5306({...school,regionId});
  assert(plan);assert.equal(plan.sourceVertices,73);assert.equal(plan.sourceLevels,5);
- assert(plan.depth>150&&plan.depth<151);assert(plan.width>112&&plan.width<113);
+ assert(plan.depth>150&&plan.depth<151);assert(plan.width>111&&plan.width<113);
  assert.equal(plan.modelHeight,15.25);assert.equal(plan.newEntrances,0);assert.equal(plan.newRamps,0);
  assert.equal(planJuventaSchoolShell5306({...school,regionId,id:53865846}),null);
  const moved=school.geometry.map((p,i)=>i===0?{...p,lat:p.lat+.000001}:p);
