@@ -1,4 +1,4 @@
-## Milovice RP 5.287 — Armádní 891: souvislá tmavá fasáda přízemí (24. 11. 2026; CI čekají)
+## Milovice RP 5.287 — Armádní 891: souvislá tmavá fasáda přízemí (24. 11. 2026; PR #77 MERGED, 5/5 CI PASS; Pages neověřeny)
 
 V [adresné fotogalerii domu Armádní 891](https://jirisimon.cz/milovice/) je patrné tmavé přízemí a světlá vyšší podlaží. Původní barevná vrstva však v herní 3D scéně začínala až 70 cm nad terénem, proto dole prosvítal generický šedý sokl z provizorních fasád. Oprava protáhne stejný tmavý povrch až k modelové úrovni +0,02 m na všech původních deseti obvodových hranách a mírně jej vysune před generický sokl (+0,039 m proti +0,036 m). Nadále zůstává za okny (+0,044 m a více); světlá separační lišta zůstává viditelná. Barevné odstíny, výška pásu a nefotografované strany jsou **odhad**, ne 360° fotogrammetrie. Žádná změna půdorysů, průchodnosti, kolizí ani skutečných dveřních otvorů.
 
