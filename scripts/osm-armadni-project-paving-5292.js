@@ -29,7 +29,7 @@ const matches=(w,c)=>String(w?.id)===c.id&&w.type==='way'&&
  hash(w.geometry)===c.hash;
 export function planArmadniProjectPaving5292({regionId,ways}={}){
  const c=ARMADNI_PAVING_5292;
- if(regionId!==c.regionId||!Array.isArray(ways))return null;
+ if(!['mlada','vrutice','westlink'].includes(regionId)||!Array.isArray(ways))return null;
  const routes=[];
  for(const item of c.paths){
   const way=ways.find(w=>String(w?.id)===item.id);

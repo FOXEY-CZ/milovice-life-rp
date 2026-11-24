@@ -32,7 +32,7 @@ const distance=g=>g.slice(1).reduce((sum,p,i)=>{
 },0);
 export function planArmadniPromenadePaving5293({regionId,ways}={}){
  const c=ARMADNI_PROMENADE_5293;
- if(regionId!==c.region||!Array.isArray(ways))return null;
+ if(!['mlada','vrutice','westlink'].includes(regionId)||!Array.isArray(ways))return null;
  const original=ways.find(w=>String(w.id)===c.sourceOSMId);
  if(!matching(original,c.sourceOSMId,c.nodes,c.hash))return null;
  const sourceMetres=distance(original.geometry);

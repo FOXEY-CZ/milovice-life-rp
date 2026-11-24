@@ -16,7 +16,14 @@ assert(p);assert.equal(p.version,'5.291');assert.equal(p.modelWidthMetres,5);
 assert(p.originalRoadLengthMetres>40&&p.originalFootwayLengthMetres>94);
 assert.equal(p.surveyedWidth,false);
 for(const key of ['newFootways','newRoads','newCrossings','newZebras','newParking','newKerbs','newColliders'])assert.equal(p[key],0);
-assert.equal(plan({regionId:'vrutice',road,footway,baseWidth:7.8}),null);
+assert.equal(plan({regionId:'old',road,footway,baseWidth:7.8}),null);
+for(const regionId of ['vrutice','westlink']){
+ const regionWays=JSON.parse(readFileSync(new URL('../data/regions/'+regionId+'.json',import.meta.url),'utf8')).elements;
+ const r=regionWays.find(w=>String(w.id)===c.roadId);
+ const f=regionWays.find(w=>String(w.id)===c.footwayId);
+ assert.deepEqual(r,road);assert.deepEqual(f,footway);
+ assert.deepEqual(plan({regionId,road:r,footway:f,baseWidth:7.8}),p);
+}
 assert.equal(plan({regionId:'mlada',road,footway,baseWidth:5}),null);
 assert.equal(plan({regionId:'mlada',road:{...road,id:17},footway,baseWidth:7.8}),null);
 assert.equal(plan({regionId:'mlada',road:{...road,tags:{...road.tags,width:'5'}},footway,baseWidth:7.8}),null);
@@ -57,7 +64,7 @@ assert(after-before>29,'restored only '+(after-before)+' metres');
 assert.equal(JSON.stringify({road,footway}),saved);
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),raw);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-for(const s of ["from './scripts/osm-armadni-sidewalk-clearance-5291.js?v=529100'",
+for(const s of ["from './scripts/osm-armadni-sidewalk-clearance-5291.js?v=529600'",
  'planArmadniSidewalkWidth5291({',
  'window.__miloviceArmadniSidewalkRuntime5291=()=>'])assert(html.includes(s));
 const meta=html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1];

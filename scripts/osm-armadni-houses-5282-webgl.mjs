@@ -130,6 +130,15 @@ try{
  assert.equal(pavers.projectNotAsBuilt,true);
  for(const key of ['newParking','newRoads','newFootways','newColliders'])
   assert.equal(pavers[key],0);
+ const regionalWalkAudits=await page.evaluate(()=>[
+  window.__miloviceArmadniSidewalkRuntime5291?.(),
+  window.__miloviceArmadniProjectPavingRuntime5292?.(),
+  window.__miloviceArmadniPromenadeRuntime5293?.(),
+  window.__miloviceArmadniEastRuntime5294?.()
+ ]);
+ assert(regionalWalkAudits.every(a=>a?.ready&&['mlada','vrutice','westlink'].includes(a.sourceRegion)),
+  '5.296 original pavement plans must retain the first source region');
+ assert.equal(new Set(regionalWalkAudits.map(a=>a.sourceRegion)).size,1);
  const west=await page.evaluate(()=>window.__miloviceArmadniWestRuntime5289?.());
  assert(west?.ready,'C13/C14 Armádní 886/887 provisional facades visible after 7.1s mobile LOD');
  assert.equal(west.version,'5.289');
@@ -198,5 +207,5 @@ try{
  await page.setViewportSize({width:1280,height:720});
  await page.waitForTimeout(950);
  await page.screenshot({path:'browser-artifacts/armadni-houses-5282-wide.png'});
- console.log('PASS 5.294 Armádní east source walking network, 5.293 north promenade and 5.292 paving, 5.291 source road clipping and 5.290 source-locked green pockets one low-poly mesh after 7.1s mobile LOD, plus 4 houses/357 model windows and wide WebGL');
+ console.log('PASS 5.296 region-order-safe Armádní, 5.294 east source walking network, 5.293 north promenade and 5.292 paving, 5.291 source road clipping and 5.290 source-locked green pockets one low-poly mesh after 7.1s mobile LOD, plus 4 houses/357 model windows and wide WebGL');
 }finally{await browser.close()}
