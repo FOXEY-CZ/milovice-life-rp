@@ -90,6 +90,18 @@ try{
  assert.equal(promenade.material,'armadni-c13c14-planned-pavers');
  assert.equal(promenade.unverifiedActualPavingColor,true);
  for(const key of ['newPaths','newParking','newColliders'])assert.equal(promenade[key],0);
+ const parking=await page.evaluate(()=>window.__miloviceArmadniParkingRuntime5295?.());
+ assert(parking?.ready,'5.295 source parking guard not ready after 7.1s LOD');
+ assert.equal(parking.version,'5.295');
+ assert.equal(parking.sourceCrossingIds.length,7);
+ assert.equal(parking.sourceApproachIds.length,13);
+ assert.equal(parking.exactSourceJunctions,21);
+ assert.equal(parking.protectedWayIds.length,21);
+ assert.equal(parking.modelClearRadius,4.25);
+ assert.equal(parking.actualParkingSurveyed,false);
+ assert.equal(parking.unmarkedCrossingsRemainUnpainted,true);
+ for(const k of ['newParking','newCrossings','newZebras','newKerbs','newColliders'])
+  assert.equal(parking[k],0);
  const east=await page.evaluate(()=>
   window.__miloviceArmadniEastRuntime5294?.());
  assert(east?.ready,'5.294 original east footways missing after 7.1s mobile LOD');
