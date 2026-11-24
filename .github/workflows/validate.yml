@@ -279,5 +279,7 @@ jobs:
         run: node scripts/osm-armadni-parking-5295.test.mjs
       - name: Verify 5.299 strict parking cap and mapped lot boundary clearance
         run: node scripts/parking-layout-5299.test.mjs
+      - name: Verify 5.300 athletics source outlines
+        run: node scripts/osm-athletics-outline-5300.test.mjs
       - name: Verify 5.285 Armadni 891 photo-inferred south balconies, original OSM, mobile-safe geometry
         run: node scripts/osm-armadni-891-balconies-5285.test.mjs

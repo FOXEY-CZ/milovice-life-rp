@@ -1,3 +1,7 @@
+## Milovice RP 5.300 — atletické plochy bez falešných obrysů (24. 11. 2026)
+
+Dvě původní OSM atletické plochy 1472419115 (vrh koulí, 21 bodů) a 1472419120 (skok daleký, 5 bodů) mají identické zdrojové geometrie v Mladé a Westlinku. Přesný source lock vypíná generický bílý obrys jen u nich: hranice mapovaného polygonu sama nedokládá skutečnou bílou čáru. Původní plochy, terén, materiály a ostatní hřiště zůstávají. Žádné nové objekty, kolize, GPS ani domnělé doskočiště nebo sektor. Runtime audit uvádí konkrétní vypnuté obrysy. Povrch a vybavení nejsou fotoověřené; CI/Pages čekají.
+
 ## Milovice RP 5.299 — ochrana hranic mapovaných parkovišť a limitu aut (24. 11. 2026; CI čeká)
 
 Procedurální generátor parkování nyní nepřekročí limit ani při více řadách existujícího mapovaného parkoviště. Dříve samotný střed auta uvnitř polygonu nezaručil, že karoserie nepřesáhne jeho okraj; nově se vyžaduje konzervativní modelová rezerva 2,3 m od každé hrany. Funguje i u konkávních polygonů. Tato rezerva odpovídá přibližné obálce běžného modelového auta, nikoli skutečným rozměrům všech vozů nebo právnímu vymezení stání. Dosavadní roadside pravidla a ochrana Armádní zůstávají. Žádná nová parkoviště, souřadnice, geometrie ani kolize. Přidán Node test 30 seedů, 7 limitů a dvou polygonů; CI/WebGL/Pages čekají.
