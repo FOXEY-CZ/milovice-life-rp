@@ -1,3 +1,7 @@
+## Milovice RP 5.301 — umělý povrch fotbalového hřiště Juventa (24. 11. 2026)
+
+Rada města 14/2025, str. 21, UR-226-14/25 ([PDF](https://www.mesto-milovice.cz/assets/File.ashx?id_dokumenty=17955&id_org=9519)) dokládá fotbalové hřiště s umělým povrchem při ZŠ Juventa; [městský katalog](https://hriste.mesto-milovice.cz/hriste-u-zs-juventa) lokalizuje areál a [Sportengo](https://sportengo.cz/sportoviste/sportovni-areal-u-zs-juventa) uvádí umělý trávník. Jediný přilehlý OSM polygon s `sport=soccer` 1472419116 má 6 bodů a identickou geometrii v Mladé/Westlinku, hash e5044ba5. Přiřazení polygonu ke skutečnému povrchu je podložená inference, nikoli zaměření. Reuse existujícího pitchTurf místo obecného pitch; odstín modelový, žádné nové materiály, objekty, GPS, značení nebo kolize. Explicitní OSM surface v budoucnu má přednost. CI/WebGL/Pages čekají.
+
 ## Milovice RP 5.300 — atletické plochy bez falešných obrysů (24. 11. 2026)
 
 Dvě původní OSM atletické plochy 1472419115 (vrh koulí, 21 bodů) a 1472419120 (skok daleký, 5 bodů) mají identické zdrojové geometrie v Mladé a Westlinku. Přesný source lock vypíná generický bílý obrys jen u nich: hranice mapovaného polygonu sama nedokládá skutečnou bílou čáru. Původní plochy, terén, materiály a ostatní hřiště zůstávají. Žádné nové objekty, kolize, GPS ani domnělé doskočiště nebo sektor. Runtime audit uvádí konkrétní vypnuté obrysy. Povrch a vybavení nejsou fotoověřené; CI/Pages čekají.
