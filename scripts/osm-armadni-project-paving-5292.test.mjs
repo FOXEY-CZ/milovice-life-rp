@@ -16,7 +16,13 @@ assert.equal(p.planningNotAsBuilt,true);assert.equal(p.realSurfaceVerified,false
 for(const k of ['newFootways','newRoads','newKerbs','newCrossings',
  'newParking','newColliders'])assert.equal(p[k],0,k);
 for(const w of picked)assert(selected(p,w));
-assert.equal(plan({regionId:'vrutice',ways}),null);
+assert.equal(plan({regionId:'old',ways}),null);
+for(const regionId of ['vrutice','westlink']){
+ const regionWays=JSON.parse(readFileSync(new URL('../data/regions/'+regionId+'.json',import.meta.url),'utf8')).elements;
+ const alt=plan({regionId,ways:regionWays});
+ assert(alt,'original source plan missing for '+regionId);
+ assert.deepEqual(alt,p);
+}
 assert.equal(plan({regionId:'mlada',ways:ways.filter(w=>String(w.id)!==c.paths[0].id)}),null);
 for(const item of c.paths){
  const bad=ways.map(w=>String(w.id)===item.id?{...w,
@@ -57,7 +63,7 @@ assert(safePieces>=5&&safeMetres>120,'OSM safe pavement was lost');
 assert.equal(JSON.stringify(picked),original);
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),raw);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-for(const x of ["from './scripts/osm-armadni-project-paving-5292.js?v=529200'",
+for(const x of ["from './scripts/osm-armadni-project-paving-5292.js?v=529600'",
  'planArmadniProjectPaving5292({','isArmadniProjectPavingWay5292(armadniPavingPlan5292,el)',
  "material:'armadni-c13c14-planned-pavers'",
  'window.__miloviceArmadniProjectPavingRuntime5292=()=>'])

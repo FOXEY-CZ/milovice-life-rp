@@ -40,7 +40,7 @@ const length=g=>g.slice(1).reduce((n,p,i)=>{
 const same=(a,b)=>a?.lat===b?.lat&&a?.lon===b?.lon;
 export function planArmadniEastWalks5294({regionId,ways}={}){
  const c=ARMADNI_EAST_WALKS_5294;
- if(regionId!==c.region||!Array.isArray(ways))return null;
+ if(!['mlada','vrutice','westlink'].includes(regionId)||!Array.isArray(ways))return null;
  const originals=new Map();
  for(const source of [...c.ways,c.north]){
   const w=ways.find(e=>String(e?.id)===source.id);

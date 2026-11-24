@@ -35,7 +35,13 @@ for(const k of ['newFootways','newRoads','newCrossings','newZebras',
 assert(planArmadniPromenadePaving5293({regionId:'mlada',ways}));
 assert(sources.every(w=>picked(result,w)));
 assert(!picked(result,{...sources[0],tags:{highway:'footway',surface:'asphalt'}}));
-assert.equal(plan({regionId:'vrutice',ways}),null);
+assert.equal(plan({regionId:'old',ways}),null);
+for(const regionId of ['vrutice','westlink']){
+ const regionWays=JSON.parse(readFileSync(new URL('../data/regions/'+regionId+'.json',import.meta.url),'utf8')).elements;
+ const alt=plan({regionId,ways:regionWays});
+ assert(alt,'original source plan missing for '+regionId);
+ assert.deepEqual(alt,{...result,regionId});
+}
 for(const s of [...c.ways,c.north]){
  const changed=ways.map(w=>String(w.id)===s.id?{...w,geometry:w.geometry.map(
   (p,i)=>i===0?{...p,lon:p.lon+0.0000001}:p)}:w);
@@ -85,7 +91,7 @@ assert.equal(JSON.stringify(sources),original);
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),raw);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const marker of [
- "from './scripts/osm-armadni-east-walks-5294.js?v=529400'",
+ "from './scripts/osm-armadni-east-walks-5294.js?v=529600'",
  'const armadniEastPlan5294=planArmadniEastWalks5294({',
  'isArmadniEastWay5294(armadniEastPlan5294,el)',
  'window.__miloviceArmadniEastRuntime5294=()=>',

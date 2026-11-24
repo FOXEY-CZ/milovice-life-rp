@@ -18,7 +18,7 @@ const matches=(w,id,n,h,t)=>String(w?.id)===id&&w?.type==='way'&&
  Object.entries(t).every(([k,v])=>w.tags[k]===v)&&hash(w.geometry)===h;
 export function planArmadniSidewalkWidth5291({regionId,road,footway,baseWidth}={}){
  const c=ARMADNI_SIDEWALK_5291;
- if(regionId!==c.region||baseWidth!==c.defaultModelWidth||
+ if(!['mlada','vrutice','westlink'].includes(regionId)||baseWidth!==c.defaultModelWidth||
  !matches(road,c.roadId,c.roadNodes,c.roadHash,{highway:'residential',lit:'30'})||
  !matches(footway,c.footwayId,c.footwayNodes,c.footwayHash,{highway:'footway'}))return null;
  const roadMetres=length(road.geometry),walkMetres=length(footway.geometry);
