@@ -1,4 +1,4 @@
-## Milovice RP 5.290 — 3D zeleň na čtyřech původních travnatých plochách Armádní (24. 11. 2026; CI čekají)
+## Milovice RP 5.290 — 3D zeleň na čtyřech původních travnatých plochách Armádní (24. 11. 2026; PR #80 MERGED, 5/5 CI PASS; Pages neověřeny)
 
 Podle **skutečné OSM mapy**, nikoli vymyšlených pozemků, přidán drobný prostorový porost na čtyři již renderované polygony `landuse=grass`: `1468803911`, `1468803935` (poblíž Armádní 886/887) a `1468803941`, `1468803951` (poblíž Armádní 890/891). Jejich původní GPS souřadnice, obrysy, terén, chodníky a průjezdné komunikace **se nemění**. Jednotlivé vizuální trsy trávy mají modelový, nikoliv změřený odstín ani skutečně zaznamenaný počet či polohu. Každý stojí uvnitř původní travnaté plochy a mimo dosah všech známých cest a půdorysů budov.
 
