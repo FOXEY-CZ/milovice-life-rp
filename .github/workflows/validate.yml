@@ -261,5 +261,7 @@ jobs:
         run: node scripts/osm-armadni-890-pair-facade-5288.test.mjs
       - name: Validate 5.289 Armádní 886/C14 and 887/C13 original footprint, provisional facade and unknown balcony positions
         run: node scripts/osm-armadni-west-project-5289.test.mjs
+      - name: Check 5.290 Armádní source grass polygons, road clearance and low-poly model foliage batch
+        run: node scripts/osm-armadni-green-5290.test.mjs
       - name: Verify 5.285 Armadni 891 photo-inferred south balconies, original OSM, mobile-safe geometry
         run: node scripts/osm-armadni-891-balconies-5285.test.mjs
