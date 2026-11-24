@@ -281,5 +281,7 @@ jobs:
         run: node scripts/parking-layout-5299.test.mjs
       - name: Verify 5.300 athletics source outlines
         run: node scripts/osm-athletics-outline-5300.test.mjs
+      - name: Verify 5.301 Juventa existing artificial turf material
+        run: node scripts/osm-juventa-turf-5301.test.mjs
       - name: Verify 5.285 Armadni 891 photo-inferred south balconies, original OSM, mobile-safe geometry
         run: node scripts/osm-armadni-891-balconies-5285.test.mjs

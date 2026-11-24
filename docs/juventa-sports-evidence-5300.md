@@ -8,3 +8,11 @@
 
 Další krok: porovnat dostupné fotografie s přesnými OSM geometriemi, případně doplnit zdrojově doložené části dráhy a vybavení. Fotografie nepřebírat do herních assetů bez ověření licence. Žádná nová geometrie tímto auditem nevzniká.
 
+
+## 5.301 – doložený umělý povrch
+
+Rada města 14/2025, str. 21, UR-226-14/25 ([PDF](https://www.mesto-milovice.cz/assets/File.ashx?id_dokumenty=17955&id_org=9519)) dokládá fotbalové hřiště s umělým povrchem při ZŠ Juventa; [městský katalog](https://hriste.mesto-milovice.cz/hriste-u-zs-juventa) lokalizuje areál a [Sportengo](https://sportengo.cz/sportoviste/sportovni-areal-u-zs-juventa) uvádí umělý trávník. Jediný přilehlý OSM polygon s `sport=soccer` 1472419116 má 6 bodů a identickou geometrii v Mladé/Westlinku, hash e5044ba5. Přiřazení polygonu ke skutečnému povrchu je podložená inference, nikoli zaměření. Reuse existujícího pitchTurf místo obecného pitch; odstín modelový, žádné nové materiály, objekty, GPS, značení nebo kolize. Explicitní OSM surface v budoucnu má přednost. CI/WebGL/Pages čekají.
+
+### Kontrolní kamera
+
+Kontrolní pohled `?streetAudit=pitch-juventa-5301` používá skutečný OSM polygon a stávající plánovač sportovní kamery. Městský katalog uvádí GPS 50°13′33.4″N 14°52′01.7″E jako polohu areálu, nikoli snímku; výsledné oko i cíl kamery jsou uvnitř polygonu. Sportengo potvrzuje běžecký ovál s umělým povrchem kolem hřiště, ale v dodaných OSM datech není jeho zaměřený obrys. Proto se ovál, lajny dráhy ani vybavení zatím nepřidávají. Matematický plán kamery ověřen na uloženém polygonu; skutečný WebGL pohled čeká na CI.
