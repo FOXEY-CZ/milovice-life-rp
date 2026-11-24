@@ -277,5 +277,7 @@ jobs:
         run: node scripts/osm-armadni-east-walks-5294.test.mjs
       - name: Verify 5.295 Armadni unmarked crossing and mapped footway parking clearance
         run: node scripts/osm-armadni-parking-5295.test.mjs
+      - name: Verify 5.299 strict parking cap and mapped lot boundary clearance
+        run: node scripts/parking-layout-5299.test.mjs
       - name: Verify 5.285 Armadni 891 photo-inferred south balconies, original OSM, mobile-safe geometry
         run: node scripts/osm-armadni-891-balconies-5285.test.mjs
