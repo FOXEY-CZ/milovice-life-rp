@@ -265,5 +265,7 @@ jobs:
         run: node scripts/osm-armadni-green-5290.test.mjs
       - name: Verify 5.291 original Armádní footway survives procedural road width
         run: node scripts/osm-armadni-sidewalk-clearance-5291.test.mjs
+      - name: Verify 5.292 concrete planned pavement on exact original C13/C14 footways
+        run: node scripts/osm-armadni-project-paving-5292.test.mjs
       - name: Verify 5.285 Armadni 891 photo-inferred south balconies, original OSM, mobile-safe geometry
         run: node scripts/osm-armadni-891-balconies-5285.test.mjs
