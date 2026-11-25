@@ -986,6 +986,17 @@ try{
  if(afterDrive.route?.status==='ready'?!afterDrive.audit?.valid:(!['off-road','destination-off-road','no-route'].includes(afterDrive.route?.status)||afterDrive.audit||afterDrive.route?.legs.length))
   throw Error('5.326 unsafe recalculated route '+JSON.stringify(afterDrive));
  console.log('PASS 5.326 moving vehicle cache',JSON.stringify({beforeDrive,afterDrive:afterDrive.cache}));
+ // The driving regression leaves momentum. Brake with ordinary player input
+ // before the existing exit/re-entry regression; the game refuses exit above .45 m/s.
+ const stopped=()=>Number(document.getElementById('speed').textContent)===0;
+ if(!await page.evaluate(stopped)){
+  await page.keyboard.down('s');
+  try{
+   await page.waitForFunction(()=>Number(document.getElementById('speed').textContent)<=2,undefined,{timeout:30000});
+  }finally{await page.keyboard.up('s');}
+ }
+ await page.waitForFunction(stopped,undefined,{timeout:30000});
+ console.log('PASS 5.326 vehicle stopped before exit regression');
  await page.locator('#maplaunch').click();await page.locator('#map-goal-clear-5319').click();
  if(!await page.locator('#map-fit-route-5323').isDisabled())throw Error('5.324 stale fit-route control after clearing');
  await page.locator('#closemap').click();
