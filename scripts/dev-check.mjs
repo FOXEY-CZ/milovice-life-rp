@@ -10,6 +10,7 @@ const discovered=readdirSync(scriptDir).filter(name=>/(?:\.test|-test)\.mjs$/.te
 const packs=Object.freeze({
  all:discovered,
  juventa:discovered.filter(name=>/^osm-juventa-/.test(name)),
+ podlesem:discovered.filter(name=>/^osm-pod-lesem-/.test(name)),
  sportovni:[
   'osm-lesni-courtyard-lawns-5231.test.mjs',
   'osm-sportovni-footway-network-5230.test.mjs',

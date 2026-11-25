@@ -1,3 +1,7 @@
+## Milovice RP 5.310 — druhý modelový chodec Pod Lesem
+
+Přenos původního PR #63 na aktuální main. OSM 1272081412 (hash 69d970c5), původní uzly 8–1, cca 109 m, otočení asi 14,8 m před osou vozovky. Pouze při platné hlavní trase 5.278 a volném místě v limitu 65 NPC; žádný nový přechod, geometrie ani kolize. Sdílí plynulé otáčení a krokovou animaci 5.280, nikoli starou časovou animaci. Kamera `?v=531000&streetAudit=pod-lesem-branch-5279` je technický odhad. Node a mobilní/široká WebGL regrese připraveny, CI čeká. 5.309 #104 MERGED, 6/6 PR CI a Pages PASS.
+
 ## Milovice RP 5.309 — modelové okenní pásy Juventa
 
 5.309 — první modelové okenní pásy Juventa. Fotografie dodavatele [AZ KLIMA](https://www.azklima.com/en/zakladni-skola-a-materska-skola-juventa-milovice/) a městské dokumentace z dubna 2026 potvrzují široké členěné sklo, červené, oranžové a žluté svislé akcenty. Pouze kandidátní hrana 47 původního OSM 53865836, tři řady po třech modelových okenních sestavách (54 tabulí skla, 9 akcentů, 72 ploch, 144 trojúhelníků, jediný mesh). Rozměry, přesné přiřazení ke konkrétní hraně a počet oken jsou výslovně odhad; žádné skutečné umístění vchodu netvrdíme. Kandidátní vstupní část hrany ponechána volná; žádné nové kolize ani změna půdorysu. Nejsou použity fotografické pixely. Node a mobilní WebGL testy připraveny; CI čeká. Navazuje na opravu PR #100 (Validate PASS, ostatní kontroly při zápisu běží). Dál: ověřit obě změny a modelovat vchod pouze po kontrole umístění.

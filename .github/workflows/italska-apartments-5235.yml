@@ -325,6 +325,7 @@ jobs:
               node scripts/osm-pod-lesem-road-bends-webgl-5272.mjs
               node scripts/osm-pod-lesem-track-webgl-5273.mjs
               node scripts/osm-pod-lesem-crossing-walker-webgl-5275.mjs
+              node scripts/osm-pod-lesem-branch-webgl-5279.mjs
               ;;
             3)
               node scripts/osm-rakouska-granite-webgl-5269.mjs
