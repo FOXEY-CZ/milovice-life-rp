@@ -336,3 +336,5 @@ jobs:
         run: node scripts/gps-cue-5330.test.mjs
       - name: Verify 5.331 local Czech GPS voice
         run: node scripts/gps-voice-5331.test.mjs
+      - name: Verify fictional player-facing identity and source street coverage
+        run: node scripts/fictional-identity.test.mjs

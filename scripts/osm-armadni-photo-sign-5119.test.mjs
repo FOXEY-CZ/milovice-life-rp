@@ -2,6 +2,7 @@
 // Static safety regression; live Chrome/WebGL visibility remains a separate smoke test.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {GAME_TITLE} from './fictional-identity.js';
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const mlada=JSON.parse(readFileSync(
  new URL('../data/regions/mlada.json',import.meta.url),'utf8')).elements;
@@ -16,7 +17,8 @@ assert.equal(clinic.tags.name,'Poliklinika Milovice');
 const build=html.match(/const BUILD_ID='([^']+)'/)?.[1];
 assert(/^20\d{6}-[a-z0-9-]+$/.test(build));
 assert(html.includes('<meta name="milovice-build" content="'+build+'"'));
-assert(/<title>Milovice RP – 5\.\d{3}/.test(html));
+assert(html.includes('<title>'+GAME_TITLE+' – 5.')); 
+assert(/ – 5\.\d{3}<\/title>/.test(html));
 assert(/Verze 5\.\d{3} · build/.test(html));
 assert(/href="\.\/\?v=\d{6}"/.test(html));
 assert(/href="\?v=\d{6}&streetAudit=armadni-billa-5118"/.test(html));
