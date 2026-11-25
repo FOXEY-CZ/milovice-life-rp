@@ -1,3 +1,7 @@
+## Milovice RP 5.324 — mobilní GPS mapa
+
+Na úzkých displejích dvousloupcová tlačítka mapy, v krátkém režimu na šířku čtyřsloupcová lišta. Dotykové cíle minimálně 44 px, výběr cíle 16px text, omezený rolovatelný informační zápatí, navigace viditelná i ve sbaleném mobilním HUDu. Tlačítko Trasa je povolené pouze s dostupnou ověřenou mapovou vrstvou. Browser regrese kontroluje rozměry, dostupnost ovládání a zrušení cíle při 320×568, 667×375 a 390×844, pořizuje screenshoty. Beze změny silničního grafu a routingu, žádné nové síťové požadavky. CI kandidáta čeká; skutečný dotykový hardware neověřen.
+
 ## Milovice RP 5.323 — GPS trasa na velké mapě
 
 Již ověřené silniční úseky se vykreslují fialově také do Leaflet mapy jako jediná víceúseková vrstva, bez propojení mezer a bez nového routování. Tlačítko Trasa přiblíží celou trasu a vypne automatické sledování. Zrušení cíle odstraní vrstvu, pěší režim zůstává přímý. Node a browser CI čekají.
