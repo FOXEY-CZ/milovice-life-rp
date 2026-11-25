@@ -302,3 +302,7 @@ jobs:
         run: node scripts/osm-juventa-wing-registration-5313.test.mjs
       - name: Verify 5.314 hypothetical Juventa section and runtime safety
         run: node scripts/osm-juventa-local-section-5314.test.mjs
+      - name: Verify 5.315 HZS source footprint and civilian access
+        run: node scripts/osm-hzs-source-audit-5315.test.mjs
+      - name: Verify 5.315 HZS procedural shell and override guards
+        run: node scripts/osm-hzs-facade-5315.test.mjs

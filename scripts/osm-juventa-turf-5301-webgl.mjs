@@ -23,6 +23,7 @@ try{
   jump:window.__miloviceJuventaRender5301?.('long-jump'),
   access:window.__miloviceJuventaAccess5304?.(),
   school:window.__miloviceJuventaSchool5306?.(),
+  hzs:window.__miloviceHZSShell5315?.(),
   sport:window.__miloviceSportPitchAudit,selected:document.querySelector('#street-audit-nav a.selected')?.dataset.auditId,
   canvas:document.querySelector('canvas')?.clientWidth}));
  assert.equal(state.camera.pitchId,'1472419116');assert.equal(state.camera.sport,'soccer');
@@ -40,6 +41,12 @@ try{
  console.log('PASS 5.302 mobile Juventa actual attached sand mesh after 7.1s LOD',JSON.stringify(state.jump));
  assert.deepEqual(state.access?.protectedWayIds,['1472419124','1472419127','1472419128','1076211056','1076211057','1076211058','1076211060']);
  assert.equal(state.access.segments,31);assert.equal(state.access.exactSourceJunctions,14);assert.equal(state.access.sourceCrossingId,'1076211056');assert.equal(state.access.newGeometry,0);
+ assert(state.hzs?.attached&&state.hzs.registered&&state.hzs.vertices>0,'HZS source shell missing');
+ assert.equal(state.hzs.sourceHash,'10a34d4b');assert.equal(state.hzs.sourceOutlineVertices,8);
+ assert.equal(state.hzs.textureBytes,512);assert.equal(state.hzs.plasterRows,64);
+ assert.equal(state.hzs.materialGroups,2);assert.equal(state.hzs.newColliders,0);
+ assert.equal(state.hzs.garageDoorsAdded,0);assert.equal(state.hzs.towerAdded,0);
+ console.log('PASS 5.315 HZS attached exact shell after LOD',JSON.stringify(state.hzs));
  assert.equal(state.school?.sourceOSMId,'53865836');assert.equal(state.school.sourceOutlineVertices,72);
  assert(state.school.attached&&state.school.visible&&state.school.registered&&state.school.vertices>0);
  assert.equal(state.school.materialGroups,2);assert.equal(state.school.modelShellOnly,true);
