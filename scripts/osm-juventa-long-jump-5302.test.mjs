@@ -122,3 +122,16 @@ assert.equal(mapJuventaWallUV5307(mock5307,15.25),true);
 assert.deepEqual(uv5307,[[.2,.3],[.2,.3],[.2,.3],[.5,0],[.5,.5],[.5,1]]);
 assert.equal(mapJuventaWallUV5307({...mock5307,index:{}},15.25),false);
 console.log('PASS 5.307: 512-byte facade palette, normalized wall UV only, original cap UVs preserved');
+
+import {JUVENTA_PHOTO_5308,planJuventaPhotoAnchor5308} from './osm-juventa-photo-anchor-5308.js';
+for(const regionId of ['mlada','westlink']){
+ const ways=JSON.parse(readFileSync(new URL('../data/regions/'+regionId+'.json',import.meta.url),'utf8')).elements;
+ const school=ways.find(w=>String(w.id)==='53865836');
+ const anchor=planJuventaPhotoAnchor5308({...school,regionId});
+ assert(anchor);assert.equal(anchor.edge,47);assert(anchor.distance>21&&anchor.distance<23);
+ assert(anchor.length>17&&anchor.length<18);assert(anchor.fraction>.8&&anchor.fraction<.9);
+ assert.equal(anchor.exactEntranceSurveyed,false);assert.equal(anchor.newGeometry,0);
+ assert.equal(planJuventaPhotoAnchor5308({...school,regionId,id:0}),null);
+}
+assert.equal(JUVENTA_PHOTO_5308.heading,98.62);
+console.log('PASS 5.308: EXIF ray intersects exact OSM facade edge 47 in both region copies');
