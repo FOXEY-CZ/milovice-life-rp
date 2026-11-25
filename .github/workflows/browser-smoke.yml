@@ -229,7 +229,13 @@ concurrency:
 permissions:
   contents: read
 jobs:
-  smoke:
+  webgl-shard:
+    name: WebGL shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        shard: [1, 2, 3]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -242,33 +248,62 @@ jobs:
       - name: Start local GitHub Pages equivalent and run Chromium WebGL smoke test
         env:
           CHROME_BIN: /usr/bin/google-chrome
+        shell: bash
         run: |
-          python3 -m http.server 8080 --bind 127.0.0.1 > /tmp/milovice-http.log 2>&1 &
-          node scripts/osm-prubezna-renovation-webgl-5134.mjs
-          node scripts/osm-prubezna-road-webgl-5135.mjs
-          node scripts/osm-prubezna-links-webgl-5137.mjs
-          node scripts/osm-prubezna-bends-webgl-5138.mjs
-          node scripts/osm-sportovni-sidewalk-webgl-5139.mjs
-          node scripts/osm-sportovni-ruian-panels-webgl-5140.mjs
-          node scripts/osm-sportovni-estate-walk-webgl-5141.mjs
-          node scripts/osm-sportovni-entrances-webgl-5143.mjs
-          node scripts/osm-sportovni-hall-webgl-5145.mjs
-          node scripts/osm-sportovni-basketball-webgl-5142.mjs
-          node scripts/osm-ruian-party-walls-webgl-5133.mjs
-          node scripts/browser_smoke.mjs
-          node scripts/osm-armadni-trolleys-webgl-5120.mjs
-          node scripts/osm-armadni-clinic-entry-webgl-5121.mjs
-          node scripts/osm-clinic-forecourt-webgl-5123.mjs
-          node scripts/osm-clinic-storefronts-webgl-5124.mjs
-          node scripts/osm-clinic-parking-inlays-webgl-5125.mjs
-          node scripts/osm-tyrsova-armadni-junction-webgl-5131.mjs
-
-          node scripts/editor_smoke.mjs
-          node scripts/photo-pilot-smoke.mjs
+          set -euo pipefail
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8080/ >/dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:8080/ >/dev/null
+          case "${{ matrix.shard }}" in
+            1)
+              node scripts/osm-prubezna-renovation-webgl-5134.mjs
+              node scripts/osm-prubezna-road-webgl-5135.mjs
+              node scripts/osm-prubezna-links-webgl-5137.mjs
+              node scripts/osm-prubezna-bends-webgl-5138.mjs
+              node scripts/osm-sportovni-sidewalk-webgl-5139.mjs
+              node scripts/osm-sportovni-ruian-panels-webgl-5140.mjs
+              ;;
+            2)
+              node scripts/osm-sportovni-estate-walk-webgl-5141.mjs
+              node scripts/osm-sportovni-entrances-webgl-5143.mjs
+              node scripts/osm-sportovni-hall-webgl-5145.mjs
+              node scripts/osm-sportovni-basketball-webgl-5142.mjs
+              node scripts/osm-ruian-party-walls-webgl-5133.mjs
+              node scripts/osm-armadni-trolleys-webgl-5120.mjs
+              node scripts/osm-armadni-clinic-entry-webgl-5121.mjs
+              node scripts/osm-clinic-forecourt-webgl-5123.mjs
+              ;;
+            3)
+              node scripts/browser_smoke.mjs
+              node scripts/osm-clinic-storefronts-webgl-5124.mjs
+              node scripts/osm-clinic-parking-inlays-webgl-5125.mjs
+              node scripts/osm-tyrsova-armadni-junction-webgl-5131.mjs
+              node scripts/editor_smoke.mjs
+              node scripts/photo-pilot-smoke.mjs
+              ;;
+            *) exit 2 ;;
+          esac
       - name: Attach browser screenshot if available
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: milovice-city-browser-shot
+          name: milovice-city-browser-shot-${{ matrix.shard }}
           path: browser-artifacts/
           if-no-files-found: ignore
+
+  smoke:
+    name: smoke
+    needs: webgl-shard
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Require every WebGL shard to pass
+        env:
+          SHARDS_RESULT: ${{ needs.webgl-shard.result }}
+        run: test "$SHARDS_RESULT" = success
