@@ -1,3 +1,7 @@
+## Milovice RP 5.313 — kontrolní přehled křídel Juventy
+
+Technický pohled shora `?v=531300&streetAudit=juventa-wings-5313`: červená A, modrá C, orientační registrace z uloženého odečtu DEKPROJEKT. 4 trojúhelníky a 2 obrysové smyčky pouze v auditním režimu, beze změny fyziky a půdorysu. Maximální reziduum kontrolních bodů cca 1,85 m není geodetická přesnost. Node a mobilní WebGL CI čeká.
+
 ## Milovice RP 5.312 — skutečný výškový audit Juventy
 
 Diagnostika zachytí skutečně vytvořený základ školy a výšky aktivního DEM při konstrukci. 292 vzorků obvodu, původní OSM hash; pokrytí všech bodů bez fallbacku, obě pořadí Mladá/Westlink v Node testu, reálný Chromium test. Očekávané převýšení základny proti kandidátní fasádě 4,6–5,2 m. Žádná změna geometrie, kolizí ani terénu; absolutní datum stavebního řezu neznámé. Viz [DEM audit](docs/juventa-terrain-audit-5312.md). CI čeká.

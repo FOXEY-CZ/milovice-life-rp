@@ -72,6 +72,10 @@ try{
  assert.equal(terrain.fallbackUsed,false);assert.equal(terrain.readyForGeometry,false);
  assert.equal(terrain.newGeometry,0);assert.equal(terrain.newColliders,0);
  console.log('PASS 5.312 actual school foundation vs loaded DEM',JSON.stringify(terrain));
+ const wings=photo.school.wings5313;
+ assert(wings&&wings.candidateEdges.A.includes(47)&&wings.candidateEdges.C.includes(33));
+ assert.equal(wings.readyForGeometry,false);
+ assert.equal(await page.evaluate(()=>window.__miloviceJuventaWingOverlay5313?.()),null);
  const section=photo.school.section5311;
  assert.equal(section?.stairRiseTotal,.94);assert.equal(section.canopyClearanceAboveLanding,3.16);
  assert.deepEqual(section.candidateOutlineProjection.edges,[48,49,50]);
@@ -91,4 +95,17 @@ try{
  assert.deepEqual(errors,[]);
  await page.screenshot({path:'browser-artifacts/juventa-5309-mobile.png'});
  console.log('PASS 5.308: actual mobile review camera matches photo GPS and heading',JSON.stringify(photo.gps));
+ await page.goto('http://127.0.0.1:8080/?v=531300&streetAudit=juventa-wings-5313',{waitUntil:'domcontentloaded',timeout:35000});
+ await page.waitForFunction(()=>window.__miloviceAreasLoaded?.includes('mlada')&&
+  window.__miloviceStreetAuditRendered?.view==='juventa-wings-5313'&&
+  window.__miloviceJuventaWingOverlay5313?.()?.allCornersInFrame,undefined,{timeout:120000});
+ await page.waitForTimeout(7100);
+ const overlay=await page.evaluate(()=>window.__miloviceJuventaWingOverlay5313?.());
+ assert(overlay?.attached&&overlay.visible&&overlay.allCornersInFrame);
+ assert.equal(overlay.overlayMeshes,2);assert.equal(overlay.outlineLoops,2);
+ assert.equal(overlay.triangles,4);assert.equal(overlay.auditOnly,true);
+ assert.equal(overlay.physicalGeometry,0);assert.equal(overlay.newColliders,0);
+ assert.deepEqual(errors,[]);
+ await page.screenshot({path:'browser-artifacts/juventa-5313-wing-audit-mobile.png'});
+ console.log('PASS 5.313 actual mobile A/C audit-only overlays after 7.1s LOD',JSON.stringify(overlay));
 }finally{await browser.close()}
