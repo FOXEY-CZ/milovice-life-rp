@@ -1,3 +1,7 @@
+## Milovice RP 5.325 — vlastní navigační bod
+
+Tlačítko Bod aktivuje výběr jednoho vlastního bodu na mapě. Pouze na načteném DEM; další kliknutí bez aktivního výběru nemění cíl. Bod má jednu fialovou mapovou značku a používá stávající HUD, minimapu a silniční navigaci; zrušení nebo volba jiného cíle odstraní vlastní značku. Nejde o ověřený vchod ani garanci silniční dostupnosti. Žádné nové silnice, síťové požadavky ani 3D objekty. Node a browser CI čekají.
+
 ## Milovice RP 5.324 — mobilní GPS mapa
 
 Na úzkých displejích dvousloupcová tlačítka mapy, v krátkém režimu na šířku čtyřsloupcová lišta. Dotykové cíle minimálně 44 px, výběr cíle 16px text, omezený rolovatelný informační zápatí, navigace viditelná i ve sbaleném mobilním HUDu. Tlačítko Trasa je povolené pouze s dostupnou ověřenou mapovou vrstvou. Browser regrese kontroluje rozměry, dostupnost ovládání a zrušení cíle při 320×568, 667×375 a 390×844, pořizuje screenshoty. Beze změny silničního grafu a routingu, žádné nové síťové požadavky. CI kandidáta čeká; skutečný dotykový hardware neověřen.

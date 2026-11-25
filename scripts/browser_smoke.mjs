@@ -812,7 +812,7 @@ try{
   await page.setViewportSize(viewport);
   await page.waitForFunction(()=>document.querySelector('#osmmap')?.getBoundingClientRect().height>=120,undefined,{timeout:4000});
   const layout=await page.evaluate(()=>{
-   const ids=['mapfollow','mapfollow-camera','map-fit-route-5323','closemap','map-goal-5319','map-goal-clear-5319'];
+   const ids=['mapfollow','mapfollow-camera','map-fit-route-5323','closemap','map-goal-5319','map-pick-5325','map-goal-clear-5319'];
    const controls=ids.map(id=>{const el=document.getElementById(id),r=el.getBoundingClientRect();
     const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
     return {id,width:r.width,height:r.height,left:r.left,right:r.right,top:r.top,bottom:r.bottom,hit:el.contains(hit)};
@@ -837,6 +837,25 @@ try{
  await page.setViewportSize({width:1280,height:760});
  await page.locator('#maplaunch').click();
  console.log('PASS 5.324 compact mobile guidance and clear');
+ // Select a custom point on the actual map, not via the debug API.
+ const mapBox=await page.locator('#osmmap').boundingBox();
+ const clickPoint={x:Math.round(mapBox.width/2+70),y:Math.round(mapBox.height/2+50)};
+ await page.locator('#osmmap').click({position:clickPoint});
+ if(await page.evaluate(()=>window.__miloviceMapGuidance5319())!==null)throw Error('5.325 ordinary map click changed goal');
+ await page.locator('#map-pick-5325').click();
+ await page.locator('#osmmap').click({position:clickPoint});
+ await page.waitForFunction(()=>window.__miloviceCustomWaypoint5325?.()?.attached===true,undefined,{timeout:6000});
+ const waypoint=await page.evaluate(()=>window.__miloviceCustomWaypoint5325());
+ if(waypoint.picking||waypoint.goal?.length!==2||await page.locator('#map-goal-5319').inputValue()!=='custom'||
+    await page.locator('.rp-custom-waypoint-5325').count()!==1)throw Error('5.325 custom waypoint state '+JSON.stringify(waypoint));
+ await page.locator('#closemap').click();
+ await page.waitForFunction(()=>window.__miloviceMapGoalMinimap5320?.()?.drawn===true,undefined,{timeout:6000});
+ if(await page.evaluate(()=>window.__miloviceMapGuidance5319()?.name)!=='📍 Vlastní bod')throw Error('5.325 missing guidance');
+ await page.locator('#maplaunch').click();
+ if(await page.locator('.rp-custom-waypoint-5325').count()!==1)throw Error('5.325 duplicate marker');
+ await page.locator('#map-goal-clear-5319').click();
+ if(await page.evaluate(()=>window.__miloviceCustomWaypoint5325()?.goal)!==null||await page.locator('.rp-custom-waypoint-5325').count())throw Error('5.325 clear failed');
+ console.log('PASS 5.325 custom waypoint click, reopen and clear');
  await page.locator('#map-goal-5319').selectOption({label:'🚒 Hasičská stanice Milovice'});
  await page.locator('#closemap').click();
  await page.waitForFunction(()=>window.__miloviceMapGuidance5319?.()?.distanceMetres>0,undefined,{timeout:6000});
@@ -919,6 +938,34 @@ try{
   console.log('PASS GPS target switch',target.name,next.route.status,next.route.distanceMetres??null);
   await page.locator('#closemap').click();
  }
+ // Billa was verified immediately above. Select its position through the custom
+ // map-point mode, not the goal dropdown, and require the same usable road route.
+ const billaRoute=await page.evaluate(()=>window.__miloviceMapRoadRoute5321());
+ if(billaRoute?.status!=='ready'||billaRoute.distanceMetres<=0)throw Error('5.325 known Billa route required');
+ await page.locator('#maplaunch').click();
+ await page.waitForFunction(()=>window.__miloviceFullMapRoute5323?.()?.attached===true,undefined,{timeout:6000});
+ // Let the map's deferred reopen resize finish before fitting the route.
+ await page.waitForTimeout(150);
+ await page.locator('#map-fit-route-5323').click();
+ await page.locator('#map-pick-5325').click();
+ await page.locator('.rp-map-extra-landmark').nth(6).click();
+ await page.waitForFunction(()=>window.__miloviceCustomWaypoint5325?.()?.attached===true,undefined,{timeout:6000});
+ const selectedPoint=await page.evaluate(()=>window.__miloviceCustomWaypoint5325());
+ if(selectedPoint.picking||Math.abs(selectedPoint.goal[0]-50.2290858)>1e-7||Math.abs(selectedPoint.goal[1]-14.8620817)>1e-7)
+  throw Error('5.325 custom Billa point mismatch '+JSON.stringify(selectedPoint));
+ await page.locator('#closemap').click();
+ await page.waitForFunction(()=>window.__miloviceMapRoadRoute5321?.()?.status==='ready',undefined,{timeout:10000});
+ const customVehicle=await page.evaluate(()=>({route:window.__miloviceMapRoadRoute5321(),audit:window.__miloviceRoadRouteAudit5322()}));
+ if(!customVehicle.audit?.valid||customVehicle.route.legs.length<2||
+    Math.abs(customVehicle.route.distanceMetres-billaRoute.distanceMetres)>.001||
+    customVehicle.route.newLinks!==0||customVehicle.route.entranceVerified!==false)
+  throw Error('5.325 custom vehicle routing invalid '+JSON.stringify(customVehicle));
+ await page.locator('#maplaunch').click();
+ await page.waitForFunction(()=>window.__miloviceFullMapRoute5323?.()?.attached===true,undefined,{timeout:6000});
+ if(await page.locator('.rp-custom-waypoint-5325').count()!==1)throw Error('5.325 custom vehicle marker missing');
+ await page.screenshot({path:'browser-artifacts/milovice-custom-vehicle-route-5325.png'});
+ await page.locator('#closemap').click();
+ console.log('PASS 5.325 custom waypoint vehicle route',customVehicle.route.distanceMetres);
  await page.locator('#maplaunch').click();await page.locator('#map-goal-clear-5319').click();
  if(!await page.locator('#map-fit-route-5323').isDisabled())throw Error('5.324 stale fit-route control after clearing');
  await page.locator('#closemap').click();

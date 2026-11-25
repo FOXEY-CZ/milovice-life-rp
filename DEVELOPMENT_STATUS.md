@@ -3,8 +3,8 @@
 Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.323**, GPS na velké mapě. Kandidát **5.324**, build `20261125-mobile-gps-map-532400`.
-- Main po #119: `9b0d6f9f0d39a2c76abe4869c0a9d65b468111b7`, 5/5 PR CI PASS; 5.322 main 8/8 včetně Pages PASS (45665057056). 5.323 main 7/7 PASS včetně Pages (45671071416). HEAD ověř živě.
+- Herní verze main: **5.324**, build `20261125-mobile-gps-map-532400`. Kandidát 5.325.
+- Main po #120: `138a5298ffe12a0c8061273693cb1ea90c464a90`, 6/6 PR CI PASS včetně tří viewportů. #119 main 6/6 PASS včetně Pages (45672507383). 5.324 main 7/7 PASS včetně Pages (45674021791). HEAD ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -22,7 +22,9 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - #116 6/6 PR CI PASS, 7/7 main včetně Pages PASS.
 - #117 6/6 PR CI PASS včetně auditu skutečné trasy, 8/8 main včetně Pages PASS.
 - #118 6/6 PR CI PASS, 7/7 main včetně Pages PASS.
-- #119 5/5 PR CI PASS, main CI čeká. Chromium: HZS 2165,992 m, Tesco 535,599 m, Billa 1837,114 m; všechny trasy ready a auditované.
+- #119 5/5 PR CI PASS, 6/6 main včetně Pages PASS. Chromium: HZS 2165,992 m, Tesco 535,599 m, Billa 1837,114 m; všechny trasy ready a auditované.
+
+- #120 6/6 PR CI PASS, 7/7 main včetně Pages PASS.
 
 ## Prioritní práce a otevřené PR
 - **5.308 / #103 MERGED**: GPS 50.226810, 14.866101, směr 98,62° přesně potvrzen v mobilním WebGL; zdrojová metadata převzata z původního modulu, nikoli znovu ověřena. Hrana 47 kandidátní fasáda, nikoli zaměřený vchod. #100 uzavřen, větev zachována.
@@ -47,7 +49,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - Další technický backlog: profilovat paměť a FPS před optimalizací, oddělovat čisté funkce dopravy a UI s regresí; neprovádět hromadný přepis index.html.
 
 ## Další krok podle W7
-5.323 nasazena. #119 sloučena, 5/5 workflow PASS. 5.324 kandidát v feature/mobile-map-5324: responzivní ovládání mapy, viditelná navigace ve sbaleném HUDu, podmíněné tlačítko Trasa, test tří viewportů a screenshoty. Delta přenesena na main po #119, testy #119 zachovány; CI kandidáta čeká. Dále: vlastní cíl kliknutím na mapu.
+5.324 sloučena; mobilní rozložení a HUD potvrzeny Chromium. 5.325 kandidát: explicitní vlastní bod pouze na načteném DEM, stávající navigační pipeline, jedna mapová značka, test kliknutí, opětovného otevření a zrušení. Browser regrese navíc vybere vlastní bod na dříve ověřené značce Billa v režimu řidiče, vyžaduje shodnou auditovanou trasu. CI čeká. Další krok: otestovat nedostupné cíle a přepočet při pohybu.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
