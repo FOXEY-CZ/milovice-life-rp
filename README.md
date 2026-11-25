@@ -1,3 +1,7 @@
+## Milovice RP 5.323 — GPS trasa na velké mapě
+
+Již ověřené silniční úseky se vykreslují fialově také do Leaflet mapy jako jediná víceúseková vrstva, bez propojení mezer a bez nového routování. Tlačítko Trasa přiblíží celou trasu a vypne automatické sledování. Zrušení cíle odstraní vrstvu, pěší režim zůstává přímý. Node a browser CI čekají.
+
 ## Milovice RP 5.322 — ověření GPS trasy
 
 Před vykreslením se každá část trasy kontroluje proti existujícím veřejným segmentům, jejich jednosměrkám, spojitosti a délce. Neplatná trasa se nezobrazí, přímý směr zůstane. Audit se spouští jen při přepočtu trasy. Browser smoke nově vyžaduje skutečnou kladnou trasu k HZS, nikoli pouze lifecycle. Předchozí Chromium běh doložil 2165,992 m. Zákazy odbočení a skutečný vchod nejsou ověřeny. CI čeká.
