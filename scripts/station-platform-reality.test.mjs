@@ -52,7 +52,7 @@ assert(!frontend.includes('new THREE.Mesh(gg,stationWalls)'));
 assert(frontend.includes('const middle=Math.min(5.5,Math.max(4.15,(max-min)*.12))'));
 assert(!frontend.includes("for(let i=0;i<center.length;i++){"));
 assert(frontend.includes("railSignWall.yaw,'#215aa3',2.1,.46"));
-assert(!frontend.includes("stationBoard('Milovice',r.mx+nx*.45"));
+assert(!frontend.includes("stationBoard(STATIC_SIGN_TEXT.station,r.mx+nx*.45"));
 assert(frontend.includes("stationCafeMapOnly=true"));
 assert(frontend.includes("kind:'cafe-indoor-approximate'"));
 assert(!frontend.includes("Nádraží Milovice · Nádražka"));
@@ -70,7 +70,8 @@ assert(currentStationPage.includes('stationUnverifiedSidePavingRemoved=true'));
 assert(!currentStationPage.includes('planPhotoPlatformCanopy('));
 assert(!currentStationPage.includes('installCanopyBraces('));
 assert(!currentStationPage.includes("archPart('stationPaving',r.mx+nx*2.65"));
-assert(currentStationPage.includes("stationBoard('Milovice'"));
+assert(currentStationPage.includes('stationBoard(STATIC_SIGN_TEXT.station,'));
+assert(!currentStationPage.includes("stationBoard('Milovice'"));
 assert(currentStationPage.includes('stationPassagePortals'));
 
 // 5.28.2b: The station-specific gable builder was removed to fix giant
@@ -88,7 +89,7 @@ assert(plaqueHTML.includes("stationSignOnRailLongFacade=true"));
 assert(plaqueHTML.includes("stationSignOnEndWall=false"));
 assert(plaqueHTML.includes("stationSignOneSided=true"));
 assert(plaqueHTML.includes("new THREE.MeshBasicMaterial({map:t,side:THREE.FrontSide})"));
-assert(!plaqueHTML.includes("stationBoard('Milovice',r.mx+nx*.45"));
+assert(!plaqueHTML.includes("stationBoard(STATIC_SIGN_TEXT.station,r.mx+nx*.45"));
 assert(plaqueHTML.includes("const plaqueS=-2.4"));
 assert(plaqueHTML.includes("stationInventedSemicircleRemoved=true"));
 assert(!plaqueHTML.includes("new THREE.TorusGeometry(w*.5"));
