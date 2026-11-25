@@ -292,3 +292,5 @@ jobs:
         run: node scripts/osm-juventa-long-jump-5302.test.mjs
       - name: Verify 5.285 Armadni 891 photo-inferred south balconies, original OSM, mobile-safe geometry
         run: node scripts/osm-armadni-891-balconies-5285.test.mjs
+      - name: Verify 5.310 original Pod Lesem branch pedestrian
+        run: node scripts/osm-pod-lesem-branch-walker-5279.test.mjs
