@@ -3,8 +3,8 @@
 Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.314**, build `20261125-juventa-local-section-531400`. Kandidát 5.315 v pracovní větvi.
-- Main po #109: `8e8224da7096f9866002dd71d37b37c1853f8a8e`, 6/6 PR CI PASS, Pages PASS (45631631855), další 3 main kontroly v průběhu. HEAD ověř živě.
+- Herní verze main: **5.315**, build `20261125-hzs-shell-531500`. Kandidát 5.316 v pracovní větvi.
+- Main po #110: `3f3832e65b3da54a2d5d766b02687cca3032f2e6`, 6/6 PR CI PASS; 5.314 main 7/7 včetně Pages PASS. 5.315 Pages zatím neověřeny. HEAD ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -12,7 +12,8 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - #107 6/6 PR CI PASS, 7/7 main CI včetně Pages PASS (45628373388). Mobilní test potvrzuje výškový rozdíl 4,628–5,137 m.
 
 - #108 6/6 PR CI PASS, 7/7 main včetně Pages PASS.
-- #109 6/6 PR CI PASS; main Pages PASS, 4/7 main hotovo při přípravě.
+- #109 6/6 PR CI PASS, 7/7 main včetně Pages PASS.
+- #110 6/6 PR CI PASS; main CI čeká.
 
 ## Prioritní práce a otevřené PR
 - **5.308 / #103 MERGED**: GPS 50.226810, 14.866101, směr 98,62° přesně potvrzen v mobilním WebGL; zdrojová metadata převzata z původního modulu, nikoli znovu ověřena. Hrana 47 kandidátní fasáda, nikoli zaměřený vchod. #100 uzavřen, větev zachována.
@@ -37,7 +38,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - Další technický backlog: profilovat paměť a FPS před optimalizací, oddělovat čisté funkce dopravy a UI s regresí; neprovádět hromadný přepis index.html.
 
 ## Další krok podle W7
-5.315 kandidát: HZS Milovice, originální 8vrcholový půdorys, 512 B vlastní textura světle šedé a šedého plechu, bez nových kolizí, vrat nebo věže. Dva Node a mobilní WebGL CI čekají. Další krok: ověřit přesné průčelí podle fotografií a teprve potom modelovat vrata.
+5.316 kandidát: opt-in náhled tří modelových vrat na kandidátní stěně 3 HZS, jeden mesh, 6 trojúhelníků, 8 KiB textura. Žádná změna fyziky, orientace a počet neověřené. CI čeká. Další krok: ověřit technický záběr a georeferenci průčelí, poté rozhodnout o běžném herním modelu.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
