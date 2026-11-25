@@ -334,3 +334,5 @@ jobs:
         run: node scripts/map-goal-arrival-5329.test.mjs
       - name: Verify 5.330 opt-in GPS cue policy
         run: node scripts/gps-cue-5330.test.mjs
+      - name: Verify 5.331 local Czech GPS voice
+        run: node scripts/gps-voice-5331.test.mjs

@@ -1,0 +1,3 @@
+# 5.331 — Czech voice mode
+
+Uses only local Czech voices exposed by the browser. No remote speech service is selected. Voice mode is independent from the default-off sound switch. Existing cue timing stays unchanged. No queued speech; busy cues are skipped, missing voice falls back to original tones. Cancels active GPS utterance on target changes and mute; browser synth is page-wide. Async speech errors are recorded, not retried. Mocked unit tests cover the local voice selection and busy state; real browser test covers selection, arrival scheduling and mute/fallback. Does not prove acoustic output or pronunciation. CI pending.

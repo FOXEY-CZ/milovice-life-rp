@@ -3,8 +3,8 @@
 Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.329**, build `20261125-goal-arrival-532900`. Kandidát 5.330.
-- Main po #125: `a413ccfffecb99e0798e2dca779e24537e64ce41`, 6/6 PR CI PASS po opravě značek. 5.328 main 8/8 PASS včetně Pages (45681858691). 5.329 main/Pages čeká. HEAD ověř živě.
+- Herní verze main: **5.330**, build `20261125-gps-sound-533000`. Kandidát 5.331.
+- Main po #126: `6dd7f310f080795dad5132ee848c4e7d74273640`, 6/6 PR CI PASS. 5.329 main 7/7 PASS včetně Pages (45686664641). 5.330 main/Pages čeká. HEAD ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -59,7 +59,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - Další technický backlog: profilovat paměť a FPS před optimalizací, oddělovat čisté funkce dopravy a UI s regresí; neprovádět hromadný přepis index.html.
 
 ## Další krok podle W7
-5.329 sloučena, dosažení blízkosti a výběr ověřeny. 5.330 kandidát: opt-in krátké tóny GPS, omezení opakování, přepínač mapy, test skutečného naplánování zvuku při dosažení cíle. CI čeká; skutečná slyšitelnost a pokyny při jízdě zatím neověřeny. Dále: ověřit zvuk v browseru a mobilní rozložení.
+5.330 sloučena, naplánování tónu a vypnutí ověřeny. 5.331 kandidát: místní český hlas s fallback tóny, bez fronty, opt-in. Unit/browser CI čekají; fyzická slyšitelnost ani výslovnost neověřeny. Dále: ověřit hlasové režimy a mobilní UI.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
