@@ -3,8 +3,8 @@
 Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.327**, build `20261125-route-instructions-532700`. Kandidát 5.328.
-- Main po #123: `7b05e688bd45a69e7438ed17bad360f4c5bc23e0`, 6/6 PR CI PASS. 5.326 main 7/7 PASS včetně Pages (45679094364). 5.327 main/Pages čeká. HEAD ověř živě.
+- Herní verze main: **5.328**, build `20261125-instruction-cache-532800`. Kandidát 5.329.
+- Main po #124: `4f5d62ac0864fc2220117febc2ae8ff5a7b721a6`, 6/6 PR CI PASS. 5.327 main 7/7 PASS včetně Pages (45680282898). 5.328 main/Pages čeká. HEAD ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -32,6 +32,8 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 - #123 6/6 PR CI PASS, main čeká.
 
+- #124 6/6 PR CI PASS; browser stání 1 výpočet, 1→4 cache hits; jízda 23 výpočtů, průměr 0,261 ms, max 4 ms. FPS neměřeno. Main čeká.
+
 ## Prioritní práce a otevřené PR
 - **5.308 / #103 MERGED**: GPS 50.226810, 14.866101, směr 98,62° přesně potvrzen v mobilním WebGL; zdrojová metadata převzata z původního modulu, nikoli znovu ověřena. Hrana 47 kandidátní fasáda, nikoli zaměřený vchod. #100 uzavřen, větev zachována.
 - **5.309 / #104 MERGED**: 9 modelových okenních sestav, 54 tabulí, 144 trojúhelníků/1 mesh, bez kolizí. Mobilní WebGL po 7,1 s LOD PASS; screenshot artefakt uložen, vizuálně neporovnán. #101 uzavřen.
@@ -55,7 +57,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - Další technický backlog: profilovat paměť a FPS před optimalizací, oddělovat čisté funkce dopravy a UI s regresí; neprovádět hromadný přepis index.html.
 
 ## Další krok podle W7
-5.327 sloučena; geometrické GPS pokyny ověřeny. 5.328 kandidát: cache přesné polohy a trasy, bez dalšího timeru, diagnostika CPU času, stání/pohyb/zrušení v browser testu. Lokální unit PASS, CI čeká. Dále: ověřit reálné počty a změřit výkon; neprohlašovat FPS bez měření.
+5.328 sloučena; cache ověřena v browseru. 5.329 kandidát: dokončení navigace v blízkosti cíle, čas a zastavení, bez potvrzení vchodu; unit/browser CI čekají. Dále: ověřit dosažení cíle při jízdě a případné upozornění.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

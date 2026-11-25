@@ -1,3 +1,7 @@
+## Milovice RP 5.329 — dosažení navigačního cíle
+
+Automatické ukončení navigace po nejméně 1,4 s ve vzdálenosti do 12 m pěšky nebo 10 m ve vozidle, ve vozidle navíc rychlost nejvýše 0,45 m/s. Vyžaduje alespoň tři časově odlišné vzorky a zavřenou mapu. Změna cíle, režimu nebo opuštění okolí obnoví podmínky. Zobrazuje oznámení o blízkosti cíle, nikoli potvrzeném vstupu do budovy. V režimu výběru lze vybrat i vlastní polohu. Používá existující 280ms cyklus a vymazání cíle, bez nové sítě nebo 3D objektů. Unit a browser CI čekají.
+
 ## Milovice RP 5.328 — cache navigačních pokynů
 
 Jeden uložený výsledek podle identity auditované trasy a přesné polohy vozidla. Při stání se výpočet neopakuje; jakákoli změna polohy, trasy nebo auditu vyvolá nový výpočet. Vymazání cíle a neplatná trasa uvolní cache. Diagnostika počtu výpočtů, zásahů cache a CPU času; žádný nový časovač ani zaokrouhlení polohy. Lokální jednotkový test PASS; integrace a browser CI čekají. Zvýšení FPS dosud neměřeno.

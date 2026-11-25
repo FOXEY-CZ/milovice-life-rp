@@ -856,6 +856,24 @@ try{
  await page.locator('#map-goal-clear-5319').click();
  if(await page.evaluate(()=>window.__miloviceCustomWaypoint5325()?.goal)!==null||await page.locator('.rp-custom-waypoint-5325').count())throw Error('5.325 clear failed');
  console.log('PASS 5.325 custom waypoint click, reopen and clear');
+ // Real Leaflet input: choose own player position as a nearby custom goal.
+ await page.locator('#mapfollow').click();
+ await page.locator('#map-pick-5325').click();
+ await page.locator('.milovice-player-marker').click({position:{x:4,y:4}});
+ await page.waitForFunction(()=>window.__miloviceCustomWaypoint5325?.()?.attached===true,undefined,{timeout:6000});
+ await page.waitForTimeout(1800);
+ if(await page.locator('#map-goal-5319').inputValue()!=='custom'||await page.evaluate(()=>window.__miloviceGoalArrival5329())!==null)
+  throw Error('5.329 goal completed while map open');
+ await page.locator('#closemap').click();
+ await page.waitForFunction(()=>window.__miloviceGoalArrival5329?.()?.walking===true,undefined,{timeout:12000});
+ const arrived=await page.evaluate(()=>({arrival:window.__miloviceGoalArrival5329(),guidance:window.__miloviceMapGuidance5319(),custom:window.__miloviceCustomWaypoint5325(),cache:window.__miloviceInstructionCache5328()}));
+ if(arrived.arrival.name!=='📍 Vlastní bod'||arrived.arrival.distanceMetres>12||arrived.arrival.entranceVerified!==false||
+    arrived.guidance!==null||arrived.custom.attached||arrived.cache.retainedEntries!==0)
+  throw Error('5.329 incomplete arrival cleanup '+JSON.stringify(arrived));
+ await page.waitForFunction(()=>window.__miloviceMapGoalMinimap5320?.()===null,undefined,{timeout:6000});
+ await page.locator('#maplaunch').click();
+ if(await page.locator('#map-goal-5319').inputValue()!==''||await page.locator('.rp-custom-waypoint-5325').count())throw Error('5.329 stale map goal after arrival');
+ console.log('PASS 5.329 actual walking arrival and cleanup',JSON.stringify(arrived.arrival));
  await page.locator('#map-goal-5319').selectOption({label:'🚒 Hasičská stanice Milovice'});
  await page.locator('#closemap').click();
  await page.waitForFunction(()=>window.__miloviceMapGuidance5319?.()?.distanceMetres>0,undefined,{timeout:6000});
