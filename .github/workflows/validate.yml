@@ -296,3 +296,5 @@ jobs:
         run: node scripts/osm-pod-lesem-branch-walker-5279.test.mjs
       - name: Verify 5.311 Juventa entrance drawing levels and original projection
         run: node scripts/osm-juventa-section-5311.test.mjs
+      - name: Verify 5.312 Juventa actual foundation and regional DEM order
+        run: node scripts/osm-juventa-terrain-audit-5312.test.mjs
