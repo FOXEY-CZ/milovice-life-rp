@@ -900,6 +900,18 @@ try{
  if(!stillRoute||stillRoute.time!==stationaryRoute.time||stillRoute.reason!==stationaryRoute.reason)
   throw Error('5.326 stationary route unnecessarily recalculated '+JSON.stringify({stationaryRoute,stillRoute}));
  console.log('PASS 5.326 stationary vehicle cache',JSON.stringify(stillRoute));
+ const hudInstruction=await page.evaluate(async()=>{
+  const {nextRouteInstruction5327}=await import('./scripts/map-route-instructions-5327.js?v=532700');
+  const c=window.__miloviceRouteRecalculation5326();
+  const expected=nextRouteInstruction5327(window.__miloviceMapRoadRoute5321(),window.__miloviceRoadRouteAudit5322(),{x:c.x,y:c.z});
+  const shown=window.__miloviceMapInstruction5327();
+  const el=document.getElementById('map-instruction-5327');
+  return {expected,shown,hidden:el.hidden,display:getComputedStyle(el).display,text:el.textContent};
+ });
+ if(!hudInstruction.expected||JSON.stringify(hudInstruction.shown)!==JSON.stringify(hudInstruction.expected)||
+    hudInstruction.hidden||hudInstruction.display==='none'||!hudInstruction.text.includes(Math.round(hudInstruction.expected.distanceMetres)+' m'))
+  throw Error('5.327 stationary HZS geometric HUD instruction invalid '+JSON.stringify(hudInstruction));
+ console.log('PASS 5.327 actual HZS instruction',JSON.stringify(hudInstruction));
  await page.locator('#maplaunch').click();
  await page.waitForFunction(()=>window.__miloviceFullMapRoute5323?.()?.attached===true,undefined,{timeout:6000});
  const fullRoute=await page.evaluate(()=>window.__miloviceFullMapRoute5323());
@@ -1001,6 +1013,7 @@ try{
  if(!await page.locator('#map-fit-route-5323').isDisabled())throw Error('5.324 stale fit-route control after clearing');
  await page.locator('#closemap').click();
  await page.waitForFunction(()=>window.__miloviceMapRoadRoute5321?.()===null&&window.__miloviceRoadRouteAudit5322?.()===null&&window.__miloviceFullMapRoute5323?.()===null,undefined,{timeout:6000});
+ if(await page.evaluate(()=>window.__miloviceMapInstruction5327())!==null||await page.locator('#map-instruction-5327').isVisible())throw Error('5.327 stale instruction after clear');
  console.log('PASS 5.321 vehicle road routing lifecycle',roadRoute.status,roadRoute.distanceMetres);
  // Regression: exiting a sedan must never transform it into an unrelated bus.
  // A vehicle must keep its stable identity and unique 3D appearance.

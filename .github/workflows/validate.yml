@@ -326,3 +326,5 @@ jobs:
         run: node scripts/map-custom-waypoint-5325.test.mjs
       - name: Verify 5.326 GPS recalculation policy
         run: node scripts/map-route-recalculation-5326.test.mjs
+      - name: Verify 5.327 geometric GPS instructions
+        run: node scripts/map-route-instructions-5327.test.mjs
