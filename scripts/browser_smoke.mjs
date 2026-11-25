@@ -856,6 +856,11 @@ try{
  await page.locator('#map-goal-clear-5319').click();
  if(await page.evaluate(()=>window.__miloviceCustomWaypoint5325()?.goal)!==null||await page.locator('.rp-custom-waypoint-5325').count())throw Error('5.325 clear failed');
  console.log('PASS 5.325 custom waypoint click, reopen and clear');
+ // Opt-in is an actual user gesture; no sound should be scheduled by default.
+ const soundBefore=await page.evaluate(()=>window.__miloviceGpsSound5330());
+ if(soundBefore.enabled||soundBefore.count!==0)throw Error('5.330 GPS sound not silent by default');
+ await page.locator('#gps-sound-5330').click();
+ await page.waitForFunction(()=>window.__miloviceGpsSound5330?.()?.enabled===true,undefined,{timeout:6000});
  // Real Leaflet input: choose own player position as a nearby custom goal.
  await page.locator('#mapfollow').click();
  await page.locator('#map-pick-5325').click();
@@ -875,6 +880,11 @@ try{
  await page.locator('#maplaunch').click();
  if(await page.locator('#map-goal-5319').inputValue()!==''||await page.locator('.rp-custom-waypoint-5325').count())throw Error('5.329 stale map goal after arrival');
  if(await page.locator('.milovice-camera-marker').evaluate(el=>getComputedStyle(el).pointerEvents)==='none')throw Error('5.329 camera pointer events not restored');
+ const soundAfter=await page.evaluate(()=>window.__miloviceGpsSound5330());
+ if(soundAfter.count!==1||soundAfter.last!=='arrival'||soundAfter.error)throw Error('5.330 expected one scheduled arrival cue '+JSON.stringify(soundAfter));
+ await page.locator('#gps-sound-5330').click();
+ if(await page.evaluate(()=>window.__miloviceGpsSound5330().enabled))throw Error('5.330 mute failed');
+ console.log('PASS 5.330 opt-in arrival cue and mute',JSON.stringify(soundAfter));
  console.log('PASS 5.329 actual walking arrival and cleanup',JSON.stringify(arrived.arrival));
  await page.locator('#map-goal-5319').selectOption({label:'🚒 Hasičská stanice Milovice'});
  await page.locator('#closemap').click();

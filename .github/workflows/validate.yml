@@ -332,3 +332,5 @@ jobs:
         run: node scripts/map-instruction-cache-5328.test.mjs
       - name: Verify 5.329 waypoint arrival policy
         run: node scripts/map-goal-arrival-5329.test.mjs
+      - name: Verify 5.330 opt-in GPS cue policy
+        run: node scripts/gps-cue-5330.test.mjs

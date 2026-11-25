@@ -3,8 +3,8 @@
 Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.328**, build `20261125-instruction-cache-532800`. Kandidát 5.329.
-- Main po #124: `4f5d62ac0864fc2220117febc2ae8ff5a7b721a6`, 6/6 PR CI PASS. 5.327 main 7/7 PASS včetně Pages (45680282898). 5.328 main 8/8 PASS včetně Pages (45681858691). HEAD ověř živě.
+- Herní verze main: **5.329**, build `20261125-goal-arrival-532900`. Kandidát 5.330.
+- Main po #125: `a413ccfffecb99e0798e2dca779e24537e64ce41`, 6/6 PR CI PASS po opravě značek. 5.328 main 8/8 PASS včetně Pages (45681858691). 5.329 main/Pages čeká. HEAD ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -34,6 +34,8 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 - #124 6/6 PR CI PASS; browser stání 1 výpočet, 1→4 cache hits; jízda 23 výpočtů, průměr 0,261 ms, max 4 ms. FPS neměřeno. Main 8/8 PASS.
 
+- #125 6/6 PR CI PASS po opravě překrývajících se značek; main čeká.
+
 ## Prioritní práce a otevřené PR
 - **5.308 / #103 MERGED**: GPS 50.226810, 14.866101, směr 98,62° přesně potvrzen v mobilním WebGL; zdrojová metadata převzata z původního modulu, nikoli znovu ověřena. Hrana 47 kandidátní fasáda, nikoli zaměřený vchod. #100 uzavřen, větev zachována.
 - **5.309 / #104 MERGED**: 9 modelových okenních sestav, 54 tabulí, 144 trojúhelníků/1 mesh, bez kolizí. Mobilní WebGL po 7,1 s LOD PASS; screenshot artefakt uložen, vizuálně neporovnán. #101 uzavřen.
@@ -57,7 +59,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - Další technický backlog: profilovat paměť a FPS před optimalizací, oddělovat čisté funkce dopravy a UI s regresí; neprovádět hromadný přepis index.html.
 
 ## Další krok podle W7
-5.328 sloučena; cache ověřena v browseru. 5.329 kandidát: dokončení navigace v blízkosti cíle, čas a zastavení, bez potvrzení vchodu; první CI 5/6 PASS; browser timeout při překrytí značky hráče kamerou. Oprava: kamera v režimu výběru nepřebírá kliknutí, po výběru je opět interaktivní; nový CI čeká. Dále: ověřit dosažení cíle při jízdě a případné upozornění.
+5.329 sloučena, dosažení blízkosti a výběr ověřeny. 5.330 kandidát: opt-in krátké tóny GPS, omezení opakování, přepínač mapy, test skutečného naplánování zvuku při dosažení cíle. CI čeká; skutečná slyšitelnost a pokyny při jízdě zatím neověřeny. Dále: ověřit zvuk v browseru a mobilní rozložení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
