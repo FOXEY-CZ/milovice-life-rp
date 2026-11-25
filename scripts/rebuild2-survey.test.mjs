@@ -60,8 +60,10 @@ for(const marker of ['objectChecks','objectProgress()','onlyUnfinished','objects
  assert(html.includes(marker),'Per-OSM-object QA must persist and support remaining-work filter: '+marker);
 const dashboard=read('rebuild.html'),game=read('index.html');
 assert(dashboard.includes("survey.html?id="),'All-street dashboard must deep-link inspection');
-assert(game.includes('survey.html?id=old%3AN%C3%A1dra%C5%BEn%C3%AD'),
- 'In-game real map must offer Nádražní inspection');
+assert(dashboard.includes('survey.html?id=old%3AN%C3%A1dra%C5%BEn%C3%AD'),
+ 'Developer dashboard must retain direct Nádražní inspection');
+assert(!game.includes('survey.html?id=old%3AN%C3%A1dra%C5%BEn%C3%AD'),
+ 'Player game must not expose the real-street survey link');
 assert(!group.approved&&group.audited.length===0,'New survey cannot silently approve a street');
 console.log('Milovice RP Nádražní REBUILD 2.0 survey PASS',JSON.stringify({
  mapped:group.total,photos:photos.length,

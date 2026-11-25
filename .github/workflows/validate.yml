@@ -338,3 +338,5 @@ jobs:
         run: node scripts/gps-voice-5331.test.mjs
       - name: Verify fictional player-facing identity and source street coverage
         run: node scripts/fictional-identity.test.mjs
+      - name: Verify local Ironfield vector map
+        run: node scripts/ironfield-map.test.mjs
