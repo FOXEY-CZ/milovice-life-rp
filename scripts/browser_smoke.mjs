@@ -812,7 +812,7 @@ try{
   await page.setViewportSize(viewport);
   await page.waitForFunction(()=>document.querySelector('#osmmap')?.getBoundingClientRect().height>=120,undefined,{timeout:4000});
   const layout=await page.evaluate(()=>{
-   const ids=['mapfollow','mapfollow-camera','map-fit-route-5323','closemap','map-goal-5319','map-pick-5325','map-goal-clear-5319'];
+   const ids=['mapfollow','mapfollow-camera','map-fit-route-5323','closemap','map-goal-5319','map-pick-5325','map-goal-clear-5319','gps-sound-5330','gps-voice-5331'];
    const controls=ids.map(id=>{const el=document.getElementById(id),r=el.getBoundingClientRect();
     const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
     return {id,width:r.width,height:r.height,left:r.left,right:r.right,top:r.top,bottom:r.bottom,hit:el.contains(hit)};
@@ -823,6 +823,16 @@ try{
   if(layout.controls.some(c=>c.width<44||c.height<44||c.left<-.5||c.top<-.5||c.right>layout.w+.5||c.bottom>layout.h+.5||!c.hit))
    throw Error('5.324 inaccessible responsive map controls '+JSON.stringify(layout));
    if(!await page.locator('#map-fit-route-5323').isDisabled())throw Error('5.324 fit route enabled without route');
+  const audio=await page.evaluate(()=>{
+   const group=document.getElementById('gps-audio-5332'),credits=document.getElementById('mapfoot');
+   return {separate:!credits.contains(group)&&group.contains(document.getElementById('gps-voice-5331')),bottom:group.getBoundingClientRect().bottom,creditsTop:credits.getBoundingClientRect().top};
+  });
+  if(!audio.separate||audio.bottom>audio.creditsTop+.5)throw Error('5.332 GPS audio controls overlap credits '+JSON.stringify(audio));
+  await page.locator('#gps-voice-5331').click();
+  if(!await page.evaluate(()=>window.__miloviceGpsVoice5331().selected))throw Error('5.332 voice toggle unavailable on mobile');
+  await page.locator('#gps-voice-5331').click();
+  if(await page.evaluate(()=>window.__miloviceGpsVoice5331().selected))throw Error('5.332 voice toggle reset failed');
+  console.log('PASS 5.332 responsive GPS audio controls',JSON.stringify(audio));
   console.log('PASS 5.324 responsive map',JSON.stringify(layout));
  }
  await page.screenshot({path:'browser-artifacts/milovice-mobile-map-5324.png'});
