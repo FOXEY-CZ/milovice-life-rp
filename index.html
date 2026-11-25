@@ -757,7 +757,8 @@ import {calculateMapGuidance5319} from './scripts/map-guidance-5319.js?v=531900'
 import {extraMapLandmarks5318} from './scripts/map-landmarks-5318.js?v=531800';
 import * as THREE from 'three';
 import {insideElevationGrid,resolveTerrainHeight} from './scripts/terrain-elevation.js?v=1';
-import {makeHumanRig,makeRoadCar,makePidBus,makeCityElefantStyleTrain} from './scripts/world-models.js?v=560';
+import {makeHumanRig,makeRoadCar,makePidBus,makeCityElefantStyleTrain} from './scripts/world-models.js?v=533900';
+import {FALLBACK_STOPS,TRANSIT_PALETTE} from './scripts/fictional-transit.js?v=533900';
 import {addCityLanduseBatches,forestInstancePlacements,inspectMappedClayGrain5178} from './scripts/landscapes.js?v=530301';
 import {planOSMPitchMarkings} from './scripts/osm-pitch-markings-599.js?v=59900';
 import {planMappedStreetLamps} from './scripts/osm-street-lighting-5100.js?v=510000';
@@ -2584,7 +2585,7 @@ function facadeTexture(seed){
  t.repeat.set(2,2);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=2;
  return t;
 }
-const mat=c=>new THREE.MeshLambertMaterial({color:c});const grass=mat(0x71905d),road=mat(0x363a3e),walk=mat(0xa7a7a2),white=mat(0xf3e8c4),yellow=mat(0xe3b531),blue=mat(0x1e568f),glass=mat(0x75b4d0);function cube(w,h,d,m,x,y,z,parent=scene){let o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);parent.add(o);return o}cube(4000,.2,4000,grass,0,-.15,0);const stops=[{name:'Milovice, žel. st.',z:0},{name:'Milovice, radnice',z:-105},{name:'Milovice, Armádní',z:-210},{name:'Milovice, Park Mirakulum',z:-320}];cube(18,.12,400,road,0,.01,-156);for(let zz=-344;zz<35;zz+=7){for(let xx of [-8.8,8.8])cube(.11,.018,5,mat(0xb3b3a8),xx,.095,zz);}cube(2,.13,400,walk,-11,.05,-156);cube(2,.13,400,walk,11,.05,-156);for(let z=36;z>-350;z-=17)cube(.17,.03,7,white,0,.1,z);for(let i=0;i<4;i++){let z=stops[i].z;cube(4,.12,17,walk,12,.13,z);cube(.25,3,.25,blue,13,1.5,z);cube(1.6,.9,.12,yellow,13,3.1,z);cube(1.7,.18,.75,blue,14,.7,z+5)}// Modelová čtvrť Milovic: rozšířené ulice, křižovatky a orientační místa.
+const mat=c=>new THREE.MeshLambertMaterial({color:c});const grass=mat(0x71905d),road=mat(0x363a3e),walk=mat(0xa7a7a2),white=mat(0xf3e8c4),yellow=mat(0xe3b531),blue=mat(0x1e568f),glass=mat(0x75b4d0);function cube(w,h,d,m,x,y,z,parent=scene){let o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);parent.add(o);return o}cube(4000,.2,4000,grass,0,-.15,0);const stops=FALLBACK_STOPS.map(stop=>({...stop}));cube(18,.12,400,road,0,.01,-156);for(let zz=-344;zz<35;zz+=7){for(let xx of [-8.8,8.8])cube(.11,.018,5,mat(0xb3b3a8),xx,.095,zz);}cube(2,.13,400,walk,-11,.05,-156);cube(2,.13,400,walk,11,.05,-156);for(let z=36;z>-350;z-=17)cube(.17,.03,7,white,0,.1,z);for(let i=0;i<4;i++){let z=stops[i].z;cube(4,.12,17,walk,12,.13,z);cube(.25,3,.25,blue,13,1.5,z);cube(1.6,.9,.12,yellow,13,3.1,z);cube(1.7,.18,.75,blue,14,.7,z+5)}// Modelová čtvrť Milovic: rozšířené ulice, křižovatky a orientační místa.
 // Uspořádání je herní aproximace, nikoliv geodeticky přesná silniční síť.
 const asphalt=mat(0x41474c), pavement=mat(0xb9b6aa), lineMat=mat(0xf6eee0);
 const sideRoads=[-48,-155,-266];
@@ -3212,7 +3213,7 @@ function rpCreateGameplayStops(stops){
  rpClearGameplayStops();
  gameplayStopGroup=new THREE.Group();osmLayer.add(gameplayStopGroup);
  const postMat=new THREE.MeshStandardMaterial({color:0x586979,metalness:.5,roughness:.48});
- const blueMat=new THREE.MeshStandardMaterial({color:0x225a89,roughness:.58});
+ const blueMat=new THREE.MeshStandardMaterial({color:TRANSIT_PALETTE.primary,roughness:.58});
  for(let n=0;n<stops.length;n++){
   const stop=stops[n];
   const nearest=driveSegments.reduce((best,s)=>{
@@ -8913,7 +8914,7 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
      ctx.font='700 83px Arial, sans-serif';
      ctx.textAlign='center';ctx.textBaseline='alphabetic';
      ctx.fillStyle=signPlan.letteringColour;
-     ctx.fillText(signPlan.photographedText,256,74);
+     ctx.fillText('PHARMACY',256,74);
      const texture=new THREE.CanvasTexture(signCanvas);
      texture.colorSpace=THREE.SRGBColorSpace;
      const sign=new THREE.Mesh(
@@ -8942,7 +8943,7 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
       }
       return {ready:attached&&visible,attachedToScene:attached,
        visibleAfterLOD:attached&&visible,
-       signText:signPlan.photographedText,
+       signText:'PHARMACY',sourceSignText:signPlan.photographedText,
        actualDrawMeshCount:attached?1:0,
        protectedFromDetailLOD:sign.userData.lodDetail===false,
        pharmacyBaySurveyed:false};
