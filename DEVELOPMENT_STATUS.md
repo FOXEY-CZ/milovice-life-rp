@@ -3,13 +3,13 @@
 Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.312**, build `20261125-juventa-terrain-audit-531200`. 5.313 v přípravě.
+- Herní verze main: **5.312**, build `20261125-juventa-terrain-audit-531200`. 5.313 kandidát v pracovní větvi.
 - Main po #107: `8413775894346a8aa5920179978304537f5669d9`, 6/6 PR CI PASS; 5.311 7/7 main CI včetně Pages PASS. HEAD ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
 ### CI 5.312
-- #107 6/6 PR CI PASS, main CI/Pages ověř živě. Mobilní test potvrzuje výškový rozdíl 4,628–5,137 m.
+- #107 6/6 PR CI PASS, 7/7 main CI včetně Pages PASS (45628373388). Mobilní test potvrzuje výškový rozdíl 4,628–5,137 m.
 
 ## Prioritní práce a otevřené PR
 - **5.308 / #103 MERGED**: GPS 50.226810, 14.866101, směr 98,62° přesně potvrzen v mobilním WebGL; zdrojová metadata převzata z původního modulu, nikoli znovu ověřena. Hrana 47 kandidátní fasáda, nikoli zaměřený vchod. #100 uzavřen, větev zachována.
@@ -34,7 +34,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - Další technický backlog: profilovat paměť a FPS před optimalizací, oddělovat čisté funkce dopravy a UI s regresí; neprovádět hromadný přepis index.html.
 
 ## Další krok podle W7
-5.313 příprava: registrace vyznačených objektů A/C z PDF str. 17, 4 ruční kontrolní body, max. reziduum cca 1,85 m, kandidátní masky GPS a blízkost hran. Modul + test bez geometrie v přípravné větvi. Ověřit test, připojit kontrolní vizualizaci pouze v auditním režimu a nezaměňovat masky za zaměřené rozhraní budov. Před merge ověř CI/Pages 5.312.
+5.313 kandidát: registrace objektů A/C a auditní pohled shora, červená A/modrá C, čtyři vizualizační trojúhelníky a dvě obrysové smyčky pouze v režimu juventa-wings-5313. Bez fyzické geometrie a kolizí. CI čeká. Další krok: dohledat výškový datum a nezávislé rozhraní křídel, nebo připravit výškově lokální zdrojově odůvodněnou modelovou variantu bez zásahu do produkčního půdorysu.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

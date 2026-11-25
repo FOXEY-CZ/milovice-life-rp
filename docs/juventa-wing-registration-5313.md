@@ -8,3 +8,6 @@ Ruční odečet čtyř přibližných kontrolních bodů z obrazového zobrazen�
 
 ## Připravený další krok
 Modul a Node test jsou samostatné, bez připojení ke hře. Test ještě neběžel. Po ověření 5.312 vytvořit kontrolní vizualizaci kandidátních oblastí pouze v auditním režimu a porovnat s fotografií; neřezat půdorys ani přemisťovat školu bez potvrzení skutečného rozhraní a výšek. Nepovažovat samotné reziduum za přesnost hranic objektu. Zachovat fyziku, zdrojový polygon a původní geometrii.
+
+## Integrace 5.313
+Přidán výhradně auditní režim `?v=531300&streetAudit=juventa-wings-5313`. Červená a modrá průsvitná vrstva nad společnou modelovou střechou, dva obrysy, čtyři trojúhelníky, žádné kolize ani fyzická změna. Kamera 300 m nad terénem, technický odhad. Původní fotoaudit ověřuje nepřítomnost překryvu; nový mobilní test ověřuje viditelnost po LOD a všechny rohy v záběru. Testy čekají. V tomto kroku původní dokument znovu neotevírán, vychází z uložených ručních odečtů.

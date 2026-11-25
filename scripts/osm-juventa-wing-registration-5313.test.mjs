@@ -17,3 +17,7 @@ for(const regionId of ['mlada','westlink']){
  assert.equal(plan({...input,id:0}),null);
 }
 console.log('PASS 5.313 approximate A/C image registration and explicit unverified geometry gates');
+
+import {renderJuventaWingOverlay5313 as render} from './osm-juventa-wing-registration-5313.js';
+assert.equal(render(null,{enabled:false}),null);
+assert.equal(render(null,{enabled:true}),null);

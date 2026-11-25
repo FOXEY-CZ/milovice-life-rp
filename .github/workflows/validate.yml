@@ -298,3 +298,5 @@ jobs:
         run: node scripts/osm-juventa-section-5311.test.mjs
       - name: Verify 5.312 Juventa actual foundation and regional DEM order
         run: node scripts/osm-juventa-terrain-audit-5312.test.mjs
+      - name: Verify 5.313 Juventa A/C source registration and audit guard
+        run: node scripts/osm-juventa-wing-registration-5313.test.mjs
