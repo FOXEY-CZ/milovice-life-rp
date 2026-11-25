@@ -51,4 +51,17 @@ try{
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/juventa-5301-mobile.png'});
  console.log('PASS 5.301 mobile Juventa actual attached turf meshes after 7.1s LOD',JSON.stringify(state.render));
+ await page.goto('http://127.0.0.1:8080/?v=530800&streetAudit=juventa-school-5308',{waitUntil:'domcontentloaded',timeout:35000});
+ await page.waitForFunction(()=>window.__miloviceAreasLoaded?.includes('mlada')&&
+  window.__miloviceStreetAuditRendered?.view==='juventa-school-5308'&&window.__miloviceJuventaSchool5306?.().visible,undefined,{timeout:120000});
+ const photo=await page.evaluate(()=>({gps:window.__miloviceAuditCameraGPS,view:window.__miloviceStreetAuditRendered,school:window.__miloviceJuventaSchool5306?.()}));
+ assert(Math.abs(photo.gps.latitude-50.22681)<.000001);
+ assert(Math.abs(photo.gps.longitude-14.866101)<.000001);
+ assert(Math.abs(photo.gps.bearingDegrees-98.62)<.2);
+ assert.equal(photo.view.cameraMode,'documented-photo-gps-and-heading');
+ assert.equal(photo.view.photoCameraIsObjectSurvey,false);
+ assert.equal(photo.school.photoAnchor5308.edge,47);
+ assert.deepEqual(errors,[]);
+ await page.screenshot({path:'browser-artifacts/juventa-5308-mobile.png'});
+ console.log('PASS 5.308: actual mobile review camera matches photo GPS and heading',JSON.stringify(photo.gps));
 }finally{await browser.close()}
