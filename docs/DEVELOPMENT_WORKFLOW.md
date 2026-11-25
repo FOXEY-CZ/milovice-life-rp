@@ -74,3 +74,7 @@ Tento postup **nezruší omezení délky chatu, přemýšlení ani chyby služby
 - Browser smoke (20 skriptů) a Italská (23 skriptů WebGL + dosavadní Node kontroly) běží každý ve třech izolovaných GitHub runner skupinách. Zachovány všechny původní příkazy, trigger filtry, časové limity jednotlivých skupin i původní jméno závěrečného kontrolního jobu. `fail-fast: false` zachová diagnostiku všech skupin i při selhání jedné.
 - Závěrečný job vyžaduje úspěch všech skupin. Každá má samostatný HTTP server s readiness kontrolou, cleanup a unikátní screenshot artefakt. Italská ukládá všechny vytvořené screenshoty, nejen historický výčet.
 - Cílem je kratší wall-clock čekání; skutečný přínos se měří až po CI. Paralelizace může spotřebovat více runner minut nebo čekat na volnou kapacitu. Nové plošné triggery nepřidávat.
+
+## W5 — oddělení terénního výpočtu
+
+- `scripts/terrain-elevation.js` obsahuje čisté funkce pro hranice DEM, trojúhelníkovou interpolaci, přednost starého města a fallback okraje. `index.html` zachovává dosavadní `terrainAt` rozhraní a stav regionů; geometrie, zdrojová data, výšková pravidla, LOD a herní verze se nemění. Regrese pokrývá umělé mřížky i skutečné ČÚZK vrcholy, běží v hlavním Validate.
