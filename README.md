@@ -1,3 +1,7 @@
+## Milovice RP 5.332 — mobilní ovládání zvuku GPS
+
+Dva přepínače zvuku a hlasu jsou v samostatné nepřekrývající se liště, mimo rolovatelné licenční zápatí. Na malém displeji dva stejně široké sloupce, minimální výška 44 px. Licenční text i odkaz zachovány, zápatí lze rolovat. Rozšířený browser test kontroluje oba ovladače, dotykové rozměry, hit-test, přepnutí hlasu a alespoň 120 px mapy ve třech původních mobilních rozměrech. Chování zvuku, routingu a 3D světa beze změny. CI čeká, skutečný telefon neověřen.
+
 ## Milovice RP 5.331 — volitelná česká hlasová GPS
 
 Vedle zapnutí GPS zvuku lze zvolit český hlas. Používá pouze místní český hlas označený prohlížečem jako localService; při nedostupnosti nebo synchronní chybě zůstávají původní tóny. Hlášky mají vzdálenost zaokrouhlenou na 5 m, nepřekrývají se a nejsou frontovány. Změna cíle a vypnutí zvuku ruší aktivní GPS řeč. Hlas i zvuk ve výchozím nastavení vypnuty; rádio beze změny. CI čeká; skutečná česká výslovnost závisí na zařízení a není automaticky ověřena.
