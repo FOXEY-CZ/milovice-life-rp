@@ -3,8 +3,8 @@
 Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.316**, build `20261125-hzs-door-preview-531600`. Kandidát 5.317 v pracovní větvi.
-- Main po #111: `28cd8ffca6ca601b047f726cd33742e2a0c2e4f7`, 6/6 PR CI PASS; 5.315 main 8/8 včetně Pages PASS. 5.316 Pages zatím neověřeny. HEAD ověř živě.
+- Herní verze main: **5.317**, build `20261125-hzs-sign-preview-531700`. Kandidát 5.318 v pracovní větvi.
+- Main po #112: `3a4e180d9dcbcf7d4c19640795113dcd7ba6520f`, 6/6 PR CI PASS, Pages PASS (45636986224), 3 další main kontroly čekají. HEAD ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -14,7 +14,8 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - #108 6/6 PR CI PASS, 7/7 main včetně Pages PASS.
 - #109 6/6 PR CI PASS, 7/7 main včetně Pages PASS.
 - #110 6/6 PR CI PASS, 8/8 main včetně Pages PASS.
-- #111 6/6 PR CI PASS; main CI čeká.
+- #111 6/6 PR CI PASS, 7/7 main včetně Pages PASS.
+- #112 6/6 PR CI PASS; Pages PASS, 4/7 main při přípravě.
 
 ## Prioritní práce a otevřené PR
 - **5.308 / #103 MERGED**: GPS 50.226810, 14.866101, směr 98,62° přesně potvrzen v mobilním WebGL; zdrojová metadata převzata z původního modulu, nikoli znovu ověřena. Hrana 47 kandidátní fasáda, nikoli zaměřený vchod. #100 uzavřen, větev zachována.
@@ -39,7 +40,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - Další technický backlog: profilovat paměť a FPS před optimalizací, oddělovat čisté funkce dopravy a UI s regresí; neprovádět hromadný přepis index.html.
 
 ## Další krok podle W7
-5.317 kandidát: opt-in modelová věž, pás prosklení a dva vlastní nápisy, pět meshů/40 trojúhelníků, bez kolizí. CI čeká. Další krok: zkontrolovat screenshot a doložit orientaci, případně přesunout práci na jinou část města.
+5.318 kandidát: 7 nových OSM bodů v Leaflet mapě, celkem 14, barvy podle kategorií a ochrana proti souběžnému otevření. Node a browser CI čekají. Další krok: ověřit UI a zvážit jednoduchý herní navigační cíl, bez automatického tvrzení o dostupnosti vstupu.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

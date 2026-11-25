@@ -798,6 +798,15 @@ try{
  if(!(await page.locator('#mapfollow').isVisible()))throw new Error('Full-map recenter missing');
  console.log('Full map marker: OK');
  await page.screenshot({path:'browser-artifacts/milovice-full-map.png'});
+ const mapAudit=await page.evaluate(()=>window.__miloviceMapLandmarks5318?.());
+ if(mapAudit?.count!==14||mapAudit.attached!==14||mapAudit.extra.length!==7||new Set(mapAudit.names).size!==14)
+  throw Error('5.318 map landmark count or duplication: '+JSON.stringify(mapAudit));
+ if(await page.locator('.rp-map-extra-landmark').count()!==7)throw Error('5.318 missing Leaflet SVG landmark markers');
+ await page.locator('#closemap').click();
+ await page.locator('#maplaunch').click();
+ const reopened=await page.evaluate(()=>window.__miloviceMapLandmarks5318?.());
+ if(reopened?.count!==14||reopened.attached!==14)throw Error('5.318 duplicate or missing markers on reopen');
+ console.log('PASS 5.318 seven source landmarks, actual Leaflet markers and reopen',JSON.stringify(reopened));
  await page.locator('#closemap').click();
  await page.locator('#rp-vehicles').click();
  await page.locator('[data-spawn="sedan"]').click();
