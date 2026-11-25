@@ -9,7 +9,7 @@ const browser=await chromium.launch({
 try{
  const view='pitch-juventa-5301',page=await browser.newPage({viewport:{width:393,height:852},deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
- await page.goto('http://127.0.0.1:8080/?v=530500&streetAudit='+view,{waitUntil:'domcontentloaded',timeout:35000});
+ await page.goto('http://127.0.0.1:8080/?v=530600&streetAudit='+view,{waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(view=>window.__miloviceAreasLoaded?.includes('mlada')&&
    window.__miloviceSportPitchCameraAudit?.targetInFrame===true&&
@@ -22,6 +22,7 @@ try{
  const state=await page.evaluate(()=>({camera:window.__miloviceSportPitchCameraAudit,render:window.__miloviceJuventaRender5301?.(),
   jump:window.__miloviceJuventaRender5301?.('long-jump'),
   access:window.__miloviceJuventaAccess5304?.(),
+  school:window.__miloviceJuventaSchool5306?.(),
   sport:window.__miloviceSportPitchAudit,selected:document.querySelector('#street-audit-nav a.selected')?.dataset.auditId,
   canvas:document.querySelector('canvas')?.clientWidth}));
  assert.equal(state.camera.pitchId,'1472419116');assert.equal(state.camera.sport,'soccer');
@@ -39,6 +40,9 @@ try{
  console.log('PASS 5.302 mobile Juventa actual attached sand mesh after 7.1s LOD',JSON.stringify(state.jump));
  assert.deepEqual(state.access?.protectedWayIds,['1472419124','1472419127','1472419128','1076211056','1076211057','1076211058','1076211060']);
  assert.equal(state.access.segments,31);assert.equal(state.access.exactSourceJunctions,14);assert.equal(state.access.sourceCrossingId,'1076211056');assert.equal(state.access.newGeometry,0);
+ assert.equal(state.school?.sourceOSMId,'53865836');assert.equal(state.school.sourceOutlineVertices,72);
+ assert(state.school.attached&&state.school.visible&&state.school.registered&&state.school.vertices>0);
+ assert.equal(state.school.materialGroups,2);assert.equal(state.school.modelShellOnly,true);
  assert.equal(state.selected,view);assert(state.canvas>0);assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/juventa-5301-mobile.png'});

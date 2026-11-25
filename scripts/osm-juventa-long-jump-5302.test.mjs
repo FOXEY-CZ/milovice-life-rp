@@ -91,3 +91,18 @@ for(let seed=1;seed<=30;seed++){
 assert(rejected5305>0,'baseline must contain conflicting parking candidates');
 assert(accepted5305>0,'guard must preserve safe parking candidates');
 console.log('PASS 5.305: actual parking generator, 30 seeds; '+rejected5305+' conflicting baseline slots, '+accepted5305+' safe generated slots (model widths)');
+
+import {planJuventaSchoolShell5306} from './osm-juventa-school-shell-5306.js';
+for(const regionId of ['mlada','westlink']){
+ const ways=JSON.parse(readFileSync(new URL('../data/regions/'+regionId+'.json',import.meta.url),'utf8')).elements;
+ const school=ways.find(w=>String(w.id)==='53865836');
+ const plan=planJuventaSchoolShell5306({...school,regionId});
+ assert(plan);assert.equal(plan.sourceVertices,73);assert.equal(plan.sourceLevels,5);
+ assert(plan.depth>150&&plan.depth<151);assert(plan.width>111&&plan.width<113);
+ assert.equal(plan.modelHeight,15.25);assert.equal(plan.newEntrances,0);assert.equal(plan.newRamps,0);
+ assert.equal(planJuventaSchoolShell5306({...school,regionId,id:53865846}),null);
+ const moved=school.geometry.map((p,i)=>i===0?{...p,lat:p.lat+.000001}:p);
+ assert.equal(planJuventaSchoolShell5306({...school,regionId,geometry:moved}),null);
+ assert.equal(planJuventaSchoolShell5306({...school,regionId,tags:{...school.tags,'building:levels':'4'}}),null);
+}
+console.log('PASS 5.306: original 150m school footprint restored through source-specific size guard');

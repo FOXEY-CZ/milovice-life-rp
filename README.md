@@ -1,3 +1,7 @@
+## Milovice RP 5.306 — obnovený půdorys školy Juventa
+
+5.306 — obnovení dosud vynechaného půdorysu školy Juventa. Původní OSM 53865836 / RÚIAN 62834916 (73 uzlů včetně uzavíracího, hash be655146, bbox cca 111,9 × 150,4 m) překračuje obecný limit rendereru 140 m. Přesně ověřená výjimka pouze pro tuto geometrii ve dvou regionálních exportech. Jedna samostatná extruze s dvěma existujícími materiály, standardní kolize a základy na původním polygonu. Výška 15,25 m odvozena z pěti OSM podlaží, nikoli zaměření jednotlivých křídel; plochá střecha i fasádní materiál provizorní. Bez vymyšlených oken, dveří, ramp a střešních doplňků. Node a mobilní WebGL po 7,1s LOD rozšířeny, CI čeká. 5.305 PR #97 MERGED 3ca2c4f, 5/5 CI PASS, Pages neověřeny. Dál: ověřit CI, spojit podklady fasády s konkrétními hranami školy.
+
 ## Milovice RP 5.305 — propojené pěší přístupy Juventa
 
 5.305 — ochrana navazující pěší sítě Juventa: sedm původních OSM pěších ways (1472419124/127/128, 1076211056/57/58/60), 31 segmentů, 14 přesně shodných zdrojových spojů včetně značeného přechodu 1076211056 přes Komenského. Původní cesty, přechod, GPS i vozovky zůstávají beze změn; rozšíření modelového 4,25m odstupu pro generovaná parkovací auta, nikoli právní zákaz. Shoda hashů ve dvou regionálních souborech, rozšířené Node a mobilní WebGL testy; CI čeká. PR #95 MERGED 63d0e42, 5/5 CI PASS, Pages neověřeny. PR #96 nahrazen čistou větví z main po konfliktu squash historie; CI čeká. Běžecký ovál nadále bez přesného podkladu. Dál: ověřit CI nové větve a získat obrys oválu.
