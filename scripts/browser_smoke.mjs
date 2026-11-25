@@ -811,6 +811,10 @@ try{
  await page.locator('#closemap').click();
  await page.waitForFunction(()=>window.__miloviceMapGuidance5319?.()?.distanceMetres>0,undefined,{timeout:6000});
  const nav=await page.evaluate(()=>window.__miloviceMapGuidance5319());
+ await page.waitForFunction(()=>window.__miloviceMapGoalMinimap5320?.()?.drawn===true,undefined,{timeout:6000});
+ const pin=await page.evaluate(()=>window.__miloviceMapGoalMinimap5320());
+ if(pin.name!==nav.name||pin.directPointNotRoute!==true||pin.newWorldObjects!==0||Math.hypot(pin.x,pin.y)>66.001)
+  throw Error('5.320 invalid actual minimap marker '+JSON.stringify(pin));
  if(nav.name!=='🚒 Hasičská stanice Milovice'||nav.straightLine!==true||nav.entranceVerified!==false||!nav.arrow)
   throw Error('5.319 missing game guidance '+JSON.stringify(nav));
  if(await page.locator('#map-guidance-5319').getAttribute('hidden')!==null)throw Error('5.319 HUD hidden');
@@ -818,6 +822,8 @@ try{
  if(await page.locator('#map-goal-5319').inputValue()!=='7')throw Error('5.319 lost selected goal');
  await page.locator('#map-goal-clear-5319').click();
  if(await page.evaluate(()=>window.__miloviceMapGuidance5319())!==null)throw Error('5.319 clear failed');
+ await page.waitForFunction(()=>window.__miloviceMapGoalMinimap5320?.()===null,undefined,{timeout:6000});
+ console.log('PASS 5.320 selected minimap marker and clear',JSON.stringify(pin));
  console.log('PASS 5.319 selectable goal, HUD and clear',JSON.stringify(nav));
  await page.locator('#closemap').click();
  await page.locator('#rp-vehicles').click();

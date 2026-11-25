@@ -314,3 +314,5 @@ jobs:
         run: node scripts/map-landmarks-5318.test.mjs
       - name: Verify 5.319 in-game straight-line navigation
         run: node scripts/map-guidance-5319.test.mjs
+      - name: Verify 5.320 minimap goal projection and canvas drawing
+        run: node scripts/map-goal-minimap-5320.test.mjs
