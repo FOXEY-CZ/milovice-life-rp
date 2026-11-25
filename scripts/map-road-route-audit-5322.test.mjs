@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {auditPublicRoadRoute5322 as audit} from './map-road-route-audit-5322.js';
+const p=(x,y)=>({x,y}),a=p(0,0),b=p(100,0),c=p(100,100);
+const segments=[{a,b,len:100,osmId:1,oneway:1},{a:b,b:c,len:100,osmId:2,oneway:0}];
+const route={status:'ready',distanceMetres:130,destinationRoadPoint:p(100,50),
+ legs:[{a:p(20,0),b,osmId:'1'},{a:b,b:p(100,50),osmId:'2'}]};
+const ok=audit(route,segments);assert(ok?.valid);assert.equal(ok.legCount,2);
+assert.deepEqual(ok.sourceRoadIds,['1','2']);assert.equal(ok.lengthMetres,130);
+assert.equal(ok.maxJoinGap,0);assert.equal(ok.newRoadLinks,0);
+assert.equal(ok.turnRestrictionsVerified,false);assert.equal(ok.destinationEntranceVerified,false);
+assert.equal(audit({...route,distanceMetres:131},segments),null);
+assert.equal(audit({...route,destinationRoadPoint:c},segments),null);
+assert.equal(audit(route,segments.slice(0,1)),null);
+assert.equal(audit({...route,legs:[{...route.legs[0],osmId:'private'},route.legs[1]]},segments),null);
+assert.equal(audit({...route,legs:[{a:b,b:p(20,0),osmId:'1'}],distanceMetres:80,destinationRoadPoint:p(20,0)},segments),null);
+assert.equal(audit({...route,legs:[{a:p(20,1),b,osmId:'1'},route.legs[1]]},segments),null);
+assert.equal(audit({...route,legs:[{a:p(20,0),b:p(90,0),osmId:'1'},route.legs[1]],distanceMetres:120},segments),null);
+assert.equal(audit({status:'no-route',legs:[]},segments),null);
+assert.equal(audit({status:'ready',legs:[],distanceMetres:0},segments).legCount,0);
+console.log('PASS 5.322 route audit checks source segments, direction, continuity and distance');
