@@ -25,3 +25,6 @@ Uživatel zvolil Ironfield jako fiktivní město ve hře CROSSVEX. Změněny hr�
 
 ## 5.336 – vlastní mapa
 Leaflet vykresluje lokální geometrii šesti snapshotů přes Canvas, pouze fiktivní popisky při zoomu 17–19. Odstraněn odkaz na technický průzkum z patičky mapy, OSM/ČÚZK atribuce zachována. Stávající GPS, cíle a vlastní waypointy bez změny výpočtu. Zdrojové JSON, GPS a Leaflet CDN zůstávají; nejde o offline či anonymní distribuci. Plochy s nedoloženým uzavřením se nekreslí, včetně některých vodních ploch; mapa zatím nereprezentuje každý objekt 3D scény. Browser a CI čekají.
+
+## 5.337
+První napojení fiktivních nápisů na 3D textury. Zbývají specializované nápisy, barevné identity, zastávky a Credits & Licenses. CI čeká.

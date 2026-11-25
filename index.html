@@ -1,4 +1,4 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CROSSVEX – 5.336</title><meta name="milovice-build" content="20261125-ironfield-vector-map-533600"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
+<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CROSSVEX – 5.337</title><meta name="milovice-build" content="20261125-fictional-signage-533700"><style>html,body{margin:0;height:100%;overflow:hidden;background:#121d2c;color:white;font:14px system-ui}#hud{position:absolute;top:12px;left:12px;background:#0c1828e8;padding:14px;border:1px solid #7790a5;border-radius:14px;max-width:min(310px,calc(100vw - 28px));pointer-events:none;box-sizing:border-box}#hud h2{margin:0 0 8px;font-size:18px}#hud p{margin:5px 0}#hud strong{color:#ffdc68}#controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:95%}button{background:#1e3856;color:white;border:1px solid #6e94b5;border-radius:9px;padding:12px 15px;font-weight:700;touch-action:none}button.held,button:active{background:#3d739f}html,body,canvas,#controls,#controls button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#controls{z-index:30;touch-action:none}#controls button{cursor:pointer;min-height:52px;min-width:58px;position:relative;pointer-events:auto;-webkit-tap-highlight-color:transparent}#controls button:focus{outline:2px solid #ffd54f}#hint{position:absolute;top:12px;right:12px;background:#0c1828bb;padding:10px;border-radius:10px;max-width:230px;pointer-events:none}#status{color:#b7edb7}#err{color:#ffc3c3}#hint{top:auto;bottom:155px;right:10px;font-size:12px;max-width:220px}#osmnotice{display:none}#hud{z-index:2}#controls{z-index:40;bottom:max(10px,env(safe-area-inset-bottom));padding:6px 0;background:#152435e0;border-radius:12px}#controls button{touch-action:none;user-select:none;-webkit-user-select:none;min-height:52px;flex:1 1 auto}#controls button[data-key]{flex:1 1 20%;font-size:16px}#minimap{pointer-events:none;opacity:.88}@media(max-width:700px){#hud{top:8px;left:8px;padding:9px;font-size:11px;max-width:58vw}#hud h2{font-size:15px}#hint{display:none}#controls{width:98%;gap:5px}#controls button{padding:10px 6px;font-size:12px;min-width:0}#minimap{width:100px;height:100px;bottom:155px;right:8px}}html,body{overscroll-behavior:none}canvas{touch-action:none}</style><style>
 #realmap{position:fixed;inset:0;z-index:100;background:#101e2c;display:none;flex-direction:column;color:#fff;font-family:system-ui}#realmap.open{display:flex}#maphead{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#142c3e}#maphead button{flex:0 0 auto;min-height:40px}#osmmap{flex:1;min-height:0;touch-action:pan-x pan-y;background:#182a34}#osmmap .rp-ironfield-street{background:transparent;border:0;box-shadow:none;color:#f0e8d4;font-size:11px;font-weight:600;text-shadow:0 1px 3px #09121a,0 0 3px #09121a;pointer-events:none;padding:0}#osmmap .rp-ironfield-street:before{display:none}#mapfoot{padding:8px 12px;background:#142c3e;font-size:12px;line-height:1.4}#maplaunch{position:fixed;right:12px;top:75px;z-index:45;background:#193d58;border:1px solid #93b4c7;box-shadow:0 2px 8px #0006}#realmap .leaflet-container{background:#d7e5da}#realmap a{color:#aedbff} @media(max-width:700px){#maplaunch{top:72px;right:8px;padding:7px 10px;font-size:12px;min-height:36px}#maphead{font-size:13px}}
 </style><style>#perf{position:fixed;top:10px;right:10px;z-index:42;background:#102437e8;border:1px solid #77a7b6;border-radius:10px;padding:7px 10px;color:#c8f6d4;font:600 12px system-ui;pointer-events:none;min-width:100px;text-align:center}#perf small{display:block;color:#c9d5dd;font-size:10px;font-weight:400}@media(max-width:700px){#perf{top:8px;right:8px;padding:5px 7px;font-size:11px}#maplaunch{top:100px!important}}</style><style id="milovice-modern-ui">
 #hud{background:linear-gradient(145deg,rgba(9,24,39,.88),rgba(20,44,61,.82));backdrop-filter:blur(12px);border:1px solid rgba(176,214,235,.3);box-shadow:0 10px 30px #061b2b33;border-radius:18px}
@@ -458,7 +458,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 <strong>📸 Milovice nádraží · fotoaudit 5.80</strong>
 <span>Pohled podle GPS a směru fotoaparátu z 30. 5. 2024. Velikost a poloha automatů jsou odhady, nikoliv geodetické zaměření.</span>
 <div><a href="https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_automaty_na_j%C3%ADzdenky.jpg" target="_blank" rel="noopener noreferrer">Původní fotografie · ŠJů · CC BY 4.0</a> · <a href="./?v=5800">Zpět do hry</a></div>
-</aside><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ CROSSVEX</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.336 · build <strong id="build-label">20261125-ironfield-vector-map-533600</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Fiktivní české město</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="map-guidance-5319" hidden><strong id="map-guidance-arrow-5319">↑</strong> <span id="map-guidance-name-5319"></span> · <strong id="map-guidance-distance-5319"></strong> <small>vzdušnou čarou</small> <small id="map-route-5321"></small> <strong id="map-instruction-5327" hidden style="display:none;color:#d8b4fe;margin-top:3px;font-size:12px"></strong> <button id="map-guidance-clear-5319" type="button" aria-label="Zrušit navigační cíl" style="pointer-events:auto;padding:3px 6px">×</button></p><p id="topolova-foot-job-hud" hidden>🚶 Pěší doručení: <strong id="topolova-foot-job-progress">0 / 3</strong> · <strong id="topolova-foot-job-distance">–</strong> · Směr: <strong id="topolova-foot-job-direction" aria-label="Směr dalšího kontrolního bodu">↑</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Fiktivní svět inspirovaný skutečnou krajinou.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="rp-camera-gps-toggle" type="button" aria-expanded="false">📍 GPS kamery</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Herní mapa</button>
+</aside><div id="perf" aria-label="Výkon hry">FPS: --<small>Objekty: --</small></div><div id="hud"><h2>🏘️ CROSSVEX</h2><button id="rp-hud-toggle" type="button" aria-expanded="false" aria-label="Zobrazit podrobnosti hry">☰ Info</button><p>Verze 5.337 · build <strong id="build-label">20261125-fictional-signage-533700</strong> · <strong id="mapmode">Singleplayer RP</strong></p><p>🗺️ <strong>Fiktivní české město</strong></p><p id="terrain-status">🏞️ Výškopis: <strong>načítání…</strong></p><p id="vehicle-stats">🚗 Rychlost: <strong id="speed">0</strong> km/h</p><p>🚗 Auta: <strong id="car-count">0</strong> · 🚶 Chodci: <strong id="people-count">0</strong></p><p id="map-guidance-5319" hidden><strong id="map-guidance-arrow-5319">↑</strong> <span id="map-guidance-name-5319"></span> · <strong id="map-guidance-distance-5319"></strong> <small>vzdušnou čarou</small> <small id="map-route-5321"></small> <strong id="map-instruction-5327" hidden style="display:none;color:#d8b4fe;margin-top:3px;font-size:12px"></strong> <button id="map-guidance-clear-5319" type="button" aria-label="Zrušit navigační cíl" style="pointer-events:auto;padding:3px 6px">×</button></p><p id="topolova-foot-job-hud" hidden>🚶 Pěší doručení: <strong id="topolova-foot-job-progress">0 / 3</strong> · <strong id="topolova-foot-job-distance">–</strong> · Směr: <strong id="topolova-foot-job-direction" aria-label="Směr dalšího kontrolního bodu">↑</strong></p><p id="rp-job-progress" hidden>🚌 <strong id="stop">Zastávka</strong> · <strong id="distance">0 m</strong></p><p id="status">Vystup a prozkoumej město!</p><p>Režim: <strong id="mode">Řidič autobusu</strong> · Peníze: <strong id="money">0</strong> Kč</p><p id="rp-job-extra" hidden>📍 Trasa: <strong id="progress">0 / 3</strong> · Cestující: <strong id="pass">0</strong></p><p>Čas: <strong id="clock">00:00</strong><span id="rp-rating-wrap" hidden> · Hodnocení: <strong id="rating">100</strong> %</span></p></div><div id="hint">WASD / šipky: řízení nebo chůze · E: nastoupit/vystoupit · C: pohled z očí / třetí osoby · tažením myši či prstu otáčíš kamerou · dvojklik uzamkne myš (Esc uvolní) · R: reset.</div><div id="osmnotice" style="position:absolute;right:12px;top:110px;background:#102238dc;padding:10px;border-radius:9px;max-width:240px">Fiktivní svět inspirovaný skutečnou krajinou.</div><canvas id="minimap" width="180" height="180" style="position:absolute;right:12px;bottom:125px;background:#193027dd;border:1px solid #91a4aa;border-radius:10px"></canvas><div id="controls"><button data-key="KeyA">◀</button><button data-key="KeyW">▲ Jít</button><button data-key="KeyS">▼ Zpět</button><button data-key="KeyD">▶</button><button id="enter">🚗 Nastoupit</button><button id="camera">📷 Kamera</button><button id="rp-camera-gps-toggle" type="button" aria-expanded="false">📍 GPS kamery</button><button id="horn" hidden>📣 Klakson</button><button id="doors" hidden>🚪 Dveře</button><button id="rp-vehicles">🚘 Vozidla</button><button id="rp-jobs">💼 Práce</button><button id="reset">↺ Reset</button></div><div id="rp-joystick" role="slider" tabindex="0" data-intensity="stojí" aria-label="Virtuální joystick pro chůzi a běh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Stojí"><div id="rp-joystick-knob"></div></div><button id="maplaunch" type="button">🗺️ Herní mapa</button>
 <button id="osm-inspect-toggle" type="button" aria-pressed="false" title="Klepnutím na konkrétní budovu zjistíš její OSM identitu">🔎 Objekt</button>
 <section id="osm-inspect-result" role="status" aria-live="polite" hidden>
 <strong id="osm-inspect-title">Identifikace objektu</strong>
@@ -740,6 +740,7 @@ document.getElementById('closemap').addEventListener('click',()=>{setMapPicking5
 document.addEventListener('keydown',e=>{if(e.code==='Escape'&&mapPanel.classList.contains('open')){setMapPicking5325(false);mapPanel.classList.remove('open');e.stopImmediatePropagation()}},true);
 
 import {STREET_NAMES,streetDisplayName,landmarkDisplayName,regionDisplayName} from './scripts/fictional-identity.js?v=533500';
+import {businessSignText,STATIC_SIGN_TEXT} from './scripts/fictional-signage.js?v=533700';
 import {loadGameMap,GAME_MAP_STYLES} from './scripts/ironfield-map.js?v=533600';
 import {createCustomWaypoint5325} from './scripts/map-custom-waypoint-5325.js?v=532500';
 import {roadRouteMapLines5323} from './scripts/map-road-route-lines-5323.js?v=532300';
@@ -1014,7 +1015,7 @@ Object.assign(citySurfaceKit,makeMiloviceVisualKit(THREE));
 window.__miloviceBigUpdate={version:'5.6.0',surfaces:8,streetDecor:0,activeShadows:0,
  safeWheelRig:true,mobileDetailRadius:175};
 window.__miloviceGraphics2={active:true,albedoTiles:8,contactShadow:true,method:'original-procedural-mobile'};
-const BUILD_ID='20261125-ironfield-vector-map-533600';
+const BUILD_ID='20261125-fictional-signage-533700';
 // Strictly opt-in traffic diagnostic; no NPC spawning changes in normal play.
 const rpItalskaNpcEncounterMode5259=
  new URLSearchParams(location.search).get('npcAudit')==='italska-encounter-5259';
@@ -2665,10 +2666,10 @@ function label(text,x,z){
  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(12,2.25),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv),side:THREE.DoubleSide,transparent:true}));
  mesh.position.set(x,5,z);mesh.rotation.y=Math.PI/2;scene.add(mesh);
 }
-label('MILOVICE • NÁDRAŽÍ',-15,8);
+label(STATIC_SIGN_TEXT.stationFallback,-15,8);
 label('CENTRUM / RADNICE',-15,-105);
-label('ARMÁDNÍ',-15,-210);
-label('SMĚR MIRAKULUM',-15,-320);
+label(STATIC_SIGN_TEXT.fallbackStreet,-15,-210);
+label(STATIC_SIGN_TEXT.fallbackLeisure,-15,-320);
 const bus=new THREE.Group();scene.add(bus);
 // Detailnější nízkopolygonový autobus: tmavá prosklená kabina, oddělené panely,
 // dveře, nárazníky, blatníky, světlomety a kola. Směr jízdy je -Z.
@@ -2783,7 +2784,7 @@ function led(text,w,h){
  const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;
  return new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));
 }
-const frontLed=led('432 • MILOVICE',1.85,.39);frontLed.position.set(0,2.78,-5.65);bus.add(frontLed);
+const frontLed=led(STATIC_SIGN_TEXT.busDestination,1.85,.39);frontLed.position.set(0,2.78,-5.65);bus.add(frontLed);
 const backLed=led('432',1.15,.33);backLed.position.set(0,2.65,5.60);bus.add(backLed);
 frontLed.visible=false;backLed.visible=false;
 // Proporčnější vizuál z třetí osoby bez změny jízdní fyziky.
@@ -5729,7 +5730,7 @@ function blueStarFacadeSign(x,y,z,yaw){
  const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=220;
  const c=canvas.getContext('2d');c.fillStyle='#f9f4e8';c.fillRect(0,0,1024,220);
  c.fillStyle='#34628e';c.font='bold 73px Arial';c.textAlign='center';c.textBaseline='middle';
- c.fillText('MODRÁ HVĚZDA',515,115,980);
+ c.fillText(STATIC_SIGN_TEXT.hotel,515,115,980);
  c.fillStyle='#274e8d';const cx=55,cy=105,r1=46,r2=20;
  c.beginPath();for(let i=0;i<10;i++){const a=i*Math.PI/5-Math.PI/2,r=i%2===0?r1:r2;
   if(i===0)c.moveTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);else c.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r)}
@@ -6444,7 +6445,7 @@ function miloviceStationGroundFloor(pts,base,h,cx,cz){
    if(!railSignWall||transverse<railSignWall.transverse)railSignWall=candidate;
   }
   if(railSignWall){
-   const board=stationBoard('Milovice',
+   const board=stationBoard(STATIC_SIGN_TEXT.station,
     railSignWall.x+railSignWall.nx*.22,base+3.20,
     railSignWall.z+railSignWall.nz*.22,
     railSignWall.yaw,'#215aa3',2.1,.46);
@@ -6643,7 +6644,7 @@ function miloviceBikeTower(pts,base){
  window.__miloviceBikeTowerUpperSignDispose=upperSign.dispose;
  archPart('stationCanopy',cx+nx*(rad+.3),base+2.52,cz+nz*(rad+.3),3.5,.20,1.5,yaw);
  archPart('stationGlass',cx+nx*(rad+.25),base+1.36,cz+nz*(rad+.25),2.6,2.38,.18,yaw);
- stationBoard('BIKE TOWER',cx+nx*(rad+.37),base+2.94,cz+nz*(rad+.37),yaw,'#166299');
+ stationBoard(STATIC_SIGN_TEXT.bikeHub,cx+nx*(rad+.37),base+2.94,cz+nz*(rad+.37),yaw,'#166299');
  window.__miloviceLandmarkDebug ||= {};
  window.__miloviceLandmarkDebug.bikeTower=true;
 }
@@ -6811,7 +6812,7 @@ function miloviceBusinessFront(pts,tags,base,height,cx,cz,osmId,regionId='old'){
  }
  g.textAlign='center';g.textBaseline='middle';
  let font=normalized==='billa'?158:normalized==='penny'?143:118;
- const upper=name.toLocaleUpperCase('cs');
+ const upper=businessSignText(tags).toLocaleUpperCase('cs');
  do{g.font='900 '+font+'px system-ui, sans-serif';if(g.measureText(upper).width<=952)break;font-=8}while(font>34);
  g.fillText(upper,512,101,962);
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
@@ -6830,7 +6831,7 @@ function miloviceBusinessFront(pts,tags,base,height,cx,cz,osmId,regionId='old'){
  if(isPhotoBillaSign)window.__miloviceBillaSignAudit={
   version:'5.119',sourceWayId:String(osmId),
   photo:'https://www.firmy.cz/detail/13214923-billa-milovice-mlada.html',
-  roofLetters:'BILLA',letterColour:'yellow',
+  roofLetters:upper,sourceRoofLetters:'BILLA',letterColour:'yellow',
   transparentBillboard:true,photoCanopyCount:1,
   extraGenericCanopies:0,extraGenericFascias:0,
   roofSignKeptAfterDetailLOD:true,
@@ -9509,7 +9510,7 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
       .075,postTop-grade.floorY,.075,yaw);
     }
     const label=facadePoint(entrance,0,.024);
-    schoolFacadeSign('ZŠ T. G. MASARYKA',
+    schoolFacadeSign(STATIC_SIGN_TEXT.school,
      label.x,baseHeight+3.18,label.z,yaw,3.7,.55);
     window.__miloviceSchoolPhotoAudit={
      ...(window.__miloviceSchoolPhotoAudit||{}),
@@ -9526,7 +9527,7 @@ const isPionyru2022PhotoGable=osmId===202385910; // front gable from user panora
     };
    }else if(isStation){
     archPart('glassAwning',mx+nx*flushBoxOffset(2.9),baseHeight+2.9,mz+nz*flushBoxOffset(2.9),Math.min(11,len*.72),.24,2.9,yaw);
-    stationFacadeSign('Milovice',mx+nx*flushBoxOffset(.16),baseHeight+4.45,mz+nz*flushBoxOffset(.16),yaw);
+    stationFacadeSign(STATIC_SIGN_TEXT.station,mx+nx*flushBoxOffset(.16),baseHeight+4.45,mz+nz*flushBoxOffset(.16),yaw);
    }else if(isPanelBlock){
     if(estatePlan?.version==='5.140'||estatePlan?.version==='5.148'){
      // Photo-unverified canopies do not belong on source-locked blocks.

@@ -1,3 +1,7 @@
+## CROSSVEX 5.337 — fiktivní 3D nápisy
+
+Texty generických obchodních fasád, nádraží, školy, hotelu, cyklohubu a autobusu používají fiktivní slovník. Zdrojové klíče a geometrie zůstávají. Barvy značek a další specializované textury čekají na audit. CI čeká.
+
 ## CROSSVEX 5.336 — lokální vektorová mapa Ironfieldu
 
 Šest lokálních OSM snapshotů, 3 679 jedinečných zdrojových cest a polygonů ve výpočtu, Canvas základ, fiktivní popisky od zoomu 17. Bez externích mapových dlaždic, s atribucí ODbL; Leaflet CDN a zdrojové GPS nadále zachovány. Původní GPS a waypointy beze změny. Unit a browser testy nově kontrolují mapu, názvy, zoom, atribuci a absenci rastrových dlaždic. CI čeká. [Plán vydání](docs/RELEASE_IDENTITY.md).
