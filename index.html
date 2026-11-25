@@ -83,6 +83,8 @@
 #map-pick-5325{min-width:44px;min-height:44px;padding:6px;white-space:nowrap;touch-action:manipulation}
 #map-pick-5325[aria-pressed="true"]{background:#68409a;border-color:#d8b4fe}
 #osmmap.rp-pick-5325,#osmmap.rp-pick-5325 .leaflet-interactive{cursor:crosshair}
+/* Camera markers remain visible, but may not intercept a waypoint click. */
+#osmmap.rp-pick-5325 .milovice-camera-marker,#osmmap.rp-pick-5325 .milovice-camera-marker *,#osmmap.rp-pick-5325 .milovice-camera-direction-tip,#osmmap.rp-pick-5325 .milovice-camera-direction-tip *{pointer-events:none!important}
 /* Keep map actions accessible without shrinking the map to a toolbar. */
 @media(max-width:700px), (max-height:500px) and (max-width:1000px){
  #maphead{flex:0 0 auto;display:grid;grid-template-columns:minmax(0,1fr);gap:4px;padding:6px 8px}
@@ -558,7 +560,7 @@ function syncCustomMapGoal5325(){
 }
 document.getElementById('map-pick-5325').addEventListener('click',()=>{
  if(!leafletMap)return;
- if(!mapPicking5325){fullMapFollow=false;fullMapFollowCamera=false;}
+ if(!mapPicking5325){fullMapFollow=false;fullMapFollowCamera=false;leafletMap.closePopup();}
  setMapPicking5325(!mapPicking5325);
 });
 window.__miloviceCustomWaypoint5325=()=>({picking:mapPicking5325,goal:mapGoal5319?.custom?[...mapGoal5319.gps]:null,attached:!!(leafletCustom5325&&leafletMap?.hasLayer(leafletCustom5325))});

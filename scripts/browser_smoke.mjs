@@ -859,6 +859,7 @@ try{
  // Real Leaflet input: choose own player position as a nearby custom goal.
  await page.locator('#mapfollow').click();
  await page.locator('#map-pick-5325').click();
+ if(await page.locator('.milovice-camera-marker').evaluate(el=>getComputedStyle(el).pointerEvents)!=='none')throw Error('5.329 camera intercepts waypoint selection');
  await page.locator('.milovice-player-marker').click({position:{x:4,y:4}});
  await page.waitForFunction(()=>window.__miloviceCustomWaypoint5325?.()?.attached===true,undefined,{timeout:6000});
  await page.waitForTimeout(1800);
@@ -873,6 +874,7 @@ try{
  await page.waitForFunction(()=>window.__miloviceMapGoalMinimap5320?.()===null,undefined,{timeout:6000});
  await page.locator('#maplaunch').click();
  if(await page.locator('#map-goal-5319').inputValue()!==''||await page.locator('.rp-custom-waypoint-5325').count())throw Error('5.329 stale map goal after arrival');
+ if(await page.locator('.milovice-camera-marker').evaluate(el=>getComputedStyle(el).pointerEvents)==='none')throw Error('5.329 camera pointer events not restored');
  console.log('PASS 5.329 actual walking arrival and cleanup',JSON.stringify(arrived.arrival));
  await page.locator('#map-goal-5319').selectOption({label:'🚒 Hasičská stanice Milovice'});
  await page.locator('#closemap').click();
