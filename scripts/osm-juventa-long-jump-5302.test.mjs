@@ -135,3 +135,21 @@ for(const regionId of ['mlada','westlink']){
 }
 assert.equal(JUVENTA_PHOTO_5308.heading,98.62);
 console.log('PASS 5.308: EXIF ray intersects exact OSM facade edge 47 in both region copies');
+
+import {planJuventaWindowBays5309} from './osm-juventa-window-bays-5309.js';
+for(const regionId of ['mlada','westlink']){
+ const ways=JSON.parse(readFileSync(new URL('../data/regions/'+regionId+'.json',import.meta.url),'utf8')).elements;
+ const school=ways.find(w=>String(w.id)==='53865836');
+ const plan=planJuventaWindowBays5309({...school,regionId,toWorld:toWorld5304});
+ assert(plan);assert.equal(plan.edge,47);assert.equal(plan.windowBays,9);assert.equal(plan.glassPanes,54);
+ assert.equal(plan.accentStrips,9);assert.equal(plan.quads.length,72);
+ assert.equal(plan.exactPositionsSurveyed,false);assert.equal(plan.entryCandidateKeptClear,true);
+ const a=toWorld5304(school.geometry[47]),b=toWorld5304(school.geometry[48]),dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz);
+ for(const q of plan.quads)for(const [x,y,z] of q.vertices){
+  const u=((x-a.x)*dx+(z-a.z)*dz)/len;
+  assert(u>=0&&u<len*.75);assert(y>0&&y<15.25);
+  assert(Math.abs((x-a.x)*dz-(z-a.z)*dx)/len<.04);
+ }
+ assert.equal(planJuventaWindowBays5309({...school,regionId,id:0,toWorld:toWorld5304}),null);
+}
+console.log('PASS 5.309: nine model window bays, 72 quads, original edge and candidate entrance clearance');
