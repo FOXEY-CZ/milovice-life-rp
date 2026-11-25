@@ -1,15 +1,18 @@
 name: Milovice 5.216 mapped Višňová Armádní refuge island and zebra WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - data/regions/mlada.json
-      - scripts/osm-visnova-refuge-5216.js
-      - scripts/osm-visnova-refuge-5216.test.mjs
-      - scripts/osm-visnova-refuge-webgl-5216.mjs
-      - scripts/osm-visnova-continuous-walker-5215.test.mjs
-      - .github/workflows/visnova-refuge-5216.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 10 * * 5'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-visnova-refuge-5216.js'
+      - 'scripts/osm-visnova-refuge-5216.test.mjs'
+      - 'scripts/osm-visnova-refuge-webgl-5216.mjs'
+      - 'scripts/osm-visnova-continuous-walker-5215.test.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

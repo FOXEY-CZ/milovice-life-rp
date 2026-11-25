@@ -11,3 +11,5 @@ Tento soubor popisuje **pracovní postup**, ne automatickou službu. Uživatel m
 7. **Komunikace:** uživateli sděl stručně, co je změněné a kde to vyzkouší. Nežádej znovu o informace, které jsou v repozitáři. U hlubokého úkolu průběžně uváděj ověřený pokrok; nepracuj údajně na pozadí.
 
 Plné podrobnosti: `docs/DEVELOPMENT_WORKFLOW.md`. Základní zdroj reality: `docs/STREET_WORKFLOW.md`, `docs/reality-audit-00.md`.
+
+**CI W2:** Jeden atomický commit a jedna aktivní PR do aktuálního `main`. Před další verzí ověř CI, merge a konkrétní Pages běh pro výsledný SHA; nevrstvi nové PR na čekající PR. Historické WebGL sady mají rozložený týdenní plán, ruční spuštění a cílené PR filtry; při zásahu do sdíleného subsystému ručně ověř relevantní rozšířené testy před merge. Nevracej plošné triggery `index.html` do historických workflow. Čísla cache-busting verzí v historických testech nesmí být natvrdo.

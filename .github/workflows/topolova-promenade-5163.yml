@@ -1,13 +1,17 @@
 name: Milovice 5.163 Topolova 102m mapped sidewalk pedestrians
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-topolova-promenade-5163.js
-      - scripts/osm-topolova-promenade-5163.test.mjs
-      - scripts/osm-topolova-promenade-webgl-5163.mjs
-      - .github/workflows/topolova-promenade-5163.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 9 * * 1'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-topolova-promenade-5163.js'
+      - 'scripts/osm-topolova-promenade-5163.test.mjs'
+      - 'scripts/osm-topolova-promenade-webgl-5163.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

@@ -1,15 +1,18 @@
 name: Milovice 5.228 original Visnova long sidewalk mobile WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - data/regions/mlada.json
-      - scripts/osm-visnova-long-sidewalk-5228.js
-      - scripts/osm-visnova-long-sidewalk-5228.test.mjs
-      - scripts/osm-visnova-long-sidewalk-webgl-5228.mjs
-      - scripts/osm-lesni-east-link-5227.test.mjs
-      - .github/workflows/visnova-long-sidewalk-5228.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 10 * * 3'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-visnova-long-sidewalk-5228.js'
+      - 'scripts/osm-visnova-long-sidewalk-5228.test.mjs'
+      - 'scripts/osm-visnova-long-sidewalk-webgl-5228.mjs'
+      - 'scripts/osm-lesni-east-link-5227.test.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

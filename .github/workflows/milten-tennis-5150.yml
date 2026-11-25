@@ -1,15 +1,17 @@
 name: Milten Sportovni 5.150 seven tennis courts mobile WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/landscapes.js
-      - scripts/osm-sportovni-tennis-5150.js
-      - scripts/osm-sportovni-tennis-5150.test.mjs
-      - scripts/osm-sportovni-tennis-webgl-5150.mjs
-      - data/regions/mlada.json
-      - .github/workflows/milten-tennis-5150.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * 2'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-sportovni-tennis-5150.js'
+      - 'scripts/osm-sportovni-tennis-5150.test.mjs'
+      - 'scripts/osm-sportovni-tennis-webgl-5150.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

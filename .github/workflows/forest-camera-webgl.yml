@@ -1,16 +1,16 @@
 name: Milovice 5.98 forest camera WebGL
 on:
-  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 2 * * 2'
+  pull_request:
     branches: [main]
     paths:
-      - index.html
-      - scripts/forest-camera-598.js
-      - scripts/forest-camera-webgl.mjs
-      - scripts/forest-placement-597.js
-      - scripts/landscapes.js
-      - data/regions/mlada.json
-      - .github/workflows/forest-camera-webgl.yml
-  workflow_dispatch:
+      - 'scripts/forest-camera-598.js'
+      - 'scripts/forest-placement-597.js'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

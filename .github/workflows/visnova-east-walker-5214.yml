@@ -1,14 +1,17 @@
 name: Milovice 5.214 two safe Višňová pedestrians mobile WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - data/regions/mlada.json
-      - scripts/osm-visnova-east-walker-5214.js
-      - scripts/osm-visnova-east-walker-5214.test.mjs
-      - scripts/osm-visnova-east-walker-webgl-5214.mjs
-      - .github/workflows/visnova-east-walker-5214.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 10 * * 0'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-visnova-east-walker-5214.js'
+      - 'scripts/osm-visnova-east-walker-5214.test.mjs'
+      - 'scripts/osm-visnova-east-walker-webgl-5214.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

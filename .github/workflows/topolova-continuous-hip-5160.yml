@@ -1,13 +1,17 @@
 name: Milovice 5.160 Topolova five-house continuous hip roof
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-topolova-continuous-hip-5160.js
-      - scripts/osm-topolova-continuous-hip-5160.test.mjs
-      - scripts/osm-topolova-continuous-hip-webgl-5160.mjs
-      - .github/workflows/topolova-continuous-hip-5160.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 7 * * 2'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-topolova-continuous-hip-5160.js'
+      - 'scripts/osm-topolova-continuous-hip-5160.test.mjs'
+      - 'scripts/osm-topolova-continuous-hip-webgl-5160.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

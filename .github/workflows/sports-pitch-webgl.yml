@@ -1,15 +1,16 @@
 name: Milovice 5.99 mapped sports WebGL
 on:
-  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 6 * * 1'
+  pull_request:
     branches: [main]
     paths:
-      - index.html
-      - scripts/landscapes.js
-      - scripts/osm-pitch-markings-599.js
-      - scripts/sports-pitch-webgl-599.mjs
-      - data/regions/mlada.json
-      - .github/workflows/sports-pitch-webgl.yml
-  workflow_dispatch:
+      - 'scripts/osm-pitch-markings-599.js'
+      - 'scripts/sports-pitch-webgl-599.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

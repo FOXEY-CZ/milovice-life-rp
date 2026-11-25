@@ -1,35 +1,38 @@
 name: Milovice Topolova verified street and DEM regression
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/landscapes.js
-      - scripts/osm-clay-court-grain-5178.js
-      - scripts/osm-clay-court-grain-5178.test.mjs
-      - scripts/osm-topolova-foot-lifecycle-5183.test.mjs
-      - scripts/osm-topolova-foot-path-highlight-5182.js
-      - scripts/osm-topolova-foot-path-highlight-5182.test.mjs
-      - scripts/osm-topolova-foot-minimap-5181.js
-      - scripts/osm-topolova-foot-minimap-5181.test.mjs
-      - scripts/osm-topolova-foot-navigation-5180.js
-      - scripts/osm-topolova-foot-navigation-5180.test.mjs
-      - scripts/osm-topolova-foot-job-5179.js
-      - scripts/osm-topolova-foot-job-5179.test.mjs
-      - scripts/osm-topolova-paving-5177.js
-      - scripts/osm-topolova-paving-5177.test.mjs
-      - scripts/osm-topolova-west-walker-5175.js
-      - scripts/osm-topolova-west-walker-5175.test.mjs
-      - scripts/osm-topolova-pedestrian-topology-5174.js
-      - scripts/osm-topolova-pedestrian-topology-5174.test.mjs
-      - scripts/osm-topolova-street-inventory-5173.js
-      - scripts/osm-topolova-street-inventory-5173.test.mjs
-      - scripts/osm-topolova-estimated-facades-5161.js
-      - scripts/osm-topolova-estimated-facades-5161.test.mjs
-      - scripts/osm-topolova-entry-survey-5170.js
-      - scripts/osm-topolova-entry-survey-5170.test.mjs
-      - scripts/osm-topolova-entry-survey-webgl-5170.mjs
-      - .github/workflows/topolova-entry-survey-5170.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 7 * * 6'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-clay-court-grain-5178.js'
+      - 'scripts/osm-clay-court-grain-5178.test.mjs'
+      - 'scripts/osm-topolova-foot-lifecycle-5183.test.mjs'
+      - 'scripts/osm-topolova-foot-path-highlight-5182.js'
+      - 'scripts/osm-topolova-foot-path-highlight-5182.test.mjs'
+      - 'scripts/osm-topolova-foot-minimap-5181.js'
+      - 'scripts/osm-topolova-foot-minimap-5181.test.mjs'
+      - 'scripts/osm-topolova-foot-navigation-5180.js'
+      - 'scripts/osm-topolova-foot-navigation-5180.test.mjs'
+      - 'scripts/osm-topolova-foot-job-5179.js'
+      - 'scripts/osm-topolova-foot-job-5179.test.mjs'
+      - 'scripts/osm-topolova-paving-5177.js'
+      - 'scripts/osm-topolova-paving-5177.test.mjs'
+      - 'scripts/osm-topolova-west-walker-5175.js'
+      - 'scripts/osm-topolova-west-walker-5175.test.mjs'
+      - 'scripts/osm-topolova-pedestrian-topology-5174.js'
+      - 'scripts/osm-topolova-pedestrian-topology-5174.test.mjs'
+      - 'scripts/osm-topolova-street-inventory-5173.js'
+      - 'scripts/osm-topolova-street-inventory-5173.test.mjs'
+      - 'scripts/osm-topolova-estimated-facades-5161.js'
+      - 'scripts/osm-topolova-estimated-facades-5161.test.mjs'
+      - 'scripts/osm-topolova-entry-survey-5170.js'
+      - 'scripts/osm-topolova-entry-survey-5170.test.mjs'
+      - 'scripts/osm-topolova-entry-survey-webgl-5170.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

@@ -1,14 +1,16 @@
 name: Sportovni Topolova 5.152 V7a zebra direction mobile WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/reality-walkways.js
-      - scripts/osm-zebra-v7-5152.test.mjs
-      - scripts/osm-zebra-v7-webgl-5152.mjs
-      - data/regions/mlada.json
-      - .github/workflows/osm-zebra-v7-5152.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * 3'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-zebra-v7-5152.test.mjs'
+      - 'scripts/osm-zebra-v7-webgl-5152.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

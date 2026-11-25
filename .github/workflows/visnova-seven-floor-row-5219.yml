@@ -1,15 +1,18 @@
 name: Milovice 5.219 three real RUIAN 7-floor Višňová blocks mobile WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - data/regions/mlada.json
-      - scripts/osm-visnova-seven-floor-row-5219.js
-      - scripts/osm-visnova-seven-floor-row-5219.test.mjs
-      - scripts/osm-visnova-seven-floor-row-webgl-5219.mjs
-      - scripts/osm-visnova-garden-lawns-5218.test.mjs
-      - .github/workflows/visnova-seven-floor-row-5219.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 10 * * 6'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-visnova-seven-floor-row-5219.js'
+      - 'scripts/osm-visnova-seven-floor-row-5219.test.mjs'
+      - 'scripts/osm-visnova-seven-floor-row-webgl-5219.mjs'
+      - 'scripts/osm-visnova-garden-lawns-5218.test.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

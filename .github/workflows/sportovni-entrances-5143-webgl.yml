@@ -1,15 +1,18 @@
 name: Sportovni 5.143 entrances mobile WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-sportovni-entrances-5143.js
-      - scripts/osm-sportovni-entrances-5143.test.mjs
-      - scripts/osm-sportovni-entrances-webgl-5143.mjs
-      - scripts/osm-mlada-residential-5105.js
-      - data/regions/mlada.json
-      - .github/workflows/sportovni-entrances-5143-webgl.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 5 * * 3'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-sportovni-entrances-5143.js'
+      - 'scripts/osm-sportovni-entrances-5143.test.mjs'
+      - 'scripts/osm-sportovni-entrances-webgl-5143.mjs'
+      - 'scripts/osm-mlada-residential-5105.js'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

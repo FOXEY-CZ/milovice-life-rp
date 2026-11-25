@@ -1,14 +1,17 @@
 name: Milovice 5.212 source-locked Višňová east lawns WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - data/regions/mlada.json
-      - scripts/osm-visnova-east-lawns-5212.js
-      - scripts/osm-visnova-east-lawns-5212.test.mjs
-      - scripts/osm-visnova-east-lawns-webgl-5212.mjs
-      - .github/workflows/visnova-east-lawns-5212.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 9 * * 6'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-visnova-east-lawns-5212.js'
+      - 'scripts/osm-visnova-east-lawns-5212.test.mjs'
+      - 'scripts/osm-visnova-east-lawns-webgl-5212.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

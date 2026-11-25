@@ -1,15 +1,17 @@
 name: Prubezna 5.144 public-photo facades mobile WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-prubezna-photo-frontages-5144.js
-      - scripts/osm-prubezna-photo-frontages-5144.test.mjs
-      - scripts/osm-prubezna-photo-frontages-webgl-5144.mjs
-      - scripts/facade-anchors.js
-      - data/regions/mlada.json
-      - .github/workflows/prubezna-photo-frontages-5144.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * 6'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-prubezna-photo-frontages-5144.js'
+      - 'scripts/osm-prubezna-photo-frontages-5144.test.mjs'
+      - 'scripts/osm-prubezna-photo-frontages-webgl-5144.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

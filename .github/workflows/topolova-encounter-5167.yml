@@ -1,13 +1,17 @@
 name: Milovice 5.167 actual AI car and pedestrian encounter WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-topolova-encounter-5167.js
-      - scripts/osm-topolova-encounter-5167.test.mjs
-      - scripts/osm-topolova-encounter-webgl-5167.mjs
-      - .github/workflows/topolova-encounter-5167.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 7 * * 4'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-topolova-encounter-5167.js'
+      - 'scripts/osm-topolova-encounter-5167.test.mjs'
+      - 'scripts/osm-topolova-encounter-webgl-5167.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

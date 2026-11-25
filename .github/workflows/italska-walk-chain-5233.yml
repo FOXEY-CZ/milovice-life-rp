@@ -1,15 +1,18 @@
 name: Milovice 5.233 source-locked Italska sidewalk chain mobile WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - data/regions/mlada.json
-      - scripts/osm-italska-walk-chain-5233.js
-      - scripts/osm-italska-flat-roof-5232.test.mjs
-      - scripts/osm-italska-walk-chain-5233.test.mjs
-      - scripts/osm-italska-walk-chain-webgl-5233.mjs
-      - .github/workflows/italska-walk-chain-5233.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 2 * * 5'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-italska-walk-chain-5233.js'
+      - 'scripts/osm-italska-flat-roof-5232.test.mjs'
+      - 'scripts/osm-italska-walk-chain-5233.test.mjs'
+      - 'scripts/osm-italska-walk-chain-webgl-5233.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

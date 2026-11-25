@@ -1,13 +1,17 @@
 name: Milovice 5.156 Topolova 646 contractor photo 2025
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-topolova-photo-646-5156.js
-      - scripts/osm-topolova-photo-646-5156.test.mjs
-      - scripts/osm-topolova-photo-646-webgl-5156.mjs
-      - .github/workflows/topolova-photo-646-5156.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 8 * * 6'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-topolova-photo-646-5156.js'
+      - 'scripts/osm-topolova-photo-646-5156.test.mjs'
+      - 'scripts/osm-topolova-photo-646-webgl-5156.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

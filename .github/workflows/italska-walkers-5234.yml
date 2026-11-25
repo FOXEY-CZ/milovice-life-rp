@@ -1,16 +1,19 @@
 name: Milovice 5.234 real Italska sidewalk simulated pedestrians WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - data/regions/mlada.json
-      - scripts/osm-italska-walkers-5234.js
-      - scripts/osm-italska-walkers-5234.test.mjs
-      - scripts/osm-italska-walkers-webgl-5234.mjs
-      - scripts/osm-italska-walk-chain-5233.js
-      - scripts/osm-italska-walk-chain-5233.test.mjs
-      - .github/workflows/italska-walkers-5234.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 2 * * 6'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-italska-walkers-5234.js'
+      - 'scripts/osm-italska-walkers-5234.test.mjs'
+      - 'scripts/osm-italska-walkers-webgl-5234.mjs'
+      - 'scripts/osm-italska-walk-chain-5233.js'
+      - 'scripts/osm-italska-walk-chain-5233.test.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

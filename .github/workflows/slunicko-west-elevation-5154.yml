@@ -1,14 +1,17 @@
 name: Slunicko 5.154 source-matched west elevation mobile
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-slunicko-west-elevation-5154.js
-      - scripts/osm-slunicko-west-elevation-5154.test.mjs
-      - scripts/osm-slunicko-west-elevation-webgl-5154.mjs
-      - data/regions/mlada.json
-      - .github/workflows/slunicko-west-elevation-5154.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 5 * * 1'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-slunicko-west-elevation-5154.js'
+      - 'scripts/osm-slunicko-west-elevation-5154.test.mjs'
+      - 'scripts/osm-slunicko-west-elevation-webgl-5154.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

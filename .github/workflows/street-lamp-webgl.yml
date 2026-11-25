@@ -1,15 +1,16 @@
 name: Milovice 5.100 OSM-lit streets WebGL
 on:
-  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 6 * * 6'
+  pull_request:
     branches: [main]
     paths:
-      - index.html
-      - scripts/osm-street-lighting-5100.js
-      - scripts/street-lamp-webgl-5100.mjs
-      - data/regions/mlada.json
-      - data/regions/vrutice.json
-      - .github/workflows/street-lamp-webgl.yml
-  workflow_dispatch:
+      - 'scripts/osm-street-lighting-5100.js'
+      - 'scripts/street-lamp-webgl-5100.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

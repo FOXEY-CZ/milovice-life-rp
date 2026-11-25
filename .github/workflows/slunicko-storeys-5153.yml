@@ -1,14 +1,17 @@
 name: Topolova MS Slunicko 5.153 mobile WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-slunicko-storeys-5153.js
-      - scripts/osm-slunicko-storeys-5153.test.mjs
-      - scripts/osm-slunicko-storeys-webgl-5153.mjs
-      - data/regions/mlada.json
-      - .github/workflows/slunicko-storeys-5153.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 5 * * 0'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-slunicko-storeys-5153.js'
+      - 'scripts/osm-slunicko-storeys-5153.test.mjs'
+      - 'scripts/osm-slunicko-storeys-webgl-5153.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

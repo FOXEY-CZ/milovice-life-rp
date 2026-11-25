@@ -1,13 +1,17 @@
 name: Milovice 5.164 connected OSM footway NPC corner
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-topolova-connected-5164.js
-      - scripts/osm-topolova-connected-5164.test.mjs
-      - scripts/osm-topolova-connected-webgl-5164.mjs
-      - .github/workflows/topolova-connected-5164.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 7 * * 1'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-topolova-connected-5164.js'
+      - 'scripts/osm-topolova-connected-5164.test.mjs'
+      - 'scripts/osm-topolova-connected-webgl-5164.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

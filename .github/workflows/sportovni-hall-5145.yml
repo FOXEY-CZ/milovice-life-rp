@@ -1,14 +1,17 @@
 name: Sportovni 5.145 photo hall mobile WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-sportovni-hall-5145.js
-      - scripts/osm-sportovni-hall-5145.test.mjs
-      - scripts/osm-sportovni-hall-webgl-5145.mjs
-      - data/regions/mlada.json
-      - .github/workflows/sportovni-hall-5145.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 5 * * 5'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-sportovni-hall-5145.js'
+      - 'scripts/osm-sportovni-hall-5145.test.mjs'
+      - 'scripts/osm-sportovni-hall-webgl-5145.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

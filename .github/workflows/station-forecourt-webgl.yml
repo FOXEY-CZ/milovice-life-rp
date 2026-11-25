@@ -11,6 +11,9 @@ on:
       - '**/*.md'
       - 'scripts/dev-check.mjs'
   workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

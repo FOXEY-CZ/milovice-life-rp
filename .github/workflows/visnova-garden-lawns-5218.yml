@@ -1,15 +1,18 @@
 name: Milovice 5.218 three more source-locked Višňová lawns mobile WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - data/regions/mlada.json
-      - scripts/osm-visnova-garden-lawns-5218.js
-      - scripts/osm-visnova-garden-lawns-5218.test.mjs
-      - scripts/osm-visnova-garden-lawns-webgl-5218.mjs
-      - scripts/osm-visnova-tagged-colors-5217.test.mjs
-      - .github/workflows/visnova-garden-lawns-5218.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 10 * * 2'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-visnova-garden-lawns-5218.js'
+      - 'scripts/osm-visnova-garden-lawns-5218.test.mjs'
+      - 'scripts/osm-visnova-garden-lawns-webgl-5218.mjs'
+      - 'scripts/osm-visnova-tagged-colors-5217.test.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

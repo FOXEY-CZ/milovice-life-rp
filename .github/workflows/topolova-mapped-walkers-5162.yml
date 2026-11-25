@@ -1,13 +1,17 @@
 name: Milovice 5.162 mapped pedestrian NPCs Topolova footway
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-topolova-mapped-walkers-5162.js
-      - scripts/osm-topolova-mapped-walkers-5162.test.mjs
-      - scripts/osm-topolova-mapped-walkers-webgl-5162.mjs
-      - .github/workflows/topolova-mapped-walkers-5162.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 8 * * 2'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-topolova-mapped-walkers-5162.js'
+      - 'scripts/osm-topolova-mapped-walkers-5162.test.mjs'
+      - 'scripts/osm-topolova-mapped-walkers-webgl-5162.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

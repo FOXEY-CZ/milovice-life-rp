@@ -1,14 +1,17 @@
 name: Topolova 5.148 RUIAN apartment WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-topolova-residential-5148.js
-      - scripts/osm-topolova-residential-5148.test.mjs
-      - scripts/osm-topolova-residential-webgl-5148.mjs
-      - data/regions/mlada.json
-      - .github/workflows/topolova-residential-5148.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 9 * * 2'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-topolova-residential-5148.js'
+      - 'scripts/osm-topolova-residential-5148.test.mjs'
+      - 'scripts/osm-topolova-residential-webgl-5148.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

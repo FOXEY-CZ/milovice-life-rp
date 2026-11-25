@@ -1,14 +1,17 @@
 name: Milovice 5.213 Višňová paved sidewalk walking NPC WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - data/regions/mlada.json
-      - scripts/osm-visnova-sidewalk-walker-5213.js
-      - scripts/osm-visnova-sidewalk-walker-5213.test.mjs
-      - scripts/osm-visnova-sidewalk-walker-webgl-5213.mjs
-      - .github/workflows/visnova-sidewalk-walker-5213.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 11 * * 0'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-visnova-sidewalk-walker-5213.js'
+      - 'scripts/osm-visnova-sidewalk-walker-5213.test.mjs'
+      - 'scripts/osm-visnova-sidewalk-walker-webgl-5213.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

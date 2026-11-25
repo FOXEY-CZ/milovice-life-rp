@@ -1,14 +1,18 @@
 name: Milovice 5.157 Topolova 646 both photo facades
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-topolova-photo-646-5157.js
-      - scripts/osm-topolova-photo-646-5157.test.mjs
-      - scripts/osm-topolova-photo-646-both-webgl-5157.mjs
-      - scripts/osm-topolova-photo-646-webgl-5156.mjs
-      - .github/workflows/topolova-both-facades-5157.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 7 * * 0'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-topolova-photo-646-5157.js'
+      - 'scripts/osm-topolova-photo-646-5157.test.mjs'
+      - 'scripts/osm-topolova-photo-646-both-webgl-5157.mjs'
+      - 'scripts/osm-topolova-photo-646-webgl-5156.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

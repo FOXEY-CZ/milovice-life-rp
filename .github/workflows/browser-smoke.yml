@@ -1,6 +1,118 @@
 name: Browser smoke test (Milovice RP)
 on:
   push:
+    branches: [main]
+    paths:
+      - index.html
+      - editor.html
+      - photo-pilot.html
+      - scripts/panoramax-pilot.js
+      - scripts/panoramax-pilot.test.mjs
+      - scripts/photo-pilot-smoke.mjs
+      - scripts/editor_smoke.mjs
+      - scripts/mapillary-discovery.js
+      - scripts/mapillary-discovery-ui.js
+      - scripts/mapillary-discovery.test.mjs
+      - scripts/architecture-manifest.js
+      - scripts/architecture-manifest.test.mjs
+      - scripts/street-architecture.js
+      - scripts/street-photo-block.js
+      - scripts/street-photo-block.test.mjs
+      - scripts/performance-governor.js
+      - scripts/performance-governor.test.mjs
+      - data/architecture/verified-buildings.json
+      - data/milovice-osm.json
+      - data/milovice-terrain.json
+      - scripts/browser_smoke.mjs
+      - scripts/osm-armadni-trolleys-webgl-5120.mjs
+      - scripts/osm-armadni-clinic-entry-5121.js
+      - scripts/osm-armadni-clinic-entry-5121.test.mjs
+      - scripts/osm-armadni-clinic-entry-webgl-5121.mjs
+      - scripts/osm-armadni-landmarks-5118.js
+      - scripts/osm-armadni-open-polygons-5122.test.mjs
+      - scripts/osm-clinic-forecourt-5123.js
+      - scripts/osm-clinic-forecourt-5123.test.mjs
+      - scripts/osm-clinic-forecourt-webgl-5123.mjs
+      - scripts/osm-clinic-storefronts-5124.js
+      - scripts/osm-clinic-storefronts-5124.test.mjs
+      - scripts/osm-clinic-storefronts-webgl-5124.mjs
+      - scripts/osm-clinic-parking-inlays-5125.js
+      - scripts/osm-clinic-pharmacy-sign-5126.js
+      - scripts/osm-clinic-pharmacy-sign-5126.test.mjs
+      - scripts/osm-clinic-yellow-cross-5127.js
+      - scripts/osm-clinic-yellow-cross-5127.test.mjs
+      - scripts/osm-clinic-furniture-protection-5128.js
+      - scripts/osm-clinic-furniture-protection-5128.test.mjs
+      - scripts/osm-clinic-photo-saplings-5129.js
+      - scripts/osm-clinic-photo-saplings-5129.test.mjs
+      - scripts/osm-spojovaci-photo-street-furniture-5130.js
+      - scripts/osm-spojovaci-photo-street-furniture-5130.test.mjs
+      - scripts/osm-tyrsova-armadni-junction-5131.js
+      - scripts/osm-tyrsova-armadni-junction-5131.test.mjs
+      - scripts/osm-tyrsova-armadni-junction-webgl-5131.mjs
+      - scripts/osm-tyrsova-party-walls-5132.js
+      - scripts/osm-tyrsova-party-walls-5132.test.mjs
+      - scripts/osm-ruian-party-walls-5133.js
+      - scripts/osm-ruian-party-walls-5133.test.mjs
+      - scripts/osm-ruian-party-walls-webgl-5133.mjs
+      - scripts/osm-prubezna-renovation-5134.js
+      - scripts/osm-prubezna-renovation-5134.test.mjs
+      - scripts/osm-prubezna-renovation-webgl-5134.mjs
+      - scripts/osm-prubezna-road-5135.js
+      - scripts/osm-prubezna-road-5135.test.mjs
+      - scripts/osm-prubezna-road-webgl-5135.mjs
+      - scripts/osm-prubezna-links-5137.js
+      - scripts/osm-prubezna-links-5137.test.mjs
+      - scripts/osm-prubezna-links-webgl-5137.mjs
+      - scripts/osm-prubezna-bends-5138.js
+      - scripts/osm-prubezna-bends-5138.test.mjs
+      - scripts/osm-prubezna-bends-webgl-5138.mjs
+      - scripts/osm-sportovni-sidewalk-5139.js
+      - scripts/osm-sportovni-sidewalk-5139.test.mjs
+      - scripts/osm-sportovni-sidewalk-webgl-5139.mjs
+      - scripts/osm-sportovni-ruian-panels-5140.js
+      - scripts/osm-sportovni-ruian-panels-5140.test.mjs
+      - scripts/osm-sportovni-ruian-panels-webgl-5140.mjs
+      - scripts/osm-sportovni-estate-walk-5141.js
+      - scripts/osm-sportovni-estate-walk-5141.test.mjs
+      - scripts/osm-sportovni-basketball-5142.js
+      - scripts/osm-sportovni-basketball-5142.test.mjs
+      - scripts/osm-sportovni-basketball-webgl-5142.mjs
+      - scripts/osm-sportovni-hall-5145.js
+      - scripts/osm-sportovni-hall-5145.test.mjs
+      - scripts/osm-sportovni-hall-webgl-5145.mjs
+      - scripts/osm-sportovni-entrances-5143.js
+      - scripts/osm-sportovni-entrances-5143.test.mjs
+      - scripts/osm-sportovni-entrances-webgl-5143.mjs
+      - scripts/osm-sportovni-estate-walk-webgl-5141.mjs
+      - scripts/osm-clinic-parking-inlays-5125.test.mjs
+      - scripts/osm-clinic-parking-inlays-webgl-5125.mjs
+      - scripts/station-photo-parking.js
+      - scripts/station-photo-parking.test.mjs
+      - scripts/station-ticket-machines.js
+      - scripts/station-ticket-machines.test.mjs
+      - scripts/road-clearance.js
+      - scripts/station-roof-geometry.js
+      - scripts/station-roof-geometry.test.mjs
+      - scripts/station-roof-seams.js
+      - scripts/station-roof-seams.test.mjs
+      - scripts/station-roof-eaves.js
+      - scripts/station-roof-eaves.test.mjs
+      - scripts/skolska-roof.js
+      - scripts/skolska-roof.test.mjs
+      - scripts/roof-opening-geometry.js
+      - scripts/roof-opening-geometry.test.mjs
+      - scripts/facade-perimeter.js
+      - scripts/facade-perimeter.test.mjs
+      - scripts/hero-architecture.js
+      - scripts/city-roof-geometry.js
+      - scripts/city-roof-geometry.test.mjs
+      - scripts/building-audit-queue.test.mjs
+      - scripts/hero-architecture.js
+      - data/architecture/building-audit-queue.json
+      - .github/workflows/browser-smoke.yml
+  pull_request:
+    branches: [main]
     paths:
       - index.html
       - editor.html
@@ -111,6 +223,9 @@ on:
       - data/architecture/building-audit-queue.json
       - .github/workflows/browser-smoke.yml
   workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

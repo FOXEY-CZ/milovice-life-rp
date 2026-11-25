@@ -1,16 +1,19 @@
 name: Milovice 5.224 original connected Lesni service spur mobile WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - data/regions/mlada.json
-      - scripts/osm-lesni-paved-service-spur-5224.js
-      - scripts/osm-lesni-paved-service-spur-5224.test.mjs
-      - scripts/osm-lesni-paved-service-spur-webgl-5224.mjs
-      - scripts/osm-lesni-paved-living-street-5223.js
-      - scripts/osm-lesni-paved-living-street-5223.test.mjs
-      - .github/workflows/lesni-paved-service-spur-5224.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * 6'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-lesni-paved-service-spur-5224.js'
+      - 'scripts/osm-lesni-paved-service-spur-5224.test.mjs'
+      - 'scripts/osm-lesni-paved-service-spur-webgl-5224.mjs'
+      - 'scripts/osm-lesni-paved-living-street-5223.js'
+      - 'scripts/osm-lesni-paved-living-street-5223.test.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

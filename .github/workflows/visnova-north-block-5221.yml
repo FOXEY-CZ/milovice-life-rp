@@ -1,15 +1,18 @@
 name: Milovice 5.221 original 7-floor north Visnova RUIAN facade mobile WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - data/regions/mlada.json
-      - scripts/osm-visnova-north-block-5221.js
-      - scripts/osm-visnova-north-block-5221.test.mjs
-      - scripts/osm-visnova-north-block-webgl-5221.mjs
-      - scripts/osm-visnova-estate-pavers-5220.test.mjs
-      - .github/workflows/visnova-north-block-5221.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 10 * * 4'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-visnova-north-block-5221.js'
+      - 'scripts/osm-visnova-north-block-5221.test.mjs'
+      - 'scripts/osm-visnova-north-block-webgl-5221.mjs'
+      - 'scripts/osm-visnova-estate-pavers-5220.test.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

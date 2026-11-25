@@ -1,13 +1,17 @@
 name: Milovice 5.166 mapped zebra NPC traffic priority
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-topolova-priority-5166.js
-      - scripts/osm-topolova-priority-5166.test.mjs
-      - scripts/osm-topolova-priority-webgl-5166.mjs
-      - .github/workflows/topolova-priority-5166.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 9 * * 0'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-topolova-priority-5166.js'
+      - 'scripts/osm-topolova-priority-5166.test.mjs'
+      - 'scripts/osm-topolova-priority-webgl-5166.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

@@ -1,14 +1,17 @@
 name: Milovice 5.232 OSM Italska mapped flat roof mobile WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - data/regions/mlada.json
-      - scripts/osm-italska-flat-roof-5232.js
-      - scripts/osm-italska-flat-roof-5232.test.mjs
-      - scripts/osm-italska-flat-roof-webgl-5232.mjs
-      - .github/workflows/italska-flat-roof-5232.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 2 * * 4'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-italska-flat-roof-5232.js'
+      - 'scripts/osm-italska-flat-roof-5232.test.mjs'
+      - 'scripts/osm-italska-flat-roof-webgl-5232.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

@@ -1,13 +1,17 @@
 name: Milovice 5.168 north zebra two opposing AI cars WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-topolova-north-encounter-5168.js
-      - scripts/osm-topolova-north-encounter-5168.test.mjs
-      - scripts/osm-topolova-north-encounter-webgl-5168.mjs
-      - .github/workflows/topolova-north-encounter-5168.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 8 * * 4'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-topolova-north-encounter-5168.js'
+      - 'scripts/osm-topolova-north-encounter-5168.test.mjs'
+      - 'scripts/osm-topolova-north-encounter-webgl-5168.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

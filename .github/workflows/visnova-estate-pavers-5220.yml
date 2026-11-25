@@ -1,15 +1,18 @@
 name: Milovice 5.220 two original Višňová paved estate sidewalks WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - data/regions/mlada.json
-      - scripts/osm-visnova-estate-pavers-5220.js
-      - scripts/osm-visnova-estate-pavers-5220.test.mjs
-      - scripts/osm-visnova-estate-pavers-webgl-5220.mjs
-      - scripts/osm-visnova-seven-floor-row-5219.test.mjs
-      - .github/workflows/visnova-estate-pavers-5220.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 10 * * 1'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-visnova-estate-pavers-5220.js'
+      - 'scripts/osm-visnova-estate-pavers-5220.test.mjs'
+      - 'scripts/osm-visnova-estate-pavers-webgl-5220.mjs'
+      - 'scripts/osm-visnova-seven-floor-row-5219.test.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

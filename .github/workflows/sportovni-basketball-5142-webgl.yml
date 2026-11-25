@@ -1,14 +1,17 @@
 name: Sportovni 5.142 basketball mobile WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-sportovni-basketball-5142.js
-      - scripts/osm-sportovni-basketball-5142.test.mjs
-      - scripts/osm-sportovni-basketball-webgl-5142.mjs
-      - data/regions/mlada.json
-      - .github/workflows/sportovni-basketball-5142-webgl.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 5 * * 2'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-sportovni-basketball-5142.js'
+      - 'scripts/osm-sportovni-basketball-5142.test.mjs'
+      - 'scripts/osm-sportovni-basketball-webgl-5142.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

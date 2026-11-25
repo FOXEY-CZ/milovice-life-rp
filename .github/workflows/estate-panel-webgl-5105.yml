@@ -1,18 +1,19 @@
 name: Milovice 5.105 Mladá residential panel WebGL
 on:
-  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 2 * * 1'
+  pull_request:
     branches: [main]
     paths:
-      - index.html
-      - scripts/osm-mlada-residential-5105.js
-      - scripts/osm-mlada-footway-joins-5106.js
-      - scripts/osm-mlada-footway-joins-5106.test.mjs
-      - scripts/osm-mlada-residential-webgl-5105.mjs
-      - scripts/regional-residential-style.js
-      - scripts/street-audit-menu-5101.js
-      - data/regions/mlada.json
-      - .github/workflows/estate-panel-webgl-5105.yml
-  workflow_dispatch:
+      - 'scripts/osm-mlada-residential-5105.js'
+      - 'scripts/osm-mlada-footway-joins-5106.js'
+      - 'scripts/osm-mlada-footway-joins-5106.test.mjs'
+      - 'scripts/osm-mlada-residential-webgl-5105.mjs'
+      - 'scripts/street-audit-menu-5101.js'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

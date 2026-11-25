@@ -1,14 +1,17 @@
 name: Sportovni 5.146 photo sidewalk mobile WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-sportovni-photo-northwalk-5146.js
-      - scripts/osm-sportovni-photo-northwalk-5146.test.mjs
-      - scripts/osm-sportovni-photo-northwalk-webgl-5146.mjs
-      - data/regions/mlada.json
-      - .github/workflows/sportovni-photo-northwalk-5146.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 5 * * 6'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-sportovni-photo-northwalk-5146.js'
+      - 'scripts/osm-sportovni-photo-northwalk-5146.test.mjs'
+      - 'scripts/osm-sportovni-photo-northwalk-webgl-5146.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

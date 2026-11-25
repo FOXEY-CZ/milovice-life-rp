@@ -53,3 +53,11 @@ Krátký (ideálně do cca 10 kB) a pravdivý soubor. Obsahuje: aktuální relea
 ## Co nezaručujeme
 
 Tento postup **nezruší omezení délky chatu, přemýšlení ani chyby služby**. Při cíleném čtení a menším množství commitů by ale měl snížit práci navíc, zbytečné spouštění CI i riziko ztráty návaznosti. AGENTS.md je instrukce pro asistenty, kteří soubor skutečně načtou; není automatické napojení na jakýkoliv nově otevřený chat.
+
+## W2 — řízení fronty CI (25. 11. 2026)
+
+- Šest hlavních workflow (Validate, browser smoke, Italská, street-block, Station, Nádražní) běží podle filtrů cest na PR do main a při push do main. Starší běh stejného workflow na stejném ref se zruší, pokud jej nahradí novější.
+- 59 historických regionálních workflow zůstává zachováno beze změny testovacích kroků. Běží ručně, při změnách konkrétních verzovaných testovacích/modulových cest na PR do main (pokud má workflow takové cesty), a v rozloženém týdenním plánu UTC. Společný index.html nebo regionální data už sama nespouští všechna historická workflow. Při změně sdílených subsystémů spusť ručně relevantní rozšířenou regresi před merge.
+- Čtyři workflow aktualizace mapy/terénu a existující GitHub Pages nasazování jsou nedotčené. Ověř konkrétní Pages run pro výsledný SHA main; samotný PASS v PR neprokazuje publikaci.
+- Jeden připravený atomický commit na pracovní větev, jedna PR proti aktuálnímu main; před zahájením další verze dokonči předchozí PR. Nevrstvi další verze na čekající větev. Průběžný stav testů zapisuj až společně s další skutečnou změnou, nikoli samostatným dokumentačním commitem.
+- Staré testy importů nesmějí vyžadovat zastaralý cache-busting token: kontroluj modul a validní token, nikoli historické číslo verze.

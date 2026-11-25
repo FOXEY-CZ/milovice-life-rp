@@ -1,13 +1,17 @@
 name: Milovice 5.159 Topolova 614-615 signed facades
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-topolova-drawing-614615-5159.js
-      - scripts/osm-topolova-drawing-614615-5159.test.mjs
-      - scripts/osm-topolova-drawing-webgl-5159.mjs
-      - .github/workflows/topolova-drawing-614615-5159.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 7 * * 3'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-topolova-drawing-614615-5159.js'
+      - 'scripts/osm-topolova-drawing-614615-5159.test.mjs'
+      - 'scripts/osm-topolova-drawing-webgl-5159.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

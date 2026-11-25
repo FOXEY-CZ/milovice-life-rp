@@ -1,14 +1,18 @@
 name: Milovice 5.155 Topolova 614-618 source-verified panel row
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-topolova-panel-row-5155.js
-      - scripts/osm-topolova-panel-row-5155.test.mjs
-      - scripts/osm-topolova-panel-row-webgl-5155.mjs
-      - scripts/osm-ruian-party-walls-webgl-5133.mjs
-      - .github/workflows/topolova-panel-row-5155.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 8 * * 5'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-topolova-panel-row-5155.js'
+      - 'scripts/osm-topolova-panel-row-5155.test.mjs'
+      - 'scripts/osm-topolova-panel-row-webgl-5155.mjs'
+      - 'scripts/osm-ruian-party-walls-webgl-5133.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

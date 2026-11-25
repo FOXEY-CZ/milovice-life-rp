@@ -1,6 +1,7 @@
 name: Milovice Italská road, facades and mobile WebGL
 on:
   push:
+    branches: [main]
     paths:
       - index.html
       - data/regions/mlada.json
@@ -196,6 +197,9 @@ on:
       - scripts/osm-italska-vojen-zatisi-webgl-5249.mjs
       - .github/workflows/italska-apartments-5235.yml
   workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

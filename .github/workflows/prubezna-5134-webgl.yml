@@ -1,17 +1,20 @@
 name: Milovice 5.134-5.135 Prubezna 2025 street works WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-prubezna-renovation-5134.js
-      - scripts/osm-prubezna-renovation-5134.test.mjs
-      - scripts/osm-prubezna-renovation-webgl-5134.mjs
-      - scripts/osm-prubezna-road-5135.js
-      - scripts/osm-prubezna-road-5135.test.mjs
-      - scripts/osm-prubezna-road-webgl-5135.mjs
-      - data/regions/mlada.json
-      - .github/workflows/prubezna-5134-webgl.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * 5'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-prubezna-renovation-5134.js'
+      - 'scripts/osm-prubezna-renovation-5134.test.mjs'
+      - 'scripts/osm-prubezna-renovation-webgl-5134.mjs'
+      - 'scripts/osm-prubezna-road-5135.js'
+      - 'scripts/osm-prubezna-road-5135.test.mjs'
+      - 'scripts/osm-prubezna-road-webgl-5135.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

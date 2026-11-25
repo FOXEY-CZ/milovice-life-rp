@@ -1,13 +1,16 @@
 name: Milovice 5.101 compact audit menu
 on:
-  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 6 * * 4'
+  pull_request:
     branches: [main]
     paths:
-      - index.html
-      - scripts/street-audit-menu-5101.js
-      - scripts/street-audit-menu-webgl-5101.mjs
-      - .github/workflows/street-audit-menu-webgl.yml
-  workflow_dispatch:
+      - 'scripts/street-audit-menu-5101.js'
+      - 'scripts/street-audit-menu-webgl-5101.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

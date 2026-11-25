@@ -1,15 +1,18 @@
 name: Topolova 5.149 official masonry mobile WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-topolova-masonry-5149.js
-      - scripts/osm-topolova-masonry-5149.test.mjs
-      - scripts/osm-topolova-masonry-webgl-5149.mjs
-      - scripts/osm-topolova-residential-5148.js
-      - data/regions/mlada.json
-      - .github/workflows/topolova-masonry-5149.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 8 * * 3'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-topolova-masonry-5149.js'
+      - 'scripts/osm-topolova-masonry-5149.test.mjs'
+      - 'scripts/osm-topolova-masonry-webgl-5149.mjs'
+      - 'scripts/osm-topolova-residential-5148.js'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

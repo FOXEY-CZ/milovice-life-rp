@@ -1,13 +1,17 @@
 name: Milovice 5.165 two-real-zebras pedestrian loop
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-topolova-zebra-loop-5165.js
-      - scripts/osm-topolova-zebra-loop-5165.test.mjs
-      - scripts/osm-topolova-zebra-loop-webgl-5165.mjs
-      - .github/workflows/topolova-loop-5165.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 8 * * 1'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-topolova-zebra-loop-5165.js'
+      - 'scripts/osm-topolova-zebra-loop-5165.test.mjs'
+      - 'scripts/osm-topolova-zebra-loop-webgl-5165.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

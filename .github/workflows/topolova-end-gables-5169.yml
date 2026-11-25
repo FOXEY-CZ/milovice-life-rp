@@ -1,13 +1,17 @@
 name: Milovice 5.169 Topolova source-locked end gable cleanup
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-topolova-end-gables-5169.js
-      - scripts/osm-topolova-end-gables-5169.test.mjs
-      - scripts/osm-topolova-end-gables-webgl-5169.mjs
-      - .github/workflows/topolova-end-gables-5169.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 7 * * 5'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-topolova-end-gables-5169.js'
+      - 'scripts/osm-topolova-end-gables-5169.test.mjs'
+      - 'scripts/osm-topolova-end-gables-webgl-5169.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

@@ -1,18 +1,19 @@
 name: Milovice 5.103 public playground cameras WebGL
 on:
-  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * 4'
+  pull_request:
     branches: [main]
     paths:
-      - index.html
-      - scripts/osm-playground-equipment-5102.js
-      - scripts/osm-playground-verges-5104.js
-      - scripts/osm-playground-verges-5104.test.mjs
-      - scripts/osm-playground-camera-webgl-5103.mjs
-      - scripts/street-audit-menu-5101.js
-      - data/regions/mlada.json
-      - data/regions/vrutice.json
-      - .github/workflows/playground-camera-webgl.yml
-  workflow_dispatch:
+      - 'scripts/osm-playground-equipment-5102.js'
+      - 'scripts/osm-playground-verges-5104.js'
+      - 'scripts/osm-playground-verges-5104.test.mjs'
+      - 'scripts/osm-playground-camera-webgl-5103.mjs'
+      - 'scripts/street-audit-menu-5101.js'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

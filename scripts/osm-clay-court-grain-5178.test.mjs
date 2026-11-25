@@ -30,6 +30,6 @@ assert(landscapes.includes("m.pitchClay.map=clayTexture;"));
 assert(landscapes.includes("landscapeMat.get(T)?.pitchClay"));
 const index=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert(index.includes('window.__miloviceClayGrainRuntime5178=()=>'));
-assert(index.includes("from './scripts/landscapes.js?v=517800'"));
+assert.match(index, /from\s+['"]\.\/scripts\/landscapes\.js\?v=\d+['"]/, 'landscapes import must retain a numeric cache-busting version');
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),osm);
 console.log('PASS 5.178: shared 16 KiB deterministic source-only clay texture, 3 Milten OSM clay polygons, zero added meshes');

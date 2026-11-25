@@ -1,15 +1,18 @@
 name: Milovice 5.226 original Lesni footway branches mobile WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - data/regions/mlada.json
-      - scripts/osm-lesni-footway-branches-5226.js
-      - scripts/osm-lesni-footway-branches-5226.test.mjs
-      - scripts/osm-lesni-footway-branches-webgl-5226.mjs
-      - scripts/osm-lesni-walk-chain-5225.test.mjs
-      - .github/workflows/lesni-footway-branches-5226.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * 3'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-lesni-footway-branches-5226.js'
+      - 'scripts/osm-lesni-footway-branches-5226.test.mjs'
+      - 'scripts/osm-lesni-footway-branches-webgl-5226.mjs'
+      - 'scripts/osm-lesni-walk-chain-5225.test.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

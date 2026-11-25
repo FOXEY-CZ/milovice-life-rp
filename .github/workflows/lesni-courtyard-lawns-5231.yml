@@ -1,14 +1,17 @@
 name: Milovice 5.231 authentic Lesni courtyard lawns mobile WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - data/regions/mlada.json
-      - scripts/osm-lesni-courtyard-lawns-5231.js
-      - scripts/osm-lesni-courtyard-lawns-5231.test.mjs
-      - scripts/osm-lesni-courtyard-lawns-webgl-5231.mjs
-      - .github/workflows/lesni-courtyard-lawns-5231.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * 1'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-lesni-courtyard-lawns-5231.js'
+      - 'scripts/osm-lesni-courtyard-lawns-5231.test.mjs'
+      - 'scripts/osm-lesni-courtyard-lawns-webgl-5231.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

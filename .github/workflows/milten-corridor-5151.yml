@@ -1,14 +1,17 @@
 name: Milten 5.151 photo-supported court corridor mobile WebGL
 on:
-  push:
-    paths:
-      - index.html
-      - scripts/osm-milten-photo-corridor-5151.js
-      - scripts/osm-milten-photo-corridor-5151.test.mjs
-      - scripts/osm-milten-photo-corridor-webgl-5151.mjs
-      - data/regions/mlada.json
-      - .github/workflows/milten-corridor-5151.yml
   workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * 1'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/osm-milten-photo-corridor-5151.js'
+      - 'scripts/osm-milten-photo-corridor-5151.test.mjs'
+      - 'scripts/osm-milten-photo-corridor-webgl-5151.mjs'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
