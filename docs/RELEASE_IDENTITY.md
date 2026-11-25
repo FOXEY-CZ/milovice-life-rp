@@ -1,4 +1,4 @@
-# Příprava na vydání — Brayleston: City Life (pracovní značka)
+# Příprava na vydání — CROSSVEX (pracovní značka)
 
 Rozhodnutí uživatele 25. 11. 2026: fiktivní město, ulice, čtvrti, podniky a instituce; dále modelovat podle reálné předlohy. Zachovat zdrojové OSM/RÚIAN ID, GPS, data a interní vývojové kontroly. Veřejná identita nesmí tvrdit, že jde o skutečné město nebo oficiální produkt místních organizací. Přejmenování samo nezaručuje neidentifikovatelnost ani právní bezrizikovost.
 
@@ -15,4 +15,7 @@ Rozhodnutí uživatele 25. 11. 2026: fiktivní město, ulice, čtvrti, podniky a
 4. Oddělený release build, odstranění vývojových nástrojů z veřejného UI, kontrola licencí a názvu. Původní URL dočasně zachovat, neměnit repo bez plánované migrace.
 
 ## Upřesnění názvu
-Uživatel preferuje anglický název. Pracovní značka Brayleston: City Life, město Brayleston; obchody BrayMart, ValueNest, Vendoa. České prostředí a texty zatím zůstávají. Základní veřejné hledání názvu neukázalo shodu; nejde o rešerši ochranných známek ani právní schválení.
+Uživatel preferuje anglický název. Pracovní značka CROSSVEX, město Brayleston; obchody BrayMart, ValueNest, Vendoa. České prostředí a texty zatím zůstávají. Základní veřejné hledání názvu neukázalo shodu; nejde o rešerši ochranných známek ani právní schválení.
+
+## Zvolená pracovní značka
+Uživatel vybral CROSSVEX; Brayleston zůstává názvem fiktivního města, nikoli hry. Slogan návrh: Beyond the rules. Základní webové hledání nenašlo stejnojmennou videohru, ale našlo použití jako hráčské přezdívky. Před vydáním prověřit ochranné známky v relevantních jurisdikcích. Repozitář a URL zatím zůstávají stejné kvůli kompatibilitě.

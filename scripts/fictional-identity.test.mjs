@@ -17,5 +17,5 @@ assert.equal(streetDisplayName('Topolová'),'Stříbrná alej');
 assert.equal(landmarkDisplayName('🛒 Tesco'),'🛒 BrayMart');
 assert.equal(regionDisplayName('mlada'),'Javorové sídliště');
 for(const v of [null,undefined,'__proto__','constructor','neznámý název'])assert.equal(streetDisplayName(v),'Nepojmenovaná cesta');
-assert.equal(GAME_TITLE,'Brayleston: City Life');
+assert.equal(GAME_TITLE,'CROSSVEX');
 console.log('PASS fictional identity: all source street names, 14 landmarks and 6 regions');

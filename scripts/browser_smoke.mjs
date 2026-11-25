@@ -798,7 +798,7 @@ try{
  if(!(await page.locator('#mapfollow').isVisible()))throw new Error('Full-map recenter missing');
  const names5335=await page.locator('#map-goal-5319 option').allTextContents();
  if(!names5335.includes('🛒 BrayMart')||!names5335.includes('🛒 ValueNest')||!names5335.includes('🛒 Vendoa')||names5335.some(n=>/Tesco|Penny|Billa|Milovice|Juventa/.test(n)))throw Error('5.335 fictional map names '+JSON.stringify(names5335));
- if(!await page.locator('#hud h2').textContent().then(t=>t.includes('BRAYLESTON')))throw Error('5.335 game brand');
+ if(!await page.locator('#hud h2').textContent().then(t=>t.includes('CROSSVEX')))throw Error('5.335 game brand');
  console.log('PASS 5.335 fictional map labels and brand');
  console.log('Full map marker: OK');
  await page.screenshot({path:'browser-artifacts/milovice-full-map.png'});

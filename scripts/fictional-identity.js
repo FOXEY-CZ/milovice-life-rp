@@ -1,5 +1,5 @@
 // Working fictional player-facing names. Source names and identifiers remain unchanged.
-export const GAME_TITLE='Brayleston: City Life';
+export const GAME_TITLE='CROSSVEX';
 export const CITY_NAME='Brayleston';
 export const FICTION_NOTICE='Fiktivní město, postavy, podniky a události. Hra není spojena se skutečnými městy, institucemi ani provozovateli.';
 export const STREET_NAMES=Object.freeze({

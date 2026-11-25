@@ -3,7 +3,7 @@
 Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.334**, build `20261125-gps-audio-audit-533400`. Kandidát 5.335 (Brayleston: City Life).
+- Herní verze main: **5.334**, build `20261125-gps-audio-audit-533400`. Kandidát 5.335 (CROSSVEX).
 - Main po #130: `c1f2b16e36a764a0fe9aea6baab878450ccba6a6`, 6/6 PR CI PASS. 5.333 main 7/7 PASS včetně Pages (45696082170). 5.334 main/Pages čeká. HEAD ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
@@ -60,7 +60,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Nová priorita uživatele:** [Brayleston: City Life — příprava vydání](docs/RELEASE_IDENTITY.md). 5.334 sloučena (6/6 PR CI PASS), fyzická slyšitelnost a aktivní zvuk při pohybu neověřeny. 5.335 kandidát: slovník 62 ulic, 14 cílů, 6 oblastí a první veřejné popisky. Ověřeno pokrytí všech 6 snapshotů; první CI 5/6 PASS, Validate selhala na historickém natvrdo zadaném titulku. Opraven test podle GAME_TITLE, změna anglické pracovní značky; nové CI čeká. **Další krok: vlastní herní mapa bez skutečných OSM popisků**, potom 3D nápisy, adresy, zastávky a release balíček. Kolizní příprava `prep/collision-guards-5335` (284ecca) odložena, nemazat; později přenést jen deltu.
+**Nová priorita uživatele:** [CROSSVEX — příprava vydání](docs/RELEASE_IDENTITY.md). 5.334 sloučena (6/6 PR CI PASS), fyzická slyšitelnost a aktivní zvuk při pohybu neověřeny. 5.335 kandidát: slovník 62 ulic, 14 cílů, 6 oblastí a první veřejné popisky. Ověřeno pokrytí všech 6 snapshotů; první CI 5/6 PASS, Validate selhala na historickém natvrdo zadaném titulku. Opraven test podle GAME_TITLE, změna anglické pracovní značky; následující CI 6/6 PASS na b73317b. Uživatel vybral CROSSVEX, město Brayleston; nové CI po změně názvu čeká. **Další krok: vlastní herní mapa bez skutečných OSM popisků**, potom 3D nápisy, adresy, zastávky a release balíček. Kolizní příprava `prep/collision-guards-5335` (284ecca) odložena, nemazat; později přenést jen deltu.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
