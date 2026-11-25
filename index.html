@@ -798,7 +798,7 @@ import {auditRoofStreetVisibility} from './scripts/roof-street-visibility.js?v=5
 import {planBuildingRoofTopology} from './scripts/building-roof-topology.js?v=5310';
 import {makeRetrospectiveAuditTracker,isLegacyGuessAllowed} from './scripts/legacy-reality-audit.js?v=5261';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
-import {loadLocalArchitectureCards} from './scripts/street-architecture.js?v=5130';
+import {loadLocalArchitectureCards} from './scripts/street-architecture.js?v=5131';
 import {loadApprovedArchitecture,mergeApprovedWithLocal} from './scripts/architecture-manifest.js?v=5130';
 import {makeCitySurfaceKit,makeContactShadow} from './scripts/graphics2.js?v=520';
 import {makeMiloviceVisualKit,planMiloviceStreetProps,makeVehicleContactShadows} from './scripts/visual-overhaul.js?v=560';
@@ -3939,7 +3939,7 @@ let cityAreaManifest=null;
 const loadedCityAreas=new Set(['old']),loadingCityAreas=new Set(),seenCityOSMWays=new Set();
 // Source-checked published geometry is permanent for all visitors.
 // Editor localStorage is an explicitly temporary personal preview overlay.
-const localArchitecture=loadLocalArchitectureCards(localStorage);
+const localArchitecture=loadLocalArchitectureCards();
 let reviewedFetch={cards:new Map(),error:null};
 let architectureCards=mergeApprovedWithLocal(reviewedFetch.cards,localArchitecture);
 const localPaintMaterials=new Map(),appliedArchitectureIds=new Set();

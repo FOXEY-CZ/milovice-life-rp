@@ -1,12 +1,15 @@
 // Milovice RP W1: focused Node unit-test runner for a selected workstream.
 // No extra dependencies; full cross-project validation stays in GitHub Actions.
 import {spawnSync} from 'node:child_process';
-import {existsSync} from 'node:fs';
+import {existsSync,readdirSync} from 'node:fs';
 import {dirname,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const scriptDir=dirname(fileURLToPath(import.meta.url));
+const discovered=readdirSync(scriptDir).filter(name=>/(?:\.test|-test)\.mjs$/.test(name)).sort();
 const packs=Object.freeze({
+ all:discovered,
+ juventa:discovered.filter(name=>/^osm-juventa-/.test(name)),
  sportovni:[
   'osm-lesni-courtyard-lawns-5231.test.mjs',
   'osm-sportovni-footway-network-5230.test.mjs',
@@ -133,11 +136,11 @@ const packs=Object.freeze({
   'station-photo-parking.test.mjs'
  ]
 });
-const requested=process.argv.slice(2);
+const requested=process.argv.slice(2).map(x=>x==='--all'?'all':x);
 const usage=()=>console.log(
  'Pouziti: node scripts/dev-check.mjs <'+Object.keys(packs).join('|')+'>\n'+
  'Sady:\n'+Object.entries(packs).map(([k,v])=>'  '+k+' ('+v.length+' unit testu)').join('\n')+
- '\nVolby: --list, --help\nPro WebGL test je nutny Chromium + lokalni HTTP server.'
+ '\nVolby: --list, --help, --all (vsechny nalezene unit testy)\nPro WebGL test je nutny Chromium + lokalni HTTP server.'
 );
 if(requested.length===1&&['--list','--help'].includes(requested[0])){
  usage();
@@ -145,21 +148,23 @@ if(requested.length===1&&['--list','--help'].includes(requested[0])){
  const pack=requested[0],list=packs[pack];
  console.log('Milovice RP / '+pack+' — '+list.length+' cilenych unit testu');
  let ok=0;
+ const failed=[];
  for(const name of list){
   const path=join(scriptDir,name);
   if(!existsSync(path)){
    console.error('CHYBI TEST:',name);
-   process.exitCode=1;break;
+   process.exitCode=1;failed.push(name);if(pack==='all')continue;break;
   }
   console.log('\n>>> '+name);
   const result=spawnSync(process.execPath,[path],{cwd:join(scriptDir,'..'),
-   stdio:'inherit',env:process.env});
+   stdio:'inherit',env:process.env,timeout:90000,killSignal:'SIGKILL'});
   if(result.error||result.status!==0){
    console.error('SELHAL:',name,result.error?.message||result.signal||result.status);
-   process.exitCode=1;break;
+   process.exitCode=1;failed.push(name);if(pack==='all')continue;break;
   }
   ok++;
  }
+ if(failed.length)console.error('Selhane testy:',failed.join(', '));
  console.log('\nHotovo: '+ok+'/'+list.length+' testu pro oblast '+pack+
   (process.exitCode?' (NEUSPESNE)':' (USPESNE)'));
 }else{

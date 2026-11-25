@@ -19,6 +19,18 @@ assert.deepEqual(cards.get('118487963'),{
 const local=loadLocalArchitectureCards({getItem:k=>k===STREET_STORAGE_KEY?JSON.stringify({'118487963':normal}):null});
 assert.equal(local.size,1);
 assert.equal(loadLocalArchitectureCards({getItem:()=>'{broken'}).size,0);
+assert.equal(loadLocalArchitectureCards({getItem:()=>{throw Error('SecurityError')}}).size,0);
+assert.equal(loadLocalArchitectureCards(null).size,0);
+const originalStorage=Object.getOwnPropertyDescriptor(globalThis,'localStorage');
+try{
+ Object.defineProperty(globalThis,'localStorage',{configurable:true,get(){throw Error('SecurityError: storage denied')}});
+ assert.equal(loadLocalArchitectureCards().size,0,'Denied browser storage getter cannot prevent startup');
+ Object.defineProperty(globalThis,'localStorage',{configurable:true,value:{getItem:k=>k===STREET_STORAGE_KEY?JSON.stringify({'118487963':normal}):null}});
+ assert.equal(loadLocalArchitectureCards().size,1,'Normal implicit browser storage keeps verified previews');
+}finally{
+ if(originalStorage)Object.defineProperty(globalThis,'localStorage',originalStorage);
+ else delete globalThis.localStorage;
+}
 assert.equal(normalizeArchitectureCards({}).size,0);
 const verifiedSide={
  stage:'verified',source:'',notes:'',
