@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {makeHZSGarageDoor5316 as make} from './osm-hzs-garage-door-5316.js';
+const p=make();assert.equal(p.data.byteLength,8192);
+const pixel=(x,y)=>[...p.data.slice((y*p.width+x)*4,(y*p.width+x)*4+4)];
+assert.deepEqual(pixel(0,0),[139,36,38,255]);
+assert.deepEqual(pixel(10,2),[181,43,45,255]);
+assert.deepEqual(pixel(10,19),[67,86,93,255]);
+assert.deepEqual(pixel(16,19),[181,43,45,255]);
+assert.deepEqual(pixel(10,25),[181,43,45,255]);
+assert.equal(p.data.filter((_,i)=>i%4===3).every(a=>a===255),true);
+assert.equal(p.modelGlassRows,4);assert.equal(p.modelGlassColumns,2);
+assert.equal(p.photoPixels,0);assert.equal(p.exactPanelCountVerified,false);
+assert.equal(p.placementVerified,false);assert.equal(p.newColliders,0);
+for(const args of [[0,64],[32,0],[129,64],[32,257],[NaN,64],[32,33.5]])assert.equal(make(...args),null);
+console.log('PASS 5.316 original HZS garage door texture, opaque and no position claim');
