@@ -1,0 +1,3 @@
+# 5.326 — candidate route recalculation policy
+
+Independent of pending PR #121. Original regular update remains strictly >2 s and >15 m movement. Early deviation requires >=1 s, >=8 m displacement, an audited nonempty route, and distance from every leg greater than max(18 m, initial start offset + 8 m). Invalid route or malformed geometry does not trigger the early branch. These are gameplay heuristics, not measured road widths or a claim about real access. A nearby other leg can suppress early deviation; regular recalculation still applies. No per-frame pathfinding or new road links. Next: integrate into existing minimap update, add CI invocation, test vehicle movement and fallback in Chromium after #121. Unit test authored; not yet executed in CI.
