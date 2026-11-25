@@ -3,8 +3,8 @@
 Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.336**, kandidát **5.337** (fiktivní 3D nápisy).
-- Main po #132: `dd934ffd439aee1f8b64c4a2e9f589f7776c38f8`, 6/6 PR CI PASS, Pages PASS; zbývající main kontroly ověř živě.
+- Herní verze main: **5.337**, kandidát **5.338** (vlastní barvy obchodů).
+- Main po #133: `6b5620d0e2488bd4d8d561e8f66efbe16c43b096`, 6/6 PR CI PASS, Pages PASS; ostatní main kontroly ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -60,7 +60,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** 5.337 kandidát (anglické názvy světa): fiktivní texty generických obchodních fasád, nádraží, školy, hotelu, cyklohubu a autobusu; geometrie a zdrojové názvy zůstávají. Nové testy zatím nespouštěny. Další krok: ověřit CI, následně audit ostatních textur, zastávek, barev značek a Credits & Licenses. Kolizní příprava odložena.
+**Priorita:** 5.338 kandidát: BrayMart tyrkysová, ValueNest fialová, Vendoa zelená a béžová; napojeny textury nápisů, fasádní prvky a madla vozíků. Geometrie, LOD a zdrojové klíče zachovány. Testy čekají. Další krok: specializované nápisy, zastávky, Credits & Licenses.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

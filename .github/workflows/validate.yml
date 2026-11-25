@@ -343,3 +343,6 @@ jobs:
 
       - name: Verify fictional 3D signage
         run: node scripts/fictional-signage.test.mjs
+
+      - name: Verify fictional retail palettes and contrast
+        run: node scripts/fictional-brand-palettes.test.mjs

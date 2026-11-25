@@ -31,3 +31,6 @@ První napojení fiktivních nápisů na 3D textury. Zbývají specializované n
 
 ## Jazyk světa — rozhodnutí uživatele
 Všechny hráčské názvy ulic, oblastí, institucí, podniků a fyzické nápisy mají být anglické, nikoli české. České ovládání a interní zdrojové klíče zatím zachovat. Audit dalších textur a zastávek pokračuje.
+
+## 5.338 — vizuální identita obchodů
+Vlastní palety BrayMart, ValueNest a Vendoa napojeny na nápisy a vybrané fasádní prvky. Ostatní specializované textury ještě vyžadují audit. CI čeká.
