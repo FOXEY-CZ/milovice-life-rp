@@ -822,12 +822,16 @@ try{
   });
   if(layout.controls.some(c=>c.width<44||c.height<44||c.left<-.5||c.top<-.5||c.right>layout.w+.5||c.bottom>layout.h+.5||!c.hit))
    throw Error('5.324 inaccessible responsive map controls '+JSON.stringify(layout));
+   if(!await page.locator('#map-fit-route-5323').isDisabled())throw Error('5.324 fit route enabled without route');
   console.log('PASS 5.324 responsive map',JSON.stringify(layout));
  }
+ await page.screenshot({path:'browser-artifacts/milovice-mobile-map-5324.png'});
  await page.locator('#map-goal-5319').selectOption({label:'🚒 Hasičská stanice Milovice'});
  await page.locator('#closemap').click();
+ if(await page.locator('#hud').evaluate(el=>el.classList.contains('rp-open')))await page.locator('#rp-hud-toggle').click();
  await page.waitForFunction(()=>{const el=document.querySelector('#map-guidance-5319');return !el.hidden&&getComputedStyle(el).display!=='none';},undefined,{timeout:6000});
  if(!await page.locator('#map-guidance-clear-5319').isVisible())throw Error('5.324 mobile guidance clear unavailable');
+ await page.screenshot({path:'browser-artifacts/milovice-mobile-guidance-5324.png'});
  await page.locator('#map-guidance-clear-5319').click();
  await page.waitForFunction(()=>document.getElementById('map-guidance-5319').hidden,undefined,{timeout:6000});
  await page.setViewportSize({width:1280,height:760});
@@ -876,11 +880,14 @@ try{
  if(fullRoute.legCount!==roadRoute.legs.length||fullRoute.layerCount!==1||fullRoute.newLinks!==0||
     Math.abs(fullRoute.distanceMetres-roadRoute.distanceMetres)>.001)
   throw Error('5.323 full map route invalid '+JSON.stringify(fullRoute));
+ if(!await page.locator('#map-fit-route-5323').isEnabled())throw Error('5.324 fit route disabled with audited route');
  await page.locator('#map-fit-route-5323').click();
  await page.screenshot({path:'browser-artifacts/milovice-full-road-route-5323.png'});
  await page.locator('#closemap').click();
  console.log('PASS 5.323 full map verified route',JSON.stringify(fullRoute));
- await page.locator('#maplaunch').click();await page.locator('#map-goal-clear-5319').click();await page.locator('#closemap').click();
+ await page.locator('#maplaunch').click();await page.locator('#map-goal-clear-5319').click();
+ if(!await page.locator('#map-fit-route-5323').isDisabled())throw Error('5.324 stale fit-route control after clearing');
+ await page.locator('#closemap').click();
  await page.waitForFunction(()=>window.__miloviceMapRoadRoute5321?.()===null&&window.__miloviceRoadRouteAudit5322?.()===null&&window.__miloviceFullMapRoute5323?.()===null,undefined,{timeout:6000});
  console.log('PASS 5.321 vehicle road routing lifecycle',roadRoute.status,roadRoute.distanceMetres);
  // Regression: exiting a sedan must never transform it into an unrelated bus.

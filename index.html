@@ -79,6 +79,7 @@
  #perf small{font-size:9px}
 }
 </style><style id="rp-mobile-map-5324">
+#map-fit-route-5323:disabled{opacity:.55;cursor:not-allowed}
 /* Keep map actions accessible without shrinking the map to a toolbar. */
 @media(max-width:700px), (max-height:500px) and (max-width:1000px){
  #maphead{flex:0 0 auto;display:grid;grid-template-columns:minmax(0,1fr);gap:4px;padding:6px 8px}
@@ -472,7 +473,7 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
   <div class="rp-job-card"><strong>🚌 Autobusová směna</strong><p>Testovací trasa přes pojmenované silnice z OSM. Kontrolní body nejsou ověřenými skutečnými zastávkami.</p><button id="rp-job-start" type="button">▶ Zahájit směnu</button><button id="rp-job-end" type="button" hidden>■ Ukončit směnu</button></div><div class="rp-job-card"><strong>🚶 Pěší doručení – Topolová</strong><p>Herní zakázka po skutečně mapovaném západním chodníku. 3 kontrolní body, odměna 80 Kč. Bez teleportu, pouze pěšky.</p><button id="topolova-foot-job-start" type="button">▶ Přijmout pěší zakázku</button><button id="topolova-foot-job-end" type="button" hidden>■ Zrušit zakázku</button></div>
  </div>
 </section>
-<section id="realmap" aria-label="Skutečná mapa Milovic"><div id="maphead"><strong>🗺️ Milovice – skutečná mapa</strong><div class="mapactions"><button id="mapfollow" type="button" title="Vycentrovat mapu na postavu">🎯 Kde jsem?</button><button id="mapfollow-camera" type="button" title="Zobrazit polohu a směr kamery">📷 Kamera + směr</button><button id="map-fit-route-5323" type="button" title="Zobrazit celou vypočtenou silniční trasu">🧭 Trasa</button><button id="closemap" type="button">✕ Zpět do hry</button></div></div><div id="osmmap"></div><div id="map-nav-5319" style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:#142c3e"><label for="map-goal-5319">Cíl:</label><select id="map-goal-5319" style="flex:1;min-width:0;color:white;background:#1e3856;padding:6px"><option value="">Bez cíle</option></select><button id="map-goal-clear-5319" type="button" style="padding:6px">Zrušit</button></div><div id="mapfoot">Silnice a půdorysy: © přispěvatelé OpenStreetMap (ODbL). Výškopis: © ČÚZK / Zeměměřický úřad, DMR 4G (CC BY 4.0), nadmořské výšky jsou interpolovány na herní síť 10 m. Fasády a barvy jsou herní aproximací podle veřejných fotografií, nikoli přesnou kopií každého objektu. · <a href="./survey.html?id=old%3AN%C3%A1dra%C5%BEn%C3%AD" target="_blank" rel="noopener noreferrer">🧭 Průzkum Nádražní (REBUILD 2.0)</a></div></section><script>
+<section id="realmap" aria-label="Skutečná mapa Milovic"><div id="maphead"><strong>🗺️ Milovice – skutečná mapa</strong><div class="mapactions"><button id="mapfollow" type="button" title="Vycentrovat mapu na postavu">🎯 Kde jsem?</button><button id="mapfollow-camera" type="button" title="Zobrazit polohu a směr kamery">📷 Kamera + směr</button><button id="map-fit-route-5323" type="button" disabled title="Silniční trasa není dostupná">🧭 Trasa</button><button id="closemap" type="button">✕ Zpět do hry</button></div></div><div id="osmmap"></div><div id="map-nav-5319" style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:#142c3e"><label for="map-goal-5319">Cíl:</label><select id="map-goal-5319" style="flex:1;min-width:0;color:white;background:#1e3856;padding:6px"><option value="">Bez cíle</option></select><button id="map-goal-clear-5319" type="button" style="padding:6px">Zrušit</button></div><div id="mapfoot">Silnice a půdorysy: © přispěvatelé OpenStreetMap (ODbL). Výškopis: © ČÚZK / Zeměměřický úřad, DMR 4G (CC BY 4.0), nadmořské výšky jsou interpolovány na herní síť 10 m. Fasády a barvy jsou herní aproximací podle veřejných fotografií, nikoli přesnou kopií každého objektu. · <a href="./survey.html?id=old%3AN%C3%A1dra%C5%BEn%C3%AD" target="_blank" rel="noopener noreferrer">🧭 Průzkum Nádražní (REBUILD 2.0)</a></div></section><script>
 (function(){
  const hud=document.getElementById('hud'),toggle=document.getElementById('rp-hud-toggle');
  if(!hud||!toggle)return;
@@ -539,18 +540,20 @@ mapGoalSelect5319.addEventListener('change',()=>setMapGoal5319(mapGoalSelect5319
 document.getElementById('map-goal-clear-5319').addEventListener('click',()=>setMapGoal5319(''));
 document.getElementById('map-guidance-clear-5319').addEventListener('click',()=>setMapGoal5319(''));
 function syncFullMapRoute5323(){
- if(!leafletMap||!window.L)return;
+ const fit=document.getElementById('map-fit-route-5323');
+ const enableFit=enabled=>{if(fit.disabled===enabled){fit.disabled=!enabled;fit.title=enabled?'Zobrazit celou vypočtenou silniční trasu':'Silniční trasa není dostupná';}};
+ if(!leafletMap||!window.L){enableFit(false);return;}
  const route=walking||!mapGoal5319?null:mapRouteCache5321?.result;
- if(route===leafletRouteResult5323&&leafletRoute5323&&leafletMap.hasLayer(leafletRoute5323))return;
+ if(route===leafletRouteResult5323&&leafletRoute5323&&leafletMap.hasLayer(leafletRoute5323)){enableFit(true);return;}
  const lines=roadRouteMapLines5323(route,mapRouteCache5321?.audit,gameToLatLng);
  if(!lines.length){
   if(leafletRoute5323)leafletMap.removeLayer(leafletRoute5323);
-  leafletRoute5323=null;leafletRouteResult5323=null;return;
+  leafletRoute5323=null;leafletRouteResult5323=null;enableFit(false);return;
  }
  if(!leafletRoute5323){
   leafletRoute5323=window.L.polyline(lines,{color:'#a855f7',weight:5,opacity:.95,interactive:false,className:'rp-full-road-route-5323'}).addTo(leafletMap);
  }else leafletRoute5323.setLatLngs(lines);
- leafletRouteResult5323=route;
+ leafletRouteResult5323=route;enableFit(true);
 }
 window.__miloviceFullMapRoute5323=()=>{
  if(!leafletRoute5323||!leafletMap?.hasLayer(leafletRoute5323))return null;
@@ -658,7 +661,7 @@ async function openRealMap(){
   leafletMap=window.L.map(mapEl,{zoomControl:true}).setView(liveMapPlayer(),16);leafletMap.on('dragstart',()=>{fullMapFollow=false;fullMapFollowCamera=false});
   window.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'}).addTo(leafletMap);
   addRealMapLandmarks();updateRealMapPlayer(true);setTimeout(()=>{leafletMap.invalidateSize();updateRealMapPlayer(true)},100);
- }catch(e){if(leafletMap){leafletMap.remove();leafletMap=null;leafletMarks=[];leafletPlayer=null;leafletHalo=null;leafletCameraMarker=null;leafletCameraRay=null;leafletCameraTip=null;leafletRoute5323=null;leafletRouteResult5323=null;}mapEl.textContent='Mapu se nepodařilo načíst. Zkontroluj internetové připojení. '+e.message}
+ }catch(e){if(leafletMap){leafletMap.remove();leafletMap=null;leafletMarks=[];leafletPlayer=null;leafletHalo=null;leafletCameraMarker=null;leafletCameraRay=null;leafletCameraTip=null;leafletRoute5323=null;leafletRouteResult5323=null;}syncFullMapRoute5323();mapEl.textContent='Mapu se nepodařilo načíst. Zkontroluj internetové připojení. '+e.message}
  finally{leafletMapOpening=false;}
 }
 mapLaunch.addEventListener('click',openRealMap);
