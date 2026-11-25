@@ -19,3 +19,10 @@ Nejdříve spojit situační výřez a fotografie s přesnými hranami původní
 
 ## Stav 25. 11. 2026
 5.304 PR #95 sloučen jako 63d0e42, 5/5 CI PASS. 5.305 PR #97: Validate PASS, širší WebGL kontroly dosud nedokončené; Pages neověřeny. Tento dokument je samostatný zdrojový audit a nemění herní build.
+
+## 25. 11. 2026 — doplnění podkladu 5.311
+- [DEKPROJEKT, odborný posudek 2024-017735-AdM, červenec 2024](https://smlouvy.gov.cz/smlouva/soubor/40162820/Smlouva%20podepsan%C3%A1_redacted.pdf): viz skutečné PDF str. 13 (titulní foto), 17 (situace A/C), 18 (obr. 2, tištěná str. 6, řez hlavního vstupu A), 25 (foto 26, tištěná str. 13). Průzkum 4. 7. 2024 severozápadní fasády A/C. Na fotografii 26 jsou šedé plechové žaluziové kastlíky nad okny, barevné svislé akcenty.
+- Odečtené kóty z řezu v metrech vůči **lokálnímu projektovému datu**: 1.NP +0,160; 2.NP +3,660; 3.NP +7,260; 4.NP +10,860; atika hlavní budovy +15,610; spodní hrana stříšky +3,300, horní +3,500, atika stříšky +4,400. Odvozená tloušťka desky 0,20 m. Tyto údaje nejsou výškami nad herním terénem a nelze je přiřadit ke všem křídlům komplexu.
+- [Komenského (Milovice) 05.jpg, přesná revize Commons 1237994387](https://commons.wikimedia.org/w/index.php?title=File:Komensk%C3%A9ho_(Milovice)_05.jpg&oldid=1237994387): znovu ověřeny GPS 50.226810,14.866101, EXIF skutečný směr 98,62°, datum 15. 8. 2024, Doronenko, CC BY 4.0, 18 mm / 27 mm ekvivalent. Oddělená GPS cíle 50.226741,14.866809 není zaměřený vchod. První průsečík paprsku na hraně 47 není sám o sobě důkaz polohy vstupu A.
+- AZ KLIMA stránka dostupná, jednotlivé obrázky v tomto průchodu nedostupné. Screenshot hry nebyl vizuálně zkontrolován. Žádné obrazové pixely nekopírovány.
+- Nový samostatný modul a test 5.311 ukládají kóty a blokují geometrii, dokud nebude propojena poloha A, vodorovná šířka a výškové datum. Nejde o hotovou 3D rekonstrukci.

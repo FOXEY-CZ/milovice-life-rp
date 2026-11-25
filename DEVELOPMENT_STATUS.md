@@ -4,7 +4,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
 - Herní verze main: **5.310**, build `20261125-pod-lesem-branch-walker-531000`.
-- Main po #105: `f78ceac97d9d000c50fa9544aeb9a6b66fcc6e3d`, 6/6 PR CI PASS; Pages čeká. Předchozí herní 5.309: 7/7 main CI včetně Pages PASS. HEAD vždy ověř živě.
+- Main po #105: `f78ceac97d9d000c50fa9544aeb9a6b66fcc6e3d`, 6/6 PR CI PASS; Pages PASS (45532883584). Předchozí herní 5.309: 7/7 main CI včetně Pages PASS. HEAD vždy ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 248 unit testů zatím nebyla spuštěna jako celek.
 
@@ -38,7 +38,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - Další technický backlog: profilovat paměť a FPS před optimalizací, oddělovat čisté funkce dopravy a UI s regresí; neprovádět hromadný přepis index.html.
 
 ## Další krok podle W7
-Během CI/Pages 5.310 už pokračuj konkrétní přípravou Juventy (screenshoty/zdrojový audit fasády či samostatný modul); nezávislou práci ulož do jedné přípravné větve. Před dalším merge ověř CI a Pages 5.310. Žádný otevřený herní PR po #105. Neprováděj opakovaný polling bez další práce.
+5.311 příprava: stavební řez vstupu A, DEKPROJEKT 2024, samostatný modul a unit test v této přípravné větvi; doložené kóty, nová geometrie zatím blokována chybějícím přiřazením půdorysu a výškového data. Zkontroluj test a navrhni propojení s původní mapou. Před dalším merge ověř CI a Pages 5.310. Žádný otevřený herní PR po #105. Neprováděj opakovaný polling bez další práce.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
