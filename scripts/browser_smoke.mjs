@@ -11,6 +11,8 @@ try{
  const context=await browser.newContext({viewport:{width:1280,height:760},deviceScaleFactor:1});
  const page=await context.newPage();
  const errors=[];
+ const externalMapTiles=[];
+ page.on('request',r=>{if(/https?:\/\/[^/]*tile\.openstreetmap\.org\//i.test(r.url()))externalMapTiles.push(r.url());});
  page.on('pageerror',error=>errors.push(String(error.stack||error)));
  page.on('console',message=>{if(message.type()==='error')errors.push('console: '+message.text())});
  await page.goto('http://127.0.0.1:8080/?roofAudit=1',{waitUntil:'domcontentloaded',timeout:30000});
@@ -801,6 +803,16 @@ try{
  if(!await page.locator('#hud h2').textContent().then(t=>t.includes('CROSSVEX')))throw Error('5.335 game brand');
  if(!(await page.locator('#maphead strong').textContent()).includes('Ironfield'))throw Error('5.335 fictional city name');
  console.log('PASS 5.335 fictional map labels and brand');
+ const vectorAudit=await page.evaluate(()=>window.__ironfieldMap5336?.());
+ if(!vectorAudit?.attached||vectorAudit.stats.uniqueWays<2000||vectorAudit.stats.counts.building<1500||vectorAudit.names.length<30||vectorAudit.names.includes('Nepojmenovaná cesta')||externalMapTiles.length)throw Error('5.336 local vector map '+JSON.stringify({vectorAudit,externalMapTiles}));
+ if(await page.locator('#osmmap .leaflet-tile').count())throw Error('5.336 unexpected raster tiles');
+ if(!(await page.locator('#osmmap .leaflet-control-attribution').innerText()).includes('OpenStreetMap'))throw Error('5.336 missing attribution');
+ await page.locator('#osmmap .leaflet-control-zoom-in').click();
+ await page.waitForFunction(()=>window.__ironfieldMap5336?.().labelsVisible===true);
+ if(await page.locator('#osmmap .rp-ironfield-street').count()!==vectorAudit.names.length)throw Error('5.336 street label layer');
+ await page.locator('#osmmap .leaflet-control-zoom-out').click();
+ await page.waitForFunction(()=>window.__ironfieldMap5336?.().labelsVisible===false);
+ console.log('PASS 5.336 local vector geometry, fictional zoom labels, attribution and no external tiles',JSON.stringify(vectorAudit.stats));
  console.log('Full map marker: OK');
  await page.screenshot({path:'browser-artifacts/milovice-full-map.png'});
  const mapAudit=await page.evaluate(()=>window.__miloviceMapLandmarks5318?.());
@@ -811,6 +823,7 @@ try{
  await page.locator('#maplaunch').click();
  const reopened=await page.evaluate(()=>window.__miloviceMapLandmarks5318?.());
  if(reopened?.count!==14||reopened.attached!==14)throw Error('5.318 duplicate or missing markers on reopen');
+ if(!await page.evaluate(()=>window.__ironfieldMap5336?.().attached)||externalMapTiles.length)throw Error('5.336 map reopen regression');
  console.log('PASS 5.318 seven source landmarks, actual Leaflet markers and reopen',JSON.stringify(reopened));
  // Responsive map controls: test portrait and short landscape without a second WebGL startup.
  for(const viewport of [{width:320,height:568},{width:667,height:375},{width:390,height:844}]){

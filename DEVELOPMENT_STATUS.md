@@ -3,8 +3,8 @@
 Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.334**, build `20261125-gps-audio-audit-533400`. Kandidát 5.335 (CROSSVEX).
-- Main po #130: `c1f2b16e36a764a0fe9aea6baab878450ccba6a6`, 6/6 PR CI PASS. 5.333 main 7/7 PASS včetně Pages (45696082170). 5.334 main/Pages čeká. HEAD ověř živě.
+- Herní verze main: **5.335 CROSSVEX / Ironfield**, kandidát 5.336 `20261125-ironfield-vector-map-533600`.
+- Main po #131: `7e0b8a2e5c2bf93af76234b3c5c0af502c25bd38`, 6/6 PR CI PASS, 5.334 main 7/7 PASS včetně Pages. 5.335 main/Pages čeká. HEAD ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -60,7 +60,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Nová priorita uživatele:** [CROSSVEX — příprava vydání](docs/RELEASE_IDENTITY.md). 5.334 sloučena (6/6 PR CI PASS), fyzická slyšitelnost a aktivní zvuk při pohybu neověřeny. 5.335 kandidát: slovník 62 ulic, 14 cílů, 6 oblastí a první veřejné popisky. Ověřeno pokrytí všech 6 snapshotů; první CI 5/6 PASS, Validate selhala na historickém natvrdo zadaném titulku. Opraven test podle GAME_TITLE, změna anglické pracovní značky; následující CI 6/6 PASS na b73317b. CROSSVEX předchozí CI 6/6 PASS na 35f1c65. Uživatel potvrdil město Ironfield; nové CI po změně názvu čeká. **Další krok: vlastní herní mapa bez skutečných OSM popisků**, potom 3D nápisy, adresy, zastávky a release balíček. Kolizní příprava `prep/collision-guards-5335` (284ecca) odložena, nemazat; později přenést jen deltu.
+**Priorita:** [CROSSVEX — příprava vydání](docs/RELEASE_IDENTITY.md). 5.336 kandidát: lokální vektorová mapa všech šesti snapshotů, 3 679 jedinečných cest/polygonů v přípravném výpočtu (2 120 budov, 803 silnic, 631 pěších cest); fiktivní názvy ze slovníku při zoomu >=17, OSM atribuce zachována. Bez externích rastrových dlaždic, Leaflet CDN nadále potřebná. GPS/waypointy beze změny. Nové unit a browser CI čeká. Další krok: po ověření mapy audit 3D nápisů, zastávek, adres a release balíčku. Kolizní příprava `prep/collision-guards-5335` (284ecca) odložena, nemazat. Přípravná větev mapy `prep/ironfield-map-5336` (ab6ce08) přenesena jako delta.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
