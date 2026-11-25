@@ -48,7 +48,7 @@ Každá sada spouští existující unit testy v příslušném okruhu. Nezastup
 
 Krátký (ideálně do cca 10 kB) a pravdivý soubor. Obsahuje: aktuální release/HEAD, odkaz na hru a příslušnou kameru, posledních ~3–6 důležitých prací, podložené vs. modelové vlastnosti, otevřené body, prioritní úsek a přesně jeden další realistický krok. Starý detail přesuň do README; status není další nekonečný changelog.
 
-**V současnosti:** ověřena verze hry 5.142; další stavební práce mají směřovat ke kompletnější Sportovní/Průběžné. Nové stavební změny vyžadují nové zdrojové důkazy a testy. Tento dokument nic v 3D scéně sám neupravuje.
+**Aktuální stav:** vždy viz `DEVELOPMENT_STATUS.md` a živý GitHub. Nové stavební změny vyžadují nové zdrojové důkazy a testy. Tento dokument nic v 3D scéně sám neupravuje.
 
 ## Co nezaručujeme
 
@@ -78,3 +78,8 @@ Tento postup **nezruší omezení délky chatu, přemýšlení ani chyby služby
 ## W5 — oddělení terénního výpočtu
 
 - `scripts/terrain-elevation.js` obsahuje čisté funkce pro hranice DEM, trojúhelníkovou interpolaci, přednost starého města a fallback okraje. `index.html` zachovává dosavadní `terrainAt` rozhraní a stav regionů; geometrie, zdrojová data, výšková pravidla, LOD a herní verze se nemění. Regrese pokrývá umělé mřížky i skutečné ČÚZK vrcholy, běží v hlavním Validate.
+
+## W6 — krátký handoff a archiv
+
+- Původní dlouhý status zachován beze změny v `docs/archive/development-status-2026-11-25.md`. Nový status je jen aktuální snapshot, cílově 3–6 kB, nejvýše 10 kB. Při nové verzi přepisovat aktuální přehled, nepřidávat nekonečné bloky.
+- Nový chat: `AGENTS.md` + stručný status + živý main/PR/CI; relevantní moduly až potom. Staré chaty ani archiv nečíst rutinně. Nezaručuje rychlost ChatGPT ani zrušení limitu chatu.
