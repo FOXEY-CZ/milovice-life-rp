@@ -1,3 +1,7 @@
+## Milovice RP 5.333 — rozlišení sousedních GPS pokynů
+
+Geometrický pokyn nese identitu podle zdrojových silnic a polohy odbočky zaokrouhlené na centimetry. Dvě blízké odbočky stejného směru mají vlastní vzdálenostní fáze; ořez stejné trasy před odbočkou je nemění. Globální odstup 8 s i prahy 80/20 m zůstávají. Regrese kombinuje výpočet pokynu a zvukovou politiku na dvou modelových odbočkách, browser smoke kontroluje identitu skutečného auditovaného pokynu a diagnostiku po pohybu. Neověřuje dvě projeté odbočky ani fyzickou slyšitelnost. Nové silnice, objekty a síťové požadavky: 0. CI čeká.
+
 ## Milovice RP 5.332 — mobilní ovládání zvuku GPS
 
 Dva přepínače zvuku a hlasu jsou v samostatné nepřekrývající se liště, mimo rolovatelné licenční zápatí. Na malém displeji dva stejně široké sloupce, minimální výška 44 px. Licenční text i odkaz zachovány, zápatí lze rolovat. Rozšířený browser test kontroluje oba ovladače, dotykové rozměry, hit-test, přepnutí hlasu a alespoň 120 px mapy ve třech původních mobilních rozměrech. Chování zvuku, routingu a 3D světa beze změny. CI čeká, skutečný telefon neověřen.

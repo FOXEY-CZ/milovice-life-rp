@@ -955,7 +955,7 @@ try{
   throw Error('5.328 stationary instruction cache failed '+JSON.stringify({stationaryCache,stillCache}));
  console.log('PASS 5.328 stationary instruction cache',JSON.stringify({stationaryCache,stillCache}));
  const hudInstruction=await page.evaluate(async()=>{
-  const {nextRouteInstruction5327}=await import('./scripts/map-route-instructions-5327.js?v=532700');
+  const {nextRouteInstruction5327}=await import('./scripts/map-route-instructions-5327.js?v=533300');
   const c=window.__miloviceRouteRecalculation5326();
   const expected=nextRouteInstruction5327(window.__miloviceMapRoadRoute5321(),window.__miloviceRoadRouteAudit5322(),{x:c.x,y:c.z});
   const shown=window.__miloviceMapInstruction5327();
@@ -965,6 +965,9 @@ try{
  if(!hudInstruction.expected||JSON.stringify(hudInstruction.shown)!==JSON.stringify(hudInstruction.expected)||
     hudInstruction.hidden||hudInstruction.display==='none'||!hudInstruction.text.includes(Math.round(hudInstruction.expected.distanceMetres)+' m'))
   throw Error('5.327 stationary HZS geometric HUD instruction invalid '+JSON.stringify(hudInstruction));
+ if(typeof hudInstruction.shown.maneuverKey!=='string'||!hudInstruction.shown.maneuverKey.startsWith(hudInstruction.shown.direction==='road-end'?'end:':'turn:'))
+  throw Error('5.333 actual HZS instruction missing stable maneuver identity '+JSON.stringify(hudInstruction));
+ console.log('PASS 5.333 actual audited route maneuver identity',hudInstruction.shown.maneuverKey);
  console.log('PASS 5.327 actual HZS instruction',JSON.stringify(hudInstruction));
  await page.locator('#maplaunch').click();
  await page.waitForFunction(()=>window.__miloviceFullMapRoute5323?.()?.attached===true,undefined,{timeout:6000});
@@ -1058,6 +1061,10 @@ try{
   throw Error('5.328 moving instruction cache failed '+JSON.stringify({beforeInstructionDrive,movingInstructionCache}));
  if(movingInstructionCache.retainedEntries>1||!Number.isFinite(movingInstructionCache.meanMs)||movingInstructionCache.meanMs<0||movingInstructionCache.maxMs<0)
   throw Error('5.328 invalid instruction timing '+JSON.stringify(movingInstructionCache));
+ const movingManeuver=await page.evaluate(()=>window.__miloviceMapInstruction5327());
+ if(movingManeuver&&(typeof movingManeuver.maneuverKey!=='string'||!movingManeuver.maneuverKey.startsWith(movingManeuver.direction==='road-end'?'end:':'turn:')))
+  throw Error('5.333 moving instruction missing identity '+JSON.stringify(movingManeuver));
+ console.log('5.333 moving instruction identity (null if no safe projection)',JSON.stringify(movingManeuver));
  console.log('PASS 5.328 moving instruction diagnostics',JSON.stringify(movingInstructionCache));
  // The driving regression leaves momentum. Brake with ordinary player input
  // before the existing exit/re-entry regression; the game refuses exit above .45 m/s.

@@ -2,6 +2,8 @@
 // Coordinates: x east, y south. Positive cross product means a right turn.
 const finite=p=>Number.isFinite(p?.x)&&Number.isFinite(p?.y);
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+// Centimetre-rounded bend position and source road IDs survive clipping the route start.
+const pointKey=p=>`${Math.round(p.x*100)},${Math.round(p.y*100)}`;
 export function nextRouteInstruction5327(route,audit,player){
  if(route?.status!=='ready'||audit?.valid!==true||!Array.isArray(route.legs)||
     !route.legs.length||audit.legCount!==route.legs.length||!finite(player)||
@@ -35,7 +37,7 @@ export function nextRouteInstruction5327(route,audit,player){
   const angle=Math.atan2(ax*by-ay*bx,ax*bx+ay*by)*180/Math.PI;
   if(Math.abs(angle)<35)continue;
   const direction=Math.abs(angle)>=150?'reverse':angle>0?'right':'left';
-  return {direction,distanceMetres:Math.max(0,at-nearest.along),angleDegrees:angle,geometricOnly:true,junctionVerified:false,entranceVerified:false};
+  return {direction,maneuverKey:`turn:${a.osmId}:${b.osmId}:${pointKey(b.a)}`,distanceMetres:Math.max(0,at-nearest.along),angleDegrees:angle,geometricOnly:true,junctionVerified:false,entranceVerified:false};
  }
- return {direction:'road-end',distanceMetres:Math.max(0,total-nearest.along),angleDegrees:null,geometricOnly:true,junctionVerified:false,entranceVerified:false};
+ return {direction:'road-end',maneuverKey:`end:${legs.at(-1).osmId}:${pointKey(legs.at(-1).b)}`,distanceMetres:Math.max(0,total-nearest.along),angleDegrees:null,geometricOnly:true,junctionVerified:false,entranceVerified:false};
 }
