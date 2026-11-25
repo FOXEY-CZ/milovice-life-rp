@@ -9,7 +9,7 @@ const browser=await chromium.launch({
 try{
  const view='pitch-juventa-5301',page=await browser.newPage({viewport:{width:393,height:852},deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
- await page.goto('http://127.0.0.1:8080/?v=530700&streetAudit='+view,{waitUntil:'domcontentloaded',timeout:35000});
+ await page.goto('http://127.0.0.1:8080/?v=530800&streetAudit='+view,{waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(view=>window.__miloviceAreasLoaded?.includes('mlada')&&
    window.__miloviceSportPitchCameraAudit?.targetInFrame===true&&
@@ -46,6 +46,7 @@ try{
  assert.equal(state.school.facade5307?.applied,true);assert.equal(state.school.facade5307.bytes,512);
  assert.equal(state.school.facade5307.bandRows,8);assert.equal(state.school.facade5307.newMeshes,0);
  assert.equal(state.school.facade5307.newColliders,0);
+ assert.equal(state.school.photoAnchor5308?.edge,47);assert.equal(state.school.photoAnchor5308.exactEntranceSurveyed,false);
  assert.equal(state.selected,view);assert(state.canvas>0);assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/juventa-5301-mobile.png'});
