@@ -14,3 +14,6 @@ Z uloženého ČÚZK DMR 4G (regionální přepočet na 20 m) a originálního p
 
 ## Další krok
 Přenést tento modul a test na výsledný main po #106, připojit diagnostiku k reálnému základu školy a ověřit mobilní WebGL. Následně navrhnout lokální výškové rozdělení komplexu, až bude doloženo rozhraní objektů a společné datum stavebního řezu. Neodečítat automaticky 0,94 m schodiště z DEM ani neměnit globální algoritmus základů. Identita kandidátního výstupku a výškový datum výkresu zůstávají neověřené.
+
+## Příprava runtime diagnostiky
+Doplněna čistá funkce `auditJuventaRuntimeFoundation5312`: přijímá skutečně vytvořený základ budovy, aktivní terrainAt a kontrolu pokrytí načtenými DEM. Porovnává základ s reprodukovanou politikou maximum +0,10 m; rozlišuje lokální světovou Y souřadnici a absolutní výšku DEM. Není-li pokrytý každý vzorek, vrací null namísto použití fallbacku. Zaznamená pořadí regionů. Test simuluje oba pořadí, chybějící pokrytí, NaN a základ posunutý o 0,5 m. Skutečný runtime ještě není připojen, test nebyl spuštěn; před sloučením propojit na novém main po #106 a potvrdit v Chromium. Neměnit stávající založení ani fyziku.

@@ -41,3 +41,35 @@ export function auditJuventaTerrain5312(input,{oldGrid,regionalGrids}={}){
   absoluteDatumOfSectionVerified:false,entrancePositionVerified:false,
   foundationIsCurrentModelPolicy:true,readyForGeometry:false,newGeometry:0,newColliders:0};
 }
+
+// Compare the actual foundation captured when the school is built with the
+// actual loaded terrain resolver. Refuse fallback samples outside coverage.
+// Report world-relative heights separately from absolute DEM elevations.
+export function auditJuventaRuntimeFoundation5312(input,{
+ terrainAt,isCovered,baseHeight,referenceBase,loadedRegionIds=[]
+}={}){
+ if(!planJuventaSchoolShell5306(input)||typeof terrainAt!=='function'||
+ typeof isCovered!=='function'||!Number.isFinite(baseHeight)||
+ !Number.isFinite(referenceBase)||!Array.isArray(loadedRegionIds))return null;
+ const points=input.geometry.slice(0,-1).map(xy),samples=[];
+ for(let i=0;i<points.length;i++){
+  const a=points[i],b=points[(i+1)%points.length],steps=Math.max(1,Math.ceil(Math.hypot(b.x-a.x,b.z-a.z)/3));
+  for(let j=0;j<=steps;j++)samples.push({x:a.x+(b.x-a.x)*j/steps,z:a.z+(b.z-a.z)*j/steps});
+ }
+ const local=points.slice(47,52);
+ if([...samples,...local].some(p=>!isCovered(p.x,p.z)))return null;
+ const heights=samples.map(p=>terrainAt(p.x,p.z)),candidate=local.map(p=>terrainAt(p.x,p.z));
+ if([...heights,...candidate].some(y=>!Number.isFinite(y)))return null;
+ const highest=Math.max(...heights),lowest=Math.min(...heights),expected=highest+.10;
+ const delta=baseHeight-expected;
+ return {sourceOSMId:'53865836',perimeterSamples:samples.length,
+  loadedRegionIds:[...loadedRegionIds],referenceBase,
+  actualFoundationWorldY:round(baseHeight),expectedFoundationWorldY:round(expected),
+  actualFoundationElevation:round(referenceBase+baseHeight),
+  foundationPolicyDelta:round(delta),matchesCurrentFoundationPolicy:Math.abs(delta)<.002,
+  perimeterRelief:round(highest-lowest),
+  candidateNodeIndices:[47,48,49,50,51],candidateNodeWorldY:candidate.map(round),
+  foundationAboveCandidateRange:[round(baseHeight-Math.max(...candidate)),round(baseHeight-Math.min(...candidate))],
+  fallbackUsed:false,sectionDatumVerified:false,entrancePositionVerified:false,
+  readyForGeometry:false,newGeometry:0,newColliders:0};
+}

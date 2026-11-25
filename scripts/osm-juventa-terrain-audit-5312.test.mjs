@@ -22,3 +22,31 @@ for(const regionId of ['mlada','westlink']){
  assert.equal(audit({...school,regionId},{oldGrid,regionalGrids:[regionalGrids[0]]}),null);
 }
 console.log('PASS 5.312 source DEM terrain, foundation gap and regional grid comparison');
+
+import {auditJuventaRuntimeFoundation5312 as runtime} from './osm-juventa-terrain-audit-5312.js';
+import {insideElevationGrid,resolveTerrainHeight} from './terrain-elevation.js';
+const school=read('regions/mlada.json').elements.find(w=>String(w.id)==='53865836');
+const input={...school,regionId:'mlada'};
+for(const order of [regionalGrids,[...regionalGrids].reverse()]){
+ const offline=audit(input,{oldGrid,regionalGrids});
+ const expected=offline.audits.find(a=>a.region===order[0].region);
+ const terrainAt=(x,z)=>resolveTerrainHeight(x,z,oldGrid,order);
+ const isCovered=(x,z)=>[oldGrid,...order].some(g=>insideElevationGrid(g,x,z));
+ const opts={terrainAt,isCovered,referenceBase:oldGrid.base,
+  baseHeight:expected.modelFoundationElevation-oldGrid.base,
+  loadedRegionIds:order.map(g=>g.region)};
+ const r=runtime(input,opts);
+ assert(r);assert.equal(r.perimeterSamples,292);
+ assert.equal(r.matchesCurrentFoundationPolicy,true);
+ assert.equal(r.actualFoundationElevation,expected.modelFoundationElevation);
+ assert.deepEqual(r.loadedRegionIds,opts.loadedRegionIds);
+ assert(r.foundationAboveCandidateRange[0]>4.6&&r.foundationAboveCandidateRange[1]<5.3);
+ assert.equal(r.fallbackUsed,false);assert.equal(r.readyForGeometry,false);
+ assert.equal(runtime(input,{...opts,isCovered:()=>false}),null);
+ assert.equal(runtime(input,{...opts,terrainAt:()=>NaN}),null);
+ const shifted=runtime(input,{...opts,baseHeight:opts.baseHeight+.5});
+ assert.equal(shifted.matchesCurrentFoundationPolicy,false);
+ assert(Math.abs(shifted.foundationPolicyDelta-.5)<.002);
+ assert.equal(shifted.readyForGeometry,false);
+}
+console.log('PASS 5.312 runtime foundation audit with both regional load orders and fail-closed coverage');
