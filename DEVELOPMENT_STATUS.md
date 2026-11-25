@@ -3,23 +3,23 @@
 Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze: **5.307**, build `20261125-juventa-school-facade-530700`.
-- Poslední ověřený nasazený kód: `0c3d7e464b5141779a28b7de3469bebc5f045625` (PR #102, W3–W5). Aktuální HEAD vždy znovu ověř přes GitHub, protože dokumentace nebo další commity jej mohou změnit.
+- Herní verze main: **5.308**, build `20261125-juventa-photo-camera-530801`. Kandidát 5.309 v pracovní větvi.
+- Main po #103: `2c2f23104621063b81675dc5b80016eb8f19856b` (6/6 PR CI PASS). Pages: PASS. Poslední potvrzené předchozí nasazení W2–W6: `a7a3492`. Aktuální HEAD vždy znovu ověř přes GitHub, protože dokumentace nebo další commity jej mohou změnit.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 247 unit testů zatím nebyla spuštěna jako celek.
 
-### CI main – snímek při aktualizaci
-- Nádražní 5.81 Forecourt photo WebGL: PASS ([run 45530735469](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45530735469))
-- Milovice 5.82 street-block photo WebGL: in_progress ([run 45530735775](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45530735775))
-- Validate Milovice Life RP: PASS ([run 45530735315](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45530735315))
-- pages build and deployment: PASS ([run 45530734493](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45530734493))
-- Milovice Italská road, facades and mobile WebGL: in_progress ([run 45530735183](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45530735183))
-- Browser smoke test (Milovice RP): in_progress ([run 45530735206](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45530735206))
-- Station photo WebGL smoke: PASS ([run 45530735147](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45530735147))
+### CI main – snímek při přípravě 5.309
+- Milovice 5.82 street-block photo WebGL: in_progress ([run 45531529489](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45531529489))
+- Station photo WebGL smoke: PASS ([run 45531529231](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45531529231))
+- pages build and deployment: PASS ([run 45531528154](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45531528154))
+- Milovice Italská road, facades and mobile WebGL: in_progress ([run 45531527663](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45531527663))
+- Browser smoke test (Milovice RP): in_progress ([run 45531527504](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45531527504))
+- Nádražní 5.81 Forecourt photo WebGL: in_progress ([run 45531527660](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45531527660))
+- Validate Milovice Life RP: PASS ([run 45531528116](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45531528116))
 
 ## Prioritní práce a otevřené PR
-- **5.308 (obnovení #100)**: kandidát build `20261125-juventa-photo-camera-530801`, přenesen na aktuální main se všemi W2–W6. Zdrojová fotka Komenského 05 (Doronenko, CC BY 4.0, 15. 8. 2024), uložená GPS 50.226810, 14.866101 a EXIF směr 98,62°, první průsečík původního polygonu školy hrana 47, cca 21,9 m od kamery. Kandidátní fasáda, nikoli zaměřený vchod. Optika a výška kamery modelové; žádné nové objekty. Metadata převzata z původního zdrojového modulu, znovu nezávisle neověřena. Opravy původního CI: literální kamerový registr a nezaokrouhlená diagnostika směru. Nové CI čeká. Po merge aktualizovat herní verzi a Pages zde.
-- **#101 (5.309)**: navazuje na #100, devět odhadnutých barevných okenních polí na kandidátní hraně 47; zatím nesloučeno. Až po #100 zkontrolovat rozdíly a testy.
+- **5.308 / #103 MERGED**: GPS 50.226810, 14.866101, směr 98,62° přesně potvrzen v mobilním WebGL; zdrojová metadata převzata z původního modulu, nikoli znovu ověřena. Hrana 47 kandidátní fasáda, nikoli zaměřený vchod. #100 uzavřen, větev zachována.
+- **5.309 (náhrada #101)**: devět modelových okenních sestav na hraně 47 (54 skleněných tabulí, 9 barevných akcentů, 144 trojúhelníků, jeden mesh, nula kolizí). Podklady AZ KLIMA a městské dokumentace z původní implementace; přesný počet, rozměry a umístění jsou odhad. Nově screenshot upload a kontrola po 7,1 s LOD. CI kandidáta čeká.
 - **#63 (5.279)**: dodatečný NPC chodec Pod Lesem, stará konfliktní větev; ponechat pro pozdější věcnou revizi. #36 a #37 uzavřeny jako nahrazené #38/#39, větve zachovány.
 
 ## Poslední herní práce
@@ -37,7 +37,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - Další technický backlog: profilovat paměť a FPS před optimalizací, oddělovat čisté funkce dopravy a UI s regresí; neprovádět hromadný přepis index.html.
 
 ## Přesně jeden další krok
-Ověřit CI obnoveného 5.308 a jeho nasazení po merge. Nezakládat další herní verzi před ověřením tohoto kandidáta; potom přenést #101 na aktuální main. Kontrolní pohled po nasazení: `?v=530801&streetAudit=juventa-school-5308`.
+Ověřit Pages a CI 5.308, otevřít/ověřit náhradní PR 5.309 a po úspěšném CI sloučit. Poté uzavřít #101, aktualizovat status a zkontrolovat skutečné screenshoty před modelováním dalších částí školy.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

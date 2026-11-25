@@ -48,4 +48,5 @@ jobs:
             browser-artifacts/milovice-street-58220-*.png
             browser-artifacts/vrutice-underground-5281-*.png
             browser-artifacts/armadni-houses-5282-*.png
+            browser-artifacts/juventa-*.png
           if-no-files-found: ignore
