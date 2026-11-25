@@ -59,7 +59,7 @@ Tento postup **nezruší omezení délky chatu, přemýšlení ani chyby služby
 - Šest hlavních workflow (Validate, browser smoke, Italská, street-block, Station, Nádražní) běží podle filtrů cest na PR do main a při push do main. Starší běh stejného workflow na stejném ref se zruší, pokud jej nahradí novější.
 - 59 historických regionálních workflow zůstává zachováno beze změny testovacích kroků. Běží ručně, při změnách konkrétních verzovaných testovacích/modulových cest na PR do main (pokud má workflow takové cesty), a v rozloženém týdenním plánu UTC. Společný index.html nebo regionální data už sama nespouští všechna historická workflow. Při změně sdílených subsystémů spusť ručně relevantní rozšířenou regresi před merge.
 - Čtyři workflow aktualizace mapy/terénu a existující GitHub Pages nasazování jsou nedotčené. Ověř konkrétní Pages run pro výsledný SHA main; samotný PASS v PR neprokazuje publikaci.
-- Jeden připravený atomický commit na pracovní větev, jedna PR proti aktuálnímu main; před zahájením další verze dokonči předchozí PR. Nevrstvi další verze na čekající větev. Průběžný stav testů zapisuj až společně s další skutečnou změnou, nikoli samostatným dokumentačním commitem.
+- Jeden připravený atomický commit na pracovní větev, jedna PR proti aktuálnímu main; před otevřením dalšího herního PR dokonči předchozí PR. Příprava dalšího kroku smí probíhat souběžně podle W7. Nevrstvi další PR na čekající větev. Průběžný stav testů zapisuj až společně s další skutečnou změnou, nikoli samostatným dokumentačním commitem.
 - Staré testy importů nesmějí vyžadovat zastaralý cache-busting token: kontroluj modul a validní token, nikoli historické číslo verze.
 
 ## W3 — úplnost kontrol a odolnost startu
@@ -83,3 +83,9 @@ Tento postup **nezruší omezení délky chatu, přemýšlení ani chyby služby
 
 - Původní dlouhý status zachován beze změny v `docs/archive/development-status-2026-11-25.md`. Nový status je jen aktuální snapshot, cílově 3–6 kB, nejvýše 10 kB. Při nové verzi přepisovat aktuální přehled, nepřidávat nekonečné bloky.
 - Nový chat: `AGENTS.md` + stručný status + živý main/PR/CI; relevantní moduly až potom. Staré chaty ani archiv nečíst rutinně. Nezaručuje rychlost ChatGPT ani zrušení limitu chatu.
+
+## W7 — souběžná příprava během CI a nasazení
+
+**W7 — souběžný vývoj (schváleno uživatelem 25. 11. 2026):** Během CI či Pages pokračuj konkrétní přípravou dalšího kroku, nikoli pouhým opakováním stavu. Nejvýše jeden aktivní herní PR a jedna oddělená přípravná větev (bez PR a bez zásahu do testovaného SHA). Základ přípravy je aktuální main; po jeho změně přenes pouze vlastní delta na nový main a zkontroluj konflikty a návaznosti. Je-li další krok přímo závislý na neověřeném kódu, připrav nezávislý modul, test nebo zdrojový audit místo předčasného propojení. Další PR otevři po dokončení předchozího PR, případně už během Pages/main CI; nikdy neslučuj, dokud neprošly potřebné kontroly kandidáta a předchozího herního main a nebylo potvrzeno jeho nasazení. Při selhání má oprava přednost. Neprováděj polling bez užitečné práce; neměň testovací pokrytí ani bezpečnostní brány. Nejde o práci asistenta na pozadí.
+
+Při každém `Pokračuj` zkontroluj výsledky jednou, případně bezpečně sluč, potom proveď konkrétní krok přípravy nebo implementace. Nevyžaduj opakované příkazy jen ke kontrole stavu. Přípravnou větev pojmenuj `prep/...`, zaznamenej základní SHA a skutečně hotové změny v handoffu nebo popisu existujícího PR. Při převodu na aktivní PR znovu ověř aktuální main. Pokud nelze bezpečně provést žádnou další změnu, vysvětli konkrétní blokér; nic neslučuj bez testů.
