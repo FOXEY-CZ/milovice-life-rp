@@ -1,3 +1,7 @@
+## Milovice RP 5.334 — ověření zvukového pokynu GPS
+
+Rozšířený Chromium smoke test používá skutečnou auditovanou silniční trasu z výchozího auta k HZS. Vyžaduje odbočku v pásmu 20–80 m, zapne tóny gestem, ověří nulový přírůstek při otevřené mapě, jediný naplánovaný směrový tón po zavření mapy a bezprostřední neopakování. Po vypnutí sleduje nulový přírůstek i při následné skutečné jízdě a brzdění. Bez změny zvukové politiky, routingu nebo scény; test neprokazuje slyšitelnost, výslovnost nebo aktivní hlasový pokyn za pohybu. Syntaxe testu ověřena, Chromium CI čeká.
+
 ## Milovice RP 5.333 — rozlišení sousedních GPS pokynů
 
 Geometrický pokyn nese identitu podle zdrojových silnic a polohy odbočky zaokrouhlené na centimetry. Dvě blízké odbočky stejného směru mají vlastní vzdálenostní fáze; ořez stejné trasy před odbočkou je nemění. Globální odstup 8 s i prahy 80/20 m zůstávají. Regrese kombinuje výpočet pokynu a zvukovou politiku na dvou modelových odbočkách, browser smoke kontroluje identitu skutečného auditovaného pokynu a diagnostiku po pohybu. Neověřuje dvě projeté odbočky ani fyzickou slyšitelnost. Nové silnice, objekty a síťové požadavky: 0. CI čeká.
