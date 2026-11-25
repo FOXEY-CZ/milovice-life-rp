@@ -1,3 +1,7 @@
+## Milovice RP 5.312 — skutečný výškový audit Juventy
+
+Diagnostika zachytí skutečně vytvořený základ školy a výšky aktivního DEM při konstrukci. 292 vzorků obvodu, původní OSM hash; pokrytí všech bodů bez fallbacku, obě pořadí Mladá/Westlink v Node testu, reálný Chromium test. Očekávané převýšení základny proti kandidátní fasádě 4,6–5,2 m. Žádná změna geometrie, kolizí ani terénu; absolutní datum stavebního řezu neznámé. Viz [DEM audit](docs/juventa-terrain-audit-5312.md). CI čeká.
+
 ## Milovice RP 5.311 — stavební audit vstupu Juventy
 
 Nová diagnostika v existujícím modelu školy: výšky z řezu DEKPROJEKT 2024 (lokální projektové datum), podesta +0,140 m, spodní terén −0,800 m, rozdíl 0,940 m, krytí 3,160 m nad podestou. OSM výstupek hran 48–50 cca 8,6 × 5,6 m je kandidát, nikoli ověřený přístřešek. Zachována původní geometrie, kolize a okna. Znovu ověřené stavební PDF a fotografie ATRIO IN; Commons v tomto průchodu nedostupné. Viz [audit](docs/juventa-school-facade-evidence-2026.md). CI čeká.

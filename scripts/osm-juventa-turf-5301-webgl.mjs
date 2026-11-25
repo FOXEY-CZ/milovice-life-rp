@@ -9,7 +9,7 @@ const browser=await chromium.launch({
 try{
  const view='pitch-juventa-5301',page=await browser.newPage({viewport:{width:393,height:852},deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
- await page.goto('http://127.0.0.1:8080/?v=531100&streetAudit='+view,{waitUntil:'domcontentloaded',timeout:35000});
+ await page.goto('http://127.0.0.1:8080/?v=531200&streetAudit='+view,{waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(view=>window.__miloviceAreasLoaded?.includes('mlada')&&
    window.__miloviceSportPitchCameraAudit?.targetInFrame===true&&
@@ -51,7 +51,7 @@ try{
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/juventa-5301-mobile.png'});
  console.log('PASS 5.301 mobile Juventa actual attached turf meshes after 7.1s LOD',JSON.stringify(state.render));
- await page.goto('http://127.0.0.1:8080/?v=531100&streetAudit=juventa-school-5308',{waitUntil:'domcontentloaded',timeout:35000});
+ await page.goto('http://127.0.0.1:8080/?v=531200&streetAudit=juventa-school-5308',{waitUntil:'domcontentloaded',timeout:35000});
  await page.waitForFunction(()=>window.__miloviceAreasLoaded?.includes('mlada')&&
   window.__miloviceStreetAuditRendered?.view==='juventa-school-5308'&&window.__miloviceJuventaSchool5306?.().visible,undefined,{timeout:120000});
  const photo=await page.evaluate(()=>({gps:window.__miloviceAuditCameraGPS,view:window.__miloviceStreetAuditRendered,school:window.__miloviceJuventaSchool5306?.(),windows:window.__miloviceJuventaWindows5309?.()}));
@@ -63,6 +63,15 @@ try{
  assert.equal(photo.view.cameraMode,'documented-photo-gps-and-heading');
  assert.equal(photo.view.photoCameraIsObjectSurvey,false);
  assert.equal(photo.school.photoAnchor5308.edge,47);
+ const terrain=photo.school.terrain5312;
+ assert(terrain,'missing actual foundation audit');
+ assert.equal(terrain.perimeterSamples,292);assert.equal(terrain.matchesCurrentFoundationPolicy,true);
+ assert(Math.abs(terrain.foundationPolicyDelta)<.002);
+ assert(terrain.perimeterRelief>7.7&&terrain.perimeterRelief<7.8);
+ assert(terrain.foundationAboveCandidateRange[0]>4.6&&terrain.foundationAboveCandidateRange[1]<5.3);
+ assert.equal(terrain.fallbackUsed,false);assert.equal(terrain.readyForGeometry,false);
+ assert.equal(terrain.newGeometry,0);assert.equal(terrain.newColliders,0);
+ console.log('PASS 5.312 actual school foundation vs loaded DEM',JSON.stringify(terrain));
  const section=photo.school.section5311;
  assert.equal(section?.stairRiseTotal,.94);assert.equal(section.canopyClearanceAboveLanding,3.16);
  assert.deepEqual(section.candidateOutlineProjection.edges,[48,49,50]);
