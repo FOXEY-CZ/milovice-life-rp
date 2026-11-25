@@ -20,4 +20,13 @@ assert.equal(at(53001,10,{instruction:{direction:'fake',distanceMetres:10}}),nul
 cue.reset();assert.equal(at(53002,10),'right');
 assert.equal(at(54000,10,{target:other}),null);
 assert.ok(Object.values(patterns).every(p=>p.length<=3&&p.every(f=>Number.isFinite(f)&&f>0)));
+// A distinct turn in the same direction must not inherit the previous distance stage.
+const keyed=create(),keyTarget={};
+const keyAt=(now,d,key)=>keyed.update({enabled:true,mapOpen:false,walking:false,target:keyTarget,instruction:{direction:'right',distanceMetres:d,maneuverKey:key},now});
+assert.equal(keyAt(0,60,'A'),'right');
+assert.equal(keyAt(8000,15,'A'),'right');
+assert.equal(keyAt(9000,45,'B'),null);
+assert.equal(keyAt(16000,40,'B'),'right');
+assert.equal(keyAt(24000,39,'B'),null);
+assert.equal(keyAt(24001,15,'B'),'right');
 console.log('PASS 5.330 GPS cue opt-in, rate limit, distance stages and reset');
