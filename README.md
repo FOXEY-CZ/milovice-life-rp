@@ -1,3 +1,7 @@
+## Milovice RP 5.314 — lokální výškové scénáře Juventy
+
+Diagnostika využívá již vypočtený konstrukční DEM audit, bez opakovaného vzorkování nebo nových meshů. Relativní úrovně řezu A přepočítány pro kandidátní spodní terén; nejsou zaměřeným vstupem ani absolutním datumem. Node porovnání obou uložených DEM, mobilní WebGL ověřuje aktivní DEM. CI čeká. [Podrobnosti](docs/juventa-local-section-5314.md).
+
 ## Milovice RP 5.313 — kontrolní přehled křídel Juventy
 
 Technický pohled shora `?v=531300&streetAudit=juventa-wings-5313`: červená A, modrá C, orientační registrace z uloženého odečtu DEKPROJEKT. 4 trojúhelníky a 2 obrysové smyčky pouze v auditním režimu, beze změny fyziky a půdorysu. Maximální reziduum kontrolních bodů cca 1,85 m není geodetická přesnost. Node a mobilní WebGL CI čeká.

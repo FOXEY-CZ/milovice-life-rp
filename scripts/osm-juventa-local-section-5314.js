@@ -1,4 +1,4 @@
-// Juventa 5.314, independent preparation; not imported into game.
+// Juventa 5.314, diagnostic scenario only; never affects geometry.
 // Source: DEKPROJEKT 2024-017735-AdM, PDF p.18, printed p.6, figure 2.
 // https://smlouvy.gov.cz/smlouva/soubor/40162820/Smlouva%20podepsan%C3%A1_redacted.pdf
 // Reopened 2026-11-25: section explicitly at main entrance of A, 4 above-ground
@@ -44,4 +44,22 @@ export function scenario(anchor, uncertainty) {
    hypotheticalElevationRanges:Object.fromEntries(Object.keys(min.elevations).map(k=>[k,[min.elevations[k].nominal,max.elevations[k].nominal]])),
    rangeIsConfidenceInterval:false,anchorIsVerifiedEntrance:false,
    worldDatumVerified:false,readyForGeometry:false,newGeometry:0,newColliders:0};
+ }
+
+ // Reuse the existing construction-time audit: no repeated sampling, no new meshes.
+ export function runtimeJuventaSection5314(terrain){
+  if(terrain?.sourceOSMId!=='53865836'||terrain.fallbackUsed!==false||
+    terrain.matchesCurrentFoundationPolicy!==true||!Number.isFinite(terrain.referenceBase)||
+    !Number.isFinite(terrain.actualFoundationElevation)||!Array.isArray(terrain.loadedRegionIds)||
+    JSON.stringify(terrain.candidateNodeIndices)!=='[47,48,49,50,51]'||
+    terrain.candidateNodeWorldY?.length!==5||
+    terrain.candidateNodeWorldY.some(y=>!Number.isFinite(y)))return null;
+  const anchors=terrain.candidateNodeWorldY.map(y=>y+terrain.referenceBase);
+  const lo=scenario(Math.min(...anchors),0),hi=scenario(Math.max(...anchors),0);
+  if(!lo||!hi)return null;
+  return {sourceOSMId:terrain.sourceOSMId,anchorNodeIndices:[...terrain.candidateNodeIndices],
+   loadedRegionIds:[...terrain.loadedRegionIds],existingFoundation:terrain.actualFoundationElevation,
+   hypotheticalElevationRanges:Object.fromEntries(Object.keys(lo.elevations).map(k=>[k,[lo.elevations[k].nominal,hi.elevations[k].nominal]])),
+   rangeIsConfidenceInterval:false,anchorIsVerifiedEntrance:false,worldDatumVerified:false,
+   readyForGeometry:false,newGeometry:0,newColliders:0};
  }

@@ -34,3 +34,10 @@ for(const regionId of ['mlada','westlink']){
  assert.equal(compare(input,{oldGrid,regionalGrids:[regionalGrids[0]]}),null);
 }
 console.log('PASS 5.314 hypothetical section ranges, both stored DEMs and geometry safety gates');
+
+import {runtimeJuventaSection5314 as runtime} from './osm-juventa-local-section-5314.js';
+const fixture={sourceOSMId:'53865836',fallbackUsed:false,matchesCurrentFoundationPolicy:true,referenceBase:200,actualFoundationElevation:222.017,candidateNodeIndices:[47,48,49,50,51],candidateNodeWorldY:[17.239,17.390,17.081,16.880,17.244],loadedRegionIds:['mlada']};
+const r=runtime(fixture);assert(r);assert.deepEqual(r.hypotheticalElevationRanges.lowerTerrain,[216.88,217.39]);assert.deepEqual(r.hypotheticalElevationRanges.landing,[217.82,218.33]);assert.deepEqual(r.hypotheticalElevationRanges.roofParapet,[233.29,233.8]);
+for(const patch of [{fallbackUsed:true},{matchesCurrentFoundationPolicy:false},{referenceBase:NaN},{candidateNodeWorldY:[1,2,3,4,NaN]},{candidateNodeIndices:[0,1,2,3,4]},{loadedRegionIds:null}])assert.equal(runtime({...fixture,...patch}),null);
+assert.equal(r.readyForGeometry,false);assert.equal(r.newColliders,0);
+console.log('PASS 5.314 construction-time scenario without geometry');

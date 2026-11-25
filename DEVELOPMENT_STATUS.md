@@ -3,13 +3,15 @@
 Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.312**, build `20261125-juventa-terrain-audit-531200`. 5.313 kandidát v pracovní větvi.
-- Main po #107: `8413775894346a8aa5920179978304537f5669d9`, 6/6 PR CI PASS; 5.311 7/7 main CI včetně Pages PASS. HEAD ověř živě.
+- Herní verze main: **5.313**, build `20261125-juventa-wing-audit-531300`. Kandidát 5.314 v pracovní větvi.
+- Main po #108: `f025780a17fc6fdcf29657c889070a8310f6bf95`, 6/6 PR CI PASS; Pages 5.313 dosud neověřeny. HEAD ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
-### CI 5.312
+### CI 5.312–5.313
 - #107 6/6 PR CI PASS, 7/7 main CI včetně Pages PASS (45628373388). Mobilní test potvrzuje výškový rozdíl 4,628–5,137 m.
+
+- #108 6/6 PR CI PASS; main CI a Pages čekají na ověření.
 
 ## Prioritní práce a otevřené PR
 - **5.308 / #103 MERGED**: GPS 50.226810, 14.866101, směr 98,62° přesně potvrzen v mobilním WebGL; zdrojová metadata převzata z původního modulu, nikoli znovu ověřena. Hrana 47 kandidátní fasáda, nikoli zaměřený vchod. #100 uzavřen, větev zachována.
@@ -34,7 +36,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - Další technický backlog: profilovat paměť a FPS před optimalizací, oddělovat čisté funkce dopravy a UI s regresí; neprovádět hromadný přepis index.html.
 
 ## Další krok podle W7
-5.313 kandidát: registrace objektů A/C a auditní pohled shora, červená A/modrá C, čtyři vizualizační trojúhelníky a dvě obrysové smyčky pouze v režimu juventa-wings-5313. Bez fyzické geometrie a kolizí. CI čeká. Další krok: dohledat výškový datum a nezávislé rozhraní křídel, nebo připravit výškově lokální zdrojově odůvodněnou modelovou variantu bez zásahu do produkčního půdorysu.
+5.314 kandidát: lokální výškové scénáře ze stávajícího runtime DEM auditu, bez nového vzorkování nebo geometrie. Node test a mobilní WebGL CI čekají. Další krok: potvrdit výškový datum, nebo přesunout pozornost na další zdrojově doloženou část mapy; nepřidávat fyzickou geometrii jen ze scénářů.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

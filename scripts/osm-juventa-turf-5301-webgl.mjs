@@ -72,6 +72,18 @@ try{
  assert.equal(terrain.fallbackUsed,false);assert.equal(terrain.readyForGeometry,false);
  assert.equal(terrain.newGeometry,0);assert.equal(terrain.newColliders,0);
  console.log('PASS 5.312 actual school foundation vs loaded DEM',JSON.stringify(terrain));
+ const local=photo.school.localSection5314;
+ assert(local,'missing 5.314 diagnostic');
+ assert.deepEqual(local.loadedRegionIds,terrain.loadedRegionIds);
+ assert.equal(local.existingFoundation,terrain.actualFoundationElevation);
+ const ranges=local.hypotheticalElevationRanges;
+ for(let i=0;i<2;i++){
+  assert(Math.abs(ranges.landing[i]-ranges.lowerTerrain[i]-.94)<.002);
+  assert(Math.abs(ranges.roofParapet[i]-ranges.lowerTerrain[i]-16.41)<.002);
+ }
+ for(const k of ['worldDatumVerified','readyForGeometry','anchorIsVerifiedEntrance','rangeIsConfidenceInterval'])assert.equal(local[k],false);
+ assert.equal(local.newGeometry,0);assert.equal(local.newColliders,0);
+ console.log('PASS 5.314 actual loaded DEM hypothetical section',JSON.stringify(local));
  const wings=photo.school.wings5313;
  assert(wings&&wings.candidateEdges.A.includes(47)&&wings.candidateEdges.C.includes(33));
  assert.equal(wings.readyForGeometry,false);
