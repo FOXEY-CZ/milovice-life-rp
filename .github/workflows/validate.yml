@@ -328,3 +328,5 @@ jobs:
         run: node scripts/map-route-recalculation-5326.test.mjs
       - name: Verify 5.327 geometric GPS instructions
         run: node scripts/map-route-instructions-5327.test.mjs
+      - name: Verify 5.328 bounded GPS instruction cache
+        run: node scripts/map-instruction-cache-5328.test.mjs
