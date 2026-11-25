@@ -25,4 +25,26 @@ assert(p.x>22.9&&!p.blocked,'can pass through portal beyond wall end');
 w.reset();
 assert.equal(w.collides(5,5,.35),false,'reset clears streamed city');
 assert.equal(w.stats().polygons,0);
-console.log('OK: OSM collision boundaries, swept movement, wall openings, sliding and reset');
+// Negative grid indices and obstacles spanning cell boundaries.
+const edge=makeMiloviceCollisionWorld({cellSize:8});
+assert(edge.addWall({x:-8,z:-12},{x:-8,z:12},.32));
+assert.equal(edge.collides(-8.3,-8.1,.35),true);
+assert.equal(edge.collides(-9,-8.1,.35),false);
+assert(edge.move(-10,-8.1,4,0,.35).blocked);
+assert.equal(edge.move(-10,14,4,0,.35).blocked,false);
+// Invalid data must not alter the grid or run unbounded loops.
+for(const size of [0,-1,NaN,Infinity])assert.throws(()=>makeMiloviceCollisionWorld({cellSize:size}),RangeError);
+const before=edge.stats();
+for(const thickness of [0,-1,NaN,Infinity])assert.equal(edge.addWall({x:1,z:1},{x:2,z:2},thickness),false);
+assert.equal(edge.addPolygon([null,{x:2,z:1},{x:2,z:2}]),false);
+assert.equal(edge.addWall({x:1e100,z:1},{x:2e100,z:2},.32),false);
+assert.equal(edge.addPolygon([{x:0,z:0},{x:1e8,z:0},{x:1e8,z:1e8},{x:0,z:1e8}]),false);
+assert.deepEqual(edge.stats(),before);
+assert.equal(edge.collides(1e100,0,.35),true);
+assert.equal(edge.collides(0,0,1e100),true);
+for(const [dx,dz,radius] of [[NaN,0,.35],[1e100,0,.35],[1,0,-1],[1,0,NaN]])
+ assert.deepEqual(edge.move(-10,0,dx,dz,radius),{x:-10,z:0,blocked:true});
+assert.equal(edge.move(NaN,0,1,0,.35).blocked,true);
+assert.equal(edge.move(-10,0,1,0,.35,null).blocked,true);
+assert.deepEqual(edge.stats(),before);
+console.log('OK: OSM collision boundaries, swept movement, wall openings, sliding and reset; input guards and grid boundaries');
