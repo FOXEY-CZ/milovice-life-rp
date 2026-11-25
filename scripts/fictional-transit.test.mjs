@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {TRANSIT_NAME,TRANSIT_CODE,TRANSIT_PALETTE,destinationLabel,transitRouteLabel,FALLBACK_STOPS} from './fictional-transit.js';
+assert.equal(TRANSIT_NAME,'CrossTransit');
+assert.equal(TRANSIT_CODE,'CT');
+assert.equal(destinationLabel('432'),'432 IRONFIELD');
+assert.equal(destinationLabel('S22'),'S22 IRONFIELD');
+assert.equal(destinationLabel('17','Other City'),'17 OTHER CITY');
+assert.equal(transitRouteLabel('432'),'CT 432');
+assert.equal(transitRouteLabel('S22'),'CT S22');
+assert.deepEqual(FALLBACK_STOPS.map(s=>s.z),[0,-105,-210,-320]);
+assert.equal(new Set(FALLBACK_STOPS.map(s=>s.name)).size,4);
+assert(FALLBACK_STOPS.every(s=>/^[A-Za-z ]+$/.test(s.name)));
+assert(Object.isFrozen(TRANSIT_PALETTE));
+console.log('PASS independent CrossTransit identity and preserved stop coordinates');
