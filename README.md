@@ -1,3 +1,7 @@
+## Milovice RP 5.330 — volitelný zvuk GPS
+
+V mapě je vypnutý výchozí přepínač GPS zvuku. Krátké původní syntetické tóny pro změny směru, konec silniční trasy a dosažení blízkosti cíle. Pokyny nejvýše jednou za 8 s, ve vzdálenostních pásmech 80/20 m, bez zvukových pokynů při otevřené mapě nebo pěší navigaci (vyjma oznámení dokončení). Zvuk běží přes stávající Web Audio kontext, rádio se nemění. Nejde o hlasové čtení instrukcí. Browser test kontroluje naplánování jediného tónu při dosažení cíle, nikoliv slyšitelnost fyzického reproduktoru. CI čeká.
+
 ## Milovice RP 5.329 — dosažení navigačního cíle
 
 Automatické ukončení navigace po nejméně 1,4 s ve vzdálenosti do 12 m pěšky nebo 10 m ve vozidle, ve vozidle navíc rychlost nejvýše 0,45 m/s. Vyžaduje alespoň tři časově odlišné vzorky a zavřenou mapu. Změna cíle, režimu nebo opuštění okolí obnoví podmínky. Zobrazuje oznámení o blízkosti cíle, nikoli potvrzeném vstupu do budovy. V režimu výběru lze vybrat i vlastní polohu. Používá existující 280ms cyklus a vymazání cíle, bez nové sítě nebo 3D objektů. Unit a browser CI čekají.
