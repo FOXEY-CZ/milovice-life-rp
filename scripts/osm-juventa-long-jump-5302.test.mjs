@@ -106,3 +106,19 @@ for(const regionId of ['mlada','westlink']){
  assert.equal(planJuventaSchoolShell5306({...school,regionId,tags:{...school.tags,'building:levels':'4'}}),null);
 }
 console.log('PASS 5.306: original 150m school footprint restored through source-specific size guard');
+
+import {JUVENTA_FACADE_5307,makeJuventaFacade5307,mapJuventaWallUV5307} from './osm-juventa-school-facade-5307.js';
+const palette5307=makeJuventaFacade5307(15.25);
+assert.equal(palette5307.bytes,512);assert.equal(palette5307.bandRows,8);
+assert.deepEqual([...palette5307.data.slice(0,4)],[84,76,71,255]);
+assert.deepEqual([...palette5307.data.slice(-4)],[228,217,190,255]);
+assert.equal(makeJuventaFacade5307(0),null);
+assert.equal(JUVENTA_FACADE_5307.wholePerimeterEstimated,true);
+const uv5307=Array.from({length:6},()=>[.2,.3]);
+const mock5307={index:null,groups:[{start:0,count:3,materialIndex:0},{start:3,count:3,materialIndex:1}],
+ attributes:{position:{count:6,getY:i=>[0,0,0,0,7.625,15.25][i]},
+ uv:{count:6,setXY:(i,x,y)=>{uv5307[i]=[x,y]}}}};
+assert.equal(mapJuventaWallUV5307(mock5307,15.25),true);
+assert.deepEqual(uv5307,[[.2,.3],[.2,.3],[.2,.3],[.5,0],[.5,.5],[.5,1]]);
+assert.equal(mapJuventaWallUV5307({...mock5307,index:{}},15.25),false);
+console.log('PASS 5.307: 512-byte facade palette, normalized wall UV only, original cap UVs preserved');
