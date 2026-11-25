@@ -10,3 +10,6 @@ Další krok: po dokončení #109 přenést přípravu na nový main, ověřit r
 - [DotaceEU, článek 4. 5. 2023](https://www.dotaceeu.cz/cs/evropske-fondy-v-cr/novinky/pro-hasice-a-ostatni-slozky-izs-jsme-pripravili-vi), fotografie průčelí: stejné charakteristické materiály a barevnost. Datum článku není nutně datum pořízení fotografie.
 
 Připraven vlastní jednobarevný periodický RGBA materiál 1 × 64 (256 B) s modelovým stínem a světlou hranou vodorovných pásů, samostatná paleta omítky, červené a skla. Barvy, perioda a odlesky odhadnuté; žádná fotografie ani její pixely nejsou součástí repozitáře. Nejsou potvrzeny orientace průčelí, přesný počet a šířky vrat, výška a půdorys věže. Materiál zatím není použit na herní budově. Node test připraven, neběžel. Další krok: registrovat průčelí k půdorysu, následně zapojit model v samostatné změně.
+
+## Integrace 5.315
+Původní výška, základ a kolize jsou ponechány. Jediný náhradní mesh s vlastní 1×128 RGBA texturou (512 B), dolní polovina světlá omítka, horní kovové pásy, rozdělení po celém obvodu je odhad. Generické doplňky se na tomto modelu nepoužijí. Schválené karty mají přednost. Dva Node testy a rozšíření existující mobilní WebGL regrese, výsledky čekají. Žádná nová věž nebo vrata. Původní fotografie nebyly v tomto kroku znovu otevřeny.
