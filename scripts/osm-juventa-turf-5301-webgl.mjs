@@ -23,6 +23,7 @@ try{
   jump:window.__miloviceJuventaRender5301?.('long-jump'),
   access:window.__miloviceJuventaAccess5304?.(),
   school:window.__miloviceJuventaSchool5306?.(),
+  hzs:window.__miloviceHZSShell5315?.(),
   sport:window.__miloviceSportPitchAudit,selected:document.querySelector('#street-audit-nav a.selected')?.dataset.auditId,
   canvas:document.querySelector('canvas')?.clientWidth}));
  assert.equal(state.camera.pitchId,'1472419116');assert.equal(state.camera.sport,'soccer');
@@ -40,6 +41,13 @@ try{
  console.log('PASS 5.302 mobile Juventa actual attached sand mesh after 7.1s LOD',JSON.stringify(state.jump));
  assert.deepEqual(state.access?.protectedWayIds,['1472419124','1472419127','1472419128','1076211056','1076211057','1076211058','1076211060']);
  assert.equal(state.access.segments,31);assert.equal(state.access.exactSourceJunctions,14);assert.equal(state.access.sourceCrossingId,'1076211056');assert.equal(state.access.newGeometry,0);
+ assert(state.hzs?.attached&&state.hzs.registered&&state.hzs.vertices>0,'HZS source shell missing');
+ assert.equal(state.hzs.sourceHash,'10a34d4b');assert.equal(state.hzs.sourceOutlineVertices,8);
+ assert.equal(state.hzs.textureBytes,512);assert.equal(state.hzs.plasterRows,64);
+ assert.equal(state.hzs.materialGroups,2);assert.equal(state.hzs.newColliders,0);
+ assert.equal(state.hzs.garageDoorsAdded,0);assert.equal(state.hzs.towerAdded,0);
+ assert.equal(await page.evaluate(()=>window.__miloviceHZSPreview5316?.()),null);
+ console.log('PASS 5.315 HZS attached exact shell after LOD',JSON.stringify(state.hzs));
  assert.equal(state.school?.sourceOSMId,'53865836');assert.equal(state.school.sourceOutlineVertices,72);
  assert(state.school.attached&&state.school.visible&&state.school.registered&&state.school.vertices>0);
  assert.equal(state.school.materialGroups,2);assert.equal(state.school.modelShellOnly,true);
@@ -119,5 +127,13 @@ try{
  assert.equal(overlay.physicalGeometry,0);assert.equal(overlay.newColliders,0);
  assert.deepEqual(errors,[]);
  await page.screenshot({path:'browser-artifacts/juventa-5313-wing-audit-mobile.png'});
+ await page.goto('http://127.0.0.1:8080/?v=531600&streetAudit=hzs-doors-5316',{waitUntil:'domcontentloaded',timeout:35000});
+ await page.waitForFunction(()=>window.__miloviceAreasLoaded?.includes('mlada')&&window.__miloviceHZSPreview5316?.()?.attached,undefined,{timeout:120000});
+ await page.waitForTimeout(7100);
+ const hzs=await page.evaluate(()=>window.__miloviceHZSPreview5316?.());
+ assert(hzs?.attached);assert.equal(hzs.doors,3);assert.equal(hzs.triangles,6);assert.equal(hzs.textureBytes,8192);
+ assert.equal(hzs.newColliders,0);assert.equal(hzs.facadeOrientationVerified,false);
+ await page.screenshot({path:'browser-artifacts/hzs-5316-model-preview.png'});
+ console.log('PASS 5.316 opt-in HZS garage door preview after LOD',JSON.stringify(hzs));
  console.log('PASS 5.313 actual mobile A/C audit-only overlays after 7.1s LOD',JSON.stringify(overlay));
 }finally{await browser.close()}

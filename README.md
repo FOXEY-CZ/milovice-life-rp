@@ -1,3 +1,11 @@
+## Milovice RP 5.316 — HZS technický náhled vrat
+
+Pouze režim `?v=531600&streetAudit=hzs-doors-5316`: tři modelová vrata na kandidátní stěně 3, vlastní 8 KiB textura, jeden mesh a šest trojúhelníků bez změny fyziky. Orientace, skutečné rozměry a počet vrat nejsou zaměřeny. Node a mobilní WebGL CI čekají. [Podklady](docs/hzs-garage-door-5316.md).
+
+## Milovice RP 5.315 — HZS Milovice, první modelová fasáda
+
+Původní OSM budova 985224523, RÚIAN 103284605, dvě podlaží, půdorys, základ, stávající výška a kolize zachovány. Vlastní 512B textura světle šedé omítky a vodorovného kovového opláštění; rozdělení materiálu na celém obvodu odhad, nikoli zaměření. Jediný náhradní mesh, bez generických domovních dekorací, nových vrat či věže. Respektuje schválené architektonické karty. Dva Node testy a mobilní WebGL CI čekají. [Podklady](docs/hzs-source-audit-5315.md).
+
 ## Milovice RP 5.314 — lokální výškové scénáře Juventy
 
 Diagnostika využívá již vypočtený konstrukční DEM audit, bez opakovaného vzorkování nebo nových meshů. Relativní úrovně řezu A přepočítány pro kandidátní spodní terén; nejsou zaměřeným vstupem ani absolutním datumem. Node porovnání obou uložených DEM, mobilní WebGL ověřuje aktivní DEM. CI čeká. [Podrobnosti](docs/juventa-local-section-5314.md).
