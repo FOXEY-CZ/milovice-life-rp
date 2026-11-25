@@ -1,3 +1,7 @@
+## Milovice RP 5.321 — první silniční navigace
+
+V autě či autobusu vybraný cíl využije stávající veřejný NPC graf a jednosměrky. Dijkstra s binární haldou, napojení na nejbližší úsek do 30 m od vozidla a 75 m od cíle. Fialová trasa na minimapě, vzdálenost po silnici, přepočet při pohybu o 15 m nejvýše jednou za 2 s (výběr a změna grafu ihned). Pěší navigace zůstává přímá. Nejde o ověřený vchod, zákazy odbočení ani kompletní silniční síť; při nenalezení trasy přímý směr zůstane. CI čeká.
+
 ## Milovice RP 5.320 — navigační cíl na minimapě
 
 Fialový diamant pro blízký cíl, šipka na okraji pro vzdálený a kroužek v okruhu 15 m. Směr je konzistentní s rotací mapy, aktualizace v existujícím 350ms cyklu. Zrušení cíle odstraní značku; zachované autobusové a pěší mise. Bez trasování, nových objektů nebo sítě. Node a browser CI čekají.

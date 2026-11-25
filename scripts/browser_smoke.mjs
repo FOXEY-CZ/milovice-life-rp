@@ -830,6 +830,17 @@ try{
  await page.locator('[data-spawn="sedan"]').click();
  if(!(await page.locator('#mode').innerText()).includes('Řidič auta'))throw new Error('Car spawn did not work');
  if(await page.locator('#doors').isVisible())throw new Error('Bus-only door button visible during car free roam');
+ await page.locator('#maplaunch').click();
+ await page.locator('#map-goal-5319').selectOption({label:'🚒 Hasičská stanice Milovice'});
+ await page.locator('#closemap').click();
+ await page.waitForFunction(()=>window.__miloviceMapRoadRoute5321?.()?.status,undefined,{timeout:10000});
+ const roadRoute=await page.evaluate(()=>window.__miloviceMapRoadRoute5321());
+ if(roadRoute.newLinks!==0||!['ready','no-route','off-road','destination-off-road'].includes(roadRoute.status)||
+   (roadRoute.status==='ready'&&(!Number.isFinite(roadRoute.distanceMetres)||roadRoute.entranceVerified!==false)))
+  throw Error('5.321 road route invalid '+JSON.stringify(roadRoute));
+ await page.locator('#maplaunch').click();await page.locator('#map-goal-clear-5319').click();await page.locator('#closemap').click();
+ await page.waitForFunction(()=>window.__miloviceMapRoadRoute5321?.()===null,undefined,{timeout:6000});
+ console.log('PASS 5.321 vehicle road routing lifecycle',roadRoute.status,roadRoute.distanceMetres);
  // Regression: exiting a sedan must never transform it into an unrelated bus.
  // A vehicle must keep its stable identity and unique 3D appearance.
  await page.waitForTimeout(550);
