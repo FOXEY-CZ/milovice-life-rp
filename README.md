@@ -1,4 +1,4 @@
-## Javorstín: City Life 5.335 — první etapa fiktivní identity
+## Brayleston: City Life 5.335 — první etapa fiktivní identity
 
 Pracovní značka, 62 názvů ulic, 14 mapových orientačních bodů a 6 oblastí ve slovníku. Veřejný HUD, cíle GPS, minimapa, výběr oblasti a názvy kontrolních bodů používají nové názvy; zdrojová data a navigační geometrie zůstávají. Skutečné OSM dlaždice, část textů a modelové nápisy nadále vyžadují náhradu, proto ještě nejde o release build. Test pokrytí dat a browser kontrola; CI čeká. [Plán vydání](docs/RELEASE_IDENTITY.md).
 

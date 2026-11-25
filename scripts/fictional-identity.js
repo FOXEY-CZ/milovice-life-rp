@@ -1,6 +1,6 @@
 // Working fictional player-facing names. Source names and identifiers remain unchanged.
-export const GAME_TITLE='Javorstín: City Life';
-export const CITY_NAME='Javorstín';
+export const GAME_TITLE='Brayleston: City Life';
+export const CITY_NAME='Brayleston';
 export const FICTION_NOTICE='Fiktivní město, postavy, podniky a události. Hra není spojena se skutečnými městy, institucemi ani provozovateli.';
 export const STREET_NAMES=Object.freeze({
  "5. května": "Den rozbřesku",
@@ -18,7 +18,7 @@ export const STREET_NAMES=Object.freeze({
  "Italská": "Jantarová",
  "Javorová": "Pod korunami",
  "Jiřická": "Mezi loukami",
- "K Milovicům": "K Javorstínu",
+ "K Milovicům": "K Braylestonu",
  "Kaštanová": "Ořechová alej",
  "Ke Hřišti": "K Zelené louce",
  "Komenského": "U Knihovny",
@@ -69,17 +69,17 @@ export const STREET_NAMES=Object.freeze({
 export const LANDMARK_NAMES=Object.freeze({
  "⛪ Kostel sv. Kateřiny": "⛪ Kostel U Lucerny",
  "🏨 Modrá hvězda": "🏨 Penzion Stříbrný měsíc",
- "🚉 Nádraží Milovice": "🚉 Nádraží Javorstín",
+ "🚉 Nádraží Milovice": "🚉 Nádraží Brayleston",
  "🚲 Cyklověž": "🚲 Cyklohub",
  "🏘️ Dům Mírová 36": "🏘️ Dům U Luceren",
  "🛒 Potraviny D a Š": "🛒 Potraviny Zrnova",
  "🏫 ZŠ T. G. Masaryka": "🏫 ZŠ U Knihovny",
- "🚒 Hasičská stanice Milovice": "🚒 Hasičská stanice Javorstín",
+ "🚒 Hasičská stanice Milovice": "🚒 Hasičská stanice Brayleston",
  "🏫 ZŠ Juventa": "🏫 ZŠ Rozbřesk",
- "🏥 Poliklinika Milovice": "🏥 Zdravotní centrum Javorstín",
+ "🏥 Poliklinika Milovice": "🏥 Zdravotní centrum Brayleston",
  "🏫 MŠ Sluníčko": "🏫 MŠ Mechulky",
- "🛒 Tesco": "🛒 JavoMarket",
- "🛒 Penny": "🛒 Levnohrad",
+ "🛒 Tesco": "🛒 BrayMart",
+ "🛒 Penny": "🛒 ValueNest",
  "🛒 Billa": "🛒 Vendoa"
 });
 export const REGION_NAMES=Object.freeze({

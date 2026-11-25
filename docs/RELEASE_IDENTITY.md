@@ -1,4 +1,4 @@
-# Příprava na vydání — Javorstín: City Life (pracovní značka)
+# Příprava na vydání — Brayleston: City Life (pracovní značka)
 
 Rozhodnutí uživatele 25. 11. 2026: fiktivní město, ulice, čtvrti, podniky a instituce; dále modelovat podle reálné předlohy. Zachovat zdrojové OSM/RÚIAN ID, GPS, data a interní vývojové kontroly. Veřejná identita nesmí tvrdit, že jde o skutečné město nebo oficiální produkt místních organizací. Přejmenování samo nezaručuje neidentifikovatelnost ani právní bezrizikovost.
 
@@ -13,3 +13,6 @@ Rozhodnutí uživatele 25. 11. 2026: fiktivní město, ulice, čtvrti, podniky a
 2. Vlastní herní mapa, bez skutečných popisků; stejná geometrie a GPS navigace.
 3. Fiktivní nápisy, adresy, instituce, interiéry, zastávky a mise.
 4. Oddělený release build, odstranění vývojových nástrojů z veřejného UI, kontrola licencí a názvu. Původní URL dočasně zachovat, neměnit repo bez plánované migrace.
+
+## Upřesnění názvu
+Uživatel preferuje anglický název. Pracovní značka Brayleston: City Life, město Brayleston; obchody BrayMart, ValueNest, Vendoa. České prostředí a texty zatím zůstávají. Základní veřejné hledání názvu neukázalo shodu; nejde o rešerši ochranných známek ani právní schválení.
