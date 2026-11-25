@@ -807,6 +807,18 @@ try{
  const reopened=await page.evaluate(()=>window.__miloviceMapLandmarks5318?.());
  if(reopened?.count!==14||reopened.attached!==14)throw Error('5.318 duplicate or missing markers on reopen');
  console.log('PASS 5.318 seven source landmarks, actual Leaflet markers and reopen',JSON.stringify(reopened));
+ await page.locator('#map-goal-5319').selectOption({label:'🚒 Hasičská stanice Milovice'});
+ await page.locator('#closemap').click();
+ await page.waitForFunction(()=>window.__miloviceMapGuidance5319?.()?.distanceMetres>0,undefined,{timeout:6000});
+ const nav=await page.evaluate(()=>window.__miloviceMapGuidance5319());
+ if(nav.name!=='🚒 Hasičská stanice Milovice'||nav.straightLine!==true||nav.entranceVerified!==false||!nav.arrow)
+  throw Error('5.319 missing game guidance '+JSON.stringify(nav));
+ if(await page.locator('#map-guidance-5319').getAttribute('hidden')!==null)throw Error('5.319 HUD hidden');
+ await page.locator('#maplaunch').click();
+ if(await page.locator('#map-goal-5319').inputValue()!=='7')throw Error('5.319 lost selected goal');
+ await page.locator('#map-goal-clear-5319').click();
+ if(await page.evaluate(()=>window.__miloviceMapGuidance5319())!==null)throw Error('5.319 clear failed');
+ console.log('PASS 5.319 selectable goal, HUD and clear',JSON.stringify(nav));
  await page.locator('#closemap').click();
  await page.locator('#rp-vehicles').click();
  await page.locator('[data-spawn="sedan"]').click();

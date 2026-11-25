@@ -1,3 +1,7 @@
+## Milovice RP 5.319 — jednoduchá navigace v herní mapě
+
+Kliknutí na orientační bod nebo výběr ze seznamu nastaví cíl. HUD ukazuje jméno, vzdálenost vzdušnou čarou a směr relativní k pohledu pěšího hráče nebo vozidlu; v okruhu 15 m zobrazí V blízkosti. Zrušení v mapě nebo HUDu. Bez trasování, ověření vstupu, nové geometrie nebo síťových dotazů. Node a browser CI čekají.
+
 ## Milovice RP 5.318 — rozšířená herní mapa
 
 14 orientačních bodů místo 7: HZS, Juventa, poliklinika, MŠ Sluníčko, Tesco, Penny a Billa přidané ze stávajících OSM obrysů. Barevné rozlišení škol, veřejných služeb a obchodů. Ochrana před souběžným načtením mapy a duplicitami při otevření; žádné další síťové požadavky ani nové 3D objekty. Node a browser CI čekají. [Podklady](docs/map-landmarks-5318.md).
