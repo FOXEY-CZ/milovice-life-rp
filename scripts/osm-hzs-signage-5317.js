@@ -49,3 +49,49 @@ export function makeHZSSign5317(kind,scale=2){
  return {width,height,data,text,rotationDegrees:rotated?90:0,photoPixels:0,
   estimatedFont:true,placementVerified:false,newColliders:0};
 }
+
+// Explicitly hypothetical model on the same candidate facade as the 5.316 doors.
+// No new collider, interior or verified site dimensions; ordinary gameplay unchanged.
+export function planHZSSignPreview5317(doorPlan,modelHeight){
+ if(doorPlan?.edge!==3||doorPlan.modelOnly!==true||!Number.isFinite(modelHeight)||modelHeight<4.6||
+ ![doorPlan.length,doorPlan.ux,doorPlan.uz,doorPlan.nx,doorPlan.nz].every(Number.isFinite)||
+ !Number.isFinite(doorPlan.a?.x)||!Number.isFinite(doorPlan.a?.z)||doorPlan.length<13||doorPlan.length>15)return null;
+ const sign=makeHZSSign5317('facade'),signWidth=8.4,signHeight=signWidth*sign.height/sign.width;
+ const signBottom=Math.max(doorPlan.height+.30,modelHeight*.72);
+ if(signBottom+signHeight>modelHeight-.1)return null;
+ const towerWidth=2.4,towerDepth=2.4,towerExtraHeight=5.5;
+ return {doorPlan,modelHeight,signWidth,signHeight,signBottom,
+  towerWidth,towerDepth,towerExtraHeight,towerAlong:1.7,modelOnly:true,
+  towerDimensionsVerified:false,placementVerified:false,newColliders:0};
+}
+export function renderHZSSignPreview5317(THREE,{plan,layer,baseHeight,enabled}={}){
+ if(enabled!==true||!plan||!layer||!Number.isFinite(baseHeight))return null;
+ const d=plan.doorPlan,group=new THREE.Group();
+ group.name='HZS_hypothetical_sign_and_tower_5317';
+ const coord=(s,y,inset=0)=>new THREE.Vector3(d.a.x+d.ux*s-d.nx*inset,baseHeight+y,d.a.z+d.uz*s-d.nz*inset);
+ // A camera outside the wall must read the text left-to-right, not mirrored.
+ const reverse=d.ux*d.nz-d.uz*d.nx<0;
+ const sign=(kind,center,bottom,width,height,inset)=>{
+  const tex=makeHZSSign5317(kind),map=new THREE.DataTexture(tex.data,tex.width,tex.height,THREE.RGBAFormat);
+  map.colorSpace=THREE.SRGBColorSpace;map.magFilter=THREE.NearestFilter;map.minFilter=THREE.NearestFilter;
+  map.generateMipmaps=false;map.needsUpdate=true;
+  const l=center+(reverse?1:-1)*width/2,r=center-(reverse?1:-1)*width/2;
+  const pos=[coord(l,bottom,inset),coord(r,bottom,inset),coord(r,bottom+height,inset),coord(l,bottom+height,inset)];
+  const g=new THREE.BufferGeometry().setFromPoints(pos);g.setAttribute('uv',new THREE.Float32BufferAttribute([0,0,1,0,1,1,0,1],2));g.setIndex([0,1,2,0,2,3]);
+  const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({map,alphaTest:.5,side:THREE.DoubleSide}));
+  m.name='HZS_model_sign_'+kind;group.add(m);return tex.data.byteLength;
+ };
+ const tower=new THREE.Mesh(new THREE.BoxGeometry(plan.towerWidth,plan.towerExtraHeight,plan.towerDepth),new THREE.MeshStandardMaterial({color:0xd5d6d3,roughness:.9}));
+ tower.position.copy(coord(plan.towerAlong,plan.modelHeight+plan.towerExtraHeight/2,plan.towerDepth/2));
+ tower.rotation.y=Math.atan2(-d.uz,d.ux);tower.name='HZS_model_tower_above_roof';group.add(tower);
+ const strip=new THREE.Mesh(new THREE.BoxGeometry(.66,plan.towerExtraHeight-.5,.04),new THREE.MeshStandardMaterial({color:0xb52b2d,roughness:.85}));
+ strip.position.copy(coord(plan.towerAlong-.65,plan.modelHeight+plan.towerExtraHeight/2,-.035));
+ strip.rotation.y=tower.rotation.y;group.add(strip);
+ const glass=new THREE.Mesh(new THREE.BoxGeometry(.36,plan.towerExtraHeight-1.1,.025),new THREE.MeshStandardMaterial({color:0x43565d,roughness:.32}));
+ glass.position.copy(coord(plan.towerAlong-.65,plan.modelHeight+plan.towerExtraHeight/2,-.07));
+ glass.rotation.y=tower.rotation.y;group.add(glass);
+ const textureBytes=sign('facade',d.length/2,plan.signBottom,plan.signWidth,plan.signHeight,-.04)+
+  sign('tower',plan.towerAlong+.52,plan.modelHeight+.9,.95,2.01,-.045);
+ layer.add(group);
+ return {group,meshes:5,triangles:40,textureBytes,newColliders:0,modelOnly:true,towerDimensionsVerified:false,placementVerified:false};
+}

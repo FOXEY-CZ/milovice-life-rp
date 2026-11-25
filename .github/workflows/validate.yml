@@ -306,3 +306,7 @@ jobs:
         run: node scripts/osm-hzs-source-audit-5315.test.mjs
       - name: Verify 5.315 HZS procedural shell and override guards
         run: node scripts/osm-hzs-facade-5315.test.mjs
+      - name: Verify 5.316 HZS model-only door preview
+        run: node scripts/osm-hzs-garage-door-5316.test.mjs
+      - name: Verify 5.317 HZS model-only tower and signage
+        run: node scripts/osm-hzs-signage-5317.test.mjs

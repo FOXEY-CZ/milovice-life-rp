@@ -17,3 +17,11 @@ assert.equal(b.rotationDegrees,90);assert.equal(a.rotationDegrees,0);
 for(const args of [['unknown',2],['tower',0],['tower',5],['facade',1.5]])assert.equal(make(...args),null);
 assert.equal(S.towerDimensionsVerified,false);assert.equal(S.newGeometry,0);assert.equal(S.newColliders,0);
 console.log('PASS 5.317 original transparent HZS signage and unverified placement gates');
+
+import {planHZSSignPreview5317 as plan,renderHZSSignPreview5317 as render} from './osm-hzs-signage-5317.js';
+const d={edge:3,modelOnly:true,length:14,height:3.3,ux:1,uz:0,nx:0,nz:-1,a:{x:0,z:0}};
+const p=plan(d,6.1);assert(p);assert.equal(p.towerExtraHeight,5.5);
+assert(p.signBottom>d.height);assert(p.signBottom+p.signHeight<6.1);
+assert.equal(p.newColliders,0);assert.equal(p.towerDimensionsVerified,false);
+assert.equal(plan({...d,edge:0},6.1),null);assert.equal(plan(d,2),null);assert.equal(render(null,{enabled:false}),null);
+console.log('PASS 5.317 model-only tower and sign layout gates');
