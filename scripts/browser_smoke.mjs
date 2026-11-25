@@ -874,6 +874,15 @@ try{
     routeAudit.newRoadLinks!==0||Math.abs(routeAudit.lengthMetres-roadRoute.distanceMetres)>.001)
   throw Error('5.322 actual source route audit failed '+JSON.stringify(routeAudit));
  console.log('PASS 5.322 verified HZS route legs',JSON.stringify(routeAudit));
+ // The same stationary vehicle and selected goal must not invoke the pathfinder again.
+ const stationaryRoute=await page.evaluate(()=>window.__miloviceRouteRecalculation5326());
+ if(stationaryRoute?.reason!=='changed'||!Number.isFinite(stationaryRoute.time))
+  throw Error('5.326 initial recalculation state missing '+JSON.stringify(stationaryRoute));
+ await page.waitForTimeout(2400);
+ const stillRoute=await page.evaluate(()=>window.__miloviceRouteRecalculation5326());
+ if(!stillRoute||stillRoute.time!==stationaryRoute.time||stillRoute.reason!==stationaryRoute.reason)
+  throw Error('5.326 stationary route was unnecessarily recalculated '+JSON.stringify({stationaryRoute,stillRoute}));
+ console.log('PASS 5.326 stationary vehicle cache',JSON.stringify(stillRoute));
  await page.locator('#maplaunch').click();
  await page.waitForFunction(()=>window.__miloviceFullMapRoute5323?.()?.attached===true,undefined,{timeout:6000});
  const fullRoute=await page.evaluate(()=>window.__miloviceFullMapRoute5323());

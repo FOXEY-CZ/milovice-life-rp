@@ -670,6 +670,7 @@ document.addEventListener('keydown',e=>{if(e.code==='Escape'&&mapPanel.classList
 
 import {roadRouteMapLines5323} from './scripts/map-road-route-lines-5323.js?v=532300';
 import {auditPublicRoadRoute5322} from './scripts/map-road-route-audit-5322.js?v=532200';
+import {routeRecalculation5326} from './scripts/map-route-recalculation-5326.js?v=532600';
 import {routePublicRoads5321} from './scripts/map-road-route-5321.js?v=532100';
 import {mapGoalMarker5320,drawMapGoalMarker5320} from './scripts/map-goal-minimap-5320.js?v=532000';
 import {calculateMapGuidance5319} from './scripts/map-guidance-5319.js?v=531900';
@@ -15346,20 +15347,21 @@ function updateMapRoadRoute5321(mapX,mapZ){
   mapRouteCache5321=null;if(el.textContent)el.textContent='';return null;
  }
  const now=performance.now(),old=mapRouteCache5321;
- const changed=!old||old.goal!==mapGoal5319||old.revision!==mapRoadRevision5321;
- if(changed||now-old.time>2000&&Math.hypot(mapX-old.x,mapZ-old.z)>15){
+ const reason=routeRecalculation5326(old,{now,x:mapX,z:mapZ,goal:mapGoal5319,revision:mapRoadRevision5321});
+ if(reason){
   const candidate=routePublicRoads5321(driveSegments,driveGraph,{x:mapX,y:mapZ},mapGoal5319.world);
   const audit=auditPublicRoadRoute5322(candidate,driveSegments);
   const result=candidate?.status==='ready'&&!audit?{status:'invalid-route',legs:[],newLinks:0}:candidate;
-  mapRouteCache5321={goal:mapGoal5319,revision:mapRoadRevision5321,time:now,x:mapX,z:mapZ,result,audit};
+  mapRouteCache5321={goal:mapGoal5319,revision:mapRoadRevision5321,time:now,x:mapX,z:mapZ,result,audit,reason};
  }
- const route=mapRouteCache5321.result;
+ const route=mapRouteCache5321?.result??null;
  const msg=route?.status==='ready'?' · Po silnici '+Math.round(route.distanceMetres)+' m':' · Silniční trasa nenalezena';
  if(el.textContent!==msg)el.textContent=msg;
  return route;
 }
 window.__miloviceMapRoadRoute5321=()=>mapRouteCache5321?.result??null;
 window.__miloviceRoadRouteAudit5322=()=>mapRouteCache5321?.audit??null;
+window.__miloviceRouteRecalculation5326=()=>{const c=mapRouteCache5321;return c?{time:c.time,x:c.x,z:c.z,reason:c.reason,revision:c.revision,status:c.result?.status??null}:null;};
 function drawMini(){mapGoalMini5320=null;const mapX=walking?px:x,mapZ=walking?pz:z,heading=walking?orbitYaw:angle;if(osmActive){
  const route5321=updateMapRoadRoute5321(mapX,mapZ);
  const w=180,h=180,scale=.30;mc.clearRect(0,0,w,h);mc.fillStyle='#203b33';mc.fillRect(0,0,w,h);
