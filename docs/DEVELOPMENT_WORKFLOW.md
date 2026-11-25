@@ -61,3 +61,20 @@ Tento postup **nezruší omezení délky chatu, přemýšlení ani chyby služby
 - Čtyři workflow aktualizace mapy/terénu a existující GitHub Pages nasazování jsou nedotčené. Ověř konkrétní Pages run pro výsledný SHA main; samotný PASS v PR neprokazuje publikaci.
 - Jeden připravený atomický commit na pracovní větev, jedna PR proti aktuálnímu main; před zahájením další verze dokonči předchozí PR. Nevrstvi další verze na čekající větev. Průběžný stav testů zapisuj až společně s další skutečnou změnou, nikoli samostatným dokumentačním commitem.
 - Staré testy importů nesmějí vyžadovat zastaralý cache-busting token: kontroluj modul a validní token, nikoli historické číslo verze.
+
+## W3 — úplnost kontrol a odolnost startu
+
+- `node scripts/validate.cjs` kontroluje také existenci statických lokálních importů všech pěti publikovaných HTML stránek včetně navazujících modulů. Neověřuje dynamicky sestavené URL ani dostupnost CDN.
+- `node scripts/dev-check.mjs --all` automaticky najde všechny `*.test.mjs` i starší `*-test.mjs`; po jednotlivém selhání pokračuje a na konci vypíše neúspěšné testy. `juventa` je nová cílená sada. Úplný běh je ruční nebo jednou týdně, ne při každém push.
+- Editorové náhledy nejsou podmínkou startu: odmítnutý přístup k browser localStorage vrací prázdnou lokální mapu, publikovaná architektura zůstává nezávislá. Herní verze 5.307 a uložená data se nemění.
+- `index.html` přesahuje 15 tisíc řádků. Další refaktor dělat po samostatných modulech a s mobilním/desktop WebGL testem, nikoli jednorázovým přepisem. Handoff má být po dokončení rozpracovaných PR zkrácen; zachovat historii v git/README.
+
+## W4 — paralelní browser regrese
+
+- Browser smoke (20 skriptů) a Italská (23 skriptů WebGL + dosavadní Node kontroly) běží každý ve třech izolovaných GitHub runner skupinách. Zachovány všechny původní příkazy, trigger filtry, časové limity jednotlivých skupin i původní jméno závěrečného kontrolního jobu. `fail-fast: false` zachová diagnostiku všech skupin i při selhání jedné.
+- Závěrečný job vyžaduje úspěch všech skupin. Každá má samostatný HTTP server s readiness kontrolou, cleanup a unikátní screenshot artefakt. Italská ukládá všechny vytvořené screenshoty, nejen historický výčet.
+- Cílem je kratší wall-clock čekání; skutečný přínos se měří až po CI. Paralelizace může spotřebovat více runner minut nebo čekat na volnou kapacitu. Nové plošné triggery nepřidávat.
+
+## W5 — oddělení terénního výpočtu
+
+- `scripts/terrain-elevation.js` obsahuje čisté funkce pro hranice DEM, trojúhelníkovou interpolaci, přednost starého města a fallback okraje. `index.html` zachovává dosavadní `terrainAt` rozhraní a stav regionů; geometrie, zdrojová data, výšková pravidla, LOD a herní verze se nemění. Regrese pokrývá umělé mřížky i skutečné ČÚZK vrcholy, běží v hlavním Validate.

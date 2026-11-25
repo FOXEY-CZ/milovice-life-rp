@@ -24,6 +24,8 @@ jobs:
           node-version: '22'
       - name: Validate HTML and JavaScript
         run: node scripts/validate.cjs
+      - name: Verify terrain sampling and real DEM grid vertices
+        run: node scripts/terrain-elevation.test.mjs
       - name: Check focused workstream runner interface
         run: node scripts/dev-check.mjs --list
       - name: Validate REBUILD 2.0 all-region, all-object street coverage

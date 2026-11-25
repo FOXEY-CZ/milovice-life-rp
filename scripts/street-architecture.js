@@ -42,7 +42,11 @@ export function normalizeArchitectureCards(raw){
  return result;
 }
 export function loadLocalArchitectureCards(storage){
- try{return normalizeArchitectureCards(JSON.parse(storage.getItem(STREET_STORAGE_KEY)||'{}'))}
+ try{
+  // Access the browser storage getter inside the guard: it can itself throw SecurityError.
+  const source=storage===undefined?globalThis.localStorage:storage;
+  return normalizeArchitectureCards(JSON.parse(source?.getItem(STREET_STORAGE_KEY)||'{}'));
+ }
  catch{return new Map()}
 }
 export function architecturePreviewDiagnostics(cards){
