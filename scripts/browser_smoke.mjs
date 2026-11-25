@@ -854,6 +854,40 @@ try{
  await page.screenshot({path:'browser-artifacts/milovice-full-road-route-5323.png'});
  await page.locator('#closemap').click();
  console.log('PASS 5.323 full map verified route',JSON.stringify(fullRoute));
+ // Exercise two additional targets without pretending every landmark is road-connected.
+ for(const target of [{name:'🛒 Tesco',gps:[50.2271913,14.8794758]},{name:'🛒 Billa',gps:[50.2290858,14.8620817]}]){
+  await page.locator('#maplaunch').click();
+  await page.locator('#map-goal-5319').selectOption({label:target.name});
+  await page.locator('#closemap').click();
+  await page.waitForFunction(name=>window.__miloviceMapGuidance5319?.()?.name===name&&!!window.__miloviceMapRoadRoute5321?.()?.status,target.name,{timeout:10000});
+  const next=await page.evaluate(()=>({route:window.__miloviceMapRoadRoute5321(),audit:window.__miloviceRoadRouteAudit5322()}));
+  await page.locator('#maplaunch').click();
+  if(next.route.status==='ready'){
+   const [lat,lon]=target.gps, x=(lon-14.889)*111320*Math.cos(50.226*Math.PI/180),y=(50.226-lat)*111320;
+   const offset=Math.hypot(next.route.destinationRoadPoint.x-x,next.route.destinationRoadPoint.y-y);
+   if(!Number.isFinite(offset)||offset>75.001||Math.abs(offset-next.route.targetOffset)>.001||
+      next.route.newLinks!==0||next.route.entranceVerified!==false||!next.audit?.valid||
+      !next.audit.obeysSegmentOneWay||!next.audit.usesExistingPublicSegments||
+      next.audit.legCount!==next.route.legs.length||Math.abs(next.audit.lengthMetres-next.route.distanceMetres)>.001)
+    throw Error('GPS switched target route invalid '+JSON.stringify({target,next,offset}));
+   if(next.route.legs.length){
+    await page.waitForFunction(()=>window.__miloviceFullMapRoute5323?.()?.attached===true,undefined,{timeout:6000});
+    const layer=await page.evaluate(()=>window.__miloviceFullMapRoute5323());
+    if(layer.layerCount!==1||layer.legCount!==next.route.legs.length||Math.abs(layer.distanceMetres-next.route.distanceMetres)>.001)
+     throw Error('GPS switched target stale map layer '+JSON.stringify({target,layer,next}));
+   }else{
+    await page.waitForFunction(()=>window.__miloviceFullMapRoute5323?.()===null,undefined,{timeout:6000});
+   }
+  }else{
+   if(!['off-road','destination-off-road','no-route'].includes(next.route.status)||next.route.legs.length||next.audit)
+    throw Error('GPS unexpected route failure '+JSON.stringify({target,next}));
+   await page.waitForFunction(()=>window.__miloviceFullMapRoute5323?.()===null,undefined,{timeout:6000});
+   if(!(await page.locator('#map-route-5321').textContent()).includes('Silniční trasa nenalezena'))
+    throw Error('GPS missing direct-guidance fallback '+target.name);
+  }
+  console.log('PASS GPS target switch',target.name,next.route.status,next.route.distanceMetres??null);
+  await page.locator('#closemap').click();
+ }
  await page.locator('#maplaunch').click();await page.locator('#map-goal-clear-5319').click();await page.locator('#closemap').click();
  await page.waitForFunction(()=>window.__miloviceMapRoadRoute5321?.()===null&&window.__miloviceRoadRouteAudit5322?.()===null&&window.__miloviceFullMapRoute5323?.()===null,undefined,{timeout:6000});
  console.log('PASS 5.321 vehicle road routing lifecycle',roadRoute.status,roadRoute.distanceMetres);
