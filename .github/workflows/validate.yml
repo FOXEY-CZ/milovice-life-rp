@@ -294,3 +294,5 @@ jobs:
         run: node scripts/osm-armadni-891-balconies-5285.test.mjs
       - name: Verify 5.310 original Pod Lesem branch pedestrian
         run: node scripts/osm-pod-lesem-branch-walker-5279.test.mjs
+      - name: Verify 5.311 Juventa entrance drawing levels and original projection
+        run: node scripts/osm-juventa-section-5311.test.mjs
