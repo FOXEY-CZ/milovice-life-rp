@@ -1,3 +1,7 @@
+## Milovice RP 5.331 — volitelná česká hlasová GPS
+
+Vedle zapnutí GPS zvuku lze zvolit český hlas. Používá pouze místní český hlas označený prohlížečem jako localService; při nedostupnosti nebo synchronní chybě zůstávají původní tóny. Hlášky mají vzdálenost zaokrouhlenou na 5 m, nepřekrývají se a nejsou frontovány. Změna cíle a vypnutí zvuku ruší aktivní GPS řeč. Hlas i zvuk ve výchozím nastavení vypnuty; rádio beze změny. CI čeká; skutečná česká výslovnost závisí na zařízení a není automaticky ověřena.
+
 ## Milovice RP 5.330 — volitelný zvuk GPS
 
 V mapě je vypnutý výchozí přepínač GPS zvuku. Krátké původní syntetické tóny pro změny směru, konec silniční trasy a dosažení blízkosti cíle. Pokyny nejvýše jednou za 8 s, ve vzdálenostních pásmech 80/20 m, bez zvukových pokynů při otevřené mapě nebo pěší navigaci (vyjma oznámení dokončení). Zvuk běží přes stávající Web Audio kontext, rádio se nemění. Nejde o hlasové čtení instrukcí. Browser test kontroluje naplánování jediného tónu při dosažení cíle, nikoliv slyšitelnost fyzického reproduktoru. CI čeká.
