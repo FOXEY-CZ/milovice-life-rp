@@ -835,11 +835,17 @@ try{
  await page.locator('#closemap').click();
  await page.waitForFunction(()=>window.__miloviceMapRoadRoute5321?.()?.status,undefined,{timeout:10000});
  const roadRoute=await page.evaluate(()=>window.__miloviceMapRoadRoute5321());
- if(roadRoute.newLinks!==0||!['ready','no-route','off-road','destination-off-road'].includes(roadRoute.status)||
-   (roadRoute.status==='ready'&&(!Number.isFinite(roadRoute.distanceMetres)||roadRoute.entranceVerified!==false)))
-  throw Error('5.321 road route invalid '+JSON.stringify(roadRoute));
+ if(roadRoute.status!=='ready'||roadRoute.newLinks!==0||!Number.isFinite(roadRoute.distanceMetres)||
+    roadRoute.distanceMetres<=0||roadRoute.entranceVerified!==false)
+  throw Error('5.322 actual HZS route required '+JSON.stringify(roadRoute));
+ const routeAudit=await page.evaluate(()=>window.__miloviceRoadRouteAudit5322());
+ if(!routeAudit?.valid||routeAudit.legCount!==roadRoute.legs.length||routeAudit.legCount<2||
+    routeAudit.obeysSegmentOneWay!==true||routeAudit.usesExistingPublicSegments!==true||
+    routeAudit.newRoadLinks!==0||Math.abs(routeAudit.lengthMetres-roadRoute.distanceMetres)>.001)
+  throw Error('5.322 actual source route audit failed '+JSON.stringify(routeAudit));
+ console.log('PASS 5.322 verified HZS route legs',JSON.stringify(routeAudit));
  await page.locator('#maplaunch').click();await page.locator('#map-goal-clear-5319').click();await page.locator('#closemap').click();
- await page.waitForFunction(()=>window.__miloviceMapRoadRoute5321?.()===null,undefined,{timeout:6000});
+ await page.waitForFunction(()=>window.__miloviceMapRoadRoute5321?.()===null&&window.__miloviceRoadRouteAudit5322?.()===null,undefined,{timeout:6000});
  console.log('PASS 5.321 vehicle road routing lifecycle',roadRoute.status,roadRoute.distanceMetres);
  // Regression: exiting a sedan must never transform it into an unrelated bus.
  // A vehicle must keep its stable identity and unique 3D appearance.
