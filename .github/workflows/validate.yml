@@ -316,3 +316,7 @@ jobs:
         run: node scripts/map-guidance-5319.test.mjs
       - name: Verify 5.320 minimap goal projection and canvas drawing
         run: node scripts/map-goal-minimap-5320.test.mjs
+      - name: Verify 5.321 directed public-road routing
+        run: node scripts/map-road-route-5321.test.mjs
+      - name: Verify 5.322 route source segments and direction
+        run: node scripts/map-road-route-audit-5322.test.mjs
