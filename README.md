@@ -1,3 +1,7 @@
+## Javorstín: City Life 5.335 — první etapa fiktivní identity
+
+Pracovní značka, 62 názvů ulic, 14 mapových orientačních bodů a 6 oblastí ve slovníku. Veřejný HUD, cíle GPS, minimapa, výběr oblasti a názvy kontrolních bodů používají nové názvy; zdrojová data a navigační geometrie zůstávají. Skutečné OSM dlaždice, část textů a modelové nápisy nadále vyžadují náhradu, proto ještě nejde o release build. Test pokrytí dat a browser kontrola; CI čeká. [Plán vydání](docs/RELEASE_IDENTITY.md).
+
 ## Milovice RP 5.334 — ověření zvukového pokynu GPS
 
 Rozšířený Chromium smoke test používá skutečnou auditovanou silniční trasu z výchozího auta k HZS. Vyžaduje odbočku v pásmu 20–80 m, zapne tóny gestem, ověří nulový přírůstek při otevřené mapě, jediný naplánovaný směrový tón po zavření mapy a bezprostřední neopakování. Po vypnutí sleduje nulový přírůstek i při následné skutečné jízdě a brzdění. Bez změny zvukové politiky, routingu nebo scény; test neprokazuje slyšitelnost, výslovnost nebo aktivní hlasový pokyn za pohybu. Syntaxe testu ověřena, Chromium CI čeká.
