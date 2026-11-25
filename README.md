@@ -1,3 +1,7 @@
+## Milovice RP 5.328 — cache navigačních pokynů
+
+Jeden uložený výsledek podle identity auditované trasy a přesné polohy vozidla. Při stání se výpočet neopakuje; jakákoli změna polohy, trasy nebo auditu vyvolá nový výpočet. Vymazání cíle a neplatná trasa uvolní cache. Diagnostika počtu výpočtů, zásahů cache a CPU času; žádný nový časovač ani zaokrouhlení polohy. Lokální jednotkový test PASS; integrace a browser CI čekají. Zvýšení FPS dosud neměřeno.
+
 ## Milovice RP 5.327 — navigační pokyny v HUDu
 
 Řidič vidí směr další výrazné změny mezi různými OSM silnicemi a zbývající vzdálenost po auditované trase. Při nejednoznačném promítnutí polohy nebo nedostupné trase se pokyn skryje; konec silniční trasy není potvrzený vchod. Geometrický pokyn není ověřená křižovatka ani ověřená možnost otočení. Bez nových silnic a síťových požadavků. Unit a browser CI čekají.

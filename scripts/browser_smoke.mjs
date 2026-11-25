@@ -893,6 +893,7 @@ try{
     routeAudit.newRoadLinks!==0||Math.abs(routeAudit.lengthMetres-roadRoute.distanceMetres)>.001)
   throw Error('5.322 actual source route audit failed '+JSON.stringify(routeAudit));
  console.log('PASS 5.322 verified HZS route legs',JSON.stringify(routeAudit));
+ const stationaryCache=await page.evaluate(()=>window.__miloviceInstructionCache5328());
  const stationaryRoute=await page.evaluate(()=>window.__miloviceRouteRecalculation5326());
  if(stationaryRoute?.reason!=='changed'||!Number.isFinite(stationaryRoute.time))throw Error('5.326 initial recalculation state missing');
  await page.waitForTimeout(2400);
@@ -900,6 +901,10 @@ try{
  if(!stillRoute||stillRoute.time!==stationaryRoute.time||stillRoute.reason!==stationaryRoute.reason)
   throw Error('5.326 stationary route unnecessarily recalculated '+JSON.stringify({stationaryRoute,stillRoute}));
  console.log('PASS 5.326 stationary vehicle cache',JSON.stringify(stillRoute));
+ const stillCache=await page.evaluate(()=>window.__miloviceInstructionCache5328());
+ if(stationaryCache.retainedEntries!==1||stillCache.retainedEntries!==1||stillCache.computations!==stationaryCache.computations||stillCache.hits<=stationaryCache.hits)
+  throw Error('5.328 stationary instruction cache failed '+JSON.stringify({stationaryCache,stillCache}));
+ console.log('PASS 5.328 stationary instruction cache',JSON.stringify({stationaryCache,stillCache}));
  const hudInstruction=await page.evaluate(async()=>{
   const {nextRouteInstruction5327}=await import('./scripts/map-route-instructions-5327.js?v=532700');
   const c=window.__miloviceRouteRecalculation5326();
@@ -986,6 +991,7 @@ try{
  await page.locator('#closemap').click();
  console.log('PASS 5.325 custom waypoint vehicle route',customVehicle.route.distanceMetres);
  // Use real driving input only, after all exact stationary route checks.
+ const beforeInstructionDrive=await page.evaluate(()=>window.__miloviceInstructionCache5328());
  const beforeDrive=await page.evaluate(()=>window.__miloviceRouteRecalculation5326());
  await page.keyboard.down('w');
  try{
@@ -998,6 +1004,12 @@ try{
  if(afterDrive.route?.status==='ready'?!afterDrive.audit?.valid:(!['off-road','destination-off-road','no-route'].includes(afterDrive.route?.status)||afterDrive.audit||afterDrive.route?.legs.length))
   throw Error('5.326 unsafe recalculated route '+JSON.stringify(afterDrive));
  console.log('PASS 5.326 moving vehicle cache',JSON.stringify({beforeDrive,afterDrive:afterDrive.cache}));
+ const movingInstructionCache=await page.evaluate(()=>window.__miloviceInstructionCache5328());
+ if(afterDrive.route?.status==='ready'&&(movingInstructionCache.computations<=beforeInstructionDrive.computations||movingInstructionCache.retainedEntries!==1))
+  throw Error('5.328 moving instruction cache failed '+JSON.stringify({beforeInstructionDrive,movingInstructionCache}));
+ if(movingInstructionCache.retainedEntries>1||!Number.isFinite(movingInstructionCache.meanMs)||movingInstructionCache.meanMs<0||movingInstructionCache.maxMs<0)
+  throw Error('5.328 invalid instruction timing '+JSON.stringify(movingInstructionCache));
+ console.log('PASS 5.328 moving instruction diagnostics',JSON.stringify(movingInstructionCache));
  // The driving regression leaves momentum. Brake with ordinary player input
  // before the existing exit/re-entry regression; the game refuses exit above .45 m/s.
  const stopped=()=>Number(document.getElementById('speed').textContent)===0;
@@ -1014,6 +1026,7 @@ try{
  await page.locator('#closemap').click();
  await page.waitForFunction(()=>window.__miloviceMapRoadRoute5321?.()===null&&window.__miloviceRoadRouteAudit5322?.()===null&&window.__miloviceFullMapRoute5323?.()===null,undefined,{timeout:6000});
  if(await page.evaluate(()=>window.__miloviceMapInstruction5327())!==null||await page.locator('#map-instruction-5327').isVisible())throw Error('5.327 stale instruction after clear');
+ if((await page.evaluate(()=>window.__miloviceInstructionCache5328())).retainedEntries!==0)throw Error('5.328 retained cleared route');
  console.log('PASS 5.321 vehicle road routing lifecycle',roadRoute.status,roadRoute.distanceMetres);
  // Regression: exiting a sedan must never transform it into an unrelated bus.
  // A vehicle must keep its stable identity and unique 3D appearance.
