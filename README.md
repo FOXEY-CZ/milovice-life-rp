@@ -1,3 +1,7 @@
+## Milovice RP 5.320 — navigační cíl na minimapě
+
+Fialový diamant pro blízký cíl, šipka na okraji pro vzdálený a kroužek v okruhu 15 m. Směr je konzistentní s rotací mapy, aktualizace v existujícím 350ms cyklu. Zrušení cíle odstraní značku; zachované autobusové a pěší mise. Bez trasování, nových objektů nebo sítě. Node a browser CI čekají.
+
 ## Milovice RP 5.319 — jednoduchá navigace v herní mapě
 
 Kliknutí na orientační bod nebo výběr ze seznamu nastaví cíl. HUD ukazuje jméno, vzdálenost vzdušnou čarou a směr relativní k pohledu pěšího hráče nebo vozidlu; v okruhu 15 m zobrazí V blízkosti. Zrušení v mapě nebo HUDu. Bez trasování, ověření vstupu, nové geometrie nebo síťových dotazů. Node a browser CI čekají.
