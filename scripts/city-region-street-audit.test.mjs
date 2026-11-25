@@ -3,12 +3,22 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
+import {JUVENTA_PHOTO_5308} from './osm-juventa-photo-anchor-5308.js';
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const start=html.indexOf('const rpStreetAuditViews={');
 const end=html.indexOf('\nconst rpStreetAuditView=',start);
 assert(start>0&&end>start,'Find actual game camera configuration');
 const config=runInNewContext(html.slice(start,end)+'\nrpStreetAuditViews;');
+// Keep the pure-data camera registry evaluable outside the browser, and
+// ensure the mirrored photo metadata never drifts from its source module.
+const photo=config['juventa-school-5308'];
+assert(photo);
+assert.equal(photo.camera.lat,JUVENTA_PHOTO_5308.camera.lat);
+assert.equal(photo.camera.lon,JUVENTA_PHOTO_5308.camera.lon);
+for(const key of ['heading','source','date','author'])assert.equal(photo[key],JUVENTA_PHOTO_5308[key]);
+assert.equal(photo.publicPhotoCamera,true);
+assert.equal(photo.estimatedHeading,false);
 const required=[
  ['tyrsova-west-593','westlink','202373467','Tyršova'],
  ['ostravska-north-593','centerlink','1463667018','Ostravská'],
