@@ -9,7 +9,7 @@ const browser=await chromium.launch({
 try{
  const view='pitch-juventa-5301',page=await browser.newPage({viewport:{width:393,height:852},deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const errors=[];page.on('pageerror',e=>errors.push(String(e.stack||e)));
- await page.goto('http://127.0.0.1:8080/?v=530700&streetAudit='+view,{waitUntil:'domcontentloaded',timeout:35000});
+ await page.goto('http://127.0.0.1:8080/?v=530801&streetAudit='+view,{waitUntil:'domcontentloaded',timeout:35000});
  try{
   await page.waitForFunction(view=>window.__miloviceAreasLoaded?.includes('mlada')&&
    window.__miloviceSportPitchCameraAudit?.targetInFrame===true&&
@@ -46,8 +46,24 @@ try{
  assert.equal(state.school.facade5307?.applied,true);assert.equal(state.school.facade5307.bytes,512);
  assert.equal(state.school.facade5307.bandRows,8);assert.equal(state.school.facade5307.newMeshes,0);
  assert.equal(state.school.facade5307.newColliders,0);
+ assert.equal(state.school.photoAnchor5308?.edge,47);assert.equal(state.school.photoAnchor5308.exactEntranceSurveyed,false);
  assert.equal(state.selected,view);assert(state.canvas>0);assert.deepEqual(errors,[]);
  await mkdir('browser-artifacts',{recursive:true});
  await page.screenshot({path:'browser-artifacts/juventa-5301-mobile.png'});
  console.log('PASS 5.301 mobile Juventa actual attached turf meshes after 7.1s LOD',JSON.stringify(state.render));
+ await page.goto('http://127.0.0.1:8080/?v=530801&streetAudit=juventa-school-5308',{waitUntil:'domcontentloaded',timeout:35000});
+ await page.waitForFunction(()=>window.__miloviceAreasLoaded?.includes('mlada')&&
+  window.__miloviceStreetAuditRendered?.view==='juventa-school-5308'&&window.__miloviceJuventaSchool5306?.().visible,undefined,{timeout:120000});
+ const photo=await page.evaluate(()=>({gps:window.__miloviceAuditCameraGPS,view:window.__miloviceStreetAuditRendered,school:window.__miloviceJuventaSchool5306?.()}));
+ assert(Math.abs(photo.gps.latitude-50.22681)<.000001);
+ assert(Math.abs(photo.gps.longitude-14.866101)<.000001);
+ assert(Number.isFinite(photo.gps.bearingDegreesExact));
+ assert(Math.abs(photo.gps.bearingDegreesExact-98.62)<.2,JSON.stringify(photo.gps));
+ assert.equal(photo.gps.bearingDegrees,99);
+ assert.equal(photo.view.cameraMode,'documented-photo-gps-and-heading');
+ assert.equal(photo.view.photoCameraIsObjectSurvey,false);
+ assert.equal(photo.school.photoAnchor5308.edge,47);
+ assert.deepEqual(errors,[]);
+ await page.screenshot({path:'browser-artifacts/juventa-5308-mobile.png'});
+ console.log('PASS 5.308: actual mobile review camera matches photo GPS and heading',JSON.stringify(photo.gps));
 }finally{await browser.close()}

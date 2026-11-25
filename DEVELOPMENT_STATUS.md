@@ -18,7 +18,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - Station photo WebGL smoke: PASS ([run 45530735147](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45530735147))
 
 ## Prioritní práce a otevřené PR
-- **#100 (5.308)**: zdrojová fotka Komenského 05, GPS a EXIF směr, kandidátní hrana školy 47 (nikoli zaměřený vchod). Starší větev je po údržbě v konfliktu s main; přenést jen relevantní změny do aktuálního main, zachovat W2–W5 a tento stručný formát. Ověřit CI.
+- **5.308 (obnovení #100)**: kandidát build `20261125-juventa-photo-camera-530801`, přenesen na aktuální main se všemi W2–W6. Zdrojová fotka Komenského 05 (Doronenko, CC BY 4.0, 15. 8. 2024), uložená GPS 50.226810, 14.866101 a EXIF směr 98,62°, první průsečík původního polygonu školy hrana 47, cca 21,9 m od kamery. Kandidátní fasáda, nikoli zaměřený vchod. Optika a výška kamery modelové; žádné nové objekty. Metadata převzata z původního zdrojového modulu, znovu nezávisle neověřena. Opravy původního CI: literální kamerový registr a nezaokrouhlená diagnostika směru. Nové CI čeká. Po merge aktualizovat herní verzi a Pages zde.
 - **#101 (5.309)**: navazuje na #100, devět odhadnutých barevných okenních polí na kandidátní hraně 47; zatím nesloučeno. Až po #100 zkontrolovat rozdíly a testy.
 - **#63 (5.279)**: dodatečný NPC chodec Pod Lesem, stará konfliktní větev; ponechat pro pozdější věcnou revizi. #36 a #37 uzavřeny jako nahrazené #38/#39, větve zachovány.
 
@@ -37,7 +37,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - Další technický backlog: profilovat paměť a FPS před optimalizací, oddělovat čisté funkce dopravy a UI s regresí; neprovádět hromadný přepis index.html.
 
 ## Přesně jeden další krok
-Po ověření aktuálního HEAD a doběhnutí zbývajících CI na nasazeném kódu obnovit **#100 na současném main** s minimálním diffs, bez vracení starých workflow nebo dokumentace. Nezakládat další herní verzi před ověřením #100. Potom teprve #101.
+Ověřit CI obnoveného 5.308 a jeho nasazení po merge. Nezakládat další herní verzi před ověřením tohoto kandidáta; potom přenést #101 na aktuální main. Kontrolní pohled po nasazení: `?v=530801&streetAudit=juventa-school-5308`.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
