@@ -1,3 +1,7 @@
+## Milovice RP 5.326 — automatický přepočet GPS
+
+Původní pravidlo (>2 s a >15 m pohybu) zachováno. Odchýlení od všech ověřených úseků může vyvolat přepočet po 1 s, při pohybu alespoň 8 m a odstupu větším než max(18 m, počáteční odstup + 8 m). Bez změn grafu a bez nových síťových požadavků. Stávající 350ms cyklus minimapy; lokální Node test modulu PASS, nové browser kontroly stání a jízdy čekají. Prahy jsou herní heuristiky.
+
 ## Milovice RP 5.325 — vlastní navigační bod
 
 Tlačítko Bod aktivuje výběr jednoho vlastního bodu na mapě. Pouze na načteném DEM; další kliknutí bez aktivního výběru nemění cíl. Bod má jednu fialovou mapovou značku a používá stávající HUD, minimapu a silniční navigaci; zrušení nebo volba jiného cíle odstraní vlastní značku. Nejde o ověřený vchod ani garanci silniční dostupnosti. Žádné nové silnice, síťové požadavky ani 3D objekty. Node a browser CI čekají.
