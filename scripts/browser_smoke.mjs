@@ -978,7 +978,31 @@ try{
  if(!await page.locator('#map-fit-route-5323').isEnabled())throw Error('5.324 fit route disabled with audited route');
  await page.locator('#map-fit-route-5323').click();
  await page.screenshot({path:'browser-artifacts/milovice-full-road-route-5323.png'});
+ // 5.334: use the actual nearby HZS instruction, not a fabricated route.
+ const nearby=await page.evaluate(()=>window.__miloviceMapInstruction5327());
+ if(!nearby||nearby.distanceMetres>80||nearby.distanceMetres<=20||!['left','right','reverse'].includes(nearby.direction))
+  throw Error('5.334 expected audited HZS approach within first cue band '+JSON.stringify(nearby));
+ const audioBefore=await page.evaluate(()=>({sound:window.__miloviceGpsSound5330(),voice:window.__miloviceGpsVoice5331()}));
+ if(audioBefore.sound.enabled||audioBefore.voice.selected)throw Error('5.334 expected muted tone mode');
+ await page.locator('#gps-sound-5330').click();
+ await page.waitForFunction(()=>window.__miloviceGpsSound5330()?.enabled===true,undefined,{timeout:6000});
+ await page.waitForTimeout(900);
+ const audioOpen=await page.evaluate(()=>window.__miloviceGpsSound5330());
+ if(audioOpen.count!==audioBefore.sound.count||audioOpen.error)
+  throw Error('5.334 audio scheduled with map open '+JSON.stringify(audioOpen));
  await page.locator('#closemap').click();
+ await page.waitForFunction(n=>window.__miloviceGpsSound5330()?.count>n,audioBefore.sound.count,{timeout:12000});
+ const carCue=await page.evaluate(()=>({sound:window.__miloviceGpsSound5330(),instruction:window.__miloviceMapInstruction5327(),mode:document.getElementById('mode').textContent}));
+ if(carCue.sound.count!==audioBefore.sound.count+1||carCue.sound.last!==nearby.direction||carCue.sound.error||carCue.sound.context!=='running'||!carCue.mode.includes('Řidič auta')||carCue.instruction?.direction!==nearby.direction)
+  throw Error('5.334 actual vehicle route cue mismatch '+JSON.stringify(carCue));
+ await page.waitForTimeout(900);
+ if(await page.evaluate(()=>window.__miloviceGpsSound5330().count)!==carCue.sound.count)
+  throw Error('5.334 stationary cue repeated immediately');
+ await page.locator('#maplaunch').click();
+ await page.locator('#gps-sound-5330').click();
+ if(await page.evaluate(()=>window.__miloviceGpsSound5330().enabled))throw Error('5.334 vehicle audio mute failed');
+ await page.locator('#closemap').click();
+ console.log('PASS 5.334 real audited vehicle cue, open-map suppression and mute',JSON.stringify(carCue));
  console.log('PASS 5.323 full map verified route',JSON.stringify(fullRoute));
  // Exercise two additional targets without pretending every landmark is road-connected.
  for(const target of [{name:'🛒 Tesco',gps:[50.2271913,14.8794758]},{name:'🛒 Billa',gps:[50.2290858,14.8620817]}]){
@@ -1045,6 +1069,8 @@ try{
  // Use real driving input only, after all exact stationary route checks.
  const beforeInstructionDrive=await page.evaluate(()=>window.__miloviceInstructionCache5328());
  const beforeDrive=await page.evaluate(()=>window.__miloviceRouteRecalculation5326());
+ const mutedBeforeDrive=await page.evaluate(()=>window.__miloviceGpsSound5330());
+ if(mutedBeforeDrive.enabled)throw Error('5.334 expected GPS mute before driving');
  await page.keyboard.down('w');
  try{
   await page.waitForFunction(before=>{
@@ -1076,6 +1102,10 @@ try{
   }finally{await page.keyboard.up('s');}
  }
  await page.waitForFunction(stopped,undefined,{timeout:30000});
+ const mutedAfterDrive=await page.evaluate(()=>window.__miloviceGpsSound5330());
+ if(mutedAfterDrive.enabled||mutedAfterDrive.count!==mutedBeforeDrive.count)
+  throw Error('5.334 muted GPS scheduled sound during real driving '+JSON.stringify({mutedBeforeDrive,mutedAfterDrive}));
+ console.log('PASS 5.334 no additional GPS audio during muted driving',JSON.stringify(mutedAfterDrive));
  console.log('PASS 5.326 vehicle stopped before exit regression');
  await page.locator('#maplaunch').click();await page.locator('#map-goal-clear-5319').click();
  if(!await page.locator('#map-fit-route-5323').isDisabled())throw Error('5.324 stale fit-route control after clearing');
