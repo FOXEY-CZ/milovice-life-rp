@@ -7,19 +7,19 @@ const known=Object.freeze({
  'zš t. g. masaryka':'🏫 ZŠ T. G. Masaryka','zš juventa':'🏫 ZŠ Juventa',
  'poliklinika milovice':'🏥 Poliklinika Milovice','mš sluníčko':'🏫 MŠ Sluníčko'
 });
-const shops=Object.freeze({supermarket:'Potraviny',convenience:'Potraviny',bakery:'Pekárna',jewelry:'Šperky',clothes:'Oděvy',florist:'Květinářství',hairdresser:'Kadeřnictví'});
-const amenities=Object.freeze({restaurant:'Restaurace',fast_food:'Bistro',clinic:'Zdravotní centrum',school:'Škola',pharmacy:'Lékárna',cafe:'Kavárna'});
+const shops=Object.freeze({supermarket:'Groceries',convenience:'Groceries',bakery:'Bakery',jewelry:'Jewelry',clothes:'Clothing',florist:'Florist',hairdresser:'Hair Salon'});
+const amenities=Object.freeze({restaurant:'Restaurant',fast_food:'Bistro',clinic:'Health Center',school:'School',pharmacy:'Pharmacy',cafe:'Cafe'});
 const keyOf=value=>typeof value==='string'?value.normalize('NFC').trim().toLocaleLowerCase('cs'):'';
 export function businessSignText(tags={}){
  const key=keyOf(tags.name);
  if(Object.hasOwn(known,key))return landmarkDisplayName(known[key]).replace(/^\S+\s+/u,'');
  if(Object.hasOwn(amenities,tags.amenity))return amenities[tags.amenity];
  if(Object.hasOwn(shops,tags.shop))return shops[tags.shop];
- return tags.shop?'Obchod':'Provozovna';
+ return tags.shop?'Shop':'Business';
 }
 export const STATIC_SIGN_TEXT=Object.freeze({
- station:'IRONFIELD',stationFallback:'IRONFIELD • NÁDRAŽÍ',
- busDestination:'432 • IRONFIELD',fallbackStreet:'STRÁŽNÍKŮ',
- fallbackLeisure:'SMĚR ZÁBAVNÍ PARK',school:'ZŠ U KNIHOVNY',
- hotel:'STŘÍBRNÝ MĚSÍC',bikeHub:'CYKLOHUB'
+ station:'IRONFIELD',stationFallback:'IRONFIELD • STATION',
+ busDestination:'432 • IRONFIELD',fallbackStreet:'SENTINEL ROAD',
+ fallbackLeisure:'AMUSEMENT PARK',school:'LIBRARY HILL SCHOOL',
+ hotel:'SILVERMOON INN',bikeHub:'CYCLEHUB'
 });

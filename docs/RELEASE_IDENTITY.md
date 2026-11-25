@@ -28,3 +28,6 @@ Leaflet vykresluje lokální geometrii šesti snapshotů přes Canvas, pouze fik
 
 ## 5.337
 První napojení fiktivních nápisů na 3D textury. Zbývají specializované nápisy, barevné identity, zastávky a Credits & Licenses. CI čeká.
+
+## Jazyk světa — rozhodnutí uživatele
+Všechny hráčské názvy ulic, oblastí, institucí, podniků a fyzické nápisy mají být anglické, nikoli české. České ovládání a interní zdrojové klíče zatím zachovat. Audit dalších textur a zastávek pokračuje.

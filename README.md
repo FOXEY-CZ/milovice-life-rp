@@ -1,6 +1,6 @@
 ## CROSSVEX 5.337 — fiktivní 3D nápisy
 
-Texty generických obchodních fasád, nádraží, školy, hotelu, cyklohubu a autobusu používají fiktivní slovník. Zdrojové klíče a geometrie zůstávají. Barvy značek a další specializované textury čekají na audit. CI čeká.
+Anglické názvy 62 ulic, 14 orientačních bodů a 6 oblastí. Texty generických obchodních fasád, nádraží, školy, hotelu, cyklohubu a autobusu používají fiktivní slovník. Zdrojové klíče a geometrie zůstávají. Barvy značek a další specializované textury čekají na audit. CI čeká.
 
 ## CROSSVEX 5.336 — lokální vektorová mapa Ironfieldu
 

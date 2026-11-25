@@ -60,7 +60,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** 5.337 kandidát: fiktivní texty generických obchodních fasád, nádraží, školy, hotelu, cyklohubu a autobusu; geometrie a zdrojové názvy zůstávají. Nové testy zatím nespouštěny. Další krok: ověřit CI, následně audit ostatních textur, zastávek, barev značek a Credits & Licenses. Kolizní příprava odložena.
+**Priorita:** 5.337 kandidát (anglické názvy světa): fiktivní texty generických obchodních fasád, nádraží, školy, hotelu, cyklohubu a autobusu; geometrie a zdrojové názvy zůstávají. Nové testy zatím nespouštěny. Další krok: ověřit CI, následně audit ostatních textur, zastávek, barev značek a Credits & Licenses. Kolizní příprava odložena.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

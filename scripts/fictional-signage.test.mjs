@@ -3,20 +3,20 @@ import {businessSignText,STATIC_SIGN_TEXT} from './fictional-signage.js';
 import {CITY_NAME} from './fictional-identity.js';
 for(const [name,expected] of [
  ['Tesco','BrayMart'],['PENNY','ValueNest'],[' Billa ','Vendoa'],
- ['Modrá hvězda','Penzion Stříbrný měsíc'],['Potraviny D a Š','Potraviny Zrnova'],
- ['ZŠ T. G. Masaryka','ZŠ U Knihovny'],['ZŠ Juventa','ZŠ Rozbřesk'],
- ['Poliklinika Milovice','Zdravotní centrum Ironfield'],['MŠ Sluníčko','MŠ Mechulky']
+ ['Modrá hvězda','Silvermoon Inn'],['Potraviny D a Š','Grainwell Market'],
+ ['ZŠ T. G. Masaryka','Library Hill School'],['ZŠ Juventa','Dawnridge School'],
+ ['Poliklinika Milovice','Ironfield Health Center'],['MŠ Sluníčko','Mosswood Preschool']
 ]){
  assert.equal(businessSignText({name}),expected);
  assert.equal(businessSignText({name:name.normalize('NFD')}),expected);
 }
 for(const [tags,expected] of [
- [{name:'Unknown real company',shop:'bakery'},'Pekárna'],
- [{name:'Unknown real company',amenity:'restaurant'},'Restaurace'],
- [{name:'Unknown real company',shop:'supermarket'},'Potraviny'],
- [{name:'Unknown real company',shop:'other'},'Obchod'],
- [{name:'Unknown real company'},'Provozovna'],
- [{name:'constructor',shop:'toString'},'Obchod'],[{},'Provozovna']
+ [{name:'Unknown real company',shop:'bakery'},'Bakery'],
+ [{name:'Unknown real company',amenity:'restaurant'},'Restaurant'],
+ [{name:'Unknown real company',shop:'supermarket'},'Groceries'],
+ [{name:'Unknown real company',shop:'other'},'Shop'],
+ [{name:'Unknown real company'},'Business'],
+ [{name:'constructor',shop:'toString'},'Shop'],[{},'Business']
 ]){
  const original=JSON.stringify(tags);
  assert.equal(businessSignText(tags),expected);
