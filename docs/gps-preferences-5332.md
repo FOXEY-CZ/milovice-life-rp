@@ -1,0 +1,3 @@
+# 5.332 — GPS preferences preparation
+
+Independent of pending #127. Versioned localStorage with safe access, strict booleans, bounded integer volume 0–100 and in-memory fallback when storage is unavailable. Default 100 preserves existing tone/voice gain. Saved sound preference is not runtime permission: integration must require a fresh trusted user gesture to resume Web Audio and must visibly distinguish saved-on from active sound. No speech, radio or audio-context creation in this module. Volume zero must suppress both tone and voice scheduling; do not pass a zero gain to an exponential ramp. Add actual reload and blocked-storage browser regression after #127. Unit test authored; execution pending.
