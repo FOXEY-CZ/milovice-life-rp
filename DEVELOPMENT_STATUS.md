@@ -3,8 +3,8 @@
 Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.331**, build `20261125-gps-voice-533100`. Kandidát 5.332.
-- Main po #127: `c4dc0e67c20af0aebc537d61a0a4b7577530b51e`, 6/6 PR CI PASS. 5.330 main 8/8 PASS včetně Pages (45688011969). 5.331 main/Pages čeká. HEAD ověř živě.
+- Herní verze main: **5.332**, build `20261125-gps-mobile-533200`. Kandidát 5.333.
+- Main po #128: `596a360b6e4649fa05e933efa05245391218708d`, 6/6 PR CI PASS. 5.331 main 7/7 PASS včetně Pages (45690416881). 5.332 main/Pages čeká. HEAD ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -59,7 +59,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - Další technický backlog: profilovat paměť a FPS před optimalizací, oddělovat čisté funkce dopravy a UI s regresí; neprovádět hromadný přepis index.html.
 
 ## Další krok podle W7
-5.331 sloučena, lokální český hlas s fallback tóny, 6/6 PR CI PASS. Skutečná slyšitelnost ani výslovnost neověřeny. 5.332 kandidát: samostatná lišta zvuku mimo rolovatelné licenční zápatí, mobilní hit-test a přepnutí hlasu; CI čeká. Dále: ověřit dostupnost obou režimů a skutečné pokyny při jízdě.
+5.332 sloučena, 6/6 PR CI PASS včetně mobilního hit-testu a přepnutí hlasu. 5.333 kandidát: samostatná identita sousedních odboček, zachován globální odstup 8 s. Obě sady asercí prošly v izolovaném JS prostředí, Node/CI čeká. Browser kontroluje identitu skutečné trasy; dvě projeté odbočky a fyzická slyšitelnost neověřeny. Dále: ověřit zvukový pokyn při jízdě.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
