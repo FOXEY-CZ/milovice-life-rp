@@ -46,7 +46,8 @@ for(const token of [
  "const isArmClinic=armLandmark?.kind==='polyclinic'",
  "window.__miloviceArmLandmarksRuntime=()=>{",
  "const isPhotoBillaSign=normalized==='billa'",
- "roofLetters:'BILLA',letterColour:'yellow'"
+ "roofLetters:upper,sourceRoofLetters:'BILLA',letterColour:'yellow'",
+ "const upper=businessSignText(tags).toLocaleUpperCase('cs');"
 ])assert(html.includes(token),'Missing protected integration: '+token);
 assert(/(?:const|let) floors=modelCard\?\.floors\?\?\(armLandmark\?\.floors/.test(html),
  'Original clinic floor-level fallback must still exist');

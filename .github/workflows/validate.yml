@@ -340,3 +340,6 @@ jobs:
         run: node scripts/fictional-identity.test.mjs
       - name: Verify local Ironfield vector map
         run: node scripts/ironfield-map.test.mjs
+
+      - name: Verify fictional 3D signage
+        run: node scripts/fictional-signage.test.mjs
