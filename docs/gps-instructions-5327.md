@@ -1,0 +1,5 @@
+# 5.327 — navigation instructions candidate
+
+Independent module based on the already audited route. Classifies direction change only between different OSM road IDs when adjacent legs are at least 3 m and the angle is at least 35 degrees; >=150 degrees means a reversal in route geometry, not a legal U-turn instruction. Distance follows route length, not straight-line distance. Projection limited to the first 60 m of the cached route; competing nearby projections, excessive offset, malformed geometry or unaudited routes suppress output. Road-end means end of verified road route, not confirmed entrance or arrival. Thresholds are gameplay heuristics; no lane, roundabout, intersection or turn-restriction verification. No new road links. Next: integrate a Czech HUD hint in the existing minimap tick after #122; show nothing when no reliable instruction exists. Unit tests authored; CI and local Node execution not yet performed.
+
+HUD integration prepared on main after #122. Czech text distinguishes end of road route and geometric reversal. Browser regression compares stationary HZS HUD against the module and requires clearing after goal removal. CI pending.

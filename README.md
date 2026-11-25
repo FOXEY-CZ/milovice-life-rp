@@ -1,3 +1,7 @@
+## Milovice RP 5.327 — navigační pokyny v HUDu
+
+Řidič vidí směr další výrazné změny mezi různými OSM silnicemi a zbývající vzdálenost po auditované trase. Při nejednoznačném promítnutí polohy nebo nedostupné trase se pokyn skryje; konec silniční trasy není potvrzený vchod. Geometrický pokyn není ověřená křižovatka ani ověřená možnost otočení. Bez nových silnic a síťových požadavků. Unit a browser CI čekají.
+
 ## Milovice RP 5.326 — automatický přepočet GPS
 
 Původní pravidlo (>2 s a >15 m pohybu) zachováno. Odchýlení od všech ověřených úseků může vyvolat přepočet po 1 s, při pohybu alespoň 8 m a odstupu větším než max(18 m, počáteční odstup + 8 m). Bez změn grafu a bez nových síťových požadavků. Stávající 350ms cyklus minimapy; lokální Node test modulu PASS, nové browser kontroly stání a jízdy čekají. Prahy jsou herní heuristiky.

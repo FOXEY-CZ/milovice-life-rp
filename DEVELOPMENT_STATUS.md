@@ -3,8 +3,8 @@
 Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.325**, build `20261125-custom-waypoint-532500`. Kandidát 5.326.
-- Main po #121: `675ddbbd6c70d8488b94cf36250cdb752e783305`, 6/6 PR CI PASS. 5.324 main 7/7 PASS včetně Pages (45674021791). 5.325 main 8/8 PASS včetně Pages (45676562536). HEAD ověř živě.
+- Herní verze main: **5.326**, build `20261125-route-recalculation-532600`. Kandidát 5.327.
+- Main po #122: `3997677cdc41c72978c9a6ee8bb1222da95f1ed4`, 6/6 PR CI PASS po opravě testu zastavení. 5.325 main 8/8 PASS včetně Pages (45676562536). 5.326 main/Pages čeká. HEAD ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -27,6 +27,8 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - #120 6/6 PR CI PASS, 7/7 main včetně Pages PASS.
 
 - #121 6/6 PR CI PASS, 8/8 main včetně Pages PASS.
+
+- #122 6/6 PR CI PASS po opravě brzdění, main čeká.
 
 ## Prioritní práce a otevřené PR
 - **5.308 / #103 MERGED**: GPS 50.226810, 14.866101, směr 98,62° přesně potvrzen v mobilním WebGL; zdrojová metadata převzata z původního modulu, nikoli znovu ověřena. Hrana 47 kandidátní fasáda, nikoli zaměřený vchod. #100 uzavřen, větev zachována.
@@ -51,7 +53,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - Další technický backlog: profilovat paměť a FPS před optimalizací, oddělovat čisté funkce dopravy a UI s regresí; neprovádět hromadný přepis index.html.
 
 ## Další krok podle W7
-5.325 sloučena, vlastní bod a řízení potvrzeny CI. 5.326 kandidát: přepočet při odchylce, původní pravidlo zachováno, lokální jednotkové testy PASS, první CI 5/6: stání/jízda a vymazání trasy PASS; pozdější výstup z jedoucího auta timeout. Oprava testu přidává brzdění a potvrzení 0 km/h bez změny herních pravidel. Nové CI čeká. Dále: ověřit nedostupné cíle a navigační instrukce.
+5.326 sloučena, přepočet a zastavení ověřeny. 5.327 kandidát: geometrický směr a vzdálenost po auditované trase v HUDu, skrytí při nejistotě nebo zrušení cíle. Node a browser CI čekají. Dále: ověřit pokyny během jízdy a změřit případný dopad na výkon.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
