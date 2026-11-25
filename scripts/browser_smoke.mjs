@@ -893,6 +893,13 @@ try{
     routeAudit.newRoadLinks!==0||Math.abs(routeAudit.lengthMetres-roadRoute.distanceMetres)>.001)
   throw Error('5.322 actual source route audit failed '+JSON.stringify(routeAudit));
  console.log('PASS 5.322 verified HZS route legs',JSON.stringify(routeAudit));
+ const stationaryRoute=await page.evaluate(()=>window.__miloviceRouteRecalculation5326());
+ if(stationaryRoute?.reason!=='changed'||!Number.isFinite(stationaryRoute.time))throw Error('5.326 initial recalculation state missing');
+ await page.waitForTimeout(2400);
+ const stillRoute=await page.evaluate(()=>window.__miloviceRouteRecalculation5326());
+ if(!stillRoute||stillRoute.time!==stationaryRoute.time||stillRoute.reason!==stationaryRoute.reason)
+  throw Error('5.326 stationary route unnecessarily recalculated '+JSON.stringify({stationaryRoute,stillRoute}));
+ console.log('PASS 5.326 stationary vehicle cache',JSON.stringify(stillRoute));
  await page.locator('#maplaunch').click();
  await page.waitForFunction(()=>window.__miloviceFullMapRoute5323?.()?.attached===true,undefined,{timeout:6000});
  const fullRoute=await page.evaluate(()=>window.__miloviceFullMapRoute5323());
@@ -966,6 +973,19 @@ try{
  await page.screenshot({path:'browser-artifacts/milovice-custom-vehicle-route-5325.png'});
  await page.locator('#closemap').click();
  console.log('PASS 5.325 custom waypoint vehicle route',customVehicle.route.distanceMetres);
+ // Use real driving input only, after all exact stationary route checks.
+ const beforeDrive=await page.evaluate(()=>window.__miloviceRouteRecalculation5326());
+ await page.keyboard.down('w');
+ try{
+  await page.waitForFunction(before=>{
+   const next=window.__miloviceRouteRecalculation5326?.();
+   return next&&next.time>before.time&&Math.hypot(next.x-before.x,next.z-before.z)>=8&&['movement','deviation'].includes(next.reason);
+  },beforeDrive,{timeout:20000});
+ }finally{await page.keyboard.up('w');}
+ const afterDrive=await page.evaluate(()=>({cache:window.__miloviceRouteRecalculation5326(),route:window.__miloviceMapRoadRoute5321(),audit:window.__miloviceRoadRouteAudit5322()}));
+ if(afterDrive.route?.status==='ready'?!afterDrive.audit?.valid:(!['off-road','destination-off-road','no-route'].includes(afterDrive.route?.status)||afterDrive.audit||afterDrive.route?.legs.length))
+  throw Error('5.326 unsafe recalculated route '+JSON.stringify(afterDrive));
+ console.log('PASS 5.326 moving vehicle cache',JSON.stringify({beforeDrive,afterDrive:afterDrive.cache}));
  await page.locator('#maplaunch').click();await page.locator('#map-goal-clear-5319').click();
  if(!await page.locator('#map-fit-route-5323').isDisabled())throw Error('5.324 stale fit-route control after clearing');
  await page.locator('#closemap').click();
