@@ -3,19 +3,13 @@
 Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.311**, build `20261125-juventa-section-audit-531100`. Kandidát 5.312 v pracovní větvi.
-- Main po #106: `19b9e9b1c4e27d35afcdb3064a4e069c3ffff078`, 6/6 PR CI PASS. Předchozí herní 5.310: 7/7 main CI včetně Pages PASS. HEAD vždy ověř živě.
+- Herní verze main: **5.312**, build `20261125-juventa-terrain-audit-531200`. 5.313 v přípravě.
+- Main po #107: `8413775894346a8aa5920179978304537f5669d9`, 6/6 PR CI PASS; 5.311 7/7 main CI včetně Pages PASS. HEAD ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
-### CI 5.311 – snapshot
-- Milovice Italská road, facades and mobile WebGL: in_progress ([run 45627445805](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45627445805))
-- Validate Milovice Life RP: in_progress ([run 45627445929](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45627445929))
-- Nádražní 5.81 Forecourt photo WebGL: in_progress ([run 45627445784](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45627445784))
-- Browser smoke test (Milovice RP): in_progress ([run 45627445770](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45627445770))
-- Milovice 5.82 street-block photo WebGL: in_progress ([run 45627445755](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45627445755))
-- Station photo WebGL smoke: PASS ([run 45627445815](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45627445815))
-- pages build and deployment: PASS ([run 45627445385](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45627445385))
+### CI 5.312
+- #107 6/6 PR CI PASS, main CI/Pages ověř živě. Mobilní test potvrzuje výškový rozdíl 4,628–5,137 m.
 
 ## Prioritní práce a otevřené PR
 - **5.308 / #103 MERGED**: GPS 50.226810, 14.866101, směr 98,62° přesně potvrzen v mobilním WebGL; zdrojová metadata převzata z původního modulu, nikoli znovu ověřena. Hrana 47 kandidátní fasáda, nikoli zaměřený vchod. #100 uzavřen, větev zachována.
@@ -40,7 +34,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - Další technický backlog: profilovat paměť a FPS před optimalizací, oddělovat čisté funkce dopravy a UI s regresí; neprovádět hromadný přepis index.html.
 
 ## Další krok podle W7
-5.312 kandidát: výškový audit skutečně vytvořeného základu školy, kontrola obou DEM a fallbacku, 292 obvodových vzorků, očekávaný rozdíl cca 4,6–5,2 m u kandidátní fasády. Build `20261125-juventa-terrain-audit-531200`. CI čeká. Během CI připravit zdrojově podložené členění komplexu (nepřidávat odhadnuté fyzické schody); po PASS ověřit skutečný log a Pages 5.311.
+5.313 příprava: registrace vyznačených objektů A/C z PDF str. 17, 4 ruční kontrolní body, max. reziduum cca 1,85 m, kandidátní masky GPS a blízkost hran. Modul + test bez geometrie v přípravné větvi. Ověřit test, připojit kontrolní vizualizaci pouze v auditním režimu a nezaměňovat masky za zaměřené rozhraní budov. Před merge ověř CI/Pages 5.312.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
