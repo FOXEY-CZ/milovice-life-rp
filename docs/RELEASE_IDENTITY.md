@@ -15,7 +15,10 @@ Rozhodnutí uživatele 25. 11. 2026: fiktivní město, ulice, čtvrti, podniky a
 4. Oddělený release build, odstranění vývojových nástrojů z veřejného UI, kontrola licencí a názvu. Původní URL dočasně zachovat, neměnit repo bez plánované migrace.
 
 ## Upřesnění názvu
-Uživatel preferuje anglický název. Pracovní značka CROSSVEX, město Brayleston; obchody BrayMart, ValueNest, Vendoa. České prostředí a texty zatím zůstávají. Základní veřejné hledání názvu neukázalo shodu; nejde o rešerši ochranných známek ani právní schválení.
+Uživatel preferuje anglický název. Pracovní značka CROSSVEX, město Ironfield; obchody BrayMart, ValueNest, Vendoa. České prostředí a texty zatím zůstávají. Základní veřejné hledání názvu neukázalo shodu; nejde o rešerši ochranných známek ani právní schválení.
 
 ## Zvolená pracovní značka
-Uživatel vybral CROSSVEX; Brayleston zůstává názvem fiktivního města, nikoli hry. Slogan návrh: Beyond the rules. Základní webové hledání nenašlo stejnojmennou videohru, ale našlo použití jako hráčské přezdívky. Před vydáním prověřit ochranné známky v relevantních jurisdikcích. Repozitář a URL zatím zůstávají stejné kvůli kompatibilitě.
+Uživatel vybral CROSSVEX; Ironfield zůstává názvem fiktivního města, nikoli hry. Slogan návrh: Beyond the rules. Základní webové hledání nenašlo stejnojmennou videohru, ale našlo použití jako hráčské přezdívky. Před vydáním prověřit ochranné známky v relevantních jurisdikcích. Repozitář a URL zatím zůstávají stejné kvůli kompatibilitě.
+
+## Potvrzený název města
+Uživatel zvolil Ironfield jako fiktivní město ve hře CROSSVEX. Změněny hráčské popisky mapy, minimapy, cíle GPS a související ulice. Existující fiktivní obchodní názvy a český jazyk zachovány. Právní dostupnost názvu před vydáním ještě prověřit.

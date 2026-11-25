@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {GAME_TITLE,STREET_NAMES,LANDMARK_NAMES,REGION_NAMES,streetDisplayName,landmarkDisplayName,regionDisplayName} from './fictional-identity.js';
+import {GAME_TITLE,CITY_NAME,STREET_NAMES,LANDMARK_NAMES,REGION_NAMES,streetDisplayName,landmarkDisplayName,regionDisplayName} from './fictional-identity.js';
 const paths=["data/milovice-osm.json","data/regions/mlada.json","data/regions/vrutice.json","data/regions/westlink.json","data/regions/centerlink.json","data/regions/bozidar.json"];
 const names=new Set();
 for(const path of paths){
@@ -18,4 +18,7 @@ assert.equal(landmarkDisplayName('🛒 Tesco'),'🛒 BrayMart');
 assert.equal(regionDisplayName('mlada'),'Javorové sídliště');
 for(const v of [null,undefined,'__proto__','constructor','neznámý název'])assert.equal(streetDisplayName(v),'Nepojmenovaná cesta');
 assert.equal(GAME_TITLE,'CROSSVEX');
+assert.equal(CITY_NAME,'Ironfield');
+assert.equal(landmarkDisplayName('🚉 Nádraží Milovice'),'🚉 Nádraží Ironfield');
+assert.equal(streetDisplayName('K Milovicům'),'K Ironfieldu');
 console.log('PASS fictional identity: all source street names, 14 landmarks and 6 regions');

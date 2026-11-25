@@ -60,7 +60,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Nová priorita uživatele:** [CROSSVEX — příprava vydání](docs/RELEASE_IDENTITY.md). 5.334 sloučena (6/6 PR CI PASS), fyzická slyšitelnost a aktivní zvuk při pohybu neověřeny. 5.335 kandidát: slovník 62 ulic, 14 cílů, 6 oblastí a první veřejné popisky. Ověřeno pokrytí všech 6 snapshotů; první CI 5/6 PASS, Validate selhala na historickém natvrdo zadaném titulku. Opraven test podle GAME_TITLE, změna anglické pracovní značky; následující CI 6/6 PASS na b73317b. Uživatel vybral CROSSVEX, město Brayleston; nové CI po změně názvu čeká. **Další krok: vlastní herní mapa bez skutečných OSM popisků**, potom 3D nápisy, adresy, zastávky a release balíček. Kolizní příprava `prep/collision-guards-5335` (284ecca) odložena, nemazat; později přenést jen deltu.
+**Nová priorita uživatele:** [CROSSVEX — příprava vydání](docs/RELEASE_IDENTITY.md). 5.334 sloučena (6/6 PR CI PASS), fyzická slyšitelnost a aktivní zvuk při pohybu neověřeny. 5.335 kandidát: slovník 62 ulic, 14 cílů, 6 oblastí a první veřejné popisky. Ověřeno pokrytí všech 6 snapshotů; první CI 5/6 PASS, Validate selhala na historickém natvrdo zadaném titulku. Opraven test podle GAME_TITLE, změna anglické pracovní značky; následující CI 6/6 PASS na b73317b. CROSSVEX předchozí CI 6/6 PASS na 35f1c65. Uživatel potvrdil město Ironfield; nové CI po změně názvu čeká. **Další krok: vlastní herní mapa bez skutečných OSM popisků**, potom 3D nápisy, adresy, zastávky a release balíček. Kolizní příprava `prep/collision-guards-5335` (284ecca) odložena, nemazat; později přenést jen deltu.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

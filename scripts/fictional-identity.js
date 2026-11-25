@@ -1,6 +1,6 @@
 // Working fictional player-facing names. Source names and identifiers remain unchanged.
 export const GAME_TITLE='CROSSVEX';
-export const CITY_NAME='Brayleston';
+export const CITY_NAME='Ironfield';
 export const FICTION_NOTICE='Fiktivní město, postavy, podniky a události. Hra není spojena se skutečnými městy, institucemi ani provozovateli.';
 export const STREET_NAMES=Object.freeze({
  "5. května": "Den rozbřesku",
@@ -18,7 +18,7 @@ export const STREET_NAMES=Object.freeze({
  "Italská": "Jantarová",
  "Javorová": "Pod korunami",
  "Jiřická": "Mezi loukami",
- "K Milovicům": "K Braylestonu",
+ "K Milovicům": "K Ironfieldu",
  "Kaštanová": "Ořechová alej",
  "Ke Hřišti": "K Zelené louce",
  "Komenského": "U Knihovny",
@@ -69,14 +69,14 @@ export const STREET_NAMES=Object.freeze({
 export const LANDMARK_NAMES=Object.freeze({
  "⛪ Kostel sv. Kateřiny": "⛪ Kostel U Lucerny",
  "🏨 Modrá hvězda": "🏨 Penzion Stříbrný měsíc",
- "🚉 Nádraží Milovice": "🚉 Nádraží Brayleston",
+ "🚉 Nádraží Milovice": "🚉 Nádraží Ironfield",
  "🚲 Cyklověž": "🚲 Cyklohub",
  "🏘️ Dům Mírová 36": "🏘️ Dům U Luceren",
  "🛒 Potraviny D a Š": "🛒 Potraviny Zrnova",
  "🏫 ZŠ T. G. Masaryka": "🏫 ZŠ U Knihovny",
- "🚒 Hasičská stanice Milovice": "🚒 Hasičská stanice Brayleston",
+ "🚒 Hasičská stanice Milovice": "🚒 Hasičská stanice Ironfield",
  "🏫 ZŠ Juventa": "🏫 ZŠ Rozbřesk",
- "🏥 Poliklinika Milovice": "🏥 Zdravotní centrum Brayleston",
+ "🏥 Poliklinika Milovice": "🏥 Zdravotní centrum Ironfield",
  "🏫 MŠ Sluníčko": "🏫 MŠ Mechulky",
  "🛒 Tesco": "🛒 BrayMart",
  "🛒 Penny": "🛒 ValueNest",
