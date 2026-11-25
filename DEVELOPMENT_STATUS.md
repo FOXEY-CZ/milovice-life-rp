@@ -6,16 +6,10 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - Herní verze main: **5.310**, build `20261125-pod-lesem-branch-walker-531000`.
 - Main po #105: `f78ceac97d9d000c50fa9544aeb9a6b66fcc6e3d`, 6/6 PR CI PASS; Pages PASS (45532883584). Předchozí herní 5.309: 7/7 main CI včetně Pages PASS. HEAD vždy ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
-- PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 248 unit testů zatím nebyla spuštěna jako celek.
+- PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 249 unit testů zatím nebyla spuštěna jako celek.
 
-### CI 5.310 – snímek při aktualizaci W7
-- Validate Milovice Life RP: in_progress ([run 45532883662](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45532883662))
-- Milovice Italská road, facades and mobile WebGL: in_progress ([run 45532883644](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45532883644))
-- Browser smoke test (Milovice RP): in_progress ([run 45532883698](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45532883698))
-- Station photo WebGL smoke: in_progress ([run 45532883592](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45532883592))
-- Nádražní 5.81 Forecourt photo WebGL: in_progress ([run 45532883679](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45532883679))
-- Milovice 5.82 street-block photo WebGL: in_progress ([run 45532883729](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45532883729))
-- pages build and deployment: waiting ([run 45532883584](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45532883584))
+### CI 5.310
+- 7/7 main kontrol PASS včetně Pages (45532883584); W7 docs-only Pages 45533060570 PASS.
 
 ## Prioritní práce a otevřené PR
 - **5.308 / #103 MERGED**: GPS 50.226810, 14.866101, směr 98,62° přesně potvrzen v mobilním WebGL; zdrojová metadata převzata z původního modulu, nikoli znovu ověřena. Hrana 47 kandidátní fasáda, nikoli zaměřený vchod. #100 uzavřen, větev zachována.
@@ -38,7 +32,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - Další technický backlog: profilovat paměť a FPS před optimalizací, oddělovat čisté funkce dopravy a UI s regresí; neprovádět hromadný přepis index.html.
 
 ## Další krok podle W7
-5.311 příprava: stavební řez vstupu A, DEKPROJEKT 2024, samostatný modul a unit test v této přípravné větvi; doložené kóty, nová geometrie zatím blokována chybějícím přiřazením půdorysu a výškového data. Zkontroluj test a navrhni propojení s původní mapou. Před dalším merge ověř CI a Pages 5.310. Žádný otevřený herní PR po #105. Neprováděj opakovaný polling bez další práce.
+5.311 kandidát: doložené kóty podesty a krytí, výstupek původního půdorysu 48–51, pouze diagnostika v existující škole. Build `20261125-juventa-section-audit-531100`, CI čeká. Neztotožňovat výstupek s ověřeným vstupem, bez výškového data nebudovat fyzickou geometrii. Po ověření kandidáta pokračovat registrací situačního podkladu a DEM; během testů připravit další samostatný krok podle W7.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

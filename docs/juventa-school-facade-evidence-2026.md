@@ -26,3 +26,9 @@ Nejdříve spojit situační výřez a fotografie s přesnými hranami původní
 - [Komenského (Milovice) 05.jpg, přesná revize Commons 1237994387](https://commons.wikimedia.org/w/index.php?title=File:Komensk%C3%A9ho_(Milovice)_05.jpg&oldid=1237994387): znovu ověřeny GPS 50.226810,14.866101, EXIF skutečný směr 98,62°, datum 15. 8. 2024, Doronenko, CC BY 4.0, 18 mm / 27 mm ekvivalent. Oddělená GPS cíle 50.226741,14.866809 není zaměřený vchod. První průsečík paprsku na hraně 47 není sám o sobě důkaz polohy vstupu A.
 - AZ KLIMA stránka dostupná, jednotlivé obrázky v tomto průchodu nedostupné. Screenshot hry nebyl vizuálně zkontrolován. Žádné obrazové pixely nekopírovány.
 - Nový samostatný modul a test 5.311 ukládají kóty a blokují geometrii, dokud nebude propojena poloha A, vodorovná šířka a výškové datum. Nejde o hotovou 3D rekonstrukci.
+
+## 25. 11. 2026 — opakovaná kontrola řezu a půdorysu
+- PDF DEKPROJEKT str. 17 (obr. 1) vyznačuje objekt A severně od C. Str. 18 (obr. 2) dokládá podestu +0,140 m a spodní úroveň terénu -0,800 m, rozdíl 0,940 m; 1.NP je o 0,020 m výš, spodní hrana krytí o 3,160 m nad podestou. Jsou to lokální výšky řezu, nikoli výšky vůči hernímu DEM.
+- Původní OSM uzly 48–51 tvoří výstupek: základna 48→51 cca 8,57 m, přední hrana 49→50 cca 8,61 m, hloubka cca 5,6 m. Navazující hrany 47 a 51 jsou téměř rovnoběžné. Situační obrázek podporuje oblast objektu A, ale není georeferencovanou dokumentací jednotlivých konstrukcí. Výstupek zůstává kandidátem, ne potvrzeným přístřeškem; šířka dveří, vztah k terénu a identita výstupku nejsou ověřené.
+- ATRIO IN PDF str. 15 potvrzuje krytou podestu, hranaté sloupy, schody a zábradlí. Znovu se nepodařilo otevřít revizi Commons, uložená foto metadata z 5.308/5.311 nejsou v tomto průchodu nově potvrzena.
+- 5.311 zpřístupňuje hodnoty pouze v existující diagnostice školy; žádná změna 3D objektů, kolizí či herního pohybu. Node a Chromium testy přidány, CI čeká.

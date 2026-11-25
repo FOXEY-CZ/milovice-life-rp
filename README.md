@@ -1,3 +1,7 @@
+## Milovice RP 5.311 — stavební audit vstupu Juventy
+
+Nová diagnostika v existujícím modelu školy: výšky z řezu DEKPROJEKT 2024 (lokální projektové datum), podesta +0,140 m, spodní terén −0,800 m, rozdíl 0,940 m, krytí 3,160 m nad podestou. OSM výstupek hran 48–50 cca 8,6 × 5,6 m je kandidát, nikoli ověřený přístřešek. Zachována původní geometrie, kolize a okna. Znovu ověřené stavební PDF a fotografie ATRIO IN; Commons v tomto průchodu nedostupné. Viz [audit](docs/juventa-school-facade-evidence-2026.md). CI čeká.
+
 ## Milovice RP 5.310 — druhý modelový chodec Pod Lesem
 
 Přenos původního PR #63 na aktuální main. OSM 1272081412 (hash 69d970c5), původní uzly 8–1, cca 109 m, otočení asi 14,8 m před osou vozovky. Pouze při platné hlavní trase 5.278 a volném místě v limitu 65 NPC; žádný nový přechod, geometrie ani kolize. Sdílí plynulé otáčení a krokovou animaci 5.280, nikoli starou časovou animaci. Kamera `?v=531000&streetAudit=pod-lesem-branch-5279` je technický odhad. Node a mobilní/široká WebGL regrese připraveny, CI čeká. 5.309 #104 MERGED, 6/6 PR CI a Pages PASS.
