@@ -3,8 +3,8 @@
 Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.319**, build `20261125-map-guidance-531900`. Kandidát 5.320 v pracovní větvi.
-- Main po #114: `5ea9570021b440d2e98980e0f5671dc854f64057`, 6/6 PR CI PASS; 5.318 main 7/7 včetně Pages PASS. 5.319 Pages zatím neověřeny. HEAD ověř živě.
+- Herní verze main: **5.320**, build `20261125-map-goal-minimap-532000`. Kandidát 5.321 v pracovní větvi.
+- Main po #115: `1034f8631724655fed8f8c6a554046d054173e9b`, 6/6 PR CI PASS; 5.319 main 8/8 včetně Pages PASS. 5.320 Pages zatím neověřeny. HEAD ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -17,7 +17,8 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - #111 6/6 PR CI PASS, 7/7 main včetně Pages PASS.
 - #112 6/6 PR CI PASS, 7/7 main včetně Pages PASS.
 - #113 6/6 PR CI PASS, 7/7 main včetně Pages PASS.
-- #114 6/6 PR CI PASS; main CI čeká.
+- #114 6/6 PR CI PASS, 8/8 main včetně Pages PASS.
+- #115 6/6 PR CI PASS; main CI čeká.
 
 ## Prioritní práce a otevřené PR
 - **5.308 / #103 MERGED**: GPS 50.226810, 14.866101, směr 98,62° přesně potvrzen v mobilním WebGL; zdrojová metadata převzata z původního modulu, nikoli znovu ověřena. Hrana 47 kandidátní fasáda, nikoli zaměřený vchod. #100 uzavřen, větev zachována.
@@ -42,7 +43,7 @@ Aktualizace: 25. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 - Další technický backlog: profilovat paměť a FPS před optimalizací, oddělovat čisté funkce dopravy a UI s regresí; neprovádět hromadný přepis index.html.
 
 ## Další krok podle W7
-5.320 kandidát: fialová značka cíle na rotující minimapě, radiální omezení 66 px, šipka na okraji a kruh v blízkosti, bez nových 3D objektů. Node/browser CI čekají. Další krok: skutečné trasování po veřejné síti komunikací, nejdřív čistý routovací modul a testy.
+5.321 kandidát: první Dijkstra trasa ve stávajícím veřejném dopravním grafu, respektuje jednosměrky, přichycení k úsekům, fialová linka na minimapě v autě, cache. CI čeká; browser test ověřuje lifecycle, nikoli nutně nalezenou trasu. Další krok: ověřit skutečné dosažitelné trasy na mapě a zlepšit výběr úseků.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
