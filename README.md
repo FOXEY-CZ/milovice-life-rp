@@ -1,3 +1,11 @@
+## Milovice RP 5.318 — rozšířená herní mapa
+
+14 orientačních bodů místo 7: HZS, Juventa, poliklinika, MŠ Sluníčko, Tesco, Penny a Billa přidané ze stávajících OSM obrysů. Barevné rozlišení škol, veřejných služeb a obchodů. Ochrana před souběžným načtením mapy a duplicitami při otevření; žádné další síťové požadavky ani nové 3D objekty. Node a browser CI čekají. [Podklady](docs/map-landmarks-5318.md).
+
+## Milovice RP 5.317 — HZS modelový náhled věže a označení
+
+Pouze režim `?v=531700&streetAudit=hzs-doors-5316`: vlastní bitmapový nápis STANICE HZS MILOVICE a otočené 112, modelová věž nad stávající střechou, červený pás a tmavé prosklení. Pět meshů/40 trojúhelníků, bez kolizí. Umístění, výška 5,5 m nad střechou a ostatní rozměry jsou odhady, ne zaměření. Node a mobilní WebGL CI čekají. [Podklady](docs/hzs-signage-5317.md).
+
 ## Milovice RP 5.316 — HZS technický náhled vrat
 
 Pouze režim `?v=531600&streetAudit=hzs-doors-5316`: tři modelová vrata na kandidátní stěně 3, vlastní 8 KiB textura, jeden mesh a šest trojúhelníků bez změny fyziky. Orientace, skutečné rozměry a počet vrat nejsou zaměřeny. Node a mobilní WebGL CI čekají. [Podklady](docs/hzs-garage-door-5316.md).
