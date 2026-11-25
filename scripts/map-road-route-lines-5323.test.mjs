@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {roadRouteMapLines5323 as lines} from './map-road-route-lines-5323.js';
+const r={status:'ready',legs:[{a:{x:0,y:0},b:{x:10,y:0}},{a:{x:10.1,y:0},b:{x:10,y:20}}]};
+const a={valid:true,legCount:2},gps=(x,y)=>[50-y/111320,14+x/71300];
+assert.deepEqual(lines(r,a,gps),[[gps(0,0),gps(10,0)],[gps(10.1,0),gps(10,20)]]);
+assert.deepEqual(lines(r,null,gps),[]);assert.deepEqual(lines(r,{...a,legCount:1},gps),[]);
+assert.deepEqual(lines({...r,status:'no-route'},a,gps),[]);
+assert.deepEqual(lines(r,a,()=>[NaN,14]),[]);
+assert.deepEqual(lines(r,a,()=>[91,14]),[]);
+assert.deepEqual(lines({...r,legs:[r.legs[0],{a:null,b:r.legs[1].b}]},a,gps),[]);
+console.log('PASS 5.323 audited route projection without fabricated links');

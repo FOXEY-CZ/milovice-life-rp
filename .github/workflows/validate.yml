@@ -320,3 +320,5 @@ jobs:
         run: node scripts/map-road-route-5321.test.mjs
       - name: Verify 5.322 route source segments and direction
         run: node scripts/map-road-route-audit-5322.test.mjs
+      - name: Verify 5.323 full map route projection
+        run: node scripts/map-road-route-lines-5323.test.mjs
