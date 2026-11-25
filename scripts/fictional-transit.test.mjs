@@ -12,3 +12,16 @@ assert.equal(new Set(FALLBACK_STOPS.map(s=>s.name)).size,4);
 assert(FALLBACK_STOPS.every(s=>/^[A-Za-z ]+$/.test(s.name)));
 assert(Object.isFrozen(TRANSIT_PALETTE));
 console.log('PASS independent CrossTransit identity and preserved stop coordinates');
+
+import {readFileSync} from 'node:fs';
+const models=readFileSync(new URL('./world-models.js',import.meta.url),'utf8');
+const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+for(const token of ["destinationLabel(route)","transitRouteLabel(route)","destinationLabel('S22')","TRANSIT_PALETTE.body","TRANSIT_PALETTE.primary","TRANSIT_PALETTE.accent"])assert(models.includes(token),token);
+assert(!models.includes("'PID '+route"));
+assert(!models.includes("'S22 MILOVICE'"));
+assert(!models.includes("route+' MILOVICE'"));
+assert(html.includes('const stops=FALLBACK_STOPS.map(stop=>({...stop}))'));
+assert(html.includes("ctx.fillText('PHARMACY',256,74)"));
+assert(!html.includes("ctx.fillText(signPlan.photographedText,256,74)"));
+assert(html.includes('sourceSignText:signPlan.photographedText'));
+console.log('PASS CrossTransit model integration and English pharmacy display');
