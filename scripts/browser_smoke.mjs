@@ -854,7 +854,7 @@ try{
   console.log('PASS 5.324 responsive map',JSON.stringify(layout));
  }
  await page.screenshot({path:'browser-artifacts/milovice-mobile-map-5324.png'});
- await page.locator('#map-goal-5319').selectOption({label:'🚒 Hasičská stanice Ironfield'});
+ await page.locator('#map-goal-5319').selectOption({label:'🚒 Ironfield Fire Station'});
  await page.locator('#closemap').click();
  if(await page.locator('#hud').evaluate(el=>el.classList.contains('rp-open')))await page.locator('#rp-hud-toggle').click();
  await page.waitForFunction(()=>{const el=document.querySelector('#map-guidance-5319');return !el.hidden&&getComputedStyle(el).display!=='none';},undefined,{timeout:6000});
@@ -923,7 +923,7 @@ try{
  console.log('PASS 5.331 voice opt-in and arrival voice/tone fallback',JSON.stringify(voiceAfter));
  console.log('PASS 5.330 opt-in arrival cue and mute',JSON.stringify(soundAfter));
  console.log('PASS 5.329 actual walking arrival and cleanup',JSON.stringify(arrived.arrival));
- await page.locator('#map-goal-5319').selectOption({label:'🚒 Hasičská stanice Ironfield'});
+ await page.locator('#map-goal-5319').selectOption({label:'🚒 Ironfield Fire Station'});
  await page.locator('#closemap').click();
  await page.waitForFunction(()=>window.__miloviceMapGuidance5319?.()?.distanceMetres>0,undefined,{timeout:6000});
  const nav=await page.evaluate(()=>window.__miloviceMapGuidance5319());
@@ -931,7 +931,7 @@ try{
  const pin=await page.evaluate(()=>window.__miloviceMapGoalMinimap5320());
  if(pin.name!==nav.name||pin.directPointNotRoute!==true||pin.newWorldObjects!==0||Math.hypot(pin.x,pin.y)>66.001)
   throw Error('5.320 invalid actual minimap marker '+JSON.stringify(pin));
- if(nav.name!=='🚒 Hasičská stanice Ironfield'||nav.straightLine!==true||nav.entranceVerified!==false||!nav.arrow)
+ if(nav.name!=='🚒 Ironfield Fire Station'||nav.straightLine!==true||nav.entranceVerified!==false||!nav.arrow)
   throw Error('5.319 missing game guidance '+JSON.stringify(nav));
  if(await page.locator('#map-guidance-5319').getAttribute('hidden')!==null)throw Error('5.319 HUD hidden');
  await page.locator('#maplaunch').click();
@@ -947,7 +947,7 @@ try{
  if(!(await page.locator('#mode').innerText()).includes('Řidič auta'))throw new Error('Car spawn did not work');
  if(await page.locator('#doors').isVisible())throw new Error('Bus-only door button visible during car free roam');
  await page.locator('#maplaunch').click();
- await page.locator('#map-goal-5319').selectOption({label:'🚒 Hasičská stanice Ironfield'});
+ await page.locator('#map-goal-5319').selectOption({label:'🚒 Ironfield Fire Station'});
  await page.locator('#closemap').click();
  await page.waitForFunction(()=>window.__miloviceMapRoadRoute5321?.()?.status,undefined,{timeout:10000});
  const roadRoute=await page.evaluate(()=>window.__miloviceMapRoadRoute5321());
