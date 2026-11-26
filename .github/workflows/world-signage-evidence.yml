@@ -8,6 +8,7 @@ on:
       - 'scripts/street-environment-reality.js'
       - 'scripts/fictional-transit.js'
       - 'scripts/fictional-signage.js'
+      - 'scripts/street-environment-pass.test.mjs'
       - '.github/workflows/world-signage-evidence.yml'
   pull_request:
     branches: [main]
@@ -18,6 +19,7 @@ on:
       - 'scripts/street-environment-reality.js'
       - 'scripts/fictional-transit.js'
       - 'scripts/fictional-signage.js'
+      - 'scripts/street-environment-pass.test.mjs'
       - 'scripts/fictional-transit.test.mjs'
       - 'scripts/fictional-signage.test.mjs'
       - '.github/workflows/world-signage-evidence.yml'
@@ -46,6 +48,7 @@ jobs:
           node scripts/fictional-signage.test.mjs
           node scripts/fictional-transit.test.mjs
           node scripts/station-forecourt-pass.test.mjs
+          node scripts/street-environment-pass.test.mjs
           node scripts/stage-player-package.mjs --stage "$RUNNER_TEMP/crossvex-signs"
           npm install --no-save --no-package-lock playwright-core@1.57.0
           python3 -m http.server 8080 --bind 127.0.0.1 --directory "$RUNNER_TEMP/crossvex-signs" > "$RUNNER_TEMP/sign-http.log" 2>&1 &
