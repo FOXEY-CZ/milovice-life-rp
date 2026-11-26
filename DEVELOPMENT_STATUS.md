@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #149 mapové notices a zmenšený staging sloučeny, 7/7 PR CI a předchozí main 5/5 včetně Pages PASS. Preview 45823646420: 281 souborů, 12 mapových/výškových JSON, 5 schválených architektonických záznamů, 3 vývojové JSON vynechány pouze ve stagingu; desktop start/mapa/jízda PASS. Nový main `6141018d1c480e10a0ae05fe393ac2013205a60f` čeká. Regionální baseline 45824495393 (před #149): 6/6 oblastí, 1988 požadavků, 0 HTTP/JS/síťových chyb a neznámých URL. Kandidát opakuje šest regionů nad zmenšeným balíčkem, metadata kontrola v každé skupině, CI čeká. Dále mobilní staging, další assety a původ dat; ODbL odpovídající databáze a podmínky konkrétní služby ČÚZK nejsou definitivně vypořádány. Bez release schválení.
+**Priorita:** #150 regionální preview sloučen, 5/5 PR CI a předchozí main 7/7 včetně Pages PASS. Zmenšený balíček 45825095733: 6/6 oblastí, 1988 požadavků, 0 chyb/neznámých URL, 5 architektonických záznamů zachováno. Nový main `f8b2906a71a4d4781a0c5e79672bfba5bd91f2ce` čeká. Mobilní preview 45825523512: oba profily timeout první analogové chůze, 323 požadavků každý bez HTTP/JS chyb, mapa nedosažena, URL gate správně FAIL. Diagnostický kandidát ověřuje hit target, příjem stick magnitude před pohybem, začíná dotyk v 45 % vychýlení a zachycuje pointer události před uvolněním. Příčina zatím neprokázána, nový CI čeká. Dále mobilní ověření, původ dat a assetů; bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
