@@ -1,7 +1,7 @@
 name: Staged player package (preview only)
 on:
   push:
-    branches: [prep/release-license-inventory, prep/release-network-evidence, prep/release-library-notices]
+    branches: [prep/release-license-inventory, prep/release-network-evidence, prep/release-library-notices, prep/release-gameplay-preview]
     paths:
       - '.github/workflows/player-package-preview.yml'
       - 'scripts/stage-player-package.mjs'
@@ -9,6 +9,9 @@ on:
       - 'scripts/audit-library-notices.mjs'
       - 'credits.html'
       - 'scripts/audit-release-network.mjs'
+      - 'scripts/release-network-observer.mjs'
+      - 'scripts/release-network-observer.test.mjs'
+      - 'scripts/release-gameplay-scenario.mjs'
       - 'index.html'
   pull_request:
     branches: [main]
@@ -19,6 +22,9 @@ on:
       - 'scripts/release-package-check.mjs'
       - 'scripts/audit-library-notices.mjs'
       - 'scripts/audit-release-network.mjs'
+      - 'scripts/release-network-observer.mjs'
+      - 'scripts/release-network-observer.test.mjs'
+      - 'scripts/release-gameplay-scenario.mjs'
       - '.github/workflows/player-package-preview.yml'
   workflow_dispatch:
 permissions:
@@ -39,6 +45,8 @@ jobs:
           node scripts/stage-player-package.mjs --self-test
           node scripts/release-package-check.mjs --self-test
           node scripts/audit-release-network.mjs --self-test
+          node scripts/release-network-observer.test.mjs
+          node scripts/gps-voice-5331.test.mjs
           stage="$RUNNER_TEMP/crossvex-player"
           node scripts/stage-player-package.mjs --stage "$stage"
           node scripts/release-package-check.mjs --inventory "$stage" > "$RUNNER_TEMP/crossvex-inventory.json"
@@ -72,11 +80,15 @@ jobs:
           import assert from 'node:assert/strict';
           import {writeFileSync} from 'node:fs';
           import {chromium} from 'playwright-core';
+          import {observeReleaseNetwork} from './scripts/release-network-observer.mjs';
+          import {runReleaseGameplayScenario} from './scripts/release-gameplay-scenario.mjs';
           const browser=await chromium.launch({executablePath:'/usr/bin/google-chrome',headless:true,args:['--no-sandbox','--disable-dev-shm-usage','--enable-webgl','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
           const errors=[],missing=[],requests=new Set();
           const base='http://127.0.0.1:8080';
+          const observers=[],gameplay={};
           try {
             const page=await browser.newPage({viewport:{width:1280,height:760}});
+            observers.push({scenario:'startup-map-credits',observer:observeReleaseNetwork(page)});
             page.on('pageerror',e=>errors.push(String(e)));
             page.on('request',r=>requests.add(r.url()));
             page.on('response',r=>{if(r.url().startsWith(base+'/')&&r.status()>=400&&!r.url().endsWith('/favicon.ico'))missing.push(r.status()+' '+r.url());});
@@ -97,7 +109,20 @@ jobs:
             assert.deepEqual(missing,[],'Missing local staged resources');
             assert.deepEqual(errors,[],'Page errors');
             console.log('PASS staged desktop world startup, map and credits');
+            const drive=await browser.newPage({viewport:{width:1280,height:760}});
+            observers.push({scenario:'desktop-driving-audio',observer:observeReleaseNetwork(drive)});
+            drive.on('pageerror',e=>errors.push(String(e)));
+            drive.on('request',r=>requests.add(r.url()));
+            drive.on('response',r=>{if(r.url().startsWith(base+'/')&&r.status()>=400&&!r.url().endsWith('/favicon.ico'))missing.push(r.status()+' '+r.url());});
+            await runReleaseGameplayScenario(drive,base,gameplay);
+            assert.deepEqual(missing,[],'Missing local staged resources during gameplay');
+            assert.deepEqual(errors,[],'Page errors during gameplay');
+            console.log('PASS staged driving and audio control scenario',JSON.stringify(gameplay));
           } finally {
+            const traces=observers.map(({scenario,observer})=>({scenario,...observer.stop()}));
+            writeFileSync(process.env.RUNNER_TEMP+'/crossvex-response-trace.json',JSON.stringify(traces,null,2));
+            writeFileSync(process.env.RUNNER_TEMP+'/crossvex-gameplay.json',JSON.stringify(gameplay,null,2));
+            console.log('Response evidence',JSON.stringify(traces.map(({scenario,summary})=>({scenario,...summary}))));
             writeFileSync(process.env.RUNNER_TEMP+'/crossvex-requests.json',JSON.stringify([...requests].sort(),null,2));
             await browser.close();
           }
@@ -115,4 +140,6 @@ jobs:
             ${{ runner.temp }}/crossvex-http.log
             ${{ runner.temp }}/crossvex-requests.json
             ${{ runner.temp }}/crossvex-network-review.json
+            ${{ runner.temp }}/crossvex-response-trace.json
+            ${{ runner.temp }}/crossvex-gameplay.json
           if-no-files-found: warn

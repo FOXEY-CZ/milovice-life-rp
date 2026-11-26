@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #145 síťový audit sloučen, 5/5 PR CI PASS, předchozí main 5/5 včetně Pages PASS; nový main `86b0ac88ae93991a671d74737d710c76ec18e391` čeká na ověření. Kandidát úplných licenčních textů Three.js a Leaflet v Credits; porovnání s přesně připnutými npm verzemi 0.160.1 / 1.9.4 v izolovaném preview čeká. Three.js r160 zdroj má package verzi 0.160.0, proto je shoda s 0.160.1 výslovně neověřená. Dále rozšíření síťových scénářů, audit dat a assetů. Bez release schválení.
+**Priorita:** #146 úplné licence knihoven sloučeny, 5/5 PR CI PASS; předchozí main 6/6 včetně Pages PASS. Shoda celých textů s npm three@0.160.1 a leaflet@1.9.4 potvrzena v 45819759597 a PR preview. Nový main `471f8067bc9ab68a4385a337ece97780ea37f6e8` čeká. Kandidát rozšířeného desktop preview: jízda, ovladače zvuku, GPS cíl a síťové odpovědi/přesměrování; testy a CI čekají. Přesný URL audit zachován. Dále vyhodnotit skutečný trace a další regiony/mobile, audit dat a assetů. Bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
