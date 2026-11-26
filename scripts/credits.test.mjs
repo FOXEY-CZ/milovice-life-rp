@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const page=readFileSync(new URL('../credits.html',import.meta.url),'utf8');
+const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+for(const term of ['CROSSVEX','Credits &amp; Licenses','OpenStreetMap','ODbL 1.0','ČÚZK','CC BY 4.0','Three.js','Leaflet','Quaternius','JaronKBragg7337','CC0 1.0','Stav licenčního auditu'])assert(page.includes(term),term);
+assert.equal((game.match(/href="\.\/credits\.html"/g)||[]).length,2);
+assert(game.includes('id="rp-credits-link"'));
+assert(game.includes('leafletMap.attributionControl.addAttribution'));
+assert(!/<script\b/i.test(page));
+console.log('PASS standalone credits page and in-game links; attribution retained');
