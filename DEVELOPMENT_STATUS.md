@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** 5.344 nahrazuje zbývající skutečné názvy při načítání a obnově mapy, skrývá surové chyby, ověřuje anglické oblasti a cíle na mobilu. První CI kandidáta 6/7 PASS; mobilní test odhalil dvě technické spawn volby, nyní podmíněné developer režimem. Nové CI čeká. Preview distribuce na 5.342 a 5.343 PASS (45739287501, 45739409272); další: vyhodnotit síťový záznam, ověřit přesný původ GLB a licence, audit adres a textur. Bez automatického vydání.
+**Priorita:** 5.344 nahrazuje zbývající skutečné názvy při načítání a obnově mapy, skrývá surové chyby, ověřuje anglické oblasti a cíle na mobilu. První CI kandidáta 6/7 PASS; mobilní test odhalil dvě technické spawn volby, nyní podmíněné developer režimem. Druhé CI 6/7 PASS; mobilní test zachytil pozdější hlášku Maple Heights místo uvítání. Opraveno sledováním historie skutečného HUD; nové CI čeká. Preview distribuce na 5.342 a 5.343 PASS (45739287501, 45739409272); další: vyhodnotit síťový záznam, ověřit přesný původ GLB a licence, audit adres a textur. Bez automatického vydání.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
