@@ -2,6 +2,13 @@ name: Original procedural car optimization (preview only)
 on:
   push:
     branches: [prep/procedural-car-batching]
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/procedural-car-batching.js'
+      - 'scripts/review-procedural-car-batching.mjs'
+      - 'scripts/city-procedural-batch-preview.mjs'
+      - '.github/workflows/procedural-car-batching.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -32,3 +39,26 @@ jobs:
         with:
           name: procedural-car-review
           path: ${{ runner.temp }}/procedural-car-review/
+
+  city-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/stage-player-package.mjs --stage "$RUNNER_TEMP/crossvex-batch"
+          npm install --no-save --no-package-lock playwright-core@1.57.0
+          python3 -m http.server 8080 --bind 127.0.0.1 --directory "$RUNNER_TEMP/crossvex-batch" > "$RUNNER_TEMP/city-batch-http.log" 2>&1 &
+          trap 'kill $! 2>/dev/null || true' EXIT
+          curl --retry 10 --retry-connrefused --retry-delay 1 -fsS http://127.0.0.1:8080/credits.html >/dev/null
+          node scripts/city-procedural-batch-preview.mjs "$RUNNER_TEMP/crossvex-batch" "$RUNNER_TEMP/city-batch.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: city-batch-preview
+          path: ${{ runner.temp }}/city-batch.json

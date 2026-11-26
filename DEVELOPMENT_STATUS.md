@@ -3,7 +3,7 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.349**, #165 sloučen po 8/8 PR PASS a 278/278 unit testech. Main `f4781ba`, Pages 45878986534 PASS; ostatní main CI ověřit živě.
+- Herní verze main: **5.349**, #165 sloučen po 8/8 PR PASS a 278/278 unit testech; f4781ba 7/7 main PASS včetně Pages. #166 (evidence only) sloučen do `bc783f5` po 4/4 PR PASS; nové main CI čeká.
 - Main po #160: `7a087a173569b6b49df0f3721469ec2f71c3621f`; 9/9 PR PASS a 8/8 main PASS včetně Pages 45860346528.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #165 sloučen, 5.349 nasazena. Audit atlasu 45878542383 / 45879023599: oba 28 unikátních PNG, 9 s WebGL upload voláním, všech pět opravených cedulí skutečně předáno WebGL, jejich SHA se změnilo. 3 contact sheets + kamera vizuálně zkontrolovány; text na vzdálených sloupcích ve scéně nečitelný, 19 textur bez upload evidence. Atlas není úplná vizuální ani právní kontrola. Příprava evidence PR; dále konkrétní zbylé release mezery, #147 a #161 otevřeny. Nepřidávat další ekvivalentní audity.
+**Priorita:** #167 sloučen do a0cda37 po 5/5 PR a předchozí main 5/5 včetně Pages. 5.349 beze změny. #161: procedurální alternativa 45880821993 a 45880977031 PASS, 8 variant/16 pohledů, 53–57 → 21 draw calls, stejné triangly a 4 samostatná kola, nejvýš 1 výrazně odlišný pixel na pohled. Další přípravný test dočasné kopie hry s ABBA a GLB off; produkční runtime ani výchozí režim zatím neměnit, řešit lifecycle. #147 a #161 otevřeny; bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
