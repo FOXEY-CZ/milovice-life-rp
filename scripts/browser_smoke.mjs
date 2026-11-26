@@ -1096,6 +1096,19 @@ try{
    const next=window.__miloviceRouteRecalculation5326?.();
    return next&&next.time>before.time&&Math.hypot(next.x-before.x,next.z-before.z)>=8&&['movement','deviation'].includes(next.reason);
   },beforeDrive,{timeout:20000});
+ }catch(error){
+  const state=await page.evaluate(()=>({
+   routeCache:window.__miloviceRouteRecalculation5326?.(),
+   routeStatus:window.__miloviceMapRoadRoute5321?.()?.status,
+   movement:window.__miloviceMovementDebug,
+   speedHud:document.getElementById('speed')?.textContent,
+   modeHud:document.getElementById('mode')?.textContent,
+   statusHud:document.getElementById('status')?.textContent,
+   mapOpen:document.getElementById('realmap')?.classList.contains('open'),
+   visibility:document.visibilityState,
+   performance:document.getElementById('perf')?.textContent
+  })).catch(e=>({diagnosticError:String(e)}));
+  throw Error('5.326 driving recalculation timeout: '+JSON.stringify({beforeDrive,state}),{cause:error});
  }finally{await page.keyboard.up('w');}
  const afterDrive=await page.evaluate(()=>({cache:window.__miloviceRouteRecalculation5326(),route:window.__miloviceMapRoadRoute5321(),audit:window.__miloviceRoadRouteAudit5322()}));
  if(afterDrive.route?.status==='ready'?!afterDrive.audit?.valid:(!['off-road','destination-off-road','no-route'].includes(afterDrive.route?.status)||afterDrive.audit||afterDrive.route?.legs.length))
@@ -1322,9 +1335,25 @@ try{
  const mobileContext=await browser.newContext({viewport:{width:390,height:820},deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const mobile=await mobileContext.newPage();
  const mobileErrors=[];mobile.on('pageerror',e=>mobileErrors.push(String(e)));
+ // Region streaming can replace the welcome text before the assertion.
+ // Observe actual HUD text from page creation, not an arbitrary later frame.
+ await mobile.addInitScript(()=>{
+  const history=[];window.__testPlayerStatusHistory=history;
+  const observer=new MutationObserver(()=>{
+   const text=document.getElementById('status')?.textContent;
+   if(text&&history.at(-1)!==text&&history.length<128)history.push(text);
+  });
+  observer.observe(document,{subtree:true,childList:true,characterData:true});
+ });
  await mobile.goto('http://127.0.0.1:8080/',{waitUntil:'domcontentloaded',timeout:30000});
  await mobile.waitForFunction(()=>window.__miloviceStarted===true,{timeout:45000});
  await mobile.waitForFunction(()=>!document.getElementById('rp-spawn').hidden,{timeout:45000});
+ const playerRegions=await mobile.locator('#rp-area-select option').allTextContents();
+ const fictionalRegions=['Old Town','Maple Heights','Westwood','Betweenwoods','Northlink','Cloudridge'];
+ if(!playerRegions.includes('Old Town')||playerRegions.some(name=>!fictionalRegions.includes(name)))throw Error('5.344 unexpected player region name '+JSON.stringify(playerRegions));
+ const playerStartup=await mobile.evaluate(()=>({status:document.getElementById('status')?.textContent,history:window.__testPlayerStatusHistory,retry:document.getElementById('osm3d')?.textContent,title:document.title}));
+ if(!playerStartup.history?.some(s=>s.includes('Prozkoumávej Ironfield.'))||playerStartup.retry!=='🗺️ Ironfield 3D'||!playerStartup.title.includes('CROSSVEX')||/Milovic/i.test([...playerStartup.history,playerStartup.status,playerStartup.retry].join(' ')))throw Error('5.344 fictional player startup copy: '+JSON.stringify(playerStartup));
+ console.log('5.344 real mobile startup copy:',JSON.stringify(playerStartup));
  const budget=await mobile.evaluate(()=>window.__milovicePerformance);
   const mobileGPUProfile=await mobile.evaluate(()=>window.__miloviceGPUProfile);
   if(!mobileGPUProfile||!mobileGPUProfile.diffuseMobile||
@@ -1420,6 +1449,10 @@ try{
  await mobile.locator('.milovice-player-marker').waitFor({state:'visible',timeout:15000});
  if(await mobile.locator('#mapfollow-camera').isVisible()||await mobile.locator('.milovice-camera-marker').count())throw Error('5.343 developer camera exposed in player map');
  if(!await mobile.locator('#mapfollow').isVisible())throw Error('5.343 normal navigation unavailable');
+ const mobileGoals=await mobile.locator('#map-goal-5319 option').allTextContents();
+ for(const goal of ['🚉 Ironfield Station','🚒 Ironfield Fire Station','🛒 BrayMart','🛒 ValueNest','🛒 Vendoa'])if(!mobileGoals.includes(goal))throw Error('5.344 missing fictional mobile map goal '+goal);
+ if(mobileGoals.some(name=>/Milovic|Tesco|Penny|Billa|Juventa|Masaryk|Sluníčko|Modrá hvězda/i.test(name)))throw Error('5.344 original landmark in player map '+JSON.stringify(mobileGoals));
+ console.log('PASS 5.344 mobile fictional regions and destinations');
  await mobile.locator('#closemap').click();
  console.log('PASS 5.343 default mobile player UI and audit compatibility');
  if(mobileErrors.length)throw new Error('Mobile JavaScript errors: '+mobileErrors.slice(0,3).join(' | '));

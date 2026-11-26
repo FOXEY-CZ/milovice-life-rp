@@ -1,3 +1,7 @@
+## CROSSVEX 5.344 — fictional startup copy
+
+Hráčské načítání, uvítání, stav mapy a obnovovací tlačítka používají Ironfield. Interní názvy, auditní texty, zdrojová data a geometrie beze změny. Chybové zprávy hráčům neukazují surové výjimky mapy; auditní režim je zachová. Výběr modelů neoznačuje deklarovanou licenci za ověřenou; Credits & Licenses zůstávají. Technické spawny photo5/station se nabízejí jen v developer režimu. Mobilní test odhalil původní únik těchto dvou možností; opraveno. Druhé CI 6/7 PASS; mobilní test nyní zachytává historii HUD, protože streamování oblasti přepisuje úvodní text; nové CI čeká.
+
 ## CROSSVEX 5.343 — Developer Mode
 
 Běžné hráčské UI skrývá GPS kamery, inspekci OSM, technický výškopis a kamerové značky mapy. `?dev=1` nebo existující auditní URL zpřístupní dosavadní nástroje. Herní navigace, FPS a Credits & Licenses zachovány. Statické a mobilní browser testy; CI čeká. Nejde o odstranění zdrojových dat ani zabezpečení přístupu.

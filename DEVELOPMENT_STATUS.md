@@ -3,8 +3,8 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.343** (Developer Mode); kandidát technická příprava distribuce.
-- Main po #139: `b27b726a1db76335ccdec3b45315eb92f8e168f5`, 6/6 PR CI PASS; předchozí 5.342 7/7 PASS. Main CI a Pages čekají.
+- Herní verze main: **5.343** (Developer Mode + nástroje distribuce); kandidát **5.344** (hráčské popisky).
+- Main po #140: `01508acded541b023b509ba7a86bbc09f37c9916`; #140 5/5 PASS, předchozí main 7/7 PASS po opakování browser smoke. CI nového main a Pages ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** 5.343 sloučena. Samostatný distribuční preview na 5.342 PASS (45739287501); opakování na 5.343 čeká. Inventura a staging: `docs/RELEASE_LICENSE_INVENTORY.md`. Bez automatického vydání; licence, síťový audit a skutečný release manifest zůstávají otevřené.
+**Priorita:** 5.344 nahrazuje zbývající skutečné názvy při načítání a obnově mapy, skrývá surové chyby, ověřuje anglické oblasti a cíle na mobilu. První CI kandidáta 6/7 PASS; mobilní test odhalil dvě technické spawn volby, nyní podmíněné developer režimem. Druhé CI 6/7 PASS; mobilní test zachytil pozdější hlášku Maple Heights místo uvítání. Opraveno sledováním historie skutečného HUD; nové CI čeká. Preview distribuce na 5.342 a 5.343 PASS (45739287501, 45739409272); další: vyhodnotit síťový záznam, ověřit přesný původ GLB a licence, audit adres a textur. Bez automatického vydání.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
