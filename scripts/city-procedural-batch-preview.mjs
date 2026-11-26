@@ -51,16 +51,30 @@ try{
    }));
    assert.ok(sample.intervals.length>=5);assert.equal(sample.sizes.length,1);
    for(const count of sample.counts){const [n,b]=count.split(':').map(Number);assert.ok(n>0);assert.equal(b,batch?n:0);}
-   await page.keyboard.down('w');
-   try{await page.waitForFunction(()=>Number(document.getElementById('speed').textContent)>0,null,{timeout:25000});}finally{await page.keyboard.up('w');}
-   const moved=await page.evaluate(()=>window.__miloviceVehicleDebug);
-   assert.equal(moved.activeCarId,state.debug.activeCarId);
-   assert.ok(moved.drivenWheels.some((w,i)=>w!==state.debug.drivenWheels[i]),'Wheels did not rotate');
-   assert.deepEqual(errors,[]);assert.deepEqual(carRequests,[]);
    const mean=sample.intervals.reduce((a,b)=>a+b,0)/sample.intervals.length;
-   results.push({batch,roadCount:state.debug.previewRoadCount,meanMs:mean,...sample,vehicleId:moved.activeCarId,wheels:moved.drivenWheels});
-   console.log('CITY BATCH PREVIEW',JSON.stringify(results.at(-1)));
+   const record={batch,roadCount:state.debug.previewRoadCount,meanMs:mean,...sample,vehicleId:state.debug.activeCarId,wheelsBefore:state.debug.drivenWheels,driveVerified:false};
+   results.push(record);
+   console.log('CITY BATCH STATIONARY',JSON.stringify(record));
+   await page.keyboard.down('w');
+   try{
+    await page.waitForFunction(({id,wheels})=>{
+     const d=window.__miloviceVehicleDebug;
+     return d?.activeCarId===id&&Number(document.getElementById('speed').textContent)>0&&
+      d.drivenWheels.length===4&&d.drivenWheels.every((w,i)=>Math.abs(w-wheels[i])>.001);
+    },{id:state.debug.activeCarId,wheels:state.debug.drivenWheels},{timeout:25000});
+    const moved=await page.evaluate(()=>window.__miloviceVehicleDebug);
+    assert.equal(moved.activeCarId,state.debug.activeCarId);
+    assert.ok(moved.drivenWheels.every((w,i)=>Math.abs(w-state.debug.drivenWheels[i])>.001),'All four wheels must rotate');
+    record.wheels=moved.drivenWheels;record.driveVerified=true;
+   }finally{
+    await page.keyboard.up('w');
+    record.finalDiagnostic=await page.evaluate(()=>({debug:window.__miloviceVehicleDebug,speed:Number(document.getElementById('speed').textContent)}));
+    record.pageErrors=[...errors];record.carRequests=[...carRequests];
+   }
+   assert.deepEqual(errors,[]);assert.deepEqual(carRequests,[]);
+   console.log('CITY BATCH PREVIEW',JSON.stringify(record));
   }finally{await page.close();}
  }
+ assert.equal(results.length,4);assert.ok(results.every(r=>r.driveVerified));
  assert.equal(new Set(results.flatMap(r=>r.sizes)).size,1);
 }finally{writeFileSync(output,JSON.stringify({scope:'separate fresh staged pages ABBA; SwiftShader only; uncontrolled NPC count; not physical GPU FPS',results},null,2));await browser.close();}

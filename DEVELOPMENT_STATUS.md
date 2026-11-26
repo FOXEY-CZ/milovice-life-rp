@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #167 sloučen do a0cda37 po 5/5 PR a předchozí main 5/5 včetně Pages. 5.349 beze změny. #161: procedurální alternativa 45880821993 a 45880977031 PASS, 8 variant/16 pohledů, 53–57 → 21 draw calls, stejné triangly a 4 samostatná kola, nejvýš 1 výrazně odlišný pixel na pohled. Další přípravný test dočasné kopie hry s ABBA a GLB off; produkční runtime ani výchozí režim zatím neměnit, řešit lifecycle. #147 a #161 otevřeny; bez release schválení.
+**Priorita:** #167 sloučen do a0cda37 po 5/5 PR a předchozí main 5/5 včetně Pages. 5.349 beze změny. #161: procedurální alternativa 45880821993 a 45880977031 PASS, 8 variant/16 pohledů, 53–57 → 21 draw calls, stejné triangly a 4 samostatná kola, nejvýš 1 výrazně odlišný pixel na pohled. Další přípravný test dočasné kopie hry s ABBA a GLB off; první city run 45881821685 FAIL na původním autě (diagnostika kol 2 Hz); opraveno čekání na všechna 4 kola + ukládání dílčích měření, repeat čeká. Produkční runtime ani výchozí režim zatím neměnit, řešit lifecycle. #147 a #161 otevřeny; bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
