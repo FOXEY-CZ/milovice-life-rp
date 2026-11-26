@@ -100,7 +100,9 @@ try{
    other.g.add(new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial()));
    // Two independent scene instances must never share mutable wheel transforms.
    car.g.rotation.y=.73;other.g.position.set(6,0,0);
-   manager.update([car,other],0,0,2,car);
+   // Advance past the manager's 0.65 s update throttle before adding a second car.
+   manager.update([car,other],0,0,3,car);
+   assert.equal(globalThis.window.__miloviceGLBDebug.assignments.find(a=>a.id===other.id)?.key,key,'second car must install after the update interval');
    const groups=model.children.filter(g=>g.name.startsWith('AdapterWheel_'));
    const otherGroups=other.g.userData.licensedGLB?.children.filter(g=>g.name.startsWith('AdapterWheel_'));
    assert.equal(groups.length,4);assert.equal(otherGroups?.length,4);
