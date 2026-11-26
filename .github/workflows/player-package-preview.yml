@@ -6,6 +6,7 @@ on:
       - '.github/workflows/player-package-preview.yml'
       - 'scripts/stage-player-package.mjs'
       - 'scripts/release-package-check.mjs'
+      - 'index.html'
   workflow_dispatch:
 permissions:
   contents: read
@@ -58,10 +59,13 @@ jobs:
             await page.waitForFunction(()=>window.__miloviceStarted===true,null,{timeout:60000});
             await page.locator('#rp-spawn-close').waitFor({state:'visible',timeout:90000});
             await page.locator('#rp-spawn-close').click();
+            assert.equal(await page.locator('html').evaluate(e=>e.classList.contains('rp-developer-mode')),false);
+            assert.equal(await page.locator('#rp-camera-gps-toggle').isHidden(),true);
             await page.waitForTimeout(6500);
             await page.locator('#maplaunch').click();
             await page.locator('#osmmap .leaflet-control-attribution').waitFor({state:'visible',timeout:30000});
             assert.match(await page.locator('#osmmap .leaflet-control-attribution').innerText(),/OpenStreetMap/);
+            assert.equal(await page.locator('#mapfollow-camera').isHidden(),true);
             assert.equal(await page.locator('#osmmap .leaflet-tile').count(),0);
             await page.goto(base+'/credits.html',{waitUntil:'domcontentloaded'});
             assert.equal(await page.locator('h1').textContent(),'Credits & Licenses');

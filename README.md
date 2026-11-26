@@ -1,3 +1,7 @@
+## CROSSVEX 5.343 — Developer Mode
+
+Běžné hráčské UI skrývá GPS kamery, inspekci OSM, technický výškopis a kamerové značky mapy. `?dev=1` nebo existující auditní URL zpřístupní dosavadní nástroje. Herní navigace, FPS a Credits & Licenses zachovány. Statické a mobilní browser testy; CI čeká. Nejde o odstranění zdrojových dat ani zabezpečení přístupu.
+
 ## CROSSVEX 5.342 — Credits & Licenses
 
 Samostatná responzivní stránka s odkazy z HUD a mapy, stávající atribuce zachována, evidence technologií, mapových dat, modelů a referencí. Statická kontrola a Chromium test na třech velikostech. Není úplným licenčním auditem. CI čeká.

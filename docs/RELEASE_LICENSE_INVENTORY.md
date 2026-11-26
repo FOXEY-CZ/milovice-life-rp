@@ -39,4 +39,4 @@ Recursive Git tree inspection found 807 entries (including directories), 18 trac
 
 ## Current scope
 
-Prepared while 5.343 developer-mode CI runs; no gameplay changes, no PR against main, no release authorization. Next: reconcile with latest main, verify upstream evidence, then implement a release manifest/validation step without changing existing CI gates.
+5.342 staging, checker self-tests and desktop Chromium startup/map/credits passed in isolated workflow 45739287501. Preparation reconciled with 5.343 main; repeat test pending, including default-hidden developer controls. No deployment or release authorization. Review network trace, upstream evidence and actual release manifest next.
