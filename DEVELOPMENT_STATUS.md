@@ -3,7 +3,7 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.348**; #160, #162 a #163 sloučeny. Technické měření a kontrola GLB bez změny hry. Main `7523976`, 5/5 PASS včetně Pages 45866650331.
+- Herní verze main: **5.348**; #164 sloučen, main `db7c715`, 5/5 PASS včetně Pages 45869222905. Kandidát **5.349**: oprava směrovek a zastávkových tabulí.
 - Main po #160: `7a087a173569b6b49df0f3721469ec2f71c3621f`; 9/9 PR PASS a 7/7 main PASS včetně Pages 45860346528.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #164 sloučen po 5/5 PR a 5/5 předchozí main včetně Pages; main db7c715, nové CI ověřit. Audit nápisů 45869071497 FAIL (české směrovky, nádražní tabule a PID). Kandidát 5.349: fiktivní směrovky a regionální destinace, CT paleta a anglické tabule, zdrojová data a geometrie zachovány; nové unit a staged CI čeká. #147 a #161 otevřeny; žádné release schválení. Po ověření nápisů zkontrolovat další skutečné textury a fyzické plochy.
+**Priorita:** #164 sloučen po 5/5 PR a 5/5 předchozí main včetně Pages; main db7c715, 5/5 main PASS včetně Pages. Audit nápisů 45869071497 FAIL (české směrovky, nádražní tabule a PID). Kandidát 5.349: fiktivní směrovky a regionální destinace, CT paleta a anglické tabule, zdrojová data a geometrie zachovány; Unit a staged audit 45869437402 PASS (3/3 skupiny, 6/6 oblastí, 44–46 textových záznamů na scénář, žádné neznámé texty ani page errors); PR CI čeká. #147 a #161 otevřeny; žádné release schválení. Po ověření nápisů zkontrolovat další skutečné textury a fyzické plochy.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

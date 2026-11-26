@@ -9,6 +9,18 @@ on:
       - 'scripts/fictional-transit.js'
       - 'scripts/fictional-signage.js'
       - '.github/workflows/world-signage-evidence.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/audit-world-signage.mjs'
+      - 'scripts/station-forecourt-pass.js'
+      - 'scripts/street-environment-pass.js'
+      - 'scripts/street-environment-reality.js'
+      - 'scripts/fictional-transit.js'
+      - 'scripts/fictional-signage.js'
+      - 'scripts/fictional-transit.test.mjs'
+      - 'scripts/fictional-signage.test.mjs'
+      - '.github/workflows/world-signage-evidence.yml'
   workflow_dispatch:
 permissions:
   contents: read
