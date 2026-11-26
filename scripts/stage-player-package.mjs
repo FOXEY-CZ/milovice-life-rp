@@ -56,19 +56,31 @@ function realFile(root,p){
  const f=resolve(root,p);if(!inside(root,f)||!lstatSync(f).isFile()||realpathSync(f)!==f)throw Error('Not a plain source file: '+p);
  return f;
 }
+// The preview is tied to a committed revision, not an edited working tree.
+// Ignore untracked files (including local tool dependencies); they are never selected.
+function cleanRevision(root){
+ const git=args=>execFileSync('git',['-C',root,...args],{encoding:'utf8'});
+ if(realpathSync(git(['rev-parse','--show-toplevel']).trim())!==root)throw Error('Run staging from repository root');
+ const revision=git(['rev-parse','--verify','HEAD']).trim();
+ if(git(['status','--porcelain=v1','-z','--untracked-files=no','--ignore-submodules=none']))throw Error('Tracked checkout has uncommitted changes');
+ return revision;
+}
 function build(root,dest,profile='standard'){
  root=realpathSync(root);dest=resolve(dest);
  if(inside(root,dest)||existsSync(dest))throw Error('Destination must be new and outside the source checkout');
  const parent=dirname(dest);if(realpathSync(parent)!==parent)throw Error('Destination parent must be a real directory');
- const tracked=execFileSync('git',['-C',root,'ls-files','-z'],{encoding:'utf8'}).split('\0').filter(Boolean);
+ const revision=cleanRevision(root);
+ const tracked=execFileSync('git',['-C',root,'ls-tree','-r','--name-only','-z',revision],{encoding:'utf8'}).split('\0').filter(Boolean);
  const read=p=>{const source=readFileSync(realFile(root,p),'utf8');return profile==='procedural-preview'?proceduralProfile(p,source):source;};
  const files=plan(tracked,read);
  for(const p of files)realFile(root,p);
  mkdirSync(dest);
  try{for(const p of files){
   const target=join(dest,p);mkdirSync(dirname(target),{recursive:true});if(profile==='procedural-preview'&&/\.(?:html|js)$/.test(p))writeFileSync(target,read(p));else copyFileSync(realFile(root,p),target);
- }}catch(error){rmSync(dest,{recursive:true,force:true});throw error;}
- console.log('Staged '+files.length+' files ('+profile+'); NOT release-approved. Run release-package-check.mjs --inventory '+JSON.stringify(dest));
+ }
+  if(cleanRevision(root)!==revision)throw Error('Source revision changed during staging');
+ }catch(error){rmSync(dest,{recursive:true,force:true});throw error;}
+ console.log('Staged '+files.length+' files ('+profile+') from '+revision+'; NOT release-approved. Run release-package-check.mjs --inventory '+JSON.stringify(dest));
 }
 function selfTest(){
  const sources=new Map([
@@ -94,7 +106,9 @@ function selfTest(){
   const root=join(temp,'source'),dest=join(temp,'candidate');mkdirSync(root);
   execFileSync('git',['init','-q',root]);
   for(const [p,s] of sources){const f=join(root,p);mkdirSync(dirname(f),{recursive:true});writeFileSync(f,s);}
-  execFileSync('git',['-C',root,'add','.']);
+  const git=(...args)=>execFileSync('git',['-C',root,...args],{encoding:'utf8'});
+  const commit=message=>git('-c','user.name=Staging Fixture','-c','user.email=fixture@example.invalid','-c','commit.gpgsign=false','commit','-qm',message);
+  git('add','.');commit('baseline');
   build(root,dest);assert.equal(readFileSync(join(dest,'scripts/b.js'),'utf8'),sources.get('scripts/b.js'));
   assert(existsSync(join(dest,'data/architecture/verified-buildings.json')));
  for(const p of playerData)assert(existsSync(join(dest,p)),p);
@@ -104,11 +118,22 @@ function selfTest(){
   assert.throws(()=>build(root,join(root,'candidate')),/Destination/);
   // Fail before creating any candidate directory, not just during plan().
   const unknown=join(root,'data/private-audit.json'),rejected=join(temp,'rejected');
-  writeFileSync(unknown,'{}');execFileSync('git',['-C',root,'add','data/private-audit.json']);
+  const trackedScript=join(root,'scripts/b.js');
+  writeFileSync(trackedScript,'// uncommitted');
+  assert.throws(()=>build(root,rejected),/uncommitted changes/);
+  assert(!existsSync(rejected));
+  git('add','scripts/b.js');
+  assert.throws(()=>build(root,rejected),/uncommitted changes/);
+  assert(!existsSync(rejected));
+  git('restore','--source=HEAD','--staged','--worktree','scripts/b.js');
+  writeFileSync(unknown,'{}');
+  build(root,join(temp,'untracked-ok'));
+  assert(!existsSync(join(temp,'untracked-ok','data/private-audit.json')));
+  git('add','data/private-audit.json');commit('unknown tracked data');
   assert.throws(()=>build(root,rejected),/Unclassified data JSON/);
   assert(!existsSync(rejected));
-  execFileSync('git',['-C',root,'rm','-f','data/private-audit.json']);
-  execFileSync('git',['-C',root,'rm','-f','data/regions/index.json']);
+  git('rm','-f','data/private-audit.json');
+  git('rm','-f','data/regions/index.json');commit('missing required data');
   assert.throws(()=>build(root,rejected),/Missing\/untracked dependency/);
   assert(!existsSync(rejected));
  }finally{rmSync(temp,{recursive:true,force:true});}

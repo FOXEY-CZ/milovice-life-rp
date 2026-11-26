@@ -28,3 +28,7 @@ Technical PASS is not a legal decision. Keep source records and notices, do not 
 
 ## 5.350 and next distribution option
 #168 10/10 PR PASS, main 69598567 7/7 PASS including Pages. Opt-in original vehicle batching and ownership passed city, GLB swap/reset/fallback and isolated lifetime. Not hardware FPS or rights clearance. New procedural-only staging option removes the active car/human GLB loaders from that candidate, retains historical credits, and leaves original public demo unchanged. Validation pending; this is a concrete alternative to shipping unresolved GLB files, not a resolution of map/architecture/contributor rights. See docs/RELEASE_PROCEDURAL_PROFILE.md.
+
+
+## Committed staging revision (candidate)
+The staging builder requires a clean tracked checkout rooted at the repository, enumerates paths from its exact HEAD commit, prints the source revision, and rechecks the clean revision after copying before reporting success. Ordinary staged/unstaged tracked edits are rejected; untracked files are not included. Fixture tests cover both edited states and untracked exclusion, plus the existing committed unknown/missing data cases. This is a reproducibility guard, not a cryptographic attestation or release approval; concurrent modification and Git configuration remain outside its guarantee. CI pending.
