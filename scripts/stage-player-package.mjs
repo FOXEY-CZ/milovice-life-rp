@@ -109,7 +109,7 @@ function selfTest(){
   assert(!existsSync(rejected));
   execFileSync('git',['-C',root,'rm','-f','data/private-audit.json']);
   execFileSync('git',['-C',root,'rm','-f','data/regions/index.json']);
-  assert.throws(()=>build(root,rejected),/Missing\\/untracked dependency/);
+  assert.throws(()=>build(root,rejected),/Missing\/untracked dependency/);
   assert(!existsSync(rejected));
  }finally{rmSync(temp,{recursive:true,force:true});}
  console.log('PASS: staging builder self-test');
