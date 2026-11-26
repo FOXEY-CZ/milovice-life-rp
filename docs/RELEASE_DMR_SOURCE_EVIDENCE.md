@@ -1,0 +1,10 @@
+# DMR 4G exact source evidence — issue #147
+
+Checked 2026-11-26. Official national INSPIRE catalogue:
+- https://geoportal.gov.cz/php/micka/record/basic/CZ-CUZK-DMR4G-V — dataset CZ-CUZK-DMR4G-V, revised 2026-06-01; metadata updated 2026-11-11. S-JTSK/Bpv, 5 m grid, TIFF and LAZ; access/use lists no fee, CC BY 4.0 and reference to vyhláška 31/1995 Sb. Links to the related DMR 4G image service.
+- https://geoportal.gov.cz/php/micka/record/basic/CZ-CUZK-AGS-DMR4G — service CZ-CUZK-AGS-DMR4G, revised 2026-07-19; metadata updated 2026-09-14. Public EPSG:5514 service, no public-access restriction; purpose includes export image and sampling; explicitly links the above dataset and the actual endpoint https://ags.cuzk.gov.cz/arcgis2/rest/services/dmr4g/ImageServer.
+- Service access/use points to Zásady užívání dat a služeb ZÚ, https://geoportal.cuzk.gov.cz/Dokumenty/Podminky.pdf. Direct retrieval from gov.cz, cz and orto hosts failed with redirect loops. The full document was not reviewed; do not conclude that the service has identical terms to the dataset or that historic exports have been legally cleared.
+
+Repository method: scripts/build_terrain.py and scripts/build_region_terrain.py call the same endpoint /exportImage using EPSG:5514, TIFF F32, approximately 5 m pixels, bilinear export interpolation, then sample at 10 m (central) or 20 m (regional). Both store rounded decimetres relative to a center elevation and zero for invalid samples if the 98% validity gate passes; the original raster bytes and exact historical provider revisions were not independently reconstructed. This describes the committed methods, not a byte-level historical reproduction.
+
+Player credits now link the exact dataset and service records, retain attribution and CC BY 4.0 link, state modifications and preserve the unresolved service-terms warning. Existing 13 map/terrain/street download links, coordinates, geometry, runtime and library notices unchanged. The staged map audit checks the new links and modification/caveat text. No external fetch at runtime and no release approval. #180 6/6 PR PASS; prior main 5/5 PASS including Pages 45899168323. Candidate CI pending.
