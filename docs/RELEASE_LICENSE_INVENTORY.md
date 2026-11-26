@@ -40,3 +40,21 @@ Recursive Git tree inspection found 807 entries (including directories), 18 trac
 ## Current scope
 
 5.342 staging, checker self-tests and desktop Chromium startup/map/credits passed in isolated workflow 45739287501. Preparation reconciled with 5.343 main; repeat test pending, including default-hidden developer controls. No deployment or release authorization. Review network trace, upstream evidence and actual release manifest next.
+
+
+## Observed exact bytes — 2026-11-26
+Successful [preview run 45742322194](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45742322194), artifact 15082141059. All nine parsed as GLB 2.0; all seven previously declared sizes matched. The parser reported zero core glTF images and zero external buffer/image URIs for each file. Geometry, material colors, vertex colors, extensions and visual marks still require review. The following hashes are byte-identity baselines, not license approval.
+
+| Model | Bytes | SHA-256 |
+|---|---:|---|
+| casualMan | 785308 | `dc2d86e50075e372df870bb60cee46c56033cc2ecb28722523caab93ab1d0111` |
+| casualWoman | 804896 | `522cd442880c6769bdf079f1a2161a1aaffe78b32f1de64fb990644b2e327fea` |
+| suitMan | 857732 | `a9896c1468fadbd24a89a2f86eecd8d47ae5ec6b3ef267b2194dc3b8bb9fb3d0` |
+| broadleaf | 89340 | `01ce29544f56c7f1d0828fe8268b45ff3d75a4612b067ac3707c9bfb11a02f7f` |
+| birch | 90348 | `165aac1b43f009cd7b8145242c86f5b189917281324d272eafde312cd09d16c8` |
+| spectralGT | 4688844 | `e7b7f0d9de0c3bc3897c8134b1ceae5631b1da2690d336df18c3ea82e7238c73` |
+| citySUV | 181608 | `1a9ce2bba813dca5005abab09715b01b8b5f4a9c48d7260463afdfeb876aa8b6` |
+| cityCar | 174320 | `e5f5fa41c4434383b20287725c0e9d757cbd0f059eedc342ec265d32a195fe39` |
+| citySport | 175100 | `bbb1c718d2aaf5f4344e9fb2cd66d8332a998a515b09ddd4dfa14698d787124e` |
+
+The audit now rejects a byte/hash mismatch against this observed baseline; rerun pending. No assets vendored, rights or trademark clearance still pending.

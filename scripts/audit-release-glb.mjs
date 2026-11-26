@@ -1,6 +1,6 @@
 // Inspect exact runtime GLB bytes, not a legal clearance or visual logo audit.
 import {createHash} from 'node:crypto';
-import {writeFileSync,readFileSync} from 'node:fs';
+import {writeFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
 const showcase='https://raw.githubusercontent.com/trebeljahr/quaternius-showcase/0128ca510d653bb04d6d1e4885bd8890b5050b4f/public/glb/';
 const garage='https://raw.githubusercontent.com/bennibeni/garage/5c26fd4bac37080cd55f8064c59de4b14b489ddd/public/models/';
@@ -15,6 +15,45 @@ const entries=[
  ['cityCar',garage+'quaternius-car.glb',174320],
  ['citySport',garage+'quaternius-sport.glb',175100]
 ];
+// Observed in successful preview run 45742322194; byte identity only, not rights approval.
+const observed=Object.freeze({
+  "casualMan": {
+    "bytes": 785308,
+    "sha256": "dc2d86e50075e372df870bb60cee46c56033cc2ecb28722523caab93ab1d0111"
+  },
+  "casualWoman": {
+    "bytes": 804896,
+    "sha256": "522cd442880c6769bdf079f1a2161a1aaffe78b32f1de64fb990644b2e327fea"
+  },
+  "suitMan": {
+    "bytes": 857732,
+    "sha256": "a9896c1468fadbd24a89a2f86eecd8d47ae5ec6b3ef267b2194dc3b8bb9fb3d0"
+  },
+  "broadleaf": {
+    "bytes": 89340,
+    "sha256": "01ce29544f56c7f1d0828fe8268b45ff3d75a4612b067ac3707c9bfb11a02f7f"
+  },
+  "birch": {
+    "bytes": 90348,
+    "sha256": "165aac1b43f009cd7b8145242c86f5b189917281324d272eafde312cd09d16c8"
+  },
+  "spectralGT": {
+    "bytes": 4688844,
+    "sha256": "e7b7f0d9de0c3bc3897c8134b1ceae5631b1da2690d336df18c3ea82e7238c73"
+  },
+  "citySUV": {
+    "bytes": 181608,
+    "sha256": "1a9ce2bba813dca5005abab09715b01b8b5f4a9c48d7260463afdfeb876aa8b6"
+  },
+  "cityCar": {
+    "bytes": 174320,
+    "sha256": "e5f5fa41c4434383b20287725c0e9d757cbd0f059eedc342ec265d32a195fe39"
+  },
+  "citySport": {
+    "bytes": 175100,
+    "sha256": "bbb1c718d2aaf5f4344e9fb2cd66d8332a998a515b09ddd4dfa14698d787124e"
+  }
+});
 const sha256=b=>createHash('sha256').update(b).digest('hex');
 function inspect(bytes){
  assert(bytes.length>=20&&bytes.readUInt32LE(0)===0x46546c67,'GLB magic');
@@ -66,12 +105,13 @@ async function audit(output){
    const limit=32*1024*1024;let size=0;const chunks=[];
    for await(const chunk of r.body){size+=chunk.byteLength;assert(size<=limit,'asset exceeds audit size limit');chunks.push(Buffer.from(chunk));}
    const result=inspect(Buffer.concat(chunks));
-   report.models.push({id,url,expectedBytes,sizeMatches:expectedBytes===null?null:result.bytes===expectedBytes,declaredLicense:'CC0-1.0',review:'pending',...result});
+   const pin=observed[id];assert(pin,'missing observed baseline');
+   report.models.push({id,url,expectedBytes:pin.bytes,sizeMatches:result.bytes===pin.bytes,hashMatches:result.sha256===pin.sha256,declaredLicense:'CC0-1.0',review:'pending',...result});
   }catch(e){report.models.push({id,url,review:'pending',error:String(e)});}
  }
  writeFileSync(output,JSON.stringify(report,null,2)+'\n',{flag:'wx'});
- for(const m of report.models)console.log(JSON.stringify({id:m.id,bytes:m.bytes,sha256:m.sha256,images:m.images?.length,external:m.external?.length,sizeMatches:m.sizeMatches,error:m.error}));
- if(report.models.some(m=>m.error||m.sizeMatches===false||m.external?.length))process.exitCode=1;
+ for(const m of report.models)console.log(JSON.stringify({id:m.id,bytes:m.bytes,sha256:m.sha256,images:m.images?.length,external:m.external?.length,sizeMatches:m.sizeMatches,hashMatches:m.hashMatches,error:m.error}));
+ if(report.models.some(m=>m.error||m.sizeMatches!==true||m.hashMatches!==true||m.external?.length))process.exitCode=1;
 }
 const [mode,out]=process.argv.slice(2);
 if(mode==='--self-test')selfTest();
