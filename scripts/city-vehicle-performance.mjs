@@ -6,8 +6,14 @@ const output=process.argv[2];
 assert.ok(output,'Output JSON path required');
 const base='http://127.0.0.1:8080';
 const viewport={width:1280,height:760};
-const evidence={schema:1,scope:'stationary in-world comparison, Chromium SwiftShader software WebGL; not hardware FPS certification',viewport,warmupMs:6500,windowMs:8000,order:['on','coupe','coupe','on'],samples:[],pageErrors:[]};
-const browser=await chromium.launch({executablePath:process.env.CHROME_BIN||'/usr/bin/google-chrome',headless:true,args:['--no-sandbox','--disable-dev-shm-usage','--enable-webgl','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+const backend=process.env.CITY_PERF_BACKEND||'swiftshader';
+assert.ok(['swiftshader','auto'].includes(backend),'CITY_PERF_BACKEND must be swiftshader or auto');
+const windowMs=Number(process.env.CITY_PERF_WINDOW_MS||8000);
+assert.ok(Number.isInteger(windowMs)&&windowMs>=8000&&windowMs<=60000,'CITY_PERF_WINDOW_MS must be 8000–60000');
+const evidence={schema:2,scope:'stationary in-world RAF comparison; not isolated GPU render time or hardware FPS certification',backendRequested:backend,viewport,warmupMs:6500,windowMs,order:['on','coupe','coupe','on'],samples:[],pageErrors:[]};
+const browser=await chromium.launch(backend==='swiftshader'?
+ {executablePath:process.env.CHROME_BIN||'/usr/bin/google-chrome',headless:true,args:['--no-sandbox','--disable-dev-shm-usage','--enable-webgl','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']}:
+ {...(process.env.CHROME_BIN?{executablePath:process.env.CHROME_BIN}:{channel:'chrome'}),headless:false});
 function stats(values){
  const sorted=[...values].sort((a,b)=>a-b);
  const q=p=>sorted[Math.max(0,Math.ceil(sorted.length*p)-1)];
@@ -24,7 +30,21 @@ try{
  await page.waitForFunction(()=>!!window.__miloviceVehicleDebug?.activeCarId&&Number(document.getElementById('speed')?.textContent)===0,null,{timeout:30000});
  const id=await page.evaluate(()=>window.__miloviceVehicleDebug.activeCarId);
  evidence.vehicleId=id;
- evidence.environment=await page.evaluate(()=>({userAgent:navigator.userAgent,deviceMemory:navigator.deviceMemory??null,hardwareConcurrency:navigator.hardwareConcurrency,dpr:devicePixelRatio,visibility:document.visibilityState}));
+ evidence.environment=await page.evaluate(()=>{
+  // Probe a separate temporary context, never alter the game's renderer.
+  const canvas=document.createElement('canvas');
+  const gl=canvas.getContext('webgl2')||canvas.getContext('webgl');
+  let renderer=null,vendor=null,unmasked=false;
+  if(gl){
+   const ext=gl.getExtension('WEBGL_debug_renderer_info');
+   renderer=gl.getParameter(ext?.UNMASKED_RENDERER_WEBGL??gl.RENDERER);
+   vendor=gl.getParameter(ext?.UNMASKED_VENDOR_WEBGL??gl.VENDOR);
+   unmasked=!!ext;
+   gl.getExtension('WEBGL_lose_context')?.loseContext();
+  }
+  return {userAgent:navigator.userAgent,deviceMemory:navigator.deviceMemory??null,hardwareConcurrency:navigator.hardwareConcurrency,dpr:devicePixelRatio,visibility:document.visibilityState,probeRenderer:renderer,probeVendor:vendor,probeUnmasked:unmasked};
+ });
+ console.log('CITY VEHICLE ENVIRONMENT',JSON.stringify(evidence.environment));
  for(const mode of evidence.order){
   const key=mode==='coupe'?'spectralGT':'cityCar';
   await page.locator('#rp-vehicles').click();

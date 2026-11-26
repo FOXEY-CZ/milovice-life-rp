@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #160 sloučen, 9/9 PR PASS; 7/7 main PASS včetně Pages. Čtyři modely prošly skutečným managerem, 24 snímků vizuálně zkontrolováno, desktop coupe/low-poly přepínání v celém světě PASS. Nezávislá příprava `prep/city-vehicle-performance-5348`: ABBA stacionární měření v Chromium SwiftShader, stejná identita auta, 1280×760, kontrola skutečného modelu, rozlišení, p50/p95/p99 a propadů. Výsledek čeká; nejde o GPU benchmark ani potvrzení 60 FPS. #147 a #157 zůstávají otevřené; žádné release schválení. Po měření rozhodnout o dalším kroku bez snížení grafiky naslepo.
+**Priorita:** #160 sloučen, 9/9 PR PASS; 7/7 main PASS včetně Pages. Čtyři modely prošly skutečným managerem, 24 snímků vizuálně zkontrolováno, desktop coupe/low-poly přepínání v celém světě PASS. Nezávislá příprava `prep/city-vehicle-performance-5348`: ABBA stacionární měření v Chromium SwiftShader, stejná identita auta, 1280×760, kontrola skutečného modelu, rozlišení, p50/p95/p99 a propadů. 45861651388 PASS: on 454,61 ms (36 intervalů), coupe 1412,43 ms (12 intervalů), 3,11× delší RAF interval; rozdílné NPC počty a malý vzorek. Opt-in režim ponechán. Přidán volitelný lokální headed Chrome a delší měřicí interval, evidence renderer probe; nové CI čeká. Nejde o GPU benchmark ani potvrzení 60 FPS. #147 a #157 zůstávají otevřené; žádné release schválení. Dále získat lokální hardware evidence nebo pokračovat release auditem; nesnižovat grafiku naslepo.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
