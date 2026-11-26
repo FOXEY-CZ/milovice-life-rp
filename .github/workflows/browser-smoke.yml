@@ -279,6 +279,7 @@ jobs:
               node scripts/osm-clinic-forecourt-webgl-5123.mjs
               ;;
             3)
+              node scripts/credits-browser.mjs
               node scripts/browser_smoke.mjs
               node scripts/osm-clinic-storefronts-webgl-5124.mjs
               node scripts/osm-clinic-parking-inlays-webgl-5125.mjs
