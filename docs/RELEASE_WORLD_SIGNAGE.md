@@ -7,3 +7,6 @@ Baseline run 45869071497 failed on real directions and station boards; neutral r
 
 ## Legacy regression reconciliation
 PR #165 validation 45870012393 failed at street-environment-pass.test.mjs:115 because the old assertion required the Czech rendering array. Replaced that one assertion with checks for the exact three fictional names, renderer integration, preserved photo observation and absence of the old rendering array. All geometry/clearance assertions retained. Include this historical test in the targeted signage workflow. No additional runtime changes. Repeat CI pending.
+
+## Second validation reconciliation
+Exact head 27a5ab5: signage 45870183478 and staged package 45870183620 PASS; Validate 45870183582 failed at station-photo-parking.test.mjs:497 due to fixed historical import cache pin 5650. Require the exact forecourt module path with a numeric cache pin rather than the obsolete value, retain all geometry and collision assertions. Added a single independent full dev-check --all job to collect all discovered unit failures in one run (not per district). No runtime change; new CI pending.

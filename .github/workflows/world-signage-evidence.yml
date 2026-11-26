@@ -9,6 +9,7 @@ on:
       - 'scripts/fictional-transit.js'
       - 'scripts/fictional-signage.js'
       - 'scripts/street-environment-pass.test.mjs'
+      - 'scripts/station-photo-parking.test.mjs'
       - '.github/workflows/world-signage-evidence.yml'
   pull_request:
     branches: [main]
@@ -20,6 +21,7 @@ on:
       - 'scripts/fictional-transit.js'
       - 'scripts/fictional-signage.js'
       - 'scripts/street-environment-pass.test.mjs'
+      - 'scripts/station-photo-parking.test.mjs'
       - 'scripts/fictional-transit.test.mjs'
       - 'scripts/fictional-signage.test.mjs'
       - '.github/workflows/world-signage-evidence.yml'
@@ -27,6 +29,15 @@ on:
 permissions:
   contents: read
 jobs:
+  unit-sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/dev-check.mjs --all
   signs:
     runs-on: ubuntu-latest
     timeout-minutes: 12

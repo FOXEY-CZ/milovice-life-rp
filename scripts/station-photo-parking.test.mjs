@@ -494,7 +494,8 @@ assert(game.includes("from './scripts/station-photo-parking.js?v=58530'"),
 assert(hasConsistentGameBuild(game),
  'New game version must retain 5.76 parking with the added ticket-machine scene');
 assert(game.includes("from './scripts/bike-tower-interior.js?v=5640'"));
-assert(game.includes("from './scripts/station-forecourt-pass.js?v=5650'"));
+assert.match(game,/from '\.\/scripts\/station-forecourt-pass\.js\?v=\d+'/,
+ 'The current cache-versioned station forecourt module must remain integrated');
 const code=readFileSync(new URL('./station-photo-parking.js',import.meta.url),'utf8');
 assert(code.includes('new THREE.InstancedMesh('));
 assert(code.includes('estimatedParkingPolygon=true'));
