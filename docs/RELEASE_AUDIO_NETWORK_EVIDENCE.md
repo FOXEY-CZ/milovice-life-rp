@@ -14,3 +14,6 @@ The independent scripts/release-network-observer.mjs records request URL, method
 - After #146 is merged, reconcile this independent delta with current main; integrate observer in the staged preview without weakening exact URL validation.
 - Exercise actual vehicle controls, horn, GPS tones and the local-only voice toggle, other regions, desktop/mobile. Record unsupported scenarios as such and distinguish failed requests from pending requests.
 - Inspect actual captured results before approving additional URLs. No final release approval or runtime changes in this preparation.
+
+## Desktop gameplay scenario prepared
+`runReleaseGameplayScenario` uses the normal sedan spawn, horn, GPS audio/voice controls, a selectable GPS target and keyboard acceleration. It asserts a running AudioContext and nonzero speed; a cue or spoken phrase is reported only if observed, not forced. No audio waveform or other regions/mobile tested yet. Attach the response observer before navigation and save partial evidence in finally. This scenario is not yet integrated or executed in CI.

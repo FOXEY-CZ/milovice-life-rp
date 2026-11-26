@@ -1,0 +1,52 @@
+import assert from 'node:assert/strict';
+
+// Run against a fresh staged player page with network observer attached before navigation.
+// This records control interactions, not audibility or offline speech guarantees.
+export async function runReleaseGameplayScenario(page,base,evidence={}){
+ const step=(name,detail={})=>{(evidence.steps??=[]).push({name,...detail});};
+ await page.goto(base+'/',{waitUntil:'domcontentloaded',timeout:30000});
+ await page.waitForFunction(()=>window.__miloviceStarted===true,null,{timeout:60000});
+ await page.locator('[data-spawn="sedan"]').waitFor({state:'visible',timeout:90000});
+ await page.locator('[data-spawn="sedan"]').click();
+ await page.waitForFunction(()=>document.getElementById('mode')?.textContent==='Řidič auta'&&!!window.__miloviceVehicleDebug?.activeCarId,null,{timeout:30000});
+ await page.waitForTimeout(6500);
+ step('sedan spawn and LOD wait');
+ await page.locator('#horn').click();
+ step('horn control clicked',{audibilityVerified:false});
+ await page.locator('#maplaunch').click();
+ await page.locator('#osmmap .leaflet-control-attribution').waitFor({state:'visible',timeout:30000});
+ assert.match(await page.locator('#osmmap .leaflet-control-attribution').innerText(),/OpenStreetMap/);
+ await page.locator('#gps-sound-5330').click();
+ await page.waitForFunction(()=>window.__miloviceGpsSound5330?.().enabled===true,null,{timeout:10000});
+ const audio=await page.evaluate(()=>window.__miloviceGpsSound5330());
+ assert.equal(audio.context,'running');
+ step('GPS audio enabled',{context:audio.context});
+ await page.locator('#gps-voice-5331').click();
+ const voice=await page.evaluate(()=>window.__miloviceGpsVoice5331());
+ assert.equal(voice.selected,true);
+ step('local Czech voice selected',{available:voice.available,spoken:voice.count});
+ const goal=page.locator('#map-goal-5319');
+ await page.waitForFunction(()=>Array.from(document.querySelectorAll('#map-goal-5319 option')).some(o=>o.value&&!o.disabled),null,{timeout:30000});
+ const value=await goal.locator('option').evaluateAll(options=>options.find(o=>o.value&&!o.disabled)?.value);
+ assert.ok(value,'No selectable GPS target');
+ await goal.selectOption(value);
+ await page.locator('#closemap').click();
+ await page.locator('#map-guidance-5319').waitFor({state:'attached'});
+ // Movement is verified independently of whether a navigation cue happens.
+ try{
+  await page.keyboard.down('KeyW');
+  await page.waitForFunction(()=>Number(document.getElementById('speed')?.textContent)>0,null,{timeout:15000});
+  step('vehicle accelerated',{speedKmh:Number(await page.locator('#speed').textContent())});
+  await page.waitForTimeout(3000);
+ }finally{await page.keyboard.up('KeyW');}
+ const end=await page.evaluate(()=>({sound:window.__miloviceGpsSound5330(),voice:window.__miloviceGpsVoice5331()}));
+ step('GPS cue observation',{toneOrSpeechCount:end.sound.count,spokenCount:end.voice.count,cueObserved:end.sound.count>0});
+ await page.locator('#maplaunch').click();
+ await page.locator('#gps-sound-5330').click();
+ await page.waitForFunction(()=>window.__miloviceGpsSound5330?.().enabled===false,null,{timeout:10000});
+ await page.locator('#gps-voice-5331').click();
+ assert.equal(await page.locator('#gps-voice-5331').getAttribute('aria-pressed'),'false');
+ step('audio controls disabled');
+ await page.locator('#closemap').click();
+ return evidence;
+}
