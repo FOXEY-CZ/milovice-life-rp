@@ -1,3 +1,7 @@
+## CROSSVEX 5.342 — Credits & Licenses
+
+Samostatná responzivní stránka s odkazy z HUD a mapy, stávající atribuce zachována, evidence technologií, mapových dat, modelů a referencí. Statická kontrola a Chromium test na třech velikostech. Není úplným licenčním auditem. CI čeká.
+
 ## CROSSVEX 5.341 — Ironfield Fire Station
 
 Anglický originální bitmapový nápis v existujícím opt-in náhledu hasičské stanice, rozšířený font, zachováno 112 a zdrojová dokumentace. Bez nových kolizí či aktivace neověřeného modelu v běžné hře. CI čeká.
