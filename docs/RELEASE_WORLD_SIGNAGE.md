@@ -10,3 +10,6 @@ PR #165 validation 45870012393 failed at street-environment-pass.test.mjs:115 be
 
 ## Second validation reconciliation
 Exact head 27a5ab5: signage 45870183478 and staged package 45870183620 PASS; Validate 45870183582 failed at station-photo-parking.test.mjs:497 due to fixed historical import cache pin 5650. Require the exact forecourt module path with a numeric cache pin rather than the obsolete value, retain all geometry and collision assertions. Added a single independent full dev-check --all job to collect all discovered unit failures in one run (not per district). No runtime change; new CI pending.
+
+## Full unit regression comparison
+Candidate 1c2d554: standard validation and 7/8 workflow suites PASS, full suite 265/278; all three signage matrix jobs PASS. Independent run 45874124879 confirmed the same 13 failures on exact original main db7c715 and 278/278 on test-only baf1eca. Transfer the reviewed 13 assertions files unchanged to #165; no diagnostic workflow, no skip, no runtime changes. Exact final candidate PR tests pending. See HISTORICAL_UNIT_RECONCILIATION.md.

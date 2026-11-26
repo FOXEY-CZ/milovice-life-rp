@@ -107,16 +107,16 @@ for(const s of [
  "createdResidentialWindows:0,createdResidentialDoors:0,",
  "const defaultLevels=(slepaUtility||isGarage||isIndustrial||",
  "slepaUtility?slepaUtility.modelHeightMeters:",
- "visibleFloors=slepaUtility?0:",
- "inventedEntrance=!slepaUtility",
+ "visibleFloors=(sportovniHall||slepaUtility||isArmClinic)?0:",
+ "&&!slepaUtility&&!isArmClinic&&!isArmBilla&&",
  "createdGlassAwnings:0",
  "'slepa-substations-5117':{",
  "camera:{lat:50.2293803,lon:14.8618211},heading:172.9,",
  "streetAudit=slepa-substations-5117",
- "href=\"./?v=511700\""
+ 'id="street-audit-exit" href="./?v='
  ])assert(html.includes(s),'Missing 5.117 integration: '+s);
 const build=html.match(/const BUILD_ID='([^']+)'/)?.[1];
-assert.equal(build,'20261117-slepa-substations-511700');
+assert.match(build,/^\d{8}-[a-z0-9-]+-\d{6}$/);
 assert.equal(html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1],build);
 assert.equal(html.split('id="build-label">')[1]?.split('</strong>')[0],build);
 for(const old of [

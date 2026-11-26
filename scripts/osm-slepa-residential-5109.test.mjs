@@ -87,7 +87,7 @@ for(const term of [
  "streetWayId:slepaStreet?.id,streetPoints:slepaStreet?.points,",
  "const slepaWay=roadWays.find(w=>String(w.id)==='202375817'",
  'window.__miloviceSlepaResidentialAudit={',
- 'const estateAudit=estatePlan?.sourceStreetId?',
+ 'estatePlan?.sourceStreetId?window.__miloviceSlepaResidentialAudit:',
  'planMladaPanelEdge(\n   estatePlan,len,regionalStyle?.baySpacing??3.12)',
  "archPart('panelSeam',mx+nx*flushBoxOffset(.11),",
  'audit.verticalBayJoints++;row.verticalJoints++;',

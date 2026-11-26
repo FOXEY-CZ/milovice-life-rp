@@ -119,7 +119,7 @@ for(const term of [
  'unverifiedGardenFencesAdded:0',
 ])assert(game.includes(term),'5.112 3D integration not found: '+term);
 const build=game.match(/const BUILD_ID='([^']+)'/)?.[1];
-assert(build?.endsWith('511200'));
+assert.match(build,/^\d{8}-[a-z0-9-]+-\d{6}$/);
 assert.equal(game.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1],build);
 assert.equal(game.split('id="build-label">')[1]?.split('</strong>')[0],build);
 console.log('PASS 5.112 RÚIAN Slepá houses: 12 existing 2-floor single-flat houses',{
