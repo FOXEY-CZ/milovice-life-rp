@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/vehicle-wheel-diagnostics.yml'
       - 'scripts/inspect-vehicle-wheels.mjs'
+      - 'scripts/review-vehicle-axles.mjs'
       - 'scripts/vehicle-axle-adapter.js'
       - 'scripts/vehicle-assets.js'
   pull_request:
@@ -12,6 +13,7 @@ on:
     paths:
       - '.github/workflows/vehicle-wheel-diagnostics.yml'
       - 'scripts/inspect-vehicle-wheels.mjs'
+      - 'scripts/review-vehicle-axles.mjs'
       - 'scripts/vehicle-axle-adapter.js'
       - 'scripts/vehicle-assets.js'
   workflow_dispatch:
@@ -20,17 +22,22 @@ permissions:
 jobs:
   wheel-diagnostics:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm install --no-save --no-package-lock three@0.160.1
+      - run: npm install --no-save --no-package-lock three@0.160.1 playwright-core@1.57.0
       - run: node scripts/inspect-vehicle-wheels.mjs "$RUNNER_TEMP/vehicle-wheel-diagnostics.json"
+      - run: node scripts/audit-release-glb.mjs --audit "$RUNNER_TEMP/vehicle-visual-pins.json"
+      - run: node scripts/review-vehicle-axles.mjs "$RUNNER_TEMP/vehicle-visual-pins.json" "$RUNNER_TEMP/vehicle-axle-views"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: vehicle-wheel-diagnostics
-          path: ${{ runner.temp }}/vehicle-wheel-diagnostics.json
+          path: |
+            ${{ runner.temp }}/vehicle-wheel-diagnostics.json
+            ${{ runner.temp }}/vehicle-axle-views/
+            ${{ runner.temp }}/vehicle-visual-pins.json
           if-no-files-found: warn

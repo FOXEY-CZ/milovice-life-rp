@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #158 sloučen 9/9 PR, předchozí main 7/7 PASS včetně Pages. Nový main `6ff19572e39c61a79b64224930c02f3a8c54f674` čeká. #157 diagnostika 45849827056: všechny čtyři GLB odmítány; 45850512267 tři adaptéry PASS, každý 5040 vrcholů, čtyři správné pivoty, Sports Coupe má samostatné díly kol a brzd. 5.347 kandidát integruje tři adaptéry při načtení, kontrola čtyř kol zachována, test skutečného manageru spin/reverse/clone/fallback a staged browser/GLB CI čekají. Před merge ještě ověřit vizuálně skutečné modely a režijní náklady, Sports Coupe samostatně. #147 a #157 otevřeny; žádné release schválení.
+**Priorita:** #158 sloučen 9/9 PR, předchozí main 7/7 PASS včetně Pages. Nový main `6ff19572e39c61a79b64224930c02f3a8c54f674` čeká. #157 diagnostika 45849827056: všechny čtyři GLB odmítány; 45850512267 tři adaptéry PASS, každý 5040 vrcholů, čtyři správné pivoty, Sports Coupe má samostatné díly kol a brzd. 5.347 kandidát integruje tři adaptéry při načtení, kontrola čtyř kol zachována, 45852058175 skutečný manager spin/reverse/clone/fallback PASS 3/3, GLB 45852059163 PASS; 5.346 Pages PASS. Přidán izolovaný Chromium render 18 pohledů (idle/rotated/reverse) a evidence draw calls/triangles, nový CI čeká. Před merge ještě ověřit vizuálně skutečné modely a režijní náklady, Sports Coupe samostatně. #147 a #157 otevřeny; žádné release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
