@@ -1,0 +1,28 @@
+name: CDN library byte audit (evidence only)
+on:
+  push:
+    branches: [prep/release-cdn-integrity]
+    paths:
+      - '.github/workflows/cdn-library-audit.yml'
+      - 'scripts/audit-release-cdn.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-save --no-package-lock three@0.160.1 leaflet@1.9.4
+      - run: node scripts/audit-release-cdn.mjs --self-test
+      - run: node scripts/audit-release-cdn.mjs --audit "$RUNNER_TEMP/cdn-library-evidence.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cdn-library-evidence-review-pending
+          path: ${{ runner.temp }}/cdn-library-evidence.json
+          if-no-files-found: warn
