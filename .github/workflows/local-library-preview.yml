@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - 'scripts/stage-local-library-preview.mjs'
+      - 'scripts/local-library-byte-pins.mjs'
+      - 'scripts/audit-library-notices.mjs'
       - 'scripts/serve-local-preview.mjs'
       - 'scripts/review-procedural-release-profile.mjs'
       - 'scripts/audit-release-network.mjs'
@@ -37,6 +39,17 @@ jobs:
           work="$RUNNER_TEMP/local-libraries"
           mkdir "$work"
           npm install --prefix "$work" --ignore-scripts --no-save --no-package-lock three@0.160.1 leaflet@1.9.4
+          # Reject same-size modified input without creating a destination.
+          victim="$work/node_modules/leaflet/dist/images/layers.png"
+          cp "$victim" "$RUNNER_TEMP/layers.original.png"
+          node -e 'const fs=require("node:fs");const p=process.argv[1];const b=fs.readFileSync(p);b[0]^=1;fs.writeFileSync(p,b)' "$victim"
+          rejected="$RUNNER_TEMP/crossvex-rejected"
+          if node scripts/stage-local-library-preview.mjs --stage "$rejected" "$work/node_modules" > "$RUNNER_TEMP/tampered-library.log" 2>&1; then
+            echo "Modified library unexpectedly accepted"; exit 1
+          fi
+          grep -F 'Vendor SHA-256 mismatch: leaflet/dist/images/layers.png' "$RUNNER_TEMP/tampered-library.log"
+          test ! -e "$rejected"
+          mv "$RUNNER_TEMP/layers.original.png" "$victim"
           stage="$RUNNER_TEMP/crossvex-local"
           node scripts/stage-local-library-preview.mjs --stage "$stage" "$work/node_modules"
           node scripts/audit-release-map-data.mjs "$stage"
@@ -53,6 +66,7 @@ jobs:
           name: local-library-unapproved-evidence
           path: |
             ${{ runner.temp }}/local-library-inventory.json
+            ${{ runner.temp }}/tampered-library.log
             ${{ runner.temp }}/local-library-http.log
 
   wider-preview:

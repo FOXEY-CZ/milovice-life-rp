@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {existsSync,realpathSync,lstatSync,readFileSync,writeFileSync,mkdirSync,mkdtempSync,readdirSync,rmSync,renameSync} from 'node:fs';
 import {resolve,dirname,join,relative,isAbsolute,sep,posix} from 'node:path';
 import {execFileSync} from 'node:child_process';
+import {verifyVendorBytes,verifyVendorInventory,selfTestVendorPins} from './local-library-byte-pins.mjs';
 const libraries=[
  {name:'three',version:'0.160.1',prefix:'https://cdn.jsdelivr.net/npm/three@0.160.1/',paths:['build/three.module.js','examples/jsm/loaders/GLTFLoader.js','examples/jsm/utils/BufferGeometryUtils.js','examples/jsm/utils/SkeletonUtils.js','LICENSE']},
  {name:'leaflet',version:'1.9.4',prefix:'https://unpkg.com/leaflet@1.9.4/',paths:['dist/leaflet.js','dist/leaflet.css','dist/images/layers.png','dist/images/layers-2x.png','dist/images/marker-icon.png','dist/images/marker-icon-2x.png','dist/images/marker-shadow.png','LICENSE']}
@@ -26,13 +27,16 @@ function build(dest,modules){
  assert.ok(!inside(root,dest)&&!existsSync(dest),'Use a new external destination');
  const parent=dirname(dest);assert.equal(realpathSync(parent),parent);
  // Validate exact package versions and every selected input before writing.
+ verifyVendorInventory(libraries.flatMap(lib=>lib.paths.filter(p=>p!=='LICENSE').map(p=>lib.name+'/'+p)));
  const assets=[];
  for(const lib of libraries){
   const packageRoot=realpathSync(join(modules,lib.name));
   assert.equal(JSON.parse(readFileSync(join(packageRoot,'package.json'),'utf8')).version,lib.version);
   for(const p of lib.paths){
    const f=join(packageRoot,p);assert.ok(lstatSync(f).isFile()&&realpathSync(f)===f,'Not a regular library file '+p);
-   assets.push(['vendor/'+lib.name+'/'+p,readFileSync(f)]);
+   const bytes=readFileSync(f);
+   if(p!=='LICENSE')verifyVendorBytes(lib.name+'/'+p,bytes);
+   assets.push(['vendor/'+lib.name+'/'+p,bytes]);
   }
  }
  const temp=mkdtempSync(join(parent,'.crossvex-local-')),stage=join(temp,'preview');
@@ -49,6 +53,7 @@ function build(dest,modules){
   const credits=join(stage,'credits.html'),before=readFileSync(credits,'utf8'),marker='<h2>Technologie</h2>';
   assert.equal(before.split(marker).length,2);
   writeFileSync(credits,before.replace(marker,marker+'<p>Lokální knihovny tohoto náhledu: <a href="./vendor/three/LICENSE">Three.js MIT</a> · <a href="./vendor/leaflet/LICENSE">Leaflet BSD 2-Clause</a>.</p>'));
+  execFileSync(process.execPath,['scripts/audit-library-notices.mjs',credits,join(stage,'vendor/three/LICENSE'),join(stage,'vendor/leaflet/LICENSE')],{cwd:root,stdio:'inherit'});
   assert.ok(!existsSync(dest),'Destination appeared during build');renameSync(stage,dest);
   console.log('Staged local-library procedural preview with '+assets.length+' vendor files; NOT release-approved.');
  }finally{rmSync(temp,{recursive:true,force:true});}
@@ -60,6 +65,7 @@ function selfTest(){
  assert.equal(localize('index.html',leaflet+'dist/leaflet.css'),'./vendor/leaflet/dist/leaflet.css');
  assert.equal(localize('index.html','https://example.org/a'),'https://example.org/a');
  assert.equal(libraries.reduce((n,l)=>n+l.paths.length,0),13);
+ selfTestVendorPins();
  console.log('PASS local library URL rewrite fixtures');
 }
 const [mode,dest,modules,...extra]=process.argv.slice(2);
