@@ -1,0 +1,3 @@
+# Wider local-library preview — independent preparation
+
+Desktop #174 exact candidate 79b374f job 140165433970 PASS: 328 requests, zero remote attempts, zero GLB/HTTP/failed/pending/redirect/page errors, 39 road cars. Prior #173 main 5/5 PASS including Pages 45894512731. Wider test preparation adds opt-in local-only URL policy and blocks remote HTTP(S) requests in the existing six district and two mobile scenarios. Existing standard URL audit remains unchanged; local mode requires all three local library requests, forbids CDN URLs, and preserves procedural ownership and network checks. Negative fixture tests cover external URLs and missing local library. Workflow wiring after #174 merge; CI pending. No new public runtime or legal approval.

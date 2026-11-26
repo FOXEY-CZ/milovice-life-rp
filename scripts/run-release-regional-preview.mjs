@@ -4,6 +4,9 @@ import {join} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {chromium} from 'playwright-core';
 import {observeReleaseNetwork} from './release-network-observer.mjs';
+import {blockRemotePreviewRequests} from './local-preview-network-guard.mjs';
+const localOnly=process.env.LOCAL_LIBRARY_PREVIEW==='1';
+assert.ok(!localOnly||process.env.PROCEDURAL_PREVIEW==='1','Local preview requires procedural profile');
 import {runReleaseRegionScenario} from './release-region-scenario.mjs';
 
 const groups={central:['old','mlada'],west:['vrutice','westlink'],north:['centerlink','bozidar']};
@@ -15,6 +18,7 @@ try{
  for(const id of ids){
   const page=await browser.newPage({viewport:{width:1280,height:760}});
   const observer=observeReleaseNetwork(page),errors=[],evidence={region:id,steps:[]};
+  const remoteAttempts=localOnly?await blockRemotePreviewRequests(page,base):[];
   page.on('pageerror',e=>errors.push(String(e)));
   if(process.env.PROCEDURAL_PREVIEW==='1')await page.addInitScript(()=>{localStorage.setItem('milovice_glb_quality','coupe');localStorage.setItem('milovice_glb_humans','on');});
 
@@ -39,6 +43,7 @@ try{
    writeFileSync(join(out,'regional-'+id+'-requests.json'),JSON.stringify([...new Set(trace.records.map(r=>r.url))].sort(),null,2));
    await page.close();
   }
+  if(localOnly)evidence.remoteAttempts=remoteAttempts;
   if(process.env.PROCEDURAL_PREVIEW==='1'){
    evidence.glbRequests=trace.records.filter(r=>/\.(?:glb|gltf)(?:[?#.]|$)/i.test(r.url)).map(r=>r.url);
    evidence.proceduralNetwork=evidence.glbRequests.length===0&&trace.summary.httpErrors===0&&trace.summary.failed===0&&trace.summary.pending===0?'pass':'fail';
@@ -46,10 +51,10 @@ try{
   const missing=trace.records.filter(r=>r.url.startsWith(base+'/')&&!r.url.endsWith('/favicon.ico')&&(r.status>=400||r.outcome==='failed'));
   evidence.missingLocal=missing;
   try{
-   execFileSync(process.execPath,['scripts/audit-release-network.mjs','--check',join(out,'regional-'+id+'-requests.json'),join(out,'regional-'+id+'-network-review.json')],{stdio:'inherit'});
+   execFileSync(process.execPath,['scripts/audit-release-network.mjs',localOnly?'--check-local':'--check',join(out,'regional-'+id+'-requests.json'),join(out,'regional-'+id+'-network-review.json')],{stdio:'inherit'});
    evidence.urlAudit='pass';
   }catch(error){evidence.urlAudit='fail';evidence.urlError=String(error);}
-  evidence.result=(process.env.PROCEDURAL_PREVIEW!=='1'||evidence.proceduralNetwork==='pass')&&evidence.scenario==='pass'&&evidence.urlAudit==='pass'&&missing.length===0?'pass':'fail';
+  evidence.result=remoteAttempts.length===0&&(process.env.PROCEDURAL_PREVIEW!=='1'||evidence.proceduralNetwork==='pass')&&evidence.scenario==='pass'&&evidence.urlAudit==='pass'&&missing.length===0?'pass':'fail';
   results.push(evidence);
   writeFileSync(join(out,'regional-'+id+'-result.json'),JSON.stringify(evidence,null,2));
   console.log('Regional evidence',JSON.stringify(evidence));
