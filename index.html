@@ -276,7 +276,20 @@ html.rp-ticket-photo-audit #osm3d{display:none!important}
 #rp-camera-gps-panel .actions a{color:#a8e5ff;padding:8px 4px}
 #rp-camera-gps-panel .actions button{padding:7px 9px;min-height:36px;font-size:12px}
 @media(max-width:700px){#rp-camera-gps-panel{top:45px;font-size:12px;padding:9px 11px;gap:5px}#rp-camera-gps-panel strong{font-size:13px}}
-</style></head><body><aside id="rp-camera-gps-panel" hidden aria-label="Souřadnice herní kamery">
+</style><style id="rp-developer-mode-style">
+html:not(.rp-developer-mode) #rp-camera-gps-toggle,
+html:not(.rp-developer-mode) #rp-camera-gps-panel,
+html:not(.rp-developer-mode) #osm-inspect-toggle,
+html:not(.rp-developer-mode) #osm-inspect-result,
+html:not(.rp-developer-mode) #mapfollow-camera,
+html:not(.rp-developer-mode) #terrain-status{display:none!important}
+</style><script>
+(function(){
+ const q=new URLSearchParams(location.search);
+ const enabled=q.get('dev')==='1'||q.get('inspect')==='1'||['roofAudit','ticketPhotoAudit','forecourtAudit','streetAudit','npcAudit'].some(key=>q.has(key));
+ document.documentElement.classList.toggle('rp-developer-mode',enabled);
+})();
+</script></head><body><aside id="rp-camera-gps-panel" hidden aria-label="Souřadnice herní kamery">
 <strong>📍 Kde je herní kamera?</strong>
 <span id="rp-camera-gps-value" aria-live="polite">Načítám polohu…</span>
 <div id="rp-camera-bearing-visual" role="group" aria-label="Grafický kompas směru kamery">
@@ -521,6 +534,7 @@ let mapRouteCache5321=null,mapRoadRevision5321=0,mapInstruction5327=null;
 let leafletRoute5323=null,leafletRouteResult5323=null;
 const mapGoalSelect5319=document.getElementById('map-goal-5319');
 const mapGuidanceHUD5319=document.getElementById('map-guidance-5319');
+const rpDeveloperMode=document.documentElement.classList.contains('rp-developer-mode');
 let leafletCameraMarker=null,leafletCameraRay=null,leafletCameraTip=null,fullMapFollowCamera=false;
 const GAME_ORIGIN_LAT=50.226,GAME_ORIGIN_LON=14.889;
 function gameToLatLng(xx,zz){return [GAME_ORIGIN_LAT-zz/111320,GAME_ORIGIN_LON+xx/(111320*Math.cos(GAME_ORIGIN_LAT*Math.PI/180))]}
@@ -639,6 +653,7 @@ function updateRealMapPlayer(forceCenter=false){
   const tipCoords=gps.bearingDegrees===null?camCoords:
    gameToLatLng(camera.position.x+rpCameraGpsDirection.x/horizontal*85,
     camera.position.z+rpCameraGpsDirection.z/horizontal*85);
+  if(rpDeveloperMode){
   if(!leafletCameraMarker){
    leafletCameraRay=window.L.polyline([camCoords,tipCoords],{
     color:'#f5a623',weight:5,opacity:.95,interactive:false}).addTo(leafletMap);
@@ -661,6 +676,7 @@ function updateRealMapPlayer(forceCenter=false){
    if(!leafletMap.hasLayer(leafletCameraTip))leafletCameraTip.addTo(leafletMap);
    const tip=leafletCameraTip.getElement()?.querySelector('.milovice-camera-tip-arrow');
    if(tip)tip.style.transform='rotate('+gps.bearingDegrees+'deg)';
+  }
   }
   const arrow=leafletPlayer.getElement()?.querySelector('.milovice-player-arrow');
  if(arrow)arrow.style.transform='rotate('+(-heading*180/Math.PI)+'deg)';
@@ -700,7 +716,7 @@ function addRealMapLandmarks(){
  });
 }
 document.getElementById('mapfollow').onclick=()=>{fullMapFollow=true;fullMapFollowCamera=false;updateRealMapPlayer(true)};
-document.getElementById('mapfollow-camera').onclick=()=>{fullMapFollowCamera=true;fullMapFollow=false;updateRealMapPlayer(true)};
+document.getElementById('mapfollow-camera').onclick=()=>{if(!rpDeveloperMode)return;fullMapFollowCamera=true;fullMapFollow=false;updateRealMapPlayer(true)};
 setInterval(()=>{if(mapPanel.classList.contains('open'))updateRealMapPlayer();if(mapGoal5319)updateMapGuidance5319()},280);
 function loadStyle(href){if(document.querySelector('link[data-osm-leaflet]'))return;const l=document.createElement('link');l.rel='stylesheet';l.href=href;l.dataset.osmLeaflet='1';document.head.append(l)}
 function pickMapWaypoint5325(ll){
@@ -2528,6 +2544,7 @@ function rpUpdateLiveCameraGps(){
  rpCameraGpsMap.href='https://mapy.com/zakladni?x='+p.longitude.toFixed(7)+'&y='+p.latitude.toFixed(7)+'&z=19';
 }
 rpCameraGpsToggle.addEventListener('click',()=>{
+ if(!rpDeveloperMode)return;
  rpCameraGpsPanel.hidden=!rpCameraGpsPanel.hidden;
  rpCameraGpsToggle.setAttribute('aria-expanded',String(!rpCameraGpsPanel.hidden));
  rpUpdateLiveCameraGps();
@@ -3077,6 +3094,7 @@ function osmInspectShow(message,formatted=null){
  window.__miloviceOsmInspection.selected=formatted;
 }
 osmInspectToggle.addEventListener('click',()=>{
+ if(!rpDeveloperMode)return;
  osmInspectActive=!osmInspectActive;
  osmInspectToggle.setAttribute('aria-pressed',String(osmInspectActive));
  osmInspectToggle.textContent=osmInspectActive?'🔎 Klepni na stavbu':'🔎 Objekt';
