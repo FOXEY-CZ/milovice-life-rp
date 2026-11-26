@@ -1,0 +1,46 @@
+name: Published architecture source audit (evidence only)
+on:
+  push:
+    branches: [prep/release-architecture-candidate]
+    paths:
+      - '.github/workflows/architecture-source-audit.yml'
+      - 'scripts/audit-architecture-sources.mjs'
+      - 'scripts/discover-staged-source-references.mjs'
+      - 'docs/architecture-source-inventory.json'
+      - 'data/architecture/verified-buildings.json'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/architecture-source-audit.yml'
+      - 'scripts/audit-architecture-sources.mjs'
+      - 'scripts/discover-staged-source-references.mjs'
+      - 'scripts/architecture-manifest.js'
+      - 'scripts/street-architecture.js'
+      - 'scripts/stage-player-package.mjs'
+      - 'docs/architecture-source-inventory.json'
+      - 'data/architecture/verified-buildings.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/stage-player-package.mjs --stage "$RUNNER_TEMP/crossvex-architecture"
+      - run: node scripts/audit-architecture-sources.mjs --self-test "$RUNNER_TEMP/crossvex-architecture"
+      - run: node scripts/audit-architecture-sources.mjs --audit "$RUNNER_TEMP/crossvex-architecture" "$RUNNER_TEMP/architecture-source-evidence.json"
+      - run: node scripts/discover-staged-source-references.mjs --self-test
+      - run: node scripts/discover-staged-source-references.mjs --scan "$RUNNER_TEMP/crossvex-architecture" "$RUNNER_TEMP/staged-source-references.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: architecture-sources-review-pending
+          path: |
+            ${{ runner.temp }}/architecture-source-evidence.json
+            ${{ runner.temp }}/staged-source-references.json
+          if-no-files-found: warn
