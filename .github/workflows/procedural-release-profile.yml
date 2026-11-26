@@ -6,6 +6,9 @@ on:
     branches: [main]
     paths:
       - 'scripts/stage-procedural-profile.mjs'
+      - 'scripts/stage-player-package.mjs'
+      - 'scripts/run-release-mobile-preview.mjs'
+      - 'scripts/run-release-regional-preview.mjs'
       - 'scripts/review-procedural-release-profile.mjs'
       - '.github/workflows/procedural-release-profile.yml'
   workflow_dispatch:
@@ -39,3 +42,42 @@ jobs:
         with:
           name: procedural-preview-unapproved-inventory
           path: ${{ runner.temp }}/procedural-inventory.json
+
+  wider-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        group: [mobile, central, west, north]
+    env:
+      PROCEDURAL_PREVIEW: '1'
+      REGION_GROUP: ${{ matrix.group }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - shell: bash
+        run: |
+          set -euo pipefail
+          stage="$RUNNER_TEMP/crossvex-procedural"
+          node scripts/stage-player-package.mjs --stage-procedural-preview "$stage"
+          npm install --no-save --no-package-lock playwright-core@1.57.0
+          python3 -m http.server 8080 --bind 127.0.0.1 --directory "$stage" > "$RUNNER_TEMP/procedural-http.log" 2>&1 &
+          trap 'kill $! 2>/dev/null || true' EXIT
+          curl --retry 10 --retry-connrefused --retry-delay 1 -fsS http://127.0.0.1:8080/credits.html >/dev/null
+          if [ "$REGION_GROUP" = mobile ]; then
+            node scripts/run-release-mobile-preview.mjs
+          else
+            node scripts/run-release-regional-preview.mjs
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: procedural-preview-${{ matrix.group }}
+          path: |
+            ${{ runner.temp }}/mobile-*.json
+            ${{ runner.temp }}/mobile-*.png
+            ${{ runner.temp }}/regional-*.json

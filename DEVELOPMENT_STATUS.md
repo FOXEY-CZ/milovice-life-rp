@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** 5.350 nasazena, GLB swap/reset/fallback PASS (39/0/39→40/1/39→40/2/38→41/2/39), bez page errors. #161: alternativa staging --stage-procedural-preview bez aktivních GLB loaderů vozidel/postav, zachovává credits, nezasahuje Pages; CI čeká. #147 data a architecture rights otevřeny; bez release schválení.
+**Priorita:** 5.350 nasazena, GLB swap/reset/fallback PASS (39/0/39→40/1/39→40/2/38→41/2/39), bez page errors. #161: alternativa staging --stage-procedural-preview bez aktivních GLB loaderů vozidel/postav, zachovává credits, nezasahuje Pages; desktop 45889659702 PASS (283 souborů, 328 requests, 0 GLB/HTTP/page errors, 39 aut), artifact 15150942293. Rozšíření 6 regionů + 2 mobile orientací se stejnou kontrolou GLB a ownership; CI čeká. #147 data a architecture rights otevřeny; bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
