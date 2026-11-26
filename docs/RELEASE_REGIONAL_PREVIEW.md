@@ -9,3 +9,6 @@ The scenario records successful region loading, walking mode, public district la
 After #149 merge, reapply this delta onto the new main and integrate into a separate staged regional preview job with adequate timeout (six independent pages, sequential or bounded parallel). Reuse existing response observer and exact URL gate; save per-region partial evidence in finally. Verify no local missing resources or page errors; report remote failures/pending separately. Do not approve new external URLs without evidence. Mobile viewport coverage remains a separate task.
 
 No tests executed yet and no runtime code changed.
+
+## Isolated baseline execution
+A preparation-branch workflow now runs six independent desktop scenarios in three groups with at most two runners concurrently. This is on the pre-#149 main baseline; successful results will not establish the reduced package works until the same delta is reapplied and tested after #149. Per-region exact URL audit, local failure checks and response summaries retained. Remote failures and pending requests are reported separately; no release authorization. CI pending.

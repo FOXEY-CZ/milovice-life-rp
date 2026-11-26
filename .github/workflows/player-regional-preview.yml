@@ -1,0 +1,46 @@
+name: Staged regional preview (evidence only)
+on:
+  push:
+    branches: [prep/release-regional-preview]
+    paths:
+      - '.github/workflows/player-regional-preview.yml'
+      - 'scripts/release-region-scenario.mjs'
+      - 'scripts/run-release-regional-preview.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  regional-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        group: [central, west, north]
+    env:
+      REGION_GROUP: ${{ matrix.group }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Stage candidate and run regional browser scenarios
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/stage-player-package.mjs --stage "$RUNNER_TEMP/crossvex-regional"
+          npm install --no-save --no-package-lock playwright-core@1.57.0
+          python3 -m http.server 8080 --bind 127.0.0.1 --directory "$RUNNER_TEMP/crossvex-regional" > "$RUNNER_TEMP/regional-http.log" 2>&1 &
+          trap 'kill $! 2>/dev/null || true' EXIT
+          curl --retry 10 --retry-connrefused --retry-delay 1 -fsS http://127.0.0.1:8080/credits.html >/dev/null
+          node scripts/run-release-regional-preview.mjs
+      - name: Save regional evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crossvex-regional-${{ matrix.group }}
+          path: |
+            ${{ runner.temp }}/regional-*.json
+            ${{ runner.temp }}/regional-http.log
+          if-no-files-found: warn
