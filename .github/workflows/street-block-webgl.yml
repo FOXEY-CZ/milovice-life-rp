@@ -17,7 +17,19 @@ concurrency:
 permissions:
   contents: read
 jobs:
-  street-block-webgl:
+  street-shard:
+    name: Street WebGL — ${{ matrix.area }}
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        include:
+          - area: street-cameras
+            script: scripts/street-block-webgl.mjs
+          - area: vrutice-surface
+            script: scripts/osm-vrutice-underground-surface-5281-webgl.mjs
+          - area: armadni-houses
+            script: scripts/osm-armadni-houses-5282-webgl.mjs
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -29,24 +41,39 @@ jobs:
         run: |
           npm init -y >/dev/null 2>&1
           npm install --no-save --no-package-lock playwright-core@1.57.0
-      - name: Verify geotagged 5. května and Mírová views
+      - name: Verify street WebGL evidence
+        shell: bash
+        env:
+          TEST_SCRIPT: ${{ matrix.script }}
         run: |
+          set -euo pipefail
           CHROME_BIN="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
           export CHROME_BIN
-          python3 -m http.server 8080 >/tmp/milovice-street-582-http.log 2>&1 &
+          python3 -m http.server 8080 --bind 127.0.0.1 >/tmp/milovice-street-582-http.log 2>&1 &
           SERVER_PID=$!
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
-          node scripts/street-block-webgl.mjs
-          node scripts/osm-vrutice-underground-surface-5281-webgl.mjs
-          node scripts/osm-armadni-houses-5282-webgl.mjs
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8080/ >/dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:8080/ >/dev/null
+          node "$TEST_SCRIPT"
       - name: Upload real 3D comparison images
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: milovice-street-58220-cameras
-          path: |
-            browser-artifacts/milovice-street-58220-*.png
-            browser-artifacts/vrutice-underground-5281-*.png
-            browser-artifacts/armadni-houses-5282-*.png
-            browser-artifacts/juventa-*.png
+          name: milovice-street-cameras-${{ matrix.area }}
+          path: browser-artifacts/
           if-no-files-found: ignore
+
+  street-block-webgl:
+    name: street-block-webgl
+    needs: street-shard
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Require all three street WebGL shards to pass
+        env:
+          SHARDS_RESULT: ${{ needs.street-shard.result }}
+        run: test "$SHARDS_RESULT" = success
