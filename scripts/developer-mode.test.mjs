@@ -22,3 +22,6 @@ console.log('PASS fictional startup and recovery copy');
 // Raw errors may contain source URLs or names; expose them only in developer mode.
 for(const expression of ["osmMessage('🏙️ Načítám '+regionDisplayName(area.id)+'…');","osmMessage('Oblast '+regionDisplayName(area.id)+': '+(rpDeveloperMode?e.message:'Načtení se nezdařilo.'));","osmNotice.textContent='3D mapa se nenačetla.'+(rpDeveloperMode?' '+e.message:'')+' Zkus znovu načíst mapu.';"])assert(html.includes(expression),expression);
 for(const expression of ["osmMessage('🏙️ Načítám '+regionDisplayName(area.id)+' ze skutečné mapy…');","osmMessage('Oblast '+regionDisplayName(area.id)+': '+e.message);","osmNotice.textContent='3D mapa se nenačetla: '+e.message+'. Zkus znovu načíst mapu.';"])assert(!html.includes(expression),expression);
+
+assert(html.includes("mapEl.textContent='Mapu se nepodařilo načíst. Zkontroluj internetové připojení.'+(rpDeveloperMode?' '+e.message:'')"));
+assert(!html.includes("mapEl.textContent='Mapu se nepodařilo načíst. Zkontroluj internetové připojení. '+e.message"));

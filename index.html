@@ -748,7 +748,7 @@ async function openRealMap(){
   window.__ironfieldMap5336=()=>({stats:vector.stats,attached:!!leafletMap?.hasLayer(vectorLayer),labelsVisible:!!leafletMap?.hasLayer(streetLabels),names:vector.labels.map(l=>l.name),zoom:leafletMap?.getZoom()});
   leafletMap.on('click',e=>pickMapWaypoint5325(e.latlng));
   addRealMapLandmarks();syncCustomMapGoal5325();document.getElementById('map-pick-5325').disabled=false;updateRealMapPlayer(true);setTimeout(()=>{leafletMap.invalidateSize();updateRealMapPlayer(true)},100);
- }catch(e){if(leafletMap){leafletMap.remove();leafletMap=null;leafletMarks=[];leafletPlayer=null;leafletHalo=null;leafletCameraMarker=null;leafletCameraRay=null;leafletCameraTip=null;leafletRoute5323=null;leafletRouteResult5323=null;leafletCustom5325=null;}setMapPicking5325(false);document.getElementById('map-pick-5325').disabled=true;syncFullMapRoute5323();mapEl.textContent='Mapu se nepodařilo načíst. Zkontroluj internetové připojení. '+e.message}
+ }catch(e){if(leafletMap){leafletMap.remove();leafletMap=null;leafletMarks=[];leafletPlayer=null;leafletHalo=null;leafletCameraMarker=null;leafletCameraRay=null;leafletCameraTip=null;leafletRoute5323=null;leafletRouteResult5323=null;leafletCustom5325=null;}setMapPicking5325(false);document.getElementById('map-pick-5325').disabled=true;syncFullMapRoute5323();mapEl.textContent='Mapu se nepodařilo načíst. Zkontroluj internetové připojení.'+(rpDeveloperMode?' '+e.message:'')}
  finally{leafletMapOpening=false;}
 }
 mapLaunch.addEventListener('click',openRealMap);
