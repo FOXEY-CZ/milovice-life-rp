@@ -13,3 +13,8 @@ for(const id of ['rp-camera-gps-toggle','rp-camera-gps-panel','osm-inspect-toggl
 assert(html.includes('if(rpDeveloperMode){\n  if(!leafletCameraMarker)'));
 assert(html.includes('if(!rpDeveloperMode)return;fullMapFollowCamera=true'));
 console.log('PASS player-default UI and opt-in development modes');
+
+// Source assertions for the ordinary startup and recovery text. Developer audits retain source names.
+for(const text of ["Připravuji Ironfield…","Načítám Ironfield…","Vítej v Ironfieldu.","Ironfield 3D':'🔄 Načíst Ironfield","Mapa Ironfieldu je právě aktivní.","Prozkoumávej Ironfield.","Zkusit načíst Ironfield","Mapu Ironfieldu se nepodařilo načíst.","Mapa se nenačetla.","Načítám herní mapu…"])assert(html.includes(text),text);
+for(const text of ["Připravuji skutečné Milovice…","Načítám Milovice…","Jsi v Milovicích.","Milovice 3D':'🔄 Načíst Milovice","Právě je aktivní skutečná mapa Milovic.","Prozkoumávej skutečné Milovice.","Zkusit načíst Milovice","Skutečnou mapu Milovic se nepodařilo načíst.","Skutečná mapa se nenačetla.","Načítám místní soubor mapy ze stejného GitHub Pages webu…"])assert(!html.includes(text),text);
+console.log('PASS fictional startup and recovery copy');
