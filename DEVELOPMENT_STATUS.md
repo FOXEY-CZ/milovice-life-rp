@@ -3,8 +3,8 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.344**; W8 CI optimalizace sloučena; kandidát vizuální GLB evidence.
-- Main po #143: `e3a1d0d48171faf4eca4907035162ee61563362f`; #143 4/4 PR CI PASS, předchozí main 5/5 včetně Pages PASS. Main 5/5 včetně Pages PASS.
+- Herní verze main: **5.344**; vizuální GLB evidence sloučena; kandidát síťový audit.
+- Main po #144: `f0a4ba99b4f40998ac6d32841df698bc75720bb7`; #144 6/6 CI PASS, předchozí main 5/5 včetně Pages PASS. Nový main CI a Pages ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #143 W8 sloučen. GLB 9/9 hash PASS; porovnání upstream aut blokováno HTTP 403. Vizuální preview 45812034171 vytvořilo 36 záběrů; kontrola obrázků odhalila chybné ohraničení 3 postav, dalších 6 modelů je viditelných. Opravený preview 45812498155 PASS, 36/36 snímků, kontaktový arch skutečně prohlédnut: všech 9 modelů viditelných, bez zjevného čitelného loga v tomto měřítku. Detailní a právní kontrola zůstává otevřená. Kandidát čeká na PR CI. Bez release schválení.
+**Priorita:** #144 vizuální GLB audit sloučen (9/9 hash, 36/36 záběrů, bez zjevného čitelného loga v tomto měřítku; detailní a právní kontrola otevřená, upstream aut HTTP 403). Síťový preview 45813742579 PASS: 331 unikátních URL, 320 lokálních a 11 známých externích, 0 neznámých, 0 chybějících povinných. Čtyři GLB v tomto scénáři nepozorovány. Kandidát síťového auditu čeká na PR CI. Dále licenční texty knihoven a rozšíření scénářů; bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
