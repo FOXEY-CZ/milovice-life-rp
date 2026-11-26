@@ -40,3 +40,6 @@ Uživatel schválil regionální značku CrossTransit (CT), nezávislou na Ironf
 
 ## 5.340 — jízdenkové automaty
 Anglická hlavička CrossTransit Tickets na obou automatech; původní barevné rozlišení skříní a geometrie zachovány. Zdrojové fotografie a interní důkazy beze změny. CI čeká.
+
+## 5.341 — Fire Station
+IRONFIELD FIRE STATION v model-only náhledu; číslo 112 a původní zdrojový nápis zachovány jako důkaz. Neověřené rozměry a umístění nejsou aktivovány v běžné hře. CI čeká.

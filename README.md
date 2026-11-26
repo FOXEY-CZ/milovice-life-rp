@@ -1,3 +1,7 @@
+## CROSSVEX 5.341 — Ironfield Fire Station
+
+Anglický originální bitmapový nápis v existujícím opt-in náhledu hasičské stanice, rozšířený font, zachováno 112 a zdrojová dokumentace. Bez nových kolizí či aktivace neověřeného modelu v běžné hře. CI čeká.
+
 ## CROSSVEX 5.340 — CrossTransit Tickets
 
 Oba jízdenkové automaty používají originální anglickou hlavičku CrossTransit Tickets. Zachovány odlišné barvy skříní, zdrojové doklady, umístění a počet meshů; aktualizovány testy. CI čeká.

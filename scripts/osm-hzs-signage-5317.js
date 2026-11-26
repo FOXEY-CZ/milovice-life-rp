@@ -16,11 +16,14 @@ const glyphs={
  'L':['10000','10000','10000','10000','10000','10000','11111'],
  'O':['01110','10001','10001','10001','10001','10001','01110'],
  'V':['10001','10001','10001','10001','10001','01010','00100'],
+ 'R':['11110','10001','10001','11110','10100','10010','10001'],
+ 'F':['11111','10000','10000','11110','10000','10000','10000'],
+ 'D':['11110','10001','10001','10001','10001','10001','11110'],
  '1':['00100','01100','00100','00100','00100','00100','01110'],
  '2':['01110','10001','00001','00010','00100','01000','11111']
 };
 export const HZS_SIGNAGE_5317=Object.freeze({
- facadeText:'STANICE HZS MILOVICE',towerText:'112',
+ sourceFacadeText:'STANICE HZS MILOVICE',facadeText:'IRONFIELD FIRE STATION',towerText:'112',
  towerRotationDegrees:90,towerPurpose:'hose-drying',
  sourceUrls:Object.freeze([
  'https://hzscr.gov.cz/hasicien/docDetail.aspx?docType=ART&docid=22205732',
