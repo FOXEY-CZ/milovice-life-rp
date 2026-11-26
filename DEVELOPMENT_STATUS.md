@@ -3,8 +3,8 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.347**; #159 sloučen. Kandidát **5.348** (volitelné detailní kupé).
-- Main po #159: `da74b807b8313d8d5a73b225a3aa49b27964a064`; #159 9/9 PR PASS, předchozí main 7/7 včetně Pages PASS. Nový main ověř živě.
+- Herní verze main: **5.348**; #160 sloučen. Příprava měření výkonu bez změny hry.
+- Main po #160: `7a087a173569b6b49df0f3721469ec2f71c3621f`; 9/9 PR PASS a 7/7 main PASS včetně Pages 45860346528.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #159 sloučen 9/9 PR, předchozí main 7/7 PASS včetně Pages. Nový main `da74b807b8313d8d5a73b225a3aa49b27964a064` čeká. Sports Coupe experiment 45854371824 PASS 68 pohyblivých/190 pevných částí; 45854868742 PASS 20 WebGL snímků, 258 → 70 meshů, 516 → 140 draw calls, 151722 trojúhelníků, max 1 výrazně odlišný pixel v odpovídajících optimalizovaných pohledech. 5.348 kandidát volitelný režim coupe pouze hráč/PC; auto/on a NPC low-poly, výstup a vypnutí downgrade. CI actual-manager, čtyři modely WebGL a staged preview čekají. Výkon města/telefonů nepotvrzen. #147 a #157 otevřeny; žádné release schválení.
+**Priorita:** #160 sloučen, 9/9 PR PASS; 7/7 main PASS včetně Pages. Čtyři modely prošly skutečným managerem, 24 snímků vizuálně zkontrolováno, desktop coupe/low-poly přepínání v celém světě PASS. Nezávislá příprava `prep/city-vehicle-performance-5348`: ABBA stacionární měření v Chromium SwiftShader, stejná identita auta, 1280×760, kontrola skutečného modelu, rozlišení, p50/p95/p99 a propadů. 45861651388 PASS: on 454,61 ms (36 intervalů), coupe 1412,43 ms (12 intervalů), 3,11× delší RAF interval; rozdílné NPC počty a malý vzorek. Opt-in režim ponechán. Přidán volitelný lokální headed Chrome a delší měřicí interval, evidence renderer probe; 45862465460 PASS, explicitní SwiftShader probe, on 475,96 ms / coupe 1387,44 ms (2,91×); lokální hardware režim neověřen. Nejde o GPU benchmark ani potvrzení 60 FPS. #157 uzavřen jako technicky vyřešený; #147 a #161 otevřeny; žádné release schválení. Dále získat lokální hardware evidence nebo pokračovat release auditem; nesnižovat grafiku naslepo. Nezávislá příprava #161: prep/local-car-provenance, 9ccef5a, fixture CI 45864735753 PASS, skutečné originály zatím nedostupné. PR #162: čtyři kontroly fe96938 ověřeny přímo podle ID; GitHub merge vrátil 409, nový dokumentační head ověřit před merge.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
