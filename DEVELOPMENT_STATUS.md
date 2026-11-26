@@ -3,8 +3,8 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.341**, kandidát **5.342** (Credits & Licenses).
-- Main po #137: `86465bda1111fe0b59ea759173fa6fd66d805018`, 6/6 PR CI PASS, main CI a Pages ověř živě.
+- Herní verze main: **5.342**, kandidát **5.343** (Developer Mode).
+- Main po #138: `4db6498dd65ed1e95a2909a5d9dcd5ea11c21c37`, 6/6 PR CI PASS, main CI a Pages ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** 5.342 kandidát: samostatná stránka Credits & Licenses, odkazy HUD/mapa, zachovaná atribuce OSM/ČÚZK, nové statické a mobilní browser testy. CI čeká. Další: oddělení technického UI, úplný licenční audit před vydáním.
+**Priorita:** 5.343 kandidát: hráčské UI bez GPS kamery, OSM inspektoru a údajů výškopisu; `?dev=1` a stávající auditní URL zachovány. CI čeká. Další: audit zbývajících názvů a distribuční balíček; skrytí UI není anonymizace dat.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

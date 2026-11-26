@@ -46,3 +46,6 @@ IRONFIELD FIRE STATION v model-only náhledu; číslo 112 a původní zdrojový 
 
 ## 5.342 — Credits & Licenses
 Samostatná hráčská stránka, odkazy z HUD a mapy, původní atribuce zachována. Licence podle evidence projektu; před distribucí ověřit úplný soupis aktiv, licenční texty a podmínky odvozených databází. CI čeká.
+
+## 5.343 — Developer Mode
+Výchozí hráčské UI oddělené od technických ovladačů. Opt-in `?dev=1`, původní auditní odkazy zachovány. Nejde o autentizaci ani anonymizaci: zdrojové soubory, GPS a auditní kód jsou nadále veřejné. CI čeká.

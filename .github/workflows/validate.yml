@@ -352,3 +352,6 @@ jobs:
 
       - name: Verify credits and retained map attribution
         run: node scripts/credits.test.mjs
+
+      - name: Verify opt-in developer mode and audit compatibility
+        run: node scripts/developer-mode.test.mjs
