@@ -1,0 +1,28 @@
+name: Spectral wheel experiment
+on:
+  push:
+    branches: [prep/vehicle-spectral-wheels]
+    paths:
+      - 'scripts/prepare-spectral-wheels.mjs'
+      - 'scripts/inspect-spectral-wheels.mjs'
+      - '.github/workflows/spectral-wheel-experiment.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  experiment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock three@0.160.1
+      - run: node scripts/inspect-spectral-wheels.mjs "$RUNNER_TEMP/spectral-wheel-experiment.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: spectral-wheel-experiment
+          path: ${{ runner.temp }}/spectral-wheel-experiment.json
+          if-no-files-found: warn
