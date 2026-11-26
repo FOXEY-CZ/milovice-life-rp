@@ -1,7 +1,7 @@
 name: GLB evidence audit (preview only)
 on:
   push:
-    branches: [prep/glb-release-audit]
+    branches: [prep/glb-release-audit, prep/release-model-registry]
     paths:
       - 'scripts/audit-release-glb.mjs'
       - '.github/workflows/glb-release-audit.yml'
@@ -17,13 +17,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - run: npm install --no-save --no-package-lock three@0.160.1
+      - run: node scripts/audit-release-glb.mjs --check-runtime "$RUNNER_TEMP/glb-runtime-registry.json"
       - run: node scripts/audit-release-glb.mjs --self-test
       - run: node scripts/audit-release-glb.mjs --audit "$RUNNER_TEMP/glb-evidence.json"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: glb-evidence-review-pending
-          path: ${{ runner.temp }}/glb-evidence.json
+          path: |
+            ${{ runner.temp }}/glb-evidence.json
+            ${{ runner.temp }}/glb-runtime-registry.json
 
   upstream-originals:
     # External provider availability is not a gameplay regression. Manual release evidence only.
