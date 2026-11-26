@@ -1,0 +1,27 @@
+name: Local preview launcher cross-platform tests
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'Start-CROSSVEX-preview.cmd'
+      - 'scripts/launch-local-preview.mjs'
+      - 'scripts/serve-local-preview.mjs'
+      - '.github/workflows/local-preview-launcher.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  launcher:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/serve-local-preview.mjs --self-test
+      - run: node scripts/launch-local-preview.mjs --self-test
