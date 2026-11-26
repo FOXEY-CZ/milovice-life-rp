@@ -5,11 +5,17 @@ on:
     paths-ignore:
       - '**/*.md'
       - 'scripts/dev-check.mjs'
+      # Exact non-runtime release audit files only; all other changes still trigger.
+      - 'scripts/audit-release-glb.mjs'
+      - '.github/workflows/glb-release-audit.yml'
   pull_request:
     branches: [main]
     paths-ignore:
       - '**/*.md'
       - 'scripts/dev-check.mjs'
+      # Exact non-runtime release audit files only; all other changes still trigger.
+      - 'scripts/audit-release-glb.mjs'
+      - '.github/workflows/glb-release-audit.yml'
   workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
