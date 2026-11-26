@@ -30,5 +30,21 @@ export async function runReleaseRegionScenario(page,base,id,evidence={}){
  assert.equal(await page.locator('#mapfollow-camera').isHidden(),true);
  step('fictional map and attribution visible');
  await page.locator('#closemap').click();
+ if(id==='mlada'){
+  // Exercise the real public job menu; do not move the player with debug hooks.
+  await page.waitForFunction(()=>!!window.__miloviceTopolovaLoopPlan,null,{timeout:30000});
+  const moneyBefore=await page.locator('#money').textContent();
+  await page.locator('#rp-jobs').click();
+  await page.locator('#topolova-foot-job-start').click();
+  await page.waitForFunction(()=>window.__miloviceTopolovaFootJobLifecycle5183?.().active===true,null,{timeout:10000});
+  const message=await page.locator('#status').textContent();
+  assert.match(message,/Silver Avenue/);
+  assert.doesNotMatch(message,/Topolov/i);
+  await page.locator('#rp-jobs').click();
+  await page.locator('#topolova-foot-job-end').click();
+  assert.equal(await page.evaluate(()=>window.__miloviceTopolovaFootJobLifecycle5183().active),false);
+  assert.equal(await page.locator('#money').textContent(),moneyBefore);
+  step('fictional pedestrian delivery label and cancellation',{message,rewardUnchanged:true});
+ }
  return evidence;
 }
