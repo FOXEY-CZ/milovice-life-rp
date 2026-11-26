@@ -7,6 +7,16 @@ on:
       - 'scripts/audit-architecture-sources.mjs'
       - 'docs/architecture-source-inventory.json'
       - 'data/architecture/verified-buildings.json'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/architecture-source-audit.yml'
+      - 'scripts/audit-architecture-sources.mjs'
+      - 'scripts/architecture-manifest.js'
+      - 'scripts/street-architecture.js'
+      - 'scripts/stage-player-package.mjs'
+      - 'docs/architecture-source-inventory.json'
+      - 'data/architecture/verified-buildings.json'
   workflow_dispatch:
 permissions:
   contents: read
