@@ -48,7 +48,7 @@ async function selfTest(){
  const dir=realpathSync(mkdtempSync(join(tmpdir(),'crossvex launcher ')));try{
   const stub=join(dir,'server fixture.mjs');
   writeFileSync(stub,"import assert from 'node:assert/strict'; assert.equal(process.argv[2],"+JSON.stringify(dir)+"); assert.equal(process.argv[3],'0'); console.log('UNAPPROVED local preview: http://127.0.0.1:43210');");
-  const calls=[];await runServer(stub,dir,url=>calls.push(url));assert.deepEqual(calls,['http://127.0.0.1:43210']);
+  const calls=[];await runServer(stub,dir,url=>calls.push(url));assert.deepEqual(calls,['http://127.0.0.1:43210/']);
   writeFileSync(stub,"process.exit(3);");await assert.rejects(runServer(stub,dir,()=>assert.fail()),/before startup/);
   assert.throws(()=>stagePath(dir),/Missing preview file/);
   const stage=join(dir,'preview folder');

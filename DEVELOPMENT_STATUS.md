@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #174–175 local-library 9/9 scénářů PASS, 2960 requests, 0 remote/GLB/HTTP/failed/pending/redirect/page errors. #176 loopback Node launcher HTTP a 9 browser scénářů PASS. Kandidát Windows .cmd wrapper, volný port, explicitní existující staging, bez downloads; Windows/Ubuntu fixture a reálný child server HTTP test CI čeká. Interaktivní dvojklik a Explorer zatím neověřeny. Veřejná hra beze změny; #147 a #161 otevřené, bez release schválení.
+**Priorita:** #174–175 local-library 9/9 scénářů PASS, 2960 requests, 0 remote/GLB/HTTP/failed/pending/redirect/page errors. #176 loopback Node launcher HTTP a 9 browser scénářů PASS. Kandidát Windows .cmd wrapper, volný port, explicitní existující staging, bez downloads; Windows/Ubuntu HTTP server PASS; wrapper fixture 45897092879 selhal na očekávaném koncovém lomítku URL. Opraven přesný očekávaný výstup, ostatní testy zachovány; opakované CI čeká. Interaktivní dvojklik a Explorer zatím neověřeny. Veřejná hra beze změny; #147 a #161 otevřené, bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
