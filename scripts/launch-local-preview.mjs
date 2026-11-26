@@ -7,6 +7,7 @@ import {realpathSync,statSync,existsSync,mkdtempSync,mkdirSync,writeFileSync,rmS
 import {dirname,join,resolve} from 'node:path';
 import {tmpdir} from 'node:os';
 import {fileURLToPath} from 'node:url';
+import {previewPort,previewOrigin} from './local-preview-port.mjs';
 const here=dirname(fileURLToPath(import.meta.url));
 function readyUrl(line){
  const m=/^UNAPPROVED local preview: http:\/\/127\.0\.0\.1:(\d{1,5})$/.exec(line);
@@ -20,8 +21,8 @@ function stagePath(input){
  for(const f of ['index.html','credits.html','vendor/three/build/three.module.js','vendor/leaflet/dist/leaflet.js','vendor/leaflet/dist/leaflet.css'])assert.ok(existsSync(join(root,f)),'Missing preview file: '+f);
  return root;
 }
-async function runServer(serverPath,stage,onReady,timeout=15000){
- const child=spawn(process.execPath,[serverPath,stage,'0'],{stdio:['ignore','pipe','inherit'],shell:false,windowsHide:true});
+async function runServer(serverPath,stage,onReady,{port=previewPort(),timeout=15000}={}){
+ const child=spawn(process.execPath,[serverPath,stage,String(port)],{stdio:['ignore','pipe','inherit'],shell:false,windowsHide:true});
  const lines=createInterface({input:child.stdout});let ready=false,stopping=false;
  return await new Promise((ok,fail)=>{
   const timer=setTimeout(()=>{if(!ready){child.kill();fail(Error('Local server did not start'));}},timeout);
@@ -30,7 +31,7 @@ async function runServer(serverPath,stage,onReady,timeout=15000){
   const cleanup=()=>{clearTimeout(timer);process.off('SIGINT',stop);process.off('SIGTERM',stop);lines.close();};
   lines.on('line',line=>{
    console.log(line);const url=readyUrl(line);
-   if(!ready&&url){ready=true;clearTimeout(timer);try{Promise.resolve(onReady(url,stop)).catch(error=>{stop();fail(error);});}catch(error){stop();fail(error);}}
+   if(!ready&&url){if(port!==0&&url!==previewOrigin(port)+'/'){stop();fail(Error('Server reported a different port; browser not opened'));return;}ready=true;clearTimeout(timer);try{Promise.resolve(onReady(url,stop)).catch(error=>{stop();fail(error);});}catch(error){stop();fail(error);}}
   });
   child.once('error',error=>{cleanup();fail(error);});
   child.once('close',(code,signal)=>{cleanup();if(!ready)fail(Error('Local server stopped before startup: '+(code??signal)));else if(!stopping&&code&&code!==0)fail(Error('Local server exited: '+code));else ok();});
@@ -48,8 +49,13 @@ async function selfTest(){
  const dir=realpathSync(mkdtempSync(join(tmpdir(),'crossvex launcher ')));try{
   const stub=join(dir,'server fixture.mjs');
   writeFileSync(stub,"import assert from 'node:assert/strict'; assert.equal(process.argv[2],"+JSON.stringify(dir)+"); assert.equal(process.argv[3],'0'); console.log('UNAPPROVED local preview: http://127.0.0.1:43210');");
-  const calls=[];await runServer(stub,dir,url=>calls.push(url));assert.deepEqual(calls,['http://127.0.0.1:43210/']);
-  writeFileSync(stub,"process.exit(3);");await assert.rejects(runServer(stub,dir,()=>assert.fail()),/before startup/);
+  const calls=[];await runServer(stub,dir,url=>calls.push(url),{port:0});assert.deepEqual(calls,['http://127.0.0.1:43210/']);
+  writeFileSync(stub,"import assert from 'node:assert/strict'; assert.equal(process.argv[3],'47835'); console.log('UNAPPROVED local preview: http://127.0.0.1:47835');");
+  const fixed=[];await runServer(stub,dir,url=>fixed.push(url),{port:47835});assert.deepEqual(fixed,['http://127.0.0.1:47835/']);
+  await assert.rejects(runServer(stub,dir,()=>assert.fail(),{port:47836}),/before startup/);
+  writeFileSync(stub,"console.log('UNAPPROVED local preview: http://127.0.0.1:47836');");
+  await assert.rejects(runServer(stub,dir,()=>assert.fail(),{port:47835}),/different port/);
+  writeFileSync(stub,"process.exit(3);");await assert.rejects(runServer(stub,dir,()=>assert.fail(),{port:0}),/before startup/);
   assert.throws(()=>stagePath(dir),/Missing preview file/);
   const stage=join(dir,'preview folder');
   for(const [p,body] of Object.entries({'index.html':'<meta name="crossvex-profile" content="procedural-preview">game','credits.html':'credits','vendor/three/build/three.module.js':'export {}','vendor/leaflet/dist/leaflet.js':'library','vendor/leaflet/dist/leaflet.css':'body{}'})){
@@ -63,7 +69,7 @@ async function selfTest(){
     assert.equal(response.status,200);assert.match(await response.text(),/procedural-preview/);
     checked=true;
    }finally{stop();}
-  });
+  },{port:0});
   assert.equal(checked,true,'Real server readiness and HTTP response required');
  }finally{rmSync(dir,{recursive:true,force:true});}
  console.log('PASS Windows preview wrapper fixtures');
@@ -77,7 +83,9 @@ async function main(){
  if(!input){const rl=promptInterface({input:process.stdin,output:process.stdout});try{input=await rl.question('Path to existing local CROSSVEX preview: ');}finally{rl.close();}}
  const stage=stagePath(input),server=join(here,'serve-local-preview.mjs');
  assert.ok(existsSync(server),'Local server script is missing');
+ const port=previewPort();
  console.log('Developer preview only. Ctrl+C stops the server.');
- await runServer(server,stage,openWindows);
+ console.log('Stable browser storage origin: '+previewOrigin(port)+' (no automatic fallback port).');
+ await runServer(server,stage,openWindows,{port});
 }
 try{await main();}catch(error){console.error(error.message);process.exitCode=1;}
