@@ -1,23 +1,10 @@
 import assert from 'node:assert/strict';
-import {readFileSync,writeFileSync,copyFileSync} from 'node:fs';
+import {readFileSync,writeFileSync} from 'node:fs';
 import {join} from 'node:path';
 import {chromium} from 'playwright-core';
 const stage=process.argv[2],output=process.argv[3];
 assert.ok(stage&&output);
-const path=join(stage,'index.html');
-let html=readFileSync(path,'utf8');
-function replaceOnce(from,to){
- assert.equal(html.split(from).length,2,'Expected unique stage marker: '+from);
- html=html.replace(from,to);
-}
-replaceOnce("import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=534800';",
- "import {makeVehicleAssetManager} from './scripts/vehicle-assets.js?v=534800';\nimport {batchProceduralRoadCar} from './scripts/procedural-car-batching.js';\nconst batchPreview=new URLSearchParams(location.search).get('batchPreview')==='1';");
-replaceOnce(" const vehicle=type===7?makePidBus(THREE,'432',true):makeRoadCar(THREE,index);",
- " const originalVehicle=type===7?makePidBus(THREE,'432',true):makeRoadCar(THREE,index);\n const vehicle=batchPreview&&type!==7?(batchProceduralRoadCar(THREE,originalVehicle)||originalVehicle):originalVehicle;\n if(vehicle.stats)vehicle.group.userData.batchPreview=true;");
-replaceOnce("  glbModels:window.__miloviceGLBDebug?.assignments||[]",
- "  glbModels:window.__miloviceGLBDebug?.assignments||[],\n  previewBatchCount:trafficCars.filter(c=>c.g.userData.batchPreview===true).length,\n  previewRoadCount:trafficCars.filter(c=>c.type!==7).length");
-copyFileSync(new URL('./procedural-car-batching.js',import.meta.url),join(stage,'scripts/procedural-car-batching.js'));
-writeFileSync(path,html);
+assert.ok(readFileSync(join(stage,'index.html'),'utf8').includes('20261126-procedural-preview-535000'),'Expected staged 5.350 runtime');
 const browser=await chromium.launch({executablePath:'/usr/bin/google-chrome',headless:true,args:['--no-sandbox','--disable-dev-shm-usage','--enable-webgl','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
 const results=[];
 try{
@@ -28,7 +15,7 @@ try{
   page.on('request',r=>{if(/quaternius-(car|sport|suv)\.glb|spectral_gt_rs_game_ready\.glb/.test(r.url()))carRequests.push(r.url());});
   await page.addInitScript(()=>localStorage.setItem('milovice_glb_quality','off'));
   try{
-   await page.goto('http://127.0.0.1:8080/?batchPreview='+(batch?1:0),{waitUntil:'domcontentloaded',timeout:30000});
+   await page.goto('http://127.0.0.1:8080/?proceduralBatch='+(batch?1:0),{waitUntil:'domcontentloaded',timeout:30000});
    await page.waitForFunction(()=>window.__miloviceStarted===true,null,{timeout:90000});
    await page.locator('[data-spawn="sedan"]').click({timeout:90000});
    await page.waitForFunction(()=>!!window.__miloviceVehicleDebug?.activeCarId&&window.__miloviceVehicleDebug?.previewRoadCount>0,null,{timeout:60000});
@@ -72,6 +59,31 @@ try{
     record.pageErrors=[...errors];record.carRequests=[...carRequests];
    }
    assert.deepEqual(errors,[]);assert.deepEqual(carRequests,[]);
+   if(batch){
+    // Separate zero-speed page reload for deterministic removal regression.
+    await page.reload({waitUntil:'domcontentloaded'});
+    await page.waitForFunction(()=>window.__miloviceStarted===true,null,{timeout:90000});
+    const snapshot=()=>page.evaluate(()=>window.__miloviceVehicleDebug);
+    await page.locator('[data-spawn="sedan"]').click({timeout:90000});
+    await page.waitForFunction(()=>{const d=window.__miloviceVehicleDebug;return d?.activeCarId&&d.proceduralLifetime?.enabled&&d.proceduralLifetime.live===d.previewRoadCount;},null,{timeout:60000});
+    const before=await snapshot(),cycles=[];
+    for(const kind of ['suv','van','sedan']){
+     const prior=await snapshot();
+     await page.locator('#rp-vehicles').click();
+     await page.locator('[data-spawn="'+kind+'"]').click();
+     await page.waitForFunction(({id,released})=>{const d=window.__miloviceVehicleDebug;return d?.activeCarId&&d.activeCarId!==id&&d.proceduralLifetime?.released>released&&d.proceduralLifetime.live===d.previewRoadCount;},{id:prior.activeCarId,released:prior.proceduralLifetime.released},{timeout:60000});
+     const current=await snapshot();
+     assert.equal(current.proceduralLifetime.created-current.proceduralLifetime.released,current.proceduralLifetime.live);
+     cycles.push(current.proceduralLifetime);
+    }
+    const last=await snapshot();
+    await page.keyboard.press('r');
+    await page.waitForFunction(n=>{const d=window.__miloviceVehicleDebug;return !d?.activeCarId&&d?.proceduralLifetime?.released>n&&d.proceduralLifetime.live===d.previewRoadCount;},last.proceduralLifetime.released,{timeout:60000});
+    const reset=await snapshot();
+    assert.equal(reset.proceduralLifetime.created-reset.proceduralLifetime.released,reset.proceduralLifetime.live);
+    record.lifecycle={before:before.proceduralLifetime,cycles,reset:reset.proceduralLifetime};
+    assert.deepEqual(errors,[]);assert.deepEqual(carRequests,[]);
+   }
    console.log('CITY BATCH PREVIEW',JSON.stringify(record));
   }finally{await page.close();}
  }

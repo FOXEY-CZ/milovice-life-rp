@@ -3,7 +3,7 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.349**, #165 sloučen po 8/8 PR PASS a 278/278 unit testech; f4781ba 7/7 main PASS včetně Pages. #166 (evidence only) sloučen do `bc783f5` po 4/4 PR PASS; nové main CI čeká.
+- Herní verze main: **5.349**, a0cda37 5/5 PASS včetně Pages 45881718343. Kandidát **5.350**: opt-in procedurální optimalizace a správa životnosti.
 - Main po #160: `7a087a173569b6b49df0f3721469ec2f71c3621f`; 9/9 PR PASS a 8/8 main PASS včetně Pages 45860346528.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** Main a0cda37 5/5 PASS včetně Pages 45881718343. 5.349 beze změny. #161: 8 variant 53–57 → 21 draw calls, 16 pohledů PASS. City preview 45882048484 2/2 PASS: 39/39 vozidel, 4 kola ve všech 4 jízdách, nula GLB car requests/page errors; SwiftShader průměr RAF 350,34 → 345,82 ms (~1,3 %, ne hardware FPS). Připojena ownership lease, mock a skutečný opakovaný WebGL lifecycle test; čeká CI. Produkční integrace a reset/replacement testy ještě otevřeny. #147 a #161 zůstávají otevřeny.
+**Priorita:** 45883109236 2/2 PASS, WebGL lifecycle 16 cyklů návrat 21 geometrií, závěr 0, žádný shared dispose. City repeat 39/39 PASS, bez opakovatelného zrychlení. 5.350 pouze opt-in ?proceduralBatch=1, GLB volba nezávislá; připojeno 4 známých removal míst, unit/actual city lifecycle čeká. #147 a #161 otevřeny; bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - 'scripts/procedural-car-batching.js'
+      - 'scripts/vehicle-assets.js'
       - 'scripts/review-procedural-car-batching.mjs'
       - 'scripts/city-procedural-batch-preview.mjs'
       - 'scripts/procedural-car-ownership.js'
