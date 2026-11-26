@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 const required=['index.html','credits.html'];
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const validPath=p=>typeof p==='string'&&p.length>0&&!p.includes('\\')&&!p.includes(':')&&!/[\x00-\x1f\x7f]/.test(p)&&p.split('/').every(s=>s&&s!=='.'&&s!=='..');
-const developmentData=new Set(["data/architecture-references.json","data/architecture/building-audit-queue.json","data/architecture/building-work-progress.json","data/architecture/verified-buildings.json"]);
+const developmentData=new Set(["data/architecture-references.json","data/architecture/building-audit-queue.json","data/architecture/building-work-progress.json"]);
 const forbidden=p=>developmentData.has(p)||p.split('/').some(s=>s.startsWith('.'))||/^(?:editor|survey|photo-pilot|rebuild)\.html$/i.test(p)||/^(?:AGENTS|DEVELOPMENT_STATUS|README)\.md$/i.test(p)||/(?:\.test|-test)\.mjs$|(?:-browser|-webgl)[^/]*\.mjs$/i.test(p)||/^scripts\/(?:dev-check|release-package-check)\.mjs$/i.test(p);
 
 function scan(root){

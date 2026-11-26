@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync,existsSync} from 'node:fs';
 import {join} from 'node:path';
+import {parseApprovedArchitectureManifest} from './architecture-manifest.js';
 const root=process.argv[2];assert.ok(root,'Usage: audit-release-map-data.mjs <stage>');
 const read=p=>JSON.parse(readFileSync(join(root,p),'utf8'));
 const pairs=[{"osm":"data/milovice-osm.json","dem":"data/milovice-terrain.json","step":10},{"osm":"data/regions/mlada.json","dem":"data/regions/terrain-mlada.json","step":20},{"osm":"data/regions/vrutice.json","dem":"data/regions/terrain-vrutice.json","step":20},{"osm":"data/regions/westlink.json","dem":"data/regions/terrain-westlink.json","step":20},{"osm":"data/regions/centerlink.json","dem":"data/regions/terrain-centerlink.json","step":20},{"osm":"data/regions/bozidar.json","dem":"data/regions/terrain-bozidar.json","step":20}];
@@ -13,5 +14,7 @@ for(const {osm,dem,step} of pairs){
 }
 assert.match(read('data/rebuild2-street-inventory.json').attribution,/OpenStreetMap.*ODbL/i);
 assert.ok(page.includes('href="./data/rebuild2-street-inventory.json"'));
-for(const p of ["data/architecture-references.json","data/architecture/building-audit-queue.json","data/architecture/building-work-progress.json","data/architecture/verified-buildings.json"])assert.equal(existsSync(join(root,p)),false,'Development data leaked: '+p);
-console.log('PASS six OSM snapshots, six DMR grids, street inventory, download links and four excluded files');
+for(const p of ["data/architecture-references.json","data/architecture/building-audit-queue.json","data/architecture/building-work-progress.json"])assert.equal(existsSync(join(root,p)),false,'Development data leaked: '+p);
+const verified=parseApprovedArchitectureManifest(read('data/architecture/verified-buildings.json'));
+assert.ok(verified.size>0,'No published architecture revisions');
+console.log('PASS six OSM snapshots, six DMR grids, street inventory, download links, three excluded files and '+verified.size+' published architecture records');

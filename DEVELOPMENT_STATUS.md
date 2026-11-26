@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #148 desktop herní preview sloučen, 5/5 PR CI a předchozí main 5/5 včetně Pages PASS. Preview 45821350247: 662 požadavků ve 2 scénářích, 332 unikátních URL, 0 chyb/neznámých, 1 GPS cue, lokální český hlas nedostupný. Nový main `193debe569d2f712c79ce9524380fec5c668cf53` čeká. #147 kandidát: oprava 10/20 m popisků, přímé odkazy na 12 zdrojových JSON a odvozený soupis, metadata audit, čtyři vývojové JSON vyřazeny pouze z izolovaného stagingu s fail-closed kontrolou referencí. CI čeká; dynamické závislosti a další regiony nutno ověřit. ODbL odpovídající data a podmínky služby ČÚZK nejsou definitivně právně vypořádány.
+**Priorita:** #148 desktop herní preview sloučen, 5/5 PR CI a předchozí main 5/5 včetně Pages PASS. Preview 45821350247: 662 požadavků ve 2 scénářích, 332 unikátních URL, 0 chyb/neznámých, 1 GPS cue, lokální český hlas nedostupný. Nový main `193debe569d2f712c79ce9524380fec5c668cf53` čeká. #147 kandidát: oprava 10/20 m popisků, přímé odkazy na 12 zdrojových JSON a odvozený soupis, metadata audit, první preview 45822995515 správně zablokovalo vyřazení verified-buildings.json (runtime modul architecture-manifest.js). Opravený kandidát zachovává všech pět schválených záznamů, vyřazuje jen tři další vývojové JSON; přidán test skutečným parserem manifestu. Main po #148 5/5 včetně Pages PASS. Nový preview čeká; dynamické závislosti a další regiony nutno ověřit. ODbL odpovídající data a podmínky služby ČÚZK nejsou definitivně právně vypořádány.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
