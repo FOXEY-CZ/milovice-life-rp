@@ -7,6 +7,15 @@ import {tmpdir} from 'node:os';
 import assert from 'node:assert/strict';
 import {proceduralProfile} from './stage-procedural-profile.mjs';
 const roots=['index.html','credits.html'];
+// Every new tracked data JSON needs an explicit distribution classification.
+const playerData=new Set([
+ 'data/architecture/verified-buildings.json',
+ 'data/milovice-osm.json','data/milovice-terrain.json','data/rebuild2-street-inventory.json',
+ 'data/regions/index.json',
+ ...['bozidar','centerlink','mlada','vrutice','westlink'].flatMap(region=>[
+  'data/regions/'+region+'.json','data/regions/terrain-'+region+'.json'
+ ])
+]);
 const developmentData=new Set(["data/architecture-references.json","data/architecture/building-audit-queue.json","data/architecture/building-work-progress.json"]);
 const localModule=/(?:\bfrom\s*|\bimport\s*(?:\(\s*)?)(['"])(\.{1,2}\/[^'"\s]+)\1/g;
 const htmlScript=/<script\b[^>]*\bsrc\s*=\s*(['"])(\.{1,2}\/[^'"\s]+|scripts\/[^'"\s]+)\1/gi;
@@ -33,7 +42,13 @@ function plan(tracked,read){
  for(const p of roots)add(p);
  // Explicit candidate exclusions only; stop if any selected runtime source mentions one.
  for(const p of selected){if(!/\.(?:html|js)$/.test(p))continue;const source=read(p);for(const omitted of developmentData)if(source.includes(posix.basename(omitted)))throw Error('Possible runtime dependency on excluded data: '+p+' -> '+omitted);}
- for(const p of tracked.filter(p=>/^data\/.+\.json$/.test(p)&&!developmentData.has(p)))add(p);
+ for(const p of tracked.filter(p=>/^data\/.+\.json$/.test(p))){
+  if(!playerData.has(p)&&!developmentData.has(p))throw Error('Unclassified data JSON: '+p);
+ }
+ for(const p of playerData){
+  if(developmentData.has(p))throw Error('Conflicting data classification: '+p);
+  add(p);
+ }
  return [...selected].sort();
 }
 function inside(root,p){const rel=relative(root,p);return rel===''||(!isAbsolute(rel)&&rel!=='..'&&!rel.startsWith('..'+sep));}
@@ -61,11 +76,14 @@ function selfTest(){
   ['credits.html','credits'],
   ['scripts/a.js',"export {b} from './b.js';"],
   ['scripts/b.js',"import './a.js';"],
-  ['data/regions/index.json','{}'],['data/map.json','{}'],['data/architecture-references.json','{}'],['data/architecture/verified-buildings.json','{}'],
+  ...[...playerData,...developmentData].map(p=>[p,'{}']),
   ['editor.html','dev'],['scripts/unused.js','unused'],['scripts/a.test.mjs','test']
  ]);
  const read=p=>sources.get(p);
- assert.deepEqual(plan([...sources.keys()],read),['credits.html','data/architecture/verified-buildings.json','data/map.json','data/regions/index.json','index.html','scripts/a.js','scripts/b.js']);
+ assert.equal(playerData.size,15);
+ assert.deepEqual(plan([...sources.keys()],read),['credits.html','index.html','scripts/a.js','scripts/b.js',...playerData].sort());
+ assert.throws(()=>plan([...sources.keys(),'data/private-audit.json'],read),/Unclassified data JSON: data\/private-audit\.json/);
+ assert.throws(()=>plan([...sources.keys()].filter(p=>p!=='data/regions/index.json'),read),/Missing\/untracked dependency: data\/regions\/index\.json/);
  assert.throws(()=>plan([...sources.keys()],p=>p==='scripts/a.js'?"fetch('architecture-references.json')":read(p)),/Possible runtime dependency/);
  assert.deepEqual(dependencies('index.html',"<script src='scripts/a.js'></script>"),['scripts/a.js']);
  assert.deepEqual(dependencies('scripts/a.js',"const m=import('./b.js?v=3');"),['scripts/b.js']);
@@ -79,10 +97,20 @@ function selfTest(){
   execFileSync('git',['-C',root,'add','.']);
   build(root,dest);assert.equal(readFileSync(join(dest,'scripts/b.js'),'utf8'),sources.get('scripts/b.js'));
   assert(existsSync(join(dest,'data/architecture/verified-buildings.json')));
- assert(!existsSync(join(dest,'data/architecture-references.json')));
+ for(const p of playerData)assert(existsSync(join(dest,p)),p);
+  for(const p of developmentData)assert(!existsSync(join(dest,p)),p);
  assert(!existsSync(join(dest,'editor.html')));assert(!existsSync(join(dest,'scripts/unused.js')));
   assert.throws(()=>build(root,dest),/Destination/);
   assert.throws(()=>build(root,join(root,'candidate')),/Destination/);
+  // Fail before creating any candidate directory, not just during plan().
+  const unknown=join(root,'data/private-audit.json'),rejected=join(temp,'rejected');
+  writeFileSync(unknown,'{}');execFileSync('git',['-C',root,'add','data/private-audit.json']);
+  assert.throws(()=>build(root,rejected),/Unclassified data JSON/);
+  assert(!existsSync(rejected));
+  execFileSync('git',['-C',root,'rm','-f','data/private-audit.json']);
+  execFileSync('git',['-C',root,'rm','-f','data/regions/index.json']);
+  assert.throws(()=>build(root,rejected),/Missing\/untracked dependency/);
+  assert(!existsSync(rejected));
  }finally{rmSync(temp,{recursive:true,force:true});}
  console.log('PASS: staging builder self-test');
 }
