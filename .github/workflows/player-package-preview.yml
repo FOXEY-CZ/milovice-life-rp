@@ -7,6 +7,14 @@ on:
       - 'scripts/stage-player-package.mjs'
       - 'scripts/release-package-check.mjs'
       - 'index.html'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'credits.html'
+      - 'scripts/stage-player-package.mjs'
+      - 'scripts/release-package-check.mjs'
+      - '.github/workflows/player-package-preview.yml'
   workflow_dispatch:
 permissions:
   contents: read

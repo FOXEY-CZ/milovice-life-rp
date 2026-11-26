@@ -19,8 +19,11 @@ jobs:
           node-version: '22'
       - run: node scripts/audit-release-glb.mjs --self-test
       - run: node scripts/audit-release-glb.mjs --audit "$RUNNER_TEMP/glb-evidence.json"
+      - run: node scripts/audit-release-glb.mjs --compare-cars "$RUNNER_TEMP/glb-original-cars.json"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: glb-evidence-review-pending
-          path: ${{ runner.temp }}/glb-evidence.json
+          path: |
+            ${{ runner.temp }}/glb-evidence.json
+            ${{ runner.temp }}/glb-original-cars.json
