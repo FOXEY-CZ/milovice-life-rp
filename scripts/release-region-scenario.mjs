@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {LANDMARK_NAMES,STREET_NAMES} from './fictional-identity.js';
 export const releaseRegions=Object.freeze([
  ['old','Old Town'],['mlada','Maple Heights'],['vrutice','Westwood'],
  ['westlink','Betweenwoods'],['centerlink','Northlink'],['bozidar','Cloudridge']
@@ -29,6 +30,33 @@ export async function runReleaseRegionScenario(page,base,id,evidence={}){
  assert.equal(await page.locator('#osmmap .leaflet-tile').count(),0);
  assert.equal(await page.locator('#mapfollow-camera').isHidden(),true);
  step('fictional map and attribution visible');
+ // Compare the actual public option text and rendered map labels, not just the source registry.
+ const goals=page.locator('#map-goal-5319');
+ await page.waitForFunction(()=>document.querySelectorAll('#map-goal-5319 option').length===15,null,{timeout:30000});
+ const goalOptions=await goals.locator('option').evaluateAll(nodes=>nodes.map(n=>({value:n.value,text:n.textContent.trim()})));
+ assert.equal(goalOptions[0].value,'');
+ assert.deepEqual(goalOptions.slice(1).map(o=>o.text).sort(),Object.values(LANDMARK_NAMES).sort(),'Public GPS destinations');
+ assert.equal(new Set(goalOptions.map(o=>o.value)).size,15);
+ const knownStreets=new Set(Object.values(STREET_NAMES));
+ await page.locator('#osmmap .leaflet-control-zoom-in').click();
+ await page.waitForFunction(()=>window.__ironfieldMap5336?.().labelsVisible===true,null,{timeout:15000});
+ const mapState=await page.evaluate(()=>window.__ironfieldMap5336());
+ assert.ok(mapState.attached&&mapState.names.length>0);
+ assert.ok(mapState.names.every(name=>knownStreets.has(name)),'Unexpected map street label');
+ const labels=page.locator('#osmmap .rp-ironfield-street');
+ await labels.first().waitFor({state:'attached',timeout:15000});
+ const rendered=await labels.allTextContents();
+ assert.ok(rendered.length>0&&rendered.every(name=>knownStreets.has(name.trim())),'Unexpected rendered street label');
+ const station=goalOptions.find(o=>o.text==='🚉 Ironfield Station');
+ assert.ok(station);
+ await goals.selectOption(station.value);
+ await page.waitForFunction(()=>document.getElementById('map-guidance-name-5319')?.textContent==='🚉 Ironfield Station',null,{timeout:15000});
+ assert.equal(await page.locator('#map-guidance-5319').isHidden(),false);
+ await page.locator('#map-goal-clear-5319').click();
+ assert.equal(await goals.inputValue(),'');
+ assert.equal(await page.locator('#map-guidance-5319').isHidden(),true);
+ step('fictional GPS options, rendered street labels and navigation HUD',{destinations:goalOptions.length-1,streetLabels:rendered.length,goal:station.text});
+
  await page.locator('#closemap').click();
  if(id==='mlada'){
   // Exercise the real public job menu; do not move the player with debug hooks.

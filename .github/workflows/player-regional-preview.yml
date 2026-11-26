@@ -1,7 +1,7 @@
 name: Staged regional preview (evidence only)
 on:
   push:
-    branches: [prep/release-regional-candidate, prep/player-foot-job-candidate-5346]
+    branches: [prep/release-regional-candidate, prep/player-foot-job-candidate-5346, prep/player-map-identity]
     paths:
       - '.github/workflows/player-regional-preview.yml'
       - 'scripts/release-region-scenario.mjs'
