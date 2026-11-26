@@ -1,0 +1,48 @@
+name: Local library procedural preview (not release-approved)
+on:
+  push:
+    branches: [prep/local-library-preview]
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/stage-local-library-preview.mjs'
+      - 'scripts/review-procedural-release-profile.mjs'
+      - 'scripts/stage-player-package.mjs'
+      - 'scripts/stage-procedural-profile.mjs'
+      - '.github/workflows/local-library-preview.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/stage-local-library-preview.mjs --self-test
+          work="$RUNNER_TEMP/local-libraries"
+          mkdir "$work"
+          npm install --prefix "$work" --ignore-scripts --no-save --no-package-lock three@0.160.1 leaflet@1.9.4
+          stage="$RUNNER_TEMP/crossvex-local"
+          node scripts/stage-local-library-preview.mjs --stage "$stage" "$work/node_modules"
+          node scripts/audit-release-map-data.mjs "$stage"
+          node scripts/release-package-check.mjs --inventory "$stage" > "$RUNNER_TEMP/local-library-inventory.json"
+          if node scripts/release-package-check.mjs --check "$stage" "$RUNNER_TEMP/local-library-inventory.json"; then exit 1; fi
+          npm install --no-save --no-package-lock playwright-core@1.57.0
+          python3 -m http.server 8080 --bind 127.0.0.1 --directory "$stage" > "$RUNNER_TEMP/local-library-http.log" 2>&1 &
+          trap 'kill $! 2>/dev/null || true' EXIT
+          curl --retry 10 --retry-connrefused --retry-delay 1 -fsS http://127.0.0.1:8080/credits.html >/dev/null
+          LOCAL_LIBRARY_PREVIEW=1 node scripts/review-procedural-release-profile.mjs "$stage"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: local-library-unapproved-evidence
+          path: |
+            ${{ runner.temp }}/local-library-inventory.json
+            ${{ runner.temp }}/local-library-http.log
