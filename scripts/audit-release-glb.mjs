@@ -126,18 +126,19 @@ async function compareCars(output){
   const url='https://static.poly.pizza/'+file+'.glb.br';
   try{
    const r=await fetch(url,{signal:AbortSignal.timeout(30000),redirect:'error'});
-   assert(r.ok,'HTTP '+r.status);
+   if(!r.ok){results.push({id,url,status:'unavailable',httpStatus:r.status,matches:null});continue;}
    const chunks=[];let size=0;
    for await(const chunk of r.body){size+=chunk.byteLength;assert(size<=32*1024*1024,'source too large');chunks.push(Buffer.from(chunk));}
    const raw=Buffer.concat(chunks);
    const bytes=raw.length>=4&&raw.readUInt32LE(0)===0x46546c67?raw:brotliDecompressSync(raw,{maxOutputLength:32*1024*1024});
    const result=inspect(bytes),pin=observed[id];
-   results.push({id,url,bytes:result.bytes,sha256:result.sha256,matches:result.sha256===pin.sha256&&result.bytes===pin.bytes});
-  }catch(e){results.push({id,url,error:String(e),matches:false});}
+   const matches=result.sha256===pin.sha256&&result.bytes===pin.bytes;
+   results.push({id,url,bytes:result.bytes,sha256:result.sha256,status:matches?'match':'mismatch',matches});
+  }catch(e){results.push({id,url,status:'unverified',error:String(e),matches:null});}
  }
  writeFileSync(output,JSON.stringify({review:'pending',results},null,2)+'\n',{flag:'wx'});
  for(const result of results)console.log(JSON.stringify(result));
- if(results.some(r=>!r.matches))process.exitCode=1;
+ if(results.some(r=>r.matches!==true))process.exitCode=1;
 }
 const [mode,out]=process.argv.slice(2);
 if(mode==='--self-test')selfTest();

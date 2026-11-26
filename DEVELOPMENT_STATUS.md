@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** 5.344 sloučena po opravách mobilního testu. Audit GLB: 9/9 stažených modelů a jejich SHA-256 PASS (45742322194, 45742460495, 45743092851). Deklarace CC0 doloženy v `docs/RELEASE_LICENSE_INVENTORY.md`; přesné porovnání tří aut s originály a vizuální audit ještě čekají. Bez automatického vydání.
+**Priorita:** 5.344 sloučena po opravách mobilního testu. Audit GLB: 9/9 stažených modelů a jejich SHA-256 PASS (45742322194, 45742460495, 45743092851). Deklarace CC0 doloženy v `docs/RELEASE_LICENSE_INVENTORY.md`; porovnání tří originálů skončilo HTTP 403 (45809167297). Odděleno do ručního přísného licenčního jobu; automatický audit 9 GLB zůstává přísný. Žádný PASS pro nedostupné originály. Nové CI čeká; vizuální audit a důkaz původu zůstávají otevřené. Bez automatického vydání.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
