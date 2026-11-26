@@ -3,7 +3,7 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.349**, a0cda37 5/5 PASS včetně Pages 45881718343. Kandidát **5.350**: opt-in procedurální optimalizace a správa životnosti.
+- Herní verze main: **5.350**, #169 sloučen bf95012 (staging-only), PR 10/10 PASS; předchozí 69598567 7/7 PASS včetně Pages 45888221594. Nové main CI čeká.
 - Main po #160: `7a087a173569b6b49df0f3721469ec2f71c3621f`; 9/9 PR PASS a 8/8 main PASS včetně Pages 45860346528.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** 5.350 b7bfe58 runtime 45883579481 2/2 PASS: GLB off 39/39, 4 jízdy, obě série 3 výměn + reset (42 vytvořeno, 4 odstraněno, 38 live), bez page errors. 16 WebGL lifetime cyklů PASS. Přidán skutečný GLB on sedan→SUV/reset/off regression + úplný unit sweep, PR #168 8702a26 9/10 PASS, unit sweep PASS; 45884173797 city GLB-on selhal released 0 vs 1 (pravděpodobně 2Hz stale snapshot); opraveno čekání na koherentní počty a nové ID, bez změny runtime. Repeat 28ff81f 9/10 PASS; GLB swap/reset potvrzen (40/2/38, active null, jen ambient GLB), timeout při kliknutí pod již otevřeným pickerem. Opraveno použití viditelného pickeru + přesný reset release delta; fallback repeat čeká. Režim pouze ?proceduralBatch=1, žádné potvrzené hardware FPS zrychlení. #147 a #161 otevřeny; bez release schválení.
+**Priorita:** #169 merged, procedurální alternativa 9 scénářů bez GLB/HTTP/page errors, 283 souborů; standardní runtime beze změny. Commons 45890484827 HTTP 200, všech 5 přesných fotografií ŠJů CC BY 4.0 a Taken on 30 May 2024, parser ISO selhal; přidána striktní normalizace data, repeat čeká. #147, Mapy a další práva otevřeny; bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

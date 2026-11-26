@@ -42,6 +42,22 @@ def queries(inventory):
     return result
 def field(metadata, key):
     return metadata.get(key, {}).get("value")
+def normalized_photo_date(value):
+    """Accept explicit ISO date/time or the English Commons 'Taken on' format."""
+    iso = re.fullmatch(r"(\d{4}-\d{2}-\d{2})(?:[ T]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?)?", value)
+    if iso:
+        try:
+            return datetime.date.fromisoformat(iso.group(1)).isoformat()
+        except ValueError:
+            return None
+    human = re.fullmatch(r"Taken on (\d{1,2}) (January|February|March|April|May|June|July|August|September|October|November|December) (\d{4})", value)
+    if human:
+        months = ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
+        try:
+            return datetime.date(int(human.group(3)), months.index(human.group(2)) + 1, int(human.group(1))).isoformat()
+        except ValueError:
+            return None
+    return None
 def evaluate(expected, payload):
     if "error" in payload:
         raise ValueError("Commons API error: " + str(payload["error"].get("code")))
@@ -62,10 +78,10 @@ def evaluate(expected, payload):
             checks[source["id"]] = {
                 "author": source["author"] == author,
                 "license": source["license"] == license_name and license_url in ("https://creativecommons.org/licenses/by/4.0", "https://creativecommons.org/licenses/by/4.0/", "http://creativecommons.org/licenses/by/4.0", "http://creativecommons.org/licenses/by/4.0/"),
-                "photoDate": original_date[:10] == source["date"],
+                "photoDate": normalized_photo_date(original_date) == source["date"],
             }
         matched = bool(info.get("sha1") and page.get("pageid") and checks and all(all(c.values()) for c in checks.values()))
-        records.append({"requestedTitle": requested, "returnedTitle": page.get("title"), "pageid": page.get("pageid"), "lastrevid": page.get("lastrevid"), "descriptionurl": info.get("descriptionurl"), "sha1": info.get("sha1"), "mime": info.get("mime"), "uploadTimestamp": info.get("timestamp"), "artistRaw": field(meta, "Artist"), "artist": author, "license": license_name, "licenseUrl": license_url, "dateTimeOriginal": original_date, "attribution": field(meta, "Attribution"), "credit": field(meta, "Credit"), "restrictions": field(meta, "Restrictions"), "sources": sources, "checks": checks, "metadataStatus": "matched" if matched else "unverified", "rightsStatus": "pending"})
+        records.append({"requestedTitle": requested, "returnedTitle": page.get("title"), "pageid": page.get("pageid"), "lastrevid": page.get("lastrevid"), "descriptionurl": info.get("descriptionurl"), "sha1": info.get("sha1"), "mime": info.get("mime"), "uploadTimestamp": info.get("timestamp"), "artistRaw": field(meta, "Artist"), "artist": author, "license": license_name, "licenseUrl": license_url, "dateTimeOriginal": original_date, "normalizedPhotoDate": normalized_photo_date(original_date), "attribution": field(meta, "Attribution"), "credit": field(meta, "Credit"), "restrictions": field(meta, "Restrictions"), "sources": sources, "checks": checks, "metadataStatus": "matched" if matched else "unverified", "rightsStatus": "pending"})
     return records
 def self_test():
     t = "File:Sample.jpg"
@@ -73,6 +89,11 @@ def self_test():
     page = {"title": t, "pageid": 1, "imageinfo": [{"sha1": "abc", "timestamp": "2024-06-01", "extmetadata": {"Artist": {"value": "<a href='/wiki/User:X'>ŠJů</a>"}, "LicenseShortName": {"value": "CC BY 4.0"}, "LicenseUrl": {"value": "https://creativecommons.org/licenses/by/4.0/"}, "DateTimeOriginal": {"value": "2024-05-30 12:00:00"}}}]}
     payload = {"query": {"pages": [page]}}
     assert evaluate(expected, payload)[0]["metadataStatus"] == "matched"
+    page["imageinfo"][0]["extmetadata"]["DateTimeOriginal"]["value"] = "Taken on 30 May 2024"
+    assert evaluate(expected, payload)[0]["metadataStatus"] == "matched"
+    for value in ("Taken on 31 February 2024", "Taken on 31 May 2024", "Uploaded on 30 May 2024", "2024-05-30 unknown", ""):
+        page["imageinfo"][0]["extmetadata"]["DateTimeOriginal"]["value"] = value
+        assert evaluate(expected, payload)[0]["metadataStatus"] == "unverified"
     page["imageinfo"][0]["extmetadata"]["DateTimeOriginal"]["value"] = ""
     assert evaluate(expected, payload)[0]["metadataStatus"] == "unverified"
     page["imageinfo"] = []
@@ -94,7 +115,7 @@ def main():
     expected = queries(inventory)
     if len(expected) != 5:
         raise ValueError("Expected five exact published Commons photo references")
-    params = {"action": "query", "format": "json", "formatversion": "2", "prop": "info|imageinfo", "iiprop": "sha1|mime|timestamp|url|extmetadata", "iiextmetadatafilter": "Artist|LicenseShortName|LicenseUrl|DateTimeOriginal|Attribution|Credit|Restrictions", "titles": "|".join(expected), "maxlag": "5"}
+    params = {"action": "query", "format": "json", "formatversion": "2", "uselang": "en", "prop": "info|imageinfo", "iiprop": "sha1|mime|timestamp|url|extmetadata", "iiextmetadatafilter": "Artist|LicenseShortName|LicenseUrl|DateTimeOriginal|Attribution|Credit|Restrictions", "titles": "|".join(expected), "maxlag": "5"}
     report = {"scope": "exact public Commons metadata only, no photos downloaded; no derivative or distribution rights approval", "requestedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(), "api": API, "requestedTitles": list(expected), "records": [], "rightsStatus": "pending"}
     try:
         request = urllib.request.Request(API + "?" + urllib.parse.urlencode(params), headers={"User-Agent": USER_AGENT, "Accept": "application/json"})
