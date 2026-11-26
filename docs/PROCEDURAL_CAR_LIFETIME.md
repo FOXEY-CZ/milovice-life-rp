@@ -1,0 +1,17 @@
+# Procedural vehicle lifetime — independent preparation
+
+No production wiring. The existing factory creates independent geometry per road car and caches shared materials and paint textures. Batching clones the root, shares unmerged geometry, creates merged geometries, and clones instanced arch trim. A lease records both fresh procedural roots before attachment and disposes unique geometries and instance allocations exactly once only after removal. It never follows late GLB attachments or disposes cached materials/textures. Cross-car resource aliases are rejected; fallback can be registered as the same original and selected root.
+
+Exact removal sites inspected on a0cda37: previous player spawn replacement in rpSpawn, reset, rpSeedItalskaNpcEncounter5259 replacement and rpPopulate (glbVehicles.reset then trafficGroup.clear). Traffic recycling/reuse without removal must not release geometry. Production code must detach the GLB manager and root before release; ensure activeCar/playerSpawnCar references are not reused after retirement, and do not call the batch-only dispose function separately on an owned car. Validate lifecycle with real repeated spawn/reset/region transitions and renderer memory counts before enabling batching in normal play.
+
+Mock test covers lease ownership, source/clone alias dedup, refusal to dispose attached roots, GLB exclusion, material sharing and double release. Full-world performance run 45882048484 still pending, so this commit is prepared without moving the test branch. Test execution pending.
+
+City repeat 45882048484 PASS. Prepared ownership now advanced onto test branch; enforce once-only registration with WeakSet, mock rejects re-registration after release. New real browser test keeps one batched car visible, creates/renders/removes/releases 16 further original/batched cars in same context, verifies renderer.info.memory.geometries/textures and draws return to survivor baseline each time, final geometry count zero, shared materials/textures receive zero dispose events. CI pending. No claim of physical GPU memory or actual game reset coverage yet.
+
+45883109236 compare PASS: actual repeated WebGL counts restored for 16 cycles; final geometries 0, cached texture 1, shared disposals 0. 5.350 opts in via URL; actual game removal sites wired. Existing default mode unchanged; no forced GLB off. Candidate full-world tests pending.
+
+Actual 5.350 b7bfe58 city job 140128631671 PASS: two repeated replacements and reset sequences with GLB off; ownership counts matched actual road-car population at each step. New live GLB attachment retirement regression and full unit sweep pending.
+
+PR #168 GLB-on test initially failed released counter 0 instead of 1 after new model assignment. Wait for fresh lifetime generation and exact release delta alongside GLB assignment; no assertion removed. Repeat pending.
+
+Repeat 45886162436 progressed through live GLB retirement and reset, snapshot 40 created / 2 released / 38 live, no active player, only ambient GLBs. UI harness timeout when clicking behind already-open spawn picker; conditional open added. Fallback verification still pending.

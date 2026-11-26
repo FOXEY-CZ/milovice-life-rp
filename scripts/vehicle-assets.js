@@ -225,5 +225,6 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
  }
  function getState(){return {mode,enabled:enabled(),states:Object.fromEntries(states),activeCount:active.size}}
  publish();
- return {configure,update,load,getState,spin,reset};
+ function retire(car){detach(car);lastUpdate=-1;publish();}
+ return {configure,update,load,getState,spin,reset,retire};
 }

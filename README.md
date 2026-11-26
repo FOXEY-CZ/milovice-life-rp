@@ -1,3 +1,7 @@
+# CROSSVEX 5.350 — experimental procedural vehicle batching
+
+Optional `?proceduralBatch=1`: original road-car static geometry batches, four independent wheel pivots, owned geometry disposal on removal. Default and existing GLB preferences unchanged. Isolated 16-cycle lifetime PASS; city preview PASS but no repeatable speed gain; candidate real-runtime checks pending. See docs/PROCEDURAL_CAR_ALTERNATIVE.md.
+
 ## CROSSVEX 5.349 — fictional station and directional signs
 
 Audit 45869071497 odhalil staré české texty a PID na dvou typech 3D cedulí. Anglické směrovky, fiktivních devět regionálních destinací, IRONFIELD / RAIL STATION, STAND A/B a CT s paletou CrossTransit. Původní zdrojové popisy, linky, souřadnice, geometrie a kolize zachovány. Nové fiktivní názvy jsou pracovní, bez právní rešerše. Unit a opakovaný staged audit čekají.

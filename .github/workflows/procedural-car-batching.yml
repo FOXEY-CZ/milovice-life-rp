@@ -1,0 +1,82 @@
+name: Original procedural car optimization (preview only)
+on:
+  push:
+    branches: [prep/procedural-car-batching]
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/procedural-car-batching.js'
+      - 'scripts/vehicle-assets.js'
+      - 'scripts/review-procedural-car-batching.mjs'
+      - 'scripts/city-procedural-batch-preview.mjs'
+      - 'scripts/review-procedural-glb-retirement.mjs'
+      - 'scripts/procedural-car-ownership.js'
+      - 'scripts/procedural-car-ownership.test.mjs'
+      - 'scripts/review-procedural-car-lifetime.mjs'
+      - '.github/workflows/procedural-car-batching.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock three@0.160.1 playwright-core@1.57.0
+      - shell: bash
+        run: |
+          set -euo pipefail
+          cat > procedural-car-review.html <<'EOF'
+          <!doctype html><meta charset="utf-8">
+          <script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+          <script>window.reviewReady=true;</script>
+          EOF
+          python3 -m http.server 8080 --bind 127.0.0.1 > "$RUNNER_TEMP/procedural-http.log" 2>&1 &
+          trap 'kill $! 2>/dev/null || true' EXIT
+          curl --retry 10 --retry-connrefused --retry-delay 1 -fsS http://127.0.0.1:8080/procedural-car-review.html >/dev/null
+          node scripts/review-procedural-car-batching.mjs
+          node scripts/procedural-car-ownership.test.mjs
+          node scripts/review-procedural-car-lifetime.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: procedural-car-review
+          path: ${{ runner.temp }}/procedural-car-review/
+
+  city-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/stage-player-package.mjs --stage "$RUNNER_TEMP/crossvex-batch"
+          npm install --no-save --no-package-lock playwright-core@1.57.0
+          python3 -m http.server 8080 --bind 127.0.0.1 --directory "$RUNNER_TEMP/crossvex-batch" > "$RUNNER_TEMP/city-batch-http.log" 2>&1 &
+          trap 'kill $! 2>/dev/null || true' EXIT
+          curl --retry 10 --retry-connrefused --retry-delay 1 -fsS http://127.0.0.1:8080/credits.html >/dev/null
+          node scripts/city-procedural-batch-preview.mjs "$RUNNER_TEMP/crossvex-batch" "$RUNNER_TEMP/city-batch.json"
+          node scripts/review-procedural-glb-retirement.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: city-batch-preview
+          path: ${{ runner.temp }}/city-batch.json
+
+  unit-sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/dev-check.mjs --all
