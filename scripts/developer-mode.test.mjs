@@ -25,3 +25,7 @@ for(const expression of ["osmMessage('🏙️ Načítám '+regionDisplayName(are
 
 assert(html.includes("mapEl.textContent='Mapu se nepodařilo načíst. Zkontroluj internetové připojení.'+(rpDeveloperMode?' '+e.message:'')"));
 assert(!html.includes("mapEl.textContent='Mapu se nepodařilo načíst. Zkontroluj internetové připojení. '+e.message"));
+
+// Do not claim independently verified model licenses in the player menu.
+for(const text of ["Detailní sportovní model · načítá se podle nastavení","Detailní modely · stahují se postupně, záložní model zůstává"])assert(html.includes(text),text);
+for(const text of ["Ověřený CC0 sportovní model • načítá se podle nastavení","CC0 modely · stahují se postupně, záložní model zůstává"])assert(!html.includes(text),text);

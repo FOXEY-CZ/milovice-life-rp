@@ -1,6 +1,6 @@
 ## CROSSVEX 5.344 — fictional startup copy
 
-Hráčské načítání, uvítání, stav mapy a obnovovací tlačítka používají Ironfield. Interní názvy, auditní texty, zdrojová data a geometrie beze změny. Chybové zprávy hráčům neukazují surové výjimky mapy; auditní režim je zachová. Rozšířený statický a mobilní browser test; CI čeká.
+Hráčské načítání, uvítání, stav mapy a obnovovací tlačítka používají Ironfield. Interní názvy, auditní texty, zdrojová data a geometrie beze změny. Chybové zprávy hráčům neukazují surové výjimky mapy; auditní režim je zachová. Výběr modelů neoznačuje deklarovanou licenci za ověřenou; Credits & Licenses zůstávají. Rozšířený statický a mobilní browser test; CI čeká.
 
 ## CROSSVEX 5.343 — Developer Mode
 
