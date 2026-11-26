@@ -34,3 +34,6 @@ Všechny hráčské názvy ulic, oblastí, institucí, podniků a fyzické nápi
 
 ## 5.338 — vizuální identita obchodů
 Vlastní palety BrayMart, ValueNest a Vendoa napojeny na nápisy a vybrané fasádní prvky. Ostatní specializované textury ještě vyžadují audit. CI čeká.
+
+## 5.339 — CrossTransit
+Uživatel schválil regionální značku CrossTransit (CT), nezávislou na Ironfieldu. Nové barvy a cílové displeje autobusů a vlaků, anglické fallback zastávky a PHARMACY. Zdrojové údaje a geometrie beze změny. CI čeká.

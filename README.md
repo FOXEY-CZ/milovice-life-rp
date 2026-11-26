@@ -1,3 +1,7 @@
+## CROSSVEX 5.339 — CrossTransit
+
+Regionální fiktivní síť CrossTransit (CT), nezávislá na konkrétním městě. Autobusy a vlaky používají vlastní barvy a anglické destinace; čtyři fallback zastávky mají anglické názvy při zachovaných souřadnicích. Lékárna zobrazuje PHARMACY, zdrojové foto údaje zachovány. CI čeká.
+
 ## CROSSVEX 5.338 — vlastní barvy obchodů
 
 BrayMart, ValueNest a Vendoa mají vlastní barevné palety nápisů a vybraných fasádních prvků. Vendoa zachovává průhlednou ceduli a původní konstrukci; půdorysy, vchody, LOD a kolize beze změny. CI a vizuální ověření čekají.

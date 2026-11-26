@@ -70,7 +70,8 @@ for(const str of [
  "from './scripts/osm-clinic-pharmacy-sign-5126.js?v=512600'",
  'const signPlan=shopPlan?planClinicPhotoPharmacySign({',
  "sign.name='Milovice_Spojovaci_ClinicPhotoPharmacySign_5126'",
- 'ctx.fillText(signPlan.photographedText,256,74)',
+ "ctx.fillText('PHARMACY',256,74)",
+ "signText:'PHARMACY',sourceSignText:signPlan.photographedText,",
  'window.__miloviceClinicPhotoPharmacySignAudit={',
  'window.__miloviceClinicPhotoPharmacySignRuntime=()=>{',
  'sign.userData.lodDetail=false',
@@ -81,4 +82,5 @@ for(const str of [
  'window.__miloviceClinicForecourtRuntime=()=>{',
  'window.__miloviceClinicShopfrontRuntime=()=>{'
 ])assert(html.includes(str),'Missing 5.126 integration '+str);
-console.log('PASS 5.126 photographed green LÉKÁRNA on the correct real OSM clinic, unmapped precise shop bay not asserted');
+assert(!html.includes('ctx.fillText(signPlan.photographedText,256,74)'));
+console.log('PASS 5.126 source pharmacy geometry preserved; fictional PHARMACY display');
