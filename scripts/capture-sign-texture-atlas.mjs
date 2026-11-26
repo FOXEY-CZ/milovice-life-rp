@@ -70,6 +70,16 @@ try{
  }
  const list=[...items.values()];
  assert.ok(list.some(r=>r.uploads>0),'No text canvas observed in GPU upload calls');
+ // These five corrected textures had GPU upload evidence in the 5.348 baseline.
+ const required=['◀  City Police','◀  Recycling Center','◀  Wonderwood Park','STAND A','STAND B'];
+ const uploaded=[...items.values()].filter(r=>r.uploads>0);
+ for(const label of required)assert.ok(uploaded.some(r=>r.labels.includes(label)), 'Corrected texture not observed in GPU upload: '+label);
+ for(const label of ['MILOVICE','PID','◀  Městská policie','◀  Sběrný dvůr','◀  Mirakulum','ŽEL. ST.','STANOVIŠTĚ A','STANOVIŠTĚ B'])
+  assert.ok(!list.some(r=>r.labels.includes(label)),'Legacy sign text: '+label);
+ for(const stand of ['STAND A','STAND B']){
+  const panel=uploaded.find(r=>r.labels.includes(stand));
+  for(const label of ['IRONFIELD','RAIL STATION','CT'])assert.ok(panel.labels.includes(label),stand+' missing '+label);
+ }
  const sheets=[];
  for(let i=0;i<list.length;i+=12){
   const png=await page.evaluate(async rows=>{

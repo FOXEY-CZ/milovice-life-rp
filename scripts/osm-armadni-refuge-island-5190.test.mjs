@@ -1,3 +1,4 @@
+import {hasConsistentGameBuild} from './game-build-label.js';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {planArmadniZebraArms5191} from './osm-armadni-zebra-arms-5191.js';
@@ -93,6 +94,7 @@ assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),
  source,'immutable original RÚIAN/OSM bytes');
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+assert(hasConsistentGameBuild(html));
 for(const text of [
  "from './scripts/osm-armadni-refuge-island-5190.js?v=519000'",
  'const armadniRefugePlan5190=planArmadniRefuge5190({',
@@ -157,9 +159,9 @@ for(const variant of [
 for(const needle of [
  "from './scripts/osm-armadni-zebra-arms-5191.js?v=519100'",
  'planArmadniZebraArms5191({',
- 'const pieces=armadniZebraArms5191?.pieces||unsegmentedZebraPieces5191;',
+ 'armadniZebraArms5191?.pieces||unsegmentedZebraPieces5191;',
  'window.__miloviceArmadniZebraArmsRuntime5191=()=>',
- '20261120-armadni-split-zebra-519100'
+ 'const pieces=visnovaZebraArms5216?.pieces||'
 ])assert(html.includes(needle),'missing actual 5.191 zebra integration: '+needle);
 assert.equal(readFileSync(new URL('../data/regions/mlada.json',import.meta.url),'utf8'),
  source,'OSM source bytes unchanged after split model');

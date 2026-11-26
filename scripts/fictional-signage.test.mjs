@@ -30,3 +30,12 @@ console.log('PASS fictional storefront names, neutral fallbacks and source prese
 import {readFileSync} from 'node:fs';
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 for(const marker of ['businessSignText(tags).toLocaleUpperCase','label(STATIC_SIGN_TEXT.stationFallback','led(STATIC_SIGN_TEXT.busDestination','stationBoard(STATIC_SIGN_TEXT.station','stationFacadeSign(STATIC_SIGN_TEXT.station','schoolFacadeSign(STATIC_SIGN_TEXT.school','c.fillText(STATIC_SIGN_TEXT.hotel','stationBoard(STATIC_SIGN_TEXT.bikeHub']) assert(html.includes(marker),marker);
+
+import {DIRECTION_SIGN_LABELS} from './fictional-signage.js';
+assert.deepEqual(DIRECTION_SIGN_LABELS,['City Police','Recycling Center','Wonderwood Park']);
+assert.ok(Object.isFrozen(DIRECTION_SIGN_LABELS));
+for(const file of ['street-environment-pass.js','street-environment-reality.js']){
+ const code=readFileSync(new URL('./'+file,import.meta.url),'utf8');
+ assert.ok(code.includes('DIRECTION_SIGN_LABELS.entries()'));
+ assert.ok(code.includes('directional signs reading Městská policie, Sběrný dvůr, Mirakulum'));
+}

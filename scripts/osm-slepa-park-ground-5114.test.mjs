@@ -103,7 +103,7 @@ for(const token of [
  "const slepaParkBladeMaterial=new THREE.MeshLambertMaterial({"
  ])assert(html.includes(token),'Missing 5.114 integration '+token);
 const build=html.match(/const BUILD_ID='([^']+)'/)?.[1];
-assert.equal(build,'20261117-slepa-park-511400');
+assert.match(build,/^\d{8}-[a-z0-9-]+-\d{6}$/);
 assert.equal(html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1],build);
 assert.equal(html.split('id="build-label">')[1]?.split('</strong>')[0],build);
 // Previous mobile menu safeguards must remain.

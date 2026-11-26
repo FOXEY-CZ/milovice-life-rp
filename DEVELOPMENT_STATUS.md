@@ -3,7 +3,7 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.348**; #160, #162 a #163 sloučeny. Technické měření a kontrola GLB bez změny hry. Main `7523976`, 5/5 PASS včetně Pages 45866650331.
+- Herní verze main: **5.348**; #164 sloučen, main `db7c715`, 5/5 PASS včetně Pages 45869222905. Kandidát **5.349**: oprava směrovek a zastávkových tabulí.
 - Main po #160: `7a087a173569b6b49df0f3721469ec2f71c3621f`; 9/9 PR PASS a 7/7 main PASS včetně Pages 45860346528.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #160–#163 sloučeny; měření SwiftShader 45861651388 / 45862465460 (kupé 3,11× / 2,91× delší RAF interval; desktop opt-in ponechán, hardware neověřen). #157 uzavřen; #147 a #161 otevřeny. Offline GLB fixture test 45865581727 a #163 7/7 PASS, původní archivy dosud nezískány; nejde o release schválení. Příprava `prep/player-map-identity` f2da002: regionální preview 45866801983 3/3 skupiny, 6/6 oblastí, v každé 14 GPS cílů, 60 vykreslených popisků a HUD výběr/zrušení Ironfield Station PASS; 2007 požadavků bez chyb. Před merge ověř nové PR CI. Další krok: konkrétní kontrola fyzických nápisů a zbývající hráčské identity, nezaměňovat za anonymitu či právní schválení.
+**Priorita:** Main db7c715 5/5 PASS včetně Pages. Kandidát 5.349 #165: skutečné nápisy opraveny, staged audit 6/6 PASS, 7/8 workflow PASS na 1c2d554; úplný sweep 265/278. Nezávislé srovnání 45874124879: nezměněný main db7c715 265/278, stejných 13 selhání; opravené testy baf1eca 278/278 PASS při nezměněném herním kódu. Přeneseno 13 testů do #165 bez diagnostického workflow; přesný nový kandidát musí znovu projít všemi CI včetně úplné sady. #147 a #161 otevřeny; žádné release schválení. Další krok po merge: grafické plochy nápisů a zbylé licence.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

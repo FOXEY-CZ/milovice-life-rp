@@ -94,7 +94,7 @@ for(const t of [
  "actualWebGLVisibilityNotYetVerified:true"
  ])assert(html.includes(t),'5.116 integration missing: '+t);
 const build=html.match(/const BUILD_ID='([^']+)'/)?.[1];
-assert.equal(build,'20261117-slepa-pedestrian-511600');
+assert.match(build,/^\d{8}-[a-z0-9-]+-\d{6}$/);
 assert.equal(html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1],build);
 assert.equal(html.split('id="build-label">')[1]?.split('</strong>')[0],build);
 for(const old of ['slepa-armadni-bends-5115','slepa-park-5114',

@@ -1,3 +1,4 @@
+import {TRANSIT_CODE,TRANSIT_PALETTE,regionalDestinationLabel} from './fictional-transit.js?v=534900';
 // Milovice RP 5.23 — photo-informed station FORECOURT street environment.
 // The rail station and bike tower are anchored to official OSM building ways.
 // Street furniture positions are visual approximations against photographs,
@@ -207,22 +208,22 @@ export function makeStationForecourtScene(THREE,{layer,terrainAt=()=>0,roadClear
   const rows=stationStopPanelRows({letter,routes});
   const canvas=document.createElement('canvas');canvas.width=512;canvas.height=768;
   const c=canvas.getContext('2d');
-  c.fillStyle='#b82e3d';c.fillRect(0,0,512,768);
+  c.fillStyle=TRANSIT_PALETTE.signBackground;c.fillRect(0,0,512,768);
   c.fillStyle='#fbfbf5';c.fillRect(15,15,482,738);
   c.textAlign='center';c.fillStyle='#1b2d3c';
-  c.font='bold 42px sans-serif';c.fillText('MILOVICE',256,73);
-  c.font='bold 30px sans-serif';c.fillText('ŽEL. ST.',256,113);
-  c.fillStyle='#b82e3d';c.fillRect(28,137,456,5);
-  c.fillStyle='#164e7f';c.fillRect(28,151,456,45);
+  c.font='bold 42px sans-serif';c.fillText('IRONFIELD',256,73);
+  c.font='bold 30px sans-serif';c.fillText('RAIL STATION',256,113);
+  c.fillStyle='#54c6b5';c.fillRect(28,137,456,5);
+  c.fillStyle=TRANSIT_PALETTE.signBackground;c.fillRect(28,151,456,45);
   c.fillStyle='#ffffff';c.font='bold 27px sans-serif';
-  c.fillText('STANOVIŠTĚ '+letter,256,183);
+  c.fillText('STAND '+letter,256,183);
   const rowHeight=letter==='B'?118:141;
   rows.forEach((row,i)=>{
    const top=210+i*rowHeight;
    c.fillStyle='#263541';c.textAlign='left';
    c.font='bold 57px sans-serif';c.fillText(row.route,39,top+48);
    c.fillStyle='#c7cbd0';c.fillRect(37,top+rowHeight-7,435,2);
-   const parts=row.destination.split(' / ');
+   const parts=row.destination.split(' / ').map(regionalDestinationLabel);
    c.fillStyle='#263541';c.textAlign='left';
    for(let j=0;j<parts.length&&j<3;j++){
     let size=27;
@@ -234,11 +235,11 @@ export function makeStationForecourtScene(THREE,{layer,terrainAt=()=>0,roadClear
     c.fillText(parts[j],174,top+27+j*31);
    }
   });
-  c.fillStyle='#184e7a';c.fillRect(352,695,132,45);
+  c.fillStyle=TRANSIT_PALETTE.signBackground;c.fillRect(352,695,132,45);
   c.fillStyle='#ffffff';c.textAlign='center';c.font='bold 32px sans-serif';
   c.fillText(letter,418,728);
   c.fillStyle='#183448';c.font='bold 28px sans-serif';
-  c.fillText('PID',75,727);
+  c.fillText(TRANSIT_CODE,75,727);
   const t=new THREE.CanvasTexture(canvas);t.colorSpace=THREE.SRGBColorSpace;
   return t;
  }

@@ -23,3 +23,6 @@ export const STATIC_SIGN_TEXT=Object.freeze({
  fallbackLeisure:'AMUSEMENT PARK',school:'LIBRARY HILL SCHOOL',
  hotel:'SILVERMOON INN',bikeHub:'CYCLEHUB'
 });
+
+// Display-only labels for the three source-observed direction boards.
+export const DIRECTION_SIGN_LABELS=Object.freeze(['City Police','Recycling Center','Wonderwood Park']);

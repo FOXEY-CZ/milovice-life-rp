@@ -10,3 +10,7 @@ export const FALLBACK_STOPS=Object.freeze([
  Object.freeze({name:'Sentinel Road',z:-210}),
  Object.freeze({name:'Wonderwood Park',z:-320})
 ]);
+
+// Only the display layer changes; route-source data remains historical evidence.
+const REGIONAL_DESTINATIONS=Object.freeze({'Park Mirakulum':'Wonderwood Park','Lysá nad Labem':'Riverside','Benátky nad Jizerou':'Brookhaven','Balonka':'Hillcrest','Lipník':'Willowfield','Mladá Boleslav':'Eastborough','Straky':'Oakford','Nymburk':'Stonebridge','Kostomlaty nad Labem':'Westhaven'});
+export function regionalDestinationLabel(name){return typeof name==='string'&&Object.hasOwn(REGIONAL_DESTINATIONS,name.normalize('NFC'))?REGIONAL_DESTINATIONS[name.normalize('NFC')]:'Regional Stop';}
