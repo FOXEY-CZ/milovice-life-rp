@@ -36,6 +36,28 @@ for(const page of ['index.html','editor.html','photo-pilot.html','rebuild.html',
  }
 }
 assert(localImportCount>0,'Local module graph check did not inspect any imports');
+
+// Release-audit-only files may be excluded from three expensive photo WebGL
+// triggers, never from the general validator. Detect accidental runtime use.
+const releaseOnly=['scripts/audit-release-glb.mjs','.github/workflows/glb-release-audit.yml'];
+const releaseBasenames=releaseOnly.map(p=>path.basename(p));
+for(const owner of [...seenModules,...['index.html','editor.html','photo-pilot.html','rebuild.html','survey.html','credits.html']]){
+ const source=fs.readFileSync(owner,'utf8');
+ for(const file of releaseBasenames)assert(!source.includes(file),owner+' references release-only tooling '+file+'; reconsider WebGL exclusions');
+}
+for(const name of ['station-photo-webgl','station-forecourt-webgl','street-block-webgl']){
+ const workflow=fs.readFileSync('.github/workflows/'+name+'.yml','utf8');
+ for(const event of ['push','pull_request']){
+  const block=workflow.match(new RegExp('^  '+event+':\\n([\\s\\S]*?)(?=^  [a-z_]+:|^\\S)','m'));
+  assert(block,name+' missing '+event+' trigger');
+  const paths=[...block[1].matchAll(/^      - '([^']+)'$/gm)].map(m=>m[1]);
+  assert.deepEqual(paths,['**/*.md','scripts/dev-check.mjs',...releaseOnly],name+' '+event+' unexpected ignored paths');
+  assert(block[1].includes('paths-ignore:'),name+' '+event+' missing exclusion key');
+ }
+ assert(workflow.includes('  workflow_dispatch:'),name+' must retain manual verification');
+}
+console.log('OK: narrowly scoped release audit exclusions and static runtime separation');
+
 console.log('OK: '+localImportCount+' static local imports across '+seenModules.size+' unique files');
 // Parse browser module imports without executing remote URLs in the CI runner.
 for (const [i, code] of scripts.entries()) {
