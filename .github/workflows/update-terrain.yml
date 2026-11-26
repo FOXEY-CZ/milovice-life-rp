@@ -10,8 +10,6 @@ jobs:
   build-terrain:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    env:
-      CROSSVEX_DMR_EVIDENCE_DIR: ${{ runner.temp }}/dmr-evidence
     steps:
       - uses: actions/checkout@v4
         with:
@@ -22,7 +20,9 @@ jobs:
       - name: Install geospatial dependencies
         run: python -m pip install --disable-pip-version-check numpy rasterio pyproj requests
       - name: Prepare external evidence directory
-        run: mkdir -p "$CROSSVEX_DMR_EVIDENCE_DIR"
+        run: |
+          mkdir -p "$RUNNER_TEMP/dmr-evidence"
+          printf 'CROSSVEX_DMR_EVIDENCE_DIR=%s\n' "$RUNNER_TEMP/dmr-evidence" >> "$GITHUB_ENV"
       - name: Obtain official elevations and candidate evidence
         run: python scripts/build_terrain.py
       - name: Retain candidate data and source evidence for review

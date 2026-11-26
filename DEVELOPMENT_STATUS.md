@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #183 DMR evidence/ZIP PASS; #184 OSM projekce 6867 záznamů, 3712 ID, 78 skupin, repeatable PASS (45902561790). Odhalena integrační chyba: historické live export workflow automaticky běžely bez povinné evidence a selhaly i na prep větvi. Oprava v #184: oba exporty jen ručně, read-only, externí evidence a 90denní artifact, bez git commit/push; fixture kontroluje wiring, skutečný export nespouštěn. Nový kandidát CI čeká. Historické selhání nepřepisovat; před další prací ověřit herní main CI a nápravu. #147/#161 otevřené, bez release schválení.
+**Priorita:** #183 DMR evidence/ZIP PASS; #184 OSM projekce 6867 záznamů, 3712 ID, 78 skupin, repeatable PASS (45902561790). Odhalena integrační chyba: historické live export workflow automaticky běžely bez povinné evidence a selhaly i na prep větvi. Oprava v #184: oba exporty jen ručně, read-only, externí evidence a 90denní artifact, bez git commit/push; fixture kontroluje wiring, skutečný export nespouštěn. První oprava fixture PASS, ale dvě jobless push failure 45902848320/45902847125; dokumentace GitHub potvrzuje runner context nepovolený v job env. Přesun na RUNNER_TEMP/GITHUB_ENV ve step, fixture odmítá job env. Nový kandidát CI čeká. Historické selhání nepřepisovat; před další prací ověřit herní main CI a nápravu. #147/#161 otevřené, bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

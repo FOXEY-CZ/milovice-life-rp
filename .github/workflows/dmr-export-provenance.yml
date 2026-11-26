@@ -27,9 +27,9 @@ jobs:
           for file in ('update-terrain.yml','update-region-terrain.yml'):
               text = (Path('.github/workflows') / file).read_text()
               assert 'on:\n  workflow_dispatch:\npermissions:\n  contents: read\n' in text, file
-              for required in ('CROSSVEX_DMR_EVIDENCE_DIR:', 'mkdir -p "$CROSSVEX_DMR_EVIDENCE_DIR"', 'persist-credentials: false', 'actions/upload-artifact@v4', 'retention-days: 90'):
+              for required in ('CROSSVEX_DMR_EVIDENCE_DIR=%s', 'mkdir -p "$RUNNER_TEMP/dmr-evidence"', '>> "$GITHUB_ENV"', 'persist-credentials: false', 'actions/upload-artifact@v4', 'retention-days: 90'):
                   assert required in text, (file, required)
-              for forbidden in ('git push', 'git commit', 'contents: write', '\n  push:', '\n  pull_request:'):
+              for forbidden in ('git push', 'git commit', 'contents: write', '\n  push:', '\n  pull_request:', '\n    env:'):
                   assert forbidden not in text, (file, forbidden)
           print('PASS manual-only evidence workflow safeguards')
           PY
