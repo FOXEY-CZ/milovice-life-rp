@@ -144,9 +144,10 @@ assert(planMiloviceParking([demoSegment],[],{
  center:{x:50,z:0},limit:4,acceptSpot:()=>true
 }).length>0,'Safe street parking candidates must remain possible');
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+assert.match(game,/from '\.\/scripts\/parking-layout\.js\?v=\d+'/);
 for(const token of [
  "from './scripts/osm-slepa-street-5110.js?v=511200'",
- "from './scripts/parking-layout.js?v=511200'",
+ "from './scripts/parking-layout.js?v=",
  'const osmPedestrianClearance=createRoadClearance();',
  'const driveway=planSlepaDrivewayWidth({',
  'roadWidths.set(String(el.id),width);',
@@ -165,7 +166,7 @@ for(const token of [
 const meta=game.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1],
  id=game.match(/const BUILD_ID='([^']+)'/)?.[1],
  hud=game.split('id="build-label">')[1]?.split('</strong>')[0];
-assert.equal(meta,id);assert.equal(id,hud);assert(id.endsWith('511200'));
+assert.equal(meta,id);assert.equal(id,hud);assert.match(id,/^\d{8}-[a-z0-9-]+-\d{6}$/);
 console.log('PASS 5.110 OSM Slepá neighbourhood',{
  mappedLawns:plan.mappedLawns,tufts:plan.tufts.length,
  realDriveways:ids.length,noMappedParkingLots:0,

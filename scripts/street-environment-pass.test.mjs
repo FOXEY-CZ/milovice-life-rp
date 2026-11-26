@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {DIRECTION_SIGN_LABELS} from './fictional-signage.js';
 import {PHOTO_STREET_ENVIRONMENT,STREET_PASS_03_FEATURE_POLICY,KVETNA_STREETLAMP_2022,planKvetnaStreetlamp2022,gpsToStreetWorld,nearestPhotoRoadSegment} from './street-environment-reality.js';
 const ref=PHOTO_STREET_ENVIRONMENT[0];
 assert.equal(PHOTO_STREET_ENVIRONMENT.length,1);
@@ -112,7 +113,10 @@ assert(runtime.includes('for(let i=0;i<2;i++)'));
 assert(runtime.includes('for(let i=0;i<8;i++)'));
 assert(!runtime.includes('const poles=[a,b]'));
 assert(!runtime.includes('for(const lateral of [-.14,.14])'));
-assert(runtime.includes("['Městská policie','Sběrný dvůr','Mirakulum']"));
+assert.deepEqual(DIRECTION_SIGN_LABELS,['City Police','Recycling Center','Wonderwood Park']);
+assert(runtime.includes('DIRECTION_SIGN_LABELS.entries()'),'Render the three fictional direction signs');
+assert(runtime.includes('directional signs reading Městská policie, Sběrný dvůr, Mirakulum'),'Keep the original photo observation');
+assert(!runtime.includes("['Městská policie','Sběrný dvůr','Mirakulum'].entries()"),'Never render the original names');
 assert(runtime.includes('photoGroundClearance(anchor,along,side,.8*size)'),
  'Stem positions cannot be inferred without physical OSM road-clearance test');
 

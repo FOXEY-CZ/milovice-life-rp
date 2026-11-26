@@ -70,7 +70,7 @@ for(const part of [
  'visnovaNeighborRenderCache5197.set(String(osmId)',
  'window.__miloviceVisnovaNeighborRuntime5197=()=>',
  'if(visnovaResidentialRendered5192||visnovaNeighborRendered5197',
- '!visnovaNeighborRendered5197&&!slepaUtility',
+ '!visnovaNeighborRendered5197&&!visnovaEightFloorRendered5198&&!visnovaParkingHouseRendered5202&&!slepaUtility',
  'visnovaNeighborRenderCache5197.clear();',
  "'visnova-neighbor-5197':{",
  'href="?v=519700&streetAudit=visnova-neighbor-5197"',

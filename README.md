@@ -1,3 +1,7 @@
+## CROSSVEX 5.349 — fictional station and directional signs
+
+Audit 45869071497 odhalil staré české texty a PID na dvou typech 3D cedulí. Anglické směrovky, fiktivních devět regionálních destinací, IRONFIELD / RAIL STATION, STAND A/B a CT s paletou CrossTransit. Původní zdrojové popisy, linky, souřadnice, geometrie a kolize zachovány. Nové fiktivní názvy jsou pracovní, bez právní rešerše. Unit a opakovaný staged audit čekají.
+
 ## CROSSVEX 5.348 — optional player coupe
 
 Sports Coupe: 68 původních pohyblivých částí, izolovaný batching 258 → 70 meshů a 516 → 140 draw calls, 151722 trojúhelníků beze změny. Volitelný režim pouze pro hráče na PC, běžná auta low-poly. Po vystoupení návrat k levnému modelu. #159 9/9 PASS sloučen, kandidát CI a výkon celého města čekají.

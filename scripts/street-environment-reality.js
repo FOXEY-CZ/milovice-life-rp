@@ -1,3 +1,4 @@
+import {DIRECTION_SIGN_LABELS} from './fictional-signage.js?v=534900';
 // Milovice RP 5.26.2 — photo-informed STREET scene, including full ground footprints.
 // Original model geometry; no photographed pixels or proprietary panorama assets.
 // The only precisely known spatial datum is the photo-camera GPS position.
@@ -277,12 +278,12 @@ export function makePhotoStreetEnvironment(THREE,{layer,terrainAt=()=>0,roadClea
   const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;return texture;
  }
  function signs(group,anchor,side){
-  // These THREE sign inscriptions are visible in the dated public photo.
+  // Three signs are source-observed; lettering is fictional for gameplay.
   // The exact pole position/orientation cannot be recovered from one image.
   if(!photoGroundClearance(anchor,6,side+Math.sign(side)*.08,.4))return;
   const at=itemAt(anchor,6,side+Math.sign(side)*.08,0);
   addParts(group,geometries.wire,colors.metal,[{...at,y:at.y+2.02,sy:4.04,sx:2.8,sz:2.8}]);
-  for(const [i,text] of ['Městská policie','Sběrný dvůr','Mirakulum'].entries()){
+  for(const [i,text] of DIRECTION_SIGN_LABELS.entries()){
    const texture=makeSignMap(text);
    const signMaterial=new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide});
    const sign=new THREE.Mesh(new THREE.PlaneGeometry(2.12,.365),signMaterial);
