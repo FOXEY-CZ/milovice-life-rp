@@ -3,7 +3,7 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.350**, #183 sloučen `38101f9`, PR 6/6 PASS; #182 main `fbee838` 5/5 PASS včetně Pages 45901500938. Main #183 CI čeká.
+- Herní verze main: **5.350**, #183 sloučen `38101f9`, PR 6/6 PASS; #182 main `fbee838` 5/5 PASS včetně Pages 45901500938. Main #183 Pages 45902486835 PASS; dvě historická live export workflow FAIL (45902487303/45902487340, chybí CROSSVEX_DMR_EVIDENCE_DIR).
 - Main po #160: `7a087a173569b6b49df0f3721469ec2f71c3621f`; 9/9 PR PASS a 8/8 main PASS včetně Pages 45860346528.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #174–183 offline, launcher, restart hodnot, SHA-256, DMR odkazy/terms a evidence budoucích exportů PASS (map bundle 18/19 záznamů, repeatable). Kandidát #147 čistý review-only OSM soupis: 6867 vstupních záznamů, 3712 jedinečných ID, 78 skupin, každé ID právě jednou a ve správném zdrojovém regionu; bez interních poznámek a smíšeného landmark odkazu. CI čeká. Neprokazuje správnost heuristik ani právní rozsah corresponding database. #182 občasný mobilní timeout po opakování PASS, příčina neznámá. #147/#161 otevřené, bez release schválení.
+**Priorita:** #183 DMR evidence/ZIP PASS; #184 OSM projekce 6867 záznamů, 3712 ID, 78 skupin, repeatable PASS (45902561790). Odhalena integrační chyba: historické live export workflow automaticky běžely bez povinné evidence a selhaly i na prep větvi. Oprava v #184: oba exporty jen ručně, read-only, externí evidence a 90denní artifact, bez git commit/push; fixture kontroluje wiring, skutečný export nespouštěn. Nový kandidát CI čeká. Historické selhání nepřepisovat; před další prací ověřit herní main CI a nápravu. #147/#161 otevřené, bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
