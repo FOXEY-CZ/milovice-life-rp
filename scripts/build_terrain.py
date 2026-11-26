@@ -18,6 +18,7 @@ import numpy as np
 import rasterio
 import requests
 from pyproj import Transformer
+from dmr_export_provenance import capture_export, evidence_directory, write_evidence
 
 LAT0, LON0 = 50.226, 14.889
 HALF, STEP = 1100, 10
@@ -71,15 +72,16 @@ def download_raster(points):
                 raise RuntimeError("No export raster URL: " + str(info)[:600])
             raster = requests.get(href, timeout=180)
             raster.raise_for_status()
-            return raster.content
+            return raster.content, capture_export(params, info, response, raster)
         except Exception:
             if attempt == 2:
                 raise
             time.sleep(4 * (attempt + 1))
 
 def main():
+    evidence = evidence_directory(pathlib.Path(__file__).resolve().parent.parent)
     points = ground_points()
-    blob = download_raster(points)
+    blob, record = download_raster(points)
     with rasterio.MemoryFile(blob) as mem:
         with mem.open() as raster:
             print("Raster", raster.width, raster.height, "bands", raster.count, "dtype", raster.dtypes)
@@ -110,7 +112,10 @@ def main():
         "values": values,
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(payload, separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
+    output = json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    saved = write_evidence(evidence, "old", record, blob, output)
+    OUT.write_bytes(output)
+    print("Evidence:", saved)
     print("Wrote", OUT, "at centre altitude", center, "m, samples", N * N)
 
 if __name__ == "__main__":
