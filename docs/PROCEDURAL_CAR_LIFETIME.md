@@ -1,0 +1,7 @@
+# Procedural vehicle lifetime — independent preparation
+
+No production wiring. The existing factory creates independent geometry per road car and caches shared materials and paint textures. Batching clones the root, shares unmerged geometry, creates merged geometries, and clones instanced arch trim. A lease records both fresh procedural roots before attachment and disposes unique geometries and instance allocations exactly once only after removal. It never follows late GLB attachments or disposes cached materials/textures. Cross-car resource aliases are rejected; fallback can be registered as the same original and selected root.
+
+Exact removal sites inspected on a0cda37: previous player spawn replacement in rpSpawn, reset, rpSeedItalskaNpcEncounter5259 replacement and rpPopulate (glbVehicles.reset then trafficGroup.clear). Traffic recycling/reuse without removal must not release geometry. Production code must detach the GLB manager and root before release; ensure activeCar/playerSpawnCar references are not reused after retirement, and do not call the batch-only dispose function separately on an owned car. Validate lifecycle with real repeated spawn/reset/region transitions and renderer memory counts before enabling batching in normal play.
+
+Mock test covers lease ownership, source/clone alias dedup, refusal to dispose attached roots, GLB exclusion, material sharing and double release. Full-world performance run 45882048484 still pending, so this commit is prepared without moving the test branch. Test execution pending.
