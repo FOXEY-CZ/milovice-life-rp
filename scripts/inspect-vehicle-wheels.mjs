@@ -3,6 +3,7 @@ import {createHash} from 'node:crypto';
 import {writeFileSync} from 'node:fs';
 import * as THREE from 'three';
 import {makeVehicleAssetManager,LICENSED_VEHICLES} from './vehicle-assets.js';
+import {adaptPairedAxleWheels} from './prepare-vehicle-axle-adapter.mjs';
 // Diagnostic only: use actual manager loading, normalization and wheel guard.
 const [output]=process.argv.slice(2);
 assert.ok(output,'Output path required');
@@ -70,6 +71,31 @@ try{
   assert.equal(installed,diagnostics.diagnosticAccepted,key+' diagnostic and real guard disagree');
   const record={key,bytes:bytes.length,installed,rejected:actual.rejected[key]||null,...diagnostics,messages};
   records.push(record);console.log(JSON.stringify(record));
+  // Experimental only. Do not patch the real runtime guard or original scene.
+  const proposal=adaptPairedAxleWheels(THREE,normalized,key);
+  if(key!=='spectralGT'){
+   if(!proposal){record.adapter={result:'unsupported-layout'};console.log(JSON.stringify({key,adapter:record.adapter}));}
+   else{
+    const adapted=inspect(proposal.root);
+    assert.ok(adapted.diagnosticAccepted,key+' adapted wheel bounds');
+    assert.equal(proposal.groups.length,4);assert.equal(proposal.inputVertices,proposal.outputVertices);
+    const centers=proposal.groups.map(g=>g.getWorldPosition(new THREE.Vector3()));
+    for(const [i,g] of proposal.groups.entries()){
+     const center=new THREE.Box3().setFromObject(g).getCenter(new THREE.Vector3());
+     assert.ok(center.distanceTo(centers[i])<1e-5,key+' pivot mismatch');
+     const axis=new THREE.Vector3(1,0,0).applyQuaternion(g.parent.getWorldQuaternion(new THREE.Quaternion()).invert()).normalize();
+     g.quaternion.premultiply(new THREE.Quaternion().setFromAxisAngle(axis,Math.PI/2));
+    }
+    proposal.root.updateMatrixWorld(true);
+    for(const [i,g] of proposal.groups.entries())assert.ok(g.getWorldPosition(new THREE.Vector3()).distanceTo(centers[i])<1e-5,key+' pivot moved');
+    assert.equal(inspect(normalized.clone(true)).diagnosticAccepted,false,'original changed');
+    record.adapter={result:'geometry-check-pass',inputVertices:proposal.inputVertices,outputVertices:proposal.outputVertices,accepted:adapted.accepted,pivots:centers.map(vector)};
+    console.log(JSON.stringify({key,adapter:record.adapter}));
+   }
+  }else{
+   const inventory=[];normalized.traverse(n=>{if(n.isMesh){const b=new THREE.Box3().setFromObject(n);inventory.push({name:n.name,parent:n.parent?.name,center:vector(b.getCenter(new THREE.Vector3())),size:vector(b.getSize(new THREE.Vector3()))})}});
+   record.meshInventory=inventory;console.log(JSON.stringify({key,meshInventory:inventory}));
+  }
   manager.reset();
  }
 }finally{globalThis.fetch=nativeFetch;delete globalThis.window;}
