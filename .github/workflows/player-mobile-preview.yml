@@ -6,6 +6,17 @@ on:
       - '.github/workflows/player-mobile-preview.yml'
       - 'scripts/release-mobile-scenario.mjs'
       - 'scripts/run-release-mobile-preview.mjs'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/player-mobile-preview.yml'
+      - 'scripts/release-mobile-scenario.mjs'
+      - 'scripts/run-release-mobile-preview.mjs'
+      - 'scripts/analog-controls.js'
+      - 'scripts/stage-player-package.mjs'
+      - 'scripts/audit-release-map-data.mjs'
+      - 'scripts/audit-release-network.mjs'
+      - 'scripts/release-network-observer.mjs'
   workflow_dispatch:
 permissions:
   contents: read
