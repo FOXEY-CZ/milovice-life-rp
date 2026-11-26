@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #151 mobilní staging sloučen, 5/5 PR CI i předchozí main včetně Pages PASS. Emulace 2/2 orientace, dotyková chůze/běh/stop/mapa/plyn/klakson, 662 požadavků bez chyb. Původní timeout není definitivně vysvětlen; fyzické telefony/iOS neověřeny. Nový main `863a12dff1f08b6584dd3c0327d1df2c86626409` čeká. GLB baseline 45829949592: 9/9 runtime registry shod, 9/9 velikostí a SHA-256, 0 neznámých položek. Kandidát přenesen na aktuální main s cíleným PR triggerem, CI čeká. Původní Quaternius archivy neověřeny (auta HTTP 403); bez právního schválení. Dále audit závislostí a zdrojových dat, rozhodnutí o neověřených modelech před distribucí; poté návrat k vývoji města.
+**Priorita:** #152 GLB registry sloučen, 3/3 PR CI, předchozí main 5/5 včetně Pages PASS. 9/9 modelů odpovídá runtime registrům, velikostem a SHA-256; původní Quaternius archivy stále neověřeny (auta HTTP 403). Nový main `0a9500f327b88b08768d67801e6d6a9e90454d8b` čeká. CDN audit 45831087363: 11/11 souborů byte-identické s npm three@0.160.1 / leaflet@1.9.4, FAIL jen historický CSS behavior url(#default#VML), potvrzeno v tagu v1.9.4. Nový kandidát rozlišuje přesnou VML deklaraci, ostatní neznámé reference stále blokuje, CI čeká. Dále uzavřít audit původu mapových a architektonických dat, zbývající práva a release balíček; bez právního schválení. Mobilní a regionální staging PASS, fyzické telefony neověřeny.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
