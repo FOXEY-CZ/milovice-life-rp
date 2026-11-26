@@ -3,7 +3,7 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.350**, #181 sloučen `94ec09c`, PR 7/7 PASS; #180 main `a5e13d9` 5/5 PASS včetně Pages 45899633390. Main #181 CI čeká.
+- Herní verze main: **5.350**, #182 sloučen `fbee838`, PR 7/7 PASS (mobil po opakování 45901013363 attempt 2); #181 main `94ec09c` 5/5 PASS včetně Pages 45900941229. Main #182 CI čeká.
 - Main po #160: `7a087a173569b6b49df0f3721469ec2f71c3621f`; 9/9 PR PASS a 8/8 main PASS včetně Pages 45860346528.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #174–180 offline scénáře, launcher, restart uložených hodnot, 11 SHA-256 pinů a licence PASS; #181 přesná metadata DMR 4G a služba PASS. Kandidát #147 dohledané podmínky ZÚ 23.3.2026, odkaz v credits, datum historie šesti terénních JSON 12.11.2026 oddělené od nedoloženého data aktualizace poskytovatele; audit čeká na CI. Další krok: dokumentovat nové exporty s přesným revision/acquisition důkazem nebo dotaz poskytovateli; #147 a #161 otevřené, bez release schválení.
+**Priorita:** #174–182 offline, launcher, restart hodnot, SHA-256, DMR odkazy/terms a oddělení data historie od neznámé aktualizace zdroje PASS. #182 mobil na šířku napoprvé selhal při nabídce vozidel; opakování PASS bez změny kódu, příčina nepotvrzena. Kandidát budoucí DMR exporty: externí evidence TIFF/JSON, UTC, parametry, SHA-256, helper v map review ZIP; fixture a bundle CI čeká. Žádné nové stažení ani změna terénu. #147 a #161 otevřené, bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
