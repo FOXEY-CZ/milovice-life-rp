@@ -1171,15 +1171,28 @@ try{
  await page.waitForFunction(()=>window.__miloviceGLBDebug?.state==='ready'||window.__miloviceGLBDebug?.state==='fallback',null,{timeout:45000});
  const assetStats=await page.evaluate(()=>window.__miloviceGLBDebug);
  console.log('5.1.1 CC0 GLB diagnostics:',JSON.stringify(assetStats));
- if(assetStats.state!=='ready')throw new Error('Licensed high-resolution GLB failed to load: '+JSON.stringify(assetStats));
- await page.waitForFunction(()=>window.__miloviceGLBDebug?.rejected?.spectralGT||
-    window.__miloviceGLBDebug?.assignments?.some(a=>a.key==='spectralGT'&&a.driven),
-  null,{timeout:30000});
+ if(assetStats.state!=='ready')throw new Error('Licensed low-poly GLB failed to load: '+JSON.stringify(assetStats));
+ await page.waitForFunction(id=>window.__miloviceGLBDebug?.assignments?.some(a=>a.id===id&&a.key==='cityCar'&&a.driven&&a.wheels===4),chosenCar,{timeout:30000});
+ const lowPolyAudit=await page.evaluate(()=>window.__miloviceGLBDebug);
+ if(lowPolyAudit.mode!=='on'||lowPolyAudit.assignments.some(a=>a.key==='spectralGT'||a.overlay||a.wheels!==4))
+  throw new Error('5.348 ordinary mode must use safe low-poly cars: '+JSON.stringify(lowPolyAudit));
+ await page.locator('#rp-vehicles').click();
+ await page.locator('#rp-model-select').selectOption('coupe');
+ await page.locator('#rp-spawn-close').click();
+ await page.waitForFunction(id=>window.__miloviceGLBDebug?.assignments?.some(a=>a.id===id&&a.key==='spectralGT'&&a.driven&&a.wheels===4),chosenCar,{timeout:45000});
  const gtWheelAudit=await page.evaluate(()=>window.__miloviceGLBDebug);
- if(gtWheelAudit.assignments.some(a=>a.overlay||a.wheels!==4))
-  throw new Error('5.6.0 unsupported wheels overlaid on a licensed car: '+JSON.stringify(gtWheelAudit));
- console.log('5.6.0 safely rejected incompatible GLB wheel rigs:',JSON.stringify(gtWheelAudit.rejected));
+ if(gtWheelAudit.mode!=='coupe'||gtWheelAudit.assignments.filter(a=>a.key==='spectralGT').length!==1||
+    gtWheelAudit.assignments.some(a=>a.overlay||a.wheels!==4))
+  throw new Error('5.348 unsafe wheel rig or non-player coupe: '+JSON.stringify(gtWheelAudit));
+ console.log('PASS 5.348 explicit desktop coupe, four independent wheels, one heavy model:',JSON.stringify(gtWheelAudit));
  await page.screenshot({path:'browser-artifacts/milovice-real-glb-vehicle.png'});
+ await page.locator('#rp-vehicles').click();
+ await page.locator('#rp-model-select').selectOption('on');
+ await page.locator('#rp-spawn-close').click();
+ await page.waitForFunction(id=>window.__miloviceGLBDebug?.mode==='on'&&
+    !window.__miloviceGLBDebug.assignments.some(a=>a.key==='spectralGT')&&
+    window.__miloviceGLBDebug.assignments.some(a=>a.id===id&&a.key==='cityCar'&&a.driven&&a.wheels===4),chosenCar,{timeout:30000});
+ console.log('PASS 5.348 switching back restores low-poly player car');
  await page.locator('#rp-vehicles').click();
  await page.locator('[data-spawn="suv"]').click();
  await page.waitForFunction(()=>['ready','fallback'].includes(window.__miloviceGLBDebug?.models?.citySUV),null,{timeout:45000});
