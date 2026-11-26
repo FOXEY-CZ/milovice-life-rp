@@ -1,11 +1,13 @@
 name: Staged player package (preview only)
 on:
   push:
-    branches: [prep/release-license-inventory, prep/release-network-evidence]
+    branches: [prep/release-license-inventory, prep/release-network-evidence, prep/release-library-notices]
     paths:
       - '.github/workflows/player-package-preview.yml'
       - 'scripts/stage-player-package.mjs'
       - 'scripts/release-package-check.mjs'
+      - 'scripts/audit-library-notices.mjs'
+      - 'credits.html'
       - 'scripts/audit-release-network.mjs'
       - 'index.html'
   pull_request:
@@ -15,6 +17,7 @@ on:
       - 'credits.html'
       - 'scripts/stage-player-package.mjs'
       - 'scripts/release-package-check.mjs'
+      - 'scripts/audit-library-notices.mjs'
       - 'scripts/audit-release-network.mjs'
       - '.github/workflows/player-package-preview.yml'
   workflow_dispatch:
@@ -46,6 +49,17 @@ jobs:
             echo "Unreviewed inventory unexpectedly passed"; exit 1
           fi
           grep -q 'Review/evidence missing: index.html' "$RUNNER_TEMP/crossvex-review.log"
+      - name: Verify complete library notices against pinned npm packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/crossvex-library-notices"
+          mkdir -p "$work"
+          npm pack three@0.160.1 --ignore-scripts --pack-destination "$work"
+          npm pack leaflet@1.9.4 --ignore-scripts --pack-destination "$work"
+          tar -xOf "$work/three-0.160.1.tgz" package/LICENSE > "$work/three.txt"
+          tar -xOf "$work/leaflet-1.9.4.tgz" package/LICENSE > "$work/leaflet.txt"
+          node scripts/audit-library-notices.mjs "$RUNNER_TEMP/crossvex-player/credits.html" "$work/three.txt" "$work/leaflet.txt"
       - name: Browser startup, map and credits from staged directory
         shell: bash
         run: |
