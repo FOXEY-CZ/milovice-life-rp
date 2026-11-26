@@ -5,6 +5,12 @@ on:
     paths:
       - 'scripts/review-glb-visual.mjs'
       - '.github/workflows/glb-visual-review.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/review-glb-visual.mjs'
+      - 'scripts/audit-release-glb.mjs'
+      - '.github/workflows/glb-visual-review.yml'
   workflow_dispatch:
 permissions:
   contents: read

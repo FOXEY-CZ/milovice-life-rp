@@ -4,7 +4,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
 - Herní verze main: **5.344**; W8 CI optimalizace sloučena; kandidát vizuální GLB evidence.
-- Main po #143: `e3a1d0d48171faf4eca4907035162ee61563362f`; #143 4/4 PR CI PASS, předchozí main 5/5 včetně Pages PASS. Nový main CI ověř živě.
+- Main po #143: `e3a1d0d48171faf4eca4907035162ee61563362f`; #143 4/4 PR CI PASS, předchozí main 5/5 včetně Pages PASS. Main 5/5 včetně Pages PASS.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #143 W8 sloučen. GLB 9/9 hash PASS; porovnání upstream aut blokováno HTTP 403. Vizuální preview 45812034171 vytvořilo 36 záběrů; kontrola obrázků odhalila chybné ohraničení 3 postav, dalších 6 modelů je viditelných. Opraven přesný skinned bounds a přidána kontrola ořezu/prázdného záběru; nové CI čeká. Bez release schválení.
+**Priorita:** #143 W8 sloučen. GLB 9/9 hash PASS; porovnání upstream aut blokováno HTTP 403. Vizuální preview 45812034171 vytvořilo 36 záběrů; kontrola obrázků odhalila chybné ohraničení 3 postav, dalších 6 modelů je viditelných. Opravený preview 45812498155 PASS, 36/36 snímků, kontaktový arch skutečně prohlédnut: všech 9 modelů viditelných, bez zjevného čitelného loga v tomto měřítku. Detailní a právní kontrola zůstává otevřená. Kandidát čeká na PR CI. Bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
