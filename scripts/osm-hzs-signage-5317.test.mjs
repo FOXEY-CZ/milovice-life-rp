@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {HZS_SIGNAGE_5317 as S,makeHZSSign5317 as make} from './osm-hzs-signage-5317.js';
-assert.equal(S.facadeText,'STANICE HZS MILOVICE');assert.equal(S.towerText,'112');
+assert.equal(S.sourceFacadeText,'STANICE HZS MILOVICE');assert.equal(S.facadeText,'IRONFIELD FIRE STATION');assert.equal(S.towerText,'112');
 const a=make('facade'),b=make('tower');
+assert.equal(a.text,'IRONFIELD FIRE STATION');assert.equal(b.text,'112');
 assert.equal(a.width,(S.facadeText.length*6+1)*2);assert.equal(a.height,18);
 assert.equal(b.width,18);assert.equal(b.height,38);
 for(const p of [a,b]){
