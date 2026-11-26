@@ -3,7 +3,7 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.350**, #180 sloučen `a5e13d9`, PR 6/6 PASS; #179 main `cd95c2c` 5/5 PASS včetně Pages 45899168323. Main #180 CI čeká.
+- Herní verze main: **5.350**, #181 sloučen `94ec09c`, PR 7/7 PASS; #180 main `a5e13d9` 5/5 PASS včetně Pages 45899633390. Main #181 CI čeká.
 - Main po #160: `7a087a173569b6b49df0f3721469ec2f71c3621f`; 9/9 PR PASS a 8/8 main PASS včetně Pages 45860346528.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #174–179 offline 9 scénářů, launcher a restart uložených hodnot PASS; #180 11 pinů SHA-256, obě licence a skutečný tamper rejection PASS. Kandidát #147 přesná metadata DMR 4G (CZ-CUZK-DMR4G-V, CC BY 4.0) a skutečné služby CZ-CUZK-AGS-DMR4G, popis modifikací v credits a staged audit. PDF podmínek služby nedostupné (redirect loop), práva a historická reprodukce neuzavřeny. #147 a #161 otevřené, bez release schválení; CI čeká.
+**Priorita:** #174–180 offline scénáře, launcher, restart uložených hodnot, 11 SHA-256 pinů a licence PASS; #181 přesná metadata DMR 4G a služba PASS. Kandidát #147 dohledané podmínky ZÚ 23.3.2026, odkaz v credits, datum historie šesti terénních JSON 12.11.2026 oddělené od nedoloženého data aktualizace poskytovatele; audit čeká na CI. Další krok: dokumentovat nové exporty s přesným revision/acquisition důkazem nebo dotaz poskytovateli; #147 a #161 otevřené, bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
