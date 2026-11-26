@@ -20,7 +20,10 @@ export function batchProceduralRoadCar(THREE,car){
    const g=n.geometry,m=n.material;
    if(!n.isMesh||n.isInstancedMesh||n.isSkinnedMesh||n.children.length||!g||!m||
       Array.isArray(m)||!n.visible||m.transparent||m.opacity!==1||m.alphaTest>0||
-      m.transmission>0||n.renderOrder!==0||g.groups.length>0||
+      m.transmission>0||n.renderOrder!==0||
+      // Three renders the complete draw range for a single material, ignoring groups.
+      // Arrays of materials remain excluded above; clear groups only on private clones.
+      
       Object.keys(g.morphAttributes).length||n.matrix.determinant()<=0||
       g.drawRange.start!==0||g.drawRange.count<(g.index?.count??g.attributes.position.count)||
       Object.values(g.attributes).some(a=>a.isInterleavedBufferAttribute||a.isInstancedBufferAttribute))continue;
@@ -31,7 +34,7 @@ export function batchProceduralRoadCar(THREE,car){
   }
   for(const [m,bucket] of bins)for(const nodes of bucket.values()){
    if(nodes.length<2)continue;
-   const pieces=nodes.map(n=>n.geometry.clone().applyMatrix4(n.matrix));
+   const pieces=nodes.map(n=>{const g=n.geometry.clone().applyMatrix4(n.matrix);g.clearGroups();return g;});
    let merged;
    try{merged=mergeGeometries(pieces,false);}finally{for(const g of pieces)g.dispose();}
    if(!merged)return fail();

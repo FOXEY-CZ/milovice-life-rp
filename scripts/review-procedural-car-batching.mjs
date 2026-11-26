@@ -55,7 +55,7 @@ try{
   assert.equal(r.independent,true);
   for(const v of r.views){
    assert.ok(v.visible>1000,'Empty car render');
-   assert.ok(v.callsAfter<v.callsBefore,'No draw call reduction');
+   assert.ok(v.callsAfter<=v.callsBefore-6,'Expected further reduction beyond first three saved draws');
    assert.equal(v.trianglesAfter,v.trianglesBefore);
    assert.ok(v.significant<=v.visible*.005,'More than 0.5% foreground pixels changed significantly');
    writeFileSync(join(out,'car-'+variant+'-'+v.i+'.png'),Buffer.from(v.png.split(',')[1],'base64'));
