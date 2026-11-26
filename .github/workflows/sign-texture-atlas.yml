@@ -1,0 +1,32 @@
+name: Sign texture atlas (preview only)
+on:
+  push:
+    branches: [prep/sign-texture-atlas]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  atlas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/stage-player-package.mjs --stage "$RUNNER_TEMP/crossvex-atlas"
+          npm install --no-save --no-package-lock playwright-core@1.57.0
+          python3 -m http.server 8080 --bind 127.0.0.1 --directory "$RUNNER_TEMP/crossvex-atlas" > "$RUNNER_TEMP/atlas-http.log" 2>&1 &
+          trap 'kill $! 2>/dev/null || true' EXIT
+          curl --retry 10 --retry-connrefused --retry-delay 1 -fsS http://127.0.0.1:8080/credits.html >/dev/null
+          node scripts/capture-sign-texture-atlas.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sign-texture-atlas
+          path: |
+            ${{ runner.temp }}/sign-atlas/
+            ${{ runner.temp }}/atlas-http.log

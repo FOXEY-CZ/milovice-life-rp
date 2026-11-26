@@ -2,6 +2,11 @@ name: Map data bundle (review only)
 on:
   push:
     branches: [prep/map-data-bundle]
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/build-map-review-bundle.py'
+      - '.github/workflows/map-data-bundle.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -20,10 +25,10 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/build-map-review-bundle.py HEAD "$RUNNER_TEMP/invalid.zip" && exit 1 || test ! -e "$RUNNER_TEMP/invalid.zip"
-          python scripts/build-map-review-bundle.py f4781ba756cd08f9c741bc5ee363c0c6ddc2a8df "$RUNNER_TEMP/map-review.zip"
-          python scripts/build-map-review-bundle.py f4781ba756cd08f9c741bc5ee363c0c6ddc2a8df "$RUNNER_TEMP/map-repeat.zip"
+          python scripts/build-map-review-bundle.py bc783f5a848d0b75fd9749c19b7a565dccdba0af "$RUNNER_TEMP/map-review.zip"
+          python scripts/build-map-review-bundle.py bc783f5a848d0b75fd9749c19b7a565dccdba0af "$RUNNER_TEMP/map-repeat.zip"
           cmp "$RUNNER_TEMP/map-review.zip" "$RUNNER_TEMP/map-repeat.zip"
-          if python scripts/build-map-review-bundle.py f4781ba756cd08f9c741bc5ee363c0c6ddc2a8df "$RUNNER_TEMP/map-review.zip"; then exit 1; fi
+          if python scripts/build-map-review-bundle.py bc783f5a848d0b75fd9749c19b7a565dccdba0af "$RUNNER_TEMP/map-review.zip"; then exit 1; fi
           cmp "$RUNNER_TEMP/map-review.zip" "$RUNNER_TEMP/map-repeat.zip"
           sha256sum "$RUNNER_TEMP/map-review.zip"
       - uses: actions/upload-artifact@v4

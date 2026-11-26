@@ -1,10 +1,10 @@
-# Milovice RP — aktuální handoff
+# CROSSVEX — aktuální handoff
 
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.348**; #164 sloučen, main `db7c715`, 5/5 PASS včetně Pages 45869222905. Kandidát **5.349**: oprava směrovek a zastávkových tabulí.
-- Main po #160: `7a087a173569b6b49df0f3721469ec2f71c3621f`; 9/9 PR PASS a 7/7 main PASS včetně Pages 45860346528.
+- Herní verze main: **5.349**, #165 sloučen po 8/8 PR PASS a 278/278 unit testech; f4781ba 7/7 main PASS včetně Pages. #166 (evidence only) sloučen do `bc783f5` po 4/4 PR PASS; nové main CI čeká.
+- Main po #160: `7a087a173569b6b49df0f3721469ec2f71c3621f`; 9/9 PR PASS a 8/8 main PASS včetně Pages 45860346528.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** Main db7c715 5/5 PASS včetně Pages. Kandidát 5.349 #165: skutečné nápisy opraveny, staged audit 6/6 PASS, 7/8 workflow PASS na 1c2d554; úplný sweep 265/278. Nezávislé srovnání 45874124879: nezměněný main db7c715 265/278, stejných 13 selhání; opravené testy baf1eca 278/278 PASS při nezměněném herním kódu. Přeneseno 13 testů do #165 bez diagnostického workflow; přesný nový kandidát musí znovu projít všemi CI včetně úplné sady. #147 a #161 otevřeny; žádné release schválení. Další krok po merge: grafické plochy nápisů a zbylé licence.
+**Priorita:** #166 sloučen; atlas 5.349 28 PNG, 9 upload evidence, všech pět opravených cedulí předáno WebGL, vizuální review omezené. #147: příprava `prep/map-data-bundle` 2a7399a, run 45879872431 PASS: 18 přesných Git souborů, 20 položek ZIP, opakovatelnost a ochrana proti přepsání; artifact 15145474519. Přenesení na bc783f5, PR test čeká. Nejde o finální odpovídající databázi ani právní schválení. #147 a #161 zůstávají otevřeny. Další krok: konkrétní zbylé zdrojové a release podmínky, ne opakování úspěšných auditů.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
