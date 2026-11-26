@@ -1,6 +1,6 @@
 // Inspect exact runtime GLB bytes, not a legal clearance or visual logo audit.
 import {createHash} from 'node:crypto';
-import {writeFileSync} from 'node:fs';
+import {writeFileSync,openSync,fstatSync,readSync,closeSync} from 'node:fs';
 import assert from 'node:assert/strict';
 const showcase='https://raw.githubusercontent.com/trebeljahr/quaternius-showcase/0128ca510d653bb04d6d1e4885bd8890b5050b4f/public/glb/';
 const garage='https://raw.githubusercontent.com/bennibeni/garage/5c26fd4bac37080cd55f8064c59de4b14b489ddd/public/models/';
@@ -140,6 +140,34 @@ async function compareCars(output){
  for(const result of results)console.log(JSON.stringify(result));
  if(results.some(r=>r.matches!==true))process.exitCode=1;
 }
+// Compare legitimately obtained local GLBs without fetching or uploading asset bytes.
+async function compareLocalCars(output,files){
+ const {brotliDecompressSync}=await import('node:zlib');
+ const ids=['cityCar','citySport','citySUV'],limit=32*1024*1024;
+ assert.equal(files.length,ids.length,'Provide car, sport and SUV files in that order');
+ const results=[];
+ for(const [i,id] of ids.entries()){
+  let fd;
+  try{
+   fd=openSync(files[i],'r');
+   const stat=fstatSync(fd);
+   assert(stat.isFile()&&stat.size>0&&stat.size<=limit,'Not a regular file within size limit');
+   const raw=Buffer.alloc(stat.size);
+   let pos=0;
+   while(pos<raw.length){const count=readSync(fd,raw,pos,raw.length-pos,null);assert(count>0,'Unexpected end of file');pos+=count;}
+   assert.equal(readSync(fd,Buffer.alloc(1),0,1,null),0,'File changed while reading');
+   const bytes=raw.length>=4&&raw.readUInt32LE(0)===0x46546c67?raw:brotliDecompressSync(raw,{maxOutputLength:limit});
+   const result=inspect(bytes),pin=observed[id];
+   const matches=result.bytes===pin.bytes&&result.sha256===pin.sha256;
+   results.push({id,bytes:result.bytes,sha256:result.sha256,status:matches?'match':'mismatch',matches});
+  }catch(error){results.push({id,status:'unverified',error:String(error.code||error.name),matches:null});}
+  finally{if(fd!==undefined)closeSync(fd);}
+ }
+ // Deliberately omit local paths and source file contents from the report.
+ writeFileSync(output,JSON.stringify({review:'pending',scope:'local byte identity only; source origin not authenticated',results},null,2)+'\n',{flag:'wx'});
+ for(const result of results)console.log(JSON.stringify(result));
+ if(results.some(r=>r.matches!==true))process.exitCode=1;
+}
 // Compare the actual exported runtime registries to the pinned audit list.
 // Imports use the exact npm Three.js revision in the game. No model is downloaded by importing.
 async function checkRuntime(output){
@@ -177,9 +205,10 @@ async function checkRuntime(output){
  if(issues.length)process.exitCode=1;
 }
 
-const [mode,out]=process.argv.slice(2);
+const [mode,out,...files]=process.argv.slice(2);
 if(mode==='--self-test')selfTest();
 else if(mode==='--audit'&&out)await audit(out);
 else if(mode==='--compare-cars'&&out)await compareCars(out);
 else if(mode==='--check-runtime'&&out)await checkRuntime(out);
-else throw Error('Use --self-test, --audit, --compare-cars or --check-runtime <new-json-path>');
+else if(mode==='--compare-local-cars'&&out)await compareLocalCars(out,files);
+else throw Error('Use --self-test, --audit, --compare-cars, --check-runtime or --compare-local-cars <new-json-path> [car sport SUV]');

@@ -1,0 +1,28 @@
+name: Local car provenance tool (evidence only)
+on:
+  push:
+    branches: [prep/local-car-provenance]
+    paths:
+      - 'scripts/audit-release-glb.mjs'
+      - 'scripts/local-car-provenance.test.mjs'
+      - '.github/workflows/local-car-provenance.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/audit-release-glb.mjs'
+      - 'scripts/local-car-provenance.test.mjs'
+      - '.github/workflows/local-car-provenance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare-fixtures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/audit-release-glb.mjs --self-test
+      - run: node scripts/local-car-provenance.test.mjs
