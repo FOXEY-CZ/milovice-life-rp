@@ -1,13 +1,14 @@
 name: GLB evidence audit (preview only)
 on:
   push:
-    branches: [prep/glb-release-audit, prep/release-model-candidate, prep/player-vehicle-candidate-5345]
+    branches: [prep/glb-release-audit, prep/release-model-candidate, prep/player-vehicle-candidate-5345, prep/vehicle-axle-candidate-5347]
     paths:
       - 'scripts/audit-release-glb.mjs'
       - '.github/workflows/glb-release-audit.yml'
       - 'scripts/human-assets.js'
       - 'scripts/nature-assets.js'
       - 'scripts/vehicle-assets.js'
+      - 'scripts/vehicle-axle-adapter.js'
   pull_request:
     branches: [main]
     paths:
@@ -16,6 +17,7 @@ on:
       - 'scripts/human-assets.js'
       - 'scripts/nature-assets.js'
       - 'scripts/vehicle-assets.js'
+      - 'scripts/vehicle-axle-adapter.js'
   workflow_dispatch:
 permissions:
   contents: read
