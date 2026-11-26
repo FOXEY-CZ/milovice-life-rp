@@ -6,6 +6,12 @@ on:
       - 'scripts/audit-release-glb.mjs'
       - 'scripts/local-car-provenance.test.mjs'
       - '.github/workflows/local-car-provenance.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/audit-release-glb.mjs'
+      - 'scripts/local-car-provenance.test.mjs'
+      - '.github/workflows/local-car-provenance.yml'
   workflow_dispatch:
 permissions:
   contents: read
