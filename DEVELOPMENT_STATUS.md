@@ -3,7 +3,7 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.350**, #171 sloučen `09dc4a8b`, PR 10/10 PASS; #170 main `3a0dadd7` 5/5 PASS včetně Pages 45891869862. Main #171 CI čeká.
+- Herní verze main: **5.350**, #172 sloučen `cf50f44`, PR 7/7 PASS; #171 main `09dc4a8b` 5/5 PASS včetně Pages 45892431998. Main #172 CI čeká.
 - Main po #160: `7a087a173569b6b49df0f3721469ec2f71c3621f`; 9/9 PR PASS a 8/8 main PASS včetně Pages 45860346528.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #169 procedurální alternativa 9 scénářů bez GLB/HTTP/page errors, 283 souborů; #170 Commons metadata 5/5 PASS, práva pending. #171 explicitní 15 player JSON / 3 interní JSON, obě staging varianty PASS. Kandidát Credits: všech šest herních názvů čtvrtí z fictional-identity, audit ověří každý pár OSM/DMR proti region indexu i přesnou řádku odkazu. Zdrojová data a licence beze změny. CI čeká. #147 a #161 zůstávají otevřené; žádné release schválení.
+**Priorita:** #169 procedurální alternativa 9 scénářů bez GLB/HTTP/page errors; #170 Commons metadata 5/5 PASS, práva pending; #171 15 player JSON / 3 interní JSON, obě staging varianty PASS; #172 šest fiktivních čtvrtí a OSM/DMR odkazy PASS. Kandidát staging vyžaduje čistý tracked checkout, vypisuje HEAD, vybírá soubory z revize a po kopírování kontroluje nezměněný HEAD i stav; self-test staged/unstaged/untracked. CI čeká. Nejde o kryptografickou atestaci. #147 a #161 otevřené, bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
