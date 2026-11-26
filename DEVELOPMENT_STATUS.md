@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** 45883109236 2/2 PASS, WebGL lifecycle 16 cyklů návrat 21 geometrií, závěr 0, žádný shared dispose. City repeat 39/39 PASS, bez opakovatelného zrychlení. 5.350 pouze opt-in ?proceduralBatch=1, GLB volba nezávislá; připojeno 4 známých removal míst, unit/actual city lifecycle čeká. #147 a #161 otevřeny; bez release schválení.
+**Priorita:** 5.350 b7bfe58 runtime 45883579481 2/2 PASS: GLB off 39/39, 4 jízdy, obě série 3 výměn + reset (42 vytvořeno, 4 odstraněno, 38 live), bez page errors. 16 WebGL lifetime cyklů PASS. Přidán skutečný GLB on sedan→SUV/reset/off regression + úplný unit sweep, nové PR CI čeká. Režim pouze ?proceduralBatch=1, žádné potvrzené hardware FPS zrychlení. #147 a #161 otevřeny; bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

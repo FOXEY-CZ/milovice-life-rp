@@ -9,3 +9,5 @@ Mock test covers lease ownership, source/clone alias dedup, refusal to dispose a
 City repeat 45882048484 PASS. Prepared ownership now advanced onto test branch; enforce once-only registration with WeakSet, mock rejects re-registration after release. New real browser test keeps one batched car visible, creates/renders/removes/releases 16 further original/batched cars in same context, verifies renderer.info.memory.geometries/textures and draws return to survivor baseline each time, final geometry count zero, shared materials/textures receive zero dispose events. CI pending. No claim of physical GPU memory or actual game reset coverage yet.
 
 45883109236 compare PASS: actual repeated WebGL counts restored for 16 cycles; final geometries 0, cached texture 1, shared disposals 0. 5.350 opts in via URL; actual game removal sites wired. Existing default mode unchanged; no forced GLB off. Candidate full-world tests pending.
+
+Actual 5.350 b7bfe58 city job 140128631671 PASS: two repeated replacements and reset sequences with GLB off; ownership counts matched actual road-car population at each step. New live GLB attachment retirement regression and full unit sweep pending.

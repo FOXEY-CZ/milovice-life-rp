@@ -9,6 +9,7 @@ on:
       - 'scripts/vehicle-assets.js'
       - 'scripts/review-procedural-car-batching.mjs'
       - 'scripts/city-procedural-batch-preview.mjs'
+      - 'scripts/review-procedural-glb-retirement.mjs'
       - 'scripts/procedural-car-ownership.js'
       - 'scripts/procedural-car-ownership.test.mjs'
       - 'scripts/review-procedural-car-lifetime.mjs'
@@ -63,8 +64,19 @@ jobs:
           trap 'kill $! 2>/dev/null || true' EXIT
           curl --retry 10 --retry-connrefused --retry-delay 1 -fsS http://127.0.0.1:8080/credits.html >/dev/null
           node scripts/city-procedural-batch-preview.mjs "$RUNNER_TEMP/crossvex-batch" "$RUNNER_TEMP/city-batch.json"
+          node scripts/review-procedural-glb-retirement.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: city-batch-preview
           path: ${{ runner.temp }}/city-batch.json
+
+  unit-sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/dev-check.mjs --all
