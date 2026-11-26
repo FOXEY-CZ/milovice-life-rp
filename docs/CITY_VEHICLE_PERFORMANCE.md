@@ -1,0 +1,3 @@
+# City vehicle performance evidence — 5.348
+
+Same stationary player car and viewport, ABBA (`on`, `coupe`, `coupe`, `on`), 6.5s settle and 8s RAF sampling per run. Verify actual vehicle assignment, four wheels, single heavy model, stationary state, stable canvas and visible page. Record raw intervals, median, p95/p99, stalls and active model count. No FPS threshold: SwiftShader on GitHub runners is software rendering and NPC movement/runner load are uncontrolled; not a physical GPU or driving benchmark. Compare repeated samples before any optimization. No runtime edits or release approval. Main #160 9/9 PR and 7/7 main incl Pages PASS; new experiment pending.

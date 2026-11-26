@@ -1,0 +1,36 @@
+name: City vehicle performance (evidence only)
+on:
+  push:
+    branches: [prep/city-vehicle-performance-5348]
+    paths:
+      - 'scripts/city-vehicle-performance.mjs'
+      - '.github/workflows/city-vehicle-performance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.57.0
+      - name: Compare same stationary player car in ABBA order
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8080 --bind 127.0.0.1 > "$RUNNER_TEMP/city-perf-http.log" 2>&1 &
+          trap 'kill $! 2>/dev/null || true' EXIT
+          curl --retry 10 --retry-connrefused --retry-delay 1 -fsS http://127.0.0.1:8080/ > /dev/null
+          node scripts/city-vehicle-performance.mjs "$RUNNER_TEMP/city-vehicle-performance.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: city-vehicle-performance
+          path: |
+            ${{ runner.temp }}/city-vehicle-performance.json
+            ${{ runner.temp }}/city-perf-http.log
+          if-no-files-found: warn
