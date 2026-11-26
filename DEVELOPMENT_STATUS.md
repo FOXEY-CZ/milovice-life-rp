@@ -3,7 +3,7 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.350**, #173 sloučen `9b03678`, PR 10/10 PASS; #172 main `cf50f44` 5/5 PASS včetně Pages 45893575540. Main #173 CI čeká.
+- Herní verze main: **5.350**, #174 sloučen `fdcce5a`, PR 6/6 PASS; #173 main `9b03678` 5/5 PASS včetně Pages 45894512731. Main #174 CI čeká.
 - Main po #160: `7a087a173569b6b49df0f3721469ec2f71c3621f`; 9/9 PR PASS a 8/8 main PASS včetně Pages 45860346528.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #169 procedurální alternativa 9 scénářů bez GLB; #170 Commons metadata 5/5 PASS, práva pending; #171–173 klasifikace dat, názvy čtvrtí a čistý HEAD staging PASS. Kandidát local-library preview: samostatný procedurální balíček s Three 0.160.1/Leaflet 1.9.4 z npm, 13 vendor souborů včetně licencí, browser blokuje cizí HTTP požadavky. CI čeká; bez tvrzení o plném offline pokrytí, bez zásahu do Pages. #147 a #161 otevřené, bez release schválení.
+**Priorita:** #169 procedurální alternativa 9 scénářů bez GLB; #170 Commons metadata 5/5 PASS, práva pending; #171–173 klasifikace dat, názvy čtvrtí a čistý HEAD staging PASS. #174 desktop local-library preview 328 requests, 0 remote/GLB/HTTP/failed/pending/page errors, 39 aut, PASS. Kandidát rozšiřuje local-only audit na 6 regionů + 2 mobile orientace, 4 matrix jobs, zachovává desktop a původní režimy. CI čeká; fyzická zařízení a kompletní offline pokrytí neověřeny. #147 a #161 otevřené, bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

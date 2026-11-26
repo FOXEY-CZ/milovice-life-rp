@@ -7,6 +7,12 @@ on:
     paths:
       - 'scripts/stage-local-library-preview.mjs'
       - 'scripts/review-procedural-release-profile.mjs'
+      - 'scripts/audit-release-network.mjs'
+      - 'scripts/local-preview-network-guard.mjs'
+      - 'scripts/run-release-mobile-preview.mjs'
+      - 'scripts/run-release-regional-preview.mjs'
+      - 'scripts/release-mobile-scenario.mjs'
+      - 'scripts/release-region-scenario.mjs'
       - 'scripts/stage-player-package.mjs'
       - 'scripts/stage-procedural-profile.mjs'
       - '.github/workflows/local-library-preview.yml'
@@ -45,4 +51,49 @@ jobs:
           name: local-library-unapproved-evidence
           path: |
             ${{ runner.temp }}/local-library-inventory.json
+            ${{ runner.temp }}/local-library-http.log
+
+  wider-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        group: [mobile, central, west, north]
+    env:
+      PROCEDURAL_PREVIEW: '1'
+      LOCAL_LIBRARY_PREVIEW: '1'
+      REGION_GROUP: ${{ matrix.group }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/audit-release-network.mjs --self-test
+          work="$RUNNER_TEMP/local-libraries"
+          mkdir "$work"
+          npm install --prefix "$work" --ignore-scripts --no-save --no-package-lock three@0.160.1 leaflet@1.9.4
+          stage="$RUNNER_TEMP/crossvex-local"
+          node scripts/stage-local-library-preview.mjs --stage "$stage" "$work/node_modules"
+          npm install --ignore-scripts --no-save --no-package-lock playwright-core@1.57.0
+          python3 -m http.server 8080 --bind 127.0.0.1 --directory "$stage" > "$RUNNER_TEMP/local-library-http.log" 2>&1 &
+          trap 'kill $! 2>/dev/null || true' EXIT
+          curl --retry 10 --retry-connrefused --retry-delay 1 -fsS http://127.0.0.1:8080/credits.html >/dev/null
+          if [ "$REGION_GROUP" = mobile ]; then
+            node scripts/run-release-mobile-preview.mjs
+          else
+            node scripts/run-release-regional-preview.mjs
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: local-library-preview-${{ matrix.group }}
+          path: |
+            ${{ runner.temp }}/mobile-*.json
+            ${{ runner.temp }}/mobile-*.png
+            ${{ runner.temp }}/regional-*.json
             ${{ runner.temp }}/local-library-http.log
