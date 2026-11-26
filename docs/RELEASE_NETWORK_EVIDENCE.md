@@ -1,0 +1,7 @@
+# CROSSVEX — staged network evidence
+
+2026-11-26: downloaded artifact 15081773259 from [5.344 preview run 45742894421](https://github.com/FOXEY-CZ/milovice-life-rp/actions/runs/45742894421), inspected actual crossvex-requests.json. 331 unique URLs: 320 local, 11 remote (4 jsDelivr Three.js 0.160.1 JS modules; 2 unpkg Leaflet 1.9.4 JS/CSS; 5 pinned GitHub GLBs: casualMan, casualWoman, suitMan, spectralGT, citySport). No tile, radio, or other remote request appeared in this desktop start/map/credits scenario. Not a request count, response-status inventory, full gameplay trace, privacy audit, or legal clearance. Four other pinned GLBs are known from source but not observed: cityCar, citySUV, broadleaf, birch.
+
+New strict preview tool classifies exact URL strings, rejects unknown external URLs and absence of required core Three.js/Leaflet URLs, reports known but not observed resources separately. No wildcard CDN paths or arbitrary versions. No release approval is inferred; each known URL is still review pending. Local classification by exact loopback origin only. This is a post-capture check, not a request blocker; dynamic paths, radio, GPS speech service, other regions/mobile/gameplay, redirects and response bytes need further evidence. No player code changed.
+
+Next: review dependency license texts and exact versions; extend trace scenarios for driving, other regions and audio, and review actual response status and external data access. Preserve source notices. Do not automatically approve unknown assets or publish the staging bundle.

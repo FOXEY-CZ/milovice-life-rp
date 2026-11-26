@@ -1,11 +1,12 @@
 name: Staged player package (preview only)
 on:
   push:
-    branches: [prep/release-license-inventory]
+    branches: [prep/release-license-inventory, prep/release-network-evidence]
     paths:
       - '.github/workflows/player-package-preview.yml'
       - 'scripts/stage-player-package.mjs'
       - 'scripts/release-package-check.mjs'
+      - 'scripts/audit-release-network.mjs'
       - 'index.html'
   pull_request:
     branches: [main]
@@ -14,6 +15,7 @@ on:
       - 'credits.html'
       - 'scripts/stage-player-package.mjs'
       - 'scripts/release-package-check.mjs'
+      - 'scripts/audit-release-network.mjs'
       - '.github/workflows/player-package-preview.yml'
   workflow_dispatch:
 permissions:
@@ -33,6 +35,7 @@ jobs:
           set -euo pipefail
           node scripts/stage-player-package.mjs --self-test
           node scripts/release-package-check.mjs --self-test
+          node scripts/audit-release-network.mjs --self-test
           stage="$RUNNER_TEMP/crossvex-player"
           node scripts/stage-player-package.mjs --stage "$stage"
           node scripts/release-package-check.mjs --inventory "$stage" > "$RUNNER_TEMP/crossvex-inventory.json"
@@ -47,7 +50,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npm install --no-save --no-package-lock playwright-core
+          npm install --no-save --no-package-lock playwright-core@1.57.0
           python3 -m http.server 8080 --bind 127.0.0.1 --directory "$RUNNER_TEMP/crossvex-player" > "$RUNNER_TEMP/crossvex-http.log" 2>&1 &
           trap 'kill $! 2>/dev/null || true' EXIT
           curl --retry 10 --retry-connrefused --retry-delay 1 -fsS http://127.0.0.1:8080/credits.html > /dev/null
@@ -85,6 +88,8 @@ jobs:
             await browser.close();
           }
           NODE
+      - name: Verify exact known network URLs (preview evidence only)
+        run: node scripts/audit-release-network.mjs --check "$RUNNER_TEMP/crossvex-requests.json" "$RUNNER_TEMP/crossvex-network-review.json"
       - name: Save diagnostic inventory (not a release)
         if: always()
         uses: actions/upload-artifact@v4
@@ -95,4 +100,5 @@ jobs:
             ${{ runner.temp }}/crossvex-review.log
             ${{ runner.temp }}/crossvex-http.log
             ${{ runner.temp }}/crossvex-requests.json
+            ${{ runner.temp }}/crossvex-network-review.json
           if-no-files-found: warn
