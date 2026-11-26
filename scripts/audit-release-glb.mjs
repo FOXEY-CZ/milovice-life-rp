@@ -140,8 +140,46 @@ async function compareCars(output){
  for(const result of results)console.log(JSON.stringify(result));
  if(results.some(r=>r.matches!==true))process.exitCode=1;
 }
+// Compare the actual exported runtime registries to the pinned audit list.
+// Imports use the exact npm Three.js revision in the game. No model is downloaded by importing.
+async function checkRuntime(output){
+ const [{HUMAN_ASSETS},{TREE_ASSETS},{LICENSED_VEHICLES}]=await Promise.all([
+  import('./human-assets.js'),import('./nature-assets.js'),import('./vehicle-assets.js')
+ ]);
+ const runtime=[
+  ...Object.entries(HUMAN_ASSETS).map(([id,a])=>({id,url:a.url,bytes:a.bytes,license:a.license,category:'human'})),
+  ...Object.entries(TREE_ASSETS).map(([id,url])=>({id,url,bytes:null,license:null,category:'tree'})),
+  ...Object.entries(LICENSED_VEHICLES).map(([id,a])=>({id,url:a.uri,bytes:a.fileBytes,license:a.license,category:'vehicle'}))
+ ];
+ const issues=[],auditIds=new Set(),runtimeIds=new Set(),runtimeUrls=new Set();
+ const auditMap=new Map();
+ for(const [id,url,bytes] of entries){
+  if(auditIds.has(id))issues.push('Duplicate audit id: '+id);
+  auditIds.add(id);auditMap.set(id,{url,bytes});
+  if(!observed[id])issues.push('Missing observed hash: '+id);
+  if(bytes!==null&&observed[id]?.bytes!==bytes)issues.push('Audit size baseline mismatch: '+id);
+ }
+ for(const id of Object.keys(observed))if(!auditIds.has(id))issues.push('Orphan observed hash: '+id);
+ for(const a of runtime){
+  if(runtimeIds.has(a.id))issues.push('Duplicate runtime id: '+a.id);
+  if(runtimeUrls.has(a.url))issues.push('Duplicate runtime URL: '+a.url);
+  runtimeIds.add(a.id);runtimeUrls.add(a.url);
+  const pin=auditMap.get(a.id);
+  if(!pin){issues.push('Unaudited runtime model: '+a.id);continue;}
+  if(a.url!==pin.url)issues.push('URL mismatch: '+a.id);
+  if(a.bytes!==pin.bytes)issues.push('Declared size mismatch: '+a.id);
+  if(a.category!=='tree'&&a.license!=='CC0-1.0')issues.push('License declaration changed: '+a.id);
+ }
+ for(const id of auditIds)if(!runtimeIds.has(id))issues.push('Audit entry not in runtime registry: '+id);
+ const report={schema:1,review:'pending',runtime,auditCount:entries.length,issues};
+ writeFileSync(output,JSON.stringify(report,null,2)+'\n',{flag:'wx'});
+ console.log(JSON.stringify({runtime:runtime.length,audit:entries.length,issues}));
+ if(issues.length)process.exitCode=1;
+}
+
 const [mode,out]=process.argv.slice(2);
 if(mode==='--self-test')selfTest();
 else if(mode==='--audit'&&out)await audit(out);
 else if(mode==='--compare-cars'&&out)await compareCars(out);
-else throw Error('Use --self-test, --audit or --compare-cars <new-json-path>');
+else if(mode==='--check-runtime'&&out)await checkRuntime(out);
+else throw Error('Use --self-test, --audit, --compare-cars or --check-runtime <new-json-path>');
