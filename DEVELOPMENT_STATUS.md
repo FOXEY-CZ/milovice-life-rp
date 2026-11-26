@@ -3,7 +3,7 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.350**, #176 sloučen `fb9b97a`, PR 5/5 PASS; #175 main `62f64cb` 5/5 PASS včetně Pages 45896313343. Main #176 CI čeká.
+- Herní verze main: **5.350**, #177 sloučen `6fc5ee2`, PR 5/5 PASS; #176 main `fb9b97a` 5/5 PASS včetně Pages 45897026182. Main #177 CI čeká.
 - Main po #160: `7a087a173569b6b49df0f3721469ec2f71c3621f`; 9/9 PR PASS a 8/8 main PASS včetně Pages 45860346528.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #174–175 local-library 9/9 scénářů PASS, 2960 requests, 0 remote/GLB/HTTP/failed/pending/redirect/page errors. #176 loopback Node launcher HTTP a 9 browser scénářů PASS. Kandidát Windows .cmd wrapper, volný port, explicitní existující staging, bez downloads; Windows/Ubuntu HTTP server PASS; wrapper fixture 45897092879 selhal na očekávaném koncovém lomítku URL. Opraven přesný očekávaný výstup, ostatní testy zachovány; opakované CI čeká. Interaktivní dvojklik a Explorer zatím neověřeny. Veřejná hra beze změny; #147 a #161 otevřené, bez release schválení.
+**Priorita:** #174–175 local-library 9/9 scénářů PASS, 2960 requests, 0 remote/GLB/HTTP/failed/pending/redirect/page errors. #176 server PASS; #177 Windows/Ubuntu launcher HTTP/fixtures PASS. Kandidát stabilní origin wrapper 127.0.0.1:47835, explicitní override, obsazený port bez fallback, restart a collision fixture; CI čeká. Zachovává přístup ke stávajícím localStorage klíčům ve stejném origin/profilu; žádná migrace ani kompletní save. #147 a #161 otevřené, bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

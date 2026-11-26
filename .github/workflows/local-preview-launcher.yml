@@ -5,6 +5,8 @@ on:
     paths:
       - 'Start-CROSSVEX-preview.cmd'
       - 'scripts/launch-local-preview.mjs'
+      - 'scripts/local-preview-port.mjs'
+      - 'scripts/local-preview-port.test.mjs'
       - 'scripts/serve-local-preview.mjs'
       - '.github/workflows/local-preview-launcher.yml'
   workflow_dispatch:
@@ -25,3 +27,5 @@ jobs:
           node-version: '22'
       - run: node scripts/serve-local-preview.mjs --self-test
       - run: node scripts/launch-local-preview.mjs --self-test
+
+      - run: node scripts/local-preview-port.test.mjs
