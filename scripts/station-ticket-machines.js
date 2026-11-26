@@ -8,6 +8,7 @@
 // No copied photograph, publisher artwork, inventively placed extra machine,
 // train timetable, tracking or API; machine panels are original drawings.
 import {stationGpsToWorld} from './station-forecourt-pass.js';
+import {TRANSIT_NAME,TRANSIT_PALETTE} from './fictional-transit.js?v=533900';
 
 export const STATION_TICKET_MACHINE_PHOTO=Object.freeze({
  source:'https://commons.wikimedia.org/wiki/File:Milovice,_n%C3%A1dra%C5%BE%C3%AD,_automaty_na_j%C3%ADzdenky.jpg',
@@ -153,6 +154,9 @@ export function makeStationTicketMachineScene(THREE,{layer,terrainAt=()=>0}={}){
    orange?'#ae6b0d':'#baa717');
   g.lineWidth=2;g.strokeStyle=orange?'#a86912':'#ab9813';
   g.strokeRect(27,496,266,240);
+  rect(11,12,298,51,TRANSIT_PALETTE.signBackground);
+  g.font='bold 21px system-ui,Arial';g.textAlign='center';
+  g.fillStyle=TRANSIT_PALETTE.signForeground;g.fillText(TRANSIT_NAME+' Tickets',160,46,280);
   if(orange){
    // Large dark operator panel: screen, dark surround, payment and outlet.
    panel(25,89,270,380,9,'#242b2c','#696e62');
@@ -173,9 +177,6 @@ export function makeStationTicketMachineScene(THREE,{layer,terrainAt=()=>0}={}){
    panel(55,633,210,81,5,'#cf8616','#a76c10');
    rect(69,646,180,3,'#e6a62d');
   }else{
-   rect(11,12,298,51,'#b92c29');
-   g.font='bold 21px system-ui,Arial';g.textAlign='center';
-   g.fillStyle='#ffffff';g.fillText('JÍZDENKY/TICKETS',160,46,280);
    panel(34,95,252,376,8,'#e8ebe5','#8d9893');
    panel(76,130,168,79,5,'#232b2b','#7e8b86');
    rect(90,144,140,12,'#b5c5ba');
@@ -216,7 +217,7 @@ export function makeStationTicketMachineScene(THREE,{layer,terrainAt=()=>0}={}){
   const geo=new THREE.BoxGeometry(.68,1,.30);
   for(const m of plan.machines){
    const base=terrainAt(m.x,m.z);
-   const root=new THREE.Group();root.name='PID_TicketMachine_'+m.kind;
+   const root=new THREE.Group();root.name='CrossTransit_TicketMachine_'+m.kind;
    root.position.set(m.x,base+.008,m.z);root.rotation.y=m.yaw;
    const body=new THREE.Mesh(geo,
     new THREE.MeshStandardMaterial({

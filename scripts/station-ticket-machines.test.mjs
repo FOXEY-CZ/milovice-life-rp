@@ -66,12 +66,14 @@ assert.equal(planStationTicketMachines(elements.map(e=>e.id===53865956?
  {...e,geometry:e.geometry.map(p=>({...p,lon:p.lon+.001}))}:e)),null);
 const model=readFileSync(new URL('./station-ticket-machines.js',import.meta.url),'utf8');
 assert(model.includes("m.kind==='orange'?0xe59a0b:0xe1d00b"));
-assert(model.includes('JÍZDENKY/TICKETS'));
+assert(model.includes("g.fillText(TRANSIT_NAME+' Tickets',160,46,280)"));
+assert(!model.includes('JÍZDENKY/TICKETS'));
+assert(model.includes("root.name='CrossTransit_TicketMachine_'+m.kind"));
 assert(!model.includes('new THREE.TextureLoader('),
  'Photo pixels may not be copied into the game as machine textures');
 assert(!model.includes('fetch('),'Visual source photographs stay external');
 const game=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert(game.includes("from './scripts/station-ticket-machines.js?v=5800'"));
+assert(game.includes("from './scripts/station-ticket-machines.js?v=534000'"));
 assert(game.includes("stationTicketMachines.create(elements);"));
 assert(game.includes("stationTicketMachines.reset();"));
 assert(hasConsistentGameBuild(game));

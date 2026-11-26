@@ -37,3 +37,6 @@ Vlastní palety BrayMart, ValueNest a Vendoa napojeny na nápisy a vybrané fas�
 
 ## 5.339 — CrossTransit
 Uživatel schválil regionální značku CrossTransit (CT), nezávislou na Ironfieldu. Nové barvy a cílové displeje autobusů a vlaků, anglické fallback zastávky a PHARMACY. Zdrojové údaje a geometrie beze změny. CI čeká.
+
+## 5.340 — jízdenkové automaty
+Anglická hlavička CrossTransit Tickets na obou automatech; původní barevné rozlišení skříní a geometrie zachovány. Zdrojové fotografie a interní důkazy beze změny. CI čeká.

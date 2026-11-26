@@ -1,3 +1,7 @@
+## CROSSVEX 5.340 — CrossTransit Tickets
+
+Oba jízdenkové automaty používají originální anglickou hlavičku CrossTransit Tickets. Zachovány odlišné barvy skříní, zdrojové doklady, umístění a počet meshů; aktualizovány testy. CI čeká.
+
 ## CROSSVEX 5.339 — CrossTransit
 
 Regionální fiktivní síť CrossTransit (CT), nezávislá na konkrétním městě. Autobusy a vlaky používají vlastní barvy a anglické destinace; čtyři fallback zastávky mají anglické názvy při zachovaných souřadnicích. Lékárna zobrazuje PHARMACY, zdrojové foto údaje zachovány. CI čeká.

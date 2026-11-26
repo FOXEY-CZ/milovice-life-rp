@@ -49,7 +49,7 @@ assert(html.includes('stationPhotographedDoorAndWindow(photoFacade,base)'));
 assert(html.includes('window.__miloviceStationPhotoFacade='));
 assert(html.includes('removedInventedArchedWindowsOnPhotoWall:true'));
 assert(html.includes("from './scripts/station-photo-facade.js?v=5790'"));
-assert(html.includes("from './scripts/station-ticket-machines.js?v=5800'"));
+assert(html.includes("from './scripts/station-ticket-machines.js?v=534000'"));
 assert(html.includes("stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})"));
 assert(hasConsistentGameBuild(html));
 console.log('5.79 station photo-façade clean intervals and real source wall PASS',
