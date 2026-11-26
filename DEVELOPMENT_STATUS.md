@@ -3,8 +3,8 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.338**, kandidát **5.339** (CrossTransit).
-- Main po #134: `fb6756a7e33093a225ceec57d1607be61c33b881`, 6/6 PR CI PASS po opakování chyby uploadu artefaktů; main CI a Pages ověř živě.
+- Herní verze main: **5.339**, kandidát **5.340** (CrossTransit automaty).
+- Main po #135: `574318e2990c2291075986053baef6068b35d132`, 6/6 PR CI PASS; main CI a Pages ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** 5.339 kandidát: CrossTransit (CT) regionální síť, nové barvy a cílové displeje autobusů/vlaků, anglické fallback zastávky a PHARMACY. Zdrojová geometrie a fyzika zachovány. CI čeká; další audit nápisů, Credits & Licenses.
+**Priorita:** 5.340 kandidát: oba jízdenkové automaty mají anglickou hlavičku CrossTransit Tickets, zdrojové barvy a geometrie zachovány. CI čeká. Další: anglické značení hasičů (model-only náhled), Credits & Licenses.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
