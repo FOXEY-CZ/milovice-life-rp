@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {writeFileSync} from 'node:fs';
 import * as THREE from 'three';
-import {makeVehicleAssetManager,LICENSED_VEHICLES} from './vehicle-assets.js';
+import {makeVehicleAssetManager,LICENSED_VEHICLES,selectVehicleModel} from './vehicle-assets.js';
 import {adaptPairedAxleWheels} from './vehicle-axle-adapter.js';
 // Diagnostic only: use actual manager loading, normalization and wheel guard.
 const [output]=process.argv.slice(2);
@@ -13,9 +13,23 @@ const hashes={
  cityCar:'e5f5fa41c4434383b20287725c0e9d757cbd0f059eedc342ec265d32a195fe39',
  citySport:'bbb1c718d2aaf5f4344e9fb2cd66d8332a998a515b09ddd4dfa14698d787124e'
 };
+for(const desktop of [false,true])for(const mode of ['auto','on','coupe','off']){
+ assert.equal(selectVehicleModel(0,{desktop,mode,player:false}),mode==='off'?null:'cityCar');
+ assert.equal(selectVehicleModel(0,{desktop,mode,player:true}),mode==='off'?null:desktop&&mode==='coupe'?'spectralGT':'cityCar');
+}
+assert.equal(selectVehicleModel(0,{desktop:true,mode:'coupe',player:true,coupeAvailable:false}),'cityCar');
+for(const [type,key] of [[2,'citySUV'],[3,'citySport'],[6,null],[7,null],[8,null]])assert.equal(selectVehicleModel(type,{desktop:true,mode:'coupe',player:true}),key);
+console.log('PASS explicit desktop player-only coupe selection policy');
 const nativeFetch=globalThis.fetch;
 if(typeof globalThis.ProgressEvent==='undefined')globalThis.ProgressEvent=class ProgressEvent extends Event{constructor(type,init={}){super(type);Object.assign(this,init)}};
 const records=[];
+const passengerSpec=LICENSED_VEHICLES.cityCar;
+const passengerResponse=await nativeFetch(passengerSpec.uri,{redirect:'error',signal:AbortSignal.timeout(30000)});
+assert.ok(passengerResponse.ok);
+const passengerBytes=Buffer.from(await passengerResponse.arrayBuffer());
+assert.equal(passengerBytes.length,passengerSpec.fileBytes);
+assert.equal(createHash('sha256').update(passengerBytes).digest('hex'),hashes.cityCar);
+
 const round=v=>Number.isFinite(v)?Number(v.toFixed(5)):null;
 const vector=v=>v.toArray().map(round);
 function inspect(root){
@@ -56,8 +70,9 @@ try{
   // Feed only verified bytes to the actual GLTFLoader. Any unplanned URL fails.
   globalThis.fetch=async input=>{
    const url=typeof input==='string'?input:input.url||String(input);
-   assert.equal(url,spec.uri,'Unexpected GLB dependency');
-   return new Response(bytes,{headers:{'Content-Length':String(bytes.length),'Content-Type':'model/gltf-binary'}});
+   assert.ok(url===spec.uri||url===passengerSpec.uri,'Unexpected GLB dependency '+url);
+   const payload=url===spec.uri?bytes:passengerBytes;
+   return new Response(payload,{headers:{'Content-Length':String(payload.length),'Content-Type':'model/gltf-binary'}});
   };
   globalThis.window={matchMedia:()=>({matches:key==='spectralGT'})};
   const messages=[],manager=makeVehicleAssetManager(THREE,{status:m=>messages.push(m)});
@@ -65,7 +80,13 @@ try{
   const diagnostics=inspect(normalized.clone(true));
   const car={id:'diagnostic-'+key,type:{spectralGT:0,cityCar:0,citySUV:2,citySport:3}[key],g:new THREE.Group(),driven:true,parked:false};
   car.g.add(new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial()));
-  manager.update([car],0,0,1,car);
+  if(key==='spectralGT'){
+   await manager.load('cityCar');
+   manager.update([car],0,0,1,car);
+   assert.equal(globalThis.window.__miloviceGLBDebug.assignments.find(a=>a.id===car.id)?.key,'cityCar','auto must use low-poly car');
+   manager.configure('coupe');
+  }
+  manager.update([car],0,0,2,car);
   const actual=globalThis.window.__miloviceGLBDebug;
   const installed=actual.assignments.some(a=>a.key===key&&a.wheels===4);
   assert.equal(installed,diagnostics.diagnosticAccepted,key+' diagnostic and real guard disagree');
@@ -105,8 +126,24 @@ try{
    record.runtime={installed:true,independentInstances:true,spinAndReverse:true,stationaryPivots:true,fallbackRestored:true};
    console.log(JSON.stringify({key,runtime:record.runtime}));
   }else{
-   assert.equal(installed,false,'Sports Coupe remains guarded until separate adapter');
-   record.runtime={installed:false,expectedFallback:true};
+   assert.equal(installed,true,'opt-in coupe must install');
+   const model=car.g.userData.licensedGLB,groups=model.children.filter(g=>g.name.startsWith('AdapterWheel_'));
+   assert.equal(groups.length,4);
+   const other={...car,id:'npc',g:new THREE.Group(),driven:false};
+   other.g.add(new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial()));
+   manager.update([car,other],0,0,3,car);
+   assert.equal(globalThis.window.__miloviceGLBDebug.assignments.find(a=>a.id==='npc')?.key,'cityCar');
+   assert.equal(globalThis.window.__miloviceGLBDebug.assignments.filter(a=>a.key==='spectralGT').length,1);
+   const before=groups.map(g=>({q:g.quaternion.clone(),p:g.getWorldPosition(new THREE.Vector3())}));
+   manager.spin(car,.5);car.g.updateMatrixWorld(true);
+   for(const [i,g] of groups.entries()){assert.ok(g.quaternion.angleTo(before[i].q)>.1);assert.ok(g.getWorldPosition(new THREE.Vector3()).distanceTo(before[i].p)<1e-5);}
+   manager.spin(car,-.5);
+   for(const [i,g] of groups.entries())assert.ok(g.quaternion.angleTo(before[i].q)<1e-5);
+   manager.update([car,other],0,0,4,null);
+   assert.equal(globalThis.window.__miloviceGLBDebug.assignments.filter(a=>a.key==='spectralGT').length,0,'exit must remove heavy coupe');
+   manager.configure('off');
+   assert.equal(car.g.userData.licensedGLB,null);assert.equal(car.g.userData.proceduralLOD.visible,true);
+   record.runtime={installed:true,autoLowPoly:true,playerOnly:true,spinAndReverse:true,exitDowngrade:true,fallbackRestored:true};
    console.log(JSON.stringify({key,runtime:record.runtime}));
   }
   manager.reset();

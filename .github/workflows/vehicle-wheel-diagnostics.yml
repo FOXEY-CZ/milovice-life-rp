@@ -1,12 +1,14 @@
 name: Vehicle wheel diagnostics (evidence only)
 on:
   push:
-    branches: [prep/vehicle-axle-candidate-5347]
+    branches: [prep/vehicle-axle-candidate-5347, prep/vehicle-coupe-candidate-5348]
     paths:
       - '.github/workflows/vehicle-wheel-diagnostics.yml'
       - 'scripts/inspect-vehicle-wheels.mjs'
       - 'scripts/review-vehicle-axles.mjs'
       - 'scripts/vehicle-axle-adapter.js'
+      - 'scripts/spectral-wheel-adapter.js'
+      - 'scripts/spectral-mesh-batching.js'
       - 'scripts/vehicle-assets.js'
   pull_request:
     branches: [main]
@@ -15,6 +17,8 @@ on:
       - 'scripts/inspect-vehicle-wheels.mjs'
       - 'scripts/review-vehicle-axles.mjs'
       - 'scripts/vehicle-axle-adapter.js'
+      - 'scripts/spectral-wheel-adapter.js'
+      - 'scripts/spectral-mesh-batching.js'
       - 'scripts/vehicle-assets.js'
   workflow_dispatch:
 permissions:

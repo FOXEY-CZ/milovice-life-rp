@@ -3,8 +3,8 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.346**; #158 sloučen. Kandidát **5.347** (adaptér kol).
-- Main po #158: `6ff19572e39c61a79b64224930c02f3a8c54f674`; #158 9/9 PR PASS, předchozí main 7/7 včetně Pages PASS. Nový main ověř živě.
+- Herní verze main: **5.347**; #159 sloučen. Kandidát **5.348** (volitelné detailní kupé).
+- Main po #159: `da74b807b8313d8d5a73b225a3aa49b27964a064`; #159 9/9 PR PASS, předchozí main 7/7 včetně Pages PASS. Nový main ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #158 sloučen 9/9 PR, předchozí main 7/7 PASS včetně Pages. Nový main `6ff19572e39c61a79b64224930c02f3a8c54f674` čeká. #157 diagnostika 45849827056: všechny čtyři GLB odmítány; 45850512267 tři adaptéry PASS, každý 5040 vrcholů, čtyři správné pivoty, Sports Coupe má samostatné díly kol a brzd. 5.347 kandidát integruje tři adaptéry při načtení, kontrola čtyř kol zachována, 45852058175 skutečný manager spin/reverse/clone/fallback PASS 3/3, GLB 45852059163 PASS; 5.346 Pages PASS. Přidán izolovaný Chromium render 18 pohledů (idle/rotated/reverse) a evidence draw calls/triangles, nový CI čeká. Před merge ještě ověřit vizuálně skutečné modely a režijní náklady, Sports Coupe samostatně. #147 a #157 otevřeny; žádné release schválení.
+**Priorita:** #159 sloučen 9/9 PR, předchozí main 7/7 PASS včetně Pages. Nový main `da74b807b8313d8d5a73b225a3aa49b27964a064` čeká. Sports Coupe experiment 45854371824 PASS 68 pohyblivých/190 pevných částí; 45854868742 PASS 20 WebGL snímků, 258 → 70 meshů, 516 → 140 draw calls, 151722 trojúhelníků, max 1 výrazně odlišný pixel v odpovídajících optimalizovaných pohledech. 5.348 kandidát volitelný režim coupe pouze hráč/PC; auto/on a NPC low-poly, výstup a vypnutí downgrade. CI actual-manager, čtyři modely WebGL a staged preview čekají. Výkon města/telefonů nepotvrzen. #147 a #157 otevřeny; žádné release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

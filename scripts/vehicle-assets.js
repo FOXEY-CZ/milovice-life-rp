@@ -3,6 +3,15 @@
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {vehicleModelStatus} from './fictional-identity.js?v=534500';
 import {adaptPairedAxleWheels} from './vehicle-axle-adapter.js?v=534700';
+import {adaptSpectralWheels} from './spectral-wheel-adapter.js?v=534800';
+import {batchSpectralMeshes} from './spectral-mesh-batching.js?v=534800';
+
+export function selectVehicleModel(type,{player=false,desktop=false,mode='auto',coupeAvailable=true}={}){
+ if(mode==='off'||type===6||type===8||type===7)return null;
+ if(type===2||type===5)return 'citySUV';
+ if(type===3||type===4)return 'citySport';
+ return player&&desktop&&mode==='coupe'&&coupeAvailable?'spectralGT':'cityCar';
+}
 
 export const LICENSED_VEHICLES={
  spectralGT:{
@@ -46,12 +55,9 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
    &&(typeof navigator.deviceMemory!=='number'||navigator.deviceMemory>=4);
  const enabled=()=>mode!=='off';
  const budget=()=>pc()?5:3;
- const modelFor=(car)=>{
-  if(car.type===6||car.type===8)return null; // distinct custom van / emergency silhouette stays procedural
-  if(car.type===2||car.type===5)return 'citySUV';
-  if(car.type===3||car.type===4)return 'citySport';
-  return (pc()||mode==='on')?'spectralGT':'cityCar';
- };
+ const modelFor=(car,playerCar=null)=>selectVehicleModel(car?.type,{
+  player:car===playerCar,desktop:pc(),mode,coupeAvailable:!rejected.has('spectralGT')&&states.get('spectralGT')!=='fallback'
+ });
  function publish(message=''){
   if(message)status(message);
   const asset=activeKey||'cityCar';
@@ -99,7 +105,8 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
   states.set(key,'loading');activeKey=key;publish(vehicleModelStatus(key,'loading'));
   const task=loader.loadAsync(spec.uri).then(result=>{
    const original=normalize(result.scene,spec);
-   const adapted=adaptPairedAxleWheels(THREE,original,key);
+   const adapted=key==='spectralGT'?batchSpectralMeshes(THREE,adaptSpectralWheels(THREE,original)):adaptPairedAxleWheels(THREE,original,key);
+   if(key==='spectralGT'&&!adapted)throw Error('Detailed coupe geometry adaptation failed');
    const scene=adapted?.root||original;
    scenes.set(key,scene);states.set(key,'ready');activeKey=key;lastUpdate=-1; // force next frame to attach freshly loaded mesh
    publish(vehicleModelStatus(key,'ready'));
@@ -171,10 +178,12 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
   return true;
  }
  function configure(next){
-  if(!['auto','on','off'].includes(next))return;
+  if(!['auto','on','coupe','off'].includes(next))return;
   mode=next;
   if(!enabled())detachAll();
-  if(enabled()&&!states.has(pc()?'spectralGT':'cityCar'))load(pc()?'spectralGT':'cityCar');
+  else for(const [car,instance] of [...active])if(instance.key==='spectralGT'&&(mode!=='coupe'||!pc()))detach(car);
+  if(enabled()&&!states.has('cityCar'))load('cityCar');
+  lastUpdate=-1;
   publish(enabled()?'🚘 Rozmanitá detailní auta aktivní v okolí hráče.':'🚘 Úsporné procedurální modely.');
  }
  function update(cars,x,z,t,playerCar=null){
@@ -182,21 +191,21 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
   lastUpdate=t;
   if(!enabled()){detachAll();publish();return}
   const nearby=cars.filter(c=>!c.service&&c.type!==7&&c.g.visible!==false)
-   .filter(c=>modelFor(c)!==null)
+   .filter(c=>modelFor(c,playerCar)!==null)
    .map(c=>({car:c,dist:Math.hypot(c.g.position.x-x,c.g.position.z-z)}))
    .filter(item=>item.dist<100||item.car===playerCar)
    .sort((a,b)=>(a.car===playerCar?-10000:a.dist)-(b.car===playerCar?-10000:b.dist))
    .slice(0,budget());
   const wanted=new Set(nearby.map(o=>o.car));
-  for(const car of [...active.keys()])if(!wanted.has(car))detach(car);
+  for(const [car,instance] of [...active])if(!wanted.has(car)||instance.key==='spectralGT'&&modelFor(car,playerCar)!=='spectralGT')detach(car);
   for(const {car} of nearby){
-   const key=modelFor(car);activeKey=car===playerCar?key:activeKey;
+   const key=modelFor(car,playerCar);activeKey=car===playerCar?key:activeKey;
    if(!scenes.has(key)){if(!states.has(key))load(key);continue}
    install(car,key);
   }
   // Test harness and HUD keep a live current model indicator.
-  if(playerCar)activeKey=modelFor(playerCar);
-  else if(nearby.length)activeKey=modelFor(nearby[0].car);
+  if(playerCar)activeKey=modelFor(playerCar,playerCar);
+  else if(nearby.length)activeKey=modelFor(nearby[0].car,playerCar);
   publish();
  }
  function spin(car,distance){
