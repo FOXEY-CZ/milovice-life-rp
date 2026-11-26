@@ -5,6 +5,7 @@ import {resolve,dirname,relative,isAbsolute,sep,posix,join} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {tmpdir} from 'node:os';
 import assert from 'node:assert/strict';
+import {proceduralProfile} from './stage-procedural-profile.mjs';
 const roots=['index.html','credits.html'];
 const developmentData=new Set(["data/architecture-references.json","data/architecture/building-audit-queue.json","data/architecture/building-work-progress.json"]);
 const localModule=/(?:\bfrom\s*|\bimport\s*(?:\(\s*)?)(['"])(\.{1,2}\/[^'"\s]+)\1/g;
@@ -40,18 +41,19 @@ function realFile(root,p){
  const f=resolve(root,p);if(!inside(root,f)||!lstatSync(f).isFile()||realpathSync(f)!==f)throw Error('Not a plain source file: '+p);
  return f;
 }
-function build(root,dest){
+function build(root,dest,profile='standard'){
  root=realpathSync(root);dest=resolve(dest);
  if(inside(root,dest)||existsSync(dest))throw Error('Destination must be new and outside the source checkout');
  const parent=dirname(dest);if(realpathSync(parent)!==parent)throw Error('Destination parent must be a real directory');
  const tracked=execFileSync('git',['-C',root,'ls-files','-z'],{encoding:'utf8'}).split('\0').filter(Boolean);
- const files=plan(tracked,p=>readFileSync(realFile(root,p),'utf8'));
+ const read=p=>{const source=readFileSync(realFile(root,p),'utf8');return profile==='procedural-preview'?proceduralProfile(p,source):source;};
+ const files=plan(tracked,read);
  for(const p of files)realFile(root,p);
  mkdirSync(dest);
  try{for(const p of files){
-  const target=join(dest,p);mkdirSync(dirname(target),{recursive:true});copyFileSync(realFile(root,p),target);
+  const target=join(dest,p);mkdirSync(dirname(target),{recursive:true});if(profile==='procedural-preview'&&/\.(?:html|js)$/.test(p))writeFileSync(target,read(p));else copyFileSync(realFile(root,p),target);
  }}catch(error){rmSync(dest,{recursive:true,force:true});throw error;}
- console.log('Staged '+files.length+' files; NOT release-approved. Run release-package-check.mjs --inventory '+JSON.stringify(dest));
+ console.log('Staged '+files.length+' files ('+profile+'); NOT release-approved. Run release-package-check.mjs --inventory '+JSON.stringify(dest));
 }
 function selfTest(){
  const sources=new Map([
@@ -88,5 +90,6 @@ try{
  const [mode,dest,...extra]=process.argv.slice(2);
  if(mode==='--self-test'&&!dest)selfTest();
  else if(mode==='--stage'&&dest&&!extra.length)build(process.cwd(),dest);
- else throw Error('Usage from repository root: --stage <new-external-directory> | --self-test');
+ else if(mode==='--stage-procedural-preview'&&dest&&!extra.length)build(process.cwd(),dest,'procedural-preview');
+ else throw Error('Usage from repository root: --stage <new-external-directory> | --stage-procedural-preview <new-external-directory> | --self-test');
 }catch(error){console.error(error.message);process.exitCode=1;}
