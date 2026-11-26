@@ -9,6 +9,7 @@ const allowed=new Set([
  'IRONFIELD','IRONFIELD • STATION','432 • IRONFIELD','DOWNTOWN / CITY HALL','SENTINEL ROAD','AMUSEMENT PARK',
  'LIBRARY HILL SCHOOL','SILVERMOON INN','CYCLEHUB','432','432 IRONFIELD','CT 432','S22 IRONFIELD','CROSSTRANSIT TICKETS','P',
  'BRAYMART','VALUENEST','VENDOA','GRAINWELL MARKET','DAWNRIDGE SCHOOL','IRONFIELD HEALTH CENTER','MOSSWOOD PRESCHOOL',
+ '◀  CITY POLICE','◀  RECYCLING CENTER','◀  WONDERWOOD PARK','RAIL STATION','STAND A','STAND B','CT','430','434','497','A','B','WONDERWOOD PARK','RIVERSIDE','BROOKHAVEN','HILLCREST','WILLOWFIELD','EASTBOROUGH','OAKFORD','STONEBRIDGE','WESTHAVEN',
  'GROCERIES','BAKERY','JEWELRY','CLOTHING','FLORIST','HAIR SALON','RESTAURANT','BISTRO','HEALTH CENTER','SCHOOL','PHARMACY','CAFE','SHOP','BUSINESS'
 ]);
 const browser=await chromium.launch({executablePath:'/usr/bin/google-chrome',headless:true,args:['--no-sandbox','--disable-dev-shm-usage','--enable-webgl','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
@@ -48,7 +49,7 @@ try{
    evidence.records=capture.records;evidence.overflow=capture.overflow;
    evidence.unknown=capture.records.filter(r=>!allowed.has(r.text.normalize('NFC').trim().toUpperCase()));
    assert.equal(capture.overflow,false);
-   for(const expected of ['IRONFIELD • STATION','SENTINEL ROAD','432 • IRONFIELD'])assert.ok(capture.records.some(r=>r.text===expected),'Missing startup sign '+expected);
+   for(const expected of ['IRONFIELD • STATION','SENTINEL ROAD','432 • IRONFIELD','◀  City Police','◀  Recycling Center','◀  Wonderwood Park','RAIL STATION','STAND A','STAND B','CT','Wonderwood Park','Riverside','Brookhaven','Hillcrest','Willowfield','Eastborough','Oakford','Stonebridge','Westhaven'])assert.ok(capture.records.some(r=>r.text===expected),'Missing startup sign '+expected);
    assert.deepEqual(evidence.unknown,[],'Unreviewed detached canvas text');
    assert.deepEqual(evidence.errors,[]);
    evidence.result='pass';

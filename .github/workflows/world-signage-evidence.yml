@@ -4,6 +4,10 @@ on:
     branches: [prep/world-signage-evidence]
     paths:
       - 'scripts/audit-world-signage.mjs'
+      - 'scripts/station-forecourt-pass.js'
+      - 'scripts/street-environment-reality.js'
+      - 'scripts/fictional-transit.js'
+      - 'scripts/fictional-signage.js'
       - '.github/workflows/world-signage-evidence.yml'
   workflow_dispatch:
 permissions:
@@ -27,6 +31,9 @@ jobs:
       - shell: bash
         run: |
           set -euo pipefail
+          node scripts/fictional-signage.test.mjs
+          node scripts/fictional-transit.test.mjs
+          node scripts/station-forecourt-pass.test.mjs
           node scripts/stage-player-package.mjs --stage "$RUNNER_TEMP/crossvex-signs"
           npm install --no-save --no-package-lock playwright-core@1.57.0
           python3 -m http.server 8080 --bind 127.0.0.1 --directory "$RUNNER_TEMP/crossvex-signs" > "$RUNNER_TEMP/sign-http.log" 2>&1 &
