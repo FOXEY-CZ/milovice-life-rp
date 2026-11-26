@@ -1,0 +1,39 @@
+name: Staged procedural texture evidence
+on:
+  push:
+    branches: [prep/release-credits-candidate]
+    paths:
+      - '.github/workflows/procedural-texture-audit.yml'
+      - 'scripts/audit-procedural-textures.mjs'
+      - 'scripts/osm-hzs-facade-5315.js'
+      - 'scripts/osm-juventa-school-facade-5307.js'
+      - 'scripts/osm-topolova-zebra-paint-5187.js'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/procedural-texture-audit.yml'
+      - 'scripts/audit-procedural-textures.mjs'
+      - 'scripts/osm-hzs-facade-5315.js'
+      - 'scripts/osm-juventa-school-facade-5307.js'
+      - 'scripts/osm-topolova-zebra-paint-5187.js'
+      - 'scripts/stage-player-package.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  generated-pixels:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/stage-player-package.mjs --stage "$RUNNER_TEMP/crossvex-textures"
+      - run: node scripts/audit-procedural-textures.mjs "$RUNNER_TEMP/crossvex-textures" "$RUNNER_TEMP/procedural-textures.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: procedural-textures-review-pending
+          path: ${{ runner.temp }}/procedural-textures.json
+          if-no-files-found: warn
