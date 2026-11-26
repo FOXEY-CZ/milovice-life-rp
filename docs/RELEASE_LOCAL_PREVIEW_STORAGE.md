@@ -1,0 +1,5 @@
+# Local preview browser storage restart — candidate
+
+After #178 fixed origin (5/5 PR PASS, previous main 5/5 including Pages 45897654774), test an actual staged local-library game at 127.0.0.1:47835 with a new persistent Chromium profile. Seed a synthetic 1250 balance through the same-origin credits page, then load the real game and change the draw-distance setting to 360 through the existing menu. Verify runtime setting and money HUD. Close Chromium and stop the actual local Node server. Start a new server and new Chromium process at the same origin with the same profile, without injecting any saved values; verify actual game HUD and restored setting again. Block external HTTP(S) requests and service workers, require no page/network failures; save evidence on success or failure. Test data and profile are temporary; no real user saves accessed or changed.
+
+This validates restoration of existing keys, not earning money through a completed job, every graphics preference, transfer between machines, or a full save system. Chromium on Ubuntu CI is not a physical Windows/browser interaction. Public game and packaging unchanged; no release approval. CI pending.

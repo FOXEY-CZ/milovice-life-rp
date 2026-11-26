@@ -1,0 +1,37 @@
+name: Local preview browser storage restart
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/review-local-preview-storage.mjs'
+      - 'scripts/local-preview-port.mjs'
+      - 'scripts/serve-local-preview.mjs'
+      - 'scripts/stage-local-library-preview.mjs'
+      - '.github/workflows/local-preview-storage.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  storage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/storage-libraries"
+          mkdir "$work"
+          npm install --prefix "$work" --ignore-scripts --no-save --no-package-lock three@0.160.1 leaflet@1.9.4
+          stage="$RUNNER_TEMP/crossvex-storage"
+          node scripts/stage-local-library-preview.mjs --stage "$stage" "$work/node_modules"
+          npm install --ignore-scripts --no-save --no-package-lock playwright-core@1.57.0
+          node scripts/review-local-preview-storage.mjs "$stage"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: local-preview-storage-evidence
+          path: ${{ runner.temp }}/local-preview-storage.json
