@@ -1,7 +1,7 @@
 name: Staged player package (preview only)
 on:
   push:
-    branches: [prep/release-license-inventory, prep/release-network-evidence, prep/release-library-notices, prep/release-gameplay-preview, prep/release-data-notices, prep/release-credits-candidate, prep/player-vehicle-candidate-5345]
+    branches: [prep/release-license-inventory, prep/release-network-evidence, prep/release-library-notices, prep/release-gameplay-preview, prep/release-data-notices, prep/release-credits-candidate, prep/player-vehicle-candidate-5345, prep/vehicle-axle-candidate-5347]
     paths:
       - '.github/workflows/player-package-preview.yml'
       - 'scripts/stage-player-package.mjs'
@@ -15,6 +15,7 @@ on:
       - 'scripts/release-network-observer.test.mjs'
       - 'scripts/release-gameplay-scenario.mjs'
       - 'scripts/vehicle-assets.js'
+      - 'scripts/vehicle-axle-adapter.js'
       - 'scripts/fictional-identity.js'
       - 'index.html'
   pull_request:
@@ -32,6 +33,7 @@ on:
       - 'scripts/release-network-observer.test.mjs'
       - 'scripts/release-gameplay-scenario.mjs'
       - 'scripts/vehicle-assets.js'
+      - 'scripts/vehicle-axle-adapter.js'
       - 'scripts/fictional-identity.js'
       - '.github/workflows/player-package-preview.yml'
   workflow_dispatch:

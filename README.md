@@ -1,3 +1,7 @@
+## CROSSVEX 5.347 — guarded vehicle axle adaptation
+
+SUV, Passenger Car a Sports Car: při načtení přesné zdrojové sestavy rozděleny na čtyři samostatné skupiny kol. Příprava 45850512267 PASS, každý 5040 rozvinutých vrcholů beze změny. Geometrie, materiály, rozměry, registry a zdrojové soubory zachovány; vizuální otáčení podle skutečné osy a poloměru, fyzika beze změny. Sports Coupe zatím fallback. Kandidát CI i vizuální ověření čekají.
+
 ## CROSSVEX 5.346 — pedestrian delivery player label
 
 Při zahájení pěší zakázky používá hráčské hlášení Silver Avenue přes fictional-identity.js. Tři kontrolní body, geometrie i odměna 80 Kč beze změny. Přípravný regionální test 45847448228 PASS 3/3, skutečné zahájení a zrušení zakázky bez výplaty. Kandidát CI čeká.

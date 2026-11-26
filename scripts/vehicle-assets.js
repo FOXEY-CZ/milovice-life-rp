@@ -2,6 +2,7 @@
 // Requires the SAME Three.js module revision in the page importmap and GLTFLoader.
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {vehicleModelStatus} from './fictional-identity.js?v=534500';
+import {adaptPairedAxleWheels} from './vehicle-axle-adapter.js?v=534700';
 
 export const LICENSED_VEHICLES={
  spectralGT:{
@@ -97,7 +98,9 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
   const spec=LICENSED_VEHICLES[key];if(!spec)return Promise.resolve(null);
   states.set(key,'loading');activeKey=key;publish(vehicleModelStatus(key,'loading'));
   const task=loader.loadAsync(spec.uri).then(result=>{
-   const scene=normalize(result.scene,spec);
+   const original=normalize(result.scene,spec);
+   const adapted=adaptPairedAxleWheels(THREE,original,key);
+   const scene=adapted?.root||original;
    scenes.set(key,scene);states.set(key,'ready');activeKey=key;lastUpdate=-1; // force next frame to attach freshly loaded mesh
    publish(vehicleModelStatus(key,'ready'));
    return scene;
@@ -134,7 +137,9 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
    const size=bounds.getSize(new THREE.Vector3());
    if(Math.abs(center.x-midX)<=width*.20||Math.abs(center.z-midZ)<=length*.13||
      center.y>hull.min.y+1.0||size.z>length*.4||size.x>width*.65)return;
-   found.push({node,center});
+   const adapted=node.name.startsWith('AdapterWheel_');
+   if(adapted&&node.getWorldPosition(new THREE.Vector3()).distanceTo(center)>1e-5)return;
+   found.push({node,center,radius:adapted?size.y*.5:.385,adapted});
   });
   if(found.length!==4)return null;
   if(found.filter(w=>w.center.x>midX).length!==2||found.filter(w=>w.center.z>midZ).length!==2)return null;
@@ -201,8 +206,9 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
   item.group.getWorldQuaternion(carQ);
   for(const wheel of item.wheels){
    wheel.node.parent.getWorldQuaternion(parentQ);
-   const axis=worldAxis.clone().applyQuaternion(carQ).applyQuaternion(parentQ.invert()).normalize();
-   wheel.node.quaternion.premultiply(new THREE.Quaternion().setFromAxisAngle(axis,-distance/.385));
+   const chassisQ=wheel.adapted?car.g.getWorldQuaternion(new THREE.Quaternion()):carQ;
+   const axis=worldAxis.clone().applyQuaternion(chassisQ).applyQuaternion(parentQ.invert()).normalize();
+   wheel.node.quaternion.premultiply(new THREE.Quaternion().setFromAxisAngle(axis,-distance/wheel.radius));
   }
  }
  function reset(){
