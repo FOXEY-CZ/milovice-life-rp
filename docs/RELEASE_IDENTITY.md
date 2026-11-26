@@ -43,3 +43,6 @@ Anglická hlavička CrossTransit Tickets na obou automatech; původní barevné 
 
 ## 5.341 — Fire Station
 IRONFIELD FIRE STATION v model-only náhledu; číslo 112 a původní zdrojový nápis zachovány jako důkaz. Neověřené rozměry a umístění nejsou aktivovány v běžné hře. CI čeká.
+
+## 5.342 — Credits & Licenses
+Samostatná hráčská stránka, odkazy z HUD a mapy, původní atribuce zachována. Licence podle evidence projektu; před distribucí ověřit úplný soupis aktiv, licenční texty a podmínky odvozených databází. CI čeká.
