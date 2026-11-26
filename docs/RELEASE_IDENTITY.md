@@ -56,3 +56,6 @@ Výchozí hráčské UI oddělené od technických ovladačů. Opt-in `?dev=1`, 
 - Kontrola zdroje: index.html používá STATIC_SIGN_TEXT pro nádraží, hotel, cyklověž, školu a fallback nápisy; dynamické obchody procházejí businessSignText. world-models.js používá destinationLabel; station-ticket-machines.js CrossTransit Tickets. HZS náhled rozlišuje sourceFacadeText a facadeText. Nejde o vizuální ověření všech fasád, textur ani vložených GLB.
 - Odstraněno nepodložené tvrzení o ověřeném CC0 modelu z menu. Deklarované licence a atribuce v Credits & Licenses zůstávají; nezávislé ověření konkrétních souborů je otevřené.
 - Preview distribuce na 5.342 a 5.343 PASS; síťový záznam 5.343 je v artefaktu běhu 45739409272, jeho obsah ještě nebyl vyhodnocen. Dev režim není zabezpečení. Před finálním vydáním ověřit skutečné nápisy v GLB a jejich texturách, adresní štítky a zdrojové názvy ve veřejném balíčku.
+
+## 5.345 — player vehicle labels
+Hráčské stavové zprávy detailních vozidel používají neutrální anglické kategorie přes fictional-identity.js. Zdrojové registry a licence beze změny; unit, browser historie HUD a GLB evidence CI čekají.

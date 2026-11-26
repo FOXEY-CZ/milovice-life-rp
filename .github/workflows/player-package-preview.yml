@@ -1,7 +1,7 @@
 name: Staged player package (preview only)
 on:
   push:
-    branches: [prep/release-license-inventory, prep/release-network-evidence, prep/release-library-notices, prep/release-gameplay-preview, prep/release-data-notices, prep/release-credits-candidate]
+    branches: [prep/release-license-inventory, prep/release-network-evidence, prep/release-library-notices, prep/release-gameplay-preview, prep/release-data-notices, prep/release-credits-candidate, prep/player-vehicle-candidate-5345]
     paths:
       - '.github/workflows/player-package-preview.yml'
       - 'scripts/stage-player-package.mjs'
@@ -14,6 +14,8 @@ on:
       - 'scripts/release-network-observer.mjs'
       - 'scripts/release-network-observer.test.mjs'
       - 'scripts/release-gameplay-scenario.mjs'
+      - 'scripts/vehicle-assets.js'
+      - 'scripts/fictional-identity.js'
       - 'index.html'
   pull_request:
     branches: [main]
@@ -29,6 +31,8 @@ on:
       - 'scripts/release-network-observer.mjs'
       - 'scripts/release-network-observer.test.mjs'
       - 'scripts/release-gameplay-scenario.mjs'
+      - 'scripts/vehicle-assets.js'
+      - 'scripts/fictional-identity.js'
       - '.github/workflows/player-package-preview.yml'
   workflow_dispatch:
 permissions:
@@ -51,6 +55,7 @@ jobs:
           node scripts/audit-release-network.mjs --self-test
           node scripts/release-network-observer.test.mjs
           node scripts/gps-voice-5331.test.mjs
+          node scripts/fictional-identity.test.mjs
           stage="$RUNNER_TEMP/crossvex-player"
           node scripts/stage-player-package.mjs --stage "$stage"
           node scripts/audit-release-map-data.mjs "$stage"

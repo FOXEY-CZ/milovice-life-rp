@@ -4,6 +4,15 @@ import assert from 'node:assert/strict';
 // This records control interactions, not audibility or offline speech guarantees.
 export async function runReleaseGameplayScenario(page,base,evidence={}){
  const step=(name,detail={})=>{(evidence.steps??=[]).push({name,...detail});};
+ await page.addInitScript(()=>{
+  window.__releaseVehicleStatusHistory=[];
+  const capture=()=>{
+   const value=document.getElementById('rp-model-status')?.textContent;
+   const history=window.__releaseVehicleStatusHistory;
+   if(value&&history.at(-1)!==value&&history.length<100)history.push(value);
+  };
+  new MutationObserver(capture).observe(document,{subtree:true,childList:true,characterData:true});
+ });
  await page.goto(base+'/',{waitUntil:'domcontentloaded',timeout:30000});
  await page.waitForFunction(()=>window.__miloviceStarted===true,null,{timeout:60000});
  await page.locator('[data-spawn="sedan"]').waitFor({state:'visible',timeout:90000});
@@ -11,6 +20,11 @@ export async function runReleaseGameplayScenario(page,base,evidence={}){
  await page.waitForFunction(()=>document.getElementById('mode')?.textContent==='Řidič auta'&&!!window.__miloviceVehicleDebug?.activeCarId,null,{timeout:30000});
  await page.waitForTimeout(6500);
  step('sedan spawn and LOD wait');
+ const labels=await page.evaluate(()=>[...window.__releaseVehicleStatusHistory,document.getElementById('rp-model-status')?.textContent].filter(Boolean));
+ assert.ok(labels.length,'No vehicle HUD status observed');
+ for(const label of labels)assert.doesNotMatch(label,/Quaternius|Spectral GT|CC0|cityCar|citySUV|citySport|spectralGT/i);
+ step('vehicle HUD source-name screen',{labels});
+
  await page.locator('#horn').click();
  step('horn control clicked',{audibilityVerified:false});
  await page.locator('#maplaunch').click();

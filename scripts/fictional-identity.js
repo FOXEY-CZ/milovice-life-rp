@@ -94,3 +94,15 @@ const get=(table,key,fallback)=>typeof key==='string'&&Object.hasOwn(table,key.n
 export const streetDisplayName=name=>get(STREET_NAMES,name,'Unnamed Road');
 export const landmarkDisplayName=name=>get(LANDMARK_NAMES,name,'Point of Interest');
 export const regionDisplayName=id=>get(REGION_NAMES,id,'City District');
+
+// Player-facing categories are deliberately independent of the model provenance registry.
+export const VEHICLE_DISPLAY_NAMES=Object.freeze({spectralGT:'Sports Coupe',citySUV:'SUV',cityCar:'Passenger Car',citySport:'Sports Car'});
+export const vehicleDisplayName=key=>get(VEHICLE_DISPLAY_NAMES,key,'Vehicle');
+export function vehicleModelStatus(key,state){
+ const label=vehicleDisplayName(key);
+ if(state==='loading')return '🚘 Načítám '+label+'…';
+ if(state==='ready')return '🚘 Model '+label+' je připraven.';
+ if(state==='fallback')return '🚘 Model nedostupný, původní auto zůstává.';
+ if(state==='wheels')return '🚗 '+label+': nepoužitelná geometrie kol – bezpečný automobil místo rozpadlého modelu.';
+ return '';
+}
