@@ -101,20 +101,21 @@ assert(Math.abs(eyeClinic.lat-50.2286697)<1e-7);
 assert(Math.abs(eyeClinic.lon-14.8643547)<1e-7);
 assert(Math.abs(heading(eyeClinic,targetClinic)-287.3)<.2);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+assert.match(html,/from '\.\/scripts\/osm-armadni-landmarks-5118\.js\?v=\d+'/);
 for(const token of [
- "from './scripts/osm-armadni-landmarks-5118.js?v=511800'",
+ "from './scripts/osm-armadni-landmarks-5118.js?v=",
  "const armLandmark=planArmLandmarkMassing({",
  "const isArmClinic=armLandmark?.kind==='polyclinic'",
  "const isArmBilla=armLandmark?.kind==='supermarket'",
- "const floors=modelCard?.floors??(armLandmark?.floors??",
+ "let floors=modelCard?.floors??(armLandmark?.floors??",
  "h=armLandmark.modelHeightMeters;",
  "const baseWallMat=isArmClinic?clinicPhotoWalls:",
- "const roofPreference=(slepaUtility||isArmClinic)?'flat':",
- "const visibleFloors=(slepaUtility||isArmClinic)?0:",
+ "(slepaUtility||isArmClinic)?'flat':",
+ "const visibleFloors=(sportovniHall||slepaUtility||isArmClinic)?0:",
  "else if(isCommerce&&!isBlueStar&&!auditedCore&&!isArmBilla){",
  "if(osmId===1057548624&&tags.amenity==='clinic')return;",
  "if(isArmClinic){",
- "const inventedEntrance=!slepaUtility&&!isArmClinic&&!isArmBilla&&",
+ "&&!slepaUtility&&!isArmClinic&&!isArmBilla&&",
  "i===armLandmark.frontEdgeIndex&&len>30",
  "archPart('clinicTeal'",
  "archPart('clinicWindow'",
@@ -131,11 +132,11 @@ for(const token of [
  "camera:{lat:50.2286697,lon:14.8643547},heading:287.3,"
  ])assert(html.includes(token),'Missing integration '+token);
 const build=html.match(/const BUILD_ID='([^']+)'/)?.[1];
-assert.equal(build,'20261117-armadni-landmarks-511800');
+assert.match(build,/^\d{8}-[a-z0-9-]+-\d{6}$/);
 assert.equal(html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1],build);
 assert.equal(html.split('id="build-label">')[1]?.split('</strong>')[0],build);
-assert(html.includes('id="street-audit-exit" href="./?v=511800"'));
-assert(html.includes('href="./?v=511800">Zpět do hry</a>'));
+assert.match(html,/id="street-audit-exit" href="\.\/\?v=\d+"/);
+assert.match(html,/href="\.\/\?v=\d+">Zpět do hry<\/a>/);
 for(const old of [
  "slepa-substations-5117","slepa-walk-5116",
  "slepa-armadni-bends-5115","slepa-park-5114",

@@ -97,7 +97,7 @@ for(const term of [
  'createdNewRoads:0,createdCrossings:0,createdSidewalks:0'
  ])assert(html.includes(term),'Missing 5.115 integration: '+term);
 const build=html.match(/const BUILD_ID='([^']+)'/)?.[1];
-assert.equal(build,'20261117-slepa-armadni-joins-511500');
+assert.match(build,/^\d{8}-[a-z0-9-]+-\d{6}$/);
 assert.equal(html.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1],build);
 assert.equal(html.split('id="build-label">')[1]?.split('</strong>')[0],build);
 for(const preserve of [

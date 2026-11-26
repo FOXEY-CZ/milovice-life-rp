@@ -1,0 +1,36 @@
+name: Historical unit baseline comparison (preview only)
+on:
+  push:
+    branches: [prep/historical-unit-reconciliation]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: original-main
+            ref: db7c7152c3e56b7969bc78eb4832e06b23604d08
+          - label: reconciled-tests
+            ref: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run complete discovered suite
+        run: |
+          set -o pipefail
+          git rev-parse HEAD
+          node scripts/dev-check.mjs --all 2>&1 | tee "$RUNNER_TEMP/unit-result.txt"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-${{ matrix.label }}
+          path: ${{ runner.temp }}/unit-result.txt

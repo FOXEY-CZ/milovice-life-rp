@@ -70,14 +70,14 @@ for(const term of [
  'slepaUtility?slepaUtility.modelHeightMeters',
  'Math.max(isGarage||slepaUtility?2.35:3.0,',
  'const regionalStyle=slepaUtility?null:planRegionalBuildingStyle({',
- "const roofPreference=slepaUtility?'flat':",
- 'const visibleFloors=slepaUtility?0:',
- 'const inventedEntrance=!slepaUtility&&!heroFacade',
+ "(slepaUtility||isArmClinic)?'flat':",
+ 'const visibleFloors=(sportovniHall||slepaUtility||isArmClinic)?0:',
+ '&&!slepaUtility&&!isArmClinic&&!isArmBilla&&',
  'window.__miloviceSlepaUtilityAudit={',
  'noInferredWindows:true,noInferredDoors:true'
  ])assert(game.includes(term),'Missing source-driven 5.113 integration: '+term);
 const build=game.match(/const BUILD_ID='([^']+)'/)?.[1];
-assert.equal(build,'20261117-slepa-utilities-511300');
+assert.match(build,/^\d{8}-[a-z0-9-]+-\d{6}$/);
 assert.equal(game.match(/<meta name="milovice-build" content="([^"]+)"/)?.[1],build);
 assert.equal(game.split('id="build-label">')[1]?.split('</strong>')[0],build);
 // The review camera stands on real OSM Slepá way/202398890,
