@@ -1325,6 +1325,9 @@ try{
  await mobile.goto('http://127.0.0.1:8080/',{waitUntil:'domcontentloaded',timeout:30000});
  await mobile.waitForFunction(()=>window.__miloviceStarted===true,{timeout:45000});
  await mobile.waitForFunction(()=>!document.getElementById('rp-spawn').hidden,{timeout:45000});
+ const playerRegions=await mobile.locator('#rp-area-select option').allTextContents();
+ const fictionalRegions=['Old Town','Maple Heights','Westwood','Betweenwoods','Northlink','Cloudridge'];
+ if(!playerRegions.includes('Old Town')||playerRegions.some(name=>!fictionalRegions.includes(name)))throw Error('5.344 unexpected player region name '+JSON.stringify(playerRegions));
  const playerStartup=await mobile.evaluate(()=>({status:document.getElementById('status')?.textContent,retry:document.getElementById('osm3d')?.textContent,title:document.title}));
  if(!playerStartup.status?.includes('Ironfield')||playerStartup.retry!=='🗺️ Ironfield 3D'||!playerStartup.title.includes('CROSSVEX')||/Milovic/i.test(playerStartup.status+' '+playerStartup.retry))throw Error('5.344 fictional player startup copy: '+JSON.stringify(playerStartup));
  console.log('5.344 real mobile startup copy:',JSON.stringify(playerStartup));
@@ -1423,6 +1426,10 @@ try{
  await mobile.locator('.milovice-player-marker').waitFor({state:'visible',timeout:15000});
  if(await mobile.locator('#mapfollow-camera').isVisible()||await mobile.locator('.milovice-camera-marker').count())throw Error('5.343 developer camera exposed in player map');
  if(!await mobile.locator('#mapfollow').isVisible())throw Error('5.343 normal navigation unavailable');
+ const mobileGoals=await mobile.locator('#map-goal-5319 option').allTextContents();
+ for(const goal of ['🚉 Ironfield Station','🚒 Ironfield Fire Station','🛒 BrayMart','🛒 ValueNest','🛒 Vendoa'])if(!mobileGoals.includes(goal))throw Error('5.344 missing fictional mobile map goal '+goal);
+ if(mobileGoals.some(name=>/Milovic|Tesco|Penny|Billa|Juventa|Masaryk|Sluníčko|Modrá hvězda/i.test(name)))throw Error('5.344 original landmark in player map '+JSON.stringify(mobileGoals));
+ console.log('PASS 5.344 mobile fictional regions and destinations');
  await mobile.locator('#closemap').click();
  console.log('PASS 5.343 default mobile player UI and audit compatibility');
  if(mobileErrors.length)throw new Error('Mobile JavaScript errors: '+mobileErrors.slice(0,3).join(' | '));
