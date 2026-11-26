@@ -34,9 +34,33 @@ for(const {osm,dem,step} of pairs){
  assert.match(terrain.source,/DMR 4G/);assert.equal(terrain.license,'CC BY 4.0');assert.equal(terrain.step,step);assert.match(terrain.credit,/ČÚZK/);
  for(const p of [osm,dem])assert.ok(page.includes('href="./'+p+'"'),'Missing download link: '+p);
 }
-assert.match(read('data/rebuild2-street-inventory.json').attribution,/OpenStreetMap.*ODbL/i);
-assert.ok(page.includes('href="./data/rebuild2-street-inventory.json"'));
-for(const p of ["data/architecture-references.json","data/architecture/building-audit-queue.json","data/architecture/building-work-progress.json"])assert.equal(existsSync(join(root,p)),false,'Development data leaked: '+p);
+const projection=read('data/osm-street-groups.json');
+assert.deepEqual(Object.keys(projection).sort(),['schema','sourceRevision','attribution','declaredDataLicense','review','description','summary','groups'].sort());
+assert.equal(projection.schema,1);
+assert.match(projection.sourceRevision,/^[a-f0-9]{40}$/);
+assert.equal(projection.attribution,'© OpenStreetMap contributors');
+assert.equal(projection.declaredDataLicense,'https://opendatacommons.org/licenses/odbl/1-0/');
+assert.equal(projection.review,'pending; not a legal scope determination');
+const sources=new Map(ids.map((id,i)=>[id,read(pairs[i].osm).elements]));
+const sourceIds=new Map([...sources].map(([id,elements])=>[id,new Set(elements.map(e=>e.type+':'+e.id))]));
+const sourceNames=new Map([...sources].map(([id,elements])=>[id,new Set(elements.flatMap(e=>[e.tags?.['addr:street'],e.tags?.highway?e.tags.name:null].filter(Boolean)))]));
+const union=new Set([...sourceIds.values()].flatMap(s=>[...s])),seen=new Set();
+const categories=['buildings','roads','walkways','railway','landscape','publicObjects','utilities','other'];
+for(const g of projection.groups){
+ assert.deepEqual(Object.keys(g).sort(),['mapped','region','street']);
+ assert.ok(sourceIds.has(g.region),'Unknown group region');
+ assert.ok(g.street===null||sourceNames.get(g.region).has(g.street),'Unknown group label');
+ assert.deepEqual(Object.keys(g.mapped).sort(),[...categories].sort());
+ for(const key of Object.values(g.mapped).flat()){
+  assert.ok(sourceIds.get(g.region).has(key)&&!seen.has(key),'Missing or duplicate group ID: '+key);
+  seen.add(key);
+ }
+}
+assert.deepEqual(seen,union);
+assert.deepEqual(projection.summary,{rawRecords:[...sources.values()].reduce((n,e)=>n+e.length,0),uniqueMappedWays:union.size,groups:projection.groups.length});
+assert.ok(page.includes('href="./data/osm-street-groups.json"'));
+assert.ok(!page.includes('rebuild2-street-inventory.json'));
+for(const p of ["data/architecture-references.json","data/architecture/building-audit-queue.json","data/architecture/building-work-progress.json","data/rebuild2-street-inventory.json"])assert.equal(existsSync(join(root,p)),false,'Development data leaked: '+p);
 const verified=parseApprovedArchitectureManifest(read('data/architecture/verified-buildings.json'));
 assert.ok(verified.size>0,'No published architecture revisions');
-console.log('PASS six OSM snapshots, six DMR grids, region index, fictional district labels, street inventory, download links, three excluded files and '+verified.size+' published architecture records');
+console.log('PASS six OSM snapshots, six DMR grids, region index, fictional district labels, street inventory, download links, four excluded files and '+verified.size+' published architecture records');

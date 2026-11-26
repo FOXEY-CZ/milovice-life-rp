@@ -10,13 +10,13 @@ const roots=['index.html','credits.html'];
 // Every new tracked data JSON needs an explicit distribution classification.
 const playerData=new Set([
  'data/architecture/verified-buildings.json',
- 'data/milovice-osm.json','data/milovice-terrain.json','data/rebuild2-street-inventory.json',
+ 'data/milovice-osm.json','data/milovice-terrain.json','data/osm-street-groups.json',
  'data/regions/index.json',
  ...['bozidar','centerlink','mlada','vrutice','westlink'].flatMap(region=>[
   'data/regions/'+region+'.json','data/regions/terrain-'+region+'.json'
  ])
 ]);
-const developmentData=new Set(["data/architecture-references.json","data/architecture/building-audit-queue.json","data/architecture/building-work-progress.json"]);
+const developmentData=new Set(["data/architecture-references.json","data/architecture/building-audit-queue.json","data/architecture/building-work-progress.json","data/rebuild2-street-inventory.json"]);
 const localModule=/(?:\bfrom\s*|\bimport\s*(?:\(\s*)?)(['"])(\.{1,2}\/[^'"\s]+)\1/g;
 const htmlScript=/<script\b[^>]*\bsrc\s*=\s*(['"])(\.{1,2}\/[^'"\s]+|scripts\/[^'"\s]+)\1/gi;
 const safe=p=>typeof p==='string'&&p.length>0&&!p.includes('\\')&&!p.includes(':')&&!/[\x00-\x1f\x7f]/.test(p)&&p.split('/').every(x=>x&&x!=='.'&&x!=='..');
@@ -93,6 +93,8 @@ function selfTest(){
  ]);
  const read=p=>sources.get(p);
  assert.equal(playerData.size,15);
+ assert.equal(developmentData.size,4);
+ assert.throws(()=>plan([...sources.keys()],p=>p==='credits.html'?"<a href='data/rebuild2-street-inventory.json'>old</a>":read(p)),/Possible runtime dependency/);
  assert.deepEqual(plan([...sources.keys()],read),['credits.html','index.html','scripts/a.js','scripts/b.js',...playerData].sort());
  assert.throws(()=>plan([...sources.keys(),'data/private-audit.json'],read),/Unclassified data JSON: data\/private-audit\.json/);
  assert.throws(()=>plan([...sources.keys()].filter(p=>p!=='data/regions/index.json'),read),/Missing\/untracked dependency: data\/regions\/index\.json/);

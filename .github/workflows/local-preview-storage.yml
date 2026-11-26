@@ -7,6 +7,7 @@ on:
       - 'scripts/local-preview-port.mjs'
       - 'scripts/serve-local-preview.mjs'
       - 'scripts/stage-local-library-preview.mjs'
+      - 'scripts/stage-player-package.mjs'
       - 'scripts/local-library-byte-pins.mjs'
       - 'scripts/audit-library-notices.mjs'
       - '.github/workflows/local-preview-storage.yml'
