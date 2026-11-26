@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #148 desktop herní preview sloučen, 5/5 PR CI a předchozí main 5/5 včetně Pages PASS. Preview 45821350247: 662 požadavků ve 2 scénářích, 332 unikátních URL, 0 chyb/neznámých, 1 GPS cue, lokální český hlas nedostupný. Nový main `193debe569d2f712c79ce9524380fec5c668cf53` čeká. #147 kandidát: oprava 10/20 m popisků, přímé odkazy na 12 zdrojových JSON a odvozený soupis, metadata audit, první preview 45822995515 správně zablokovalo vyřazení verified-buildings.json (runtime modul architecture-manifest.js). Opravený kandidát zachovává všech pět schválených záznamů, vyřazuje jen tři další vývojové JSON; přidán test skutečným parserem manifestu. Main po #148 5/5 včetně Pages PASS. Nový preview čeká; dynamické závislosti a další regiony nutno ověřit. ODbL odpovídající data a podmínky služby ČÚZK nejsou definitivně právně vypořádány.
+**Priorita:** #149 mapové notices a zmenšený staging sloučeny, 7/7 PR CI a předchozí main 5/5 včetně Pages PASS. Preview 45823646420: 281 souborů, 12 mapových/výškových JSON, 5 schválených architektonických záznamů, 3 vývojové JSON vynechány pouze ve stagingu; desktop start/mapa/jízda PASS. Nový main `6141018d1c480e10a0ae05fe393ac2013205a60f` čeká. Regionální baseline 45824495393 (před #149): 6/6 oblastí, 1988 požadavků, 0 HTTP/JS/síťových chyb a neznámých URL. Kandidát opakuje šest regionů nad zmenšeným balíčkem, metadata kontrola v každé skupině, CI čeká. Dále mobilní staging, další assety a původ dat; ODbL odpovídající databáze a podmínky konkrétní služby ČÚZK nejsou definitivně vypořádány. Bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
