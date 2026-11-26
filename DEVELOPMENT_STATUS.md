@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #169 merged, procedurální alternativa 9 scénářů bez GLB/HTTP/page errors, 283 souborů; standardní runtime beze změny. Commons 45890484827 HTTP 200, všech 5 přesných fotografií ŠJů CC BY 4.0 a Taken on 30 May 2024, parser ISO selhal; přidána striktní normalizace data, repeat čeká. #147, Mapy a další práva otevřeny; bez release schválení.
+**Priorita:** #169 merged, procedurální alternativa 9 scénářů bez GLB/HTTP/page errors, 283 souborů; standardní runtime beze změny. Commons 45890484827 HTTP 200, všech 5 přesných fotografií ŠJů CC BY 4.0 a Taken on 30 May 2024, repeat 45891026528 PASS 5/5 metadata; uložena evidence JSON a 4 Commons building records doplněny, Mapy nezměněny; PR CI čeká. #147, Mapy a další práva otevřeny; bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

@@ -13,7 +13,7 @@
       "declaredPhotoLicense": "CC BY 4.0",
       "photoDate": "2024-05-30",
       "reviewStatus": "pending",
-      "externalEvidence": "Manifest declaration only in this review; exact Commons page unavailable through search tool"
+      "externalEvidence": "Exact Wikimedia Commons API metadata matched author, license URL and original date for all referenced photos; run 45891026528; see docs/commons-source-metadata-evidence.json. Rights review remains pending."
     },
     {
       "id": "202298939",
@@ -25,7 +25,7 @@
       "declaredPhotoLicense": "CC BY 4.0",
       "photoDate": "2024-05-30",
       "reviewStatus": "pending",
-      "externalEvidence": "Manifest declaration only in this review; exact Commons page unavailable through search tool"
+      "externalEvidence": "Exact Wikimedia Commons API metadata matched author, license URL and original date for all referenced photos; run 45891026528; see docs/commons-source-metadata-evidence.json. Rights review remains pending."
     },
     {
       "id": "202367194",
@@ -37,7 +37,7 @@
       "declaredPhotoLicense": "CC BY 4.0",
       "photoDate": "2024-05-30",
       "reviewStatus": "pending",
-      "externalEvidence": "Manifest declaration only in this review; exact Commons page unavailable through search tool"
+      "externalEvidence": "Exact Wikimedia Commons API metadata matched author, license URL and original date for all referenced photos; run 45891026528; see docs/commons-source-metadata-evidence.json. Rights review remains pending."
     },
     {
       "id": "202367254",
@@ -49,7 +49,7 @@
       "declaredPhotoLicense": "CC BY 4.0",
       "photoDate": "2024-05-30",
       "reviewStatus": "pending",
-      "externalEvidence": "Exact Commons file listing corroborates author, date and CC BY 4.0; derivative rights not established"
+      "externalEvidence": "Exact Wikimedia Commons API metadata matched author, license URL and original date for all referenced photos; run 45891026528; see docs/commons-source-metadata-evidence.json. Rights review remains pending."
     },
     {
       "id": "202385910",
