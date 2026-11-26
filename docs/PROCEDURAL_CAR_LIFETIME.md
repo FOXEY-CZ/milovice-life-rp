@@ -11,3 +11,5 @@ City repeat 45882048484 PASS. Prepared ownership now advanced onto test branch; 
 45883109236 compare PASS: actual repeated WebGL counts restored for 16 cycles; final geometries 0, cached texture 1, shared disposals 0. 5.350 opts in via URL; actual game removal sites wired. Existing default mode unchanged; no forced GLB off. Candidate full-world tests pending.
 
 Actual 5.350 b7bfe58 city job 140128631671 PASS: two repeated replacements and reset sequences with GLB off; ownership counts matched actual road-car population at each step. New live GLB attachment retirement regression and full unit sweep pending.
+
+PR #168 GLB-on test initially failed released counter 0 instead of 1 after new model assignment. Wait for fresh lifetime generation and exact release delta alongside GLB assignment; no assertion removed. Repeat pending.
