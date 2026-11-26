@@ -3,7 +3,7 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.348**; #160 sloučen. Příprava měření výkonu bez změny hry.
+- Herní verze main: **5.348**; #160, #162 a #163 sloučeny. Technické měření a kontrola GLB bez změny hry. Main `7523976`, 5/5 PASS včetně Pages 45866650331.
 - Main po #160: `7a087a173569b6b49df0f3721469ec2f71c3621f`; 9/9 PR PASS a 7/7 main PASS včetně Pages 45860346528.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #160 sloučen, 9/9 PR PASS; 7/7 main PASS včetně Pages. Čtyři modely prošly skutečným managerem, 24 snímků vizuálně zkontrolováno, desktop coupe/low-poly přepínání v celém světě PASS. Nezávislá příprava `prep/city-vehicle-performance-5348`: ABBA stacionární měření v Chromium SwiftShader, stejná identita auta, 1280×760, kontrola skutečného modelu, rozlišení, p50/p95/p99 a propadů. 45861651388 PASS: on 454,61 ms (36 intervalů), coupe 1412,43 ms (12 intervalů), 3,11× delší RAF interval; rozdílné NPC počty a malý vzorek. Opt-in režim ponechán. Přidán volitelný lokální headed Chrome a delší měřicí interval, evidence renderer probe; 45862465460 PASS, explicitní SwiftShader probe, on 475,96 ms / coupe 1387,44 ms (2,91×); lokální hardware režim neověřen. Nejde o GPU benchmark ani potvrzení 60 FPS. #157 uzavřen jako technicky vyřešený; #147 a #161 otevřeny; žádné release schválení. Dále získat lokální hardware evidence nebo pokračovat release auditem; nesnižovat grafiku naslepo. Nezávislá příprava #161: prep/local-car-provenance, 9ccef5a, fixture CI 45864735753 PASS, skutečné originály zatím nedostupné. #162 sloučen po 4/4 PR PASS a předchozím main 8/8 PASS včetně Pages; main 061b48b, nové CI ověřit živě. Příprava lokální kontroly GLB přenesena na nový main; nové CI čeká.
+**Priorita:** #160–#163 sloučeny; měření SwiftShader 45861651388 / 45862465460 (kupé 3,11× / 2,91× delší RAF interval; desktop opt-in ponechán, hardware neověřen). #157 uzavřen; #147 a #161 otevřeny. Offline GLB fixture test 45865581727 a #163 7/7 PASS, původní archivy dosud nezískány; nejde o release schválení. Příprava `prep/player-map-identity` f2da002: regionální preview 45866801983 3/3 skupiny, 6/6 oblastí, v každé 14 GPS cílů, 60 vykreslených popisků a HUD výběr/zrušení Ironfield Station PASS; 2007 požadavků bez chyb. Před merge ověř nové PR CI. Další krok: konkrétní kontrola fyzických nápisů a zbývající hráčské identity, nezaměňovat za anonymitu či právní schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
