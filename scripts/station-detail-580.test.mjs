@@ -33,7 +33,8 @@ const model=readFileSync(new URL('scripts/station-ticket-machines.js',repoDir),'
 const game=readFileSync(new URL('index.html',repoDir),'utf8');
 assert(model.includes("const c=document.createElement('canvas');c.width=320;c.height=768;"));
 assert(model.includes("g.font='bold 21px system-ui,Arial'"));
-assert(model.includes("JÍZDENKY/TICKETS"));
+assert(model.includes("g.fillText(TRANSIT_NAME+' Tickets',160,46,280)"));
+assert(!model.includes("JÍZDENKY/TICKETS"));
 assert(model.includes("g.roundRect(x,y,w,h,r)"));
 assert(model.includes("for(let i=0;i<28;i++)"));
 assert(model.includes("new THREE.MeshStandardMaterial({"));
@@ -55,7 +56,7 @@ assert(game.includes("unchangedFixtureAnchors:true"));
 assert(game.includes("put('stationWindowSill',f,f.bottom-.030,f.sillWidth,.065,.22"));
 assert(game.includes("if(rpAuditCameraWorld&&innerWidth<innerHeight)"));
 assert(game.includes("rpForecourtParkingOverview?64:rpForecourtEntryInspection?76:105;"));
-assert(game.includes("from './scripts/station-ticket-machines.js?v=5800'"));
+assert(game.includes("from './scripts/station-ticket-machines.js?v=534000'"));
 assert(game.includes("from './scripts/station-photo-facade.js?v=5790'"));
 assert(hasConsistentGameBuild(game));
 assert(game.includes("stationPhotoParking.create(elements,{sidewalkMaterial:osmSidewalkMat})"));
