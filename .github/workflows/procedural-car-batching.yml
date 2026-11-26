@@ -8,6 +8,9 @@ on:
       - 'scripts/procedural-car-batching.js'
       - 'scripts/review-procedural-car-batching.mjs'
       - 'scripts/city-procedural-batch-preview.mjs'
+      - 'scripts/procedural-car-ownership.js'
+      - 'scripts/procedural-car-ownership.test.mjs'
+      - 'scripts/review-procedural-car-lifetime.mjs'
       - '.github/workflows/procedural-car-batching.yml'
   workflow_dispatch:
 permissions:
@@ -34,6 +37,8 @@ jobs:
           trap 'kill $! 2>/dev/null || true' EXIT
           curl --retry 10 --retry-connrefused --retry-delay 1 -fsS http://127.0.0.1:8080/procedural-car-review.html >/dev/null
           node scripts/review-procedural-car-batching.mjs
+          node scripts/procedural-car-ownership.test.mjs
+          node scripts/review-procedural-car-lifetime.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:

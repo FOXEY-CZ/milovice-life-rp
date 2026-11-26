@@ -19,7 +19,7 @@ assert.throws(()=>lease.release(),/Detach/);
 assert.equal(shared.calls,0);selected.group.parent=null;
 // Later GLB attachment uses a different owner. Do not traverse or dispose it.
 const glbGeo=resource(),glbMat=resource();selected.group.nodes.push(mesh(glbGeo,glbMat));
-assert.equal(lease.release(),true);assert.equal(lease.release(),false);assert.equal(lease.released,true);
+assert.equal(lease.release(),true);assert.equal(lease.release(),false);assert.equal(lease.released,true);assert.throws(()=>manager.register(original,selected),/once/);
 for(const r of [shared,unused,merged,archGeometry,srcArch,cloneArch])assert.equal(r.calls,1);
 for(const r of [glbGeo,glbMat,otherGeo,material])assert.equal(r.calls,0);
 assert.equal(otherLease.release(),true);assert.equal(otherGeo.calls,1);assert.equal(material.calls,0);

@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #167 sloučen do a0cda37 po 5/5 PR a předchozí main 5/5 včetně Pages. 5.349 beze změny. #161: procedurální alternativa 45880821993 a 45880977031 PASS, 8 variant/16 pohledů, 53–57 → 21 draw calls, stejné triangly a 4 samostatná kola, nejvýš 1 výrazně odlišný pixel na pohled. Další přípravný test dočasné kopie hry s ABBA a GLB off; první city run 45881821685 FAIL na původním autě (diagnostika kol 2 Hz); opraveno čekání na všechna 4 kola + ukládání dílčích měření, repeat čeká. Produkční runtime ani výchozí režim zatím neměnit, řešit lifecycle. #147 a #161 otevřeny; bez release schválení.
+**Priorita:** Main a0cda37 5/5 PASS včetně Pages 45881718343. 5.349 beze změny. #161: 8 variant 53–57 → 21 draw calls, 16 pohledů PASS. City preview 45882048484 2/2 PASS: 39/39 vozidel, 4 kola ve všech 4 jízdách, nula GLB car requests/page errors; SwiftShader průměr RAF 350,34 → 345,82 ms (~1,3 %, ne hardware FPS). Připojena ownership lease, mock a skutečný opakovaný WebGL lifecycle test; čeká CI. Produkční integrace a reset/replacement testy ještě otevřeny. #147 a #161 zůstávají otevřeny.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
