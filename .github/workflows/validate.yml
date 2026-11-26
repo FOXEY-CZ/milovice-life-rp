@@ -349,3 +349,6 @@ jobs:
 
       - name: Verify fictional regional transit identity
         run: node scripts/fictional-transit.test.mjs
+
+      - name: Verify opt-in developer mode and audit compatibility
+        run: node scripts/developer-mode.test.mjs

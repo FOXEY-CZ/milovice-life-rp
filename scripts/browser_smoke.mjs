@@ -46,6 +46,7 @@ try{
    JSON.stringify(pageState)+'; JS errors: '+
    JSON.stringify(errors.slice(-15))+'; '+String(error));
  }
+ if(!await page.evaluate(()=>document.documentElement.classList.contains('rp-developer-mode')))throw Error('5.343 audit URL must retain developer mode');
  const gfx=await page.evaluate(()=>window.__miloviceGraphics2||null);
  if(!gfx?.active||gfx.albedoTiles!==8||gfx.contactShadow!==true||
     !gfx.surfaceMaterials||Object.values(gfx.surfaceMaterials).some(v=>v!==true))
@@ -1337,6 +1338,8 @@ try{
  console.log('5.15 mobile adaptive GPU budget:',JSON.stringify(budget));
  await mobile.locator('[data-spawn="walking"]').click();
  await mobile.locator('#rp-joystick').waitFor({state:'visible',timeout:12000});
+ if(await mobile.evaluate(()=>document.documentElement.classList.contains('rp-developer-mode')))throw Error('5.343 developer mode active by default');
+ for(const id of ['rp-camera-gps-toggle','osm-inspect-toggle','terrain-status'])if(await mobile.locator('#'+id).isVisible())throw Error('5.343 exposed developer control: '+id);
  if(await mobile.locator('#controls button[data-key="KeyW"]').isVisible())
   throw new Error('Touch D-pad should be hidden while virtual joystick is active');
  // Mobile layout can reflow after spawn while model downloads complete.
@@ -1413,6 +1416,12 @@ try{
   throw new Error('5.3.4 vehicle GLB nose must align with driving direction: '+JSON.stringify(vehicleOrientations));
  console.log('5.3.4 verified real GLB vehicle orientations:',JSON.stringify(vehicleOrientations));
  await mobile.screenshot({path:'browser-artifacts/milovice-analog-joystick.png'});
+ await mobile.locator('#maplaunch').click();
+ await mobile.locator('.milovice-player-marker').waitFor({state:'visible',timeout:15000});
+ if(await mobile.locator('#mapfollow-camera').isVisible()||await mobile.locator('.milovice-camera-marker').count())throw Error('5.343 developer camera exposed in player map');
+ if(!await mobile.locator('#mapfollow').isVisible())throw Error('5.343 normal navigation unavailable');
+ await mobile.locator('#closemap').click();
+ console.log('PASS 5.343 default mobile player UI and audit compatibility');
  if(mobileErrors.length)throw new Error('Mobile JavaScript errors: '+mobileErrors.slice(0,3).join(' | '));
  await mobileContext.close();
  console.log('Smoke OK: rendered 3D, terrain, walking, car, mission controls');
