@@ -1,0 +1,23 @@
+name: Exact Commons architecture metadata (evidence only)
+on:
+  push:
+    branches: [prep/commons-source-metadata]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scripts/review-commons-source-metadata.py --self-test
+      - run: python scripts/review-commons-source-metadata.py --output "$RUNNER_TEMP/commons-source-metadata.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: commons-source-metadata
+          path: ${{ runner.temp }}/commons-source-metadata.json
