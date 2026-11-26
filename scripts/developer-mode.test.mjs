@@ -29,3 +29,14 @@ assert(!html.includes("mapEl.textContent='Mapu se nepodařilo načíst. Zkontrol
 // Do not claim independently verified model licenses in the player menu.
 for(const text of ["Detailní sportovní model · načítá se podle nastavení","Detailní modely · stahují se postupně, záložní model zůstává"])assert(html.includes(text),text);
 for(const text of ["Ověřený CC0 sportovní model • načítá se podle nastavení","CC0 modely · stahují se postupně, záložní model zůstává"])assert(!html.includes(text),text);
+
+// Execute the actual spawn-option population block in both modes.
+const regionBlock=html.match(/const select=document\.getElementById\('rp-area-select'\);\n if\(select\)\{[\s\S]*?\n \}\n return cityAreaManifest;/);
+assert(regionBlock,'region selector block');
+for(const rpDeveloperMode of [false,true]){
+ const options=[];const select={replaceChildren:()=>options.splice(0),appendChild:o=>options.push(o)};
+ const cityAreaManifest=['old','mlada','vrutice','westlink','centerlink','bozidar'].map(id=>({id}));
+ vm.runInNewContext('(function(){'+regionBlock[0]+'})()', {document:{getElementById:()=>select,createElement:()=>({})},cityAreaManifest,regionDisplayName:id=>id,rpDeveloperMode});
+ assert.deepEqual(options.map(o=>o.value),[...cityAreaManifest.map(o=>o.id),...(rpDeveloperMode?['photo5','station']:[])]);
+}
+console.log('PASS player district menu excludes technical viewpoints; developer options preserved');

@@ -12983,12 +12983,14 @@ async function loadCityAreaManifest(){
   for(const area of cityAreaManifest){
    const opt=document.createElement('option');opt.value=area.id;opt.textContent=regionDisplayName(area.id);select.appendChild(opt);
   }
-  const photoStop=document.createElement('option');
-  photoStop.value='photo5';photoStop.textContent='📸 Den rozbřesku – technický pohled';
-  select.appendChild(photoStop);
-  const stationStop=document.createElement('option');
-  stationStop.value='station';stationStop.textContent='🚉 Nádraží – nové přednádraží (2024)';
-  select.appendChild(stationStop);
+  if(rpDeveloperMode){
+   const photoStop=document.createElement('option');
+   photoStop.value='photo5';photoStop.textContent='📸 Den rozbřesku – technický pohled';
+   select.appendChild(photoStop);
+   const stationStop=document.createElement('option');
+   stationStop.value='station';stationStop.textContent='🚉 Nádraží – nové přednádraží (2024)';
+   select.appendChild(stationStop);
+  }
  }
  return cityAreaManifest;
 }
