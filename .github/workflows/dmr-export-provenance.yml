@@ -1,0 +1,20 @@
+name: DMR export provenance fixtures
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/build_terrain.py'
+      - 'scripts/build_region_terrain.py'
+      - 'scripts/dmr_export_provenance.py'
+      - 'scripts/test_dmr_export_provenance.py'
+      - '.github/workflows/dmr-export-provenance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fixtures:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m unittest discover -s scripts -p test_dmr_export_provenance.py
+      - run: python3 -m py_compile scripts/build_terrain.py scripts/build_region_terrain.py

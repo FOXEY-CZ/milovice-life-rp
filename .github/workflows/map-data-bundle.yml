@@ -6,6 +6,9 @@ on:
     branches: [main]
     paths:
       - 'scripts/build-map-review-bundle.py'
+      - 'scripts/build_terrain.py'
+      - 'scripts/build_region_terrain.py'
+      - 'scripts/dmr_export_provenance.py'
       - '.github/workflows/map-data-bundle.yml'
   workflow_dispatch:
 permissions:
@@ -31,6 +34,18 @@ jobs:
           if python scripts/build-map-review-bundle.py bc783f5a848d0b75fd9749c19b7a565dccdba0af "$RUNNER_TEMP/map-review.zip"; then exit 1; fi
           cmp "$RUNNER_TEMP/map-review.zip" "$RUNNER_TEMP/map-repeat.zip"
           sha256sum "$RUNNER_TEMP/map-review.zip"
+          revision="$(git rev-parse HEAD)"
+          python scripts/build-map-review-bundle.py "$revision" "$RUNNER_TEMP/current-map-review.zip"
+          python scripts/build-map-review-bundle.py "$revision" "$RUNNER_TEMP/current-map-repeat.zip"
+          cmp "$RUNNER_TEMP/current-map-review.zip" "$RUNNER_TEMP/current-map-repeat.zip"
+          python - "$RUNNER_TEMP/current-map-review.zip" <<'PY'
+          import json, sys, zipfile
+          with zipfile.ZipFile(sys.argv[1]) as z:
+              manifest=json.loads(z.read("manifest.json"))
+              assert "scripts/dmr_export_provenance.py" in z.namelist()
+              assert len(manifest["files"]) == 19
+              assert any(r["path"] == "scripts/dmr_export_provenance.py" and r["kind"] == "source-method" for r in manifest["files"])
+          PY
       - uses: actions/upload-artifact@v4
         with:
           name: map-data-review-bundle

@@ -14,6 +14,7 @@ import requests
 import numpy as np
 import rasterio
 from pyproj import Transformer
+from dmr_export_provenance import capture_export, evidence_directory, write_evidence
 
 ROOT=pathlib.Path(__file__).resolve().parent.parent
 REGIONS=json.loads((ROOT/"data/regions/index.json").read_text(encoding="utf8"))["regions"]
@@ -45,12 +46,12 @@ def get_raster(points):
             if "error" in info or not info.get("href"):
                 raise ValueError("DMR4G export error: "+str(info)[:500])
             tif=requests.get(info["href"],timeout=180);tif.raise_for_status()
-            return tif.content
+            return tif.content, capture_export(params, info, res, tif)
         except Exception as exc:
             errors.append(str(exc));time.sleep(3*(k+1))
     raise RuntimeError("DMR download failed: "+"; ".join(errors))
 
-def export_region(region):
+def export_region(region, evidence):
     west,south,east,north=region["bbox"]
     xmin=(west-ORIGIN_LON)*111320*COSLAT
     xmax=(east-ORIGIN_LON)*111320*COSLAT
@@ -61,7 +62,7 @@ def export_region(region):
     nz=math.ceil((zmax-zmin)/step)+1
     points=[PROJECT.transform(*geo(xmin+ix*step,zmin+iz*step))
             for iz in range(nz) for ix in range(nx)]
-    blob=get_raster(points)
+    blob,record=get_raster(points)
     with rasterio.MemoryFile(blob) as mem:
         with mem.open() as raster:
             if raster.count!=1:
@@ -81,12 +82,16 @@ def export_region(region):
        "step":step,"nx":nx,"nz":nz,"base":round(center,3),"values":rounded
     }
     target=ROOT/"data/regions"/region["terrain"]
-    target.write_text(json.dumps(output,separators=(",",":"),ensure_ascii=False),encoding="utf8")
+    output_bytes=json.dumps(output,separators=(",",":"),ensure_ascii=False).encode("utf8")
+    saved=write_evidence(evidence,region["id"],record,blob,output_bytes)
+    target.write_bytes(output_bytes)
+    print("Evidence:",saved,flush=True)
     print(region["id"],nx,nz,"min/max",round(float(values[valid].min()),1),round(float(values[valid].max()),1),
           "file",target.stat().st_size,flush=True)
 
 if __name__=="__main__":
+    evidence=evidence_directory(ROOT)
     only=set(sys.argv[1:])
     for region in REGIONS:
         if region["id"]=="old" or (only and region["id"] not in only):continue
-        export_region(region)
+        export_region(region,evidence)

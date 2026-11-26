@@ -32,7 +32,12 @@ def collect(commit):
     if git("rev-parse", commit + "^{commit}").decode().strip() != commit:
         raise ValueError("Commit mismatch")
     files, records = {}, []
-    for path in PATHS:
+    methods = list(METHODS)
+    helper = 'scripts/dmr_export_provenance.py'
+    # The helper is required only by newer committed exporters.
+    if any(b'from dmr_export_provenance import' in git('show', commit + ':' + p) for p in METHODS):
+        methods.append(helper)
+    for path in sorted(OSM + DEM + methods + [INVENTORY, INDEX]):
         raw = git("show", commit + ":" + path)
         files[path] = raw
         row = {"path": path, "bytes": len(raw), "sha256": digest(raw)}
@@ -57,7 +62,7 @@ def collect(commit):
             row.update(kind="derived-street-inventory", declared_license=ODBL,
                        attribution=obj["attribution"], review="mixed metadata scope pending")
         else:
-            row.update(kind="source-method" if path in METHODS else "region-index",
+            row.update(kind="source-method" if path in methods else "region-index",
                        review="project-file terms pending; not assigned data license")
         records.append(row)
     manifest = {"schema": 1, "commit": commit, "review": "pending",
