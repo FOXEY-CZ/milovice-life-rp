@@ -29,7 +29,7 @@ const photoBlockStart=html.indexOf("if(normalized==='billa'){\n  g.clearRect");
 const photoBlockEnd=html.indexOf("}else{\n  g.fillStyle=bg;",photoBlockStart);
 assert(photoBlockStart>=0&&photoBlockEnd>photoBlockStart);
 const drawing=html.slice(photoBlockStart,photoBlockEnd);
-assert(drawing.includes("g.fillStyle='#edc625'"));
+assert(drawing.includes("g.fillStyle=BRAND_PALETTES.billa.foreground"));
 assert(!drawing.includes('fillRect('),'BILLA sign must have no opaque panel');
 assert(html.includes("if(normalized!=='billa'){\n  archPart(normalized==='penny'"));
 assert(html.includes("if(isPhotoBillaSign)window.__miloviceBillaSignAudit={"));
@@ -46,9 +46,9 @@ for(const token of [
  "const isArmClinic=armLandmark?.kind==='polyclinic'",
  "window.__miloviceArmLandmarksRuntime=()=>{",
  "const isPhotoBillaSign=normalized==='billa'",
- "roofLetters:upper,sourceRoofLetters:'BILLA',letterColour:'yellow'",
+ "roofLetters:upper,sourceRoofLetters:'BILLA',letterColour:BRAND_PALETTES.billa.foreground,sourceLetterColour:'yellow'",
  "const upper=businessSignText(tags).toLocaleUpperCase('cs');"
 ])assert(html.includes(token),'Missing protected integration: '+token);
 assert(/(?:const|let) floors=modelCard\?\.floors\?\?\(armLandmark\?\.floors/.test(html),
  'Original clinic floor-level fallback must still exist');
-console.log('PASS 5.119: BILLA roof sign transparent yellow, one mapped canopy, preserved clinic, OSM and photo cameras');
+console.log('PASS 5.119: Vendoa roof sign transparent with fictional palette, one mapped canopy, preserved clinic, OSM and photo cameras');

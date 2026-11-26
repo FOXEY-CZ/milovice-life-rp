@@ -1,3 +1,7 @@
+## CROSSVEX 5.338 — vlastní barvy obchodů
+
+BrayMart, ValueNest a Vendoa mají vlastní barevné palety nápisů a vybraných fasádních prvků. Vendoa zachovává průhlednou ceduli a původní konstrukci; půdorysy, vchody, LOD a kolize beze změny. CI a vizuální ověření čekají.
+
 ## CROSSVEX 5.337 — fiktivní 3D nápisy
 
 Anglické názvy 62 ulic, 14 orientačních bodů a 6 oblastí. Texty generických obchodních fasád, nádraží, školy, hotelu, cyklohubu a autobusu používají fiktivní slovník. Zdrojové klíče a geometrie zůstávají. Barvy značek a další specializované textury čekají na audit. CI čeká.
