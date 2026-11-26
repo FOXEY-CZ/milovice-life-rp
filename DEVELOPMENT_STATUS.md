@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #144 vizuální GLB audit sloučen (9/9 hash, 36/36 záběrů, bez zjevného čitelného loga v tomto měřítku; detailní a právní kontrola otevřená, upstream aut HTTP 403). Síťový preview 45813742579 PASS: 331 unikátních URL, 320 lokálních a 11 známých externích, 0 neznámých, 0 chybějících povinných. Čtyři GLB v tomto scénáři nepozorovány. Kandidát síťového auditu čeká na PR CI. Dále licenční texty knihoven a rozšíření scénářů; bez release schválení.
+**Priorita:** #145 síťový audit sloučen, 5/5 PR CI PASS, předchozí main 5/5 včetně Pages PASS; nový main `86b0ac88ae93991a671d74737d710c76ec18e391` čeká na ověření. Kandidát úplných licenčních textů Three.js a Leaflet v Credits; porovnání s přesně připnutými npm verzemi 0.160.1 / 1.9.4 v izolovaném preview čeká. Three.js r160 zdroj má package verzi 0.160.0, proto je shoda s 0.160.1 výslovně neověřená. Dále rozšíření síťových scénářů, audit dat a assetů. Bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
