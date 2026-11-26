@@ -1325,6 +1325,9 @@ try{
  await mobile.goto('http://127.0.0.1:8080/',{waitUntil:'domcontentloaded',timeout:30000});
  await mobile.waitForFunction(()=>window.__miloviceStarted===true,{timeout:45000});
  await mobile.waitForFunction(()=>!document.getElementById('rp-spawn').hidden,{timeout:45000});
+ const playerStartup=await mobile.evaluate(()=>({status:document.getElementById('status')?.textContent,retry:document.getElementById('osm3d')?.textContent,title:document.title}));
+ if(!playerStartup.status?.includes('Ironfield')||playerStartup.retry!=='🗺️ Ironfield 3D'||!playerStartup.title.includes('CROSSVEX')||/Milovic/i.test(playerStartup.status+' '+playerStartup.retry))throw Error('5.344 fictional player startup copy: '+JSON.stringify(playerStartup));
+ console.log('5.344 real mobile startup copy:',JSON.stringify(playerStartup));
  const budget=await mobile.evaluate(()=>window.__milovicePerformance);
   const mobileGPUProfile=await mobile.evaluate(()=>window.__miloviceGPUProfile);
   if(!mobileGPUProfile||!mobileGPUProfile.diffuseMobile||

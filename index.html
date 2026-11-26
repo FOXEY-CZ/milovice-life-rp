@@ -13043,7 +13043,7 @@ async function rpLoadCityArea(id){
   while(loadingCityAreas.has(id))await new Promise(resolve=>setTimeout(resolve,200));
   return loadedCityAreas.has(id);
  }
- loadingCityAreas.add(id);osmMessage('🏙️ Načítám '+regionDisplayName(area.id)+' ze skutečné mapy…');
+ loadingCityAreas.add(id);osmMessage('🏙️ Načítám '+regionDisplayName(area.id)+'…');
  try{
   const warm=cityAreaAhead?.id===id?cityAreaAhead:null;
   const warmReady=warm?.ready===true;
@@ -13066,7 +13066,7 @@ async function rpLoadCityArea(id){
   return true;
  }catch(e){
   console.error('Regional Milovice data error:',id,e);
-  osmMessage('Oblast '+regionDisplayName(area.id)+': '+e.message);
+  osmMessage('Oblast '+regionDisplayName(area.id)+': '+(rpDeveloperMode?e.message:'Načtení se nezdařilo.'));
   notify('Oblast '+regionDisplayName(area.id)+' zatím nejde načíst. Původní mapa zůstává funkční.');
   return false;
  }finally{
@@ -13892,7 +13892,7 @@ osmBtn.onclick=async()=>{
  rpAppendOSMElements(elements);
  if(!osmRoads.length)throw Error('Žádné silnice v odpovědi');finalizeRoadStrips();finalizeCityWalls();finalizeFoundations();finalizeFacades();finalizeArchitecture();heroBuildings.flush(osmLayer);osmStreetLabels();chunkMilovice();improveMiloviceVisuals();publishLegacyRealityAudit();rpPopulate();rpInitRailTraffic();
  osmReady=true;window.__miloviceAreasLoaded=[...loadedCityAreas];osmNotice.style.display='none';osmSetActive(true);maybeStreamCityAreas();document.getElementById('status').textContent='Prozkoumávej Ironfield. Na mapě najdeš pojmenované ulice a budovy.';
- }catch(e){console.error('Milovice OSM construction failed:',e?.stack||String(e));osmLayer.clear();heroBuildings.reset();for(const batch of facadeBatches)batch.clear();osmReady=false;osmBtn.textContent='🔄 Zkusit načíst Ironfield';notify('Mapa se nenačetla. Zkus znovu tlačítko vpravo.');osmNotice.style.display='block';osmNotice.textContent='3D mapa se nenačetla: '+e.message+'. Zkus znovu načíst mapu.';loadingScreen.textContent='⚠️ Mapu Ironfieldu se nepodařilo načíst. Klepni na Zkusit načíst Ironfield.'}
+ }catch(e){console.error('Milovice OSM construction failed:',e?.stack||String(e));osmLayer.clear();heroBuildings.reset();for(const batch of facadeBatches)batch.clear();osmReady=false;osmBtn.textContent='🔄 Zkusit načíst Ironfield';notify('Mapa se nenačetla. Zkus znovu tlačítko vpravo.');osmNotice.style.display='block';osmNotice.textContent='3D mapa se nenačetla.'+(rpDeveloperMode?' '+e.message:'')+' Zkus znovu načíst mapu.';loadingScreen.textContent='⚠️ Mapu Ironfieldu se nepodařilo načíst. Klepni na Zkusit načíst Ironfield.'}
  finally{osmLoading=false}
 };
 
