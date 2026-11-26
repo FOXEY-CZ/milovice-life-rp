@@ -1,0 +1,208 @@
+{
+  "scope": "exact public Commons metadata only, no photos downloaded; no derivative or distribution rights approval",
+  "requestedAt": "2026-11-26T20:26:25.459951+00:00",
+  "api": "https://commons.wikimedia.org/w/api.php",
+  "requestedTitles": [
+    "File:Milovice, Školská 1.jpg",
+    "File:Milovice, Školská a 5. května (01).jpg",
+    "File:Milovice, Školská a 5. května.jpg",
+    "File:Milovice, Mírová 11, hotel Modrá hvězda.jpg",
+    "File:Milovice, Mírová 36.jpg"
+  ],
+  "records": [
+    {
+      "requestedTitle": "File:Milovice, Školská 1.jpg",
+      "returnedTitle": "File:Milovice, Školská 1.jpg",
+      "pageid": 157012920,
+      "lastrevid": 1047142889,
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_1.jpg",
+      "sha1": "3ec53df7afed9fedefbddde84ba13ffdfd5439fc",
+      "mime": "image/jpeg",
+      "uploadTimestamp": "2024-12-22T19:39:15Z",
+      "artistRaw": "<a href=\"//commons.wikimedia.org/wiki/User:%C5%A0J%C5%AF\" title=\"User:ŠJů\">ŠJů</a>",
+      "artist": "ŠJů",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "dateTimeOriginal": "Taken on 30 May 2024",
+      "normalizedPhotoDate": "2024-05-30",
+      "attribution": "ŠJů, Wikimedia Commons",
+      "credit": "<span class=\"int-own-work\">Self-photographed</span>",
+      "restrictions": "",
+      "sources": [
+        {
+          "id": "118487980",
+          "url": "https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_1.jpg",
+          "author": "ŠJů",
+          "license": "CC BY 4.0",
+          "date": "2024-05-30"
+        }
+      ],
+      "checks": {
+        "118487980": {
+          "author": true,
+          "license": true,
+          "photoDate": true
+        }
+      },
+      "metadataStatus": "matched",
+      "rightsStatus": "pending"
+    },
+    {
+      "requestedTitle": "File:Milovice, Školská a 5. května (01).jpg",
+      "returnedTitle": "File:Milovice, Školská a 5. května (01).jpg",
+      "pageid": 157012778,
+      "lastrevid": 1194046080,
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_a_5._kv%C4%9Btna_(01).jpg",
+      "sha1": "373dcdb5845f730007cc6a4ebb6c06c29e7893c9",
+      "mime": "image/jpeg",
+      "uploadTimestamp": "2024-12-22T19:34:02Z",
+      "artistRaw": "<a href=\"//commons.wikimedia.org/wiki/User:%C5%A0J%C5%AF\" title=\"User:ŠJů\">ŠJů</a>",
+      "artist": "ŠJů",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "dateTimeOriginal": "Taken on 30 May 2024",
+      "normalizedPhotoDate": "2024-05-30",
+      "attribution": "ŠJů, Wikimedia Commons",
+      "credit": "<span class=\"int-own-work\">Self-photographed</span>",
+      "restrictions": "",
+      "sources": [
+        {
+          "id": "202298939",
+          "url": "https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_a_5._kv%C4%9Btna_(01).jpg",
+          "author": "ŠJů",
+          "license": "CC BY 4.0",
+          "date": "2024-05-30"
+        }
+      ],
+      "checks": {
+        "202298939": {
+          "author": true,
+          "license": true,
+          "photoDate": true
+        }
+      },
+      "metadataStatus": "matched",
+      "rightsStatus": "pending"
+    },
+    {
+      "requestedTitle": "File:Milovice, Školská a 5. května.jpg",
+      "returnedTitle": "File:Milovice, Školská a 5. května.jpg",
+      "pageid": 156985095,
+      "lastrevid": 1047142895,
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_a_5._kv%C4%9Btna.jpg",
+      "sha1": "7f1af60020f6d4f3959989c7e9ea20d51648e8bd",
+      "mime": "image/jpeg",
+      "uploadTimestamp": "2024-12-21T22:26:47Z",
+      "artistRaw": "<a href=\"//commons.wikimedia.org/wiki/User:%C5%A0J%C5%AF\" title=\"User:ŠJů\">ŠJů</a>",
+      "artist": "ŠJů",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "dateTimeOriginal": "Taken on 30 May 2024",
+      "normalizedPhotoDate": "2024-05-30",
+      "attribution": "ŠJů, Wikimedia Commons",
+      "credit": "<span class=\"int-own-work\">Self-photographed</span>",
+      "restrictions": "",
+      "sources": [
+        {
+          "id": "202298939",
+          "url": "https://commons.wikimedia.org/wiki/File:Milovice,_%C5%A0kolsk%C3%A1_a_5._kv%C4%9Btna.jpg",
+          "author": "ŠJů",
+          "license": "CC BY 4.0",
+          "date": "2024-05-30"
+        }
+      ],
+      "checks": {
+        "202298939": {
+          "author": true,
+          "license": true,
+          "photoDate": true
+        }
+      },
+      "metadataStatus": "matched",
+      "rightsStatus": "pending"
+    },
+    {
+      "requestedTitle": "File:Milovice, Mírová 11, hotel Modrá hvězda.jpg",
+      "returnedTitle": "File:Milovice, Mírová 11, hotel Modrá hvězda.jpg",
+      "pageid": 157015791,
+      "lastrevid": 1047142650,
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_11,_hotel_Modr%C3%A1_hv%C4%9Bzda.jpg",
+      "sha1": "61bc8c9847dafb214f905632646945af8000508d",
+      "mime": "image/jpeg",
+      "uploadTimestamp": "2024-12-22T21:28:31Z",
+      "artistRaw": "<a href=\"//commons.wikimedia.org/wiki/User:%C5%A0J%C5%AF\" title=\"User:ŠJů\">ŠJů</a>",
+      "artist": "ŠJů",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "dateTimeOriginal": "Taken on 30 May 2024",
+      "normalizedPhotoDate": "2024-05-30",
+      "attribution": "ŠJů, Wikimedia Commons",
+      "credit": "<span class=\"int-own-work\">Self-photographed</span>",
+      "restrictions": "",
+      "sources": [
+        {
+          "id": "202367194",
+          "url": "https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_11,_hotel_Modr%C3%A1_hv%C4%9Bzda.jpg",
+          "author": "ŠJů",
+          "license": "CC BY 4.0",
+          "date": "2024-05-30"
+        }
+      ],
+      "checks": {
+        "202367194": {
+          "author": true,
+          "license": true,
+          "photoDate": true
+        }
+      },
+      "metadataStatus": "matched",
+      "rightsStatus": "pending"
+    },
+    {
+      "requestedTitle": "File:Milovice, Mírová 36.jpg",
+      "returnedTitle": "File:Milovice, Mírová 36.jpg",
+      "pageid": 157015547,
+      "lastrevid": 1305018599,
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_36.jpg",
+      "sha1": "c726faeb051153dc61fdfd294897ca8cd6e6579b",
+      "mime": "image/jpeg",
+      "uploadTimestamp": "2024-12-22T21:23:05Z",
+      "artistRaw": "<a href=\"//commons.wikimedia.org/wiki/User:%C5%A0J%C5%AF\" title=\"User:ŠJů\">ŠJů</a>",
+      "artist": "ŠJů",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "dateTimeOriginal": "Taken on 30 May 2024",
+      "normalizedPhotoDate": "2024-05-30",
+      "attribution": "ŠJů, Wikimedia Commons",
+      "credit": "<span class=\"int-own-work\">Self-photographed</span>",
+      "restrictions": "",
+      "sources": [
+        {
+          "id": "202367254",
+          "url": "https://commons.wikimedia.org/wiki/File:Milovice,_M%C3%ADrov%C3%A1_36.jpg",
+          "author": "ŠJů",
+          "license": "CC BY 4.0",
+          "date": "2024-05-30"
+        }
+      ],
+      "checks": {
+        "202367254": {
+          "author": true,
+          "license": true,
+          "photoDate": true
+        }
+      },
+      "metadataStatus": "matched",
+      "rightsStatus": "pending"
+    }
+  ],
+  "rightsStatus": "pending",
+  "httpStatus": 200,
+  "result": "matched",
+  "evidence": {
+    "commit": "5a65c59b075b5fb981ab33aac435630ebcec1aaf",
+    "runId": 45891026528,
+    "jobId": 140153437114,
+    "artifactId": 15150639919
+  }
+}

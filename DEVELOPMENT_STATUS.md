@@ -3,7 +3,7 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.350**, `69598567`, #168 10/10 PR PASS, main 7/7 PASS včetně Pages 45888221594.
+- Herní verze main: **5.350**, #169 sloučen bf95012 (staging-only), PR 10/10 PASS; předchozí 69598567 7/7 PASS včetně Pages 45888221594. Nové main CI čeká.
 - Main po #160: `7a087a173569b6b49df0f3721469ec2f71c3621f`; 9/9 PR PASS a 8/8 main PASS včetně Pages 45860346528.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** 5.350 nasazena, GLB swap/reset/fallback PASS (39/0/39→40/1/39→40/2/38→41/2/39), bez page errors. #161: alternativa staging --stage-procedural-preview bez aktivních GLB loaderů vozidel/postav, zachovává credits, nezasahuje Pages; desktop 45889659702 PASS (283 souborů, 328 requests, 0 GLB/HTTP/page errors, 39 aut), artifact 15150942293. Rozšíření 6 regionů + 2 mobile orientací se stejnou kontrolou GLB a ownership; CI čeká. #147 data a architecture rights otevřeny; bez release schválení.
+**Priorita:** #169 merged, procedurální alternativa 9 scénářů bez GLB/HTTP/page errors, 283 souborů; standardní runtime beze změny. Commons 45890484827 HTTP 200, všech 5 přesných fotografií ŠJů CC BY 4.0 a Taken on 30 May 2024, repeat 45891026528 PASS 5/5 metadata; uložena evidence JSON a 4 Commons building records doplněny, Mapy nezměněny; PR CI čeká. #147, Mapy a další práva otevřeny; bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

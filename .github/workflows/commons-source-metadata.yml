@@ -1,0 +1,42 @@
+name: Exact Commons architecture metadata (evidence only)
+on:
+  push:
+    branches: [prep/commons-source-metadata]
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docs/architecture-source-inventory.json'
+      - 'docs/commons-source-metadata-evidence.json'
+      - 'scripts/review-commons-source-metadata.py'
+      - 'scripts/commons-source-metadata.test.mjs'
+      - '.github/workflows/commons-source-metadata.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  metadata:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scripts/review-commons-source-metadata.py --self-test
+      - run: python scripts/review-commons-source-metadata.py --output "$RUNNER_TEMP/commons-source-metadata.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: commons-source-metadata
+          path: ${{ runner.temp }}/commons-source-metadata.json
+
+  retained-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/commons-source-metadata.test.mjs
