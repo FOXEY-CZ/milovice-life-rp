@@ -3,8 +3,8 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.344** (fiktivní hráčské popisky + evidence GLB); kandidát W8 optimalizace CI.
-- Main po #142: `ea0541ff3d9b36c597a889fc94922dc46a6451ea`; #142 5/5 PR CI PASS, předchozí main 7/7 včetně Pages PASS. Nový main CI/Pages ověř živě.
+- Herní verze main: **5.344**; vizuální GLB evidence sloučena; kandidát síťový audit.
+- Main po #144: `f0a4ba99b4f40998ac6d32841df698bc75720bb7`; #144 6/6 CI PASS, předchozí main 5/5 včetně Pages PASS. Nový main CI a Pages ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** 5.344 sloučena po opravách mobilního testu. Audit GLB: 9/9 stažených modelů a jejich SHA-256 PASS (45742322194, 45742460495, 45743092851). Deklarace CC0 doloženy v `docs/RELEASE_LICENSE_INVENTORY.md`; porovnání tří originálů skončilo HTTP 403 (45809167297). Odděleno do ručního přísného licenčního jobu; automatický audit 9 GLB zůstává přísný. Žádný PASS pro nedostupné originály. #142 5/5 PR CI PASS a sloučeno; vizuální audit a důkaz původu zůstávají otevřené. W8: tři WebGL workflow vynechají pouze samostatný GLB audit, hlavní validace hlídá přesné výjimky a statickou izolaci od herního kódu. Kandidát čeká na CI. Bez automatického vydání.
+**Priorita:** #144 vizuální GLB audit sloučen (9/9 hash, 36/36 záběrů, bez zjevného čitelného loga v tomto měřítku; detailní a právní kontrola otevřená, upstream aut HTTP 403). Síťový preview 45813742579 PASS: 331 unikátních URL, 320 lokálních a 11 známých externích, 0 neznámých, 0 chybějících povinných. Čtyři GLB v tomto scénáři nepozorovány. Kandidát síťového auditu čeká na PR CI. Dále licenční texty knihoven a rozšíření scénářů; bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.
