@@ -1,10 +1,12 @@
 name: Staged player package (preview only)
 on:
   push:
-    branches: [prep/release-license-inventory, prep/release-network-evidence, prep/release-library-notices, prep/release-gameplay-preview]
+    branches: [prep/release-license-inventory, prep/release-network-evidence, prep/release-library-notices, prep/release-gameplay-preview, prep/release-data-notices]
     paths:
       - '.github/workflows/player-package-preview.yml'
       - 'scripts/stage-player-package.mjs'
+      - 'scripts/audit-release-map-data.mjs'
+      - 'data/**/*.json'
       - 'scripts/release-package-check.mjs'
       - 'scripts/audit-library-notices.mjs'
       - 'credits.html'
@@ -19,6 +21,8 @@ on:
       - 'index.html'
       - 'credits.html'
       - 'scripts/stage-player-package.mjs'
+      - 'scripts/audit-release-map-data.mjs'
+      - 'data/**/*.json'
       - 'scripts/release-package-check.mjs'
       - 'scripts/audit-library-notices.mjs'
       - 'scripts/audit-release-network.mjs'
@@ -49,6 +53,7 @@ jobs:
           node scripts/gps-voice-5331.test.mjs
           stage="$RUNNER_TEMP/crossvex-player"
           node scripts/stage-player-package.mjs --stage "$stage"
+          node scripts/audit-release-map-data.mjs "$stage"
           node scripts/release-package-check.mjs --inventory "$stage" > "$RUNNER_TEMP/crossvex-inventory.json"
           for file in editor.html survey.html photo-pilot.html rebuild.html AGENTS.md DEVELOPMENT_STATUS.md README.md; do
             test ! -e "$stage/$file"

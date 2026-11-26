@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #146 úplné licence knihoven sloučeny, 5/5 PR CI PASS; předchozí main 6/6 včetně Pages PASS. Shoda celých textů s npm three@0.160.1 a leaflet@1.9.4 potvrzena v 45819759597 a PR preview. Nový main `471f8067bc9ab68a4385a337ece97780ea37f6e8` čeká. Kandidát rozšířeného desktop preview: jízda, ovladače zvuku, GPS cíl a síťové odpovědi/přesměrování; testy a CI čekají. Přesný URL audit zachován. Dále vyhodnotit skutečný trace a další regiony/mobile, audit dat a assetů. Bez release schválení.
+**Priorita:** #148 desktop herní preview sloučen, 5/5 PR CI a předchozí main 5/5 včetně Pages PASS. Preview 45821350247: 662 požadavků ve 2 scénářích, 332 unikátních URL, 0 chyb/neznámých, 1 GPS cue, lokální český hlas nedostupný. Nový main `193debe569d2f712c79ce9524380fec5c668cf53` čeká. #147 kandidát: oprava 10/20 m popisků, přímé odkazy na 12 zdrojových JSON a odvozený soupis, metadata audit, první preview 45822995515 správně zablokovalo vyřazení verified-buildings.json (runtime modul architecture-manifest.js). Opravený kandidát zachovává všech pět schválených záznamů, vyřazuje jen tři další vývojové JSON; přidán test skutečným parserem manifestu. Main po #148 5/5 včetně Pages PASS. Nový preview čeká; dynamické závislosti a další regiony nutno ověřit. ODbL odpovídající data a podmínky služby ČÚZK nejsou definitivně právně vypořádány.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

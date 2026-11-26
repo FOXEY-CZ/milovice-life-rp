@@ -6,6 +6,7 @@ import {execFileSync} from 'node:child_process';
 import {tmpdir} from 'node:os';
 import assert from 'node:assert/strict';
 const roots=['index.html','credits.html'];
+const developmentData=new Set(["data/architecture-references.json","data/architecture/building-audit-queue.json","data/architecture/building-work-progress.json"]);
 const localModule=/(?:\bfrom\s*|\bimport\s*(?:\(\s*)?)(['"])(\.{1,2}\/[^'"\s]+)\1/g;
 const htmlScript=/<script\b[^>]*\bsrc\s*=\s*(['"])(\.{1,2}\/[^'"\s]+|scripts\/[^'"\s]+)\1/gi;
 const safe=p=>typeof p==='string'&&p.length>0&&!p.includes('\\')&&!p.includes(':')&&!/[\x00-\x1f\x7f]/.test(p)&&p.split('/').every(x=>x&&x!=='.'&&x!=='..');
@@ -29,8 +30,9 @@ function plan(tracked,read){
   if(/\.(?:html|js)$/.test(p))for(const dep of dependencies(p,read(p)))add(dep);
  };
  for(const p of roots)add(p);
- // Preserve all tracked data JSON until a runtime trace proves an item unnecessary.
- for(const p of tracked.filter(p=>/^data\/.+\.json$/.test(p)))add(p);
+ // Explicit candidate exclusions only; stop if any selected runtime source mentions one.
+ for(const p of selected){if(!/\.(?:html|js)$/.test(p))continue;const source=read(p);for(const omitted of developmentData)if(source.includes(posix.basename(omitted)))throw Error('Possible runtime dependency on excluded data: '+p+' -> '+omitted);}
+ for(const p of tracked.filter(p=>/^data\/.+\.json$/.test(p)&&!developmentData.has(p)))add(p);
  return [...selected].sort();
 }
 function inside(root,p){const rel=relative(root,p);return rel===''||(!isAbsolute(rel)&&rel!=='..'&&!rel.startsWith('..'+sep));}
@@ -57,11 +59,12 @@ function selfTest(){
   ['credits.html','credits'],
   ['scripts/a.js',"export {b} from './b.js';"],
   ['scripts/b.js',"import './a.js';"],
-  ['data/regions/index.json','{}'],['data/map.json','{}'],
+  ['data/regions/index.json','{}'],['data/map.json','{}'],['data/architecture-references.json','{}'],['data/architecture/verified-buildings.json','{}'],
   ['editor.html','dev'],['scripts/unused.js','unused'],['scripts/a.test.mjs','test']
  ]);
  const read=p=>sources.get(p);
- assert.deepEqual(plan([...sources.keys()],read),['credits.html','data/map.json','data/regions/index.json','index.html','scripts/a.js','scripts/b.js']);
+ assert.deepEqual(plan([...sources.keys()],read),['credits.html','data/architecture/verified-buildings.json','data/map.json','data/regions/index.json','index.html','scripts/a.js','scripts/b.js']);
+ assert.throws(()=>plan([...sources.keys()],p=>p==='scripts/a.js'?"fetch('architecture-references.json')":read(p)),/Possible runtime dependency/);
  assert.deepEqual(dependencies('index.html',"<script src='scripts/a.js'></script>"),['scripts/a.js']);
  assert.deepEqual(dependencies('scripts/a.js',"const m=import('./b.js?v=3');"),['scripts/b.js']);
  assert.throws(()=>plan([...sources.keys()].filter(p=>p!=='scripts/b.js'),read),/Missing/);
@@ -73,7 +76,9 @@ function selfTest(){
   for(const [p,s] of sources){const f=join(root,p);mkdirSync(dirname(f),{recursive:true});writeFileSync(f,s);}
   execFileSync('git',['-C',root,'add','.']);
   build(root,dest);assert.equal(readFileSync(join(dest,'scripts/b.js'),'utf8'),sources.get('scripts/b.js'));
-  assert(!existsSync(join(dest,'editor.html')));assert(!existsSync(join(dest,'scripts/unused.js')));
+  assert(existsSync(join(dest,'data/architecture/verified-buildings.json')));
+ assert(!existsSync(join(dest,'data/architecture-references.json')));
+ assert(!existsSync(join(dest,'editor.html')));assert(!existsSync(join(dest,'scripts/unused.js')));
   assert.throws(()=>build(root,dest),/Destination/);
   assert.throws(()=>build(root,join(root,'candidate')),/Destination/);
  }finally{rmSync(temp,{recursive:true,force:true});}
