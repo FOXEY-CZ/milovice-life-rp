@@ -1,6 +1,10 @@
+## CROSSVEX 5.346 — pedestrian delivery player label
+
+Při zahájení pěší zakázky používá hráčské hlášení Silver Avenue přes fictional-identity.js. Tři kontrolní body, geometrie i odměna 80 Kč beze změny. Přípravný regionální test 45847448228 PASS 3/3, skutečné zahájení a zrušení zakázky bez výplaty. Kandidát CI čeká.
+
 ## CROSSVEX 5.345 — player vehicle labels
 
-Čtyři neutrální anglické kategorie vozidel v hráčském HUD při načítání, dokončení a fallbacku. Zdrojová jména, registry, licence, URL, modely a fyzika beze změny. Unit test a staged browser historie HUD, kontrola registru GLB; CI kandidáta čeká. Credits #155 sloučeny.
+Čtyři neutrální anglické kategorie vozidel v hráčském HUD při načítání, dokončení a fallbacku. Zdrojová jména, registry, licence, URL, modely a fyzika beze změny. Unit test a staged browser historie HUD, kontrola registru GLB; PR #156 8/8 PASS a sloučeno; předchozí main 5/5 včetně Pages PASS. Credits #155 sloučeny.
 
 ## CROSSVEX 5.344 — fictional startup copy
 

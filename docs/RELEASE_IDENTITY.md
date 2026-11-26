@@ -58,4 +58,7 @@ Výchozí hráčské UI oddělené od technických ovladačů. Opt-in `?dev=1`, 
 - Preview distribuce na 5.342 a 5.343 PASS; síťový záznam 5.343 je v artefaktu běhu 45739409272, jeho obsah ještě nebyl vyhodnocen. Dev režim není zabezpečení. Před finálním vydáním ověřit skutečné nápisy v GLB a jejich texturách, adresní štítky a zdrojové názvy ve veřejném balíčku.
 
 ## 5.345 — player vehicle labels
-Hráčské stavové zprávy detailních vozidel používají neutrální anglické kategorie přes fictional-identity.js. Zdrojové registry a licence beze změny; unit, browser historie HUD a GLB evidence CI čekají.
+Hráčské stavové zprávy detailních vozidel používají neutrální anglické kategorie přes fictional-identity.js. Zdrojové registry a licence beze změny; unit, browser historie HUD a GLB evidence PASS, #156 8/8 sloučen.
+
+## 5.346 — pedestrian delivery label
+Hlášení zahájení zakázky přes streetDisplayName používá Silver Avenue. Přípravný regionální browser 45847448228 3/3 PASS, zrušení bez výplaty. Kandidát CI čeká; geometrie, zdrojová ID a odměna zachovány.

@@ -3,8 +3,8 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.344**; #155 Credits a procedurální evidence sloučeny. Kandidát **5.345** (vozidla).
-- Main po #155: `3a6ff57c157b96b250b4e365556921cf92218042`; #155 6/6 PR CI PASS, předchozí main 6/6 včetně Pages a plánovaného mobilního footway PASS. Nový main ověř živě.
+- Herní verze main: **5.345**; #156 vozidla sloučena. Kandidát **5.346** (pěší zakázka).
+- Main po #156: `ecbdb35e2d91f6e9f9db392ccee639627322817d`; #156 8/8 PR CI PASS, předchozí main 5/5 včetně Pages PASS. Nový main ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #155 sloučen, 6/6 PR CI a předchozí main 6/6 včetně Pages PASS. Credits šest přesných odkazů, 4/4 procedurální výstupy ověřeny, žádné release schválení. Main `3a6ff57c157b96b250b4e365556921cf92218042` čeká. 5.345 připravena na aktuálním main: neutrální názvy čtyř kategorií aut, zachována provenance, geometrie i fyzika; unit test, staged browser historie HUD a GLB audit na přípravné větvi. CI čeká. Další konkrétní zbylé hráčské identity podle docs/RELEASE_IDENTITY.md, právní blokery dle docs/RELEASE_READINESS.md, #147 otevřeno.
+**Priorita:** #156 sloučen, 8/8 PR a předchozí main 5/5 včetně Pages PASS. Nový main `ecbdb35e2d91f6e9f9db392ccee639627322817d` čeká. 5.346 prep 45847448228: 3/3 regionální skupiny PASS, Maple Heights skutečné zahájení a zrušení zakázky, Silver Avenue, peníze beze změny, 330 požadavků bez chyb. Delta přenesena na 5.345, CI kandidáta čeká. #157 Sports Car fallback kol evidován, neměnit ochrannou kontrolu bez důkazu. Dále konkrétní hráčské nedostatky dle docs/RELEASE_IDENTITY.md a právní blokery dle docs/RELEASE_READINESS.md; #147 otevřeno. Po dokončení identity navázat odloženou herní práci, nikoli opakovat audit bez nového důkazu.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

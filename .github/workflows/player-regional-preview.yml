@@ -1,16 +1,22 @@
 name: Staged regional preview (evidence only)
 on:
   push:
-    branches: [prep/release-regional-candidate]
+    branches: [prep/release-regional-candidate, prep/player-foot-job-candidate-5346]
     paths:
       - '.github/workflows/player-regional-preview.yml'
       - 'scripts/release-region-scenario.mjs'
+      - 'scripts/osm-topolova-foot-lifecycle-5183.test.mjs'
+      - 'scripts/osm-topolova-foot-job-5179.js'
+      - 'scripts/osm-topolova-foot-job-5179.test.mjs'
       - 'scripts/run-release-regional-preview.mjs'
   pull_request:
     branches: [main]
     paths:
       - '.github/workflows/player-regional-preview.yml'
       - 'scripts/release-region-scenario.mjs'
+      - 'scripts/osm-topolova-foot-lifecycle-5183.test.mjs'
+      - 'scripts/osm-topolova-foot-job-5179.js'
+      - 'scripts/osm-topolova-foot-job-5179.test.mjs'
       - 'scripts/run-release-regional-preview.mjs'
       - 'scripts/stage-player-package.mjs'
       - 'scripts/audit-release-map-data.mjs'
@@ -39,6 +45,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          node scripts/osm-topolova-foot-lifecycle-5183.test.mjs
+          node scripts/osm-topolova-foot-job-5179.test.mjs
           node scripts/stage-player-package.mjs --stage "$RUNNER_TEMP/crossvex-regional"
           node scripts/audit-release-map-data.mjs "$RUNNER_TEMP/crossvex-regional"
           npm install --no-save --no-package-lock playwright-core@1.57.0

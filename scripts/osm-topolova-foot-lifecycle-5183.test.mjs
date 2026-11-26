@@ -24,3 +24,8 @@ assert.equal(html.split('money+=job.rewardCZK;').length-1,1);
 assert.equal((spawn.match(/money\s*[+]=/g)||[]).length,0);
 assert.equal((reset.match(/money\s*[+]=/g)||[]).length,0);
 console.log('PASS 5.183: reset and district/vehicle spawn cancel active pedestrian mission without a payout');
+
+const jobStart=html.slice(begin,html.indexOf('function rpEndTopolovaFootJob5179(){',begin));
+assert.ok(jobStart.includes("streetDisplayName('Topolová')"),'Use fictional street label in player mission message');
+assert.doesNotMatch(jobStart,/chodníku Topolové/);
+console.log('PASS fictional pedestrian delivery start label');
