@@ -346,3 +346,6 @@ jobs:
 
       - name: Verify fictional retail palettes and contrast
         run: node scripts/fictional-brand-palettes.test.mjs
+
+      - name: Verify fictional regional transit identity
+        run: node scripts/fictional-transit.test.mjs

@@ -1,3 +1,4 @@
+import {TRANSIT_PALETTE,destinationLabel,transitRouteLabel} from './fictional-transit.js?v=533900';
 // Original, procedural meshes for Milovice RP. No third-party geometry or photographed textures.
 // The style is medium-detail mobile-friendly; these are not manufacturer-certified models.
 const mats=new WeakMap();
@@ -198,12 +199,12 @@ function textPanel(THREE,text,w,h,background='#12191e',foreground='#ffd75a'){
 }
 export function makePidBus(THREE,route='432',articulated=false){
  const group=new THREE.Group(),w=2.55,length=11.0,wheels=[];
- const white=automotivePaint(THREE,0xeaeae5),red=automotivePaint(THREE,0xc72931),dark=material(THREE,0x20292f);
+ const white=automotivePaint(THREE,TRANSIT_PALETTE.body),red=automotivePaint(THREE,TRANSIT_PALETTE.primary),dark=material(THREE,0x20292f);
  const tinted=material(THREE,0x305b70,.25,.25),silver=material(THREE,0xa9b7bc,.65,.4);
  const profile=[[-5.5,.47],[-5.49,2.69],[-5.25,3.04],[5.23,3.04],[5.48,2.70],[5.50,.47]];
  const shell=part(THREE,group,sideExtrusion(THREE,profile,w,.095),white,0,0,0);
  shell.castShadow=true;
- // White/red PID-inspired regional colorblocking. Not an exact licensed operator model.
+ // CrossTransit fictional regional colorblocking; source model proportions retained.
  for(const side of [-1,1]){
   part(THREE,group,new THREE.BoxGeometry(.085,.82,10.8),red,side*1.29,1.02,0);
   part(THREE,group,new THREE.BoxGeometry(.09,.22,10.8),dark,side*1.32,1.49,0);
@@ -246,15 +247,15 @@ export function makePidBus(THREE,route='432',articulated=false){
   part(THREE,group,new THREE.BoxGeometry(2.24,.85,.12),tinted,0,2.15,12.21);
   group.userData.articulated=true;
  }
- const destination=textPanel(THREE,route+' MILOVICE',2.0,.46);
+ const destination=textPanel(THREE,destinationLabel(route),2.0,.46);
  destination.position.set(0,2.76,-5.65);group.add(destination);
- const sidePanel=textPanel(THREE,'PID '+route,2.2,.43,'#e6e8e5','#be2030');
+ const sidePanel=textPanel(THREE,transitRouteLabel(route),2.2,.43,TRANSIT_PALETTE.signBackground,TRANSIT_PALETTE.signForeground);
  sidePanel.rotation.y=Math.PI/2;sidePanel.position.set(1.38,1.2,2.20);group.add(sidePanel);
  return {group,route,wheels};
 }
 export function makeCityElefantStyleTrain(THREE){
  const group=new THREE.Group(),cars=[];
- const steel=material(THREE,0xa6afb4,.39,.48),blue=material(THREE,0x2876a4),red=material(THREE,0xc44145);
+ const steel=material(THREE,0xa6afb4,.39,.48),blue=material(THREE,TRANSIT_PALETTE.primary),red=material(THREE,TRANSIT_PALETTE.accent);
  const glass=material(THREE,0x284d61,.26,.25),black=material(THREE,0x252b30),wheel=material(THREE,0x33383d,.2,.76);
  for(let i=0;i<3;i++){
   const coach=new THREE.Group();group.add(coach);cars.push(coach);
@@ -290,14 +291,14 @@ export function makeCityElefantStyleTrain(THREE){
   if(i!==1){
    const cabZ=i===0?-12.13:12.13;
    part(THREE,coach,new THREE.BoxGeometry(2.40,1.02,.10),glass,0,2.55,cabZ);
-   const routeSign=textPanel(THREE,'S22 MILOVICE',1.65,.32);
+   const routeSign=textPanel(THREE,destinationLabel('S22'),1.65,.32);
    routeSign.position.set(0,2.87,cabZ+(i===0?-.10:.10));
    routeSign.rotation.y=i===0?0:Math.PI;
    coach.add(routeSign);
    part(THREE,coach,new THREE.BoxGeometry(2.50,.24,.12),black,0,1.45,cabZ+.04);
    for(const s of [-1,1]){
     part(THREE,coach,new THREE.BoxGeometry(.19,.17,.13),material(THREE,0xffedcb),s*.97,1.55,cabZ+.08);
-    part(THREE,coach,new THREE.BoxGeometry(.15,.15,.13),red,s*.88,.93,cabZ+.08);
+    part(THREE,coach,new THREE.BoxGeometry(.15,.15,.13),material(THREE,0xc44145),s*.88,.93,cabZ+.08);
    }
   }
  }
