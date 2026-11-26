@@ -3,8 +3,8 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.344**; vizuální GLB evidence sloučena; kandidát síťový audit.
-- Main po #144: `f0a4ba99b4f40998ac6d32841df698bc75720bb7`; #144 6/6 CI PASS, předchozí main 5/5 včetně Pages PASS. Nový main CI a Pages ověř živě.
+- Herní verze main: **5.344**; #155 Credits a procedurální evidence sloučeny. Kandidát **5.345** (vozidla).
+- Main po #155: `3a6ff57c157b96b250b4e365556921cf92218042`; #155 6/6 PR CI PASS, předchozí main 6/6 včetně Pages a plánovaného mobilního footway PASS. Nový main ověř živě.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
 
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #154 architektonická evidence sloučena, 5/5 PR CI, předchozí main 5/5 včetně Pages PASS. Nový main `8c1a5bdeac82f1790f9b4d87a66c09d0ac0bd5d5` čeká. Procedurální textury 45835510295: 4/4 výstupy deterministické, rozměry a barvy PASS, SHA-256 evidovány. Credits 45835833866: šest zdrojových odkazů v rozbalovací sekci, bez vložených médií, desktop start/mapa/jízda PASS, 662 požadavků bez chyb. Kandidát přenesen na aktuální main, cílený PR trigger textur, CI čeká. Herní verze 5.344 beze změny. Dále konkrétní zbylé hráčské identity a právní rozhodnutí dle docs/RELEASE_READINESS.md; #147 otevřeno, žádné release schválení. Neopakovat stejné audity bez nového důkazu.
+**Priorita:** #155 sloučen, 6/6 PR CI a předchozí main 6/6 včetně Pages PASS. Credits šest přesných odkazů, 4/4 procedurální výstupy ověřeny, žádné release schválení. Main `3a6ff57c157b96b250b4e365556921cf92218042` čeká. 5.345 připravena na aktuálním main: neutrální názvy čtyř kategorií aut, zachována provenance, geometrie i fyzika; unit test, staged browser historie HUD a GLB audit na přípravné větvi. CI čeká. Další konkrétní zbylé hráčské identity podle docs/RELEASE_IDENTITY.md, právní blokery dle docs/RELEASE_READINESS.md, #147 otevřeno.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

@@ -1,7 +1,7 @@
 name: GLB evidence audit (preview only)
 on:
   push:
-    branches: [prep/glb-release-audit, prep/release-model-candidate]
+    branches: [prep/glb-release-audit, prep/release-model-candidate, prep/player-vehicle-candidate-5345]
     paths:
       - 'scripts/audit-release-glb.mjs'
       - '.github/workflows/glb-release-audit.yml'
