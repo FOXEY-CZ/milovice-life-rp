@@ -7,7 +7,7 @@ import {chromium} from 'playwright-core';
 const [reportPath,out]=process.argv.slice(2);
 assert.ok(reportPath&&out);
 const manifest=JSON.parse(readFileSync(reportPath,'utf8'));
-const targets=['citySUV','cityCar','citySport'],models=new Map();
+const targets=['citySUV','cityCar','citySport','spectralGT'],models=new Map();
 for(const id of targets){
  const m=manifest.models.find(m=>m.id===id);
  assert.ok(m&&m.hashMatches&&m.sizeMatches&&m.external.length===0);
@@ -44,10 +44,11 @@ function draw(angle){
 window.prepare=async id=>{
  // Force only the relevant selection branch in this isolated harness.
  const nativeMatchMedia=window.matchMedia.bind(window);
- window.matchMedia=q=>q==='(pointer:fine)'?{matches:false}:nativeMatchMedia(q);
+ window.matchMedia=q=>q==='(pointer:fine)'?{matches:id==='spectralGT'}:nativeMatchMedia(q);
  manager=makeVehicleAssetManager(T);await manager.load(id);
- car={id:'review-'+id,type:{citySUV:2,cityCar:0,citySport:3}[id],g:new T.Group(),driven:true,parked:false};
+ car={id:'review-'+id,type:{citySUV:2,cityCar:0,citySport:3,spectralGT:0}[id],g:new T.Group(),driven:true,parked:false};
  const proxy=new T.Mesh(new T.BoxGeometry(1,1,1),new T.MeshBasicMaterial());car.g.add(proxy);scene.add(car.g);
+ if(id==='spectralGT'){await manager.load('cityCar');manager.configure('coupe');}
  const start=performance.now();manager.update([car],0,0,1,car);const installMs=performance.now()-start;
  model=car.g.userData.licensedGLB;if(!model)throw Error('real manager did not install '+id);
  groups=model.children.filter(g=>g.name.startsWith('AdapterWheel_'));if(groups.length!==4)throw Error('missing wheel groups');
@@ -58,7 +59,7 @@ window.draw=draw;window.spin=d=>{manager.spin(car,d);scene.updateMatrixWorld(tru
 window.fallback=()=>{manager.configure('off');return car.g.userData.licensedGLB===null&&car.g.userData.proceduralLOD.visible===true;};
 window.ready=true;
 </script>`;
-const files=new Set(['vehicle-assets.js','fictional-identity.js','vehicle-axle-adapter.js']);
+const files=new Set(['vehicle-assets.js','fictional-identity.js','vehicle-axle-adapter.js','spectral-wheel-adapter.js','spectral-mesh-batching.js']);
 const server=createServer((req,res)=>{
  const path=new URL(req.url,'http://127.0.0.1').pathname;
  if(path==='/'){res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});res.end(html);return;}
@@ -73,7 +74,7 @@ try{
  for(const id of targets){
   const page=await browser.newPage({viewport:{width:800,height:600},deviceScaleFactor:1});
   const errors=[];page.on('pageerror',e=>errors.push(String(e)));
-  const {url,bytes}=models.get(id);await page.route(url,r=>r.fulfill({status:200,body:bytes,contentType:'model/gltf-binary',headers:{'access-control-allow-origin':'*'}}));
+  for(const key of new Set([id,'cityCar'])){const {url,bytes}=models.get(key);await page.route(url,r=>r.fulfill({status:200,body:bytes,contentType:'model/gltf-binary',headers:{'access-control-allow-origin':'*'}}));}
   await page.goto('http://127.0.0.1:'+server.address().port+'/',{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>window.ready===true,null,{timeout:30000});
   const initial=await page.evaluate(id=>window.prepare(id),id);
@@ -109,4 +110,4 @@ try{
  writeFileSync(join(out,'wheel-visual-evidence.json'),JSON.stringify({review:'pending',scope:'isolated browser renderer; not full-world FPS',records},null,2)+'\n');
  await browser?.close();await new Promise(resolve=>server.close(resolve));
 }
-assert.equal(records.length,3);console.log('PASS 18 actual-manager wheel renders, manual visual review pending');
+assert.equal(records.length,4);console.log('PASS 24 actual-manager wheel renders, manual visual review pending');

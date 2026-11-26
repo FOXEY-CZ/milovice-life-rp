@@ -1,3 +1,7 @@
+## CROSSVEX 5.348 — optional player coupe
+
+Sports Coupe: 68 původních pohyblivých částí, izolovaný batching 258 → 70 meshů a 516 → 140 draw calls, 151722 trojúhelníků beze změny. Volitelný režim pouze pro hráče na PC, běžná auta low-poly. Po vystoupení návrat k levnému modelu. #159 9/9 PASS sloučen, kandidát CI a výkon celého města čekají.
+
 ## CROSSVEX 5.347 — guarded vehicle axle adaptation
 
 SUV, Passenger Car a Sports Car: při načtení přesné zdrojové sestavy rozděleny na čtyři samostatné skupiny kol. Příprava 45850512267 PASS, každý 5040 rozvinutých vrcholů beze změny. Geometrie, materiály, rozměry, registry a zdrojové soubory zachovány; vizuální otáčení podle skutečné osy a poloměru, fyzika beze změny. Sports Coupe zatím fallback. Kandidát CI i vizuální ověření čekají.
