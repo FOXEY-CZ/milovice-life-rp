@@ -1,0 +1,5 @@
+# Map data review bundle — issue #147
+
+Exact committed source data, not a game release archive. Independent preparation on 5.349 main f4781ba756cd08f9c741bc5ee363c0c6ddc2a8df. Includes six OSM snapshots, six resampled DMR grids, street inventory, regional index, four existing extraction/sampling scripts, manifest with file byte counts, SHA-256 and source metadata, and a scope/attribution note. The archive is deterministic in the same environment, with fixed order, timestamp and compression; refuses overwrite, verifies ZIP entries against exact Git bytes and has no network access. The workflow tests exact repeatability, invalid ref rejection and overwrite protection. No runtime modifications or publication to Pages. Existing credit links unchanged.
+
+Review still required: actual ODbL corresponding database scope, mixed inventory/architecture terms, DMR service-specific terms, full legal notices and whether included methods reproduce historical transformations. The scripts are documentary evidence, not proof of complete reproducibility or a license grant. Original GPS and source labels retained. CI pending.
