@@ -8,6 +8,8 @@ on:
       - 'scripts/dmr_export_provenance.py'
       - 'scripts/test_dmr_export_provenance.py'
       - '.github/workflows/dmr-export-provenance.yml'
+      - '.github/workflows/update-terrain.yml'
+      - '.github/workflows/update-region-terrain.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -18,3 +20,16 @@ jobs:
       - uses: actions/checkout@v4
       - run: python3 -m unittest discover -s scripts -p test_dmr_export_provenance.py
       - run: python3 -m py_compile scripts/build_terrain.py scripts/build_region_terrain.py
+      - name: Verify manual export workflow safeguards
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          for file in ('update-terrain.yml','update-region-terrain.yml'):
+              text = (Path('.github/workflows') / file).read_text()
+              assert 'on:\n  workflow_dispatch:\npermissions:\n  contents: read\n' in text, file
+              for required in ('CROSSVEX_DMR_EVIDENCE_DIR=%s', 'mkdir -p "$RUNNER_TEMP/dmr-evidence"', '>> "$GITHUB_ENV"', 'persist-credentials: false', 'actions/upload-artifact@v4', 'retention-days: 90'):
+                  assert required in text, (file, required)
+              for forbidden in ('git push', 'git commit', 'contents: write', '\n  push:', '\n  pull_request:', '\n    env:'):
+                  assert forbidden not in text, (file, forbidden)
+          print('PASS manual-only evidence workflow safeguards')
+          PY
