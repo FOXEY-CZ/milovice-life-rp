@@ -47,7 +47,12 @@ try{
  },{id:secondId,released:second.vehicle.proceduralLifetime.released},{timeout:60000});
  const reset=await state();
  assert.equal(reset.vehicle.proceduralLifetime.created-reset.vehicle.proceduralLifetime.released,reset.vehicle.proceduralLifetime.live);
- await page.locator('#rp-vehicles').click();
+ assert.equal(reset.vehicle.proceduralLifetime.released,second.vehicle.proceduralLifetime.released+1);
+ console.log('PASS GLB replacement and reset',JSON.stringify({firstId,secondId,first:first.vehicle.proceduralLifetime,second:second.vehicle.proceduralLifetime,reset:reset.vehicle.proceduralLifetime}));
+ // R reset can open the vehicle picker itself. Never click through its overlay.
+ const picker=page.locator('#rp-spawn');
+ if(!(await picker.isVisible()))await page.locator('#rp-vehicles').click();
+ await picker.waitFor({state:'visible',timeout:30000});
  await page.locator('#rp-model-select').selectOption('off');
  await page.locator('[data-spawn="sedan"]').click();
  await page.waitForFunction(previousCreated=>{

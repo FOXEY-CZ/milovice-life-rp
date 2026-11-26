@@ -13,3 +13,5 @@ City repeat 45882048484 PASS. Prepared ownership now advanced onto test branch; 
 Actual 5.350 b7bfe58 city job 140128631671 PASS: two repeated replacements and reset sequences with GLB off; ownership counts matched actual road-car population at each step. New live GLB attachment retirement regression and full unit sweep pending.
 
 PR #168 GLB-on test initially failed released counter 0 instead of 1 after new model assignment. Wait for fresh lifetime generation and exact release delta alongside GLB assignment; no assertion removed. Repeat pending.
+
+Repeat 45886162436 progressed through live GLB retirement and reset, snapshot 40 created / 2 released / 38 live, no active player, only ambient GLBs. UI harness timeout when clicking behind already-open spawn picker; conditional open added. Fallback verification still pending.
