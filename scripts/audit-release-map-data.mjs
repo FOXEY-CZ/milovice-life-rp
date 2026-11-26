@@ -7,9 +7,11 @@ const root=process.argv[2];assert.ok(root,'Usage: audit-release-map-data.mjs <st
 const read=p=>JSON.parse(readFileSync(join(root,p),'utf8'));
 const pairs=[{"osm":"data/milovice-osm.json","dem":"data/milovice-terrain.json","step":10},{"osm":"data/regions/mlada.json","dem":"data/regions/terrain-mlada.json","step":20},{"osm":"data/regions/vrutice.json","dem":"data/regions/terrain-vrutice.json","step":20},{"osm":"data/regions/westlink.json","dem":"data/regions/terrain-westlink.json","step":20},{"osm":"data/regions/centerlink.json","dem":"data/regions/terrain-centerlink.json","step":20},{"osm":"data/regions/bozidar.json","dem":"data/regions/terrain-bozidar.json","step":20}];
 const page=readFileSync(join(root,'credits.html'),'utf8');
-for(const url of ['https://geoportal.gov.cz/php/micka/record/basic/CZ-CUZK-DMR4G-V','https://geoportal.gov.cz/php/micka/record/basic/CZ-CUZK-AGS-DMR4G','https://creativecommons.org/licenses/by/4.0/'])assert.ok(page.includes('href="'+url+'"'),'Missing DMR source/license link: '+url);
+for(const url of ['https://geoportal.gov.cz/php/micka/record/basic/CZ-CUZK-DMR4G-V','https://geoportal.gov.cz/php/micka/record/basic/CZ-CUZK-AGS-DMR4G','https://creativecommons.org/licenses/by/4.0/','https://geoportal.cuzk.gov.cz/Dokumenty/Podminky.pdf'])assert.ok(page.includes('href="'+url+'"'),'Missing DMR source/license link: '+url);
 assert.ok(page.includes('relativní výšky v decimetrech'),'Missing DMR modification notice');
-assert.ok(page.includes('úplné ověření těchto podmínek před vydáním zbývá'),'Missing service-terms caveat');
+assert.ok(page.includes('Herní výškové soubory mají v historii projektu datum 12. 11. 2026.'),'Missing project history date');
+assert.ok(page.includes('Datum poslední aktualizace původních dat poskytovatele není doloženo'),'Missing upstream date caveat');
+assert.ok(page.includes('před konečnou distribucí zbývá ověřit datovou atribuci'),'Missing unresolved attribution notice');
 const index=read('data/regions/index.json');
 const ids=['old','mlada','vrutice','westlink','centerlink','bozidar'];
 assert.ok(Array.isArray(index.regions));
