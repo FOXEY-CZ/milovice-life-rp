@@ -1,0 +1,42 @@
+name: OSM street grouping review projection
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/project-osm-street-data.py'
+      - 'data/rebuild2-street-inventory.json'
+      - 'data/milovice-osm.json'
+      - 'data/regions/*.json'
+      - '.github/workflows/osm-street-projection.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  projection:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - shell: bash
+        run: |
+          set -euo pipefail
+          revision="$(git rev-parse HEAD)"
+          out="$RUNNER_TEMP/osm-street-projection.json"
+          python3 scripts/project-osm-street-data.py "$revision" "$out"
+          python3 scripts/project-osm-street-data.py "$revision" "$RUNNER_TEMP/projection-repeat.json"
+          cmp "$out" "$RUNNER_TEMP/projection-repeat.json"
+          if python3 scripts/project-osm-street-data.py "$revision" "$out"; then exit 1; fi
+          cmp "$out" "$RUNNER_TEMP/projection-repeat.json"
+          python3 - "$out" <<'PY'
+          import json,sys
+          p=json.load(open(sys.argv[1],encoding="utf8"))
+          assert p["summary"]["groups"]==len(p["groups"])
+          assert all(set(g)=={"region","street","mapped"} for g in p["groups"])
+          assert p["summary"]["uniqueMappedWays"]==sum(len(v) for g in p["groups"] for v in g["mapped"].values())
+          assert "landmarkCrossStreetReview" not in p
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: osm-street-projection-review-only
+          path: ${{ runner.temp }}/osm-street-projection.json
