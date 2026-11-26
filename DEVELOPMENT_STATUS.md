@@ -3,7 +3,7 @@
 Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Aktuální stav
-- Herní verze main: **5.350**, #183 sloučen `38101f9`, PR 6/6 PASS; #182 main `fbee838` 5/5 PASS včetně Pages 45901500938. Main #183 Pages 45902486835 PASS; dvě historická live export workflow FAIL (45902487303/45902487340, chybí CROSSVEX_DMR_EVIDENCE_DIR).
+- Herní verze main: **5.350**, #184 sloučen `570e4a6`, PR 6/6 PASS; #183 main `38101f9` herní CI/Pages 5/5 PASS (45902486835), dvě historická export selhání opravena v #184. Main #184 CI čeká.
 - Main po #160: `7a087a173569b6b49df0f3721469ec2f71c3621f`; 9/9 PR PASS a 8/8 main PASS včetně Pages 45860346528.
 - [Hra](https://foxey-cz.github.io/milovice-life-rp/) · [CI](https://github.com/FOXEY-CZ/milovice-life-rp/actions) · [Juventa — technická kamera hřiště](https://foxey-cz.github.io/milovice-life-rp/?v=530700&streetAudit=pitch-juventa-5301).
 - PR #102: všech 6 předslučovacích workflow PASS na `299ab6d`; GitHub Pages na výsledném commitu main PASS. Kompletní automaticky objevená sada 250 unit testů zatím nebyla spuštěna jako celek.
@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #183 DMR evidence/ZIP PASS; #184 OSM projekce 6867 záznamů, 3712 ID, 78 skupin, repeatable PASS (45902561790). Odhalena integrační chyba: historické live export workflow automaticky běžely bez povinné evidence a selhaly i na prep větvi. Oprava v #184: oba exporty jen ručně, read-only, externí evidence a 90denní artifact, bez git commit/push; fixture kontroluje wiring, skutečný export nespouštěn. První oprava fixture PASS, ale dvě jobless push failure 45902848320/45902847125; dokumentace GitHub potvrzuje runner context nepovolený v job env. Přesun na RUNNER_TEMP/GITHUB_ENV ve step, fixture odmítá job env. Nový kandidát CI čeká. Historické selhání nepřepisovat; před další prací ověřit herní main CI a nápravu. #147/#161 otevřené, bez release schválení.
+**Priorita:** #183 DMR evidence/ZIP PASS; #184 OSM projekce 6867 záznamů, 3712 ID, 78 skupin PASS; oprava ručních export workflow a runner scope PASS bez live exportu. Kandidát #147 tracked čistý OSM soupis nahrazuje smíšený inventář v hráčském stagingu; 15 data JSON, čtyři vývojové soubory vyloučeny, credits a nezávislé srovnání s přesnou revizí, CI čeká. Původní inventář zachován v repu. Corresponding database/DMR historická aktualizace/architektura neuzavřeny; #147/#161 otevřené, bez release schválení.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

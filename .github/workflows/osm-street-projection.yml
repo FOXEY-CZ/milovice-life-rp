@@ -5,6 +5,7 @@ on:
     paths:
       - 'scripts/project-osm-street-data.py'
       - 'data/rebuild2-street-inventory.json'
+      - 'data/osm-street-groups.json'
       - 'data/milovice-osm.json'
       - 'data/regions/*.json'
       - '.github/workflows/osm-street-projection.yml'
@@ -35,6 +36,14 @@ jobs:
           assert all(set(g)=={"region","street","mapped"} for g in p["groups"])
           assert p["summary"]["uniqueMappedWays"]==sum(len(v) for g in p["groups"] for v in g["mapped"].values())
           assert "landmarkCrossStreetReview" not in p
+          import runpy
+          shipped=json.load(open("data/osm-street-groups.json",encoding="utf8"))
+          assert shipped["groups"] == p["groups"], "Committed projection drifted from source grouping"
+          assert shipped["summary"] == p["summary"]
+          original=runpy.run_path("scripts/project-osm-street-data.py")["project"](shipped["sourceRevision"])
+          assert original["groups"] == p["groups"]
+          assert original["sources"] == p["sources"], "Source snapshots changed; regenerate projection"
+          assert original["sourceInventory"] == p["sourceInventory"], "Mixed inventory changed; regenerate projection"
           PY
       - uses: actions/upload-artifact@v4
         with:
