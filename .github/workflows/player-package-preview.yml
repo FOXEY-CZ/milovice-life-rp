@@ -1,7 +1,7 @@
 name: Staged player package (preview only)
 on:
   push:
-    branches: [prep/release-license-inventory, prep/release-network-evidence, prep/release-library-notices, prep/release-gameplay-preview, prep/release-data-notices]
+    branches: [prep/release-license-inventory, prep/release-network-evidence, prep/release-library-notices, prep/release-gameplay-preview, prep/release-data-notices, prep/release-credits-candidate]
     paths:
       - '.github/workflows/player-package-preview.yml'
       - 'scripts/stage-player-package.mjs'
@@ -83,7 +83,7 @@ jobs:
           curl --retry 10 --retry-connrefused --retry-delay 1 -fsS http://127.0.0.1:8080/credits.html > /dev/null
           node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
-          import {writeFileSync} from 'node:fs';
+          import {readFileSync,writeFileSync} from 'node:fs';
           import {chromium} from 'playwright-core';
           import {observeReleaseNetwork} from './scripts/release-network-observer.mjs';
           import {runReleaseGameplayScenario} from './scripts/release-gameplay-scenario.mjs';
@@ -111,6 +111,16 @@ jobs:
             assert.equal(await page.locator('#osmmap .leaflet-tile').count(),0);
             await page.goto(base+'/credits.html',{waitUntil:'domcontentloaded'});
             assert.equal(await page.locator('h1').textContent(),'Credits & Licenses');
+            const architecture=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/crossvex-player/data/architecture/verified-buildings.json','utf8'));
+            const expectedReferences=[...new Set(Object.values(architecture.buildings).flatMap(b=>[b.source,b.provenance?.secondPhoto].filter(Boolean)))].sort();
+            const notes=page.locator('#architecture-reference-notices');
+            await notes.locator('summary').click();
+            assert.equal(await notes.evaluate(el=>el.open),true);
+            const actualReferences=await notes.locator('a[data-architecture-reference]').evaluateAll(els=>els.map(e=>e.getAttribute('href')).sort());
+            assert.deepEqual(actualReferences,expectedReferences,'Published architecture credit references');
+            assert.equal(await notes.locator('img,iframe,video,object,embed').count(),0);
+            assert.match(await notes.innerText(),/oprávnění k zamýšlenému použití zatím nepotvrzeno/);
+            console.log('PASS published architecture credit details and '+actualReferences.length+' source links without embedded media');
             assert.deepEqual(missing,[],'Missing local staged resources');
             assert.deepEqual(errors,[],'Page errors');
             console.log('PASS staged desktop world startup, map and credits');

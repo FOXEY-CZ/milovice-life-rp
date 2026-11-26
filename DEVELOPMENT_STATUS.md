@@ -60,7 +60,7 @@ Aktualizace: 26. 11. 2026. **Tento soubor je stručný index, ne changelog.**
 
 ## Další krok podle W7
 
-**Priorita:** #153 CDN audit sloučen, 5/5 PR CI, předchozí main 3/3 včetně Pages a plánovaného playground PASS. 11/11 knihoven/grafických souborů byte-identické, přesná VML deklarace rozlišena. Nový main `9b03ce2d58a3f752fcce645aa1cc2ac5541c72c3` čeká. Architektura 45833312724 a 45833610534: 5/5 evidence, licence pending. Discovery 45833830640: 267 souborů, 369 výskytů URL, 203 různých řetězců, 0 literal image URI, 48 řádků textur; výběr index.html procedurální textury a nápisy ručně prohlédnut. Kandidát přenesen na aktuální main, oprava klasifikace ČÚZK hostů, CI čeká. Viz docs/RELEASE_READINESS.md. Dále zkontrolovat další zdroje textur a hráčské odkazy, oddělit řešitelné technické kroky od právních rozhodnutí; #147 otevřeno, žádné release schválení.
+**Priorita:** #154 architektonická evidence sloučena, 5/5 PR CI, předchozí main 5/5 včetně Pages PASS. Nový main `8c1a5bdeac82f1790f9b4d87a66c09d0ac0bd5d5` čeká. Procedurální textury 45835510295: 4/4 výstupy deterministické, rozměry a barvy PASS, SHA-256 evidovány. Credits 45835833866: šest zdrojových odkazů v rozbalovací sekci, bez vložených médií, desktop start/mapa/jízda PASS, 662 požadavků bez chyb. Kandidát přenesen na aktuální main, cílený PR trigger textur, CI čeká. Herní verze 5.344 beze změny. Dále konkrétní zbylé hráčské identity a právní rozhodnutí dle docs/RELEASE_READINESS.md; #147 otevřeno, žádné release schválení. Neopakovat stejné audity bez nového důkazu.
 
 ## Orientace v repozitáři
 - [AGENTS.md](AGENTS.md) — pravidla pokračování.

@@ -1,0 +1,16 @@
+# CROSSVEX — targeted procedural texture evidence
+
+Baseline 9b03ce2d58a3f752fcce645aa1cc2ac5541c72c3, independent preparation while #154 is under review.
+
+Read actual producer code at baseline:
+- scripts/osm-hzs-facade-5315.js: makeHZSCladding5315 and makeHZSShellPalette5315 fill RGBA arrays with constant, model-estimated palette colors and row periods; the source links are metadata, no fetch or pixel extraction in these functions.
+- scripts/osm-juventa-school-facade-5307.js: makeJuventaFacade5307 fills a 1×128 RGBA palette with two model colors and approximate 0.95 m band, no image input. Municipal PDF is cited as visual reference, not a license grant.
+- scripts/osm-topolova-zebra-paint-5187.js: makeTopolovaZebraPaintPixels5187 constructs 64×64 seeded xorshift paint noise with fixed color channels; explicitly not photo-verified wear.
+
+New staged test runs these exact exported functions and validates four outputs: deterministic bytes, dimensions, opacity, color/band/period constraints and invalid parameter handling; emits SHA-256 evidence. No runtime edits. Output digests are recorded, not independently pinned yet. Code inspection supports procedural creation for these specific generators; it does not prove all textures are original, clear rights in referenced architecture, or establish that arbitrary future changes cannot load images. No release authorization. CI pending. After reviewing results, address actual player-visible external links and remaining content rights, avoid duplicating evidence-only workflows indefinitely.
+
+## Verified output and player credit improvement
+Run 45835510295 PASS: four deterministic outputs (256, 512, 512 and 16384 bytes), SHA-256 evidence recorded. Added player-facing collapsed credits section with neutral building labels and exact reference links from the five published architecture records, author/date and declared license where present, explicitly pending rights status. No embedded images, no link activation during preview. Existing map attribution and library notices preserved. Existing staged browser preview now opens these details and compares all six exact source links against the actual staged manifest; exact network gate remains unchanged. This credits-only addition does not change runtime geometry or bump gameplay version. Both new push workflows pending.
+
+## Browser evidence and reconciliation
+Run 45835833866 PASS on a3e5fad369c82d823efc53e21159f06e6ee82769: all six exact source links matched the staged architecture manifest, no embedded media; desktop startup/map/credits and driving/audio PASS, 331 requests each, zero HTTP errors, failed/pending/redirected requests, unknown URLs or missing required URLs. Three known model URLs unobserved, Czech speech unavailable in runner and horn audibility unverified. #154 merged after 5/5 PR and previous main 5/5 including Pages. Delta reapplied to 8c1a5bdeac82f1790f9b4d87a66c09d0ac0bd5d5; targeted procedural PR trigger added. Both new candidate checks pending. No runtime geometry change, no final release approval.
