@@ -15,6 +15,12 @@ for(const p of ['vehicle-axle-adapter.js','spectral-wheel-adapter.js','spectral-
 const browser=await chromium.launch({executablePath:'/usr/bin/google-chrome',headless:true,args:['--no-sandbox','--disable-dev-shm-usage','--enable-webgl','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
 const page=await browser.newPage({viewport:{width:1280,height:760}});
 const observer=observeReleaseNetwork(page),errors=[],glb=[];
+const localOnly=process.env.LOCAL_LIBRARY_PREVIEW==='1',remoteAttempts=[];
+if(localOnly)await page.route('**/*',route=>{
+ const url=new URL(route.request().url());
+ if((url.protocol==='http:'||url.protocol==='https:')&&url.origin!=='http://127.0.0.1:8080'){remoteAttempts.push(url.href);return route.abort();}
+ return route.continue();
+});
 page.on('pageerror',e=>errors.push(String(e)));
 page.on('request',r=>{if(/\.(?:glb|gltf)(?:[?#.]|$)/i.test(r.url()))glb.push(r.url());});
 await page.addInitScript(()=>{localStorage.setItem('milovice_glb_quality','coupe');localStorage.setItem('milovice_glb_humans','on');});
@@ -43,5 +49,6 @@ try{
  await page.locator('#closemap').click();
  await page.waitForTimeout(6500);
  assert.deepEqual(glb,[]);assert.deepEqual(errors,[]);
+ if(localOnly){assert.deepEqual(remoteAttempts,[]);const snapshot=observer.snapshot();assert.equal(snapshot.summary.failed,0);assert.equal(snapshot.summary.httpErrors,0);assert.equal(snapshot.summary.pending,0);for(const path of ['/vendor/three/build/three.module.js','/vendor/leaflet/dist/leaflet.js','/vendor/leaflet/dist/leaflet.css'])assert.ok(snapshot.records.some(x=>new URL(x.url).pathname===path&&x.outcome==='finished'),'Missing local library request '+path);}
  console.log('PASS procedural distribution preview',JSON.stringify({network:observer.snapshot().summary,glb,errors,roadCars:before.previewRoadCount}));
 }finally{observer.stop();await browser.close();}
