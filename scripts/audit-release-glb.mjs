@@ -113,7 +113,34 @@ async function audit(output){
  for(const m of report.models)console.log(JSON.stringify({id:m.id,bytes:m.bytes,sha256:m.sha256,images:m.images?.length,external:m.external?.length,sizeMatches:m.sizeMatches,hashMatches:m.hashMatches,error:m.error}));
  if(report.models.some(m=>m.error||m.sizeMatches!==true||m.hashMatches!==true||m.external?.length))process.exitCode=1;
 }
+// The pinned garage license names original Brotli-compressed GLBs.
+async function compareCars(output){
+ const {brotliDecompressSync}=await import('node:zlib');
+ const originals={
+  cityCar:'d35173c8-6078-4367-8f87-b1f2599f0bb7',
+  citySport:'34db1344-31cc-49ac-bc46-c055f68e39ca',
+  citySUV:'e5fbf2ee-5c9e-47d5-8ab6-80cacd463baa'
+ };
+ const results=[];
+ for(const [id,file] of Object.entries(originals)){
+  const url='https://static.poly.pizza/'+file+'.glb.br';
+  try{
+   const r=await fetch(url,{signal:AbortSignal.timeout(30000),redirect:'error'});
+   assert(r.ok,'HTTP '+r.status);
+   const chunks=[];let size=0;
+   for await(const chunk of r.body){size+=chunk.byteLength;assert(size<=32*1024*1024,'source too large');chunks.push(Buffer.from(chunk));}
+   const raw=Buffer.concat(chunks);
+   const bytes=raw.length>=4&&raw.readUInt32LE(0)===0x46546c67?raw:brotliDecompressSync(raw,{maxOutputLength:32*1024*1024});
+   const result=inspect(bytes),pin=observed[id];
+   results.push({id,url,bytes:result.bytes,sha256:result.sha256,matches:result.sha256===pin.sha256&&result.bytes===pin.bytes});
+  }catch(e){results.push({id,url,error:String(e),matches:false});}
+ }
+ writeFileSync(output,JSON.stringify({review:'pending',results},null,2)+'\n',{flag:'wx'});
+ for(const result of results)console.log(JSON.stringify(result));
+ if(results.some(r=>!r.matches))process.exitCode=1;
+}
 const [mode,out]=process.argv.slice(2);
 if(mode==='--self-test')selfTest();
 else if(mode==='--audit'&&out)await audit(out);
-else throw Error('Use --self-test or --audit <new-json-path>');
+else if(mode==='--compare-cars'&&out)await compareCars(out);
+else throw Error('Use --self-test, --audit or --compare-cars <new-json-path>');

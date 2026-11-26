@@ -57,4 +57,11 @@ Successful [preview run 45742322194](https://github.com/FOXEY-CZ/milovice-life-r
 | cityCar | 174320 | `e5f5fa41c4434383b20287725c0e9d757cbd0f059eedc342ec265d32a195fe39` |
 | citySport | 175100 | `bbb1c718d2aaf5f4344e9fb2cd66d8332a998a515b09ddd4dfa14698d787124e` |
 
-The audit now rejects a byte/hash mismatch against this observed baseline; rerun pending. No assets vendored, rights or trademark clearance still pending.
+The audit now rejects a byte/hash mismatch against this observed baseline; rerun PASS (45742460495). No assets vendored, rights or trademark clearance still pending.
+
+
+## License evidence checked 2026-11-26
+- Three humans and two trees: [pinned mirror LICENSES.md](https://github.com/trebeljahr/quaternius-showcase/blob/0128ca510d653bb04d6d1e4885bd8890b5050b4f/LICENSES.md), blob bed8b3f67c7446e4d48aaa0d24ea19943c23065b. Mirror explicitly distinguishes its MIT code from CC0 models and maps the modular men/women directories. Its stated source-copy date is December 2022. Independently inspected creator pack pages: [Men](https://quaternius.com/packs/ultimatemodularcharacters.html), [Women](https://quaternius.com/packs/ultimatemodularwomen.html), [Nature](https://quaternius.com/packs/ultimatenature.html): each identifies CC0. These pack declarations support provenance but the exact exported GLB bytes have not been compared to the creator archives.
+- Three Quaternius cars: [pinned mirror LICENSE.txt](https://github.com/bennibeni/garage/blob/5c26fd4bac37080cd55f8064c59de4b14b489ddd/public/models/LICENSE.txt), blob 99b04bc8038949c7500863fb26b0319183cc73f5. Identifies original compressed GLB URLs individually. [Cars Bundle](https://poly.pizza/bundle/Cars-Bundle-FE5IWe6OMk) identifies CC0 and Quaternius. Exact decompressed upstream byte comparison pending.
+- Spectral GT RS: [pinned LICENSE](https://github.com/JaronKBragg7337/spectral-gt-rs/blob/34499c501908818a2b08e589a7aecf963343cee7/LICENSE), blob 8f40c549094ff25ff1e2a8cdc597f29f78195b9a; [README](https://github.com/JaronKBragg7337/spectral-gt-rs/blob/34499c501908818a2b08e589a7aecf963343cee7/README.md) specifically includes the game-ready GLB and claims original procedural authorship and CC0. Third-party rights not independently cleared.
+- Evidence status: source declarations corroborated; exact-byte fingerprints verified; visual review, original archive comparisons, third-party rights and final release approval pending. CC0 does not settle trademark rights. See https://creativecommons.org/publicdomain/zero/1.0/legalcode.
