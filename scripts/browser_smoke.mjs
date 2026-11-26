@@ -1096,6 +1096,19 @@ try{
    const next=window.__miloviceRouteRecalculation5326?.();
    return next&&next.time>before.time&&Math.hypot(next.x-before.x,next.z-before.z)>=8&&['movement','deviation'].includes(next.reason);
   },beforeDrive,{timeout:20000});
+ }catch(error){
+  const state=await page.evaluate(()=>({
+   routeCache:window.__miloviceRouteRecalculation5326?.(),
+   routeStatus:window.__miloviceMapRoadRoute5321?.()?.status,
+   movement:window.__miloviceMovementDebug,
+   speedHud:document.getElementById('speed')?.textContent,
+   modeHud:document.getElementById('mode')?.textContent,
+   statusHud:document.getElementById('status')?.textContent,
+   mapOpen:document.getElementById('realmap')?.classList.contains('open'),
+   visibility:document.visibilityState,
+   performance:document.getElementById('perf')?.textContent
+  })).catch(e=>({diagnosticError:String(e)}));
+  throw Error('5.326 driving recalculation timeout: '+JSON.stringify({beforeDrive,state}),{cause:error});
  }finally{await page.keyboard.up('w');}
  const afterDrive=await page.evaluate(()=>({cache:window.__miloviceRouteRecalculation5326(),route:window.__miloviceMapRoadRoute5321(),audit:window.__miloviceRoadRouteAudit5322()}));
  if(afterDrive.route?.status==='ready'?!afterDrive.audit?.valid:(!['off-road','destination-off-road','no-route'].includes(afterDrive.route?.status)||afterDrive.audit||afterDrive.route?.legs.length))
