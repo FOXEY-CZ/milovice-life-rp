@@ -1,6 +1,7 @@
-// Milovice RP 5.1.1 — source-verified CC0 GLB vehicles, streamed by proximity.
+// Pinned GLB vehicles, streamed by proximity; declared license provenance retained for review.
 // Requires the SAME Three.js module revision in the page importmap and GLTFLoader.
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {vehicleModelStatus} from './fictional-identity.js?v=534500';
 
 export const LICENSED_VEHICLES={
  spectralGT:{
@@ -94,15 +95,15 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
   if(scenes.has(key))return Promise.resolve(scenes.get(key));
   if(pending.has(key))return pending.get(key);
   const spec=LICENSED_VEHICLES[key];if(!spec)return Promise.resolve(null);
-  states.set(key,'loading');activeKey=key;publish('🚘 Načítám '+spec.name+' (CC0)…');
+  states.set(key,'loading');activeKey=key;publish(vehicleModelStatus(key,'loading'));
   const task=loader.loadAsync(spec.uri).then(result=>{
    const scene=normalize(result.scene,spec);
    scenes.set(key,scene);states.set(key,'ready');activeKey=key;lastUpdate=-1; // force next frame to attach freshly loaded mesh
-   publish('🚘 Model '+spec.name+' je připraven.');
+   publish(vehicleModelStatus(key,'ready'));
    return scene;
   }).catch(err=>{
    console.warn('Licensed car unavailable, retaining procedural car',key,String(err));
-   states.set(key,'fallback');activeKey=key;publish('🚘 Model nedostupný, původní auto zůstává.');
+   states.set(key,'fallback');activeKey=key;publish(vehicleModelStatus(key,'fallback'));
    return null;
   });
   pending.set(key,task);return task;
@@ -150,7 +151,7 @@ export function makeVehicleAssetManager(THREE,{status=()=>{}}={}){
   const wheels=certifiedWheels(model);
   if(!wheels){
    rejected.set(key,'GLB nemá 4 samostatné správně umístěné otočné osy kol');
-   publish('🚗 '+key+': nepoužitelná geometrie kol – bezpečný automobil místo rozpadlého modelu.');
+   publish(vehicleModelStatus(key,'wheels'));
    return false;
   }
   if(!car.g.userData.proceduralLOD){

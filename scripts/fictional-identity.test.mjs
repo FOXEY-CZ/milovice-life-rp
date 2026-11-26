@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {GAME_TITLE,CITY_NAME,STREET_NAMES,LANDMARK_NAMES,REGION_NAMES,streetDisplayName,landmarkDisplayName,regionDisplayName} from './fictional-identity.js';
+import {GAME_TITLE,CITY_NAME,STREET_NAMES,LANDMARK_NAMES,REGION_NAMES,streetDisplayName,landmarkDisplayName,regionDisplayName,vehicleDisplayName,vehicleModelStatus,VEHICLE_DISPLAY_NAMES} from './fictional-identity.js';
 const paths=["data/milovice-osm.json","data/regions/mlada.json","data/regions/vrutice.json","data/regions/westlink.json","data/regions/centerlink.json","data/regions/bozidar.json"];
 const names=new Set();
 for(const path of paths){
@@ -24,3 +24,14 @@ assert.equal(streetDisplayName('K Milovicům'),'Ironfield Road');
 console.log('PASS fictional identity: all source street names, 14 landmarks and 6 regions');
 
 for(const name of [...Object.values(STREET_NAMES),...Object.values(REGION_NAMES)]) assert(/^[A-Za-z][A-Za-z .'-]*$/.test(name),name);
+
+assert.deepEqual(Object.keys(VEHICLE_DISPLAY_NAMES).sort(),['cityCar','citySUV','citySport','spectralGT']);
+assert.equal(vehicleDisplayName('spectralGT'),'Sports Coupe');
+assert.equal(vehicleDisplayName('__proto__'),'Vehicle');
+for(const key of [...Object.keys(VEHICLE_DISPLAY_NAMES),'unknown'])for(const state of ['loading','ready','fallback','wheels']){
+ const message=vehicleModelStatus(key,state);assert.ok(message.length>0);assert.doesNotMatch(message,/Quaternius|Spectral GT|CC0|cityCar|citySUV|citySport|spectralGT/i);
+}
+assert.equal(vehicleModelStatus('cityCar','unknown'),'');
+const assetSource=readFileSync(new URL('./vehicle-assets.js',import.meta.url),'utf8');
+for(const state of ['loading','ready','fallback','wheels'])assert.ok(assetSource.includes("publish(vehicleModelStatus(key,'"+state+"'))"),state);
+console.log('PASS fictional vehicle statuses and source integration');
